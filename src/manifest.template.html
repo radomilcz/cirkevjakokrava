@@ -1,0 +1,487 @@
+<title>Manifest Církev jako kráva</title>
+<meta name="description" content="Manifest komunity Církev jako kráva – vertikální prezentace.">
+<style>
+  /* ============================================================
+     Církev jako kráva — manifest
+     Barvy, otisk i rozmístění vychází z Figmy (#3b2f2f / #e6acac, „Group 14“ otisk).
+     Písmo Agrandir (Pangram Pangram) je vložené přímo v souboru jako subset
+     (latinka + čeština + šipka), řezy: Grand Heavy, Regular, Narrow Black, Grand.
+     ============================================================ */
+  @font-face{font-family:"Agrandir Grand Heavy";src:url({{F_GRANDHEAVY}}) format("woff");font-weight:800;font-display:swap}
+  @font-face{font-family:"Agrandir";src:url({{F_REGULAR}}) format("woff");font-weight:400;font-display:swap}
+  @font-face{font-family:"Agrandir Narrow Black";src:url({{F_NARROWBLACK}}) format("woff");font-weight:900;font-display:swap}
+  @font-face{font-family:"Agrandir Grand";src:url({{F_GRAND}}) format("woff");font-weight:400;font-display:swap}
+  :root{
+    --ground:#3b2f2f;
+    --ground-deep:#2a2121;
+    --ink:#e6acac;
+    --print:rgba(217,199,199,.30);   /* otisk: bílá v soft-light ≈ tahle barva naplocho, bez blend módu */
+    --display:"Agrandir Grand Heavy","Unbounded",system-ui,sans-serif;
+    --body:"Agrandir","Outfit",system-ui,sans-serif;
+    --narrow:"Agrandir Narrow Black","Unbounded",system-ui,sans-serif;
+    --grand:"Agrandir Grand","Outfit",system-ui,sans-serif;
+    --pad:clamp(20px,4vw,76px);
+    --ease:cubic-bezier(.16,1,.3,1);
+    --move:cubic-bezier(.76,0,.24,1);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:var(--body);font-weight:400;-webkit-font-smoothing:antialiased;
+    touch-action:none;
+  }
+  ::selection{background:var(--ink);color:var(--ground)}
+
+  /* ---------- pásmo slajdů: žádný nativní scroll, jen transform ---------- */
+  .deck{position:fixed;inset:0;overflow:hidden}
+  .track{height:100%;transform:translate3d(0,0,0);transition:transform 1s var(--move);will-change:transform}
+  .track.snap{transition:none}
+  .slide{
+    position:relative;height:100%;padding:var(--pad);
+    display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);overflow:hidden;
+    contain:layout paint;
+  }
+  .eyebrow{
+    font-family:var(--display);font-weight:800;font-size:clamp(1rem,2.3vw,2.75rem);
+    line-height:1.035;margin:0;letter-spacing:-.01em;
+  }
+  .eyebrow .n{font-family:var(--body);font-weight:400;opacity:.7;margin-left:.5em}
+  .statement{
+    align-self:center;margin:0;width:100%;max-width:1560px;
+    font-size:clamp(1.9rem,5.9vw,7.25rem);line-height:1.18;letter-spacing:-.01em;
+  }
+  .statement .arrow{font-family:var(--body)}
+  .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem 2rem;flex-wrap:wrap}
+  .question{
+    margin:0;font-size:clamp(.95rem,1.55vw,1.875rem);line-height:1.25;display:flex;gap:.55em;align-items:baseline;
+    max-width:60ch;
+  }
+  .question::before{content:"→";flex:none}
+  .brand{
+    font-family:var(--display);font-weight:800;font-size:clamp(1rem,2.3vw,2.75rem);line-height:1.035;
+    margin:0 0 0 auto;white-space:nowrap;letter-spacing:-.01em;
+  }
+
+  /* ---------- otisk z Figmy (jeden <symbol>, <use> na každém slajdu) ---------- */
+  .print{
+    position:absolute;z-index:0;pointer-events:none;
+    transform:scale(calc(var(--ps,1)*.96));transition:transform 2.4s var(--ease);
+  }
+  .slide.in .print{transform:scale(var(--ps,1))}
+  .print .rot{position:absolute;left:50%;top:50%;aspect-ratio:998/816}
+  .print svg{display:block;width:100%;height:100%;overflow:visible;fill:var(--print)}
+  .slide.in .print svg{animation:breathe 34s ease-in-out infinite alternate}
+  @keyframes breathe{from{transform:rotate(-1.2deg) scale(1)}to{transform:rotate(1.2deg) scale(1.03)}}
+  /* otisk se skládá linka po lince – každá má vlastní zpoždění (nastavuje JS při vstupu na slajd) */
+  .print svg path{opacity:0;animation:lineIn 1s var(--ease) both}
+  @keyframes lineIn{from{opacity:0;transform:translate(-22px,16px)}to{opacity:1;transform:none}}
+  .slide>*:not(.print):not(.photo):not(.veil):not(.title){position:relative;z-index:1}
+
+  /* ---------- vstupní animace ---------- */
+  .rise{opacity:0;transform:translateY(.45em);transition:opacity .9s var(--ease),transform 1.1s var(--ease)}
+  .slide.in .rise{opacity:1;transform:none}
+  .ln{display:block;overflow:hidden;padding:.22em .12em .1em;margin:-.22em -.12em -.1em}
+  .ln>span{display:block;transform:translateY(125%);transition:transform 1.15s var(--ease)}
+  .slide.in .ln>span{transform:none}
+  .slide.in .ln:nth-child(2)>span{transition-delay:.09s}
+  .slide.in .ln:nth-child(3)>span{transition-delay:.18s}
+  .slide.in .question{transition-delay:.45s}
+  .slide.in .eyebrow{transition-delay:.05s}
+  .slide:first-child .rise{opacity:1;transform:none}
+
+  /* ---------- hero: foto + živé textové vrstvy ---------- */
+  .hero{color:#fff;background:var(--ground-deep)}
+  .hero .photo{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 69%;
+    transform:scale(1.06);animation:kenburns 14s var(--ease) forwards;z-index:0;
+  }
+  @keyframes kenburns{to{transform:scale(1)}}
+  .hero .veil{position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(to top,rgba(42,33,33,.5),transparent 32%),linear-gradient(to bottom,rgba(42,33,33,.25),transparent 25%)}
+  .hero .title{
+    position:absolute;left:0;right:0;top:52%;transform:translateY(-50%);z-index:1;
+    display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 var(--pad);
+  }
+  .hero .buh{
+    margin:0;font-family:var(--narrow);font-weight:900;font-size:clamp(4.5rem,16.67vw,20rem);
+    line-height:1.035;letter-spacing:0;
+  }
+  .hero .buh i{display:inline-block;font-style:normal;transform:translateY(120%);transition:transform 1.2s var(--ease)}
+  .hero.in .buh i{transform:none}
+  .hero.in .buh i:nth-child(2){transition-delay:.07s}
+  .hero.in .buh i:nth-child(3){transition-delay:.14s}
+  .hero.in .buh i:nth-child(4){transition-delay:.21s}
+  .hero.in .buh i:nth-child(5){transition-delay:.28s}
+  .hero .sub{
+    margin:-.15em 0 0;font-family:var(--grand);font-weight:400;font-size:clamp(1.1rem,2.19vw,2.625rem);line-height:1.035;
+  }
+  .hero.in .sub{transition-delay:.75s}
+  .hero.in .eyebrow{transition-delay:1s}
+  .hero.in .brand{transition-delay:1.1s}
+  .hero .foot{justify-content:flex-end}
+
+  /* ---------- hodnoty ---------- */
+  .value .word{
+    grid-row:2;align-self:center;justify-self:center;text-align:center;margin:0;width:100%;min-width:0;
+    font-family:var(--narrow);font-weight:900;font-size:clamp(2.6rem,8.85vw,10.6rem);line-height:1.1;
+    letter-spacing:0;text-transform:uppercase;
+  }
+    .word .ln>span{white-space:nowrap}
+  .value .how{
+    display:block;font-family:var(--grand);font-weight:400;text-transform:none;letter-spacing:0;
+    font-size:clamp(1.15rem,3.65vw,4.4rem);line-height:1.035;margin-top:.1em;
+  }
+  .value .how::before{content:"("}.value .how::after{content:")"}
+
+  /* ---------- navigace ---------- */
+  .rail{
+    position:fixed;right:clamp(10px,1.6vw,26px);top:50%;transform:translate(50%,-50%);z-index:10;
+    display:flex;flex-direction:column;gap:9px;margin:0;padding:0;list-style:none;
+  }
+  .rail button{
+    width:8px;height:8px;border-radius:50%;border:1.5px solid var(--ink);background:transparent;
+    padding:0;cursor:pointer;opacity:.55;transition:opacity .35s,height .35s var(--ease),background .35s;
+  }
+  .rail button:hover,.rail button:focus-visible{opacity:1;outline:none}
+  .rail button[aria-current="true"]{background:var(--ink);opacity:1;height:22px;border-radius:5px}
+  .rail li.sep{height:6px}
+  .counter{
+    position:fixed;right:clamp(10px,1.6vw,26px);top:clamp(18px,3.2vw,60px);z-index:10;
+    font-family:var(--display);font-weight:800;font-size:clamp(.7rem,1vw,1rem);letter-spacing:.04em;
+    font-variant-numeric:tabular-nums;opacity:.8;
+  }
+  .next{
+    position:fixed;right:clamp(8px,1.6vw,26px);bottom:clamp(14px,2.4vw,34px);transform:translateX(50%);z-index:10;
+    width:46px;height:46px;border-radius:50%;border:1.5px solid var(--ink);background:rgba(59,47,47,.6);
+    color:var(--ink);cursor:pointer;display:grid;place-items:center;
+    transition:transform .4s var(--ease),background .4s,color .4s,opacity .4s;
+  }
+  .next svg{width:22px;height:22px;display:block;animation:nudge 2.4s var(--ease) infinite}
+  @keyframes nudge{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+  .next:hover,.next:focus-visible{background:var(--ink);color:var(--ground);transform:translateX(50%) scale(1.08);outline:none}
+  .next.end{opacity:0;pointer-events:none}
+  .hint{
+    position:fixed;left:50%;top:clamp(18px,3.2vw,60px);transform:translateX(-50%);z-index:10;
+    font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;opacity:.6;
+    transition:opacity .6s;pointer-events:none;white-space:nowrap;
+  }
+  .hint.gone{opacity:0}
+  .progress{position:fixed;left:0;top:0;height:3px;width:100%;z-index:10;background:rgba(230,172,172,.12)}
+  .progress i{display:block;height:100%;width:0;background:var(--ink);transition:width .6s var(--ease)}
+
+  /* ---------- mobil / úzká okna ---------- */
+  @media (max-width:720px){
+    .slide{padding:calc(var(--pad) + 6px) var(--pad) calc(var(--pad) + 8px)}
+    .statement{font-size:clamp(1.7rem,8.4vw,3rem);line-height:1.22}
+    .brand{font-size:1rem}
+    .question{font-size:.95rem}
+    .foot{padding-right:56px}
+    .rail,.hint{display:none}
+    .next{right:16px;bottom:16px;transform:none}
+    .next:hover{transform:scale(1.08)}
+    .value .how{font-size:clamp(1.1rem,5vw,1.6rem)}
+  }
+  @media (max-height:520px){
+    .statement{font-size:clamp(1.4rem,5.5vh,3rem)}
+    .value .word{font-size:clamp(2rem,14vh,6rem)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .track{transition:none}
+    .rise,.ln>span,.print{transition:none;opacity:1;transform:none}
+    .hero .photo,.next svg,.slide.in .print svg{animation:none}
+    .print svg path{animation:none;opacity:1}
+  }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="otisk" viewBox="0 0 998 816">{{BLOB_PATHS}}</symbol>
+</svg>
+
+<div class="progress" aria-hidden="true"><i id="bar"></i></div>
+<div class="counter" id="counter" aria-live="polite">01 / 17</div>
+
+<div class="deck" id="deck">
+<main class="track" id="track">
+
+  <!-- 00 · manifest (vrstvy 1:1 podle Figmy: foto, manifest, BŮŮŮH, podtitul, wordmark) -->
+  <section class="slide hero in" id="s0" aria-label="Manifest – úvod">
+    <img class="photo" src="{{HERO}}" alt="Dívka stojí na pastvině vedle skotského náhorního skotu.">
+    <div class="veil"></div>
+    <h2 class="eyebrow rise">manifest</h2>
+    <div class="title">
+      <p class="buh" aria-label="BŮŮŮH"><span class="ln"><span aria-hidden="true"><i>B</i><i>Ů</i><i>Ů</i><i>Ů</i><i>H</i></span></span></p>
+      <p class="sub rise">je dobrý, my jsme normální</p>
+    </div>
+    <div class="foot"><p class="brand rise">církev jako kráva</p></div>
+  </section>
+
+  <!-- 01 · Co děláme? -->
+  <section class="slide" id="s1" data-print="01">
+    <h2 class="eyebrow rise">Co děláme?</h2>
+    <p class="statement">
+      <span class="ln"><span>Oslavujeme Boží kreativitu</span></span>
+      <span class="ln"><span>a lásku <span class="arrow">→</span> k lidem a městům</span></span>
+      <span class="ln"><span>na Kravařsku.</span></span>
+    </p>
+    <div class="foot">
+      <p class="question rise">Jakou hodnotu pro tebe mají Boží investice do Kravařska?</p>
+      <p class="brand">církev jako kráva</p>
+    </div>
+  </section>
+
+  <!-- 02 · Jak to děláme? -->
+  <section class="slide" id="s2" data-print="02">
+    <h2 class="eyebrow rise">Jak to děláme?</h2>
+    <p class="statement">
+      <span class="ln"><span>Vnímáme, co Bůh kolem</span></span>
+      <span class="ln"><span>dělá. Přidáváme k tomu</span></span>
+      <span class="ln"><span>naše srdce, slova i ruce.</span></span>
+    </p>
+    <div class="foot">
+      <p class="question rise">Vidíš Boží jednání ve své rodině, práci a škole?</p>
+      <p class="brand">církev jako kráva</p>
+    </div>
+  </section>
+
+  <!-- 03 · Pro koho? -->
+  <section class="slide" id="s3" data-print="03">
+    <h2 class="eyebrow rise">Pro koho?</h2>
+    <p class="statement">
+      <span class="ln"><span>Tvoříme pastvu pro oči,</span></span>
+      <span class="ln"><span>uši a duši. Pro publikum,</span></span>
+      <span class="ln"><span>které o Bohu nic netuší.</span></span>
+    </p>
+    <div class="foot">
+      <p class="question rise">Jakou pastvu tvoříš? Kdo a co na ní roste?</p>
+      <p class="brand">církev jako kráva</p>
+    </div>
+  </section>
+
+  <!-- 04 · Proč vlastně? -->
+  <section class="slide" id="s4" data-print="04">
+    <h2 class="eyebrow rise">Proč vlastně?</h2>
+    <p class="statement">
+      <span class="ln"><span>Aby lidé poznali, že Bohu</span></span>
+      <span class="ln"><span>na nich záleží. Uprostřed</span></span>
+      <span class="ln"><span>komunity, kam patříš i ty.</span></span>
+    </p>
+    <div class="foot">
+      <p class="question rise">Kdy naposledy jsi někoho vedl ke Kristu?</p>
+      <p class="brand">církev jako kráva</p>
+    </div>
+  </section>
+
+  <!-- 05 · hodnoty – úvod -->
+  <section class="slide value intro" id="s5" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty</h2>
+    <p class="word">
+      <span class="ln"><span>Jaká je?</span></span>
+    </p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+
+  <!-- 06–15 · hodnoty -->
+  <section class="slide value" id="s6" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">1/10</span></h2>
+    <p class="word"><span class="ln"><span>otevřená</span></span><span class="how rise">přitažlivě</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s7" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">2/10</span></h2>
+    <p class="word"><span class="ln"><span>srozumitelná</span></span><span class="how rise">pronikavě</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s8" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">3/10</span></h2>
+    <p class="word"><span class="ln"><span>štědrá</span></span><span class="how rise">bytostně</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s9" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">4/10</span></h2>
+    <p class="word"><span class="ln"><span>tvořivá</span></span><span class="how rise">nespoutaně</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s10" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">5/10</span></h2>
+    <p class="word"><span class="ln"><span>zdravá</span></span><span class="how rise">vnitřně</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s11" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">6/10</span></h2>
+    <p class="word"><span class="ln"><span>radostná</span></span><span class="how rise">hluboce</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s12" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">7/10</span></h2>
+    <p class="word"><span class="ln"><span>odvážná</span></span><span class="how rise">radikálně</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s13" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">8/10</span></h2>
+    <p class="word"><span class="ln"><span>blízká</span></span><span class="how rise">důvěrně</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s14" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">9/10</span></h2>
+    <p class="word"><span class="ln"><span>opravdová</span></span><span class="how rise">přirozeně</span></p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+  <section class="slide value" id="s15" data-print="hodnoty">
+    <h2 class="eyebrow rise">hodnoty <span class="n">10/10</span></h2>
+    <p class="word">
+      <span class="ln"><span>jednoduchá</span></span><span class="how rise">nadpřirozeně</span>
+    </p>
+    <div class="foot"><p class="brand">církev jako kráva</p></div>
+  </section>
+
+  <!-- 16 · zrcadlo -->
+  <section class="slide value mirror" id="s16" data-print="zrcadlo">
+    <h2 class="eyebrow rise">Co odráží naše životy?</h2>
+    <p class="word">
+      <span class="ln"><span>zrcadlo</span></span>
+    </p>
+    <div class="foot">
+      <p class="question rise">Jak vypadáme v zrcadle? Odpovídá realita setkání s námi tomu, co říkáme?</p>
+      <p class="brand">církev jako kráva</p>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<ul class="rail" id="rail" aria-label="Slajdy"></ul>
+<div class="hint" id="hint">scroll · šipky · mezerník</div>
+<button class="next" id="next" aria-label="Další slajd">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M5 13l7 7 7-7"/></svg>
+</button>
+
+<script>
+(function(){
+  const track=document.getElementById('track');
+  const slides=[...track.querySelectorAll('.slide')];
+  const rail=document.getElementById('rail');
+  const counter=document.getElementById('counter');
+  const bar=document.getElementById('bar');
+  const next=document.getElementById('next');
+  const hint=document.getElementById('hint');
+  const N=slides.length;
+  const pad=n=>String(n+1).padStart(2,'0');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- otisk: rozmístění 1:1 podle Figmy (rámeček 1920×1080, skupina 816×997 otočená) ----------
+     x,y,w,h = obalový box otočené skupiny v rámu; rot = rotace navíc oproti exportu (export je otočený o 90°) */
+  const PRINT={
+    '01':     {x:851, y:115,  w:997,  h:816,  rot:0},
+    '02':     {x:283, y:370,  w:1175, h:1046, rot:-165},
+    '03':     {x:549, y:-471, w:1272, h:1205, rot:-30},
+    '04':     {x:-367,y:228,  w:1272, h:1205, rot:-30},
+    'hodnoty':{x:324, y:-34,  w:1272, h:1205, rot:150},
+    'zrcadlo':{x:373, y:0,    w:1175, h:1046, rot:-15}
+  };
+  slides.forEach(s=>{
+    const k=s.dataset.print;if(!k)return;const c=PRINT[k];
+    const d=document.createElement('div');d.className='print';
+    d.style.cssText=`left:${c.x/19.2}%;top:${c.y/10.8}%;width:${c.w/19.2}%;height:${c.h/10.8}%`;
+    const r=document.createElement('div');r.className='rot';
+    r.style.cssText=`width:${998/c.w*100}%;transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
+    r.innerHTML='<svg viewBox="0 0 998 816"></svg>';
+    d.appendChild(r);s.prepend(d);s._svg=r.firstChild;
+  });
+  const LINES=[...document.querySelectorAll('#otisk path')];
+  const STEP=26; /* ms mezi linkami → celý otisk ~1,4 s */
+  function drawPrint(s){
+    if(!s._svg||s._svg.childElementCount)return;
+    const frag=document.createDocumentFragment();
+    LINES.forEach((p,i)=>{const c=p.cloneNode();c.style.animationDelay=(i*STEP)+'ms';frag.appendChild(c)});
+    s._svg.appendChild(frag);
+  }
+  function clearPrint(s){if(s._svg)s._svg.replaceChildren()}
+
+  /* ---------- lišta s tečkami ---------- */
+  slides.forEach((s,i)=>{
+    if(i===5||i===16){const sep=document.createElement('li');sep.className='sep';rail.appendChild(sep)}
+    const li=document.createElement('li');const b=document.createElement('button');
+    b.type='button';b.setAttribute('aria-label','Slajd '+(i+1));b.addEventListener('click',()=>go(i));
+    li.appendChild(b);rail.appendChild(li);s._dot=b;
+  });
+
+  /* ---------- přechod mezi slajdy ---------- */
+  let cur=0,busy=false,t1,t2;
+  function go(i,instant){
+    i=Math.max(0,Math.min(N-1,i));
+    if(i===cur&&!instant)return;
+    const prev=cur;cur=i;
+    track.classList.toggle('snap',!!instant||reduced);
+    track.style.transform=`translate3d(0,${-i*100}%,0)`;
+    slides.forEach((s,j)=>{s._dot.setAttribute('aria-current',j===i?'true':'false');if(j!==i&&j!==prev){s.classList.remove('in');clearPrint(s)}});
+    clearTimeout(t1);clearTimeout(t2);
+    drawPrint(slides[i]);
+    if(instant||reduced){slides[prev].classList.remove('in');if(prev!==i)clearPrint(slides[prev]);slides[i].classList.add('in')}
+    else{
+      busy=true;
+      t1=setTimeout(()=>{slides[prev].classList.remove('in');slides[i].classList.add('in')},180);
+      t2=setTimeout(()=>{busy=false;clearPrint(slides[prev])},1100);
+    }
+    counter.textContent=pad(i)+' / '+pad(N-1);
+    bar.style.width=((i+1)/N*100)+'%';
+    next.classList.toggle('end',i===N-1);
+    if(i>0)hint.classList.add('gone');
+    /* deep-link do adresy; v sandboxu (srcdoc iframe) to prohlížeč zakazuje, tak jen potichu přeskočit */
+    if(/^https?:$/.test(location.protocol)||location.protocol==='file:'){try{history.replaceState(null,'','#'+slides[i].id)}catch(e){}}
+  }
+
+  /* ---------- klávesy ---------- */
+  addEventListener('keydown',e=>{
+    if(e.target.matches('input,textarea'))return;
+    if(['ArrowDown','PageDown',' ','ArrowRight','j'].includes(e.key)){e.preventDefault();if(!busy)go(cur+1)}
+    else if(['ArrowUp','PageUp','ArrowLeft','k'].includes(e.key)){e.preventDefault();if(!busy)go(cur-1)}
+    else if(e.key==='Home'){e.preventDefault();go(0)}
+    else if(e.key==='End'){e.preventDefault();go(N-1)}
+  });
+  next.addEventListener('click',()=>{if(!busy)go(cur+1)});
+
+  /* ---------- kolečko / touchpad: nasbírat delta, jeden krok, pak chvíli ignorovat setrvačnost ---------- */
+  let acc=0,quiet=0;
+  addEventListener('wheel',e=>{
+    e.preventDefault();
+    const now=performance.now();
+    if(busy||now<quiet){acc=0;return}
+    acc+=e.deltaY;
+    if(Math.abs(acc)>=40){go(cur+(acc>0?1:-1));acc=0;quiet=now+1100}
+  },{passive:false});
+
+  /* ---------- dotyk: swipe ---------- */
+  let ty=null;
+  addEventListener('touchstart',e=>{ty=e.touches[0].clientY},{passive:true});
+  addEventListener('touchend',e=>{
+    if(ty===null)return;const dy=ty-e.changedTouches[0].clientY;ty=null;
+    if(Math.abs(dy)>45&&!busy)go(cur+(dy>0?1:-1));
+  },{passive:true});
+
+  /* ---------- hodnoty: slovo se vždycky vejde na šířku ---------- */
+  const words=[...document.querySelectorAll('.word .ln>span')];
+  function fit(){
+    words.forEach(w=>{
+      w.style.fontSize='';
+      const avail=w.closest('.word').clientWidth;
+      const need=w.scrollWidth;
+      if(need>avail){const fs=parseFloat(getComputedStyle(w).fontSize);w.style.fontSize=(fs*avail/need*.97)+'px'}
+    });
+  }
+  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fit,120)});
+  fit();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+
+  /* v iframu (artefakt) musí mít dokument fokus, jinak klávesy chodí rodiči */
+  try{document.body.tabIndex=-1;document.body.focus({preventScroll:true})}catch(e){}
+  addEventListener('pointerdown',()=>{try{document.body.focus({preventScroll:true})}catch(e){}});
+
+  /* ---------- start (i z hashe) ---------- */
+  const h=location.hash&&document.getElementById(location.hash.slice(1));
+  const start=h&&slides.includes(h)?slides.indexOf(h):0;
+  go(start,true);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>track.classList.remove('snap')));
+})();
+</script>
