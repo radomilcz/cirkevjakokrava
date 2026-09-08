@@ -2,6 +2,8 @@
 
 Vertikální webová prezentace manifestu komunity **Církev jako kráva**. Jeden HTML soubor bez externích závislostí: fotka, písmo i otisk jsou vložené přímo v něm.
 
+**Živě:** https://radomilcz.github.io/cirkevjakokrava/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`).
+
 Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (framy `00`–`04`, `Hodnoty 01–11`, `Zrcadlo 00`).
 
 ## Struktura
@@ -38,4 +40,4 @@ kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swi
 
 ## Licence písma
 
-Agrandir (Pangram Pangram) je licencované písmo, subset je v repu jen kvůli buildu. Repozitář proto drž soukromý, případně fonty z repa vyřaď a vkládej je při buildu z lokální cesty.
+Agrandir (Pangram Pangram) je licencované písmo s webovou licencí; v repu je jen subset (latinka, čeština, šipka) potřebný pro build a totožný s tím, co je vložené v hotové stránce.
