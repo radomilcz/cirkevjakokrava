@@ -196,6 +196,14 @@
   body.on-light .progress i{background:var(--ground)}
   body,.rail button,.next,.counter,.progress i{transition:color .6s,border-color .6s,background-color .6s}
 
+  /* ---------- na výšku: otisk na střed slajdu, velký, jen s rotací daného slajdu ---------- */
+  @media (max-aspect-ratio:1/1){
+    .print{left:50% !important;top:50% !important;width:min(135vw,78vh) !important;height:auto !important;aspect-ratio:1/1;
+      transform:translate(-50%,-50%) scale(.96)}
+    .slide.in .print{transform:translate(-50%,-50%) scale(1)}
+    .print .rot{width:100% !important}
+  }
+
   /* ---------- mobil / úzká okna ---------- */
   @media (max-width:720px){
     .slide{padding:calc(var(--pad) + 6px) var(--pad) calc(var(--pad) + 8px)}
