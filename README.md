@@ -2,7 +2,9 @@
 
 Vertikální webová prezentace manifestu komunity **Církev jako kráva**. Jeden HTML soubor bez externích závislostí: fotka, písmo i otisk jsou vložené přímo v něm.
 
-**Živě:** https://radomilcz.github.io/cirkevjakokrava/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`).
+**Živě:** https://manifest.cirkevjakokrava.cz/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`; záložní adresa https://radomilcz.github.io/cirkevjakokrava/).
+
+Doména: `docs/CNAME` drží subdoménu, v DNS je `manifest` jako CNAME na `radomilcz.github.io`.
 
 Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (framy `00`–`04`, `Hodnoty 01–11`, `Zrcadlo 00`).
 
