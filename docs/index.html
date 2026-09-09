@@ -74,16 +74,24 @@
   /* ---------- otisk z Figmy (jeden <symbol>, <use> na každém slajdu) ---------- */
   .print{
     position:absolute;z-index:0;pointer-events:none;
-    transform:scale(calc(var(--ps,1)*.96));transition:transform 2.4s var(--ease);
+    transform:scale(var(--ps,1));
   }
-  .slide.in .print{transform:scale(var(--ps,1))}
   .print .rot{position:absolute;left:50%;top:50%;aspect-ratio:998/816}
+  /* otisk se odkrývá linka po lince jednou maskou (levý dolní → pravý horní roh, stejně jako jdou linky za sebou)
+     – jediná animovaná vlastnost místo 55 animovaných cest; svg samotné se vykreslí jen jednou */
+  .print .sweep{width:100%;height:100%;
+    -webkit-mask-image:linear-gradient(45deg,#000 46%,transparent 54%);mask-image:linear-gradient(45deg,#000 46%,transparent 54%);
+    -webkit-mask-size:300% 300%;mask-size:300% 300%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:100% 0%;mask-position:100% 0%;}
+  .slide.in .print .sweep{animation:sweep 1.8s cubic-bezier(.4,0,.2,1) forwards}
+  @keyframes sweep{from{-webkit-mask-position:100% 0%;mask-position:100% 0%}to{-webkit-mask-position:0% 100%;mask-position:0% 100%}}
   .print svg{display:block;width:100%;height:100%;overflow:visible;fill:var(--print)}
-  .slide.in .print svg{animation:breathe 34s ease-in-out infinite alternate}
-  @keyframes breathe{from{transform:rotate(-1.2deg) scale(1)}to{transform:rotate(1.2deg) scale(1.03)}}
-  /* otisk se skládá linka po lince – každá má vlastní zpoždění (nastavuje JS při vstupu na slajd) */
-  .print svg path{opacity:0;animation:lineIn 1s var(--ease) both}
-  @keyframes lineIn{from{opacity:0;transform:translate(-22px,16px)}to{opacity:1;transform:none}}
+  /* jemné dýchání jen na desktopu (myš) – na kompozitní vrstvě, bez změny měřítka, aby se nic nepřekreslovalo */
+  @media (hover:hover){
+    .print .sweep{will-change:transform}
+    .slide.in .print .sweep{animation:sweep 1.8s cubic-bezier(.4,0,.2,1) forwards,breathe 40s ease-in-out infinite alternate}
+    @keyframes breathe{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
+  }
   .slide>*:not(.print):not(.photo):not(.veil):not(.title){position:relative;z-index:1}
 
   /* ---------- vstupní animace ---------- */
@@ -102,9 +110,12 @@
   .hero{color:#fff;background:var(--ground-deep)}
   .hero .photo{
     position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 69%;
-    transform:scale(1.06);animation:kenburns 14s var(--ease) forwards;z-index:0;
+    z-index:0;
   }
-  @keyframes kenburns{to{transform:scale(1)}}
+  @media (hover:hover){
+    .hero .photo{transform:scale(1.06);will-change:transform;animation:kenburns 14s var(--ease) forwards}
+    @keyframes kenburns{to{transform:scale(1)}}
+  }
   .hero .veil{position:absolute;inset:0;z-index:0;pointer-events:none;
     background:linear-gradient(to top,rgba(42,33,33,.5),transparent 32%),linear-gradient(to bottom,rgba(42,33,33,.25),transparent 25%)}
   .hero .title{
@@ -236,8 +247,8 @@
   @media (prefers-reduced-motion:reduce){
     .track{transition:none}
     .rise,.ln>span,.print{transition:none;opacity:1;transform:none}
-    .hero .photo,.next svg,.slide.in .print svg{animation:none}
-    .print svg path{animation:none;opacity:1}
+    .hero .photo,.next svg,.slide.in .print .sweep{animation:none}
+    .print .sweep{-webkit-mask-image:none;mask-image:none}
   }
 </style>
 
@@ -461,15 +472,14 @@
     d.style.cssText=`left:${c.x/19.2}%;top:${c.y/10.8}%;width:${c.w/19.2}%;height:${c.h/10.8}%`;
     const r=document.createElement('div');r.className='rot';
     r.style.cssText=`width:${998/c.w*100}%;transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
-    r.innerHTML='<svg viewBox="0 0 998 816"></svg>';
-    d.appendChild(r);s.prepend(d);s._svg=r.firstChild;
+    r.innerHTML='<div class="sweep"><svg viewBox="0 0 998 816"></svg></div>';
+    d.appendChild(r);s.prepend(d);s._svg=r.querySelector('svg');
   });
   const LINES=[...document.querySelectorAll('#otisk path')];
-  const STEP=26; /* ms mezi linkami → celý otisk ~1,4 s */
   function drawPrint(s){
     if(!s._svg||s._svg.childElementCount)return;
     const frag=document.createDocumentFragment();
-    LINES.forEach((p,i)=>{const c=p.cloneNode();c.style.animationDelay=(i*STEP)+'ms';frag.appendChild(c)});
+    LINES.forEach(p=>frag.appendChild(p.cloneNode()));
     s._svg.appendChild(frag);
   }
   function clearPrint(s){if(s._svg)s._svg.replaceChildren()}

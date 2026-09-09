@@ -34,7 +34,7 @@ kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swi
 ## Jak je to postavené
 
 - Slajdy se nepřepínají nativním scrollem, ale jedním `translateY` na celém pásu – proto to nikde neškube.
-- Otisk je jeden `<symbol>`; na aktivní slajd se naklonuje a jeho linky se objevují postupně (26 ms mezi linkami). Rozmístění a rotace otisku na jednotlivých slajdech odpovídá Figmě 1:1 (tabulka `PRINT` v JS).
+- Otisk je jeden `<symbol>`; na aktivní slajd se naklonuje a odkryje jednou animovanou maskou (linka po lince zleva dola doprava nahoru) – SVG se vykreslí jen jednou, takže to nezatěžuje ani mobil. Rozmístění a rotace otisku na jednotlivých slajdech odpovídá Figmě 1:1 (tabulka `PRINT` v JS).
 - Text se odhaluje po řádcích maskou (`.ln`), písmena BŮŮŮH jednotlivě.
 - Barvy: pozadí `#3b2f2f`, text `#e6acac`, otisk `rgba(217,199,199,.30)` (náhrada za white + soft-light).
 - Písmo: Agrandir Grand Heavy (popisky, wordmark), Regular (výroky), Narrow Black (BŮŮŮH, hodnoty, Zrcadlo), Grand (podtitul, příslovce).
