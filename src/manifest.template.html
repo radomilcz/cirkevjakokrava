@@ -311,63 +311,63 @@
   </section>
 
   <!-- 06 · hodnoty – úvod -->
-  <section class="slide value intro" id="s6" data-print="hodnoty">
+  <section class="slide value intro" id="s6" data-print="h01">
     <img class="photo" src="{{HODNOTY_PHOTO}}" alt="Kráva zblízka v mlze.">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">Jaká je?</h2>
+    <h2 class="eyebrow rise">hodnoty</h2>
     <p class="word">
-      <span class="ln"><span>hodnoty</span></span>
+      <span class="ln"><span>Jaká je?</span></span>
     </p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
 
   <!-- 07–16 · hodnoty -->
-  <section class="slide value" id="s7" data-print="hodnoty">
+  <section class="slide value" id="s7" data-print="h02">
     <h2 class="eyebrow rise">hodnoty <span class="n">1/10</span></h2>
     <p class="word"><span class="ln"><span>otevřená</span></span><span class="how rise">přitažlivě</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s8" data-print="hodnoty">
+  <section class="slide value" id="s8" data-print="h03">
     <h2 class="eyebrow rise">hodnoty <span class="n">2/10</span></h2>
     <p class="word"><span class="ln"><span>srozumitelná</span></span><span class="how rise">pronikavě</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s9" data-print="hodnoty">
+  <section class="slide value" id="s9" data-print="h04">
     <h2 class="eyebrow rise">hodnoty <span class="n">3/10</span></h2>
     <p class="word"><span class="ln"><span>štědrá</span></span><span class="how rise">bytostně</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s10" data-print="hodnoty">
+  <section class="slide value" id="s10" data-print="h05">
     <h2 class="eyebrow rise">hodnoty <span class="n">4/10</span></h2>
     <p class="word"><span class="ln"><span>tvořivá</span></span><span class="how rise">nespoutaně</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s11" data-print="hodnoty">
+  <section class="slide value" id="s11" data-print="h06">
     <h2 class="eyebrow rise">hodnoty <span class="n">5/10</span></h2>
     <p class="word"><span class="ln"><span>zdravá</span></span><span class="how rise">vnitřně</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s12" data-print="hodnoty">
+  <section class="slide value" id="s12" data-print="h07">
     <h2 class="eyebrow rise">hodnoty <span class="n">6/10</span></h2>
     <p class="word"><span class="ln"><span>radostná</span></span><span class="how rise">hluboce</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s13" data-print="hodnoty">
+  <section class="slide value" id="s13" data-print="h08">
     <h2 class="eyebrow rise">hodnoty <span class="n">7/10</span></h2>
     <p class="word"><span class="ln"><span>odvážná</span></span><span class="how rise">radikálně</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s14" data-print="hodnoty">
+  <section class="slide value" id="s14" data-print="h09">
     <h2 class="eyebrow rise">hodnoty <span class="n">8/10</span></h2>
     <p class="word"><span class="ln"><span>blízká</span></span><span class="how rise">důvěrně</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s15" data-print="hodnoty">
+  <section class="slide value" id="s15" data-print="h10">
     <h2 class="eyebrow rise">hodnoty <span class="n">9/10</span></h2>
     <p class="word"><span class="ln"><span>opravdová</span></span><span class="how rise">přirozeně</span></p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
-  <section class="slide value" id="s16" data-print="hodnoty">
+  <section class="slide value" id="s16" data-print="h11">
     <h2 class="eyebrow rise">hodnoty <span class="n">10/10</span></h2>
     <p class="word">
       <span class="ln"><span>jednoduchá</span></span><span class="how rise">nadpřirozeně</span>
@@ -398,6 +398,7 @@
 
 <script>
 (function(){
+  const deck=document.getElementById('deck');
   const track=document.getElementById('track');
   const slides=[...track.querySelectorAll('.slide')];
   const rail=document.getElementById('rail');
@@ -411,15 +412,28 @@
 
   /* ---------- otisk: rozmístění 1:1 podle Figmy (rámeček 1920×1080, skupina 816×997 otočená) ----------
      x,y,w,h = obalový box otočené skupiny v rámu; rot = rotace navíc oproti exportu (export je otočený o 90°) */
-  const PRINT={
-    '01':     {x:851, y:115,  w:997,  h:816,  rot:0},
-    '02':     {x:283, y:370,  w:1175, h:1046, rot:-165},
-    '03':     {x:549, y:-471, w:1272, h:1205, rot:-30},
-    '04':     {x:-367,y:228,  w:1272, h:1205, rot:-30},
-    '05':     {x:446, y:132,  w:997,  h:816,  rot:180},
-    'hodnoty':{x:324, y:-34,  w:1272, h:1205, rot:150},
-    'zrcadlo':{x:373, y:0,    w:1175, h:1046, rot:-15}
+  const PRINT={            /* x,y = levý horní roh obalového boxu otočené skupiny v rámu, r = rotace ve Figmě */
+    '01':     {x:851, y:115,  r:90},
+    '02':     {x:283, y:370,  r:-75},
+    '03':     {x:549, y:-471, r:60},
+    '04':     {x:-367,y:228,  r:60},
+    '05':     {x:446, y:132,  r:-90},
+    'h01':    {x:324, y:-3,   r:-120},
+    'h02':    {x:324, y:-34,  r:-120},
+    'h03':    {x:439, y:118,  r:90},
+    'h04':    {x:302, y:-111, r:60},
+    'h05':    {x:384, y:17,   r:-105},
+    'h06':    {x:384, y:0,    r:75},
+    'h07':    {x:351, y:-126, r:-45},
+    'h08':    {x:336, y:-139, r:30},
+    'h09':    {x:373, y:17,   r:-105},
+    'h10':    {x:396, y:0,    r:-75},
+    'h11':    {x:404, y:38,   r:99},
+    'zrcadlo':{x:373, y:0,    r:75}
   };
+  /* skupina je 816×997; export otisku je pořízený při rotaci 90°, Figma točí proti směru hodin, CSS po směru → css = 90 − r */
+  Object.values(PRINT).forEach(c=>{const a=c.r*Math.PI/180,C=Math.abs(Math.cos(a)),S=Math.abs(Math.sin(a));
+    c.w=816*C+997*S;c.h=816*S+997*C;c.rot=90-c.r});
   slides.forEach(s=>{
     const k=s.dataset.print;if(!k)return;const c=PRINT[k];
     const d=document.createElement('div');d.className='print';
@@ -455,6 +469,7 @@
     const prev=cur;cur=i;
     track.classList.toggle('snap',!!instant||reduced);
     track.style.transform=`translate3d(0,${-i*100}%,0)`;
+    deck.scrollTop=0; /* prohlížeč umí při skoku na #kotvu posunout i overflow:hidden kontejner */
     slides.forEach((s,j)=>{s._dot.setAttribute('aria-current',j===i?'true':'false');if(j!==i&&j!==prev){s.classList.remove('in');clearPrint(s)}});
     clearTimeout(t1);clearTimeout(t2);
     drawPrint(slides[i]);
@@ -523,6 +538,7 @@
   const h=location.hash&&document.getElementById(location.hash.slice(1));
   const start=h&&slides.includes(h)?slides.indexOf(h):0;
   go(start,true);
+  addEventListener('hashchange',()=>{const el=document.getElementById(location.hash.slice(1));if(el&&slides.includes(el))go(slides.indexOf(el))});
   requestAnimationFrame(()=>requestAnimationFrame(()=>track.classList.remove('snap')));
 })();
 </script>
