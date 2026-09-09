@@ -4,6 +4,7 @@
 Do šablony vloží:
   {{BLOB_PATHS}}   – křivky otisku (src/assets/otisk-paths.txt, jedna <path> na řádek)
   {{HERO}}         – úvodní fotka jako data URI (src/assets/hero.jpg)
+  {{HODNOTY_PHOTO}} – fotka úvodu hodnot (src/assets/hodnoty.jpg)
   {{F_*}}          – čtyři řezy Agrandiru jako data URI (src/fonts/*.woff)
 
 Výsledek je jeden soubor bez externích závislostí – jde poslat mailem,
@@ -50,6 +51,7 @@ def build():
     }
     body = tpl.replace('{{BLOB_PATHS}}', blob)
     body = body.replace('{{HERO}}', data_uri(os.path.join(SRC, 'assets', 'hero.jpg'), 'image/jpeg'))
+    body = body.replace('{{HODNOTY_PHOTO}}', data_uri(os.path.join(SRC, 'assets', 'hodnoty.jpg'), 'image/jpeg'))
     for key, name in fonts.items():
         body = body.replace(key, data_uri(os.path.join(SRC, 'fonts', name), 'font/woff'))
     if '{{' in body:

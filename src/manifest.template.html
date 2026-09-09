@@ -122,6 +122,13 @@
   .hero.in .brand{transition-delay:1.1s}
   .hero .foot{justify-content:flex-end}
 
+  /* ---------- hodnoty – úvod s fotkou ---------- */
+  .intro{color:#fff;background:var(--ground-deep)}
+  .intro .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 95%;z-index:0}
+  .intro .veil{position:absolute;inset:0;z-index:0;pointer-events:none;background:rgba(42,33,33,.18)}
+  .intro .print{z-index:1}
+  .intro .print svg{fill:rgba(255,255,255,.55)}
+
   /* ---------- Kravařsko. Moje lásko. ---------- */
   .love{background:var(--ink);color:var(--ground)}
   .love .print svg{fill:rgba(255,255,255,.55)}
@@ -305,9 +312,11 @@
 
   <!-- 06 · hodnoty – úvod -->
   <section class="slide value intro" id="s6" data-print="hodnoty">
-    <h2 class="eyebrow rise">hodnoty</h2>
+    <img class="photo" src="{{HODNOTY_PHOTO}}" alt="Kráva zblízka v mlze.">
+    <div class="veil"></div>
+    <h2 class="eyebrow rise">Jaká je?</h2>
     <p class="word">
-      <span class="ln"><span>Jaká je kráva?</span></span>
+      <span class="ln"><span>hodnoty</span></span>
     </p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>

@@ -2,9 +2,7 @@
 
 Vertikální webová prezentace manifestu komunity **Církev jako kráva**. Jeden HTML soubor bez externích závislostí: fotka, písmo i otisk jsou vložené přímo v něm.
 
-**Živě:** https://manifest.cirkevjakokrava.cz/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`; záložní adresa https://radomilcz.github.io/cirkevjakokrava/).
-
-Doména: `docs/CNAME` drží subdoménu, v DNS je `manifest` jako CNAME na `radomilcz.github.io`.
+**Živě:** https://radomilcz.github.io/cirkevjakokrava/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`).
 
 Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (framy `00`–`04`, `Hodnoty 01–11`, `Zrcadlo 00`).
 
@@ -15,6 +13,7 @@ src/manifest.template.html   šablona – tady se edituje obsah, CSS i JS
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web
 src/assets/hero-original.jpg úvodní fotka v plném rozlišení
+src/assets/hodnoty.jpg       fotka úvodu hodnot (+ hodnoty-original.jpg)
 src/fonts/*.woff             Agrandir – subset (latinka, čeština, šipka)
 build.py                     složí šablonu + assety do docs/index.html
 docs/index.html              hotová prezentace (co se posílá / hostuje)
