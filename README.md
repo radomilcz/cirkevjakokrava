@@ -1,6 +1,6 @@
 # Manifest – Církev jako kráva
 
-Vertikální webová prezentace manifestu komunity **Církev jako kráva**. Jeden HTML soubor bez externích závislostí: fotka, písmo i otisk jsou vložené přímo v něm.
+Vertikální webová prezentace manifestu komunity **Církev jako kráva**.
 
 **Živě:** https://radomilcz.github.io/cirkevjakokrava/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`).
 
@@ -9,21 +9,23 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 ## Struktura
 
 ```
-src/manifest.template.html   šablona – tady se edituje obsah, CSS i JS
+src/manifest.template.html   šablona – obsah slajdů (HTML)
+src/manifest.css             styly
+src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
-src/assets/hero.jpg          úvodní fotka, zmenšená pro web
-src/assets/hero-original.jpg úvodní fotka v plném rozlišení
+src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
 src/assets/hodnoty.jpg       fotka úvodu hodnot (+ hodnoty-original.jpg)
 src/fonts/*.woff             Agrandir – subset (latinka, čeština, šipka)
-build.py                     složí šablonu + assety do docs/index.html
-docs/index.html              hotová prezentace (co se posílá / hostuje)
+build.py                     sestaví obě verze do docs/
+docs/index.html + assets/    web – HTML, CSS, JS, fonty a fotky jako samostatné soubory (cache, paralelní stahování)
+docs/manifest.html           totéž v jednom souboru se vším vloženým – na mail, z disku, náhled v Claude
 ```
 
 ## Úprava a build
 
-1. Uprav `src/manifest.template.html` (texty jsou přímo v `<section class="slide">`).
-2. Spusť `python3 build.py` – přegeneruje `docs/index.html`.
-3. Otevři `docs/index.html` v prohlížeči.
+1. Uprav `src/manifest.template.html` (texty jsou přímo v `<section class="slide">`), případně `manifest.css` / `manifest.js`.
+2. Spusť `python3 build.py` – přegeneruje `docs/`.
+3. Otevři `docs/index.html` (nebo `docs/manifest.html`) v prohlížeči.
 
 Nová úvodní fotka: `python3 build.py --hero cesta/k/fotce.jpg` (vyžaduje `pip install pillow`).
 
