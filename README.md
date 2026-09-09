@@ -16,16 +16,15 @@ src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 c
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
 src/assets/hodnoty.jpg       fotka úvodu hodnot (+ hodnoty-original.jpg)
 src/fonts/*.woff             Agrandir – subset (latinka, čeština, šipka)
-build.py                     sestaví obě verze do docs/
-docs/index.html + assets/    web – HTML, CSS, JS, fonty a fotky jako samostatné soubory (cache, paralelní stahování)
-docs/manifest.html           totéž v jednom souboru se vším vloženým – na mail, z disku, náhled v Claude
+build.py                     sestaví web do docs/
+docs/index.html + assets/    hotový web – HTML, CSS, JS, fonty a fotky jako samostatné soubory
 ```
 
 ## Úprava a build
 
 1. Uprav `src/manifest.template.html` (texty jsou přímo v `<section class="slide">`), případně `manifest.css` / `manifest.js`.
 2. Spusť `python3 build.py` – přegeneruje `docs/`.
-3. Otevři `docs/index.html` (nebo `docs/manifest.html`) v prohlížeči.
+3. Otevři `docs/index.html` v prohlížeči (fonty přes `file://` v Chromu nepřednačte, přes lokální server nebo po nasazení ano).
 
 Nová úvodní fotka: `python3 build.py --hero cesta/k/fotce.jpg` (vyžaduje `pip install pillow`).
 

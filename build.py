@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 """Sestaví prezentaci ze šablony src/manifest.template.html.
 
-Dva výstupy:
-  docs/                 web (GitHub Pages / manifest.cirkevjakokrava.cz):
-                        index.html + assets/manifest.css, manifest.js, fonty a fotky
-                        jako samostatné soubory – prohlížeč je cachuje a stahuje paralelně
-  docs/manifest.html    jeden soubor se vším vloženým (base64) – na poslání mailem,
-                        otevření z disku, náhled v Claude
+Výstup: docs/ (GitHub Pages / manifest.cirkevjakokrava.cz)
+  index.html + assets/manifest.css, manifest.js, fonty a fotky jako samostatné
+  soubory – prohlížeč je cachuje a stahuje paralelně.
 
 Placeholdery v šabloně / CSS:
-  {{CSS}} {{JS}}                 obsah src/manifest.css a src/manifest.js (odkaz, nebo inline)
+  {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
   {{BLOB_PATHS}}                 křivky otisku (src/assets/otisk-paths.txt) – vždy inline, JS je klonuje
   {{HERO}} {{HODNOTY_PHOTO}}     fotky (src/assets/hero.jpg, hodnoty.jpg)
   {{F_GRANDHEAVY}} {{F_REGULAR}} {{F_NARROWBLACK}} {{F_GRAND}}   fonty (src/fonts/*.woff)
@@ -17,7 +14,7 @@ Placeholdery v šabloně / CSS:
 Použití:  python3 build.py
 Volitelně: python3 build.py --hero cesta/k/nove-fotce.jpg   (zmenší na 2000 px a nahradí hero.jpg)
 """
-import argparse, base64, os, re, shutil, sys
+import argparse, os, re, shutil, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, 'src')
@@ -38,11 +35,6 @@ IMAGES = {
 def read(path):
     with open(path, encoding='utf-8') as f:
         return f.read()
-
-
-def data_uri(path, mime):
-    with open(path, 'rb') as f:
-        return 'data:' + mime + ';base64,' + base64.b64encode(f.read()).decode()
 
 
 def prepare_hero(source):
@@ -72,7 +64,6 @@ def build():
     blob = ''.join(f'<path d="{d}"/>' for d in paths)
     tpl = tpl.replace('{{BLOB_PATHS}}', blob)
 
-    # --- web: samostatné soubory -------------------------------------------
     assets = os.path.join(DOCS, 'assets')
     os.makedirs(os.path.join(assets, 'fonts'), exist_ok=True)
     css_web = css
@@ -94,22 +85,10 @@ def build():
     with open(os.path.join(DOCS, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(wrap(web))
 
-    # --- jeden soubor se vším vloženým -------------------------------------
-    css_inline = css
-    for key, name in FONTS.items():
-        css_inline = css_inline.replace(key, data_uri(os.path.join(SRC, 'fonts', name), 'font/woff'))
-    single = (tpl.replace('{{CSS}}', '<style>\n' + css_inline + '</style>')
-                 .replace('{{JS}}', '<script>\n' + js + '</script>'))
-    for key, name in IMAGES.items():
-        single = single.replace(key, data_uri(os.path.join(SRC, 'assets', name), 'image/jpeg'))
-    check(single)
-    with open(os.path.join(DOCS, 'manifest.html'), 'w', encoding='utf-8') as f:
-        f.write(wrap(single))
 
     kb = lambda p: f'{os.path.getsize(p) / 1024:.0f} kB'
     print('docs/index.html', kb(os.path.join(DOCS, 'index.html')),
           '+ assets (css', kb(os.path.join(assets, 'manifest.css')), ', js', kb(os.path.join(assets, 'manifest.js')), ')')
-    print('docs/manifest.html', kb(os.path.join(DOCS, 'manifest.html')), '(vše v jednom)')
 
 
 def check(html):
