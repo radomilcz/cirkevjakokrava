@@ -123,8 +123,11 @@
   .hero .foot{justify-content:flex-end}
 
   /* ---------- Kravařsko. Moje lásko. ---------- */
+  .love{background:var(--ink);color:var(--ground)}
+  .love .print svg{fill:rgba(255,255,255,.55)}
+  .love .foot{justify-content:flex-end}
   .love .statement{
-    justify-self:center;width:auto;max-width:100%;color:#fff;
+    justify-self:center;width:auto;max-width:100%;
     font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,6.46vw,7.75rem);line-height:1.25;letter-spacing:-.01em;
   }
 
@@ -176,6 +179,15 @@
   .hint.gone{opacity:0}
   .progress{position:fixed;left:0;top:0;height:3px;width:100%;z-index:10;background:rgba(230,172,172,.12)}
   .progress i{display:block;height:100%;width:0;background:var(--ink);transition:width .6s var(--ease)}
+
+  /* na světlém slajdu se pevné ovládací prvky přebarví */
+  body.on-light .rail button,body.on-light .next{border-color:var(--ground);color:var(--ground);background:transparent}
+  body.on-light .rail button[aria-current="true"]{background:var(--ground)}
+  body.on-light .next:hover,body.on-light .next:focus-visible{background:var(--ground);color:var(--ink)}
+  body.on-light .counter{color:var(--ground)}
+  body.on-light .progress{background:rgba(59,47,47,.15)}
+  body.on-light .progress i{background:var(--ground)}
+  body,.rail button,.next,.counter,.progress i{transition:color .6s,border-color .6s,background-color .6s}
 
   /* ---------- mobil / úzká okna ---------- */
   @media (max-width:720px){
@@ -280,15 +292,14 @@
   </section>
 
   <!-- 05 · Kravařsko. Moje lásko. -->
-  <section class="slide love" id="s5" data-print="04">
-    <h2 class="eyebrow rise">Kuhländchen</h2>
+  <section class="slide love" id="s5" data-print="05">
+    <h2 class="eyebrow rise">Kuhländchen.</h2>
     <p class="statement">
       <span class="ln"><span>Kravařsko.</span></span>
       <span class="ln"><span>Moje lásko.</span></span>
     </p>
     <div class="foot">
-      <p class="question rise">Je Kravařsko tvoje srdeční záležitost?</p>
-      <p class="brand">Herzenssache</p>
+      <p class="brand">Herzenssache.</p>
     </div>
   </section>
 
@@ -296,7 +307,7 @@
   <section class="slide value intro" id="s6" data-print="hodnoty">
     <h2 class="eyebrow rise">hodnoty</h2>
     <p class="word">
-      <span class="ln"><span>Jaká je?</span></span>
+      <span class="ln"><span>Jaká je kráva?</span></span>
     </p>
     <div class="foot"><p class="brand">církev jako kráva</p></div>
   </section>
@@ -396,6 +407,7 @@
     '02':     {x:283, y:370,  w:1175, h:1046, rot:-165},
     '03':     {x:549, y:-471, w:1272, h:1205, rot:-30},
     '04':     {x:-367,y:228,  w:1272, h:1205, rot:-30},
+    '05':     {x:446, y:132,  w:997,  h:816,  rot:180},
     'hodnoty':{x:324, y:-34,  w:1272, h:1205, rot:150},
     'zrcadlo':{x:373, y:0,    w:1175, h:1046, rot:-15}
   };
@@ -443,6 +455,7 @@
       t1=setTimeout(()=>{slides[prev].classList.remove('in');slides[i].classList.add('in')},180);
       t2=setTimeout(()=>{busy=false;clearPrint(slides[prev])},1100);
     }
+    document.body.classList.toggle('on-light',slides[i].classList.contains('love'));
     counter.textContent=pad(i)+' / '+pad(N-1);
     bar.style.width=((i+1)/N*100)+'%';
     next.classList.toggle('end',i===N-1);
