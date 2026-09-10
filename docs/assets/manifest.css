@@ -242,7 +242,10 @@ body,.rail button,.next,.counter,.progress i{transition:color .6s,border-color .
   .next{right:16px;bottom:16px;transform:none}
   .next:hover{transform:scale(1.08)}
   .value .how{font-size:clamp(1.1rem,5vw,1.6rem)}
-  .love.german .cow{width:82%}
+  /* na výšku: kráva větší a výrok přes ni, jako v návrhu – ne dva oddělené bloky */
+  .love.german .cow{width:100%;top:32%}
+  .love.german .statement{translate:0 2vh}
+  .love.german .l2{margin-top:-.34em}
 }
 @media (max-height:520px){
   .statement{font-size:clamp(1.4rem,5.5vh,3rem)}
