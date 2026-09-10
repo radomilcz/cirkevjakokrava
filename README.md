@@ -2,7 +2,7 @@
 
 Vertikální webová prezentace manifestu komunity **Církev jako kráva**.
 
-**Živě:** https://radomilcz.github.io/cirkevjakokrava/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`).
+**Živě:** https://manifest.cirkevjakokrava.cz (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`; `https://radomilcz.github.io/cirkevjakokrava/` sem přesměrovává).
 
 Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (framy `00`–`04`, `Hodnoty 01–11`, `Zrcadlo 00`).
 
