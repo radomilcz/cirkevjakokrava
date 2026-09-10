@@ -18,7 +18,7 @@ Použití:  python3 build.py
 Volitelně:
   python3 build.py --hero cesta/k/nove-fotce.jpg  zmenší na 2000 px a nahradí hero.jpg (pip install pillow)
   python3 build.py --og                           přegeneruje náhled sdílení z úvodního slajdu (pip install playwright)
-  python3 build.py --icons                        přegeneruje favicon a ikonu na plochu (pip install fonttools brotli playwright)
+  python3 build.py --icons                        přegeneruje PNG ikony z favicon.svg (pip install playwright)
 """
 import argparse, os, re, shutil, sys
 
@@ -144,48 +144,31 @@ def make_og():
     print('og.jpg: 1200×630')
 
 
-ICON_SIZES = {'favicon-32.png': 32, 'icon-180.png': 180}
+ICONS = {
+    'favicon-32.png': (32, None),            # panel prohlížeče – průhledné rohy nevadí
+    'icon-180.png': (180, '#3b2f2f'),        # plocha na iOS – průhlednost by zčernala, proto podklad
+}
 
 
 def make_icons():
-    """Ikona = „k“ z wordmarku (Agrandir Grand Heavy) v barvách webu.
+    """Vyrenderuje PNG ikony ze src/assets/favicon.svg (vyžaduje playwright).
 
-    Písmeno se vytáhne z fontu jako křivka, takže favicon.svg je samostatný a má pár set bajtů.
-    PNG varianty (Safari, plocha na iOS) se z něj vyrenderují (vyžaduje fonttools + playwright).
+    Zdrojem je ručně kreslené SVG, tenhle krok z něj jen udělá rastry pro místa,
+    kde SVG nestačí: starší Safari a plochu na iOS.
     """
-    from fontTools.ttLib import TTFont
-    from fontTools.pens.svgPathPen import SVGPathPen
-    from fontTools.pens.boundsPen import BoundsPen
     from playwright.sync_api import sync_playwright
-
-    font = TTFont(os.path.join(SRC, 'fonts', 'Agrandir-GrandHeavy.woff'))
-    glyphs = font.getGlyphSet()
-    glyph = glyphs[font.getBestCmap()[ord('k')]]
-    pen = SVGPathPen(glyphs); glyph.draw(pen)
-    bounds = BoundsPen(glyphs); glyph.draw(bounds)
-    x0, y0, x1, y1 = bounds.bounds
-
-    box, height = 64, 40                            # plátno a výška písmene
-    scale = height / (y1 - y0)
-    dx = (box - (x1 - x0) * scale) / 2 - x0 * scale  # vodorovně na střed podle obtahu
-    dy = (box + height) / 2 + y0 * scale             # svisle na střed (v SVG roste y dolů, proto -scale)
-    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {box} {box}">'
-           f'<rect width="{box}" height="{box}" fill="#3b2f2f"/>'
-           f'<path transform="translate({dx:.2f} {dy:.2f}) scale({scale:.5f} -{scale:.5f})" '
-           f'fill="#e6acac" d="{pen.getCommands()}"/></svg>\n')
-    svg_path = os.path.join(SRC, 'assets', 'favicon.svg')
-    with open(svg_path, 'w', encoding='utf-8') as f:
-        f.write(svg)
-
+    svg = read(os.path.join(SRC, 'assets', 'favicon.svg'))
     with sync_playwright() as pw:
         br = chromium(pw)
-        for name, size in ICON_SIZES.items():
+        for name, (size, bg) in ICONS.items():
             page = br.new_page(viewport={'width': size, 'height': size})
-            page.goto('file://' + svg_path)
-            page.screenshot(path=os.path.join(SRC, 'assets', name), omit_background=True)
+            # SVG se vkládá do stránky, ne otevírá jako soubor – takhle jde nastavit podklad
+            page.set_content('<style>html,body{margin:0;background:%s}'
+                             'svg{display:block;width:100vw;height:100vh}</style>%s' % (bg or 'transparent', svg))
+            page.screenshot(path=os.path.join(SRC, 'assets', name), omit_background=bg is None)
             page.close()
         br.close()
-    print('favicon.svg', os.path.getsize(svg_path), 'B +', ', '.join(ICON_SIZES))
+    print('ikony:', ', '.join(ICONS))
 
 
 def check(html):

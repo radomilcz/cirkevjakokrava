@@ -2,7 +2,7 @@
 
 Vertikální webová prezentace manifestu komunity **Církev jako kráva**.
 
-**Živě:** https://radomilcz.github.io/cirkevjakokrava/ (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`).
+**Živě:** https://manifest.cirkevjakokrava.cz (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`; `https://radomilcz.github.io/cirkevjakokrava/` sem přesměrovává).
 
 Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (framy `00`–`04`, `Hodnoty 01–11`, `Zrcadlo 00`).
 
@@ -15,6 +15,8 @@ src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
 src/assets/hodnoty.jpg       fotka úvodu hodnot (+ hodnoty-original.jpg)
+src/assets/og.jpg            náhled při sdílení odkazu (1200×630, vyfocený úvodní slajd)
+src/assets/favicon.svg       ikona webu – terč v barvách značky (+ favicon-32.png, icon-180.png)
 src/fonts/*.woff             Subset (latinka, čeština, šipka)
 build.py                     sestaví web do docs/
 docs/index.html + assets/    hotový web – HTML, CSS, JS, fonty a fotky jako samostatné soubory
@@ -36,7 +38,7 @@ takže vypadá přesně jako web:
 
 ```
 python3 build.py --og      # přegeneruje src/assets/og.jpg (pip install playwright pillow)
-python3 build.py --icons   # přegeneruje favicon.svg a PNG ikony (pip install fonttools brotli playwright)
+python3 build.py --icons   # přegeneruje PNG ikony z favicon.svg (pip install playwright)
 ```
 
 Obojí potřebuje Chromium; když ho playwright nemá vlastní, ukaž na jiný přes `CHROME_PATH=/cesta/k/chrome`.
