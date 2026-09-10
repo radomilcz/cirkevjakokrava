@@ -4,3 +4,5 @@ __pycache__/
 Thumbs.db
 *.png
 !docs/**/*.png
+# ikony jsou sice generované (build.py --icons), ale patří do repa – build je jen kopíruje
+!src/assets/*.png

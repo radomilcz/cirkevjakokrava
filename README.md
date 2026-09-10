@@ -28,9 +28,25 @@ docs/index.html + assets/    hotový web – HTML, CSS, JS, fonty a fotky jako s
 
 Nová úvodní fotka: `python3 build.py --hero cesta/k/fotce.jpg` (vyžaduje `pip install pillow`).
 
+## Náhled při sdílení a ikona
+
+Když někdo pošle odkaz na WhatsApp, Messenger nebo Facebook, ukáže se náhled `assets/og.jpg` s titulkem
+„BŮŮŮH je dobrý, my jsme normální“. Náhled není sázený ručně – je to fotka úvodního slajdu hotového webu,
+takže vypadá přesně jako web:
+
+```
+python3 build.py --og      # přegeneruje src/assets/og.jpg (pip install playwright pillow)
+python3 build.py --icons   # přegeneruje favicon.svg a PNG ikony (pip install fonttools brotli playwright)
+```
+
+Obojí potřebuje Chromium; když ho playwright nemá vlastní, ukaž na jiný přes `CHROME_PATH=/cesta/k/chrome`.
+Adresa v absolutních odkazech (`og:image`, `canonical`) je konstanta `SITE` v `build.py` – musí sedět
+s doménou v `docs/CNAME`. Po změně náhledu vyčistí keš
+[Sharing Debugger](https://developers.facebook.com/tools/debug/), jinak Facebook drží starý obrázek.
+
 ## Ovládání prezentace
 
-kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tlačítko vpravo dole · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s1` … `#s16`).
+kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tlačítko vpravo dole · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s0` … `#s17`).
 
 ## Jak je to postavené
 
