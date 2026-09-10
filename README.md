@@ -15,7 +15,7 @@ src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
 src/assets/hodnoty.jpg       fotka úvodu hodnot (+ hodnoty-original.jpg)
-src/fonts/*.woff             Agrandir – subset (latinka, čeština, šipka)
+src/fonts/*.woff             Subset (latinka, čeština, šipka)
 build.py                     sestaví web do docs/
 docs/index.html + assets/    hotový web – HTML, CSS, JS, fonty a fotky jako samostatné soubory
 ```
