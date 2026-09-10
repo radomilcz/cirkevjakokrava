@@ -39,7 +39,3 @@ kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swi
 - Text se odhaluje po řádcích maskou (`.ln`), písmena BŮŮŮH jednotlivě.
 - Barvy: pozadí `#3b2f2f`, text `#e6acac`, otisk `rgba(217,199,199,.30)` (náhrada za white + soft-light).
 - Písmo: Agrandir Grand Heavy (popisky, wordmark), Regular (výroky), Narrow Black (BŮŮŮH, hodnoty, Zrcadlo), Grand (podtitul, příslovce).
-
-## Licence písma
-
-Agrandir (Pangram Pangram) je licencované písmo s webovou licencí; v repu je jen subset (latinka, čeština, šipka) potřebný pro build a totožný s tím, co je vložené v hotové stránce.
