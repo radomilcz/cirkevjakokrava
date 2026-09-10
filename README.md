@@ -15,6 +15,8 @@ src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
 src/assets/hodnoty.jpg       fotka úvodu hodnot (+ hodnoty-original.jpg)
+src/assets/og.jpg            náhled při sdílení odkazu (1200×630, vyfocený úvodní slajd)
+src/assets/favicon.svg       ikona webu – terč v barvách značky (+ favicon-32.png, icon-180.png)
 src/fonts/*.woff             Subset (latinka, čeština, šipka)
 build.py                     sestaví web do docs/
 docs/index.html + assets/    hotový web – HTML, CSS, JS, fonty a fotky jako samostatné soubory
@@ -36,7 +38,7 @@ takže vypadá přesně jako web:
 
 ```
 python3 build.py --og      # přegeneruje src/assets/og.jpg (pip install playwright pillow)
-python3 build.py --icons   # přegeneruje favicon.svg a PNG ikony (pip install fonttools brotli playwright)
+python3 build.py --icons   # přegeneruje PNG ikony z favicon.svg (pip install playwright)
 ```
 
 Obojí potřebuje Chromium; když ho playwright nemá vlastní, ukaž na jiný přes `CHROME_PATH=/cesta/k/chrome`.
