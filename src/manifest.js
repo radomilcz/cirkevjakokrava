@@ -3,11 +3,9 @@
   const track=document.getElementById('track');
   const slides=[...track.querySelectorAll('.slide')];
   const rail=document.getElementById('rail');
-  const counter=document.getElementById('counter');
   const bar=document.getElementById('bar');
   const hint=document.getElementById('hint');
   const N=slides.length;
-  const pad=n=>String(n+1).padStart(2,'0');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- otisk: rozmístění 1:1 podle Figmy (rámeček 1920×1080, skupina 816×997 otočená) ----------
@@ -84,7 +82,6 @@
       t2=setTimeout(()=>{busy=false;clearPrint(slides[prev])},1100);
     }
     document.body.classList.toggle('on-light',slides[i].classList.contains('love'));
-    counter.textContent=pad(i)+' / '+pad(N-1);
     bar.style.width=((i+1)/N*100)+'%';
     if(i>0)hint.classList.add('gone');
     /* deep-link do adresy; v sandboxu (srcdoc iframe) to prohlížeč zakazuje, tak jen potichu přeskočit */
