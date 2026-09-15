@@ -239,7 +239,6 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .slide.in:not(.love) .statement{opacity:1;transform:none;transition-delay:.1s}
   .brand{font-size:1rem}
   .question{font-size:.95rem}
-  .foot{padding-right:34px}
   .slide{padding-right:calc(var(--pad) + 14px)}
   .hint{display:none}
   /* lišta zůstává i na telefonu; na dvacet slajdů se musí stáhnout, ať se vejde */
