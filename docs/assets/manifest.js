@@ -195,6 +195,16 @@
   try{document.body.tabIndex=-1;document.body.focus({preventScroll:true})}catch(e){}
   addEventListener('pointerdown',()=>{try{document.body.focus({preventScroll:true})}catch(e){}});
 
+  /* ---------- logo: kliknutím přehrát animaci znovu ---------- */
+  const mark=document.querySelector('.mark'),markWrap=document.querySelector('.mark-wrap');
+  if(mark&&markWrap&&mark.setCurrentTime){
+    markWrap.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(reduced)return;
+      mark.setCurrentTime(0);
+    });
+  }
+
   /* ---------- start (i z hashe) ---------- */
   const h=location.hash&&document.getElementById(location.hash.slice(1));
   const start=h&&slides.includes(h)?slides.indexOf(h):0;
