@@ -5,7 +5,6 @@
   const rail=document.getElementById('rail');
   const counter=document.getElementById('counter');
   const bar=document.getElementById('bar');
-  const next=document.getElementById('next');
   const hint=document.getElementById('hint');
   const N=slides.length;
   const pad=n=>String(n+1).padStart(2,'0');
@@ -87,7 +86,6 @@
     document.body.classList.toggle('on-light',slides[i].classList.contains('love'));
     counter.textContent=pad(i)+' / '+pad(N-1);
     bar.style.width=((i+1)/N*100)+'%';
-    next.classList.toggle('end',i===N-1);
     if(i>0)hint.classList.add('gone');
     /* deep-link do adresy; v sandboxu (srcdoc iframe) to prohlížeč zakazuje, tak jen potichu přeskočit */
     if(/^https?:$/.test(location.protocol)||location.protocol==='file:'){try{history.replaceState(null,'','#'+slides[i].id)}catch(e){}}
@@ -101,7 +99,6 @@
     else if(e.key==='Home'){e.preventDefault();go(0)}
     else if(e.key==='End'){e.preventDefault();go(N-1)}
   });
-  next.addEventListener('click',()=>{if(!busy)fwd()});
 
   /* ---------- kolečko / touchpad: nasbírat delta, jeden krok, pak chvíli ignorovat setrvačnost ---------- */
   let acc=0,quiet=0;
