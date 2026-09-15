@@ -203,12 +203,6 @@ body.on-light{--logo-kvet:var(--ground);--logo-postava:var(--ink)}
 }
 .mark{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion:reduce){.mark animate,.mark animateTransform{display:none}}
-.counter{
-  position:fixed;right:clamp(10px,1.6vw,26px);top:calc(clamp(14px,2.6vw,40px) + clamp(56px,4.7vw,90px) + .5em);z-index:10;
-  text-align:right;
-  font-family:var(--display);font-weight:800;font-size:clamp(.7rem,1vw,1rem);letter-spacing:.04em;
-  font-variant-numeric:tabular-nums;opacity:.8;
-}
 .hint{
   position:fixed;left:50%;top:clamp(18px,3.2vw,60px);transform:translateX(-50%);z-index:10;
   font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;opacity:.6;
@@ -221,10 +215,9 @@ body.on-light{--logo-kvet:var(--ground);--logo-postava:var(--ink)}
 /* na světlém slajdu se pevné ovládací prvky přebarví */
 body.on-light .rail button{border-color:var(--ground);color:var(--ground);background:transparent}
 body.on-light .rail button[aria-current="true"]{background:var(--ground)}
-body.on-light .counter{color:var(--ground)}
 body.on-light .progress{background:rgba(59,47,47,.15)}
 body.on-light .progress i{background:var(--ground)}
-body,.rail button,.counter,.progress i{transition:color .6s,border-color .6s,background-color .6s}
+body,.rail button,.progress i{transition:color .6s,border-color .6s,background-color .6s}
 
 /* ---------- na výšku: otisk na střed slajdu, velký, jen s rotací daného slajdu ---------- */
 @media (max-aspect-ratio:1/1){
