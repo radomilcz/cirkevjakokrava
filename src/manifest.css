@@ -132,7 +132,7 @@ body{
 
 /* ---------- hodnoty – úvod s fotkou ---------- */
 .intro{color:#fff;background:var(--ground-deep)}
-.intro .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 95%;z-index:0}
+.intro .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;z-index:0}
 .intro .veil{position:absolute;inset:0;z-index:0;pointer-events:none;background:rgba(42,33,33,.18)}
 .intro .print{z-index:1}
 .intro .print svg{fill:rgba(255,255,255,.55)}
@@ -187,8 +187,9 @@ body{
 .value .how::before{content:"("}.value .how::after{content:")"}
 /* Figma Hodnoty 00: na úvodním slajdu bloku sedí dvojice níž a s větší mezerou
    než na deseti slajdech hodnot – proto zvlášť, ne v .value */
-.value.intro .word{translate:0 2.26vh}
-.value.intro .how{margin-top:.525em}
+/* Figma Hodnoty 00: titulek je tu 320 px (na hodnotách 170) a dvojice sedí jinde */
+.value.intro .word{font-size:clamp(3rem,16.667vw,20rem);line-height:1}
+.value.intro .how{margin-top:.3425em}
 
 /* ---------- navigace ---------- */
 .rail{

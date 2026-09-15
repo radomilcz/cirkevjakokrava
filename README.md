@@ -14,13 +14,26 @@ src/manifest.css             styly
 src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
-src/assets/hodnoty.jpg       fotka úvodu hodnot (+ hodnoty-original.jpg)
+src/assets/kultura.jpg       fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
+src/assets/krava.png         vystřižená kráva na slajd 06a (+ krava-original.png)
+src/assets/highland-original.jpg  zatím nepoužitá fotka
 src/assets/og.jpg            náhled při sdílení odkazu (1200×630, vyfocený úvodní slajd)
 src/assets/favicon.svg       ikona webu – terč v barvách značky (+ favicon-32.png, icon-180.png)
 src/fonts/*.woff             Subset (latinka, čeština, šipka)
 build.py                     sestaví web do docs/
 docs/index.html + assets/    hotový web – HTML, CSS, JS, fonty a fotky jako samostatné soubory
 ```
+
+## Fotky
+
+Přejmenované na krátké názvy podle toho, kam patří – původní jména z Unsplashe si nesla autora, tak ať se neztratí:
+
+| soubor | zdroj |
+| --- | --- |
+| `kultura-original.jpg` | Alexander Dummer, Unsplash (`hotgFPIL6Bc`) |
+| `highland-original.jpg` | Pascal van de Vendel, Unsplash (`81mllqC4JiU`) |
+
+`kultura.jpg` je z originálu oříznutá přesně na výřez z Figmy (frame `Hodnoty 00`) a zmenšená na 2000 px.
 
 ## Úprava a build
 
@@ -48,7 +61,7 @@ s doménou v `docs/CNAME`. Po změně náhledu vyčistí keš
 
 ## Ovládání prezentace
 
-kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tlačítko vpravo dole · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s0` … `#s17`).
+kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tečky na pravé liště. Kliknutím na logo se přehraje jeho animace znovu. Každý slajd má vlastní odkaz (`#s0` … `#s19`).
 
 ## Jak je to postavené
 

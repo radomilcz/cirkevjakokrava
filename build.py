@@ -10,7 +10,7 @@ Placeholdery v šabloně / CSS:
   {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
   {{BLOB_PATHS}}                 křivky otisku (src/assets/otisk-paths.txt) – vždy inline, JS je klonuje
   {{LOGO}}                       animované logo (src/assets/logo.svg) – inline, aby fungovala SMIL animace
-  {{HERO}} {{HODNOTY_PHOTO}} {{KRAVA}}   fotky (src/assets/hero.jpg, hodnoty.jpg, krava.png)
+  {{HERO}} {{KULTURA_PHOTO}} {{KRAVA}}   fotky (src/assets/hero.jpg, kultura.jpg, krava.png)
   – náhled sdílení a ikony (src/assets/og.jpg, favicon.svg, favicon-32.png, icon-180.png)
     se jen kopírují; generují se zvlášť, viz níže
   {{F_GRANDHEAVY}} {{F_REGULAR}} {{F_NARROWBLACK}} {{F_GRAND}}   fonty (src/fonts/*.woff)
@@ -37,7 +37,7 @@ FONTS = {
 }
 IMAGES = {
     '{{HERO}}': 'hero.jpg',
-    '{{HODNOTY_PHOTO}}': 'hodnoty.jpg',
+    '{{KULTURA_PHOTO}}': 'kultura.jpg',
     '{{KRAVA}}': 'krava.png',
 }
 # náhled sdílení a ikony – hotové soubory, jen se kopírují do docs/assets/
