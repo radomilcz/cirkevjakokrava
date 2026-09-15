@@ -185,6 +185,10 @@ body{
   font-size:clamp(1.15rem,3.65vw,4.4rem);line-height:1.035;margin-top:.1em;
 }
 .value .how::before{content:"("}.value .how::after{content:")"}
+/* Figma Hodnoty 00: na úvodním slajdu bloku sedí dvojice níž a s větší mezerou
+   než na deseti slajdech hodnot – proto zvlášť, ne v .value */
+.value.intro .word{translate:0 2.26vh}
+.value.intro .how{margin-top:.525em}
 
 /* ---------- navigace ---------- */
 .rail{
