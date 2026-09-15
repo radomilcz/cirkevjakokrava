@@ -60,6 +60,37 @@
     li.appendChild(b);rail.appendChild(li);s._dot=b;
   });
 
+  /* ---------- přebarvení pevných prvků podle slajdu, který je zrovna pod nimi ----------
+     Track jede celou vteřinu, ale logo sedí nahoře a index uprostřed – nové pozadí
+     k nim dojede v jinou chvíli. Tak se každý prvek ptá na slajd ve své vlastní výšce
+     a překlopí se přesně, když přes něj přejde hrana. */
+  const painted=[document.querySelector('.mark-wrap'),rail,document.querySelector('.progress')].filter(Boolean);
+  function trackY(){
+    const t=getComputedStyle(track).transform;
+    if(!t||t==='none')return 0;
+    try{return new DOMMatrixReadOnly(t).f}catch(e){return 0}
+  }
+  function paint(){
+    const ty=trackY();
+    painted.forEach(el=>{
+      const r=el.getBoundingClientRect(),y=r.top+r.height/2-ty;
+      let s=slides[0];
+      for(const c of slides){if(y>=c.offsetTop&&y<c.offsetTop+c.offsetHeight){s=c;break}if(c.offsetTop<=y)s=c}
+      el.classList.toggle('on-light',s.classList.contains('love'));
+      el.classList.toggle('on-photo',!!s.querySelector('.photo'));
+    });
+  }
+  /* Smyčka běží, jen dokud se track hýbe, pak se sama zastaví. Prvních pár snímků
+     po startu ale transform ještě hlásí starou hodnotu, tak se drží minimální doba –
+     jinak by usnula dřív, než se vůbec rozjede. */
+  let praf=0,plast=null,pstill=0,pfrom=0;
+  function ptick(){
+    const y=trackY();paint();
+    if(y===plast){if(++pstill>2&&performance.now()-pfrom>1200){praf=0;return}}else{pstill=0;plast=y}
+    praf=requestAnimationFrame(ptick);
+  }
+  function startPaint(){plast=null;pstill=0;pfrom=performance.now();if(!praf)praf=requestAnimationFrame(ptick)}
+
   /* ---------- přechod mezi slajdy ---------- */
   let cur=0,busy=false,t1,t2;
   function go(i,instant){
@@ -81,8 +112,7 @@
       t1=setTimeout(()=>{slides[prev].classList.remove('in');slides[i].classList.add('in')},180);
       t2=setTimeout(()=>{busy=false;clearPrint(slides[prev])},1100);
     }
-    document.body.classList.toggle('on-light',slides[i].classList.contains('love'));
-    document.body.classList.toggle('on-photo',!!slides[i].querySelector('.photo'));
+    startPaint();
     bar.style.width=((i+1)/N*100)+'%';
     if(i>0)hint.classList.add('gone');
     /* deep-link do adresy; v sandboxu (srcdoc iframe) to prohlížeč zakazuje, tak jen potichu přeskočit */
@@ -161,7 +191,7 @@
     const r=s._read;r.inner=Math.max(0,Math.min(r.max,y));
     track.classList.toggle('flow',!drag);track.classList.toggle('snap',!!drag);
     track.style.transform=`translate3d(0,${-(s.offsetTop+r.inner)}px,0)`;
-    light(s);
+    light(s);startPaint();
   }
   function fwd(){
     const r=slides[cur]._read;
@@ -174,7 +204,7 @@
     go(cur-1);
   }
   measure();
-  addEventListener('resize',()=>{measure();go(cur,true)});
+  addEventListener('resize',()=>{measure();go(cur,true);startPaint()});
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{measure();go(cur,true)});
 
   /* ---------- hodnoty: slovo se vždycky vejde na šířku ---------- */
