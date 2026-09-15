@@ -199,12 +199,12 @@ body{
 body.on-light{--logo-kvet:var(--ground);--logo-postava:var(--ink)}
 .mark-wrap{
   position:fixed;right:clamp(10px,1.6vw,26px);top:clamp(14px,2.6vw,40px);z-index:10;
-  width:clamp(40px,4.7vw,90px);pointer-events:none;
+  width:clamp(56px,4.7vw,90px);pointer-events:none;
 }
 .mark{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion:reduce){.mark animate,.mark animateTransform{display:none}}
 .counter{
-  position:fixed;right:clamp(10px,1.6vw,26px);top:calc(clamp(14px,2.6vw,40px) + clamp(40px,4.7vw,90px) + .5em);z-index:10;
+  position:fixed;right:clamp(10px,1.6vw,26px);top:calc(clamp(14px,2.6vw,40px) + clamp(56px,4.7vw,90px) + .5em);z-index:10;
   text-align:right;
   font-family:var(--display);font-weight:800;font-size:clamp(.7rem,1vw,1rem);letter-spacing:.04em;
   font-variant-numeric:tabular-nums;opacity:.8;
