@@ -82,6 +82,7 @@
       t2=setTimeout(()=>{busy=false;clearPrint(slides[prev])},1100);
     }
     document.body.classList.toggle('on-light',slides[i].classList.contains('love'));
+    document.body.classList.toggle('on-photo',!!slides[i].querySelector('.photo'));
     bar.style.width=((i+1)/N*100)+'%';
     if(i>0)hint.classList.add('gone');
     /* deep-link do adresy; v sandboxu (srcdoc iframe) to prohlížeč zakazuje, tak jen potichu přeskočit */
