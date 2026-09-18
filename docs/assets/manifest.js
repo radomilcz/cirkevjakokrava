@@ -160,6 +160,8 @@
 
   /* ---------- čtecí slajd: vyšší než obrazovka, slova se rozsvěcují, jak procházejí čtecí linkou ---------- */
   slides.forEach(s=>{
+    /* předmluva se taky čte projížděním, ale nerozsvěcuje se po slovech – je moc dlouhá */
+    if(s.querySelector('.essay')){s._read={inner:0,max:0,t:null,el:[]};s._printCfg=PRINT[s.dataset.print];return}
     const t=s.querySelector('.text');if(!t)return;
     t.innerHTML=t.textContent.trim().split(/\s+/).map(w=>'<i>'+w+'</i>').join(' ');
     s._read={inner:0,max:0,t,el:[...t.children]};
@@ -172,9 +174,11 @@
       const r=s._read;if(!r)return;
       r.max=Math.max(0,s.offsetHeight-H);
       /* poloha z layoutu (offset*), ne z rect – ta by se pletla s transformy vstupní animace */
-      const pos=el=>{let x=0,y=0;while(el&&el!==s){x+=el.offsetLeft;y+=el.offsetTop;el=el.offsetParent}return{x,y}};
-      const tp=pos(r.t);r.lineH=parseFloat(getComputedStyle(r.t).lineHeight);r.w=r.t.clientWidth;
-      r.el.forEach(w=>{const q=pos(w);w._top=q.y;w._x=(q.x-tp.x)/r.w});
+      if(r.t){
+        const pos=el=>{let x=0,y=0;while(el&&el!==s){x+=el.offsetLeft;y+=el.offsetTop;el=el.offsetParent}return{x,y}};
+        const tp=pos(r.t);r.lineH=parseFloat(getComputedStyle(r.t).lineHeight);r.w=r.t.clientWidth;
+        r.el.forEach(w=>{const q=pos(w);w._top=q.y;w._x=(q.x-tp.x)/r.w});
+      }
       const c=s._printCfg,d=s.querySelector('.print');
       if(c&&d){d.style.top=(c.y/1080*H+(s.offsetHeight-H)/2)+'px';d.style.height=(c.h/1080*H)+'px'}
       r.inner=Math.min(r.inner,r.max);

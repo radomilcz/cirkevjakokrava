@@ -15,7 +15,8 @@ src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
 src/assets/kultura.jpg       fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
-src/assets/kennedy.png       vystřižený portrét na slajd 06
+src/assets/kennedy.png       vystřižený portrét na slajd „Ich bin ein Kuhländler“
+src/assets/krava-manifest.jpg fotka na slajd „KRÁVA má Boží design“ (ořez z highland-original.jpg)
 src/assets/krava.png         vystřižená kráva – na slajdu 06 ji nahradil Kennedy (+ krava-original.png)
 src/assets/highland-original.jpg  zatím nepoužitá fotka
 src/assets/og.jpg            náhled při sdílení odkazu (1200×630, vyfocený úvodní slajd)
@@ -32,7 +33,7 @@ Přejmenované na krátké názvy podle toho, kam patří – původní jména z
 | soubor | zdroj |
 | --- | --- |
 | `kultura-original.jpg` | Alexander Dummer, Unsplash (`hotgFPIL6Bc`) |
-| `highland-original.jpg` | Pascal van de Vendel, Unsplash (`81mllqC4JiU`) |
+| `highland-original.jpg`, `krava-manifest.jpg` | Pascal van de Vendel, Unsplash (`81mllqC4JiU`) |
 
 `kultura.jpg` je z originálu oříznutá přesně na výřez z Figmy (frame `Hodnoty 00`) a zmenšená na 2000 px.
 
@@ -62,7 +63,7 @@ s doménou v `docs/CNAME`. Po změně náhledu vyčistí keš
 
 ## Ovládání prezentace
 
-kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s0` … `#s19`).
+kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s0` … `#s21`).
 
 ## Jak je to postavené
 
