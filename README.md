@@ -15,7 +15,8 @@ src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
 src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
 src/assets/kultura.jpg       fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
-src/assets/krava.png         vystřižená kráva na slajd 06a (+ krava-original.png)
+src/assets/kennedy.png       vystřižený portrét na slajd 06
+src/assets/krava.png         vystřižená kráva – na slajdu 06 ji nahradil Kennedy (+ krava-original.png)
 src/assets/highland-original.jpg  zatím nepoužitá fotka
 src/assets/og.jpg            náhled při sdílení odkazu (1200×630, vyfocený úvodní slajd)
 src/assets/favicon.svg       ikona webu – terč v barvách značky (+ favicon-32.png, icon-180.png)
