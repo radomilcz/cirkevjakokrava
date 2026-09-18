@@ -197,15 +197,15 @@ body{
   --odsazeni:min(6.75vw,130px);
   margin:34vh 0 30vh;margin-left:var(--odsazeni);
   width:min(32.5ch,calc(100% - var(--odsazeni)));
-  font-family:var(--body);font-weight:400;font-size:clamp(1.05rem,2.6vw,3.125rem);line-height:1.2;
+  font-family:var(--body);font-weight:400;font-size:clamp(1.05rem,2.6vw,3.125rem);line-height:1.25;
   opacity:0;transform:translateY(.3em);transition:opacity .9s var(--ease),transform 1.1s var(--ease);
 }
 .read.in .essay{opacity:1;transform:none;transition-delay:.15s}
-.essay p{margin:0 0 1.2em}
-.essay .lead{margin-bottom:1.2em}
+.essay p{margin:0 0 1.25em}
+.essay .lead{margin-bottom:1.25em}
 .essay h3{
-  font-family:var(--display);font-weight:800;font-size:1.8em;line-height:1.2;letter-spacing:-.01em;
-  margin:1.333em 0 .667em;
+  font-family:var(--display);font-weight:800;font-size:1.8em;line-height:1.25;letter-spacing:-.01em;
+  margin:1.389em 0 .694em;
 }
 .essay .lead+h3{margin-top:0}
 .essay .stanza{margin-bottom:0}
