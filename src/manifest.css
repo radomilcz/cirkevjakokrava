@@ -148,14 +148,15 @@ body{
 
 /* ---------- 06 · Ich bin ein Kuhländler (rozměry podle Figmy 1920×1080) ----------
    Slajd není z rodiny .love – pozadí je tmavé, takže barvy i patička s otázkou jdou ze základu.
-   Ve Figmě: portrét 634×812 na 607,104; zaoblení je mírnější než těch 302 px z návrhu –
-   při 47,6 % šířky ukrajuje oblouk rameno. Procenta drží tvar ve všech rozměrech oken.
+   Ve Figmě: portrét 634×812 na 607,104 se zaoblením 302 px = 47,62 % šířky / 37,21 % výšky.
+   V procentech, ne v px ani vw: váže se tím na obrázek, takže tvar drží ve všech rozměrech oken.
+   Menší poloměr nechává na spodní hraně široký rovný ořez, proto plná hodnota z návrhu.
    Oba řádky 140 px bez prostrkání,
    „Ich bin ein“ na x=443 / y=604, „Kuhländler“ na x=539 / y=726 – řádky se o kus překrývají
    a celý blok sedí o 54 px vpravo od středu. */
 .german .portret{
   position:absolute;z-index:0;left:31.61%;top:9.59%;
-  width:33.04%;height:auto;border-radius:25.4% / 19.85%;pointer-events:none;
+  width:33.04%;height:auto;border-radius:47.62% / 37.21%;pointer-events:none;
 }
 .german .statement{
   position:relative;z-index:1;justify-self:center;width:auto;max-width:100%;text-align:left;
