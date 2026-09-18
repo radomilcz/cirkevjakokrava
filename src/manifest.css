@@ -69,13 +69,22 @@ body{
 .print .rot{position:absolute;left:50%;top:50%;aspect-ratio:998/816}
 /* otisk se odkrývá linka po lince jednou maskou (levý dolní → pravý horní roh, stejně jako jdou linky za sebou)
    – jediná animovaná vlastnost místo 55 animovaných cest; svg samotné se vykreslí jen jednou */
-.print .sweep{width:100%;height:100%;
+.print .sweep{position:absolute;left:0;top:0;width:300%;height:300%;
   -webkit-mask-image:linear-gradient(45deg,#000 46%,transparent 54%);mask-image:linear-gradient(45deg,#000 46%,transparent 54%);
-  -webkit-mask-size:300% 300%;mask-size:300% 300%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  -webkit-mask-position:100% 0%;mask-position:100% 0%;}
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  transform:translate(-66.6667%,0)}
+/* Maska je přišpendlená k vrstvě, která je třikrát větší než otisk, a hýbe se celá vrstva;
+   svg uvnitř jede přesně naopak, takže otisk stojí a pod ním putuje hrana masky. Obě animace
+   jsou transformy, které kompozitor zvládne sám – dřív se animoval mask-position, a ten se
+   musel každý snímek znovu rastrovat. Měřeno na vstupu do slajdu (1920×1080, CPU 4×):
+   1100 ms rastrování → 20 ms. Otisk sedí v levém horním devítníku vrstvy, aby při obou
+   krajních polohách zůstal uvnitř jejího boxu – co z něj vyjede, to maska ořízne. */
+.print .sweep>svg{position:absolute;left:0;top:0;width:33.3333%;height:33.3333%;transform:translate(200%,0)}
 .slide.in .print .sweep{animation:sweep 1.8s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes sweep{from{-webkit-mask-position:100% 0%;mask-position:100% 0%}to{-webkit-mask-position:0% 100%;mask-position:0% 100%}}
-.print svg{display:block;width:100%;height:100%;overflow:visible;fill:var(--print)}
+.slide.in .print .sweep>svg{animation:sweep-proti 1.8s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes sweep{from{transform:translate(-66.6667%,0)}to{transform:translate(0,-66.6667%)}}
+@keyframes sweep-proti{from{transform:translate(200%,0)}to{transform:translate(0,200%)}}
+.print svg{display:block;overflow:visible;fill:var(--print)}
 /* Tady bývalo „jemné dýchání“ – nekonečná rotace otisku na desktopu. Stálo to 22 % jádra
    pořád dokola, i když se na stránce nic nedělo: maska na .sweep brání tomu, aby se rotace
    jen skládala na kompozitoru, takže se každý snímek znovu rastrovalo přes 2,8 milionu
@@ -310,6 +319,7 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .read .text i{opacity:1 !important;transition:none}
   .track{transition:none}
   .rise,.ln>span,.print{transition:none;opacity:1;transform:none}
-  .hero .photo,.slide.in .print .sweep{animation:none}
+  .hero .photo,.slide.in .print .sweep,.slide.in .print .sweep>svg{animation:none}
   .print .sweep{-webkit-mask-image:none;mask-image:none}
+  .print .sweep,.print .sweep>svg{transform:none}
 }
