@@ -76,12 +76,11 @@ body{
 .slide.in .print .sweep{animation:sweep 1.8s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes sweep{from{-webkit-mask-position:100% 0%;mask-position:100% 0%}to{-webkit-mask-position:0% 100%;mask-position:0% 100%}}
 .print svg{display:block;width:100%;height:100%;overflow:visible;fill:var(--print)}
-/* jemné dýchání jen na desktopu (myš) – na kompozitní vrstvě, bez změny měřítka, aby se nic nepřekreslovalo */
-@media (hover:hover){
-  .print .sweep{will-change:transform}
-  .slide.in .print .sweep{animation:sweep 1.8s cubic-bezier(.4,0,.2,1) forwards,breathe 40s ease-in-out infinite alternate}
-  @keyframes breathe{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
-}
+/* Tady bývalo „jemné dýchání“ – nekonečná rotace otisku na desktopu. Stálo to 22 % jádra
+   pořád dokola, i když se na stránce nic nedělo: maska na .sweep brání tomu, aby se rotace
+   jen skládala na kompozitoru, takže se každý snímek znovu rastrovalo přes 2,8 milionu
+   poloprůhledných pixelů. Změřeno: s ním 22 %, bez něj 2,2 % – stejně jako bez otisku.
+   Přesun rotace na .print ani náhrada za opacity nepomohly (22,1 % a 13,9 %). */
 .slide>*:not(.print):not(.photo):not(.portret):not(.veil):not(.title){position:relative;z-index:1}
 
 /* ---------- vstupní animace ---------- */
