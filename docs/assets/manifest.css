@@ -153,7 +153,7 @@ body{
    a celý blok sedí o 54 px vpravo od středu. */
 .german .portret{
   position:absolute;z-index:0;left:31.61%;top:9.59%;
-  width:33.04%;height:auto;border-radius:15.73vw;pointer-events:none;
+  width:33.04%;height:auto;border-radius:47.62% / 37.21%;pointer-events:none;
 }
 .german .statement{
   position:relative;z-index:1;justify-self:center;width:auto;max-width:100%;text-align:left;
