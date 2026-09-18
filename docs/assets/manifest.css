@@ -189,7 +189,7 @@ body{
 }
 .read.in .essay{opacity:1;transform:none;transition-delay:.15s}
 .essay p{margin:0 0 1.2em}
-.essay .lead{margin-bottom:2.4em}
+.essay .lead{margin-bottom:1.2em}
 .essay h3{
   font-family:var(--display);font-weight:800;font-size:1.8em;line-height:1.2;letter-spacing:-.01em;
   margin:1.333em 0 .667em;
