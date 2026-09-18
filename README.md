@@ -61,7 +61,7 @@ s doménou v `docs/CNAME`. Po změně náhledu vyčistí keš
 
 ## Ovládání prezentace
 
-kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tečky na pravé liště. Kliknutím na logo se přehraje jeho animace znovu. Každý slajd má vlastní odkaz (`#s0` … `#s19`).
+kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s0` … `#s19`).
 
 ## Jak je to postavené
 

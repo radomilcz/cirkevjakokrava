@@ -210,13 +210,9 @@ body{
 .mark-wrap.on-photo{--logo-kvet:#fff;--logo-postava:transparent}
 .mark-wrap{
   position:fixed;right:clamp(10px,1.6vw,26px);top:clamp(14px,2.6vw,40px);z-index:10;
-  width:clamp(56px,4.7vw,90px);
-  /* kliknutím se logo přehraje znovu */
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  width:clamp(56px,4.7vw,90px);pointer-events:none;
 }
 .mark{display:block;width:100%;height:auto}
-@media (prefers-reduced-motion:reduce){.mark animate,.mark animateTransform{display:none}
-  .mark-wrap{cursor:default}}
 .hint{
   position:fixed;left:50%;top:clamp(18px,3.2vw,60px);transform:translateX(-50%);z-index:10;
   font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;opacity:.6;
