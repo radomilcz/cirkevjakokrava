@@ -86,7 +86,10 @@ body{
 /* ---------- vstupní animace ---------- */
 .rise{opacity:0;transform:translateY(.45em);transition:opacity .9s var(--ease),transform 1.1s var(--ease)}
 .slide.in .rise{opacity:1;transform:none}
-.ln{display:block;overflow:hidden;padding:.22em .12em .1em;margin:-.22em -.12em -.1em}
+/* maska pro výjezd řádku zdola; horní odsazení je čistě rezerva na diakritiku –
+   Agrandir Narrow Black potřebuje .18em nad horní hranou řádku (OTEVŘENÁ, ŠTĚDRÁ, KRÁVA),
+   .22em bylo o čtyři procenta velikosti písma víc a Safari na iPadu háčky ořízlo */
+.ln{display:block;overflow:hidden;padding:.36em .12em .1em;margin:-.36em -.12em -.1em}
 .ln>span{display:block;transform:translateY(125%);transition:transform 1.15s var(--ease)}
 .slide.in .ln>span{transform:none}
 .slide.in .ln:nth-child(2)>span{transition-delay:.09s}
