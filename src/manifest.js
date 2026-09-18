@@ -61,10 +61,10 @@
   });
 
   /* ---------- přebarvení pevných prvků podle slajdu, který je zrovna pod nimi ----------
-     Track jede celou vteřinu, ale logo sedí nahoře a index uprostřed – nové pozadí
-     k nim dojede v jinou chvíli. Tak se každý prvek ptá na slajd ve své vlastní výšce
+     Track jede celou vteřinu, ale progress bar sedí na horní hraně a index uprostřed –
+     nové pozadí k nim dojede v jinou chvíli. Tak se každý prvek ptá na slajd ve své výšce
      a překlopí se přesně, když přes něj přejde hrana. */
-  const painted=[document.querySelector('.mark-wrap'),rail,document.querySelector('.progress')].filter(Boolean);
+  const painted=[rail,document.querySelector('.progress')].filter(Boolean);
   function trackY(){
     const t=getComputedStyle(track).transform;
     if(!t||t==='none')return 0;

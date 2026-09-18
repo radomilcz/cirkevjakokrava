@@ -9,7 +9,6 @@ Placeholdery v šabloně / CSS:
   {{SITE}}                       adresa webu (absolutní odkazy pro og:image, canonical)
   {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
   {{BLOB_PATHS}}                 křivky otisku (src/assets/otisk-paths.txt) – vždy inline, JS je klonuje
-  {{LOGO}}                       animované logo (src/assets/logo.svg) – inline, aby fungovala SMIL animace
   {{HERO}} {{KULTURA_PHOTO}} {{KRAVA}}   fotky (src/assets/hero.jpg, kultura.jpg, krava.png)
   – náhled sdílení a ikony (src/assets/og.jpg, favicon.svg, favicon-32.png, icon-180.png)
     se jen kopírují; generují se zvlášť, viz níže
@@ -79,7 +78,6 @@ def build():
     paths = [l.strip() for l in read(os.path.join(SRC, 'assets', 'otisk-paths.txt')).splitlines() if l.strip()]
     blob = ''.join(f'<path d="{d}"/>' for d in paths)
     tpl = tpl.replace('{{BLOB_PATHS}}', blob)
-    tpl = tpl.replace('{{LOGO}}', read(os.path.join(SRC, 'assets', 'logo.svg')).strip())
 
     assets = os.path.join(DOCS, 'assets')
     os.makedirs(os.path.join(assets, 'fonts'), exist_ok=True)
