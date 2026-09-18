@@ -191,7 +191,12 @@ body{
    Ve Figmě: sloupec 1120 px od levého okraje 206, mezititulky 90 px Grand Heavy, text 50 px
    Regular, proklad 1,2 – mezery mezi odstavci jsou tam prázdné řádky, tady jsou to marginy. */
 .essay{
-  margin:34vh 0 30vh;margin-left:min(6.75vw,130px);width:min(58.33vw,1120px);max-width:100%;
+  /* Šířka sloupce se řídí délkou řádky, ne oknem: ~47 znaků je míra z Figmy (1120 px při 50 px); v ch to vychází na 32,5, protože ch je šířka nuly.
+     Dřív to bylo v procentech okna s výjimkou pro poměr stran – na půlce desktopu se řádka
+     skokem protáhla ze 47 znaků na 74 a sazba se rozsypala. */
+  --odsazeni:min(6.75vw,130px);
+  margin:34vh 0 30vh;margin-left:var(--odsazeni);
+  width:min(32.5ch,calc(100% - var(--odsazeni)));
   font-family:var(--body);font-weight:400;font-size:clamp(1.05rem,2.6vw,3.125rem);line-height:1.2;
   opacity:0;transform:translateY(.3em);transition:opacity .9s var(--ease),transform 1.1s var(--ease);
 }
@@ -269,8 +274,6 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .german .statement{position:relative;left:auto;top:auto;justify-self:center;
     width:auto;max-width:100%;translate:0 2vh}
   .german .l1,.german .l2{font-size:clamp(2.1rem,7.29vw,8.75rem)}
-  /* na výšku se sloupec předmluvy roztáhne na celou šířku – 58 % z Figmy je poměr pro 16:9 */
-  .essay{width:100%;margin-left:0}
 }
 
 /* ---------- mobil / úzká okna ---------- */
