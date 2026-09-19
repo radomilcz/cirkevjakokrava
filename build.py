@@ -9,7 +9,7 @@ Placeholdery v šabloně / CSS:
   {{SITE}}                       adresa webu (absolutní odkazy pro og:image, canonical)
   {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
   {{BLOB_PATHS}}                 křivky otisku (src/assets/otisk-paths.txt) – vždy inline, JS je klonuje
-  {{HERO}} {{KULTURA_PHOTO}} {{KENNEDY}} {{KRAVA_FOTO}}   fotky ze src/assets/
+  {{HERO}} {{KULTURA_PHOTO}} {{KENNEDY}} {{KRAVA_FOTO}} {{ZRCADLO_FOTO}}   fotky ze src/assets/
   – náhled sdílení a ikony (src/assets/og.jpg, favicon.svg, favicon-32.png, icon-180.png)
     se jen kopírují; generují se zvlášť, viz níže
   {{F_GRANDHEAVY}} {{F_REGULAR}} {{F_NARROWBLACK}} {{F_GRAND}}   fonty (src/fonts/*.woff)
@@ -39,6 +39,7 @@ IMAGES = {
     '{{KULTURA_PHOTO}}': 'kultura.jpg',
     '{{KENNEDY}}': 'kennedy.png',
     '{{KRAVA_FOTO}}': 'krava-manifest.jpg',
+    '{{ZRCADLO_FOTO}}': 'zrcadlo.webp',
 }
 # náhled sdílení a ikony – hotové soubory, jen se kopírují do docs/assets/
 STATIC = ('og.jpg', 'favicon.svg', 'favicon-32.png', 'icon-180.png')

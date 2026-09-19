@@ -148,6 +148,18 @@ body{
 .intro .print{z-index:1}
 .intro .print svg{fill:rgba(255,255,255,.55)}
 
+/* ---------- zrcadlo – fotka přes celý slajd, otisk nad ní ---------- */
+.mirror{color:#fff;background:var(--ground-deep)}
+.mirror .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;z-index:0}
+/* Figma má text bíle přímo na fotce – na světlé obloze a hladině vychází kontrast 1,6:1.
+   Stejný přechod jako na úvodním slajdu ztmaví jen horní a dolní pruh, kde text sedí;
+   fotka i otisk uprostřed zůstávají nedotčené. */
+.mirror .veil{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(42,33,33,.66),transparent 26%),
+             linear-gradient(to bottom,rgba(42,33,33,.70),transparent 22%)}
+.mirror .print{z-index:1}
+.mirror .print svg{fill:rgba(255,255,255,.55)}
+
 /* ---------- Kravařsko. Moje lásko. ---------- */
 .love{background:var(--ink);color:var(--ground)}
 .love .print svg{fill:rgba(255,255,255,.55)}

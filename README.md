@@ -4,7 +4,7 @@ Vertikální webová prezentace manifestu komunity **Církev jako kráva**.
 
 **Živě:** https://manifest.cirkevjakokrava.cz (GitHub Pages ze složky `docs/`, aktualizuje se s každým pushem do `main`; `https://radomilcz.github.io/cirkevjakokrava/` sem přesměrovává).
 
-Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (framy `00`–`04`, `Hodnoty 01–11`, `Zrcadlo 00`).
+Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (stránka `Manifest`, sekce `Manifest` s framy `00`–`07` a `Předmluva`, sekce `Kultura` s framy `Kultura 00`–`Kultura 10` a `Zrcadlo 00`).
 
 ## Struktura
 
@@ -17,6 +17,7 @@ src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original
 src/assets/kultura.jpg       fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
 src/assets/kennedy.png       vystřižený portrét na slajd „Ich bin ein Kuhländler“
 src/assets/krava-manifest.jpg fotka na slajd „KRÁVA má Boží design“ (ořez z highland-original.jpg)
+src/assets/zrcadlo.webp      fotka na závěrečný slajd „ZRCADLO“, oříznutá podle Figmy (webp je o třetinu menší než jpg)
 src/assets/krava.png         vystřižená kráva – na slajdu 06 ji nahradil Kennedy (+ krava-original.png)
 src/assets/highland-original.jpg  zatím nepoužitá fotka
 src/assets/og.jpg            náhled při sdílení odkazu (1200×630, vyfocený úvodní slajd)
