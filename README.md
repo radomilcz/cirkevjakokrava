@@ -10,6 +10,7 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 
 ```
 src/manifest.template.html   šablona – obsah slajdů (HTML)
+src/otazky.template.html     šablona – jednostránkové A4 „Otázky na tělo“ (koučink)
 src/manifest.css             styly
 src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
@@ -25,6 +26,7 @@ src/assets/favicon.svg       ikona webu – terč v barvách značky (+ favicon-
 src/fonts/*.woff             Subset (latinka, čeština, šipka)
 build.py                     sestaví web do docs/
 docs/index.html + assets/    hotový web – HTML, CSS, JS, fonty a fotky jako samostatné soubory
+docs/otazky-na-telo.pdf      hotové A4 na tisk i do přílohy
 ```
 
 ## Fotky
@@ -45,6 +47,20 @@ Přejmenované na krátké názvy podle toho, kam patří – původní jména z
 3. Otevři `docs/index.html` v prohlížeči (fonty přes `file://` v Chromu nepřednačte, přes lokální server nebo po nasazení ano).
 
 Nová úvodní fotka: `python3 build.py --hero cesta/k/fotce.jpg` (vyžaduje `pip install pillow`).
+
+## Otázky na tělo (A4 do PDF)
+
+Koučovací otázky ke kultuře na jednu stránku – stejné barvy, písmo i otisk jako manifest.
+Texty jsou v `src/otazky.template.html` přímo v `<li>`, sazba v `<style>` nahoře.
+
+```
+python3 build.py --otazky   # vysází docs/otazky-na-telo.pdf (pip install playwright)
+```
+
+Fonty se do stránky vkládají jako data URI a otisk je inline, takže PDF je jeden soubor bez
+závislostí. Jednopísmenné předložky a spojky lepí na další slovo build (`nbsp()`), v šabloně
+je tedy psát jako obyčejnou mezeru. Chromium si build bere stejně jako u náhledu sdílení –
+když ho playwright nemá vlastní, ukaž na jiný přes `CHROME_PATH`.
 
 ## Náhled při sdílení a ikona
 

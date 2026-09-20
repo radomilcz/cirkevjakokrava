@@ -14,13 +14,17 @@ Placeholdery v šabloně / CSS:
     se jen kopírují; generují se zvlášť, viz níže
   {{F_GRANDHEAVY}} {{F_REGULAR}} {{F_NARROWBLACK}} {{F_GRAND}}   fonty (src/fonts/*.woff)
 
+Jednostránkové A4 (src/otazky.template.html) je samostatný soubor se stejnými
+placeholdery pro fonty a otisk; sází se rovnou do PDF, viz --otazky.
+
 Použití:  python3 build.py
 Volitelně:
   python3 build.py --hero cesta/k/nove-fotce.jpg  zmenší na 2000 px a nahradí hero.jpg (pip install pillow)
   python3 build.py --og                           přegeneruje náhled sdílení z úvodního slajdu (pip install playwright)
   python3 build.py --icons                        přegeneruje PNG ikony z favicon.svg (pip install playwright)
+  python3 build.py --otazky                       vysází docs/otazky-na-telo.pdf (pip install playwright)
 """
-import argparse, os, re, shutil, sys
+import argparse, base64, os, re, shutil, sys
 
 SITE = 'https://manifest.cirkevjakokrava.cz'   # doména z docs/CNAME – sdílené odkazy musí být absolutní
 
@@ -50,6 +54,12 @@ def read(path):
         return f.read()
 
 
+def otisk():
+    """Křivky otisku z src/assets/otisk-paths.txt slepené do <path> elementů."""
+    paths = [l.strip() for l in read(os.path.join(SRC, 'assets', 'otisk-paths.txt')).splitlines() if l.strip()]
+    return ''.join(f'<path d="{d}"/>' for d in paths)
+
+
 def prepare_hero(source):
     """Zmenší a zkomprimuje fotku do src/assets/hero.jpg (vyžaduje Pillow)."""
     from PIL import Image
@@ -77,9 +87,7 @@ def build():
     tpl = read(os.path.join(SRC, 'manifest.template.html'))
     css = read(os.path.join(SRC, 'manifest.css'))
     js = read(os.path.join(SRC, 'manifest.js'))
-    paths = [l.strip() for l in read(os.path.join(SRC, 'assets', 'otisk-paths.txt')).splitlines() if l.strip()]
-    blob = ''.join(f'<path d="{d}"/>' for d in paths)
-    tpl = tpl.replace('{{BLOB_PATHS}}', blob)
+    tpl = tpl.replace('{{BLOB_PATHS}}', otisk())
 
     assets = os.path.join(DOCS, 'assets')
     os.makedirs(os.path.join(assets, 'fonts'), exist_ok=True)
@@ -174,6 +182,47 @@ def make_icons():
     print('ikony:', ', '.join(ICONS))
 
 
+# ---------- otázky na tělo (jedna stránka A4 do PDF) ----------
+
+PDF = 'otazky-na-telo.pdf'
+
+# jednopísmenné předložky a spojky nesmí zůstat na konci řádku (česká sazba)
+PREDLOZKY = re.compile(r'(^|[\s„“(>])([KkSsVvZzOoUuAaIi])\s+')
+
+
+def nbsp(html):
+    """Přilepí jednopísmenná slova k následujícímu – jen v textu, ne uvnitř značek."""
+    out = []
+    for part in re.split(r'(<[^>]+>)', html):
+        out.append(part if part.startswith('<') else PREDLOZKY.sub('\\1\\2\u00a0', part))
+    return ''.join(out)
+
+
+def make_otazky():
+    """Vysází src/otazky.template.html do docs/otazky-na-telo.pdf (vyžaduje playwright).
+
+    Fonty jdou do stránky jako data URI, otisk inline – PDF pak nemá žádné vnější
+    závislosti a Chromium si do něj zabuduje jen použité řezy písma.
+    """
+    from playwright.sync_api import sync_playwright
+    html = read(os.path.join(SRC, 'otazky.template.html')).replace('{{BLOB_PATHS}}', otisk())
+    for key, name in FONTS.items():
+        with open(os.path.join(SRC, 'fonts', name), 'rb') as f:
+            html = html.replace(key, 'data:font/woff;base64,' + base64.b64encode(f.read()).decode())
+    html = nbsp(html.replace('{{WEB}}', SITE.split('//', 1)[1]))
+    check(html)
+    out = os.path.join(DOCS, PDF)
+    with sync_playwright() as pw:
+        br = chromium(pw)
+        page = br.new_page()
+        page.set_content(html)
+        page.evaluate('document.fonts.ready')      # ať se sází hotovým písmem, ne náhradou
+        page.pdf(path=out, width='210mm', height='297mm', print_background=True,
+                 margin={'top': '0', 'right': '0', 'bottom': '0', 'left': '0'})
+        br.close()
+    print(PDF + ':', f'{os.path.getsize(out) / 1024:.0f} kB')
+
+
 def check(html):
     m = re.search(r'\{\{[A-Z_]+\}\}', html)
     if m:
@@ -185,12 +234,15 @@ if __name__ == '__main__':
     ap.add_argument('--hero', help='nová úvodní fotka (zmenší se a nahradí src/assets/hero.jpg)')
     ap.add_argument('--og', action='store_true', help='přegeneruje náhled sdílení z úvodního slajdu')
     ap.add_argument('--icons', action='store_true', help='přegeneruje favicon a ikonu na plochu')
+    ap.add_argument('--otazky', action='store_true', help='vysází otázky na tělo do docs/' + PDF)
     a = ap.parse_args()
     if a.hero:
         prepare_hero(a.hero)
     if a.icons:
         make_icons()
     build()
+    if a.otazky:
+        make_otazky()
     if a.og:
         make_og()      # fotí se z hotového webu, proto až po buildu
         build()        # a znovu, ať se nový náhled zkopíruje do docs/

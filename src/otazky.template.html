@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Otázky na tělo – Církev jako kráva</title>
+<style>
+/* ============================================================
+   Církev jako kráva — Otázky na tělo (koučink), jedna stránka A4
+   Stejné barvy, písmo i otisk jako manifest; sazba pro tisk i PDF.
+   Sestavuje build.py --otazky, fonty se vkládají jako data URI –
+   PDF je tak jeden soubor bez závislostí.
+   ============================================================ */
+@font-face{font-family:"Agrandir Grand Heavy";src:url({{F_GRANDHEAVY}}) format("woff");font-weight:800}
+@font-face{font-family:"Agrandir";src:url({{F_REGULAR}}) format("woff");font-weight:400}
+@font-face{font-family:"Agrandir Narrow Black";src:url({{F_NARROWBLACK}}) format("woff");font-weight:900}
+@font-face{font-family:"Agrandir Grand";src:url({{F_GRAND}}) format("woff");font-weight:400}
+:root{
+  --ground:#3b2f2f;
+  --ink:#e6acac;
+  --print:rgba(217,199,199,.16);   /* otisk pod sazbou – slabší než na webu, ať text drží kontrast */
+  --display:"Agrandir Grand Heavy",sans-serif;
+  --body:"Agrandir",sans-serif;
+  --narrow:"Agrandir Narrow Black",sans-serif;
+  --grand:"Agrandir Grand",sans-serif;
+  --pad:16mm;
+}
+@page{size:A4 portrait;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  width:210mm;height:297mm;overflow:hidden;
+  background:var(--ground);color:var(--ink);
+  font-family:var(--body);font-weight:400;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  -webkit-font-smoothing:antialiased;
+}
+.page{position:relative;width:100%;height:100%;padding:var(--pad);display:flex;flex-direction:column}
+
+/* ---------- otisk z Figmy: dvakrát, obě přetékají přes okraj ---------- */
+.print{position:absolute;z-index:0;fill:var(--print);overflow:visible}
+.print.a{width:150mm;top:-34mm;right:-42mm;transform:rotate(-14deg)}
+.print.b{width:120mm;bottom:-40mm;left:-46mm;transform:rotate(166deg)}
+.page>*:not(.print){position:relative;z-index:1}
+
+/* ---------- hlavička ---------- */
+.eyebrow{
+  font-family:var(--display);font-weight:800;font-size:11pt;line-height:1.035;
+  letter-spacing:-.01em;margin:0;
+}
+.title{
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;
+  font-size:52pt;line-height:.97;letter-spacing:0;margin:4mm 0 0;
+}
+.lead{
+  font-family:var(--grand);font-size:12.5pt;line-height:1.32;margin:5mm 0 0;max-width:126mm;
+}
+.lead .src{display:block;font-family:var(--body);font-size:8.5pt;margin-top:2mm;opacity:.6}
+
+/* ---------- linka pod hlavičkou ---------- */
+.rule{flex:none;height:1px;background:var(--ink);opacity:.35;margin:8mm 0 7mm}
+
+/* ---------- dva sloupce se čtyřmi bloky ---------- */
+.cols{display:flex;gap:11mm;flex:1}
+.col{flex:1;min-width:0}
+.block{margin-bottom:11mm}
+.block h2{
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;
+  font-size:24pt;line-height:1;letter-spacing:0;margin:0 0 1.5mm;
+  display:flex;align-items:baseline;gap:.45em;
+}
+.block h2 .n{font-family:var(--body);font-weight:400;font-size:10pt;opacity:.6;text-transform:none}
+.block ul{list-style:none;margin:0;padding:0}
+.block li{
+  font-size:12pt;line-height:1.38;margin-top:3.4mm;
+  display:flex;gap:.55em;align-items:baseline;
+}
+.block li::before{content:"→";flex:none;opacity:.55}
+
+/* ---------- patička ---------- */
+.foot{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:6mm;
+  border-top:.5pt solid rgba(230,172,172,.35);padding-top:4mm;margin-top:auto;
+}
+.foot .web{font-family:var(--grand);font-size:8.5pt;margin:0;opacity:.7}
+.foot .brand{
+  font-family:var(--display);font-weight:800;font-size:11pt;line-height:1.035;
+  letter-spacing:-.01em;margin:0;white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <svg class="print a" viewBox="0 0 998 816" aria-hidden="true">{{BLOB_PATHS}}</svg>
+  <svg class="print b" viewBox="0 0 998 816" aria-hidden="true">{{BLOB_PATHS}}</svg>
+
+  <header>
+    <p class="eyebrow">kultura · koučink</p>
+    <h1 class="title">Otázky<br>na tělo</h1>
+    <p class="lead">„Přežvykujeme, dokud je nevstřebáme celé. Od pondělí do neděle. V práci, doma i ve škole. Nejen v kostele.“
+      <span class="src">manifest · kultura</span></p>
+  </header>
+
+  <div class="rule"></div>
+
+  <div class="cols">
+
+    <div class="col">
+      <section class="block">
+        <h2>postoj <span class="n">1/4</span></h2>
+        <ul>
+          <li>Co vnímáš na lidech jako první – Boží poklad, nebo lidský odpad?</li>
+          <li>Na koho se díváš spíš přes to, co mu chybí, než přes to, co dostal?</li>
+          <li>Kde s lidmi nevědomky pořádáš konkurz?</li>
+          <li>Co pro tebe znamená kopat jako archeolog, když tě někdo na první pohled štve nebo s ním nesouhlasíš?</li>
+        </ul>
+      </section>
+      <section class="block">
+        <h2>zranitelnost <span class="n">2/4</span></h2>
+        <ul>
+          <li>Musí si vedle tebe druzí na něco hrát, protože cítí, že je tajně hodnotíš?</li>
+          <li>Jakou masku nebo kostým je pro tebe nejtěžší u stolu odložit?</li>
+          <li>Kdy jsi naposledy ukázal svou slabost?</li>
+          <li>Komu z lidí, kterým běžně pomáháš, jsi naposledy dovolil, aby on podal vodu nebo pomohl tobě?</li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="block">
+        <h2>přijetí <span class="n">3/4</span></h2>
+        <ul>
+          <li>Kdo z tvého okolí je takový Zacheus na větvi – někdo, kdo zpovzdálí pozoruje, ale drží si odstup?</li>
+          <li>Jak by konkrétně vypadalo, kdybys k němu přišel pod strom?</li>
+          <li>Kdy jsi naposledy přijal pozvání do prostředí, které nemáš pod kontrolou?</li>
+          <li>Kdy jsi ty sám zažil situaci, že tě někdo bere i s tvými chybami, a právě tohle tě motivovalo ke změně?</li>
+          <li>Dokážeš si sednout s člověkem, který žije v přímém rozporu s tvými hodnotami, dát si s ním večeři a nesnažit se ho opravit? Co se v tobě v takové chvíli odehrává?</li>
+        </ul>
+      </section>
+      <section class="block">
+        <h2>výzva <span class="n">4/4</span></h2>
+        <ul>
+          <li>Koho tenhle týden pozveš na jídlo, abys ho líp poznal?</li>
+          <li>Jakou laskavou otázku bez předepsané odpovědi si tenhle týden připravíš pro lidi, které potkáváš?</li>
+        </ul>
+      </section>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <p class="web">{{WEB}}</p>
+    <p class="brand">církev jako kráva</p>
+  </div>
+
+</div>
+</body>
+</html>
