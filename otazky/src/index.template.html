@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Otázky na tělo – Církev jako kráva</title>
+<meta name="description" content="Koučovací otázky ke kultuře Církve jako kráva – postoj, zranitelnost, přijetí, výzva. Patnáct otázek na tělo, k přežvýkání i ke stažení na A4.">
+<link rel="canonical" href="{{SITE}}/">
+<meta name="theme-color" content="#3b2f2f">
+
+<!-- náhled při sdílení (WhatsApp, Messenger, Facebook, LinkedIn…) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{SITE}}/">
+<meta property="og:site_name" content="Církev jako kráva">
+<meta property="og:locale" content="cs_CZ">
+<meta property="og:title" content="Otázky na tělo">
+<meta property="og:description" content="Postoj, zranitelnost, přijetí, výzva. Patnáct otázek ke kultuře, které se neodpovídají hlavou, ale životem.">
+<meta property="og:image" content="{{SITE}}/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Nápis Otázky na tělo na tmavém pozadí s otiskem Církve jako kráva.">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preload" href="{{F_NARROWBLACK}}" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{F_REGULAR}}" as="font" type="font/woff" crossorigin>
+<style>
+/* ============================================================
+   Církev jako kráva — Otázky na tělo
+   Jedna stránka pro čtení na mobilu i na plátně; @media print z ní
+   vysází to samé A4, ze kterého se tiskne PDF (build.py --pdf).
+   Barvy, písmo i otisk jsou shodné s manifestem.
+   ============================================================ */
+@font-face{font-family:"Agrandir Grand Heavy";src:url({{F_GRANDHEAVY}}) format("woff");font-weight:800;font-display:swap}
+@font-face{font-family:"Agrandir";src:url({{F_REGULAR}}) format("woff");font-weight:400;font-display:swap}
+@font-face{font-family:"Agrandir Narrow Black";src:url({{F_NARROWBLACK}}) format("woff");font-weight:900;font-display:swap}
+@font-face{font-family:"Agrandir Grand";src:url({{F_GRAND}}) format("woff");font-weight:400;font-display:swap}
+:root{
+  --ground:#3b2f2f;
+  --ink:#e6acac;
+  --print:rgba(217,199,199,.13);   /* otisk pod sazbou – slabší než na manifestu, ať text drží kontrast */
+  --display:"Agrandir Grand Heavy",system-ui,sans-serif;
+  --body:"Agrandir",system-ui,sans-serif;
+  --narrow:"Agrandir Narrow Black",system-ui,sans-serif;
+  --grand:"Agrandir Grand",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  position:relative;margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--body);font-weight:400;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--ink);color:var(--ground)}
+a{color:inherit}
+
+.page{max-width:1180px;margin:0 auto;padding:clamp(30px,6vw,84px) clamp(20px,5vw,64px) clamp(36px,5vw,64px)}
+.page{position:relative;z-index:1}
+
+/* ---------- otisk z Figmy ----------
+   Otisky přetékají přes okraje stránky, proto sedí ve vrstvě, která je ořízne.
+   Bez ní by roztahovaly plochu k rolování – vodorovný posuv a prázdno pod patičkou.
+   (Ořez nesmí být na <body>: ten svoje overflow propůjčí oknu a sám zůstane průhledný.) */
+.pozadi{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.otisk{position:absolute;fill:var(--print);overflow:visible}
+.otisk.a{width:min(74vw,760px);top:clamp(-140px,-14vw,-60px);right:clamp(-260px,-22vw,-110px);transform:rotate(-14deg)}
+.otisk.b{width:min(58vw,560px);bottom:clamp(-190px,-18vw,-90px);left:clamp(-230px,-20vw,-100px);transform:rotate(166deg)}
+
+/* ---------- hlavička ---------- */
+.eyebrow{
+  font-family:var(--display);font-weight:800;font-size:clamp(.95rem,2.1vw,1.4rem);
+  line-height:1.035;letter-spacing:-.01em;margin:0;
+}
+.title{
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.9rem,11.5vw,7.5rem);line-height:.95;letter-spacing:0;margin:.12em 0 0;
+}
+.lead{
+  font-family:var(--grand);font-size:clamp(1.08rem,2.2vw,1.7rem);line-height:1.34;
+  margin:clamp(18px,2.6vw,30px) 0 0;max-width:26em;
+}
+.lead .src{display:block;font-family:var(--body);font-size:.62em;margin-top:.7em;opacity:.6}
+
+/* ---------- odkazy na PDF a tisk ---------- */
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin:clamp(22px,3vw,34px) 0 0}
+.tools a,.tools button{
+  font-family:var(--body);font-size:clamp(.92rem,1.2vw,1.05rem);color:inherit;
+  padding:.72em 1.25em;border:1px solid rgba(230,172,172,.45);border-radius:999px;
+  background:none;text-decoration:none;cursor:pointer;transition:background .2s,border-color .2s;
+}
+.tools a:hover,.tools button:hover{background:rgba(230,172,172,.12);border-color:rgba(230,172,172,.8)}
+
+.rule{height:1px;background:var(--ink);opacity:.35;margin:clamp(34px,5vw,58px) 0 clamp(28px,4vw,48px)}
+
+/* ---------- bloky otázek ---------- */
+.cols{display:grid;grid-template-columns:1fr;gap:clamp(34px,4.5vw,56px)}
+/* mezera mezi bloky musí platit i uvnitř sloupce – na mobilu se sloupce slijí do jednoho proudu */
+.col{display:flex;flex-direction:column;gap:clamp(34px,4.5vw,56px)}
+@media (min-width:900px){
+  .cols{grid-template-columns:1fr 1fr;column-gap:clamp(40px,5vw,80px)}
+}
+.block h2{
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.75rem,4.4vw,2.7rem);line-height:1;letter-spacing:0;margin:0;
+  display:flex;align-items:baseline;gap:.45em;
+}
+.block h2 .n{font-family:var(--body);font-weight:400;font-size:.36em;opacity:.6;text-transform:none}
+.block ul{list-style:none;margin:.9em 0 0;padding:0}
+.block li{
+  font-size:clamp(1.02rem,1.35vw,1.3rem);line-height:1.45;
+  display:flex;gap:.6em;align-items:baseline;
+}
+.block li+li{margin-top:.95em;padding-top:.95em;border-top:1px solid rgba(230,172,172,.15)}
+.block li::before{content:"→";flex:none;opacity:.55}
+
+/* ---------- patička ---------- */
+.foot{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:16px 32px;flex-wrap:wrap;
+  border-top:1px solid rgba(230,172,172,.35);padding-top:clamp(18px,2.4vw,26px);margin-top:clamp(40px,5.5vw,70px);
+}
+.foot .web{font-family:var(--grand);font-size:clamp(.9rem,1.2vw,1.05rem);margin:0}
+.foot .web a{text-decoration-color:rgba(230,172,172,.4);text-underline-offset:.25em}
+.foot .brand{
+  font-family:var(--display);font-weight:800;font-size:clamp(1rem,2.1vw,1.4rem);line-height:1.035;
+  letter-spacing:-.01em;margin:0;white-space:nowrap;
+}
+
+/* ============================================================
+   Tisk: přesně to A4, které vyjede i jako PDF.
+   Rozměry schválně v pt a mm – stránka se nesmí řídit šířkou okna.
+   ============================================================ */
+@page{size:A4 portrait;margin:0}
+@media print{
+  html,body{overflow:hidden;width:210mm;height:297mm;background:var(--ground);color:var(--ink);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tools{display:none}
+  .page{max-width:none;width:210mm;height:297mm;margin:0;padding:16mm;display:flex;flex-direction:column}
+  .otisk{width:auto}
+  .otisk.a{width:150mm;top:-34mm;right:-42mm;left:auto}
+  .otisk.b{width:120mm;bottom:-40mm;left:-46mm;right:auto}
+  .eyebrow{font-size:11pt}
+  .title{font-size:52pt;line-height:.97;margin:4mm 0 0}
+  .lead{font-size:12.5pt;line-height:1.32;margin:5mm 0 0;max-width:126mm}
+  .lead .src{font-size:8.5pt;margin-top:2mm}
+  .rule{flex:none;margin:8mm 0 7mm}       /* bez flex:none by se linka ve sloupci stlačila na nulu */
+  .cols{display:flex;flex:1;gap:11mm;grid-template-columns:none}
+  .col{display:block;flex:1;min-width:0}
+  .block{margin-bottom:11mm;break-inside:avoid}
+  .block h2{font-size:24pt;margin:0 0 1.5mm}
+  .block h2 .n{font-size:10pt}
+  .block ul{margin:0}
+  .block li{font-size:12pt;line-height:1.38}
+  .block li+li{margin-top:3.4mm;padding-top:0;border-top:0}
+  .foot{border-top:.5pt solid rgba(230,172,172,.35);padding-top:4mm;margin-top:auto;flex-wrap:nowrap}
+  .foot .web{font-size:8.5pt;opacity:.7}
+  .foot .web a{text-decoration:none}
+  .foot .brand{font-size:11pt}
+}
+</style>
+</head>
+<body>
+
+<div class="pozadi" aria-hidden="true">
+  <svg class="otisk a" viewBox="0 0 998 816">{{BLOB_PATHS}}</svg>
+  <svg class="otisk b" viewBox="0 0 998 816">{{BLOB_PATHS}}</svg>
+</div>
+
+<div class="page">
+
+  <header>
+    <p class="eyebrow">kultura · koučink</p>
+    <h1 class="title">Otázky<br>na tělo</h1>
+    <p class="lead">„Přežvykujeme, dokud je nevstřebáme celé. Od pondělí do neděle. V práci, doma i ve škole. Nejen v kostele.“
+      <span class="src">manifest · kultura</span></p>
+    <p class="tools">
+      <a href="{{PDF}}" download>Stáhnout A4 (PDF)</a>
+      <button type="button" onclick="window.print()">Vytisknout</button>
+    </p>
+  </header>
+
+  <div class="rule"></div>
+
+{{BLOKY}}
+
+  <footer class="foot">
+    <p class="web"><a href="https://manifest.cirkevjakokrava.cz">manifest.cirkevjakokrava.cz</a></p>
+    <p class="brand">církev jako kráva</p>
+  </footer>
+
+</div>
+</body>
+</html>
