@@ -3,7 +3,7 @@
 # řádky s pomlčkou jsou otázky. Jednopísmenné předložky lepí build sám.
 
 postoj
-- Co vnímáš na lidech jako první – Boží poklad, nebo lidský odpad?
+- Co vnímáš na lidech jako první – Boží poklad, nebo odpad?
 - Na koho se díváš spíš přes to, co mu chybí, než přes to, co dostal?
 - Kde s lidmi nevědomky pořádáš konkurz?
 - Co pro tebe znamená kopat jako archeolog, když tě někdo na první pohled štve nebo s ním nesouhlasíš?

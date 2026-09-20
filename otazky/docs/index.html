@@ -61,7 +61,9 @@ a{color:inherit}
 /* ---------- otisk z Figmy ----------
    Otisky přetékají přes okraje stránky, proto sedí ve vrstvě, která je ořízne.
    Bez ní by roztahovaly plochu k rolování – vodorovný posuv a prázdno pod patičkou.
-   (Ořez nesmí být na <body>: ten svoje overflow propůjčí oknu a sám zůstane průhledný.) */
+   (Ořez nesmí sedět na kořenovém elementu: ten svoje overflow propůjčí oknu a sám zůstane
+   průhledný. A doslovná značka v komentáři tu taky nemá co dělat – některé nástroje si ji
+   přečtou jako opravdový začátek stránky a sazba se rozsype.) */
 .pozadi{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .otisk{position:absolute;fill:var(--print);overflow:visible}
 .otisk.a{width:min(74vw,760px);top:clamp(-140px,-14vw,-60px);right:clamp(-260px,-22vw,-110px);transform:rotate(-14deg)}
@@ -186,7 +188,7 @@ a{color:inherit}
       <section class="block">
         <h2>postoj <span class="n">1/4</span></h2>
         <ul>
-          <li>Co vnímáš na lidech jako první – Boží poklad, nebo lidský odpad?</li>
+          <li>Co vnímáš na lidech jako první – Boží poklad, nebo odpad?</li>
           <li>Na koho se díváš spíš přes to, co mu chybí, než přes to, co dostal?</li>
           <li>Kde s lidmi nevědomky pořádáš konkurz?</li>
           <li>Co pro tebe znamená kopat jako archeolog, když tě někdo na první pohled štve nebo s ním nesouhlasíš?</li>
