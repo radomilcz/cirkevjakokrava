@@ -35,10 +35,10 @@ FONTS = {
     '{{F_GRAND}}': 'Agrandir-Grand.woff',
 }
 IMAGES = {
-    '{{HERO}}': 'hero.jpg',
+    '{{HERO}}': 'hero.webp',
     '{{KULTURA_PHOTO}}': 'kultura.jpg',
-    '{{KENNEDY}}': 'kennedy.png',
-    '{{KRAVA_FOTO}}': 'krava-manifest.jpg',
+    '{{KENNEDY}}': 'kennedy.webp',
+    '{{KRAVA_FOTO}}': 'krava-manifest.webp',
     '{{ZRCADLO_FOTO}}': 'zrcadlo.webp',
 }
 # náhled sdílení a ikony – hotové soubory, jen se kopírují do docs/assets/

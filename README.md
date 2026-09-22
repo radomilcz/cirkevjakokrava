@@ -13,10 +13,10 @@ src/manifest.template.html   šablona – obsah slajdů (HTML)
 src/manifest.css             styly
 src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
-src/assets/hero.jpg          úvodní fotka, zmenšená pro web (+ hero-original.jpg)
+src/assets/hero.webp         úvodní fotka, zmenšená pro web (webp q82; zdroj hero.jpg, + hero-original.jpg)
 src/assets/kultura.jpg       fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
-src/assets/kennedy.png       vystřižený portrét na slajd „Ich bin ein Kuhländler“
-src/assets/krava-manifest.jpg fotka na slajd „KRÁVA má Boží design“ (ořez z highland-original.jpg)
+src/assets/kennedy.webp      vystřižený portrét na slajd „Ich bin ein Kuhländler“ (bezztrátový webp; zdroj kennedy.png)
+src/assets/krava-manifest.webp fotka na slajd „KRÁVA má Boží design“ (webp q84; zdroj krava-manifest.jpg, ořez z highland-original.jpg)
 src/assets/zrcadlo.webp      fotka na závěrečný slajd „ZRCADLO“, oříznutá podle Figmy (webp je o třetinu menší než jpg)
 src/assets/krava.png         vystřižená kráva – na slajdu 06 ji nahradil Kennedy (+ krava-original.png)
 src/assets/highland-original.jpg  zatím nepoužitá fotka
