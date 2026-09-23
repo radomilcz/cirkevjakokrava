@@ -11,10 +11,7 @@
 :root{
   --ground:#3b2f2f;
   --ground-deep:#2a2121;
-  --ink:#e6acac;              /* vemenová */
-  --smetana:#f9e7dd;          /* smetanová */
-  --nebe:#464994;             /* nebeská */
-  --pastvina:#49865f;         /* pastvinová */
+  --ink:#e6acac;
   --print:rgba(217,199,199,.30);   /* otisk: bílá v soft-light ≈ tahle barva naplocho, bez blend módu */
   --display:"Agrandir Grand Heavy","Unbounded",system-ui,sans-serif;
   --body:"Agrandir","Outfit",system-ui,sans-serif;
@@ -255,20 +252,6 @@ body{
    70 px proti 50 px textu (změřeno 1,39×). Spodní okraj přepočtený na větší písmo, aby
    mezera pod ní byla stejná jako pod ostatními odstavci (1,25em ÷ 1,4). */
 .essay .ask{font-size:1.4em;line-height:1.2;margin-bottom:.893em}
-/* Otázka svítí: jednou jí zleva doprava proteče duhové světlo se září, bez rámečku.
-   Přechod je třikrát širší než text a posouvá se pod písmeny (background-clip:text);
-   záře je rozmazaná kopie téhož za textem. Mimo běh je to obyčejný text – obě krajní
-   polohy přechodu jsou v barvě písma, takže začátek ani konec neskočí. Maluje se jen
-   tenhle jeden řádek, 2 s, jednou. */
-.ask .q{position:relative;display:inline-block;isolation:isolate;--sweep-nebe:var(--nebe)}
-.ask .q .glow{position:absolute;inset:0;z-index:-1;opacity:0;filter:blur(.16em);pointer-events:none;white-space:nowrap}
-.ask .q.run,.ask .q.run .glow{
-  background:linear-gradient(100deg,var(--ink) 0 30%,var(--sweep-nebe) 39%,var(--pastvina) 47%,var(--smetana) 56%,var(--ink) 66% 100%) 0 0/300% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:ask-sweep 2s cubic-bezier(.45,.05,.35,1)}
-.ask .q.run .glow{animation-name:ask-sweep,ask-glow}
-@keyframes ask-sweep{from{background-position:100% 0}to{background-position:0 0}}
-@keyframes ask-glow{0%,100%{opacity:0}20%,75%{opacity:.9}}
 /* ---------- hodnoty ---------- */
 .value .word{
   grid-row:2;align-self:center;justify-self:center;text-align:center;margin:0;width:100%;min-width:0;
@@ -359,7 +342,6 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
 }
 @media (prefers-reduced-motion:reduce){
   .read .text i{opacity:1 !important;transition:none}
-  .ask .glow{display:none}
   .track{transition:none}
   .rise,.ln>span,.print{transition:none;opacity:1;transform:none}
   .hero .photo,.slide.in .print .sweep,.slide.in .print .sweep>svg{animation:none}
