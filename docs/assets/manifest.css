@@ -248,9 +248,10 @@ body{
 }
 .essay .lead+h3{margin-top:0}
 .essay>:last-child{margin-bottom:0}
-/* Zlomová otázka: jediné místo v eseji, kde se text rozsvěcuje po slovech jako
-   na ostatních čtecích slajdech. Jde to jen proto, že jsou to tři slova. */
-.essay .ask i{font-style:normal;opacity:.2;transition:opacity .3s linear}
+/* Zlomová otázka „Proč jako kráva?“: stejné písmo i řez jako text, jen větší – ve Figmě
+   70 px proti 50 px textu (změřeno 1,39×). Spodní okraj přepočtený na větší písmo, aby
+   mezera pod ní byla stejná jako pod ostatními odstavci (1,25em ÷ 1,4). */
+.essay .ask{font-size:1.4em;line-height:1.2;margin-bottom:.893em}
 /* ---------- hodnoty ---------- */
 .value .word{
   grid-row:2;align-self:center;justify-self:center;text-align:center;margin:0;width:100%;min-width:0;
@@ -340,7 +341,7 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .value .word{font-size:clamp(2rem,14vh,6rem)}
 }
 @media (prefers-reduced-motion:reduce){
-  .read .text i,.essay .ask i{opacity:1 !important;transition:none}
+  .read .text i{opacity:1 !important;transition:none}
   .track{transition:none}
   .rise,.ln>span,.print{transition:none;opacity:1;transform:none}
   .hero .photo,.slide.in .print .sweep,.slide.in .print .sweep>svg{animation:none}
