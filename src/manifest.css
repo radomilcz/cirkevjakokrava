@@ -247,7 +247,7 @@ body{
   margin:1.389em 0 .694em;
 }
 .essay .lead+h3{margin-top:0}
-.essay .stanza{margin-bottom:0}
+.essay>:last-child{margin-bottom:0}
 /* Zlomová otázka: jediné místo v eseji, kde se text rozsvěcuje po slovech jako
    na ostatních čtecích slajdech. Jde to jen proto, že jsou to tři slova. */
 .essay .ask i{font-style:normal;opacity:.2;transition:opacity .3s linear}
