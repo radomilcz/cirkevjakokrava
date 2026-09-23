@@ -225,21 +225,21 @@
   fit();
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
 
-  /* ---------- předmluva: kolem zlomové otázky jednou proběhne duhové světlo ----------
+  /* ---------- předmluva: zlomovou otázkou jednou proteče duhové světlo ----------
      Běží v čase, ne podle projetí: spustí se, až otázka dojede do horních dvou třetin
      obrazovky, tedy tam, kam se čtenář dívá, a pak doběhne sama. Při každém dalším
      příjezdu znovu. */
   const ask=document.querySelector('.essay .ask');
   if(ask){
-    ask.innerHTML='<span class="ring"><span class="fx" aria-hidden="true"><i></i></span>'
-      +'<span class="glow" aria-hidden="true"><span class="fx"><i></i></span></span>'+ask.innerHTML+'</span>';
-    const ring=ask.firstChild;
+    const t=ask.textContent.trim();
+    ask.innerHTML='<span class="q"><span class="glow" aria-hidden="true">'+t+'</span>'+t+'</span>';
+    const q=ask.firstChild;
     if(!reduced&&'IntersectionObserver' in window){
       new IntersectionObserver(es=>es.forEach(e=>{
         if(!e.isIntersecting)return;
-        ring.classList.remove('run');void ring.offsetWidth;ring.classList.add('run');
-      }),{rootMargin:'0px 0px -34% 0px',threshold:1}).observe(ring);
-      ring.addEventListener('animationend',e=>{if(e.animationName==='ask-fade')ring.classList.remove('run')});
+        q.classList.remove('run');void q.offsetWidth;q.classList.add('run');
+      }),{rootMargin:'0px 0px -34% 0px',threshold:1}).observe(q);
+      q.addEventListener('animationend',e=>{if(e.target===q)q.classList.remove('run')});
     }
   }
 
