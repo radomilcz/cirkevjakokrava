@@ -225,20 +225,28 @@
   fit();
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
 
-  /* ---------- předmluva: zlomovou otázkou jednou proteče duhové světlo ----------
+  /* ---------- předmluva: zlomovou otázkou proteče duhové světlo ----------
      Běží v čase, ne podle projetí: spustí se, až otázka dojede do horních dvou třetin
-     obrazovky, tedy tam, kam se čtenář dívá, a pak doběhne sama. Při každém dalším
-     příjezdu znovu. */
+     obrazovky (tam, kam se čtenář dívá), a pak doběhne sama. Dokud je otázka v obraze,
+     občas se zopakuje (7–11 s, schválně nepravidelně), a proběhne i po najetí myší
+     nebo klepnutí. Rozběhnutá záře se najetím nepřerušuje. */
   const ask=document.querySelector('.essay .ask');
   if(ask){
     const t=ask.textContent.trim();
     ask.innerHTML='<span class="q"><span class="glow" aria-hidden="true">'+t+'</span>'+t+'</span>';
     const q=ask.firstChild;
     if(!reduced&&'IntersectionObserver' in window){
-      new IntersectionObserver(es=>es.forEach(e=>{
-        if(!e.isIntersecting)return;
+      const run=again=>{
+        if(!again&&q.classList.contains('run'))return;
         q.classList.remove('run');void q.offsetWidth;q.classList.add('run');
+      };
+      let tm;
+      const later=()=>{clearTimeout(tm);tm=setTimeout(()=>{if(!document.hidden)run();later()},7000+Math.random()*4000)};
+      new IntersectionObserver(es=>es.forEach(e=>{
+        if(e.isIntersecting){run(true);later()}else clearTimeout(tm);
       }),{rootMargin:'0px 0px -34% 0px',threshold:1}).observe(q);
+      q.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')run()});
+      q.addEventListener('click',()=>run());
       q.addEventListener('animationend',e=>{if(e.target===q)q.classList.remove('run')});
     }
   }

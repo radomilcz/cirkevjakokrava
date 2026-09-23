@@ -11,7 +11,10 @@
 :root{
   --ground:#3b2f2f;
   --ground-deep:#2a2121;
-  --ink:#e6acac;
+  --ink:#e6acac;              /* vemenová */
+  --smetana:#f9e7dd;          /* smetanová */
+  --nebe:#464994;             /* nebeská */
+  --pastvina:#49865f;         /* pastvinová */
   --print:rgba(217,199,199,.30);   /* otisk: bílá v soft-light ≈ tahle barva naplocho, bez blend módu */
   --display:"Agrandir Grand Heavy","Unbounded",system-ui,sans-serif;
   --body:"Agrandir","Outfit",system-ui,sans-serif;
@@ -257,10 +260,10 @@ body{
    záře je rozmazaná kopie téhož za textem. Mimo běh je to obyčejný text – obě krajní
    polohy přechodu jsou v barvě písma, takže začátek ani konec neskočí. Maluje se jen
    tenhle jeden řádek, 2 s, jednou. */
-.ask .q{position:relative;display:inline-block;isolation:isolate}
+.ask .q{position:relative;display:inline-block;isolation:isolate;--sweep-nebe:var(--nebe)}
 .ask .q .glow{position:absolute;inset:0;z-index:-1;opacity:0;filter:blur(.16em);pointer-events:none;white-space:nowrap}
 .ask .q.run,.ask .q.run .glow{
-  background:linear-gradient(100deg,var(--ink) 0 30%,#8f5cff 37%,#4d8dff 42%,#27d0c4 47%,#b6ef5f 51%,#ffd23f 55%,#ff7a4d 59%,#ff5c9d 63%,var(--ink) 68% 100%) 0 0/300% 100%;
+  background:linear-gradient(100deg,var(--ink) 0 30%,var(--sweep-nebe) 39%,var(--pastvina) 47%,var(--smetana) 56%,var(--ink) 66% 100%) 0 0/300% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;
   animation:ask-sweep 2s cubic-bezier(.45,.05,.35,1)}
 .ask .q.run .glow{animation-name:ask-sweep,ask-glow}
