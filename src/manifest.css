@@ -163,6 +163,7 @@ body{
 /* ---------- Kravařsko. Moje lásko. ---------- */
 .love{background:var(--ink);color:var(--ground)}
 .love .print svg{fill:rgba(255,255,255,.55)}
+.love .foot{justify-content:flex-end}
 .love .statement{
   justify-self:center;width:auto;max-width:100%;
   font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,6.46vw,7.75rem);line-height:1.25;letter-spacing:-.01em;
