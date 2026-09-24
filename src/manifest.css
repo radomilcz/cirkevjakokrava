@@ -248,10 +248,9 @@ body{
 }
 .essay .lead+h3{margin-top:0}
 .essay>:last-child{margin-bottom:0}
-/* Zlomová otázka „Proč jako kráva?“: stejné písmo i řez jako text, jen větší – ve Figmě
-   70 px proti 50 px textu (změřeno 1,39×). Spodní okraj přepočtený na větší písmo, aby
-   mezera pod ní byla stejná jako pod ostatními odstavci (1,25em ÷ 1,4). */
-.essay .ask{font-size:1.4em;line-height:1.2;margin-bottom:.893em}
+/* Zlomová otázka „Proč jako kráva?“: stejná velikost i řádkování jako text, jen řez
+   Grand Heavy (jako nadpisy) – vyčnívá tloušťkou, ne velikostí. */
+.essay .ask{font-family:var(--display);font-weight:800;letter-spacing:-.01em}
 /* ---------- hodnoty ---------- */
 .value .word{
   grid-row:2;align-self:center;justify-self:center;text-align:center;margin:0;width:100%;min-width:0;
