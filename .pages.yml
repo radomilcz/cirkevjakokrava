@@ -1,7 +1,7 @@
 # Pages CMS (pagescms.org) – texty manifestu. Přihlášení GitHubem na app.pagescms.org.
 # Co se tu uloží, to GitHub Action přesází na web (.github/workflows/web.yml).
-# Slajdy jsou jeden seznam: přidat (s volbou typu), přetáhnout, smazat. Otisky, čísla slajdů
-# a počítadlo hodnot dopočítá build.
+# Slajdy: každý má vlastní stránku (kolekce), pořadí se skládá přetažením v „Pořadí slajdů“.
+# Otisky, čísla slajdů a počítadlo hodnot dopočítá build.
 
 media:
   input: src/assets/fotky
@@ -11,21 +11,65 @@ media:
   rename: safe
 
 content:
-  - name: slajdy
-    label: Slajdy
+  - name: poradi
+    label: Pořadí slajdů
     type: file
-    path: src/obsah/slajdy.yml
+    path: src/obsah/poradi.yml
     format: yaml
     fields:
       - name: slajdy
-        label: Slajdy
-        type: block
+        label: Slajdy v pořadí
+        type: reference
+        list: true
         required: true
+        options:
+          collection: slajdy
+          value: '{path}'
+          label: '{fields.nazev}'
+          search: nazev
+        description: Přetažením měníš pořadí. Slajd, který tu není, na webu nebude.
+
+  - name: slajdy
+    label: Slajdy
+    type: collection
+    path: src/obsah/slajdy
+    format: yaml
+    filename: '{primary}.yml'
+    operations:
+      rename: false
+    view:
+      fields:
+        - nazev
+        - skupina
+      primary: nazev
+      sort:
+        - skupina
+        - nazev
+      default:
+        sort: skupina
+        order: asc
+    fields:
+      - name: nazev
+        label: Název
+        type: string
+        required: true
+        description: Jak se slajd jmenuje v přehledu a v Pořadí slajdů.
+      - name: skupina
+        label: Skupina
+        type: select
+        required: true
+        options:
+          values:
+            - Úvod
+            - Poslání
+            - Kultura
+            - Závěr
+            - Předěly
+      - name: slajd
+        label: Slajd
+        type: block
         blockKey: typ
-        list:
-          collapsible:
-            collapsed: true
-            summary: '{nadtitulek} {slovo}'
+        required: true
         blocks:
           - name: uvod
             label: Úvod

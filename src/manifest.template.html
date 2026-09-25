@@ -21,7 +21,7 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 {{CSS}}
 <!--/head-->
-{#- Slajdy jsou v src/obsah/slajdy.yml (upravují se v Pages CMS) – seznam, v němž má každý slajd svůj typ.
+{#- Slajdy jsou v src/obsah/slajdy/ (soubor na slajd), pořadí v src/obsah/poradi.yml – obojí z Pages CMS.
     Tady je sazba jednotlivých typů. Čísla slajdů (#s0…), otisky a čárky na liště počítá build (slajdy|rozvrh). -#}
 {%- macro vyrok(text) -%}
     <p class="statement">
@@ -50,7 +50,7 @@
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 <div class="deck" id="deck">
 <main class="track" id="track">
-{%- for x in o.slajdy.slajdy|rozvrh %}
+{%- for x in o.poradi|rozvrh %}
 {%- set t = x.typ %}
 
 {%- if t == 'uvod' %}

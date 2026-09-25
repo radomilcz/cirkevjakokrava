@@ -162,6 +162,11 @@ def zkontroluj(pole, data, cesta):
                 chyba(f'{kde}: prázdný řádek')
         elif f['type'] == 'object':
             zkontroluj(f['fields'], hodnota, kde)
+        elif f['type'] == 'block':
+            b = {x['name']: x for x in f['blocks']}.get((hodnota or {}).get(f.get('blockKey', '_block')))
+            if not b:
+                chyba(f'{kde}: chybí typ slajdu (může být {", ".join(x["name"] for x in f["blocks"])})')
+            zkontroluj(b['fields'], hodnota, f'{kde} ({b["label"]})')
         elif f.get('required') and not str(hodnota or '').strip():
             chyba(f'{kde}: je povinné')
 
@@ -257,6 +262,16 @@ def nacti(polozky, cesta=''):
         if c['type'] == 'group':
             o[c['name']] = nacti(c['items'], kde + ' → ')
             continue
+        if c['type'] == 'collection':                  # Slajdy: soubor na slajd, klíč = cesta (na ni míří Pořadí)
+            o[c['name']] = {}
+            for jmeno in sorted(os.listdir(os.path.join(ROOT, c['path']))):
+                if jmeno.endswith(('.yml', '.yaml')):
+                    cesta = f'{c["path"]}/{jmeno}'
+                    with open(os.path.join(ROOT, cesta), encoding='utf-8') as f:
+                        data = yaml.safe_load(f) or {}
+                    zkontroluj(c['fields'], data, f'{kde} → {data.get("nazev") or jmeno}')
+                    o[c['name']][cesta] = data
+            continue
         with open(os.path.join(ROOT, c['path']), encoding='utf-8') as f:
             try:
                 o[c['name']] = yaml.safe_load(f) or {}
@@ -269,7 +284,14 @@ def nacti(polozky, cesta=''):
 def nacti_obsah():
     with open(os.path.join(ROOT, '.pages.yml'), encoding='utf-8') as f:
         o = nacti(yaml.safe_load(f)['content'])
-    slajdy = [x for x in o['slajdy'].get('slajdy') or [] if x.get('typ') != 'predel']
+    poradi = []
+    for cesta in o['poradi'].get('slajdy') or []:
+        data = o['slajdy'].get(str(cesta).lstrip('/'))
+        if data is None:
+            chyba(f'Pořadí slajdů: „{cesta}“ neexistuje – slajd byl smazaný nebo přejmenovaný')
+        poradi.append(dict(data['slajd'], nazev=data.get('nazev')))
+    o['poradi'] = poradi
+    slajdy = [x for x in poradi if x.get('typ') != 'predel']
     if not slajdy:
         chyba('Slajdy: prezentace nemá žádný slajd')
     kennedy = [x for x in slajdy if x['typ'] == 'kennedy']

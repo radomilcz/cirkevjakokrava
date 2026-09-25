@@ -9,7 +9,8 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 ## Struktura
 
 ```
-src/obsah/slajdy.yml         celá prezentace – seznam slajdů s typy, co se píše v Pages CMS
+src/obsah/slajdy/            slajdy – soubor na slajd (název, skupina, typ a jeho pole), z Pages CMS
+src/obsah/poradi.yml         pořadí slajdů – seznam odkazů na soubory v slajdy/
 src/obsah/spolecne.yml       podpis, nápověda, sdílení odkazu (v CMS „Nastavení“)
 .pages.yml                   formulář pro Pages CMS: sekce, názvy polí, nápovědy, povinná pole
 .github/workflows/web.yml    po každém pushi do main přesází web a commitne docs/
@@ -48,8 +49,15 @@ Texty se píšou na [app.pagescms.org](https://app.pagescms.org): přihlásit se
 `cirkevjakokrava`. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
 je změna venku.
 
-**Slajdy** jsou jeden seznam v pořadí jako na webu – slajd se přidá tlačítkem (s volbou typu), přetáhne
-za úchyt, smaže křížkem. Typy:
+Menu CMS: **Pořadí slajdů** · **Slajdy** · **Nastavení**.
+
+- **Slajdy** je tabulka (Název, Skupina) – každý slajd má vlastní stránku. „Nový“ se zeptá na typ.
+- **Pořadí slajdů** je seznam odkazů na slajdy; přetažením se mění pořadí na webu. Nový slajd se na web
+  dostane, až ho sem přidáš. Slajd, který tu chybí, je jako koncept – na webu není.
+- **Skupina** (Úvod, Poslání, Kultura, Závěr, Předěly) je jen pro přehled v tabulce.
+- Přejmenovat soubor slajdu v CMS nejde (odkaz v Pořadí by se rozbil); název slajdu se mění v poli Název.
+
+Typy slajdů:
 
 | typ | co to je |
 | --- | --- |
@@ -78,7 +86,7 @@ Zkratky v textových polích:
 - výroky se píšou po řádcích – co řádek v poli, to řádek na slajdu (zalomení drží sazbu z Figmy)
 
 Když je povinné pole prázdné nebo Kennedy nesedí, build skončí českou hláškou
-(např. `Slajdy → Slajdy 24 (Zrcadlo) → Velké slovo: je povinné`), Action zčervená a na webu
+(např. `Slajdy → Zrcadlo → Slajd (Zrcadlo) → Velké slovo: je povinné`), Action zčervená a na webu
 zůstane poslední dobrá verze.
 
 ## Úprava a build
