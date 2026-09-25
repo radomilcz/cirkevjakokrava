@@ -47,7 +47,7 @@ content:
             summary: '{nadpis}'
         fields:
           - name: maly_titulek
-            label: Malý titulek nad nadpisem
+            label: Tagline
             type: string
           - name: nadpis
             label: Nadpis
