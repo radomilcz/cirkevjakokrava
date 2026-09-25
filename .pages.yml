@@ -38,33 +38,45 @@ content:
         label: Nadtitulek
         type: string
         required: true
-      - name: kapitoly
-        label: Kapitoly
-        type: object
+      - name: text
+        label: Text předmluvy
+        type: block
+        blockKey: druh
         list:
-          collapsible:
-            collapsed: true
-            summary: '{nadpis}'
-        fields:
-          - name: maly_titulek
+          collapsible: false
+        blocks:
+          - name: tagline
             label: Tagline
-            type: string
+            type: object
+            fields:
+              - name: text
+                label: false
+                type: string
+                required: true
           - name: nadpis
             label: Nadpis
-            type: string
-            required: true
-          - name: odstavce
-            label: Odstavce
-            type: text
-            list: true
-            required: true
+            type: object
+            fields:
+              - name: text
+                label: false
+                type: string
+                required: true
+          - name: odstavec
+            label: Odstavec
+            type: object
+            fields:
+              - name: text
+                label: false
+                type: text
+                required: true
           - name: otazka
             label: Zvýrazněná otázka
-            type: string
-          - name: odstavce_po_otazce
-            label: Odstavce za otázkou
-            type: text
-            list: true
+            type: object
+            fields:
+              - name: text
+                label: false
+                type: string
+                required: true
       - name: otazka
         label: Otázka dole
         type: string

@@ -6,7 +6,7 @@ Výstup: docs/ (GitHub Pages / manifest.cirkevjakokrava.cz)
   soubory – prohlížeč je cachuje a stahuje paralelně.
 
 Texty jsou v src/obsah/*.yml – upravují se v Pages CMS (nastavení v .pages.yml) nebo ručně.
-Šablona je Jinja2: {{ o.predmluva.nadtitulek }} apod. bere z obsahu, filtry txt / vyrok
+Šablona je Jinja2: {{ o.predmluva.nadtitulek }} apod. bere z obsahu, filtry txt / vyrok / blok
 převádějí zkratky z CMS (-> na šipku, *slovo* na kurzívu). Chybějící nebo špatně vyplněné
 pole build zastaví s českou hláškou – na web se tak rozbitý obsah nedostane.
 
@@ -76,6 +76,8 @@ HEAD_END = '<!--/head-->'
 
 OBSAH = ('spolecne', 'uvod', 'predmluva', 'poslani', 'kultura', 'zrcadlo')   # src/obsah/<jméno>.yml
 PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS', *(k.strip('{}') for k in IMAGES)]  # nahradí se až po Jinja
+BLOKY = {'tagline': '<p class="lead">{}</p>', 'nadpis': '<h3>{}</h3>',   # bloky předmluvy (druh → sazba)
+         'odstavec': '<p>{}</p>', 'otazka': '<p class="ask">{}</p>'}
 POCET_HODNOT = 10          # otisky h02–h11 a oddělovač v liště počítají s deseti slajdy hodnot
 
 
@@ -99,10 +101,14 @@ def vyrok(radek):
     return Markup(upravy(radek).replace('→', '<span class="arrow">→</span>'))
 
 
+def blok(b):
+    return Markup(BLOKY[b['druh']].format(txt(b['text'])))
+
+
 def zkontroluj(pole, data, cesta):
     """Povinná pole a délky seznamů podle .pages.yml – hláška mluví stejnými názvy jako CMS."""
     for f in pole:
-        kde = f'{cesta} → {f["label"]}'
+        kde = f'{cesta} → {f["label"]}' if f.get('label') else cesta
         hodnota = (data or {}).get(f['name'])
         seznam = f.get('list')
         if seznam:
@@ -116,6 +122,13 @@ def zkontroluj(pole, data, cesta):
             if f['type'] == 'object':
                 for i, polozka in enumerate(polozky, 1):
                     zkontroluj(f['fields'], polozka, f'{kde} {i}')
+            elif f['type'] == 'block':
+                klic, bloky = f.get('blockKey', '_block'), {b['name']: b for b in f['blocks']}
+                for i, polozka in enumerate(polozky, 1):
+                    b = bloky.get((polozka or {}).get(klic))
+                    if not b:
+                        chyba(f'{kde} {i}: neznámý blok „{(polozka or {}).get(klic)}“ (může být {", ".join(bloky)})')
+                    zkontroluj(b['fields'], polozka, f'{kde} {i} ({b["label"]})')
             elif f.get('required') and any(not str(x or '').strip() for x in polozky):
                 chyba(f'{kde}: prázdný řádek')
         elif f['type'] == 'object':
@@ -145,7 +158,7 @@ def nacti_obsah():
 
 def render(tpl):
     env = Environment(undefined=StrictUndefined, autoescape=True, keep_trailing_newline=True)
-    env.filters.update(txt=txt, vyrok=vyrok)
+    env.filters.update(txt=txt, vyrok=vyrok, blok=blok)
     o = nacti_obsah()
     ctx = {k: '{{%s}}' % k for k in PASSTHROUGH}
     try:
