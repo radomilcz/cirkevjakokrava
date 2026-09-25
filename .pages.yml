@@ -16,21 +16,17 @@ content:
         label: Nadtitulek
         type: string
         required: true
-        description: Malý text vlevo nahoře – „manifest“.
       - name: napis
         label: Velký nápis
         type: string
         required: true
-        description: Každé písmeno vyjede zvlášť. Krátké slovo, verzálkami – „BŮŮŮH“.
       - name: podnadpis
         label: Podnadpis
         type: string
         required: true
-        description: Věta pod velkým nápisem.
       - name: popis_fotky
         label: Popis fotky
         type: string
-        description: Pro nevidomé a vyhledávače. Co je na fotce, jednou větou.
 
   - name: predmluva
     label: 01 · Předmluva
@@ -42,16 +38,13 @@ content:
         label: Nadtitulek
         type: string
         required: true
-        description: Malý text vlevo nahoře – „Kdo jsme?“.
       - name: bloky
         label: Text předmluvy
         type: object
-        list: true
-        description: Bloky jdou shora dolů přesně tak, jak jsou tady. Přetažením je přeskládáš, tlačítkem
-          přidáš nový odstavec, nadpis nebo otázku.
-        collapsible:
-          collapsed: true
-          summary: '{druh}: {text}'
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{druh}: {text}'
         fields:
           - name: druh
             label: Druh
@@ -63,17 +56,13 @@ content:
                 - Nadpis
                 - Odstavec
                 - Otázka
-            description: Malý titulek = drobný řádek nad nadpisem („Dobrá zpráva“). Nadpis = tučný mezititulek.
-              Odstavec = běžný text. Otázka = zvýrazněná otázka mezi odstavci („Proč jako kráva?“).
           - name: text
             label: Text
             type: text
             required: true
-            description: Šipku napiš jako ->, kurzívu jako *slovo*.
       - name: otazka
         label: Otázka dole
         type: string
-        description: Drobná otázka vlevo dole na konci předmluvy – „Co to znamená?“.
 
   - name: poslani
     label: 02–08 · Poslání
@@ -89,22 +78,18 @@ content:
             label: Nadtitulek
             type: string
             required: true
-            description: Malý text vlevo nahoře.
           - name: vyrok
             label: Výrok po řádcích
             type: string
             list: true
             required: true
-            description: Každá položka je jeden řádek na slajdu – zalomení drží sazbu z Figmy, tak ať
-              jsou řádky zhruba stejně dlouhé. Šipku napiš jako ->.
           - name: otazka
             label: Otázka k zamyšlení
             type: string
-            description: Drobná otázka vlevo dole. Když zůstane prázdná, na slajdu nebude.
           - name: podpis
             label: Podpis vpravo dole
             type: string
-            description: Nech prázdné a bude tam společný podpis (Společné → Podpis).
+            description: Prázdné = společný podpis.
       - name: lasko
         label: 03 · Lásko, to je Kravařsko!
         type: object
@@ -118,11 +103,10 @@ content:
             type: string
             list: true
             required: true
-            description: Každá položka je jeden řádek na slajdu.
           - name: podpis
             label: Podpis vpravo dole
             type: string
-            description: Nech prázdné a bude tam společný podpis.
+            description: Prázdné = společný podpis.
       - name: jak_to_delame
         label: 04 · Jak to děláme?
         type: object
@@ -131,22 +115,18 @@ content:
             label: Nadtitulek
             type: string
             required: true
-            description: Malý text vlevo nahoře.
           - name: vyrok
             label: Výrok po řádcích
             type: string
             list: true
             required: true
-            description: Každá položka je jeden řádek na slajdu – zalomení drží sazbu z Figmy, tak ať
-              jsou řádky zhruba stejně dlouhé. Šipku napiš jako ->.
           - name: otazka
             label: Otázka k zamyšlení
             type: string
-            description: Drobná otázka vlevo dole. Když zůstane prázdná, na slajdu nebude.
           - name: podpis
             label: Podpis vpravo dole
             type: string
-            description: Nech prázdné a bude tam společný podpis (Společné → Podpis).
+            description: Prázdné = společný podpis.
       - name: kennedy
         label: 05 · Ich bin ein Kuhländler
         type: object
@@ -162,18 +142,16 @@ content:
               min: 2
               max: 2
             required: true
-            description: První řádek je menší, druhý velký přes portrét. Víc řádků se do kompozice nevejde.
           - name: otazka
             label: Otázka k zamyšlení
             type: string
           - name: podpis
             label: Podpis vpravo dole
             type: string
-            description: Nech prázdné a bude tam společný podpis.
+            description: Prázdné = společný podpis.
           - name: popis_fotky
             label: Popis portrétu
             type: string
-            description: Pro nevidomé a vyhledávače.
       - name: pro_koho
         label: 06 · Pro koho?
         type: object
@@ -182,22 +160,18 @@ content:
             label: Nadtitulek
             type: string
             required: true
-            description: Malý text vlevo nahoře.
           - name: vyrok
             label: Výrok po řádcích
             type: string
             list: true
             required: true
-            description: Každá položka je jeden řádek na slajdu – zalomení drží sazbu z Figmy, tak ať
-              jsou řádky zhruba stejně dlouhé. Šipku napiš jako ->.
           - name: otazka
             label: Otázka k zamyšlení
             type: string
-            description: Drobná otázka vlevo dole. Když zůstane prázdná, na slajdu nebude.
           - name: podpis
             label: Podpis vpravo dole
             type: string
-            description: Nech prázdné a bude tam společný podpis (Společné → Podpis).
+            description: Prázdné = společný podpis.
       - name: krava
         label: 07 · Kráva má Boží design
         type: object
@@ -206,20 +180,16 @@ content:
             label: Nadtitulek
             type: string
             required: true
-            description: Malý text vlevo nahoře.
           - name: slovo
             label: Velké slovo
             type: string
             required: true
-            description: Jedno slovo přes celou fotku, malými písmeny.
           - name: dovetek
             label: Dovětek
             type: string
-            description: Drobný text vedle velkého slova.
           - name: popis_fotky
             label: Popis fotky
             type: string
-            description: Pro nevidomé a vyhledávače.
       - name: proc
         label: 08 · Proč vlastně?
         type: object
@@ -228,22 +198,18 @@ content:
             label: Nadtitulek
             type: string
             required: true
-            description: Malý text vlevo nahoře.
           - name: vyrok
             label: Výrok po řádcích
             type: string
             list: true
             required: true
-            description: Každá položka je jeden řádek na slajdu – zalomení drží sazbu z Figmy, tak ať
-              jsou řádky zhruba stejně dlouhé. Šipku napiš jako ->.
           - name: otazka
             label: Otázka k zamyšlení
             type: string
-            description: Drobná otázka vlevo dole. Když zůstane prázdná, na slajdu nebude.
           - name: podpis
             label: Podpis vpravo dole
             type: string
-            description: Nech prázdné a bude tam společný podpis (Společné → Podpis).
+            description: Prázdné = společný podpis.
 
   - name: kultura
     label: 09–20 · Kultura a hodnoty
@@ -259,20 +225,16 @@ content:
             label: Nadtitulek
             type: string
             required: true
-            description: Malý text vlevo nahoře.
           - name: slovo
             label: Velké slovo
             type: string
             required: true
-            description: Jedno slovo přes celou fotku, malými písmeny.
           - name: dovetek
             label: Dovětek
             type: string
-            description: Drobný text vedle velkého slova.
           - name: popis_fotky
             label: Popis fotky
             type: string
-            description: Pro nevidomé a vyhledávače.
       - name: odstavec
         label: 10 · Odstavec o hodnotách
         type: object
@@ -285,33 +247,28 @@ content:
             label: Text
             type: text
             required: true
-            description: Slova se při čtení rozsvěcují jedno po druhém, proto tu nejde kurzíva.
       - name: nadtitulek_hodnot
         label: Nadtitulek slajdů s hodnotami
         type: string
         required: true
-        description: Stejný na všech deseti, pořadí „1/10“ se k němu doplní samo.
       - name: hodnoty
         label: 11–20 · Hodnoty
         type: object
         list:
           min: 10
           max: 10
-        description: Přesně deset hodnot, v pořadí, v jakém jdou na webu. Každá má svůj otisk.
-        collapsible:
-          collapsed: true
-          summary: '{slovo} – {jak}'
+          collapsible:
+            collapsed: true
+            summary: '{slovo} – {jak}'
         fields:
           - name: slovo
             label: Hodnota
             type: string
             required: true
-            description: Velké slovo, malými písmeny – „otevřená“.
           - name: jak
             label: Jak
             type: string
             required: true
-            description: Příslovce vedle – „přitažlivě“.
 
   - name: zrcadlo
     label: 21 · Zrcadlo
@@ -333,7 +290,6 @@ content:
       - name: popis_fotky
         label: Popis fotky
         type: string
-        description: Pro nevidomé a vyhledávače.
 
   - name: spolecne
     label: Společné a sdílení
@@ -345,15 +301,12 @@ content:
         label: Podpis
         type: string
         required: true
-        description: Vpravo dole na každém slajdu, pokud slajd nemá vlastní – „církev jako kráva“.
       - name: napoveda
         label: Nápověda k ovládání
         type: string
-        description: Drobný text dole na úvodním slajdu, zmizí po prvním posunu.
       - name: sdileni
         label: Sdílení odkazu
         type: object
-        description: Co se ukáže, když někdo pošle odkaz na WhatsApp, Messenger nebo Facebook.
         fields:
           - name: titulek_stranky
             label: Název v panelu prohlížeče
@@ -367,11 +320,9 @@ content:
             label: Popis
             type: text
             required: true
-            description: Jedna až dvě věty pod titulkem náhledu. Vidí je i vyhledávače.
           - name: popis_obrazku
             label: Popis obrázku náhledu
             type: string
-            description: Pro nevidomé. Samotný obrázek se fotí z úvodního slajdu (build.py --og).
 settings:
   content:
     merge: true
