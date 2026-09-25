@@ -6,7 +6,7 @@ Výstup: docs/ (GitHub Pages / manifest.cirkevjakokrava.cz)
   soubory – prohlížeč je cachuje a stahuje paralelně.
 
 Texty jsou v src/obsah/*.yml – upravují se v Pages CMS (nastavení v .pages.yml) nebo ručně.
-Šablona je Jinja2: {{ o.predmluva.nadtitulek }} apod. bere z obsahu, filtry txt / vyrok / blok
+Šablona je Jinja2: {{ o.predmluva.nadtitulek }} apod. bere z obsahu, filtry txt / vyrok
 převádějí zkratky z CMS (-> na šipku, *slovo* na kurzívu). Chybějící nebo špatně vyplněné
 pole build zastaví s českou hláškou – na web se tak rozbitý obsah nedostane.
 
@@ -76,8 +76,6 @@ HEAD_END = '<!--/head-->'
 
 OBSAH = ('spolecne', 'uvod', 'predmluva', 'poslani', 'kultura', 'zrcadlo')   # src/obsah/<jméno>.yml
 PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS', *(k.strip('{}') for k in IMAGES)]  # nahradí se až po Jinja
-BLOKY = {'Malý titulek': '<p class="lead">{}</p>', 'Nadpis': '<h3>{}</h3>',
-         'Odstavec': '<p>{}</p>', 'Otázka': '<p class="ask">{}</p>'}
 POCET_HODNOT = 10          # otisky h02–h11 a oddělovač v liště počítají s deseti slajdy hodnot
 
 
@@ -99,13 +97,6 @@ def txt(text):
 def vyrok(radek):
     """Řádek výroku – šipka je v jiném písmu než výrok, proto vlastní span."""
     return Markup(upravy(radek).replace('→', '<span class="arrow">→</span>'))
-
-
-def blok(b):
-    druh = b.get('druh')
-    if druh not in BLOKY:
-        chyba(f'předmluva – neznámý druh bloku „{druh}“ (může být {", ".join(BLOKY)})')
-    return Markup(BLOKY[druh].format(txt(b.get('text') or chyba(f'předmluva – prázdný blok „{druh}“'))))
 
 
 def zkontroluj(pole, data, cesta):
@@ -154,7 +145,7 @@ def nacti_obsah():
 
 def render(tpl):
     env = Environment(undefined=StrictUndefined, autoescape=True, keep_trailing_newline=True)
-    env.filters.update(txt=txt, vyrok=vyrok, blok=blok)
+    env.filters.update(txt=txt, vyrok=vyrok)
     o = nacti_obsah()
     ctx = {k: '{{%s}}' % k for k in PASSTHROUGH}
     try:

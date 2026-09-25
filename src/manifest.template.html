@@ -62,8 +62,20 @@
   <section class="slide read" id="s1">
     <h2 class="eyebrow rise">{{ o.predmluva.nadtitulek }}</h2>
     <div class="essay">
-{%- for b in o.predmluva.bloky %}
-      {{ b|blok }}
+{%- for k in o.predmluva.kapitoly %}
+{%- if k.get('maly_titulek') %}
+      <p class="lead">{{ k.maly_titulek|txt }}</p>
+{%- endif %}
+      <h3>{{ k.nadpis|txt }}</h3>
+{%- for t in k.odstavce if t and t.strip() %}
+      <p>{{ t|txt }}</p>
+{%- endfor %}
+{%- if k.get('otazka') %}
+      <p class="ask">{{ k.otazka|txt }}</p>
+{%- endif %}
+{%- for t in k.get('odstavce_po_otazce') or [] if t and t.strip() %}
+      <p>{{ t|txt }}</p>
+{%- endfor %}
 {%- endfor %}
     </div>
     {{ pata(o.predmluva.get('otazka')) }}
