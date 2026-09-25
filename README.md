@@ -9,7 +9,7 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 ## Struktura
 
 ```
-src/obsah/*.yml              texty – co se píše v Pages CMS (úvod, předmluva, poslání, kultura, zrcadlo, společné)
+src/obsah/                   texty – co se píše v Pages CMS; soubor na slajd, poslani/ a kultura/ jsou složky v menu
 .pages.yml                   formulář pro Pages CMS: sekce, názvy polí, nápovědy, povinná pole
 .github/workflows/web.yml    po každém pushi do main přesází web a commitne docs/
 src/manifest.template.html   šablona – sazba slajdů (Jinja2), texty bere z src/obsah/
@@ -55,7 +55,7 @@ Zkratky v textových polích:
 
 - `->` je šipka →; v běžném textu se sama přilepí k předchozímu slovu, aby nezačínala řádek
 - `*slovo*` je kurzíva (ne v odstavci o hodnotách – ten se při čtení rozsvěcuje po slovech)
-- výroky na slajdech se píšou po řádcích – co je jedna položka, je jeden řádek na slajdu
+- výroky na slajdech se píšou po řádcích – co řádek v poli, to řádek na slajdu (zalomení drží sazbu z Figmy)
 
 Slajdy se v CMS nepřidávají ani nepřehazují: otisky, fotky i oddělovače na liště jsou navázané na pořadí.
 Hodnot je přesně deset a slajd s Kennedym má přesně dva řádky. Když je povinné pole prázdné nebo
@@ -64,7 +64,7 @@ Action zčervená a na webu zůstane poslední dobrá verze.
 
 ## Úprava a build
 
-1. Texty v `src/obsah/*.yml` (nebo v CMS), sazbu v `src/manifest.template.html`, případně `manifest.css` / `manifest.js`.
+1. Texty v `src/obsah/` (nebo v CMS), sazbu v `src/manifest.template.html`, případně `manifest.css` / `manifest.js`.
 2. Spusť `python3 build.py` – přegeneruje `docs/` (potřebuje `pip install pyyaml jinja2`).
 3. Otevři `docs/index.html` v prohlížeči (fonty přes `file://` v Chromu nepřednačte, přes lokální server nebo po nasazení ano).
 

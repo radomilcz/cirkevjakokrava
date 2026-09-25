@@ -1,9 +1,6 @@
-# Nastavení pro Pages CMS (pagescms.org) – webová administrace textů manifestu.
-# Přihlásíš se GitHubem na app.pagescms.org, vybereš repozitář a píšeš do formulářů.
-# CMS uloží soubor do src/obsah/, GitHub Actions z něj přesází web (.github/workflows/web.yml).
-#
-# Sekce jdou ve stejném pořadí jako slajdy.
-# Slajdy se tu nepřidávají ani nepřehazují – pořadí drží design (otisky, fotky, animace).
+# Pages CMS (pagescms.org) – texty manifestu. Přihlášení GitHubem na app.pagescms.org.
+# Co se tu uloží, to GitHub Action přesází na web (.github/workflows/web.yml).
+# Každý slajd má svou položku v menu; pořadí slajdů drží design, proto se tu nepřidávají.
 
 content:
   - name: uvod
@@ -39,101 +36,108 @@ content:
         type: string
         required: true
       - name: text
-        label: Text předmluvy
+        label: Text
         type: rich-text
         required: true
         options:
           format: markdown
           switcher: false
           media: false
-        description: Nadpis 2 = nadpis · Nadpis 3 = tagline · Citace = zvýrazněná otázka · Kurzíva = kurzíva
+        description: Nadpis 2 = nadpis · Nadpis 3 = tagline · Citace = zvýrazněná otázka
       - name: otazka
         label: Otázka dole
         type: string
 
   - name: poslani
     label: Poslání
-    type: file
-    path: src/obsah/poslani.yml
-    format: yaml
-    fields:
+    type: group
+    items:
       - name: co_delame
         label: Co děláme?
-        type: object
+        type: file
+        path: src/obsah/poslani/co-delame.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
             type: string
             required: true
           - name: vyrok
-            label: Výrok po řádcích
-            type: string
-            list: true
+            label: Výrok
+            type: text
             required: true
+            description: Co řádek, to řádek na slajdu.
           - name: otazka
-            label: Otázka k zamyšlení
+            label: Otázka
             type: string
           - name: podpis
-            label: Podpis vpravo dole
+            label: Podpis
             type: string
             description: Prázdné = společný podpis.
       - name: lasko
         label: Lásko, to je Kravařsko!
-        type: object
+        type: file
+        path: src/obsah/poslani/lasko-to-je-kravarsko.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
             type: string
             required: true
           - name: vyrok
-            label: Výrok po řádcích
-            type: string
-            list: true
+            label: Výrok
+            type: text
             required: true
+            description: Co řádek, to řádek na slajdu.
+          - name: otazka
+            label: Otázka
+            type: string
           - name: podpis
-            label: Podpis vpravo dole
+            label: Podpis
             type: string
             description: Prázdné = společný podpis.
       - name: jak_to_delame
         label: Jak to děláme?
-        type: object
+        type: file
+        path: src/obsah/poslani/jak-to-delame.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
             type: string
             required: true
           - name: vyrok
-            label: Výrok po řádcích
-            type: string
-            list: true
+            label: Výrok
+            type: text
             required: true
+            description: Co řádek, to řádek na slajdu.
           - name: otazka
-            label: Otázka k zamyšlení
+            label: Otázka
             type: string
           - name: podpis
-            label: Podpis vpravo dole
+            label: Podpis
             type: string
             description: Prázdné = společný podpis.
       - name: kennedy
         label: Ich bin ein Kuhländler
-        type: object
+        type: file
+        path: src/obsah/poslani/ich-bin-ein-kuhlander.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
             type: string
             required: true
           - name: vyrok
-            label: Výrok – přesně dva řádky
-            type: string
-            list:
-              min: 2
-              max: 2
+            label: Výrok
+            type: text
             required: true
+            description: Přesně dva řádky – malý a velký.
           - name: otazka
-            label: Otázka k zamyšlení
+            label: Otázka
             type: string
           - name: podpis
-            label: Podpis vpravo dole
+            label: Podpis
             type: string
             description: Prázdné = společný podpis.
           - name: popis_fotky
@@ -141,27 +145,31 @@ content:
             type: string
       - name: pro_koho
         label: Pro koho?
-        type: object
+        type: file
+        path: src/obsah/poslani/pro-koho.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
             type: string
             required: true
           - name: vyrok
-            label: Výrok po řádcích
-            type: string
-            list: true
+            label: Výrok
+            type: text
             required: true
+            description: Co řádek, to řádek na slajdu.
           - name: otazka
-            label: Otázka k zamyšlení
+            label: Otázka
             type: string
           - name: podpis
-            label: Podpis vpravo dole
+            label: Podpis
             type: string
             description: Prázdné = společný podpis.
       - name: krava
         label: Kráva má Boží design
-        type: object
+        type: file
+        path: src/obsah/poslani/krava.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
@@ -179,34 +187,36 @@ content:
             type: string
       - name: proc
         label: Proč vlastně?
-        type: object
+        type: file
+        path: src/obsah/poslani/proc-vlastne.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
             type: string
             required: true
           - name: vyrok
-            label: Výrok po řádcích
-            type: string
-            list: true
+            label: Výrok
+            type: text
             required: true
+            description: Co řádek, to řádek na slajdu.
           - name: otazka
-            label: Otázka k zamyšlení
+            label: Otázka
             type: string
           - name: podpis
-            label: Podpis vpravo dole
+            label: Podpis
             type: string
             description: Prázdné = společný podpis.
 
   - name: kultura
-    label: Kultura a hodnoty
-    type: file
-    path: src/obsah/kultura.yml
-    format: yaml
-    fields:
+    label: Kultura
+    type: group
+    items:
       - name: uvod
-        label: Kultura – slajd s fotkou
-        type: object
+        label: Úvod kultury
+        type: file
+        path: src/obsah/kultura/uvod.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
@@ -223,8 +233,10 @@ content:
             label: Popis fotky
             type: string
       - name: odstavec
-        label: Odstavec o hodnotách
-        type: object
+        label: Odstavec
+        type: file
+        path: src/obsah/kultura/odstavec.yml
+        format: yaml
         fields:
           - name: nadtitulek
             label: Nadtitulek
@@ -234,28 +246,34 @@ content:
             label: Text
             type: text
             required: true
-      - name: nadtitulek_hodnot
-        label: Nadtitulek slajdů s hodnotami
-        type: string
-        required: true
       - name: hodnoty
         label: Hodnoty
-        type: object
-        list:
-          min: 10
-          max: 10
-          collapsible:
-            collapsed: true
-            summary: '{slovo} – {jak}'
+        type: file
+        path: src/obsah/kultura/hodnoty.yml
+        format: yaml
         fields:
-          - name: slovo
-            label: Hodnota
+          - name: nadtitulek
+            label: Nadtitulek
             type: string
             required: true
-          - name: jak
-            label: Jak
-            type: string
-            required: true
+          - name: hodnoty
+            label: Hodnoty
+            type: object
+            list:
+              min: 10
+              max: 10
+              collapsible:
+                collapsed: true
+                summary: '{slovo} – {jak}'
+            fields:
+              - name: slovo
+                label: Hodnota
+                type: string
+                required: true
+              - name: jak
+                label: Jak
+                type: string
+                required: true
 
   - name: zrcadlo
     label: Zrcadlo
@@ -272,20 +290,20 @@ content:
         type: string
         required: true
       - name: otazka
-        label: Otázka k zamyšlení
+        label: Otázka
         type: string
       - name: popis_fotky
         label: Popis fotky
         type: string
 
   - name: spolecne
-    label: Společné a sdílení
+    label: Nastavení
     type: file
     path: src/obsah/spolecne.yml
     format: yaml
     fields:
       - name: podpis
-        label: Podpis
+        label: Společný podpis
         type: string
         required: true
       - name: napoveda
@@ -296,7 +314,7 @@ content:
         type: object
         fields:
           - name: titulek_stranky
-            label: Název v panelu prohlížeče
+            label: Název v prohlížeči
             type: string
             required: true
           - name: titulek_nahledu
@@ -308,7 +326,7 @@ content:
             type: text
             required: true
           - name: popis_obrazku
-            label: Popis obrázku náhledu
+            label: Popis obrázku
             type: string
 settings:
   content:

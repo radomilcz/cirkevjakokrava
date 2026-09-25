@@ -24,9 +24,9 @@
 {#- Texty jsou v src/obsah/*.yml (upravují se v Pages CMS), tady je jen jejich sazba.
     Pořadí a počet slajdů drží design: otisky (tabulka PRINT v JS), oddělovače v liště
     a čísla slajdů v odkazech (#s0 … #s21) – proto se slajdy v CMS nepřidávají ani nepřehazují. -#}
-{%- macro vyrok(radky) -%}
+{%- macro vyrok(text) -%}
     <p class="statement">
-{%- for r in radky %}
+{%- for r in text|radky %}
       <span class="ln"><span>{{ r|vyrok }}</span></span>
 {%- endfor %}
     </p>
@@ -97,8 +97,8 @@
     <img class="portret" src="{{KENNEDY}}" alt="{{ p.kennedy.get('popis_fotky') or '' }}">
     <h2 class="eyebrow rise">{{ p.kennedy.nadtitulek }}</h2>
     <p class="statement claim">
-      <span class="ln l1"><span>{{ p.kennedy.vyrok[0]|vyrok }}</span></span>
-      <span class="ln l2"><span>{{ p.kennedy.vyrok[1]|vyrok }}</span></span>
+      <span class="ln l1"><span>{{ (p.kennedy.vyrok|radky)[0]|vyrok }}</span></span>
+      <span class="ln l2"><span>{{ (p.kennedy.vyrok|radky)[1]|vyrok }}</span></span>
     </p>
     {{ pata(p.kennedy.get('otazka'), p.kennedy.get('podpis')) }}
   </section>
@@ -145,9 +145,9 @@
   </section>
 
   <!-- 11–20 · hodnoty -->
-{%- for h in k.hodnoty %}
+{%- for h in k.hodnoty.hodnoty %}
   <section class="slide value" id="s{{ 11 + loop.index0 }}" data-print="h{{ '%02d' % (loop.index + 1) }}">
-    <h2 class="eyebrow rise">{{ k.nadtitulek_hodnot }} <span class="n">{{ loop.index }}/{{ loop.length }}</span></h2>
+    <h2 class="eyebrow rise">{{ k.hodnoty.nadtitulek }} <span class="n">{{ loop.index }}/{{ loop.length }}</span></h2>
     <p class="word"><span class="ln"><span>{{ h.slovo }}</span></span><span class="how rise">{{ h.jak|txt }}</span></p>
     {{ pata(None, None) }}
   </section>
