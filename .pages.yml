@@ -2,12 +2,12 @@
 # Přihlásíš se GitHubem na app.pagescms.org, vybereš repozitář a píšeš do formulářů.
 # CMS uloží soubor do src/obsah/, GitHub Actions z něj přesází web (.github/workflows/web.yml).
 #
-# Sekce jdou ve stejném pořadí jako slajdy, čísla v názvech sedí s tečkami na liště webu.
+# Sekce jdou ve stejném pořadí jako slajdy.
 # Slajdy se tu nepřidávají ani nepřehazují – pořadí drží design (otisky, fotky, animace).
 
 content:
   - name: uvod
-    label: 00 · Úvod
+    label: Úvod
     type: file
     path: src/obsah/uvod.yml
     format: yaml
@@ -29,7 +29,7 @@ content:
         type: string
 
   - name: predmluva
-    label: 01 · Předmluva
+    label: Předmluva
     type: file
     path: src/obsah/predmluva.yml
     format: yaml
@@ -40,55 +40,25 @@ content:
         required: true
       - name: text
         label: Text předmluvy
-        type: block
-        blockKey: druh
-        list:
-          collapsible: false
-        blocks:
-          - name: tagline
-            label: Tagline
-            type: object
-            fields:
-              - name: text
-                label: false
-                type: string
-                required: true
-          - name: nadpis
-            label: Nadpis
-            type: object
-            fields:
-              - name: text
-                label: false
-                type: string
-                required: true
-          - name: odstavec
-            label: Odstavec
-            type: object
-            fields:
-              - name: text
-                label: false
-                type: text
-                required: true
-          - name: otazka
-            label: Zvýrazněná otázka
-            type: object
-            fields:
-              - name: text
-                label: false
-                type: string
-                required: true
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          switcher: false
+          media: false
+        description: Nadpis 2 = nadpis · Nadpis 3 = tagline · Citace = zvýrazněná otázka · Kurzíva = kurzíva
       - name: otazka
         label: Otázka dole
         type: string
 
   - name: poslani
-    label: 02–08 · Poslání
+    label: Poslání
     type: file
     path: src/obsah/poslani.yml
     format: yaml
     fields:
       - name: co_delame
-        label: 02 · Co děláme?
+        label: Co děláme?
         type: object
         fields:
           - name: nadtitulek
@@ -108,7 +78,7 @@ content:
             type: string
             description: Prázdné = společný podpis.
       - name: lasko
-        label: 03 · Lásko, to je Kravařsko!
+        label: Lásko, to je Kravařsko!
         type: object
         fields:
           - name: nadtitulek
@@ -125,7 +95,7 @@ content:
             type: string
             description: Prázdné = společný podpis.
       - name: jak_to_delame
-        label: 04 · Jak to děláme?
+        label: Jak to děláme?
         type: object
         fields:
           - name: nadtitulek
@@ -145,7 +115,7 @@ content:
             type: string
             description: Prázdné = společný podpis.
       - name: kennedy
-        label: 05 · Ich bin ein Kuhländler
+        label: Ich bin ein Kuhländler
         type: object
         fields:
           - name: nadtitulek
@@ -170,7 +140,7 @@ content:
             label: Popis portrétu
             type: string
       - name: pro_koho
-        label: 06 · Pro koho?
+        label: Pro koho?
         type: object
         fields:
           - name: nadtitulek
@@ -190,7 +160,7 @@ content:
             type: string
             description: Prázdné = společný podpis.
       - name: krava
-        label: 07 · Kráva má Boží design
+        label: Kráva má Boží design
         type: object
         fields:
           - name: nadtitulek
@@ -208,7 +178,7 @@ content:
             label: Popis fotky
             type: string
       - name: proc
-        label: 08 · Proč vlastně?
+        label: Proč vlastně?
         type: object
         fields:
           - name: nadtitulek
@@ -229,13 +199,13 @@ content:
             description: Prázdné = společný podpis.
 
   - name: kultura
-    label: 09–20 · Kultura a hodnoty
+    label: Kultura a hodnoty
     type: file
     path: src/obsah/kultura.yml
     format: yaml
     fields:
       - name: uvod
-        label: 09 · Kultura – slajd s fotkou
+        label: Kultura – slajd s fotkou
         type: object
         fields:
           - name: nadtitulek
@@ -253,7 +223,7 @@ content:
             label: Popis fotky
             type: string
       - name: odstavec
-        label: 10 · Odstavec o hodnotách
+        label: Odstavec o hodnotách
         type: object
         fields:
           - name: nadtitulek
@@ -269,7 +239,7 @@ content:
         type: string
         required: true
       - name: hodnoty
-        label: 11–20 · Hodnoty
+        label: Hodnoty
         type: object
         list:
           min: 10
@@ -288,7 +258,7 @@ content:
             required: true
 
   - name: zrcadlo
-    label: 21 · Zrcadlo
+    label: Zrcadlo
     type: file
     path: src/obsah/zrcadlo.yml
     format: yaml

@@ -62,7 +62,7 @@
   <section class="slide read" id="s1">
     <h2 class="eyebrow rise">{{ o.predmluva.nadtitulek }}</h2>
     <div class="essay">
-{%- for b in o.predmluva.text if (b.text or '').strip() %}
+{%- for b in o.predmluva.text|bloky %}
       {{ b|blok }}
 {%- endfor %}
     </div>

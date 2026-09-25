@@ -44,9 +44,12 @@ Přejmenované na krátké názvy podle toho, kam patří – původní jména z
 ## Úprava textů – Pages CMS
 
 Texty se píšou na [app.pagescms.org](https://app.pagescms.org): přihlásit se GitHubem, vybrat repozitář
-`cirkevjakokrava`. Sekce jdou v pořadí slajdů a čísla v názvech (`02 · Co děláme?`) sedí s tečkami
-na liště webu. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
+`cirkevjakokrava`. Sekce jdou v pořadí slajdů. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
 je změna venku.
+
+Předmluva se píše v jednom okně editoru (Markdown): **Nadpis 2** je nadpis, **Nadpis 3** tagline
+(„Dobrá zpráva“), **Citace** zvýrazněná otázka („Proč jako kráva?“), kurzíva je kurzíva, zbytek odstavce.
+Seznamy, tabulky, obrázky, odkazy a tučné písmo manifest nesází – build je odmítne s hláškou.
 
 Zkratky v textových polích:
 

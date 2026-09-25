@@ -6,7 +6,7 @@ Výstup: docs/ (GitHub Pages / manifest.cirkevjakokrava.cz)
   soubory – prohlížeč je cachuje a stahuje paralelně.
 
 Texty jsou v src/obsah/*.yml – upravují se v Pages CMS (nastavení v .pages.yml) nebo ručně.
-Šablona je Jinja2: {{ o.predmluva.nadtitulek }} apod. bere z obsahu, filtry txt / vyrok / blok
+Šablona je Jinja2: {{ o.predmluva.nadtitulek }} apod. bere z obsahu, filtry txt / vyrok / bloky
 převádějí zkratky z CMS (-> na šipku, *slovo* na kurzívu). Chybějící nebo špatně vyplněné
 pole build zastaví s českou hláškou – na web se tak rozbitý obsah nedostane.
 
@@ -101,8 +101,44 @@ def vyrok(radek):
     return Markup(upravy(radek).replace('→', '<span class="arrow">→</span>'))
 
 
+ESC = '\ue000'          # hvězdička, kterou editor escapoval (\*) – nesmí se z ní stát kurzíva
+
+
+def bloky(md):
+    """Předmluva z editoru Pages CMS (Markdown) → bloky na web.
+
+    Nadpis 1–2 je nadpis, nadpis 3 a menší tagline, citace zvýrazněná otázka, zbytek odstavce.
+    Co manifest nesází (seznamy, obrázky, tabulky, odkazy, tučné), build odmítne – ať se na web
+    nedostane nic, co by vypadalo jinak, než autor čekal.
+    """
+    vysledek = []
+    for kus in re.split(r'\n\s*\n', (md or '').replace('\r\n', '\n').strip()):
+        radky = [r.rstrip() for r in kus.splitlines() if r.strip()]
+        if not radky:
+            continue
+        prvni = radky[0].lstrip()
+        if re.match(r'([-*+]|\d+[.)])\s', prvni) or prvni.startswith(('|', '```', '![')) or re.fullmatch(r'[-*_]{3,}', prvni):
+            chyba(f'Předmluva: seznamy, tabulky, obrázky ani čáry manifest nesází – „{prvni[:40]}…“')
+        m = re.match(r'(#{1,6})\s+(.*)', prvni)
+        if m:
+            druh, radky[0] = ('nadpis' if len(m.group(1)) <= 2 else 'tagline'), m.group(2)
+        elif prvni.startswith('>'):
+            druh, radky = 'otazka', [re.sub(r'^\s*>\s?', '', r) for r in radky]
+        else:
+            druh = 'odstavec'
+        text = ' '.join(r.strip().rstrip('\\').strip() for r in radky)
+        text = re.sub(r'\\([\\`*_{}\[\]()#+\-.!>~|])', lambda z: ESC if z.group(1) == '*' else z.group(1), text)
+        if '**' in text or '__' in text:
+            chyba(f'Předmluva: tučné písmo manifest nepoužívá, stačí kurzíva – „{text[:40]}…“')
+        if re.search(r'\[[^\]]*\]\([^)]*\)', text):
+            chyba(f'Předmluva: odkazy manifest nesází – „{text[:40]}…“')
+        text = re.sub(r'(?<![\w])_([^_]+)_(?![\w])', r'*\1*', text)      # _kurzíva_ → *kurzíva*
+        vysledek.append({'druh': druh, 'text': text})
+    return vysledek
+
+
 def blok(b):
-    return Markup(BLOKY[b['druh']].format(txt(b['text'])))
+    return Markup(BLOKY[b['druh']].format(txt(b['text'])).replace(ESC, '*'))
 
 
 def zkontroluj(pole, data, cesta):
@@ -158,7 +194,7 @@ def nacti_obsah():
 
 def render(tpl):
     env = Environment(undefined=StrictUndefined, autoescape=True, keep_trailing_newline=True)
-    env.filters.update(txt=txt, vyrok=vyrok, blok=blok)
+    env.filters.update(txt=txt, vyrok=vyrok, blok=blok, bloky=bloky)
     o = nacti_obsah()
     ctx = {k: '{{%s}}' % k for k in PASSTHROUGH}
     try:
