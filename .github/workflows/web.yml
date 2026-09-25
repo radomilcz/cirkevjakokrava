@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12"
 
       - name: Nástroje
-        run: pip install --quiet pyyaml jinja2
+        run: pip install --quiet pyyaml jinja2 pillow
 
       - name: Sazba webu
         run: python3 build.py

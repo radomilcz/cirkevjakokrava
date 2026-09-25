@@ -9,18 +9,19 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 ## Struktura
 
 ```
-src/obsah/                   texty – co se píše v Pages CMS; soubor na slajd, poslani/ a kultura/ jsou složky v menu
+src/obsah/slajdy.yml         celá prezentace – seznam slajdů s typy, co se píše v Pages CMS
+src/obsah/spolecne.yml       podpis, nápověda, sdílení odkazu (v CMS „Nastavení“)
 .pages.yml                   formulář pro Pages CMS: sekce, názvy polí, nápovědy, povinná pole
 .github/workflows/web.yml    po každém pushi do main přesází web a commitne docs/
-src/manifest.template.html   šablona – sazba slajdů (Jinja2), texty bere z src/obsah/
+src/manifest.template.html   šablona – sazba jednotlivých typů slajdů (Jinja2)
 src/manifest.css             styly
 src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
-src/assets/hero.webp         úvodní fotka, zmenšená pro web (webp q82; zdroj hero.jpg, + hero-original.jpg)
-src/assets/kultura.jpg       fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
-src/assets/kennedy.webp      vystřižený portrét na slajd „Ich bin ein Kuhländler“ (bezztrátový webp; zdroj kennedy.png)
-src/assets/krava-manifest.webp fotka na slajd „KRÁVA má Boží design“ (webp q84; zdroj krava-manifest.jpg, ořez z highland-original.jpg)
-src/assets/zrcadlo.webp      fotka na závěrečný slajd „ZRCADLO“, oříznutá podle Figmy (webp je o třetinu menší než jpg)
+src/assets/fotky/hero.webp       úvodní fotka, zmenšená pro web (webp q82; zdroj hero.jpg, + hero-original.jpg)
+src/assets/fotky/kultura.jpg     fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
+src/assets/fotky/kennedy.webp    vystřižený portrét na slajd „Ich bin ein Kuhländler“ (bezztrátový webp; zdroj kennedy.png)
+src/assets/fotky/krava-manifest.webp fotka na slajd „KRÁVA má Boží design“ (webp q84; zdroj krava-manifest.jpg, ořez z highland-original.jpg)
+src/assets/fotky/zrcadlo.webp    fotka na závěrečný slajd „ZRCADLO“, oříznutá podle Figmy (webp je o třetinu menší než jpg)
 src/assets/krava.png         vystřižená kráva – na slajdu 06 ji nahradil Kennedy (+ krava-original.png)
 src/assets/highland-original.jpg  zatím nepoužitá fotka
 src/assets/og.jpg            náhled při sdílení odkazu (1200×630, vyfocený úvodní slajd)
@@ -44,33 +45,50 @@ Přejmenované na krátké názvy podle toho, kam patří – původní jména z
 ## Úprava textů – Pages CMS
 
 Texty se píšou na [app.pagescms.org](https://app.pagescms.org): přihlásit se GitHubem, vybrat repozitář
-`cirkevjakokrava`. Sekce jdou v pořadí slajdů. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
+`cirkevjakokrava`. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
 je změna venku.
 
-Předmluva je seznam kapitol – přeskládají se přetažením. Každá má Tagline, Nadpis a Text v editoru:
-**Citace** je zvýrazněná otázka („Proč jako kráva?“), kurzíva je kurzíva, zbytek odstavce.
-Seznamy, tabulky, obrázky, odkazy a tučné písmo manifest nesází – build je odmítne s hláškou.
+**Slajdy** jsou jeden seznam v pořadí jako na webu – slajd se přidá tlačítkem (s volbou typu), přetáhne
+za úchyt, smaže křížkem. Typy:
+
+| typ | co to je |
+| --- | --- |
+| Úvod | fotka přes celý slajd, velký nápis po písmenech (BŮŮŮH) |
+| Předmluva | dlouhý text po kapitolách (Tagline, Nadpis, Text v editoru – **Citace** = zvýrazněná otázka) |
+| Výrok | nadtitulek, výrok po řádcích, otázka, podpis, otisk |
+| Výrok na růžovém | totéž na růžovém pozadí (Lásko, to je Kravařsko!) |
+| Fotka se slovem | fotka přes celý slajd, velké slovo, dovětek (v závorce, nebo bez) |
+| Odstavec | text, který se při čtení rozsvěcuje po slovech |
+| Hodnota | velké slovo + příslovce; počítadlo „3/10“ se spočítá ze všech hodnot |
+| Zrcadlo | fotka, velké slovo, otázka |
+| Kennedy | kompozice s portrétem – jen jednou, výrok přesně na dva řádky |
+| Předěl na liště | není slajd, jen čárka mezi tečkami vpravo |
+
+Čísla slajdů (`#s0`…), počítadlo hodnot a otisky dopočítá build. Otisk je poloha z Figmy (tabulka `PRINT`
+v `manifest.js`); „Automaticky“ vezme další z řady podle typu slajdu tak, aby sousedé neměli stejný.
+Fotky se nahrávají přímo v CMS do `src/assets/fotky/`; co je širší než 2000 px nebo těžší než 600 kB,
+build zmenší do webp. Na web jdou jen použité fotky.
+
+Předmluva nesází seznamy, tabulky, obrázky, odkazy ani tučné písmo – build je odmítne s hláškou.
 
 Zkratky v textových polích:
 
 - `->` je šipka →; v běžném textu se sama přilepí k předchozímu slovu, aby nezačínala řádek
-- `*slovo*` je kurzíva (ne v odstavci o hodnotách – ten se při čtení rozsvěcuje po slovech)
-- výroky na slajdech se píšou po řádcích – co řádek v poli, to řádek na slajdu (zalomení drží sazbu z Figmy)
+- `*slovo*` je kurzíva (ne v Odstavci – ten se při čtení rozsvěcuje po slovech)
+- výroky se píšou po řádcích – co řádek v poli, to řádek na slajdu (zalomení drží sazbu z Figmy)
 
-Slajdy se v CMS nepřidávají ani nepřehazují: otisky, fotky i oddělovače na liště jsou navázané na pořadí.
-Hodnot je přesně deset a slajd s Kennedym má přesně dva řádky. Když je povinné pole prázdné nebo
-počet nesedí, build skončí českou hláškou (např. `21 · Zrcadlo → Velké slovo: je povinné`),
-Action zčervená a na webu zůstane poslední dobrá verze.
+Když je povinné pole prázdné nebo Kennedy nesedí, build skončí českou hláškou
+(např. `Slajdy → Slajdy 24 (Zrcadlo) → Velké slovo: je povinné`), Action zčervená a na webu
+zůstane poslední dobrá verze.
 
 ## Úprava a build
 
 1. Texty v `src/obsah/` (nebo v CMS), sazbu v `src/manifest.template.html`, případně `manifest.css` / `manifest.js`.
-2. Spusť `python3 build.py` – přegeneruje `docs/` (potřebuje `pip install pyyaml jinja2`).
+2. Spusť `python3 build.py` – přegeneruje `docs/` (potřebuje `pip install pyyaml jinja2`, pro zmenšování fotek `pillow`).
 3. Otevři `docs/index.html` v prohlížeči (fonty přes `file://` v Chromu nepřednačte, přes lokální server nebo po nasazení ano).
 
 Kdo pushuje do `main` ručně, ať si předtím stáhne commity z CMS a Action (`git pull`) – jinak se push odmítne.
 
-Nová úvodní fotka: `python3 build.py --hero cesta/k/fotce.jpg` (vyžaduje `pip install pillow`).
 
 ## Náhled při sdílení a ikona
 
@@ -90,7 +108,7 @@ s doménou v `docs/CNAME`. Po změně náhledu vyčistí keš
 
 ## Ovládání prezentace
 
-kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s0` … `#s21`).
+kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swipe na mobilu · tečky na pravé liště. Každý slajd má vlastní odkaz (`#s0`, `#s1`… podle pořadí).
 
 ## Jak je to postavené
 

@@ -11,18 +11,19 @@ Texty jsou v src/obsah/*.yml – upravují se v Pages CMS (nastavení v .pages.y
 převádějí zkratky z CMS (-> na šipku, *slovo* na kurzívu). Chybějící nebo špatně vyplněné
 pole build zastaví s českou hláškou – na web se tak rozbitý obsah nedostane.
 
+Fotky slajdů jsou v src/assets/fotky/ (nahrává je i CMS); build zkopíruje jen použité do docs/assets/fotky/
+a co je širší než 2000 px nebo těžší než 600 kB, zmenší do webp.
+
 Placeholdery v šabloně / CSS (nahrazuje build, ne Jinja):
   {{SITE}}                       adresa webu (absolutní odkazy pro og:image, canonical)
   {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
   {{BLOB_PATHS}}                 křivky otisku (src/assets/otisk-paths.txt) – vždy inline, JS je klonuje
-  {{HERO}} {{KULTURA_PHOTO}} {{KENNEDY}} {{KRAVA_FOTO}} {{ZRCADLO_FOTO}}   fotky ze src/assets/
   – náhled sdílení a ikony (src/assets/og.jpg, favicon.svg, favicon-32.png, icon-180.png)
     se jen kopírují; generují se zvlášť, viz níže
   {{F_GRANDHEAVY}} {{F_REGULAR}} {{F_NARROWBLACK}} {{F_GRAND}}   fonty (src/fonts/*.woff)
 
 Použití:  python3 build.py
 Volitelně:
-  python3 build.py --hero cesta/k/nove-fotce.jpg  zmenší na 2000 px a nahradí hero.jpg (pip install pillow)
   python3 build.py --og                           přegeneruje náhled sdílení z úvodního slajdu (pip install playwright)
   python3 build.py --icons                        přegeneruje PNG ikony z favicon.svg (pip install playwright)
 """
@@ -44,13 +45,8 @@ FONTS = {
     '{{F_NARROWBLACK}}': 'Agrandir-NarrowBlack.woff',
     '{{F_GRAND}}': 'Agrandir-Grand.woff',
 }
-IMAGES = {
-    '{{HERO}}': 'hero.webp',
-    '{{KULTURA_PHOTO}}': 'kultura.jpg',
-    '{{KENNEDY}}': 'kennedy.webp',
-    '{{KRAVA_FOTO}}': 'krava-manifest.webp',
-    '{{ZRCADLO_FOTO}}': 'zrcadlo.webp',
-}
+FOTKY = os.path.join('assets', 'fotky')         # fotky slajdů: src/assets/fotky → docs/assets/fotky (nahrává je i CMS)
+FOTKA_MAX = 2000, 600 * 1024                   # širší nebo těžší upload build zmenší do webp (pip install pillow)
 # náhled sdílení a ikony – hotové soubory, jen se kopírují do docs/assets/
 STATIC = ('og.jpg', 'favicon.svg', 'favicon-32.png', 'icon-180.png')
 
@@ -60,25 +56,22 @@ def read(path):
         return f.read()
 
 
-def prepare_hero(source):
-    """Zmenší a zkomprimuje fotku do src/assets/hero.jpg (vyžaduje Pillow)."""
-    from PIL import Image
-    im = Image.open(source).convert('RGB')
-    if im.width > 2000:
-        im = im.resize((2000, round(2000 * im.height / im.width)), Image.LANCZOS)
-    im.save(os.path.join(SRC, 'assets', 'hero.jpg'), 'JPEG', quality=78, optimize=True, progressive=True)
-    print('hero.jpg:', im.size)
-
-
 HEAD_END = '<!--/head-->'
 
 
 # ---------- obsah z CMS ----------
 
-PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS', *(k.strip('{}') for k in IMAGES)]  # nahradí se až po Jinja
+PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS']  # nahradí se až po Jinja
 BLOKY = {'tagline': '<p class="lead">{}</p>', 'nadpis': '<h3>{}</h3>',   # bloky předmluvy (druh → sazba)
          'odstavec': '<p>{}</p>', 'otazka': '<p class="ask">{}</p>'}
-POCET_HODNOT = 10          # otisky h02–h11 a oddělovač v liště počítají s deseti slajdy hodnot
+# Otisky (polohy z Figmy, tabulka PRINT v JS). Slajd s polem Otisk = „automaticky“ dostane další z řady.
+OTISKY_AUTO = {                                            # řady podle typu; soused nikdy nedostane stejný
+    'vyrok': ['01', '02', '03', '04'],
+    'hodnota': ['h02', 'h03', 'h04', 'h05', 'h06', 'h07', 'h08', 'h09', 'h10', 'h11'],
+    'zrcadlo': ['zrcadlo', 'h11', 'h05'],
+}
+OTISK_TYPU = {'vyrok_ruzovy': '05', 'kennedy': '06a'}      # typy s vlastní kompozicí
+S_OTISKEM = {'vyrok', 'vyrok_ruzovy', 'kennedy', 'hodnota', 'zrcadlo'}
 
 
 def chyba(msg):
@@ -178,6 +171,84 @@ def radky(text):
     return [r.strip() for r in str(text or '').splitlines() if r.strip()]
 
 
+def rozvrh(slajdy):
+    """Seznam z CMS → slajdy k sazbě: id (#s0…), otisk, předěl na liště, pořadí hodnot."""
+    hodnot = sum(1 for x in slajdy if x.get('typ') == 'hodnota')
+    vysledek, predel, hodnota = [], False, 0
+    for x in slajdy:
+        if x.get('typ') == 'predel':
+            predel = True
+            continue
+        x = dict(x, id=f's{len(vysledek)}', prvni=not vysledek, predel=predel)
+        predel = False
+        if x['typ'] in OTISK_TYPU:
+            x['otisk'] = OTISK_TYPU[x['typ']]
+        elif x['typ'] not in S_OTISKEM:
+            x['otisk'] = None
+        elif x.get('otisk') in (None, '', 'auto'):
+            x['otisk'] = 'auto'
+        if x['typ'] == 'hodnota':
+            hodnota += 1
+            x.update(poradi=hodnota, pocet=hodnot)
+        vysledek.append(x)
+    # automatické otisky: další z řady svého typu, jiný než soused před i za
+    pocitadlo = {}
+    for i, x in enumerate(vysledek):
+        if x['otisk'] != 'auto':
+            continue
+        rada = OTISKY_AUTO[x['typ']]
+        sousede = {vysledek[i - 1]['otisk'] if i else None,
+                   vysledek[i + 1]['otisk'] if i + 1 < len(vysledek) else None}
+        n = pocitadlo.get(x['typ'], 0)
+        for k in range(len(rada)):
+            kandidat = rada[(n + k) % len(rada)]
+            if kandidat not in sousede:
+                break
+        x['otisk'] = kandidat
+        pocitadlo[x['typ']] = n + k + 1
+    return vysledek
+
+
+POUZITE_FOTKY = {}
+
+
+def fotka(cesta):
+    """Fotka z CMS (assets/fotky/…) → adresa na webu; zapamatuje si ji, build ji pak zkopíruje."""
+    jmeno = os.path.basename(str(cesta or '').strip())
+    zdroj = os.path.join(SRC, FOTKY, jmeno)
+    if not jmeno or not os.path.exists(zdroj):
+        chyba(f'Slajdy: fotka „{cesta}“ není v src/{FOTKY}')
+    web = jmeno
+    try:
+        from PIL import Image
+        with Image.open(zdroj) as im:
+            if im.width > FOTKA_MAX[0] or os.path.getsize(zdroj) > FOTKA_MAX[1]:
+                web = os.path.splitext(jmeno)[0] + '.webp'
+    except ImportError:
+        pass
+    POUZITE_FOTKY[jmeno] = web
+    return FOTKY.replace(os.sep, '/') + '/' + web
+
+
+def zkopiruj_fotky(assets):
+    """Použité fotky do docs/assets/fotky; velký upload zmenší na 2000 px do webp."""
+    cil = os.path.join(assets, 'fotky')
+    if os.path.isdir(cil):
+        shutil.rmtree(cil)                       # smazané fotky ať na webu nestraší
+    os.makedirs(cil)
+    for jmeno, web in POUZITE_FOTKY.items():
+        zdroj = os.path.join(SRC, FOTKY, jmeno)
+        if web == jmeno:
+            shutil.copy(zdroj, os.path.join(cil, web))
+            continue
+        from PIL import Image
+        with Image.open(zdroj) as im:
+            im = im.convert('RGB')
+            if im.width > FOTKA_MAX[0]:
+                im = im.resize((FOTKA_MAX[0], round(FOTKA_MAX[0] * im.height / im.width)), Image.LANCZOS)
+            im.save(os.path.join(cil, web), 'WEBP', quality=82, method=6)
+
+
 def nacti(polozky, cesta=''):
     """Obsah podle menu v .pages.yml: soubor → jeho data, skupina (Poslání, Kultura) → slovník položek."""
     o = {}
@@ -198,16 +269,20 @@ def nacti(polozky, cesta=''):
 def nacti_obsah():
     with open(os.path.join(ROOT, '.pages.yml'), encoding='utf-8') as f:
         o = nacti(yaml.safe_load(f)['content'])
-    if len(o['kultura']['hodnoty'].get('hodnoty') or []) != POCET_HODNOT:
-        chyba(f'Kultura → Hodnoty: musí jich být {POCET_HODNOT}')
-    if len(radky(o['poslani']['kennedy'].get('vyrok'))) != 2:
-        chyba('Poslání → Ich bin ein Kuhländler → Výrok: musí mít přesně dva řádky')
+    slajdy = [x for x in o['slajdy'].get('slajdy') or [] if x.get('typ') != 'predel']
+    if not slajdy:
+        chyba('Slajdy: prezentace nemá žádný slajd')
+    kennedy = [x for x in slajdy if x['typ'] == 'kennedy']
+    if len(kennedy) > 1:
+        chyba('Slajdy: Kennedy může být jen jednou – kompozice s portrétem je na míru')
+    if kennedy and len(radky(kennedy[0].get('vyrok'))) != 2:
+        chyba('Slajdy → Kennedy → Výrok: musí mít přesně dva řádky')
     return o
 
 
 def render(tpl):
     env = Environment(undefined=StrictUndefined, autoescape=True, keep_trailing_newline=True)
-    env.filters.update(txt=txt, vyrok=vyrok, blok=blok, bloky=bloky, radky=radky)
+    env.filters.update(txt=txt, vyrok=vyrok, blok=blok, bloky=bloky, radky=radky, rozvrh=rozvrh, fotka=fotka)
     o = nacti_obsah()
     ctx = {k: '{{%s}}' % k for k in PASSTHROUGH}
     try:
@@ -248,9 +323,7 @@ def build():
                       for n in FONTS.values())
     web = (tpl.replace('{{CSS}}', preload + '<link rel="stylesheet" href="assets/manifest.css">')
               .replace('{{JS}}', '<script src="assets/manifest.js"></script>'))
-    for key, name in IMAGES.items():
-        shutil.copy(os.path.join(SRC, 'assets', name), os.path.join(assets, name))
-        web = web.replace(key, 'assets/' + name)
+    zkopiruj_fotky(assets)
     for name in STATIC:
         shutil.copy(os.path.join(SRC, 'assets', name), os.path.join(assets, name))
     web = web.replace('{{SITE}}', SITE)
@@ -335,12 +408,9 @@ def check(html):
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--hero', help='nová úvodní fotka (zmenší se a nahradí src/assets/hero.jpg)')
     ap.add_argument('--og', action='store_true', help='přegeneruje náhled sdílení z úvodního slajdu')
     ap.add_argument('--icons', action='store_true', help='přegeneruje favicon a ikonu na plochu')
     a = ap.parse_args()
-    if a.hero:
-        prepare_hero(a.hero)
     if a.icons:
         make_icons()
     build()

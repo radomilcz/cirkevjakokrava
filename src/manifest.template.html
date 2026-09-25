@@ -21,9 +21,8 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 {{CSS}}
 <!--/head-->
-{#- Texty jsou v src/obsah/*.yml (upravují se v Pages CMS), tady je jen jejich sazba.
-    Pořadí a počet slajdů drží design: otisky (tabulka PRINT v JS), oddělovače v liště
-    a čísla slajdů v odkazech (#s0 … #s21) – proto se slajdy v CMS nepřidávají ani nepřehazují. -#}
+{#- Slajdy jsou v src/obsah/slajdy.yml (upravují se v Pages CMS) – seznam, v němž má každý slajd svůj typ.
+    Tady je sazba jednotlivých typů. Čísla slajdů (#s0…), otisky a čárky na liště počítá build (slajdy|rozvrh). -#}
 {%- macro vyrok(text) -%}
     <p class="statement">
 {%- for r in text|radky %}
@@ -38,6 +37,12 @@
 {%- endif %}
       <p class="brand">{{ podpis or s.podpis }}</p>
     </div>
+{%- endmacro -%}
+{%- macro sekce(x, trida, stitek=None) -%}
+  <section class="slide{% if trida %} {{ trida }}{% endif %}{% if x.prvni %} in{% endif %}" id="{{ x.id }}"
+    {%- if x.otisk %} data-print="{{ x.otisk }}"{% endif %}
+    {%- if x.predel %} data-predel{% endif %}
+    {%- if stitek %} aria-label="{{ stitek }}"{% endif %}>
 {%- endmacro %}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="otisk" viewBox="0 0 998 816">{{BLOB_PATHS}}</symbol>
@@ -45,24 +50,26 @@
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 <div class="deck" id="deck">
 <main class="track" id="track">
+{%- for x in o.slajdy.slajdy|rozvrh %}
+{%- set t = x.typ %}
 
-  <!-- 00 · hero · BŮŮŮH je dobrý -->
-  <section class="slide hero in" id="s0" aria-label="Manifest – úvod">
-    <img class="photo" src="{{HERO}}" alt="{{ o.uvod.get('popis_fotky') or '' }}">
+{%- if t == 'uvod' %}
+  {{ sekce(x, 'hero', 'Manifest – úvod') }}
+    <img class="photo" src="{{ x.fotka|fotka }}" alt="{{ x.get('popis_fotky') or '' }}">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">{{ o.uvod.nadtitulek }}</h2>
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <div class="title">
-      <p class="buh" aria-label="{{ o.uvod.napis }}"><span class="ln"><span aria-hidden="true">{% for p in o.uvod.napis %}<i>{{ p }}</i>{% endfor %}</span></span></p>
-      <p class="sub rise">{{ o.uvod.podnadpis|txt }}</p>
+      <p class="buh" aria-label="{{ x.napis }}"><span class="ln"><span aria-hidden="true">{% for p in x.napis %}<i>{{ p }}</i>{% endfor %}</span></span></p>
+      <p class="sub rise">{{ x.podnadpis|txt }}</p>
     </div>
     <div class="foot"><p class="brand rise">{{ s.podpis }}</p></div>
   </section>
 
-  <!-- 01 · Předmluva · Kdo jsme? (Figma: Předmluva, 1920×4895) -->
-  <section class="slide read" id="s1">
-    <h2 class="eyebrow rise">{{ o.predmluva.nadtitulek }}</h2>
+{%- elif t == 'predmluva' %}
+  {{ sekce(x, 'read') }}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <div class="essay">
-{%- for k in o.predmluva.kapitoly %}
+{%- for k in x.kapitoly %}
 {%- if k.get('tagline') %}
       <p class="lead">{{ k.tagline|txt }}</p>
 {%- endif %}
@@ -72,101 +79,62 @@
 {%- endfor %}
 {%- endfor %}
     </div>
-    {{ pata(o.predmluva.get('otazka')) }}
+    {{ pata(x.get('otazka')) }}
   </section>
 
-  {%- set p = o.poslani %}
-
-  <!-- 02 · Co děláme? -->
-  <section class="slide" id="s2" data-print="01">
-    <h2 class="eyebrow rise">{{ p.co_delame.nadtitulek }}</h2>
-    {{ vyrok(p.co_delame.vyrok) }}
-    {{ pata(p.co_delame.get('otazka'), p.co_delame.get('podpis')) }}
+{%- elif t in ('vyrok', 'vyrok_ruzovy') %}
+  {{ sekce(x, 'love' if t == 'vyrok_ruzovy' else '') }}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    {{ vyrok(x.vyrok) }}
+    {{ pata(x.get('otazka'), x.get('podpis')) }}
   </section>
 
-  <!-- 03 · Lásko, to je Kravařsko! (Figma: 02) -->
-  <section class="slide love" id="s3" data-print="05">
-    <h2 class="eyebrow rise">{{ p.lasko.nadtitulek }}</h2>
-    {{ vyrok(p.lasko.vyrok) }}
-    {{ pata(None, p.lasko.get('podpis')) }}
-  </section>
-
-  <!-- 04 · Jak to děláme? -->
-  <section class="slide" id="s4" data-print="02">
-    <h2 class="eyebrow rise">{{ p.jak_to_delame.nadtitulek }}</h2>
-    {{ vyrok(p.jak_to_delame.vyrok) }}
-    {{ pata(p.jak_to_delame.get('otazka'), p.jak_to_delame.get('podpis')) }}
-  </section>
-
-  <!-- 05 · Ich bin ein Kuhländler (Figma: 06) – dva řádky, každý se sází jinak (.l1/.l2) -->
-  <section class="slide german" id="s5" data-print="06a">
-    <img class="portret" src="{{KENNEDY}}" alt="{{ p.kennedy.get('popis_fotky') or '' }}">
-    <h2 class="eyebrow rise">{{ p.kennedy.nadtitulek }}</h2>
+{%- elif t == 'kennedy' %}
+{%- set r = x.vyrok|radky %}
+  {{ sekce(x, 'german') }}
+    <img class="portret" src="{{ 'assets/fotky/kennedy.webp'|fotka }}" alt="{{ x.get('popis_fotky') or '' }}">
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <p class="statement claim">
-      <span class="ln l1"><span>{{ (p.kennedy.vyrok|radky)[0]|vyrok }}</span></span>
-      <span class="ln l2"><span>{{ (p.kennedy.vyrok|radky)[1]|vyrok }}</span></span>
+      <span class="ln l1"><span>{{ r[0]|vyrok }}</span></span>
+      <span class="ln l2"><span>{{ r[1]|vyrok }}</span></span>
     </p>
-    {{ pata(p.kennedy.get('otazka'), p.kennedy.get('podpis')) }}
+    {{ pata(x.get('otazka'), x.get('podpis')) }}
   </section>
 
-  <!-- 06 · Pro koho? -->
-  <section class="slide" id="s6" data-print="03">
-    <h2 class="eyebrow rise">{{ p.pro_koho.nadtitulek }}</h2>
-    {{ vyrok(p.pro_koho.vyrok) }}
-    {{ pata(p.pro_koho.get('otazka'), p.pro_koho.get('podpis')) }}
-  </section>
-
-  <!-- 07 · KRÁVA má Boží design (Figma: 06 s highland fotkou) -->
-  <section class="slide value intro manifest" id="s7">
-    <img class="photo" src="{{KRAVA_FOTO}}" alt="{{ p.krava.get('popis_fotky') or '' }}">
+{%- elif t == 'fotka' %}
+  {{ sekce(x, 'value intro manifest' if x.get('bez_zavorek') else 'value intro') }}
+    <img class="photo" src="{{ x.fotka|fotka }}" alt="{{ x.get('popis_fotky') or '' }}">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">{{ p.krava.nadtitulek }}</h2>
-    <p class="word"><span class="ln"><span>{{ p.krava.slovo }}</span></span><span class="how plain rise">{{ p.krava.get('dovetek')|txt }}</span></p>
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    <p class="word"><span class="ln"><span>{{ x.slovo }}</span></span>
+      {%- if x.get('dovetek') %}<span class="how{% if x.get('bez_zavorek') %} plain{% endif %} rise">{{ x.dovetek|txt }}</span>{% endif %}</p>
     {{ pata(None, None) }}
   </section>
 
-  <!-- 08 · Proč? · Aby lidé poznali -->
-  <section class="slide" id="s8" data-print="04">
-    <h2 class="eyebrow rise">{{ p.proc.nadtitulek }}</h2>
-    {{ vyrok(p.proc.vyrok) }}
-    {{ pata(p.proc.get('otazka'), p.proc.get('podpis')) }}
+{%- elif t == 'odstavec' %}
+  {{ sekce(x, 'read') }}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    <p class="text">{{ x.text|txt }}</p>
+    {{ pata(None, None) }}
   </section>
 
-  {%- set k = o.kultura %}
+{%- elif t == 'hodnota' %}
+  {{ sekce(x, 'value') }}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }} <span class="n">{{ x.poradi }}/{{ x.pocet }}</span></h2>
+    <p class="word"><span class="ln"><span>{{ x.slovo }}</span></span><span class="how rise">{{ x.jak|txt }}</span></p>
+    {{ pata(None, None) }}
+  </section>
 
-  <!-- 09 · hodnoty · KULTURA (100% živá) -->
-  <section class="slide value intro" id="s9">
-    <img class="photo" src="{{KULTURA_PHOTO}}" alt="{{ k.uvod.get('popis_fotky') or '' }}">
+{%- elif t == 'zrcadlo' %}
+  {{ sekce(x, 'value mirror') }}
+    <img class="photo" src="{{ x.fotka|fotka }}" alt="{{ x.get('popis_fotky') or '' }}">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">{{ k.uvod.nadtitulek }}</h2>
-    <p class="word"><span class="ln"><span>{{ k.uvod.slovo }}</span></span><span class="how rise">{{ k.uvod.get('dovetek')|txt }}</span></p>
-    {{ pata(None, None) }}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    <p class="word"><span class="ln"><span>{{ x.slovo }}</span></span></p>
+    {{ pata(x.get('otazka'), None) }}
   </section>
-
-  <!-- 10 · hodnoty · odstavec (JS ho rozseká na slova, takže bez formátování) -->
-  <section class="slide read" id="s10">
-    <h2 class="eyebrow rise">{{ k.odstavec.nadtitulek }}</h2>
-    <p class="text">{{ k.odstavec.text|txt }}</p>
-    {{ pata(None, None) }}
-  </section>
-
-  <!-- 11–20 · hodnoty -->
-{%- for h in k.hodnoty.hodnoty %}
-  <section class="slide value" id="s{{ 11 + loop.index0 }}" data-print="h{{ '%02d' % (loop.index + 1) }}">
-    <h2 class="eyebrow rise">{{ k.hodnoty.nadtitulek }} <span class="n">{{ loop.index }}/{{ loop.length }}</span></h2>
-    <p class="word"><span class="ln"><span>{{ h.slovo }}</span></span><span class="how rise">{{ h.jak|txt }}</span></p>
-    {{ pata(None, None) }}
-  </section>
+{%- endif %}
 {%- endfor %}
-
-  <!-- 21 · zrcadlo -->
-  <section class="slide value mirror" id="s21" data-print="zrcadlo">
-    <img class="photo" src="{{ZRCADLO_FOTO}}" alt="{{ o.zrcadlo.get('popis_fotky') or '' }}">
-    <div class="veil"></div>
-    <h2 class="eyebrow rise">{{ o.zrcadlo.nadtitulek }}</h2>
-    <p class="word"><span class="ln"><span>{{ o.zrcadlo.slovo }}</span></span></p>
-    {{ pata(o.zrcadlo.get('otazka'), None) }}
-  </section>
 </main>
 </div>
 <ul class="rail" id="rail" aria-label="Slajdy"></ul>

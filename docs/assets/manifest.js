@@ -54,7 +54,7 @@
 
   /* ---------- lišta s tečkami ---------- */
   slides.forEach((s,i)=>{
-    if(i===6||i===18){const sep=document.createElement('li');sep.className='sep';rail.appendChild(sep)}
+    if(s.hasAttribute('data-predel')){const sep=document.createElement('li');sep.className='sep';rail.appendChild(sep)}  /* předěl z CMS */
     const li=document.createElement('li');const b=document.createElement('button');
     b.type='button';b.setAttribute('aria-label','Slajd '+(i+1));b.addEventListener('click',()=>go(i));
     li.appendChild(b);rail.appendChild(li);s._dot=b;

@@ -1,0 +1,154 @@
+slajdy:
+- typ: uvod
+  nadtitulek: manifest
+  napis: BŮŮŮH
+  podnadpis: je dobrý, my jsme normální
+  fotka: assets/fotky/hero.webp
+  popis_fotky: Dívka stojí na pastvině vedle skotského náhorního skotu.
+- typ: predmluva
+  nadtitulek: Kdo jsme?
+  kapitoly:
+  - tagline: Dobrá zpráva
+    nadpis: Češi nejsou ovce. Potřebují církev jako kráva.
+    text: |
+      Ptali jsme se, jak můžeme proříznout českou náboženskou šeď. Nabídnout čerstvý pohled na Krista, který bourá zeď předsudků a nedůvěry. Pak přišla ze zámoří zpráva. Chcete vidět změnu? Buďte fialová kráva.
+
+      To má být vtip? Pane, to nemyslíš vážně. A pak nám to došlo. Kráva je Boží! Je to fakt divný název, ale má neskutečnou sílu.
+  - nadpis: Minulost je past. Přítomnost je pastva.
+    text: |
+      Jasně. Jsme Češi. Církev je pro nás minulost. Uzavřená. Prostě past. Ale kráva? Je nadčasová. Normální. Odzbrojující. Lokální. Kde zabučí kráva, na církev nikdo nenadává. Vtahuje nás do děje. Smějeme se → jsme zvědaví → ptáme se:
+
+      > Proč jako kráva?
+
+      Protože kráva patří na pastvu, ne do kostela. Žijeme tím, čím žije naše město. Fandíme všemu, co už v něm Bůh dělá. Ať to roste spolu s námi. Všude tam, kde pracujeme a platíme nájem. Dáváme srdce, čas a neředěný zájem.
+  - nadpis: Lásko, to je Kravařsko!
+    text: |
+      Kráva je tu domácí. Patří do krajiny stejně jako tráva. Přežvýká jetel, bodláčí i plevel. A pak přijde zázrak. Kráva se rozdává. Vrací zpátky víc, než si bere. Mléko. Smetanu. Telata. Dokonce i kravince jsou baterie pro půdní bakterie. Pastva pulzuje. Kráva ji kultivuje. Prospívá životu. Na každém kroku přidává hodnotu.
+
+      Kráva je úkaz. Dokud je tu, připomíná světu, že má laskavého Hospodáře. Kdyby odsud zmizela, tvář Kravařska by se k nepoznání změnila. Takoví chceme být i my.
+
+      Církev, která *by* Kravařsku chyběla.
+  otazka: Co to znamená?
+- typ: vyrok
+  nadtitulek: Co děláme?
+  vyrok: |
+    Oslavujeme Boží kreativitu
+    a lásku -> k lidem a městům
+    na Kravařsku.
+  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  otisk: '01'
+- typ: vyrok_ruzovy
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Lásko, to je
+    Kravařsko!
+  podpis: Herzenssache.
+  otisk: '05'
+- typ: vyrok
+  nadtitulek: Jak to děláme?
+  vyrok: |
+    Vnímáme, co Bůh kolem
+    dělá. Přidáváme k tomu
+    naše srdce, slova i ruce.
+  otazka: Jak se přidáváš k Boží práci ve svém sousedství?
+  otisk: '02'
+- typ: kennedy
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Ich bin ein
+    Kuhländler
+  otazka: Je Kravařsko i tvoje srdeční záležitost?
+  podpis: Herzenssache.
+  popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
+- typ: predel
+- typ: vyrok
+  nadtitulek: Pro koho?
+  vyrok: |
+    Tvoříme pastvu pro oči,
+    uši a duši. Pro publikum,
+    co kostel ani víru neřeší.
+  otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
+  otisk: '03'
+- typ: fotka
+  nadtitulek: pastva
+  slovo: kráva
+  dovetek: má Boží design
+  bez_zavorek: true
+  fotka: assets/fotky/krava-manifest.webp
+  popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
+- typ: vyrok
+  nadtitulek: Proč vlastně?
+  vyrok: |
+    Aby lidé poznali, že Bohu
+    na nich záleží. Uprostřed
+    komunity, kam patříš i ty.
+  otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  otisk: '04'
+- typ: fotka
+  nadtitulek: plnotučná
+  slovo: kultura
+  dovetek: 100% živá
+  bez_zavorek: false
+  fotka: assets/fotky/kultura.jpg
+  popis_fotky: Kráva se pase na horské louce, u ní dvě děti.
+- typ: odstavec
+  nadtitulek: kultura
+  text: Hodnoty ladí náš srdeční kompas. Vrací nás na cestu, když ve spěchu a únavě zabloudíme. Tvoří a chrání kulturu pastvy. Přežvykujeme, dokud je nevstřebáme celé. Od pondělí do neděle. V práci, doma i ve škole. Nejen v kostele. Jinak jsou to jen krásné kecy na motivační cedule.
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: otevřená
+  jak: přitažlivě
+  otisk: h02
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: srozumitelná
+  jak: pronikavě
+  otisk: h03
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: štědrá
+  jak: bytostně
+  otisk: h04
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: tvořivá
+  jak: nespoutaně
+  otisk: h05
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: zdravá
+  jak: vnitřně
+  otisk: h06
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: radostná
+  jak: hluboce
+  otisk: h07
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: odvážná
+  jak: radikálně
+  otisk: h08
+- typ: predel
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: blízká
+  jak: důvěrně
+  otisk: h09
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: opravdová
+  jak: přirozeně
+  otisk: h10
+- typ: hodnota
+  nadtitulek: kultura
+  slovo: jednoduchá
+  jak: nadpřirozeně
+  otisk: h11
+- typ: zrcadlo
+  nadtitulek: Co odráží naše životy?
+  slovo: zrcadlo
+  otazka: Podobá se realita našeho života tomu, co říkáme?
+  fotka: assets/fotky/zrcadlo.webp
+  popis_fotky: Tele stojí na břehu jezera, hladina zrcadlí celou jeho postavu.
+  otisk: zrcadlo
