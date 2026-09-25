@@ -47,8 +47,9 @@ Texty se píšou na [app.pagescms.org](https://app.pagescms.org): přihlásit se
 `cirkevjakokrava`. Sekce jdou v pořadí slajdů. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
 je změna venku.
 
-Předmluva se píše v jednom okně editoru (Markdown): **Nadpis 2** je nadpis, **Nadpis 3** tagline
-(„Dobrá zpráva“), **Citace** zvýrazněná otázka („Proč jako kráva?“), kurzíva je kurzíva, zbytek odstavce.
+Předmluva je seznam kapitol (`src/obsah/predmluva/`, řazené podle pole Pořadí): Tagline, Nadpis a Text
+v editoru – **Citace** je zvýrazněná otázka („Proč jako kráva?“), kurzíva je kurzíva, zbytek odstavce.
+Nadtitulek „Kdo jsme?“ a otázka dole jsou v Nastavení.
 Seznamy, tabulky, obrázky, odkazy a tučné písmo manifest nesází – build je odmítne s hláškou.
 
 Zkratky v textových polích:

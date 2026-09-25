@@ -60,13 +60,19 @@
 
   <!-- 01 · Předmluva · Kdo jsme? (Figma: Předmluva, 1920×4895) -->
   <section class="slide read" id="s1">
-    <h2 class="eyebrow rise">{{ o.predmluva.nadtitulek }}</h2>
+    <h2 class="eyebrow rise">{{ s.predmluva.nadtitulek }}</h2>
     <div class="essay">
-{%- for b in o.predmluva.text|bloky %}
+{%- for k in o.predmluva %}
+{%- if k.get('tagline') %}
+      <p class="lead">{{ k.tagline|txt }}</p>
+{%- endif %}
+      <h3>{{ k.nadpis|txt }}</h3>
+{%- for b in k.text|bloky %}
       {{ b|blok }}
 {%- endfor %}
+{%- endfor %}
     </div>
-    {{ pata(o.predmluva.get('otazka')) }}
+    {{ pata(s.predmluva.get('otazka')) }}
   </section>
 
   {%- set p = o.poslani %}

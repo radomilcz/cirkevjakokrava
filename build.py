@@ -186,6 +186,18 @@ def nacti(polozky, cesta=''):
         if c['type'] == 'group':
             o[c['name']] = nacti(c['items'], kde + ' → ')
             continue
+        if c['type'] == 'collection':                  # Předmluva: kapitoly seřazené podle pole Pořadí
+            slozka, polozky = os.path.join(ROOT, c['path']), []
+            for jmeno in sorted(os.listdir(slozka)):
+                if jmeno.endswith(('.yml', '.yaml')):
+                    with open(os.path.join(slozka, jmeno), encoding='utf-8') as f:
+                        data = yaml.safe_load(f) or {}
+                    zkontroluj(c['fields'], data, f'{kde} → {data.get("nadpis") or jmeno}')
+                    polozky.append(data)
+            if not polozky:
+                chyba(f'{kde}: nemá žádnou kapitolu')
+            o[c['name']] = sorted(polozky, key=lambda x: float(x.get('poradi') or 0))
+            continue
         with open(os.path.join(ROOT, c['path']), encoding='utf-8') as f:
             try:
                 o[c['name']] = yaml.safe_load(f) or {}

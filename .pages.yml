@@ -27,12 +27,29 @@ content:
 
   - name: predmluva
     label: Předmluva
-    type: file
-    path: src/obsah/predmluva.yml
+    type: collection
+    path: src/obsah/predmluva
     format: yaml
+    filename: '{primary}.yml'
+    view:
+      fields:
+        - nadpis
+      primary: nadpis
+      sort:
+        - poradi
+      default:
+        sort: poradi
+        order: asc
     fields:
-      - name: nadtitulek
-        label: Nadtitulek
+      - name: poradi
+        label: Pořadí
+        type: number
+        required: true
+      - name: tagline
+        label: Tagline
+        type: string
+      - name: nadpis
+        label: Nadpis
         type: string
         required: true
       - name: text
@@ -43,10 +60,7 @@ content:
           format: markdown
           switcher: false
           media: false
-        description: Nadpis 2 = nadpis · Nadpis 3 = tagline · Citace = zvýrazněná otázka
-      - name: otazka
-        label: Otázka dole
-        type: string
+        description: Citace = zvýrazněná otázka
 
   - name: poslani
     label: Poslání
@@ -309,6 +323,17 @@ content:
       - name: napoveda
         label: Nápověda k ovládání
         type: string
+      - name: predmluva
+        label: Předmluva
+        type: object
+        fields:
+          - name: nadtitulek
+            label: Nadtitulek
+            type: string
+            required: true
+          - name: otazka
+            label: Otázka dole
+            type: string
       - name: sdileni
         label: Sdílení odkazu
         type: object
