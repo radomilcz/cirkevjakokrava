@@ -134,6 +134,11 @@ def blok(b):
     return Markup(BLOKY[b['druh']].format(txt(b['text'])).replace(ESC, '*'))
 
 
+def povinne(f):
+    """Povinné je pole s `required` nebo s `pattern` (tak se v CMS značí bez anglického badge); fotka vždy."""
+    return bool(f.get('required') or f.get('pattern') or f.get('type') == 'image')
+
+
 def zkontroluj(pole, data, cesta):
     """Povinná pole a délky seznamů podle .pages.yml – hláška mluví stejnými názvy jako CMS."""
     for f in pole:
@@ -146,7 +151,7 @@ def zkontroluj(pole, data, cesta):
                 if 'min' in seznam and len(polozky) < seznam['min'] or 'max' in seznam and len(polozky) > seznam['max']:
                     pocet = seznam.get('min') if seznam.get('min') == seznam.get('max') else f'{seznam.get("min", 0)}–{seznam.get("max", "∞")}'
                     chyba(f"{kde}: musí jich být {pocet}, je jich {len(polozky)}")
-            if f.get('required') and not polozky:
+            if povinne(f) and not polozky:
                 chyba(f'{kde}: je povinné')
             if f['type'] == 'object':
                 for i, polozka in enumerate(polozky, 1):
@@ -158,7 +163,7 @@ def zkontroluj(pole, data, cesta):
                     if not b:
                         chyba(f'{kde} {i}: neznámý blok „{(polozka or {}).get(klic)}“ (může být {", ".join(bloky)})')
                     zkontroluj(b['fields'], polozka, f'{kde} {i} ({b["label"]})')
-            elif f.get('required') and any(not str(x or '').strip() for x in polozky):
+            elif povinne(f) and any(not str(x or '').strip() for x in polozky):
                 chyba(f'{kde}: prázdný řádek')
         elif f['type'] == 'object':
             zkontroluj(f['fields'], hodnota, kde)
@@ -167,7 +172,7 @@ def zkontroluj(pole, data, cesta):
             if not b:
                 chyba(f'{kde}: chybí typ slajdu (může být {", ".join(x["name"] for x in f["blocks"])})')
             zkontroluj(b['fields'], hodnota, f'{kde} ({b["label"]})')
-        elif f.get('required') and not str(hodnota or '').strip():
+        elif povinne(f) and not str(hodnota or '').strip():
             chyba(f'{kde}: je povinné')
 
 
@@ -271,9 +276,23 @@ def nacti(polozky, cesta=''):
     return o
 
 
+def rozbal(pole, komponenty):
+    """`component:` z .pages.yml → plná definice pole (jako Pages CMS: komponenta + přepsané klíče)."""
+    pole = dict(pole)
+    if 'component' in pole:
+        zaklad = dict(komponenty[pole.pop('component')])
+        pole = {**zaklad, **pole, 'type': zaklad['type']}
+    for klic in ('fields', 'blocks'):
+        if klic in pole:
+            pole[klic] = [rozbal(x, komponenty) for x in pole[klic]]
+    return pole
+
+
 def nacti_obsah():
     with open(os.path.join(ROOT, '.pages.yml'), encoding='utf-8') as f:
-        cms = yaml.safe_load(f)['content']
+        konfigurace = yaml.safe_load(f)
+    komponenty = konfigurace.get('components') or {}
+    cms = [dict(c, fields=[rozbal(x, komponenty) for x in c.get('fields', [])]) for c in konfigurace['content']]
     o = nacti(cms)
     poradi = []                                   # skupiny v pořadí menu, mezi nimi předěl (čárka na liště)
     for c in cms:

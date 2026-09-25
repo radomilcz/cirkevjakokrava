@@ -49,11 +49,20 @@ Texty se píšou na [app.pagescms.org](https://app.pagescms.org): přihlásit se
 je změna venku.
 
 Menu CMS: **Úvod** · **Poslání** · **Kultura** · **Závěr** · **Nastavení**.
+Tři úrovně: skupina (položka v menu) → slajd (řádek v seznamu) → objekt (pole).
 
 - Každá skupina je stránka se svými slajdy v pořadí jako na webu – slajd se přidá tlačítkem (s volbou typu),
-  přetáhne za úchyt, smaže křížkem.
-- Skupiny jdou na webu za sebou jako v menu; mezi nimi je čárka na liště s tečkami. Novou skupinu přidá
-  úprava `.pages.yml` (nová položka s cestou `src/obsah/skupiny/<jméno>.yml`).
+  přetáhne za úchyt, smaže košem. Sbalený řádek ukazuje nadtitulek a začátek slova nebo výroku.
+- Skupiny jdou na webu za sebou jako v menu; mezi nimi je čárka na liště s tečkami. Nová skupina =
+  zkopírovat jeden řádek v `content` v `.pages.yml` (jde to i v Pages CMS → Configuration) a změnit
+  name/label/path; CMS pak nabídne založit soubor.
+- Přesun slajdu mezi skupinami v CMS nejde (každá skupina je vlastní seznam) – smazat a založit znovu.
+- Pole mají u všech typů stejná jména: Nadtitulek, Velké slovo, Dovětek, Výrok, Otázka, Podpis, Fotka,
+  Popis fotky, Otisk, Text. Definovaná jsou jednou v `components` v `.pages.yml`.
+- Povinná pole mají v konfiguraci `pattern` – CMS česky upozorní už při uložení („Doplň výrok“) a nevisí
+  u nich anglické „Required“. Build povinnost hlídá znovu (pole s `pattern` nebo `required`, fotka vždy).
+- Otisk: prázdné = automaticky (další poloha z řady podle typu, jiná než sousedé).
+- Uložení z CMS se v historii jmenuje česky („Texty: src/obsah/skupiny/poslani.yml“).
 
 Typy slajdů:
 
@@ -83,7 +92,7 @@ Zkratky v textových polích:
 - výroky se píšou po řádcích – co řádek v poli, to řádek na slajdu (zalomení drží sazbu z Figmy)
 
 Když je povinné pole prázdné nebo Kennedy nesedí, build skončí českou hláškou
-(např. `Slajdy → Zrcadlo → Slajd (Zrcadlo) → Velké slovo: je povinné`), Action zčervená a na webu
+(např. `Závěr 1 (Zrcadlo) → Velké slovo: je povinné`), Action zčervená a na webu
 zůstane poslední dobrá verze.
 
 ## Úprava a build

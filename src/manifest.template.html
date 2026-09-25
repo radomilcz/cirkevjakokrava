@@ -59,7 +59,7 @@
     <div class="veil"></div>
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <div class="title">
-      <p class="buh" aria-label="{{ x.napis }}"><span class="ln"><span aria-hidden="true">{% for p in x.napis %}<i>{{ p }}</i>{% endfor %}</span></span></p>
+      <p class="buh" aria-label="{{ x.slovo }}"><span class="ln"><span aria-hidden="true">{% for p in x.slovo %}<i>{{ p }}</i>{% endfor %}</span></span></p>
       <p class="sub rise">{{ x.podnadpis|txt }}</p>
     </div>
     <div class="foot"><p class="brand rise">{{ s.podpis }}</p></div>
@@ -121,7 +121,7 @@
 {%- elif t == 'hodnota' %}
   {{ sekce(x, 'value') }}
     <h2 class="eyebrow rise">{{ x.nadtitulek }} <span class="n">{{ x.poradi }}/{{ x.pocet }}</span></h2>
-    <p class="word"><span class="ln"><span>{{ x.slovo }}</span></span><span class="how rise">{{ x.jak|txt }}</span></p>
+    <p class="word"><span class="ln"><span>{{ x.slovo }}</span></span><span class="how rise">{{ x.dovetek|txt }}</span></p>
     {{ pata(None, None) }}
   </section>
 

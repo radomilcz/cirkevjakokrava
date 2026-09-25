@@ -12,50 +12,50 @@ slajdy:
 - typ: hodnota
   nadtitulek: kultura
   slovo: otevřená
-  jak: přitažlivě
+  dovetek: přitažlivě
   otisk: h02
 - typ: hodnota
   nadtitulek: kultura
   slovo: srozumitelná
-  jak: pronikavě
+  dovetek: pronikavě
   otisk: h03
 - typ: hodnota
   nadtitulek: kultura
   slovo: štědrá
-  jak: bytostně
+  dovetek: bytostně
   otisk: h04
 - typ: hodnota
   nadtitulek: kultura
   slovo: tvořivá
-  jak: nespoutaně
+  dovetek: nespoutaně
   otisk: h05
 - typ: hodnota
   nadtitulek: kultura
   slovo: zdravá
-  jak: vnitřně
+  dovetek: vnitřně
   otisk: h06
 - typ: hodnota
   nadtitulek: kultura
   slovo: radostná
-  jak: hluboce
+  dovetek: hluboce
   otisk: h07
 - typ: hodnota
   nadtitulek: kultura
   slovo: odvážná
-  jak: radikálně
+  dovetek: radikálně
   otisk: h08
 - typ: hodnota
   nadtitulek: kultura
   slovo: blízká
-  jak: důvěrně
+  dovetek: důvěrně
   otisk: h09
 - typ: hodnota
   nadtitulek: kultura
   slovo: opravdová
-  jak: přirozeně
+  dovetek: přirozeně
   otisk: h10
 - typ: hodnota
   nadtitulek: kultura
   slovo: jednoduchá
-  jak: nadpřirozeně
+  dovetek: nadpřirozeně
   otisk: h11
