@@ -154,6 +154,68 @@ def render(tpl):
         chyba('chybí pole – ' + str(e))
 
 
+# ---------- Sveltia CMS ----------
+# Druhá administrace nad stejnými soubory v src/obsah/, na adrese /admin/. Formulář se skládá
+# z .pages.yml, takže obě CMS ukazují stejná pole se stejnými názvy a nemůžou se rozejít.
+
+def sveltia_pole(f):
+    """Pole z .pages.yml → widget Sveltia (formát Decap/Netlify CMS)."""
+    typ = {'string': 'string', 'text': 'text', 'select': 'select', 'object': 'object'}[f['type']]
+    w = {'name': f['name'], 'label': f['label'], 'widget': typ, 'required': bool(f.get('required'))}
+    if f.get('description'):
+        w['hint'] = f['description']
+    if typ == 'select':
+        w['options'] = f['options']['values']
+    if typ == 'object':
+        w['fields'] = [sveltia_pole(x) for x in f['fields']]
+    seznam = f.get('list')
+    if not seznam:
+        return w
+    seznam = seznam if isinstance(seznam, dict) else {}
+    l = {'name': w['name'], 'label': w['label'], 'widget': 'list', 'required': w['required']}
+    if 'hint' in w:
+        l['hint'] = w['hint']
+    for k in ('min', 'max'):
+        if k in seznam:
+            l[k] = seznam[k]
+    if typ == 'object':
+        l['fields'] = w['fields']
+        c = seznam.get('collapsible')
+        if isinstance(c, dict):
+            l['collapsed'] = bool(c.get('collapsed'))
+            if c.get('summary'):
+                l['summary'] = re.sub(r'\{(\w+)\}', r'{{fields.\1}}', c['summary'])
+    else:
+        l['field'] = {k: v for k, v in w.items() if k not in ('name', 'label', 'required', 'hint')}
+        l['field'].update(name='radek', label=w['label'])
+    return l
+
+
+def sveltia_config():
+    with open(os.path.join(ROOT, '.pages.yml'), encoding='utf-8') as f:
+        cms = yaml.safe_load(f)['content']
+    return {
+        'backend': {'name': 'github', 'repo': 'radomilcz/cirkevjakokrava', 'branch': 'main',
+                    'commit_messages': {'update': 'Texty: {{path}} (Sveltia)'}},
+        'site_url': SITE,
+        'media_folder': 'src/assets/nahrane',           # povinné, obrázky se tu ale nenahrávají
+        'collections': [{
+            'name': 'manifest', 'label': 'Manifest', 'editor': {'preview': False},
+            'files': [{'name': c['name'], 'label': c['label'], 'file': c['path'],
+                       'fields': [sveltia_pole(x) for x in c['fields']]} for c in cms],
+        }],
+    }
+
+
+def admin():
+    out = os.path.join(DOCS, 'admin')
+    os.makedirs(out, exist_ok=True)
+    shutil.copy(os.path.join(SRC, 'admin', 'index.html'), os.path.join(out, 'index.html'))
+    with open(os.path.join(out, 'config.yml'), 'w', encoding='utf-8') as f:
+        f.write('# Vygenerováno z .pages.yml (build.py) – needitovat, změny patří do .pages.yml\n')
+        yaml.safe_dump(sveltia_config(), f, allow_unicode=True, sort_keys=False, width=100)
+
+
 def wrap(body):
     """Vše před značkou <!--/head--> patří do <head>, zbytek do <body>."""
     head, _, rest = body.partition(HEAD_END)
@@ -193,6 +255,7 @@ def build():
         shutil.copy(os.path.join(SRC, 'assets', name), os.path.join(assets, name))
     web = web.replace('{{SITE}}', SITE)
     check(web)
+    admin()
     with open(os.path.join(DOCS, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(wrap(web))
 

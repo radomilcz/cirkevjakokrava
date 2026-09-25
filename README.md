@@ -9,6 +9,7 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 ## Struktura
 
 ```
+src/admin/index.html         Sveltia CMS na /admin/ (zkušebně; config.yml sestaví build z .pages.yml)
 src/obsah/*.yml              texty – co se píše v Pages CMS (úvod, předmluva, poslání, kultura, zrcadlo, společné)
 .pages.yml                   formulář pro Pages CMS: sekce, názvy polí, nápovědy, povinná pole
 .github/workflows/web.yml    po každém pushi do main přesází web a commitne docs/
@@ -58,6 +59,17 @@ Slajdy se v CMS nepřidávají ani nepřehazují: otisky, fotky i oddělovače n
 Hodnot je přesně deset a slajd s Kennedym má přesně dva řádky. Když je povinné pole prázdné nebo
 počet nesedí, build skončí českou hláškou (např. `21 · Zrcadlo → Velké slovo: je povinné`),
 Action zčervená a na webu zůstane poslední dobrá verze.
+
+### Zkušebně: Sveltia CMS
+
+Druhá administrace nad stejnými soubory běží na [manifest.cirkevjakokrava.cz/admin/](https://manifest.cirkevjakokrava.cz/admin/)
+([Sveltia CMS](https://sveltiacms.app), zdarma). Přihlášení: **Sign In Using Access Token** – Sveltia nabídne
+odkaz na GitHub, kde se vytvoří token s předvyplněnými oprávněními pro tohle repo. Tlačítko „Sign In with GitHub“
+by potřebovalo vlastní OAuth službu, tu zatím nemáme.
+
+Formulář Sveltie (`docs/admin/config.yml`) skládá build z `.pages.yml`, takže obě CMS ukazují stejná pole
+a stejné názvy. Která se neosvědčí, ta se smaže (`src/admin/` + funkce `admin()` v `build.py`,
+nebo `.pages.yml` – ten pak ale zůstane jako zdroj formuláře pro Sveltii).
 
 ## Úprava a build
 
