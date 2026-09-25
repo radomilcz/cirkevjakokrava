@@ -1,0 +1,47 @@
+# Přesází web po každé změně zdrojů.
+#
+# Díky tomu se texty dají psát odkudkoli – z Pages CMS, z webového editoru GitHubu
+# nebo odsud – a nikdo nemusí mít doma Python. Výsledek se commitne do docs/,
+# odkud ho GitHub Pages rovnou servíruje.
+name: Web
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: [docs/**]     # commit z buildu nesmí spustit další build
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:                    # dva pushe za sebou se nemají přetahovat o docs/
+  group: web
+  cancel-in-progress: false
+
+jobs:
+  sazba:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Nástroje
+        run: pip install --quiet pyyaml jinja2
+
+      - name: Sazba webu
+        run: python3 build.py
+
+      - name: Commit, když se něco změnilo
+        run: |
+          git config user.name "Manifest"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          if git diff --cached --quiet; then
+            echo "Web se nezměnil, není co commitovat."
+          else
+            git commit -m "Přesázeno z textů"
+            git push
+          fi

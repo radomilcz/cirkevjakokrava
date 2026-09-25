@@ -1,5 +1,5 @@
-<title>Manifest jako kráva</title>
-<meta name="description" content="Komunitní manifest pro Církev jako kráva – Kdo jsme. Co děláme. Jak, pro koho a proč. Plus hodnoty, které naplňují naše životy.">
+<title>{{ s.sdileni.titulek_stranky }}</title>
+<meta name="description" content="{{ s.sdileni.popis }}">
 <link rel="canonical" href="{{SITE}}/">
 <meta name="theme-color" content="#3b2f2f">
 
@@ -8,12 +8,12 @@
 <meta property="og:url" content="{{SITE}}/">
 <meta property="og:site_name" content="Církev jako kráva">
 <meta property="og:locale" content="cs_CZ">
-<meta property="og:title" content="BŮŮŮH je dobrý, my jsme normální">
-<meta property="og:description" content="Komunitní manifest pro Církev jako kráva – Kdo jsme. Co děláme. Jak, pro koho a proč. Plus hodnoty, které naplňují naše životy.">
+<meta property="og:title" content="{{ s.sdileni.titulek_nahledu }}">
+<meta property="og:description" content="{{ s.sdileni.popis }}">
 <meta property="og:image" content="{{SITE}}/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Dívka stojí na pastvině vedle skotského náhorního skotu, přes fotku nápis BŮŮŮH je dobrý, my jsme normální.">
+<meta property="og:image:alt" content="{{ s.sdileni.popis_obrazku }}">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -21,258 +21,148 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 {{CSS}}
 <!--/head-->
-
+{#- Texty jsou v src/obsah/*.yml (upravují se v Pages CMS), tady je jen jejich sazba.
+    Pořadí a počet slajdů drží design: otisky (tabulka PRINT v JS), oddělovače v liště
+    a čísla slajdů v odkazech (#s0 … #s21) – proto se slajdy v CMS nepřidávají ani nepřehazují. -#}
+{%- macro vyrok(radky) -%}
+    <p class="statement">
+{%- for r in radky %}
+      <span class="ln"><span>{{ r|vyrok }}</span></span>
+{%- endfor %}
+    </p>
+{%- endmacro -%}
+{%- macro pata(otazka, podpis=None) -%}
+    <div class="foot">
+{%- if otazka %}
+      <p class="question rise">{{ otazka|txt }}</p>
+{%- endif %}
+      <p class="brand">{{ podpis or s.podpis }}</p>
+    </div>
+{%- endmacro %}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="otisk" viewBox="0 0 998 816">{{BLOB_PATHS}}</symbol>
 </svg>
-
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
-
 <div class="deck" id="deck">
 <main class="track" id="track">
 
   <!-- 00 · hero · BŮŮŮH je dobrý -->
   <section class="slide hero in" id="s0" aria-label="Manifest – úvod">
-
-    <img class="photo" src="{{HERO}}" alt="Dívka stojí na pastvině vedle skotského náhorního skotu.">
+    <img class="photo" src="{{HERO}}" alt="{{ o.uvod.get('popis_fotky') or '' }}">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">manifest</h2>
+    <h2 class="eyebrow rise">{{ o.uvod.nadtitulek }}</h2>
     <div class="title">
-      <p class="buh" aria-label="BŮŮŮH"><span class="ln"><span aria-hidden="true"><i>B</i><i>Ů</i><i>Ů</i><i>Ů</i><i>H</i></span></span></p>
-      <p class="sub rise">je dobrý, my jsme normální</p>
+      <p class="buh" aria-label="{{ o.uvod.napis }}"><span class="ln"><span aria-hidden="true">{% for p in o.uvod.napis %}<i>{{ p }}</i>{% endfor %}</span></span></p>
+      <p class="sub rise">{{ o.uvod.podnadpis|txt }}</p>
     </div>
-    <div class="foot"><p class="brand rise">církev jako kráva</p></div>
-    </section>
+    <div class="foot"><p class="brand rise">{{ s.podpis }}</p></div>
+  </section>
 
   <!-- 01 · Předmluva · Kdo jsme? (Figma: Předmluva, 1920×4895) -->
   <section class="slide read" id="s1">
-    <h2 class="eyebrow rise">Kdo jsme?</h2>
+    <h2 class="eyebrow rise">{{ o.predmluva.nadtitulek }}</h2>
     <div class="essay">
-      <p class="lead">Dobrá zpráva</p>
-      <h3>Češi nejsou ovce. Potřebují církev jako kráva.</h3>
-      <p>Ptali jsme se, jak můžeme proříznout českou náboženskou šeď. Nabídnout čerstvý pohled na Krista, který bourá zeď předsudků a nedůvěry. Pak přišla ze zámoří zpráva. Chcete vidět změnu? Buďte fialová kráva.</p>
-      <p>To má být vtip? Pane, to nemyslíš vážně. A pak nám to došlo. Kráva je Boží! Je to fakt divný název, ale má neskutečnou sílu.</p>
-      <h3>Minulost je past. Přítomnost je pastva.</h3>
-      <p>Jasně. Jsme Češi. Církev je pro nás minulost. Uzavřená. Prostě past. Ale kráva? Je nadčasová. Normální. Odzbrojující. Lokální. Kde zabučí kráva, na církev nikdo nenadává. Vtahuje nás do děje. Smějeme se → jsme zvědaví → ptáme se:</p>
-      <p class="ask">Proč jako kráva?</p>
-      <p>Protože kráva patří na pastvu, ne do kostela. Žijeme tím, čím žije naše město. Fandíme všemu, co už v něm Bůh dělá. Ať to roste spolu s námi. Všude tam, kde pracujeme a platíme nájem. Dáváme srdce, čas a neředěný zájem.</p>
-      <h3>Lásko, to je Kravařsko!</h3>
-      <p>Kráva je tu domácí. Patří do krajiny stejně jako tráva. Přežvýká jetel, bodláčí i plevel. A pak přijde zázrak. Kráva se rozdává. Vrací zpátky víc, než si bere. Mléko. Smetanu. Telata. Dokonce i kravince jsou baterie pro půdní bakterie. Pastva pulzuje. Kráva ji kultivuje. Prospívá životu. Na každém kroku přidává hodnotu.</p>
-      <p>Kráva je úkaz. Dokud je tu, připomíná světu, že má laskavého Hospodáře. Kdyby odsud zmizela, tvář Kravařska by se k nepoznání změnila. Takoví chceme být i my.</p>
-      <p>Církev, která <em>by</em> Kravařsku chyběla.</p>
+{%- for b in o.predmluva.bloky %}
+      {{ b|blok }}
+{%- endfor %}
     </div>
-    <div class="foot">
-      <p class="question rise">Co to znamená?</p>
-      <p class="brand">církev jako kráva</p>
-    </div>
+    {{ pata(o.predmluva.get('otazka')) }}
   </section>
+
+  {%- set p = o.poslani %}
 
   <!-- 02 · Co děláme? -->
   <section class="slide" id="s2" data-print="01">
-
-    <h2 class="eyebrow rise">Co děláme?</h2>
-    <p class="statement">
-      <span class="ln"><span>Oslavujeme Boží kreativitu</span></span>
-      <span class="ln"><span>a lásku <span class="arrow">→</span> k lidem a městům</span></span>
-      <span class="ln"><span>na Kravařsku.</span></span>
-    </p>
-    <div class="foot">
-      <p class="question rise">Co (kdo) je na Kravařsku tvoje srdcovka a proč?</p>
-      <p class="brand">církev jako kráva</p>
-    </div>
-    </section>
+    <h2 class="eyebrow rise">{{ p.co_delame.nadtitulek }}</h2>
+    {{ vyrok(p.co_delame.vyrok) }}
+    {{ pata(p.co_delame.get('otazka'), p.co_delame.get('podpis')) }}
+  </section>
 
   <!-- 03 · Lásko, to je Kravařsko! (Figma: 02) -->
   <section class="slide love" id="s3" data-print="05">
-    <h2 class="eyebrow rise">Kuhländchen.</h2>
-    <p class="statement">
-      <span class="ln"><span>Lásko, to je</span></span>
-      <span class="ln"><span>Kravařsko!</span></span>
-    </p>
-    <div class="foot">
-      <p class="brand">Herzenssache.</p>
-    </div>
+    <h2 class="eyebrow rise">{{ p.lasko.nadtitulek }}</h2>
+    {{ vyrok(p.lasko.vyrok) }}
+    {{ pata(None, p.lasko.get('podpis')) }}
   </section>
 
   <!-- 04 · Jak to děláme? -->
   <section class="slide" id="s4" data-print="02">
+    <h2 class="eyebrow rise">{{ p.jak_to_delame.nadtitulek }}</h2>
+    {{ vyrok(p.jak_to_delame.vyrok) }}
+    {{ pata(p.jak_to_delame.get('otazka'), p.jak_to_delame.get('podpis')) }}
+  </section>
 
-    <h2 class="eyebrow rise">Jak to děláme?</h2>
-    <p class="statement">
-      <span class="ln"><span>Vnímáme, co Bůh kolem</span></span>
-      <span class="ln"><span>dělá. Přidáváme k tomu</span></span>
-      <span class="ln"><span>naše srdce, slova i ruce.</span></span>
-    </p>
-    <div class="foot">
-      <p class="question rise">Jak se přidáváš k Boží práci ve svém sousedství?</p>
-      <p class="brand">církev jako kráva</p>
-    </div>
-    </section>
-
-  <!-- 05 · Ich bin ein Kuhländler (Figma: 06) -->
+  <!-- 05 · Ich bin ein Kuhländler (Figma: 06) – dva řádky, každý se sází jinak (.l1/.l2) -->
   <section class="slide german" id="s5" data-print="06a">
-
-    <img class="portret" src="{{KENNEDY}}" alt="Vystřižený černobílý portrét Johna F. Kennedyho.">
-    <h2 class="eyebrow rise">Kuhländchen.</h2>
+    <img class="portret" src="{{KENNEDY}}" alt="{{ p.kennedy.get('popis_fotky') or '' }}">
+    <h2 class="eyebrow rise">{{ p.kennedy.nadtitulek }}</h2>
     <p class="statement claim">
-      <span class="ln l1"><span>Ich bin ein</span></span>
-      <span class="ln l2"><span>Kuhländler</span></span>
+      <span class="ln l1"><span>{{ p.kennedy.vyrok[0]|vyrok }}</span></span>
+      <span class="ln l2"><span>{{ p.kennedy.vyrok[1]|vyrok }}</span></span>
     </p>
-    <div class="foot">
-      <p class="question rise">Je Kravařsko i tvoje srdeční záležitost?</p>
-      <p class="brand">Herzenssache.</p>
-    </div>
-    </section>
+    {{ pata(p.kennedy.get('otazka'), p.kennedy.get('podpis')) }}
+  </section>
 
   <!-- 06 · Pro koho? -->
   <section class="slide" id="s6" data-print="03">
-
-    <h2 class="eyebrow rise">Pro koho?</h2>
-    <p class="statement">
-      <span class="ln"><span>Tvoříme pastvu pro oči,</span></span>
-      <span class="ln"><span>uši a duši. Pro publikum,</span></span>
-      <span class="ln"><span>co kostel ani víru neřeší.</span></span>
-    </p>
-    <div class="foot">
-      <p class="question rise">Jakou pastvu tvoříš? Kdo (co) na ní roste?</p>
-      <p class="brand">církev jako kráva</p>
-    </div>
-    </section>
+    <h2 class="eyebrow rise">{{ p.pro_koho.nadtitulek }}</h2>
+    {{ vyrok(p.pro_koho.vyrok) }}
+    {{ pata(p.pro_koho.get('otazka'), p.pro_koho.get('podpis')) }}
+  </section>
 
   <!-- 07 · KRÁVA má Boží design (Figma: 06 s highland fotkou) -->
   <section class="slide value intro manifest" id="s7">
-    <img class="photo" src="{{KRAVA_FOTO}}" alt="Skotský náhorní skot zblízka, za ním dřevěná ohrada.">
+    <img class="photo" src="{{KRAVA_FOTO}}" alt="{{ p.krava.get('popis_fotky') or '' }}">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">pastva</h2>
-    <p class="word"><span class="ln"><span>kráva</span></span><span class="how plain rise">má Boží design</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
+    <h2 class="eyebrow rise">{{ p.krava.nadtitulek }}</h2>
+    <p class="word"><span class="ln"><span>{{ p.krava.slovo }}</span></span><span class="how plain rise">{{ p.krava.get('dovetek')|txt }}</span></p>
+    {{ pata(None, None) }}
   </section>
 
   <!-- 08 · Proč? · Aby lidé poznali -->
   <section class="slide" id="s8" data-print="04">
+    <h2 class="eyebrow rise">{{ p.proc.nadtitulek }}</h2>
+    {{ vyrok(p.proc.vyrok) }}
+    {{ pata(p.proc.get('otazka'), p.proc.get('podpis')) }}
+  </section>
 
-    <h2 class="eyebrow rise">Proč vlastně?</h2>
-    <p class="statement">
-      <span class="ln"><span>Aby lidé poznali, že Bohu</span></span>
-      <span class="ln"><span>na nich záleží. Uprostřed</span></span>
-      <span class="ln"><span>komunity, kam patříš i ty.</span></span>
-    </p>
-    <div class="foot">
-      <p class="question rise">Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?</p>
-      <p class="brand">církev jako kráva</p>
-    </div>
-    </section>
+  {%- set k = o.kultura %}
 
   <!-- 09 · hodnoty · KULTURA (100% živá) -->
   <section class="slide value intro" id="s9">
-
-    <img class="photo" src="{{KULTURA_PHOTO}}" alt="Kráva se pase na horské louce, u ní dvě děti.">
+    <img class="photo" src="{{KULTURA_PHOTO}}" alt="{{ k.uvod.get('popis_fotky') or '' }}">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">plnotučná</h2>
-    <p class="word"><span class="ln"><span>kultura</span></span><span class="how rise">100% živá</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
+    <h2 class="eyebrow rise">{{ k.uvod.nadtitulek }}</h2>
+    <p class="word"><span class="ln"><span>{{ k.uvod.slovo }}</span></span><span class="how rise">{{ k.uvod.get('dovetek')|txt }}</span></p>
+    {{ pata(None, None) }}
+  </section>
 
-  <!-- 10 · hodnoty · odstavec -->
+  <!-- 10 · hodnoty · odstavec (JS ho rozseká na slova, takže bez formátování) -->
   <section class="slide read" id="s10">
+    <h2 class="eyebrow rise">{{ k.odstavec.nadtitulek }}</h2>
+    <p class="text">{{ k.odstavec.text|txt }}</p>
+    {{ pata(None, None) }}
+  </section>
 
-    <h2 class="eyebrow rise">kultura</h2>
-    <p class="text">Hodnoty ladí náš srdeční kompas. Vrací nás na cestu, když ve spěchu a únavě zabloudíme. Tvoří a chrání kulturu pastvy. Přežvykujeme, dokud je nevstřebáme celé. Od pondělí do neděle. V práci, doma i ve škole. Nejen v kostele. Jinak jsou to jen krásné kecy na motivační cedule.</p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <!-- 11–18 · hodnoty -->
-  <section class="slide value" id="s11" data-print="h02">
-
-    <h2 class="eyebrow rise">kultura <span class="n">1/10</span></h2>
-    <p class="word"><span class="ln"><span>otevřená</span></span><span class="how rise">přitažlivě</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s12" data-print="h03">
-
-    <h2 class="eyebrow rise">kultura <span class="n">2/10</span></h2>
-    <p class="word"><span class="ln"><span>srozumitelná</span></span><span class="how rise">pronikavě</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s13" data-print="h04">
-
-    <h2 class="eyebrow rise">kultura <span class="n">3/10</span></h2>
-    <p class="word"><span class="ln"><span>štědrá</span></span><span class="how rise">bytostně</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s14" data-print="h05">
-
-    <h2 class="eyebrow rise">kultura <span class="n">4/10</span></h2>
-    <p class="word"><span class="ln"><span>tvořivá</span></span><span class="how rise">nespoutaně</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s15" data-print="h06">
-
-    <h2 class="eyebrow rise">kultura <span class="n">5/10</span></h2>
-    <p class="word"><span class="ln"><span>zdravá</span></span><span class="how rise">vnitřně</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s16" data-print="h07">
-
-    <h2 class="eyebrow rise">kultura <span class="n">6/10</span></h2>
-    <p class="word"><span class="ln"><span>radostná</span></span><span class="how rise">hluboce</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s17" data-print="h08">
-
-    <h2 class="eyebrow rise">kultura <span class="n">7/10</span></h2>
-    <p class="word"><span class="ln"><span>odvážná</span></span><span class="how rise">radikálně</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s18" data-print="h09">
-
-    <h2 class="eyebrow rise">kultura <span class="n">8/10</span></h2>
-    <p class="word"><span class="ln"><span>blízká</span></span><span class="how rise">důvěrně</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s19" data-print="h10">
-
-    <h2 class="eyebrow rise">kultura <span class="n">9/10</span></h2>
-    <p class="word"><span class="ln"><span>opravdová</span></span><span class="how rise">přirozeně</span></p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
-
-  <section class="slide value" id="s20" data-print="h11">
-
-    <h2 class="eyebrow rise">kultura <span class="n">10/10</span></h2>
-    <p class="word">
-      <span class="ln"><span>jednoduchá</span></span><span class="how rise">nadpřirozeně</span>
-    </p>
-    <div class="foot"><p class="brand">církev jako kráva</p></div>
-    </section>
+  <!-- 11–20 · hodnoty -->
+{%- for h in k.hodnoty %}
+  <section class="slide value" id="s{{ 11 + loop.index0 }}" data-print="h{{ '%02d' % (loop.index + 1) }}">
+    <h2 class="eyebrow rise">{{ k.nadtitulek_hodnot }} <span class="n">{{ loop.index }}/{{ loop.length }}</span></h2>
+    <p class="word"><span class="ln"><span>{{ h.slovo }}</span></span><span class="how rise">{{ h.jak|txt }}</span></p>
+    {{ pata(None, None) }}
+  </section>
+{%- endfor %}
 
   <!-- 21 · zrcadlo -->
   <section class="slide value mirror" id="s21" data-print="zrcadlo">
-
-    <img class="photo" src="{{ZRCADLO_FOTO}}" alt="Tele stojí na břehu jezera, hladina zrcadlí celou jeho postavu.">
+    <img class="photo" src="{{ZRCADLO_FOTO}}" alt="{{ o.zrcadlo.get('popis_fotky') or '' }}">
     <div class="veil"></div>
-    <h2 class="eyebrow rise">Co odráží naše životy?</h2>
-    <p class="word">
-      <span class="ln"><span>zrcadlo</span></span>
-    </p>
-    <div class="foot">
-      <p class="question rise">Podobá se realita našeho života tomu, co říkáme?</p>
-      <p class="brand">církev jako kráva</p>
-    </div>
-    </section>
-
+    <h2 class="eyebrow rise">{{ o.zrcadlo.nadtitulek }}</h2>
+    <p class="word"><span class="ln"><span>{{ o.zrcadlo.slovo }}</span></span></p>
+    {{ pata(o.zrcadlo.get('otazka'), None) }}
+  </section>
 </main>
 </div>
-
 <ul class="rail" id="rail" aria-label="Slajdy"></ul>
-<div class="hint" id="hint">scroll · šipky · mezerník</div>
-
+<div class="hint" id="hint">{{ s.get('napoveda') or '' }}</div>
 {{JS}}

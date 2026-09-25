@@ -5,7 +5,12 @@ Výstup: docs/ (GitHub Pages / manifest.cirkevjakokrava.cz)
   index.html + assets/manifest.css, manifest.js, fonty a fotky jako samostatné
   soubory – prohlížeč je cachuje a stahuje paralelně.
 
-Placeholdery v šabloně / CSS:
+Texty jsou v src/obsah/*.yml – upravují se v Pages CMS (nastavení v .pages.yml) nebo ručně.
+Šablona je Jinja2: {{ o.predmluva.nadtitulek }} apod. bere z obsahu, filtry txt / vyrok / blok
+převádějí zkratky z CMS (-> na šipku, *slovo* na kurzívu). Chybějící nebo špatně vyplněné
+pole build zastaví s českou hláškou – na web se tak rozbitý obsah nedostane.
+
+Placeholdery v šabloně / CSS (nahrazuje build, ne Jinja):
   {{SITE}}                       adresa webu (absolutní odkazy pro og:image, canonical)
   {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
   {{BLOB_PATHS}}                 křivky otisku (src/assets/otisk-paths.txt) – vždy inline, JS je klonuje
@@ -21,6 +26,10 @@ Volitelně:
   python3 build.py --icons                        přegeneruje PNG ikony z favicon.svg (pip install playwright)
 """
 import argparse, os, re, shutil, sys
+
+import yaml                                   # pip install pyyaml jinja2
+from jinja2 import Environment, StrictUndefined, UndefinedError
+from markupsafe import Markup, escape
 
 SITE = 'https://manifest.cirkevjakokrava.cz'   # doména z docs/CNAME – sdílené odkazy musí být absolutní
 
@@ -63,6 +72,97 @@ def prepare_hero(source):
 HEAD_END = '<!--/head-->'
 
 
+# ---------- obsah z CMS ----------
+
+OBSAH = ('spolecne', 'uvod', 'predmluva', 'poslani', 'kultura', 'zrcadlo')   # src/obsah/<jméno>.yml
+PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS', *(k.strip('{}') for k in IMAGES)]  # nahradí se až po Jinja
+BLOKY = {'Malý titulek': '<p class="lead">{}</p>', 'Nadpis': '<h3>{}</h3>',
+         'Odstavec': '<p>{}</p>', 'Otázka': '<p class="ask">{}</p>'}
+POCET_HODNOT = 10          # otisky h02–h11 a oddělovač v liště počítají s deseti slajdy hodnot
+
+
+def chyba(msg):
+    sys.exit('Obsah: ' + msg)
+
+
+def upravy(text):
+    """Zkratky, které se v CMS píšou snadno: -> je šipka, *slovo* kurzíva. Prázdné pole = nic."""
+    t = str(escape(str(text or '').strip())).replace('-&gt;', '→')
+    return re.sub(r'\*([^*]+)\*', r'<em>\1</em>', t)
+
+
+def txt(text):
+    """Běžný text; šipka se drží předchozího slova, aby nezačínala řádek."""
+    return Markup(re.sub(r'\s*→', '\u00a0→', upravy(text)))
+
+
+def vyrok(radek):
+    """Řádek výroku – šipka je v jiném písmu než výrok, proto vlastní span."""
+    return Markup(upravy(radek).replace('→', '<span class="arrow">→</span>'))
+
+
+def blok(b):
+    druh = b.get('druh')
+    if druh not in BLOKY:
+        chyba(f'předmluva – neznámý druh bloku „{druh}“ (může být {", ".join(BLOKY)})')
+    return Markup(BLOKY[druh].format(txt(b.get('text') or chyba(f'předmluva – prázdný blok „{druh}“'))))
+
+
+def zkontroluj(pole, data, cesta):
+    """Povinná pole a délky seznamů podle .pages.yml – hláška mluví stejnými názvy jako CMS."""
+    for f in pole:
+        kde = f'{cesta} → {f["label"]}'
+        hodnota = (data or {}).get(f['name'])
+        seznam = f.get('list')
+        if seznam:
+            polozky = hodnota or []
+            if isinstance(seznam, dict):
+                if 'min' in seznam and len(polozky) < seznam['min'] or 'max' in seznam and len(polozky) > seznam['max']:
+                    pocet = seznam.get('min') if seznam.get('min') == seznam.get('max') else f'{seznam.get("min", 0)}–{seznam.get("max", "∞")}'
+                    chyba(f"{kde}: musí jich být {pocet}, je jich {len(polozky)}")
+            if f.get('required') and not polozky:
+                chyba(f'{kde}: je povinné')
+            if f['type'] == 'object':
+                for i, polozka in enumerate(polozky, 1):
+                    zkontroluj(f['fields'], polozka, f'{kde} {i}')
+            elif f.get('required') and any(not str(x or '').strip() for x in polozky):
+                chyba(f'{kde}: prázdný řádek')
+        elif f['type'] == 'object':
+            zkontroluj(f['fields'], hodnota, kde)
+        elif f.get('required') and not str(hodnota or '').strip():
+            chyba(f'{kde}: je povinné')
+
+
+def nacti_obsah():
+    with open(os.path.join(ROOT, '.pages.yml'), encoding='utf-8') as f:
+        cms = {os.path.basename(c['path'])[:-4]: c for c in yaml.safe_load(f)['content']}
+    o = {}
+    for jmeno in OBSAH:
+        with open(os.path.join(SRC, 'obsah', jmeno + '.yml'), encoding='utf-8') as f:
+            try:
+                o[jmeno] = yaml.safe_load(f) or {}
+            except yaml.YAMLError as e:
+                chyba(f'{jmeno}.yml se nedá přečíst – {e}')
+        zkontroluj(cms[jmeno]['fields'], o[jmeno], cms[jmeno]['label'])
+    k = o['kultura']
+    if len(k.get('hodnoty') or []) != POCET_HODNOT:
+        chyba(f'kultura – hodnot musí být přesně {POCET_HODNOT}, je jich {len(k.get("hodnoty") or [])}')
+    if len(o['poslani']['kennedy'].get('vyrok') or []) != 2:
+        chyba('slajd Ich bin ein Kuhländler má přesně dva řádky')
+    return o
+
+
+def render(tpl):
+    env = Environment(undefined=StrictUndefined, autoescape=True, keep_trailing_newline=True)
+    env.filters.update(txt=txt, vyrok=vyrok, blok=blok)
+    o = nacti_obsah()
+    ctx = {k: '{{%s}}' % k for k in PASSTHROUGH}
+    try:
+        return env.from_string(tpl).render(o=o, s=o['spolecne'], **ctx)
+    except UndefinedError as e:
+        chyba('chybí pole – ' + str(e))
+
+
 def wrap(body):
     """Vše před značkou <!--/head--> patří do <head>, zbytek do <body>."""
     head, _, rest = body.partition(HEAD_END)
@@ -74,7 +174,7 @@ def wrap(body):
 
 
 def build():
-    tpl = read(os.path.join(SRC, 'manifest.template.html'))
+    tpl = render(read(os.path.join(SRC, 'manifest.template.html')))
     css = read(os.path.join(SRC, 'manifest.css'))
     js = read(os.path.join(SRC, 'manifest.js'))
     paths = [l.strip() for l in read(os.path.join(SRC, 'assets', 'otisk-paths.txt')).splitlines() if l.strip()]

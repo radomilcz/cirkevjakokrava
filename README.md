@@ -9,7 +9,10 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 ## Struktura
 
 ```
-src/manifest.template.html   šablona – obsah slajdů (HTML)
+src/obsah/*.yml              texty – co se píše v Pages CMS (úvod, předmluva, poslání, kultura, zrcadlo, společné)
+.pages.yml                   formulář pro Pages CMS: sekce, názvy polí, nápovědy, povinná pole
+.github/workflows/web.yml    po každém pushi do main přesází web a commitne docs/
+src/manifest.template.html   šablona – sazba slajdů (Jinja2), texty bere z src/obsah/
 src/manifest.css             styly
 src/manifest.js              navigace, otisky, animace
 src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
@@ -38,11 +41,31 @@ Přejmenované na krátké názvy podle toho, kam patří – původní jména z
 
 `kultura.jpg` je z originálu oříznutá přesně na výřez z Figmy (frame `Hodnoty 00`) a zmenšená na 2000 px.
 
+## Úprava textů – Pages CMS
+
+Texty se píšou na [app.pagescms.org](https://app.pagescms.org): přihlásit se GitHubem, vybrat repozitář
+`cirkevjakokrava`. Sekce jdou v pořadí slajdů a čísla v názvech (`02 · Co děláme?`) sedí s tečkami
+na liště webu. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
+je změna venku.
+
+Zkratky v textových polích:
+
+- `->` je šipka →; v běžném textu se sama přilepí k předchozímu slovu, aby nezačínala řádek
+- `*slovo*` je kurzíva (ne v odstavci o hodnotách – ten se při čtení rozsvěcuje po slovech)
+- výroky na slajdech se píšou po řádcích – co je jedna položka, je jeden řádek na slajdu
+
+Slajdy se v CMS nepřidávají ani nepřehazují: otisky, fotky i oddělovače na liště jsou navázané na pořadí.
+Hodnot je přesně deset a slajd s Kennedym má přesně dva řádky. Když je povinné pole prázdné nebo
+počet nesedí, build skončí českou hláškou (např. `21 · Zrcadlo → Velké slovo: je povinné`),
+Action zčervená a na webu zůstane poslední dobrá verze.
+
 ## Úprava a build
 
-1. Uprav `src/manifest.template.html` (texty jsou přímo v `<section class="slide">`), případně `manifest.css` / `manifest.js`.
-2. Spusť `python3 build.py` – přegeneruje `docs/`.
+1. Texty v `src/obsah/*.yml` (nebo v CMS), sazbu v `src/manifest.template.html`, případně `manifest.css` / `manifest.js`.
+2. Spusť `python3 build.py` – přegeneruje `docs/` (potřebuje `pip install pyyaml jinja2`).
 3. Otevři `docs/index.html` v prohlížeči (fonty přes `file://` v Chromu nepřednačte, přes lokální server nebo po nasazení ano).
+
+Kdo pushuje do `main` ručně, ať si předtím stáhne commity z CMS a Action (`git pull`) – jinak se push odmítne.
 
 Nová úvodní fotka: `python3 build.py --hero cesta/k/fotce.jpg` (vyžaduje `pip install pillow`).
 
@@ -69,7 +92,7 @@ kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swi
 ## Jak je to postavené
 
 - Slajdy se nepřepínají nativním scrollem, ale jedním `translateY` na celém pásu – proto to nikde neškube.
-- Otisk je jeden `<symbol>`; na aktivní slajd se naklonuje a odkryje jednou animovanou maskou (linka po lince zleva dola doprava nahoru) – SVG se vykreslí jen jednou, takže to nezatěžuje ani mobil. Rozmístění a rotace otisku na jednotlivých slajdech odpovídá Figmě 1:1 (tabulka `PRINT` v JS).
+- Otisk je jeden `<symbol>`; na aktivní slajd se naklonuje a „přitiskne“ – naběhne z 108 % a −2° do plné síly. Animuje se jen průhlednost a transformace jedné vrstvy, takže to kompozitor zvládne sám a SVG se vykreslí jen jednou. Rozmístění a rotace otisku na jednotlivých slajdech odpovídá Figmě 1:1 (tabulka `PRINT` v JS).
 - Text se odhaluje po řádcích maskou (`.ln`), písmena BŮŮŮH jednotlivě.
 - Barvy: pozadí `#3b2f2f`, text `#e6acac`, otisk `rgba(217,199,199,.30)` (náhrada za white + soft-light).
 - Písmo: Agrandir Grand Heavy (popisky, wordmark), Regular (výroky), Narrow Black (BŮŮŮH, hodnoty, Zrcadlo), Grand (podtitul, příslovce).
