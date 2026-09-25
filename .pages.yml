@@ -27,40 +27,42 @@ content:
 
   - name: predmluva
     label: Předmluva
-    type: collection
-    path: src/obsah/predmluva
+    type: file
+    path: src/obsah/predmluva.yml
     format: yaml
-    filename: '{primary}.yml'
-    view:
-      fields:
-        - nadpis
-      primary: nadpis
-      sort:
-        - poradi
-      default:
-        sort: poradi
-        order: asc
     fields:
-      - name: poradi
-        label: Pořadí
-        type: number
-        required: true
-      - name: tagline
-        label: Tagline
-        type: string
-      - name: nadpis
-        label: Nadpis
+      - name: nadtitulek
+        label: Nadtitulek
         type: string
         required: true
-      - name: text
-        label: Text
-        type: rich-text
+      - name: kapitoly
+        label: Kapitoly
+        type: object
         required: true
-        options:
-          format: markdown
-          switcher: false
-          media: false
-        description: Citace = zvýrazněná otázka
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{nadpis}'
+        fields:
+          - name: tagline
+            label: Tagline
+            type: string
+          - name: nadpis
+            label: Nadpis
+            type: string
+            required: true
+          - name: text
+            label: Text
+            type: rich-text
+            required: true
+            options:
+              format: markdown
+              switcher: false
+              media: false
+            description: Citace = zvýrazněná otázka
+      - name: otazka
+        label: Otázka dole
+        type: string
 
   - name: poslani
     label: Poslání
@@ -323,17 +325,6 @@ content:
       - name: napoveda
         label: Nápověda k ovládání
         type: string
-      - name: predmluva
-        label: Předmluva
-        type: object
-        fields:
-          - name: nadtitulek
-            label: Nadtitulek
-            type: string
-            required: true
-          - name: otazka
-            label: Otázka dole
-            type: string
       - name: sdileni
         label: Sdílení odkazu
         type: object
