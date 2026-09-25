@@ -9,8 +9,7 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 ## Struktura
 
 ```
-src/obsah/slajdy/            slajdy – soubor na slajd (název, skupina, typ a jeho pole), z Pages CMS
-src/obsah/poradi.yml         pořadí slajdů – seznam odkazů na soubory v slajdy/
+src/obsah/skupiny/           slajdy po skupinách (uvod, poslani, kultura, zaver) – co se píše v Pages CMS
 src/obsah/spolecne.yml       podpis, nápověda, sdílení odkazu (v CMS „Nastavení“)
 .pages.yml                   formulář pro Pages CMS: sekce, názvy polí, nápovědy, povinná pole
 .github/workflows/web.yml    po každém pushi do main přesází web a commitne docs/
@@ -49,13 +48,12 @@ Texty se píšou na [app.pagescms.org](https://app.pagescms.org): přihlásit se
 `cirkevjakokrava`. Po uložení CMS commitne soubor do `src/obsah/`, GitHub Action přesází web a do minuty
 je změna venku.
 
-Menu CMS: **Pořadí slajdů** · **Slajdy** · **Nastavení**.
+Menu CMS: **Úvod** · **Poslání** · **Kultura** · **Závěr** · **Nastavení**.
 
-- **Slajdy** je tabulka (Název, Skupina) – každý slajd má vlastní stránku. „Nový“ se zeptá na typ.
-- **Pořadí slajdů** je seznam odkazů na slajdy; přetažením se mění pořadí na webu. Nový slajd se na web
-  dostane, až ho sem přidáš. Slajd, který tu chybí, je jako koncept – na webu není.
-- **Skupina** (Úvod, Poslání, Kultura, Závěr, Předěly) je jen pro přehled v tabulce.
-- Přejmenovat soubor slajdu v CMS nejde (odkaz v Pořadí by se rozbil); název slajdu se mění v poli Název.
+- Každá skupina je stránka se svými slajdy v pořadí jako na webu – slajd se přidá tlačítkem (s volbou typu),
+  přetáhne za úchyt, smaže křížkem.
+- Skupiny jdou na webu za sebou jako v menu; mezi nimi je čárka na liště s tečkami. Novou skupinu přidá
+  úprava `.pages.yml` (nová položka s cestou `src/obsah/skupiny/<jméno>.yml`).
 
 Typy slajdů:
 
@@ -70,7 +68,6 @@ Typy slajdů:
 | Hodnota | velké slovo + příslovce; počítadlo „3/10“ se spočítá ze všech hodnot |
 | Zrcadlo | fotka, velké slovo, otázka |
 | Kennedy | kompozice s portrétem – jen jednou, výrok přesně na dva řádky |
-| Předěl na liště | není slajd, jen čárka mezi tečkami vpravo |
 
 Čísla slajdů (`#s0`…), počítadlo hodnot a otisky dopočítá build. Otisk je poloha z Figmy (tabulka `PRINT`
 v `manifest.js`); „Automaticky“ vezme další z řady podle typu slajdu tak, aby sousedé neměli stejný.

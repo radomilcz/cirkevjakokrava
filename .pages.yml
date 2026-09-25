@@ -1,7 +1,7 @@
 # Pages CMS (pagescms.org) – texty manifestu. Přihlášení GitHubem na app.pagescms.org.
 # Co se tu uloží, to GitHub Action přesází na web (.github/workflows/web.yml).
-# Slajdy: každý má vlastní stránku (kolekce), pořadí se skládá přetažením v „Pořadí slajdů“.
-# Otisky, čísla slajdů a počítadlo hodnot dopočítá build.
+# Skupiny slajdů jdou na webu v pořadí jako tady v menu, mezi nimi je čárka na liště.
+# Uvnitř skupiny se slajdy přidávají, přetahují a mažou. Otisky a čísla dopočítá build.
 
 media:
   input: src/assets/fotky
@@ -11,65 +11,21 @@ media:
   rename: safe
 
 content:
-  - name: poradi
-    label: Pořadí slajdů
+  - name: uvod
+    label: Úvod
     type: file
-    path: src/obsah/poradi.yml
+    path: src/obsah/skupiny/uvod.yml
     format: yaml
     fields:
       - name: slajdy
-        label: Slajdy v pořadí
-        type: reference
-        list: true
-        required: true
-        options:
-          collection: slajdy
-          value: '{path}'
-          label: '{fields.nazev}'
-          search: nazev
-        description: Přetažením měníš pořadí. Slajd, který tu není, na webu nebude.
-
-  - name: slajdy
-    label: Slajdy
-    type: collection
-    path: src/obsah/slajdy
-    format: yaml
-    filename: '{primary}.yml'
-    operations:
-      rename: false
-    view:
-      fields:
-        - nazev
-        - skupina
-      primary: nazev
-      sort:
-        - skupina
-        - nazev
-      default:
-        sort: skupina
-        order: asc
-    fields:
-      - name: nazev
-        label: Název
-        type: string
-        required: true
-        description: Jak se slajd jmenuje v přehledu a v Pořadí slajdů.
-      - name: skupina
-        label: Skupina
-        type: select
-        required: true
-        options:
-          values:
-            - Úvod
-            - Poslání
-            - Kultura
-            - Závěr
-            - Předěly
-      - name: slajd
-        label: Slajd
+        label: Slajdy
         type: block
         blockKey: typ
         required: true
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{nadtitulek} {slovo}'
         blocks:
           - name: uvod
             label: Úvod
@@ -388,14 +344,1008 @@ content:
               - name: popis_fotky
                 label: Popis portrétu
                 type: string
-          - name: predel
-            label: Předěl na liště
+
+  - name: poslani
+    label: Poslání
+    type: file
+    path: src/obsah/skupiny/poslani.yml
+    format: yaml
+    fields:
+      - name: slajdy
+        label: Slajdy
+        type: block
+        blockKey: typ
+        required: true
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{nadtitulek} {slovo}'
+        blocks:
+          - name: uvod
+            label: Úvod
             type: object
             fields:
-              - name: poznamka
-                label: Poznámka
+              - name: nadtitulek
+                label: Nadtitulek
                 type: string
-                description: Čárka mezi tečkami na liště webu. Nikde se neukáže.
+                required: true
+              - name: napis
+                label: Velký nápis
+                type: string
+                required: true
+              - name: podnadpis
+                label: Podnadpis
+                type: string
+                required: true
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+          - name: predmluva
+            label: Předmluva
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: kapitoly
+                label: Kapitoly
+                type: object
+                required: true
+                list:
+                  collapsible:
+                    collapsed: true
+                    summary: '{nadpis}'
+                fields:
+                  - name: tagline
+                    label: Tagline
+                    type: string
+                  - name: nadpis
+                    label: Nadpis
+                    type: string
+                    required: true
+                  - name: text
+                    label: Text
+                    type: rich-text
+                    required: true
+                    options:
+                      format: markdown
+                      switcher: false
+                      media: false
+                    description: Citace = zvýrazněná otázka
+              - name: otazka
+                label: Otázka dole
+                type: string
+          - name: vyrok
+            label: Výrok
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Co řádek, to řádek na slajdu.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: vyrok_ruzovy
+            label: Výrok na růžovém
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Co řádek, to řádek na slajdu.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+          - name: fotka
+            label: Fotka se slovem
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Velké slovo
+                type: string
+                required: true
+              - name: dovetek
+                label: Dovětek
+                type: string
+              - name: bez_zavorek
+                label: Dovětek bez závorek
+                type: boolean
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+          - name: odstavec
+            label: Odstavec
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: text
+                label: Text
+                type: text
+                required: true
+          - name: hodnota
+            label: Hodnota
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Hodnota
+                type: string
+                required: true
+              - name: jak
+                label: Jak
+                type: string
+                required: true
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: zrcadlo
+            label: Zrcadlo
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Velké slovo
+                type: string
+                required: true
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: kennedy
+            label: Kennedy
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Přesně dva řádky – malý a velký.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+              - name: popis_fotky
+                label: Popis portrétu
+                type: string
+
+  - name: kultura
+    label: Kultura
+    type: file
+    path: src/obsah/skupiny/kultura.yml
+    format: yaml
+    fields:
+      - name: slajdy
+        label: Slajdy
+        type: block
+        blockKey: typ
+        required: true
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{nadtitulek} {slovo}'
+        blocks:
+          - name: uvod
+            label: Úvod
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: napis
+                label: Velký nápis
+                type: string
+                required: true
+              - name: podnadpis
+                label: Podnadpis
+                type: string
+                required: true
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+          - name: predmluva
+            label: Předmluva
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: kapitoly
+                label: Kapitoly
+                type: object
+                required: true
+                list:
+                  collapsible:
+                    collapsed: true
+                    summary: '{nadpis}'
+                fields:
+                  - name: tagline
+                    label: Tagline
+                    type: string
+                  - name: nadpis
+                    label: Nadpis
+                    type: string
+                    required: true
+                  - name: text
+                    label: Text
+                    type: rich-text
+                    required: true
+                    options:
+                      format: markdown
+                      switcher: false
+                      media: false
+                    description: Citace = zvýrazněná otázka
+              - name: otazka
+                label: Otázka dole
+                type: string
+          - name: vyrok
+            label: Výrok
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Co řádek, to řádek na slajdu.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: vyrok_ruzovy
+            label: Výrok na růžovém
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Co řádek, to řádek na slajdu.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+          - name: fotka
+            label: Fotka se slovem
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Velké slovo
+                type: string
+                required: true
+              - name: dovetek
+                label: Dovětek
+                type: string
+              - name: bez_zavorek
+                label: Dovětek bez závorek
+                type: boolean
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+          - name: odstavec
+            label: Odstavec
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: text
+                label: Text
+                type: text
+                required: true
+          - name: hodnota
+            label: Hodnota
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Hodnota
+                type: string
+                required: true
+              - name: jak
+                label: Jak
+                type: string
+                required: true
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: zrcadlo
+            label: Zrcadlo
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Velké slovo
+                type: string
+                required: true
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: kennedy
+            label: Kennedy
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Přesně dva řádky – malý a velký.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+              - name: popis_fotky
+                label: Popis portrétu
+                type: string
+
+  - name: zaver
+    label: Závěr
+    type: file
+    path: src/obsah/skupiny/zaver.yml
+    format: yaml
+    fields:
+      - name: slajdy
+        label: Slajdy
+        type: block
+        blockKey: typ
+        required: true
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{nadtitulek} {slovo}'
+        blocks:
+          - name: uvod
+            label: Úvod
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: napis
+                label: Velký nápis
+                type: string
+                required: true
+              - name: podnadpis
+                label: Podnadpis
+                type: string
+                required: true
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+          - name: predmluva
+            label: Předmluva
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: kapitoly
+                label: Kapitoly
+                type: object
+                required: true
+                list:
+                  collapsible:
+                    collapsed: true
+                    summary: '{nadpis}'
+                fields:
+                  - name: tagline
+                    label: Tagline
+                    type: string
+                  - name: nadpis
+                    label: Nadpis
+                    type: string
+                    required: true
+                  - name: text
+                    label: Text
+                    type: rich-text
+                    required: true
+                    options:
+                      format: markdown
+                      switcher: false
+                      media: false
+                    description: Citace = zvýrazněná otázka
+              - name: otazka
+                label: Otázka dole
+                type: string
+          - name: vyrok
+            label: Výrok
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Co řádek, to řádek na slajdu.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: vyrok_ruzovy
+            label: Výrok na růžovém
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Co řádek, to řádek na slajdu.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+          - name: fotka
+            label: Fotka se slovem
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Velké slovo
+                type: string
+                required: true
+              - name: dovetek
+                label: Dovětek
+                type: string
+              - name: bez_zavorek
+                label: Dovětek bez závorek
+                type: boolean
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+          - name: odstavec
+            label: Odstavec
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: text
+                label: Text
+                type: text
+                required: true
+          - name: hodnota
+            label: Hodnota
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Hodnota
+                type: string
+                required: true
+              - name: jak
+                label: Jak
+                type: string
+                required: true
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: zrcadlo
+            label: Zrcadlo
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: slovo
+                label: Velké slovo
+                type: string
+                required: true
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: fotka
+                label: Fotka
+                type: image
+                required: true
+              - name: popis_fotky
+                label: Popis fotky
+                type: string
+              - name: otisk
+                label: Otisk
+                type: select
+                options:
+                  values:
+                    - value: auto
+                      label: Automaticky
+                    - value: '01'
+                      label: Poloha 1
+                    - value: '02'
+                      label: Poloha 2
+                    - value: '03'
+                      label: Poloha 3
+                    - value: '04'
+                      label: Poloha 4
+                    - value: '05'
+                      label: Poloha 5
+                    - value: h02
+                      label: Poloha 6
+                    - value: h03
+                      label: Poloha 7
+                    - value: h04
+                      label: Poloha 8
+                    - value: h05
+                      label: Poloha 9
+                    - value: h06
+                      label: Poloha 10
+                    - value: h07
+                      label: Poloha 11
+                    - value: h08
+                      label: Poloha 12
+                    - value: h09
+                      label: Poloha 13
+                    - value: h10
+                      label: Poloha 14
+                    - value: h11
+                      label: Poloha 15
+                    - value: zrcadlo
+                      label: Poloha 16
+                default: auto
+          - name: kennedy
+            label: Kennedy
+            type: object
+            fields:
+              - name: nadtitulek
+                label: Nadtitulek
+                type: string
+                required: true
+              - name: vyrok
+                label: Výrok
+                type: text
+                required: true
+                description: Přesně dva řádky – malý a velký.
+              - name: otazka
+                label: Otázka
+                type: string
+              - name: podpis
+                label: Podpis
+                type: string
+                description: Prázdné = společný podpis.
+              - name: popis_fotky
+                label: Popis portrétu
+                type: string
 
   - name: spolecne
     label: Nastavení

@@ -262,16 +262,6 @@ def nacti(polozky, cesta=''):
         if c['type'] == 'group':
             o[c['name']] = nacti(c['items'], kde + ' → ')
             continue
-        if c['type'] == 'collection':                  # Slajdy: soubor na slajd, klíč = cesta (na ni míří Pořadí)
-            o[c['name']] = {}
-            for jmeno in sorted(os.listdir(os.path.join(ROOT, c['path']))):
-                if jmeno.endswith(('.yml', '.yaml')):
-                    cesta = f'{c["path"]}/{jmeno}'
-                    with open(os.path.join(ROOT, cesta), encoding='utf-8') as f:
-                        data = yaml.safe_load(f) or {}
-                    zkontroluj(c['fields'], data, f'{kde} → {data.get("nazev") or jmeno}')
-                    o[c['name']][cesta] = data
-            continue
         with open(os.path.join(ROOT, c['path']), encoding='utf-8') as f:
             try:
                 o[c['name']] = yaml.safe_load(f) or {}
@@ -283,13 +273,14 @@ def nacti(polozky, cesta=''):
 
 def nacti_obsah():
     with open(os.path.join(ROOT, '.pages.yml'), encoding='utf-8') as f:
-        o = nacti(yaml.safe_load(f)['content'])
-    poradi = []
-    for cesta in o['poradi'].get('slajdy') or []:
-        data = o['slajdy'].get(str(cesta).lstrip('/'))
-        if data is None:
-            chyba(f'Pořadí slajdů: „{cesta}“ neexistuje – slajd byl smazaný nebo přejmenovaný')
-        poradi.append(dict(data['slajd'], nazev=data.get('nazev')))
+        cms = yaml.safe_load(f)['content']
+    o = nacti(cms)
+    poradi = []                                   # skupiny v pořadí menu, mezi nimi předěl (čárka na liště)
+    for c in cms:
+        if c.get('path', '').startswith('src/obsah/skupiny/'):
+            if poradi:
+                poradi.append({'typ': 'predel'})
+            poradi += o[c['name']].get('slajdy') or []
     o['poradi'] = poradi
     slajdy = [x for x in poradi if x.get('typ') != 'predel']
     if not slajdy:

@@ -1,0 +1,55 @@
+slajdy:
+- typ: vyrok
+  nadtitulek: Co děláme?
+  vyrok: |
+    Oslavujeme Boží kreativitu
+    a lásku -> k lidem a městům
+    na Kravařsku.
+  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  otisk: '01'
+- typ: vyrok_ruzovy
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Lásko, to je
+    Kravařsko!
+  podpis: Herzenssache.
+  otisk: '05'
+- typ: vyrok
+  nadtitulek: Jak to děláme?
+  vyrok: |
+    Vnímáme, co Bůh kolem
+    dělá. Přidáváme k tomu
+    naše srdce, slova i ruce.
+  otazka: Jak se přidáváš k Boží práci ve svém sousedství?
+  otisk: '02'
+- typ: kennedy
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Ich bin ein
+    Kuhländler
+  otazka: Je Kravařsko i tvoje srdeční záležitost?
+  podpis: Herzenssache.
+  popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
+- typ: vyrok
+  nadtitulek: Pro koho?
+  vyrok: |
+    Tvoříme pastvu pro oči,
+    uši a duši. Pro publikum,
+    co kostel ani víru neřeší.
+  otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
+  otisk: '03'
+- typ: fotka
+  nadtitulek: pastva
+  slovo: kráva
+  dovetek: má Boží design
+  bez_zavorek: true
+  fotka: assets/fotky/krava-manifest.webp
+  popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
+- typ: vyrok
+  nadtitulek: Proč vlastně?
+  vyrok: |
+    Aby lidé poznali, že Bohu
+    na nich záleží. Uprostřed
+    komunity, kam patříš i ty.
+  otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  otisk: '04'
