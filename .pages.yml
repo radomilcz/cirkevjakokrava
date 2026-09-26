@@ -61,7 +61,6 @@ components:
         fields:
           - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
-          - {name: tagline, type: string, label: Tagline}
           - {name: vyrok, component: vyrok}
           - {name: otazka, component: otazka}
           - {name: podpis, component: podpis}
