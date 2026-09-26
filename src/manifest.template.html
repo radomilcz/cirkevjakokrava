@@ -89,6 +89,16 @@
     {{ pata(x.get('otazka'), x.get('podpis')) }}
   </section>
 
+{%- elif t == 'pilir' %}
+  {{ sekce(x, 'pillar') }}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    <div class="pilir">
+      <h3 class="vyzva">{{ x.vyzva|txt }}</h3>
+      <p class="popis">{{ x.text|txt }}</p>
+    </div>
+    {{ pata(x.get('otazka')) }}
+  </section>
+
 {%- elif t == 'kennedy' %}
 {%- set r = x.vyrok|radky %}
   {{ sekce(x, 'german') }}

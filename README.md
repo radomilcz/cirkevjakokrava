@@ -70,6 +70,7 @@ Typy slajdů:
 | --- | --- |
 | Úvod | fotka přes celý slajd, velký nápis po písmenech (BŮŮŮH) |
 | Předmluva | dlouhý text po kapitolách (Tagline, Nadpis, Text v editoru – **Citace** = zvýrazněná otázka) |
+| Pilíř | nadtitulek, výzva (velký nadpis), text (odstavec), otázka, otisk – pilíře poslání |
 | Výrok | nadtitulek, výrok po řádcích, otázka, podpis, otisk |
 | Výrok na růžovém | totéž na růžovém pozadí (Lásko, to je Kravařsko!) |
 | Fotka se slovem | fotka přes celý slajd, velké slovo, dovětek (v závorce, nebo bez) |

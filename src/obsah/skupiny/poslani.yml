@@ -1,12 +1,11 @@
 slajdy:
-- typ: vyrok
+- typ: pilir
   nazev: Co děláme?
   nadtitulek: Co děláme?
-  vyrok: |
-    Oslavujeme Boží kreativitu
-    a lásku -> k lidem a městům
-    na Kravařsku.
-  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  vyzva: Oslavuj.
+  text: >-
+    Boha oslavujeme i tím, komu fandíme. Na Kravařsku žijí lidé, kteří mají náš kraj rádi. Dávají mu čas a nápady. Pod jejich rukama roste něco dobrého. Vidíme v tom Boží kreativitu a lásku. Poznáváme je, učíme se od nich a podporujeme je. A dáváme to znát.
+  otazka: Komu tady fandíš? Ví o tom?
   otisk: '01'
 - typ: vyrok_ruzovy
   nazev: Lásko, to je Kravařsko!
@@ -16,14 +15,13 @@ slajdy:
     Kravařsko!
   podpis: Herzenssache.
   otisk: '05'
-- typ: vyrok
+- typ: pilir
   nazev: Jak to děláme?
   nadtitulek: Jak to děláme?
-  vyrok: |
-    Vnímáme, co Bůh kolem
-    dělá. Přidáváme k tomu
-    naše srdce, slova i ruce.
-  otazka: Jak se přidáváš k Boží práci ve svém sousedství?
+  vyzva: Přidej se.
+  text: >-
+    Bůh tu pracoval dávno před námi. Stačí se rozhlédnout. Co tu roste? Kdo o to pečuje? Přikládáme modlitby a ruce k tomu, co má Boží srdce. Dáváme do toho čas, důvěru a peníze.
+  otazka: Kde ve tvém sousedství Bůh už pracuje? Jak se přidáš?
   otisk: '02'
 - typ: kennedy
   nazev: Ich bin ein Kuhländler
@@ -34,14 +32,13 @@ slajdy:
   otazka: Je Kravařsko i tvoje srdeční záležitost?
   podpis: Herzenssache.
   popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
-- typ: vyrok
+- typ: pilir
   nazev: Pro koho?
   nadtitulek: Pro koho?
-  vyrok: |
-    Tvoříme pastvu pro oči,
-    uši a duši. Pro publikum,
-    co kostel ani víru neřeší.
-  otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
+  vyzva: Tvoř pastvu.
+  text: >-
+    Tvoříme pastvu pro oči, uši a duši. Dá se tu nadechnout, nasytit a růst. Je pro lidi, co kostel ani víru neřeší. Církev je pro ně spíš past. Pastva nemá práh. Ani nedělní otevírací dobu. Tvoříme ji všude, kde jsme.
+  otazka: Jakou pastvu tvoříš ty? Kdo na ní roste?
   otisk: '03'
 - typ: fotka
   nazev: Kráva – má Boží design
@@ -51,12 +48,11 @@ slajdy:
   bez_zavorek: true
   fotka: assets/fotky/krava-manifest.webp
   popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
-- typ: vyrok
+- typ: pilir
   nazev: Proč vlastně?
   nadtitulek: Proč vlastně?
-  vyrok: |
-    Aby lidé poznali, že Bohu
-    na nich záleží. Uprostřed
-    komunity, kam patříš i ty.
-  otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  vyzva: Buď normální.
+  text: >-
+    Bůh zná každého jménem. My se jména učíme. Zajímáme se o lidi i mimo nedělní lavice. Ať díky nám na vlastní kůži zažijí, že Bohu na nich záleží. Tam, kde žijí. Doma, v práci, v partě. A třeba si pak řeknou: „Bůh je dobrý a oni jsou normální.“
+  otazka: Co si o Bohu myslí ti, co znají tebe?
   otisk: '04'

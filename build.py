@@ -67,11 +67,12 @@ BLOKY = {'tagline': '<p class="lead">{}</p>', 'nadpis': '<h3>{}</h3>',   # bloky
 # Otisky (polohy z Figmy, tabulka PRINT v JS). Slajd s polem Otisk = „automaticky“ dostane další z řady.
 OTISKY_AUTO = {                                            # řady podle typu; soused nikdy nedostane stejný
     'vyrok': ['01', '02', '03', '04'],
+    'pilir': ['01', '02', '03', '04'],
     'hodnota': ['h02', 'h03', 'h04', 'h05', 'h06', 'h07', 'h08', 'h09', 'h10', 'h11'],
     'zrcadlo': ['zrcadlo', 'h11', 'h05'],
 }
 OTISK_TYPU = {'vyrok_ruzovy': '05', 'kennedy': '06a'}      # typy s vlastní kompozicí
-S_OTISKEM = {'vyrok', 'vyrok_ruzovy', 'kennedy', 'hodnota', 'zrcadlo'}
+S_OTISKEM = {'vyrok', 'pilir', 'vyrok_ruzovy', 'kennedy', 'hodnota', 'zrcadlo'}
 
 
 def chyba(msg):

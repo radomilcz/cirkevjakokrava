@@ -65,6 +65,15 @@ components:
           - {name: otazka, component: otazka}
           - {name: podpis, component: podpis}
           - {name: otisk, component: otisk}
+      - name: pilir
+        label: Pilíř
+        fields:
+          - {name: nazev, component: nazev}
+          - {name: nadtitulek, component: nadtitulek}
+          - {name: vyzva, type: string, label: Výzva, pattern: {regex: '\S', message: Doplň výzvu}}
+          - {name: text, component: text}
+          - {name: otazka, component: otazka}
+          - {name: otisk, component: otisk}
       - name: vyrok_ruzovy
         label: Výrok na růžovém
         fields:
