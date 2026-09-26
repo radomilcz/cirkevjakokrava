@@ -80,8 +80,10 @@ def chyba(msg):
 
 
 def upravy(text):
-    """Zkratky, které se v CMS píšou snadno: -> je šipka, *slovo* kurzíva. Prázdné pole = nic."""
+    """Zkratky, které se v CMS píšou snadno: -> je šipka, *slovo* kurzíva. Prázdné pole = nic.
+    Za předložkou a spojkou o jednom písmenu je nezlomitelná mezera (česká sazba)."""
     t = str(escape(str(text or '').strip())).replace('-&gt;', '→')
+    t = re.sub(r'(?<![^\s„(])([vkszouaiVKSZOUAI]) ', '\\1\u00a0', t)   # jednopísmenné slovo nezůstane na konci řádku
     return re.sub(r'\*([^*]+)\*', r'<em>\1</em>', t)
 
 
