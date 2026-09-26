@@ -50,6 +50,7 @@
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 <div class="deck" id="deck">
 <main class="track" id="track">
+{%- set pocitadlo = namespace(tagline=0) %}
 {%- for x in o.poradi|rozvrh %}
 {%- set t = x.typ %}
 
@@ -85,7 +86,15 @@
 {%- elif t in ('vyrok', 'vyrok_ruzovy') %}
   {{ sekce(x, 'love' if t == 'vyrok_ruzovy' else '') }}
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+{%- if x.get('tagline') %}
+{%- set pocitadlo.tagline = pocitadlo.tagline + 1 %}
+    <div class="s-taglinem">
+      <p class="tagline rise"><span class="n">{{ '%02d'|format(pocitadlo.tagline) }}</span> {{ x.tagline|txt }}</p>
+      {{ vyrok(x.vyrok) }}
+    </div>
+{%- else %}
     {{ vyrok(x.vyrok) }}
+{%- endif %}
     {{ pata(x.get('otazka'), x.get('podpis')) }}
   </section>
 

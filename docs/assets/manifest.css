@@ -206,6 +206,15 @@ body{
 .german .l1{color:#fff}
 .german .l2{margin-left:.571em;margin-top:-.446em}
 
+/* ---------- výrok s taglinem (01 Oslavuj.) – tagline sedí nad výrokem, oba uprostřed slajdu ---------- */
+.s-taglinem{grid-row:2;align-self:center;min-width:0;position:relative;z-index:1}
+.s-taglinem .statement{align-self:auto}
+.tagline{
+  margin:0 0 .9em;font-family:var(--display);font-weight:800;letter-spacing:-.01em;
+  font-size:clamp(1.1rem,2.6vw,3.1rem);line-height:1.1;
+}
+.tagline .n{font-family:var(--body);font-weight:400;opacity:.7;margin-right:.45em}
+
 /* ---------- pilíře poslání · výzva + odstavec + otázka ----------
    Výzva je v řezu i velikosti výroku, odstavec v písmu předmluvy. Sloupec drží míru řádky
    (~40 znaků), ne šířku okna. Celý blok se vysune najednou jako výrok na mobilu. */
