@@ -93,7 +93,7 @@
   {{ sekce(x, 'pillar') }}
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <div class="pilir">
-      <h3 class="vyzva">{{ x.vyzva|txt }}</h3>
+      <h3 class="nadpis">{% for r in x.vyrok|radky %}<span>{{ r|vyrok }}</span> {% endfor %}</h3>
       <p class="popis">{{ x.text|txt }}</p>
     </div>
     {{ pata(x.get('otazka')) }}

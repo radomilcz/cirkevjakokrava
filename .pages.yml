@@ -70,7 +70,7 @@ components:
         fields:
           - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
-          - {name: vyzva, type: string, label: Výzva, pattern: {regex: '\S', message: Doplň výzvu}}
+          - {name: vyrok, component: vyrok}
           - {name: text, component: text}
           - {name: otazka, component: otazka}
           - {name: otisk, component: otisk}
