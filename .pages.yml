@@ -71,7 +71,7 @@ components:
           - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: vyrok, component: vyrok}
-          - {name: text, component: text}
+          - {name: text, type: text, label: Text}
           - {name: otazka, component: otazka}
           - {name: otisk, component: otisk}
       - name: vyrok_ruzovy
