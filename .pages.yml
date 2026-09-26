@@ -15,6 +15,7 @@ media:
   rename: safe
 
 components:
+  nazev:      {type: string, label: Název}
   nadtitulek: {type: string, label: Nadtitulek, pattern: {regex: '\S', message: Doplň nadtitulek}}
   slovo:      {type: string, label: Velké slovo, pattern: {regex: '\S', message: Doplň velké slovo}}
   dovetek:    {type: string, label: Dovětek}
@@ -53,11 +54,12 @@ components:
     label: false
     blockKey: typ
     list:
-      collapsible: {collapsed: true, summary: '{nadtitulek} {slovo}{vyrok}'}
+      collapsible: {collapsed: true, summary: '{nazev}'}
     blocks:
       - name: vyrok
         label: Výrok
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: vyrok, component: vyrok}
           - {name: otazka, component: otazka}
@@ -66,6 +68,7 @@ components:
       - name: vyrok_ruzovy
         label: Výrok na růžovém
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: vyrok, component: vyrok}
           - {name: otazka, component: otazka}
@@ -73,6 +76,7 @@ components:
       - name: fotka
         label: Fotka se slovem
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: slovo, component: slovo}
           - {name: dovetek, component: dovetek}
@@ -82,6 +86,7 @@ components:
       - name: hodnota
         label: Hodnota
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: slovo, component: slovo}
           - {name: dovetek, component: dovetek, pattern: {regex: '\S', message: Doplň dovětek}}
@@ -89,11 +94,13 @@ components:
       - name: odstavec
         label: Odstavec
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: text, component: text}
       - name: uvod
         label: Úvod
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: slovo, component: slovo}
           - {name: podnadpis, component: podnadpis}
@@ -102,6 +109,7 @@ components:
       - name: predmluva
         label: Předmluva
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - name: kapitoly
             label: Kapitoly
@@ -120,6 +128,7 @@ components:
       - name: zrcadlo
         label: Zrcadlo
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: slovo, component: slovo}
           - {name: otazka, component: otazka}
@@ -129,6 +138,7 @@ components:
       - name: kennedy
         label: Kennedy
         fields:
+          - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: vyrok, component: vyrok}
           - {name: otazka, component: otazka}

@@ -1,11 +1,13 @@
 slajdy:
 - typ: uvod
+  nazev: Úvod – BŮŮŮH
   nadtitulek: manifest
   slovo: BŮŮŮH
   podnadpis: je dobrý, my jsme normální
   fotka: assets/fotky/hero.webp
   popis_fotky: Dívka stojí na pastvině vedle skotského náhorního skotu.
 - typ: predmluva
+  nazev: Předmluva
   nadtitulek: Kdo jsme?
   kapitoly:
   - tagline: Dobrá zpráva

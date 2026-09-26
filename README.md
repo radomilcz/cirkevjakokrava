@@ -52,7 +52,7 @@ Menu CMS: **Úvod** · **Poslání** · **Kultura** · **Závěr** · **Nastaven
 Tři úrovně: skupina (položka v menu) → slajd (řádek v seznamu) → objekt (pole).
 
 - Každá skupina je stránka se svými slajdy v pořadí jako na webu – slajd se přidá tlačítkem (s volbou typu),
-  přetáhne za úchyt, smaže košem. Sbalený řádek ukazuje nadtitulek a začátek slova nebo výroku.
+  přetáhne za úchyt, smaže košem. Sbalený řádek ukazuje Název slajdu (pole Název – jen pro přehled v CMS, na web nejde).
 - Skupiny jdou na webu za sebou jako v menu; mezi nimi je čárka na liště s tečkami. Nová skupina =
   zkopírovat jeden řádek v `content` v `.pages.yml` (jde to i v Pages CMS → Configuration) a změnit
   name/label/path; CMS pak nabídne založit soubor.

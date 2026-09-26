@@ -1,5 +1,6 @@
 slajdy:
 - typ: fotka
+  nazev: Kultura – 100% živá
   nadtitulek: plnotučná
   slovo: kultura
   dovetek: 100% živá
@@ -7,54 +8,65 @@ slajdy:
   fotka: assets/fotky/kultura.jpg
   popis_fotky: Kráva se pase na horské louce, u ní dvě děti.
 - typ: odstavec
+  nazev: Odstavec o hodnotách
   nadtitulek: kultura
   text: Hodnoty ladí náš srdeční kompas. Vrací nás na cestu, když ve spěchu a únavě zabloudíme. Tvoří a chrání kulturu pastvy. Přežvykujeme, dokud je nevstřebáme celé. Od pondělí do neděle. V práci, doma i ve škole. Nejen v kostele. Jinak jsou to jen krásné kecy na motivační cedule.
 - typ: hodnota
+  nazev: Hodnota – otevřená
   nadtitulek: kultura
   slovo: otevřená
   dovetek: přitažlivě
   otisk: h02
 - typ: hodnota
+  nazev: Hodnota – srozumitelná
   nadtitulek: kultura
   slovo: srozumitelná
   dovetek: pronikavě
   otisk: h03
 - typ: hodnota
+  nazev: Hodnota – štědrá
   nadtitulek: kultura
   slovo: štědrá
   dovetek: bytostně
   otisk: h04
 - typ: hodnota
+  nazev: Hodnota – tvořivá
   nadtitulek: kultura
   slovo: tvořivá
   dovetek: nespoutaně
   otisk: h05
 - typ: hodnota
+  nazev: Hodnota – zdravá
   nadtitulek: kultura
   slovo: zdravá
   dovetek: vnitřně
   otisk: h06
 - typ: hodnota
+  nazev: Hodnota – radostná
   nadtitulek: kultura
   slovo: radostná
   dovetek: hluboce
   otisk: h07
 - typ: hodnota
+  nazev: Hodnota – odvážná
   nadtitulek: kultura
   slovo: odvážná
   dovetek: radikálně
   otisk: h08
 - typ: hodnota
+  nazev: Hodnota – blízká
   nadtitulek: kultura
   slovo: blízká
   dovetek: důvěrně
   otisk: h09
 - typ: hodnota
+  nazev: Hodnota – opravdová
   nadtitulek: kultura
   slovo: opravdová
   dovetek: přirozeně
   otisk: h10
 - typ: hodnota
+  nazev: Hodnota – jednoduchá
   nadtitulek: kultura
   slovo: jednoduchá
   dovetek: nadpřirozeně
