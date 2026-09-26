@@ -216,6 +216,8 @@ body{
   margin:0;font-family:var(--display);font-weight:800;
   font-size:clamp(1.9rem,5.9vw,7.25rem);line-height:1.18;letter-spacing:-.01em;
 }
+/* dlouhé řádky (celé poslání na jednom slajdu) – menší, ať se řádek vejde na šířku */
+.pilir .nadpis.dlouhy{font-size:clamp(1.6rem,3.75vw,4.6rem)}
 /* s odstavcem pod sebou je výrok o kus menší, ať se oba vejdou */
 .pilir .nadpis:not(:last-child){margin-bottom:.6em;font-size:clamp(1.6rem,4.6vw,5.6rem);line-height:1.15}
 .pilir .nadpis>span{display:block;white-space:nowrap}
