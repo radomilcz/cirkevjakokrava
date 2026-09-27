@@ -5,4 +5,4 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme rodina křesťanů. Místní komunita v Novém Jičíně. Dospělí i děti. Tátové a mámy. Singles i páry. Senioři. Doktoři a designéři. Muzikanti. Konzultanti. Zemědělci a tesaři. Máme různé dary, ale jednu touhu. Být užiteční městu a ukázat lidem cestu → k Bohu.
+Jsme pestré stádo. Otevřená rodina křesťanů z Nového Jičína. Máme děti, co neposedí. Seniory, co pamatují třetihory. Šéfy a hypotéky. Jsme designéři a doktoři. Umělci i řemeslníci. Neděláme všechno správně. Ale na vlastní kůži jsme poznali, jak je Bůh dobrý. Dal nám různé dary, ale jednu touhu. Být užiteční našemu městu. A ukázat mu cestu → k Hospodáři. Ať to ochutná taky.
