@@ -5,9 +5,9 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme sousedé, kamarádi a kolegové z Nového Jičína a okolí. Máme společnou jednu věc. Na vlastní kůži jsme zažili, že Bůh je mnohem lepší, než jsme se báli. Je to nakažlivé. Doktoři i designéři. Umělci i řemeslníci. Děti i senioři.
+Jsme kamarádi, kolegové a sousedé. Otevřená rodina křesťanů z Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. Hledáme novou cestu, jak to ukázat našemu městu.
 
-## Slajd stažený z webu (čeká na lepší formulaci)
+## Blok slajdu
 
 Blok pro `src/obsah/skupiny/uvod.yml` (mezi úvod a předmluvu):
 

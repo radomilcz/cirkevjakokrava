@@ -6,6 +6,11 @@ slajdy:
   podnadpis: je dobrý, my jsme normální
   fotka: assets/fotky/hero.webp
   popis_fotky: Dívka stojí na pastvině vedle skotského náhorního skotu.
+- typ: odstavec
+  nazev: Kdo jsme
+  nadtitulek: Kdo jsme?
+  text: >-
+    Jsme kamarádi, kolegové a sousedé. Otevřená rodina křesťanů z Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. Hledáme novou cestu, jak to ukázat našemu městu.
 - typ: predmluva
   nazev: Předmluva
   nadtitulek: Proč kráva?
