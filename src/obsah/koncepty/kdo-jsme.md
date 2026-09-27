@@ -5,4 +5,4 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme rodina křesťanů z Nového Jičína. Děcka i dědové. Umělci i řemeslníci. Doktoři a designéři. Každý s jinými fleky. Ale všichni jsme na vlastní kůži poznali, že Bůh je dobrý. Hledáme novou cestu, jak to ukázat našemu městu.
+Jsme rodina křesťanů z Nového Jičína. Dospělí i děti. Umělci i řemeslníci. Doktoři a designéři. Všichni jsme na vlastní kůži poznali, že Bůh je dobrý. Hledáme novou cestu, jak to ukázat našemu městu.
