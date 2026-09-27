@@ -5,4 +5,4 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme rodina. Křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, jak je Bůh dobrý. Hledáme novou cestu, jak to prakticky ukázat našemu městu.
+Jsme sousedé. Křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je mnohem lepší, než jsme se báli. Kazatelnu nepotřebujeme. Stačí nám otevřená pastva.
