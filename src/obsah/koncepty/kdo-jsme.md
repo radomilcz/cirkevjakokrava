@@ -1,5 +1,8 @@
-# Kdo jsme – koncept nové sekce (zatím není v manifestu)
+# Kdo jsme – koncept nového slajdu (zatím není v manifestu)
 
-Jsme místní. Křesťané. Dospělí i děti. Tátové a mámy. Doktoři. Designéři. Muzikanti. Zemědělci. Tesaři. Máme různé obdarování, ale společné povolání. Touhu přiblížit se lidem i Bohu.
+Samostatný slajd hned za úvodem „BŮŮŮH je dobrý, my jsme normální“ – odpovídá, kdo jsou ti „my“.
+Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek (třeba „Proč kráva?“).
 
-Bůh je dobrý. My jsme normální.
+**Kdo jsme?**
+
+Jsme místní. Dospělí i děti. Tátové a mámy. Doktoři. Designéři. Muzikanti. Zemědělci. Tesaři. Máme různé obdarování, ale společné povolání: být užiteční svému městu a ukázat lidem cestu k Ježíši.
