@@ -163,7 +163,7 @@
     /* předmluva se taky čte projížděním, ale nerozsvěcuje se po slovech – je moc dlouhá */
     if(s.querySelector('.essay')){s._read={inner:0,max:0,t:null,el:[]};s._printCfg=PRINT[s.dataset.print];return}
     const t=s.querySelector('.text');if(!t)return;
-    t.innerHTML=t.textContent.trim().split(/\s+/).map(w=>'<i>'+w+'</i>').join(' ');
+    t.innerHTML=t.textContent.trim().split(/[ \t\r\n]+/).map(w=>'<i>'+w+'</i>').join(' ');   // nezlomitelná mezera zůstane uvnitř slova
     s._read={inner:0,max:0,t,el:[...t.children]};
     /* otisk drží velikost obrazovky a sedí uprostřed vysokého slajdu */
     s._printCfg=PRINT[s.dataset.print];
