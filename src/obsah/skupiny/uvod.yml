@@ -6,9 +6,14 @@ slajdy:
   podnadpis: je dobrý, my jsme normální
   fotka: assets/fotky/hero.webp
   popis_fotky: Dívka stojí na pastvině vedle skotského náhorního skotu.
+- typ: odstavec
+  nazev: Kdo jsme
+  nadtitulek: Kdo jsme?
+  text: >-
+    Jsme komunita křesťanů. Místní. Dospělí i děti. Tátové a mámy. Singles i páry. Doktoři. Designéři. Muzikanti. Zemědělci. Tesaři. Máme různé dary, ale jednu touhu: být užiteční svému městu a ukázat lidem cestu k Bohu.
 - typ: predmluva
   nazev: Předmluva
-  nadtitulek: Kdo jsme?
+  nadtitulek: Proč kráva?
   kapitoly:
   - tagline: Dobrá zpráva
     nadpis: Češi nejsou ovce. Potřebují církev jako kráva.
