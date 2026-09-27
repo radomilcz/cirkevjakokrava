@@ -5,4 +5,4 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme sousedé, kamarádi a kolegové z okolí Nového Jičína. Máme fatální problém. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. A teď hledáme způsoby, jak tuhle nákazu přenést na naše okolí.
+Jsme sousedé, kamarádi a kolegové. Křesťané z okolí Nového Jičína. Máme fatální problém. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. A teď hledáme způsoby, jak tuhle nákazu přenést na naše okolí.
