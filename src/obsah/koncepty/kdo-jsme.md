@@ -5,4 +5,4 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme komunita křesťanů. Místní. Dospělí i děti. Tátové a mámy. Singles i páry. Senioři. Doktoři, designéři, muzikanti, zemědělci, tesaři. Máme různé dary, ale jednu touhu. Být užiteční svému městu. A ukázat mu cestu k Bohu.
+Jsme komunita křesťanů. Místní. Dospělí i děti. Tátové a mámy. Singles i páry. Senioři. Doktoři, designéři, muzikanti, zemědělci, tesaři. Máme různé dary, ale jednu touhu. Být užiteční městu a ukázat lidem cestu → k Bohu.
