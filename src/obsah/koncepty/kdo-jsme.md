@@ -6,3 +6,23 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 **Kdo jsme?**
 
 Jsme sousedé, kamarádi a kolegové z Nového Jičína a okolí. Máme společnou jednu věc. Na vlastní kůži jsme zažili, že Bůh je mnohem lepší, než jsme se báli. Je to nakažlivé. Doktoři i designéři. Umělci i řemeslníci. Děti i senioři.
+
+## Slajd stažený z webu (čeká na lepší formulaci)
+
+Blok pro `src/obsah/skupiny/uvod.yml` (mezi úvod a předmluvu):
+
+```yaml
+- typ: odstavec
+  nazev: Kdo jsme
+  nadtitulek: Kdo jsme?
+  text: >-
+    …
+```
+
+## Nejlépe hodnocené varianty
+
+- (čtenář 8/10) Jsme sousedé, kamarádi a kolegové. Křesťané z okolí Nového Jičína. Máme fatální problém: Bůh je mnohem lepší, než jsme se báli. Chytli to doktoři i designéři. Umělci i řemeslníci. Děti i senioři. A je to nakažlivé → jako kráva.
+- (čtenář 8/10, POVĚST) Jsme křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší než jeho pověst. Na té jsme se podepsali i my.
+- (čtenář 7/10, PLOT) Jsme sousedé. Křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. Kazatelnu nepotřebujeme. Stačí nám plot.
+- (dvě věty) Jsme křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli.
+- (první verze s výčtem, „korporátní“) Jsme rodina křesťanů. Místní komunita v Novém Jičíně. Dospělí i děti. Tatové a mámy. Singles i páry. Senioři. Doktoři a designéři. Muzikanti. Konzultanti. Zemědělci a tesaři. Máme různé dary, ale jednu touhu. Být užiteční městu a ukázat lidem cestu → k Bohu.
