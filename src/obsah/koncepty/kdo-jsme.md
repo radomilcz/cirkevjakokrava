@@ -5,4 +5,4 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli.
+Jsme křesťané z okolí Nového Jičína. Bůh je lepší, než jsme se báli. Na vlastní kůži jsme poznali, že mu záleží na nás a našem okolí.
