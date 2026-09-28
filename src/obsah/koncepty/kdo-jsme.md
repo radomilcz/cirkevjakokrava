@@ -5,7 +5,7 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme kamarádi, kolegové a sousedi. Rodina křesťanů z Nového Jičína. Od kočárku po hůlku. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani jeden profesionálně svatý. Ale na vlastní kůži jsme poznali, že Bůh je lepší, než jsme doufali. Proto děláme, co umíme, ať to ochutná i naše okolí.
+Jsme kamarádi, kolegové a sousedi. Rodina křesťanů z Nového Jičína. Od kočárku po hůlku. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani jeden profesionálně svatý. Ale na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. Proto děláme, co umíme, ať to ochutná i naše okolí.
 
 ## Blok slajdu
 
@@ -23,6 +23,6 @@ Blok pro `src/obsah/skupiny/uvod.yml` (mezi úvod a předmluvu):
 
 - (čtenář 8/10) Jsme sousedé, kamarádi a kolegové. Křesťané z okolí Nového Jičína. Máme fatální problém: Bůh je mnohem lepší, než jsme se báli. Chytli to doktoři i designéři. Umělci i řemeslníci. Děti i senioři. A je to nakažlivé → jako kráva.
 - (čtenář 8/10, POVĚST) Jsme křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší než jeho pověst. Na té jsme se podepsali i my.
-- (čtenář 7/10, PLOT) Jsme sousedé. Křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme doufali. Kazatelnu nepotřebujeme. Stačí nám plot.
-- (dvě věty) Jsme křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme doufali.
+- (čtenář 7/10, PLOT) Jsme sousedé. Křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. Kazatelnu nepotřebujeme. Stačí nám plot.
+- (dvě věty) Jsme křesťané z okolí Nového Jičína. Na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli.
 - (první verze s výčtem, „korporátní“) Jsme rodina křesťanů. Místní komunita v Novém Jičíně. Dospělí i děti. Tatové a mámy. Singles i páry. Senioři. Doktoři a designéři. Muzikanti. Konzultanti. Zemědělci a tesaři. Máme různé dary, ale jednu touhu. Být užiteční městu a ukázat lidem cestu → k Bohu.
