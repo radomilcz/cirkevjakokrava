@@ -5,7 +5,7 @@ Typ jako „Odstavec o hodnotách“. Předmluva by pak dostala jiný nadtitulek
 
 **Kdo jsme?**
 
-Jsme kamarádi, kolegové a sousedi. Rodina křesťanů z Nového Jičína. Od kočárku po hůlku. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani jeden profesionálně svatý. Ale na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. Proto děláme, co umíme, ať to ochutná i naše okolí.
+Jsme kamarádi, kolegové a sousedi. Rodina křesťanů z Nového Jičína. Od kočárku po hůlku. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani jeden profesionálně svatý. Ale na vlastní kůži jsme poznali, že Bůh je lepší, než jsme se báli. Proto teď děláme, co umíme, ať to ochutná i naše okolí.
 
 ## Blok slajdu
 
