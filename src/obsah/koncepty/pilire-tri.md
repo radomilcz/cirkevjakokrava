@@ -40,7 +40,7 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, formu (tagline, nadpis, slajdy) řešíme
 **Návrh obsahu:**
 - Tagline: Tráva roste / dřív než kráva.
 - Nadpis: Bůh tu už pracuje. / My se přidáváme.
-- Text: Lidi trénují děti, uklízejí potok, otevírají kavárny. Věřící i nevěřící. My v tom vidíme Boží rukopis. Proto jim fandíme a říkáme, že to dělají dobře. Pak se zeptáme, s čím pomoct. Přijdeme, nanosíme židle, přispějeme, pomodlíme se.
+- Text: Lidi trénují děti, uklízejí potok, otevírají kavárny. My v tom vidíme Boží rukopis. Proto jim fandíme a říkáme, že to dělají dobře. Pak se zeptáme, s čím pomoct. Přijdeme, nanosíme židle, přispějeme, pomodlíme se.
 - Otázka: Komu tady fandíš? Ví o tom?
 
 **Banka:** Bůh tvoří. / My fandíme. · Kdo s tím přišel? · Nejdřív koukáme. / Pak pomáháme. · Otázky: Komu tady fandíš? Ví o tom? · Kde kolem tebe Bůh už pracuje? · Který spolek, škola či soused by tě uvítal?
