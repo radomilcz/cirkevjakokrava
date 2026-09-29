@@ -45,7 +45,7 @@ Pilíř 3 není třetí hromádka akcí. Je to důvod a měřítko pilířů 1 a
 - Pomodli se cestou do práce za pár lidí, které znáš.
 - Když někdo zmizí nebo má těžké období, ozvi se.
 
-**Placená práce** není samostatný pilíř. Je to místo, kde žiješ všechny tři: koho si všímáš, co umíš a koho znáš jménem. Poctivě odvedená zakázka mluví o Bohu víc než leták.
+**Placená práce** je hlavní místo, kde přinášíš, co umíš (pilíř 2), a zároveň místo, kde žiješ i ostatní dva: koho si všímáš a koho znáš jménem. Poctivě odvedená zakázka mluví o Bohu víc než leták. „Díky Bohu, že je pondělí.“
 
 ---
 
@@ -126,7 +126,7 @@ Pilíř 3 není třetí hromádka akcí. Je to důvod a měřítko pilířů 1 a
 - Nepatří sem: lákání na akci, obsah jen pro věřící, výkon pár talentů na pódiu, velké programy, které malý sbor neunese.
 - Když totéž už ve městě někdo vede → pilíř 1. Nekonkurujeme.
 - Dvojka nezačíná seznamem děr ve městě, ale tím, co umíme dát. „Nikdo jiný to nedělá“ je jen pojistka, abychom nezdvojovali.
-- Placená práce sem nepatří jako pilíř, je to místo, kde žijeme všechny tři (viz „Pro každého“).
+- Placená práce sem patří: je to hlavní místo, kde přinášíme, co umíme (viz „Zdroj: Re-thinkit“). Test mezi 1 a 2 se týká toho, co děláme navíc, ne zaměstnání.
 
 **Časté nedorozumění:**
 - „Tohle je pro umělce.“ Není. Slovo „tvoříme“ si lidé spojí s hudbou a designem, proto u tohoto pilíře vždycky mluvíme i o řemesle, jídle, číslech a péči.
@@ -177,6 +177,15 @@ Pilíř 3 není třetí hromádka akcí. Je to důvod a měřítko pilířů 1 a
 - „Přátelství je předehra.“ Ne: „Přátelství u nás není předehra k něčemu dalšímu. Je to cíl sám o sobě.“
 
 ---
+
+## Zdroj: Re-thinkit (Paul Bartlett, pracovní sešit)
+Radomil přinesl 29. 9. jako zdroj inspirace.
+- **Ef 2,10 (Klara Martin, „Workship“):** „Za prvé, jsme Božím dílem. Jsme jeho výtvorem. Bůh nás s láskou stvořil jako dar pro tento svět. A za druhé, stvořil nás pro dobré skutky. Dal nám dar smysluplné a účelné práce. Připravil pro nás tuto práci a obdařil nás schopnostmi, abychom ji mohli vykonat.“ → teologický základ pilíře 2. Zároveň se propojuje s pilířem 1: Boží rukopis vidíme v druhých a sami jsme jeho dílo.
+- **Účel církve:** „Vytvořit kulturu, která ukazuje povahu a charakter živého Boha světu, který nás pozoruje.“ → mise a oddíl Kultura.
+- **Kulturní poslání (Darrow L. Miller, Life Work):** sociální a komunitní poslání + rozvojové poslání. „Každému z nás dal dary a talenty, abychom sloužili našim komunitám, pomáhali jim růst, aby byly zdravé a nesly další život. Bůh chce, abychom ve své práci spojovali půdu a duši.“ Práce není prokletí: „Bůh stvořil práci, aby náš čas měl smysl.“
+- **Půda → duše (lekce 2, „Díky Bohu, že je pondělí“):** obyčejná práce má hlubší dopad. Milé zacházení s kolegy vytváří lepší komunitu. Podnik s finanční integritou buduje lepší ekonomiku. Když stavíte dům, vytváříte domov pro rodinu. Když vaříte a uklízíte, vytváříte útočiště a místo odpočinku. → přesně Petrův rozvaděč: práce, ve které je vidět Bůh.
+- **Jazyk (lekce 4):** „Pomáhá náš jazyk lépe porozumět Kristu?“ Sedm problémů náboženského žargonu: exkluzivita, nedorozumění, zdi, nedostatek relevance, duchovní povrchnost, nadřazenost, odrazuje lidi od Krista. → podporuje pravidla jazyka manifestu.
+- **Pozor na rozpor:** sešit říká „je zdravé i biblické zlepšovat zdraví měst“, Hodnoty 1.6 „nejsme tu, abychom Jičín měnili k Božímu obrazu“. Smíření: zlepšujeme město tím, co přinášíme (dar), ne tím, že ho předěláváme podle sebe (projekt).
 
 ## Slova
 - **Nesou pointu:** 1 = „přidat se k někomu / k něčemu“, „fandit“, „dobro“ · 2 = „přinést“, „umět“ · 3 = „záležet“, „jméno“. Ve formě (nadpisy, hesla) je držet u svého pilíře.
