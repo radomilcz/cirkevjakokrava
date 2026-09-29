@@ -16,7 +16,7 @@ Popisy pod nadpisy se k téhle ose vždycky vracejí. Krása a poctivost (03) k 
 |---|---|---|---|---|---|
 | 01 | Co děláme? | vidíme, fandíme | Bůh tvoří. / My fandíme. | Vidíme Boží rukopis v lidech a městech kolem nás. | postoj |
 | 02 | Jak to děláme? | přidáváme se | Tráva roste / dřív než kráva. | Přidáváme se k lidem, kteří už dělají něco dobrého. Učíme se od nich a investujeme vlastní čas, ruce a peníze, aby to rostlo. | čin s druhými |
-| 03 | Pro koho? | tvoříme | Každý něco umí. / Každá něco dává. | Tvoříme pastvu pro oči, uši a duši našeho města. Protože krása je univerzální Boží jazyk. | vlastní čin |
+| 03 | Pro koho? | tvoříme | Každý něco umí. / Každá něco dává. | Krása je univerzální Boží jazyk. (Popis: Hlavně pro lidi, co kostel ani víru neřeší. Tvoříme pastvu pro oči, uši a duši našeho města…) | vlastní čin |
 | 04 | Proč vlastně? | – | Číslo v kravíně. / Jméno na pastvě. | Chceme, aby lidi poznávali Boha tam, kde žijí. | důvod |
 
 Mezi pilíři: „Lásko, to je Kravařsko!“ (za 01), „Ich bin ein Kuhländler“ (za 02), „kráva – má Boží design“ (za 03).
