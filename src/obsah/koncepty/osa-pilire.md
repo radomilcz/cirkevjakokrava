@@ -42,3 +42,10 @@ Mezi pilíři: „Lásko, to je Kravařsko!“ (za 01), „Ich bin ein Kuhländl
 - Texty a otázky pod nadpisy (přes jazykovou kontrolu a Petra).
 - „Investujeme … ruce“ v nadpisu 02 (korektor: „investovat ruce“ česky moc nedrží; Radomil zatím nechává).
 - Jestli do 03 patří i placená práce (návrh podle inspirace Re-thinkit: půda → duše; v textu 03 je zatím elektrikář a dráty).
+
+## Příklady na potom (Radomil 29. 9.: „ty konkrétní věci nechme na potom“)
+Texty na slajdech jsou teď jen obecné. Konkrétní obrazy, připravené a zkontrolované:
+- 01: Tady dělají klobouky, Ondrášek zpívá, parta čistí potok.
+- 02: Za partou od potoka nechodíme s lepším plánem, ale v holínkách. A za rok tam budeme zas.
+- 03: Koncert v Beskydském divadle sklidí potlesk, kabel pod pódiem nikdy. Bez něj by ale nebylo co poslouchat.
+- 04: Třeba sousedka u plotu: časem zjistíme, že se jmenuje Věra a má nemocného vnuka.
