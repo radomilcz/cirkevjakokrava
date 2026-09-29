@@ -40,7 +40,7 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, formu (tagline, nadpis, slajdy) řešíme
 **Návrh obsahu:**
 - Tagline: Tráva roste / dřív než kráva.
 - Nadpis: Bůh tu už pracuje. / My se přidáváme.
-- Text: Lidi trénují děti, uklízejí potok, otevírají kavárny. Věřící i nevěřící. Fandíme jim a říkáme, že to dělají dobře. Pak se zeptáme, s čím pomoct. Přijdeme, nanosíme židle, přispějeme, pomodlíme se.
+- Text: Lidi trénují děti, uklízejí potok, otevírají kavárny. Věřící i nevěřící. My v tom vidíme Boží rukopis. Proto jim fandíme a říkáme, že to dělají dobře. Pak se zeptáme, s čím pomoct. Přijdeme, nanosíme židle, přispějeme, pomodlíme se.
 - Otázka: Komu tady fandíš? Ví o tom?
 
 **Banka:** Bůh tvoří. / My fandíme. · Kdo s tím přišel? · Nejdřív koukáme. / Pak pomáháme. · Otázky: Komu tady fandíš? Ví o tom? · Kde kolem tebe Bůh už pracuje? · Který spolek, škola či soused by tě uvítal?
@@ -106,7 +106,7 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, formu (tagline, nadpis, slajdy) řešíme
 
 ## Pravidla (aby se pilíře nepřekrývaly)
 - „fandit“, „přidat se“, „pomoct“ jen v 01 · „umět“, „tvořit“, „přinést“ jen v 02 · „jméno“, „záleží“, „členové“ jen v 03.
-- Kostelní slovník ani „Bůh je v tom“ v textu pro čtenáře. Víru nese nadpis, text mluví o tom, co děláme.
+- Kostelní slovník ne. Boží rukopis v cizím dobru (01) je náš pohled, ne to, co lidem říkáme: jim říkáme, že to dělají dobře.
 - Tráva jen v 01, mléko jen v 02, kravín/jména jen v 03. Kreativita/tvořivost nejvýš jednou mimo 02.
 - Každý pilíř má jen jeden kravský obraz (v tagline). Nadpis, text a otázka mluví civilně.
 - Neopakovat hlášky z jiných částí manifestu („Past budí strach. Pastva nemá práh.“, „Minulost je past“, „normální“).
