@@ -30,7 +30,7 @@ Mezi pilíři: „Lásko, to je Kravařsko!“ (za 01), „Ich bin ein Kuhländl
 1. **Nadtitulek** – otázka (Co děláme? / Jak to děláme? / Pro koho? / Proč vlastně?).
 2. **Tagline** – 2 řádky, obraz nebo hříčka, která se pamatuje (max jedna).
 3. **Nadpis** – Radomilova civilní věta. Neměnit bez něj; opravit jen překlep nebo gramatiku (a říct to).
-4. **Text** – 25–40 slov, konkrétní příklady (trenér, potok, kavárna, židle, dráty, polévka, plot, hospoda), neopakuje tagline ani nadpis.
+4. **Text** – krátce, nejdřív obecně (konkrétní příklady zatím odložené, viz dole), neopakuje tagline ani nadpis. **Nezačínat zápornou větou** (Radomil 29. 9.).
 5. **Otázka** – tykání, max 10 slov, krok na všední den.
 
 ## Co neměnit bez Radomila
