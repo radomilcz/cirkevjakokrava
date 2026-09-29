@@ -95,6 +95,9 @@
     <div class="pilir">
 {%- set r = x.vyrok|radky %}
       <h3 class="nadpis" style="--znaku:{{ r|map('length')|max }};--radku:{{ r|length }}">{% for radek in r %}<span>{{ radek|vyrok }}</span> {% endfor %}</h3>
+{%- if x.get('podnadpis') %}
+      <p class="podnadpis">{{ x.podnadpis|txt }}</p>
+{%- endif %}
 {%- if x.get('text') %}
       <p class="popis">{{ x.text|txt }}</p>
 {%- endif %}
