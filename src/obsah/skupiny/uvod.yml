@@ -1,38 +1,61 @@
 slajdy:
-- typ: uvod
-  nazev: Úvod – BŮŮŮH
-  nadtitulek: manifest
-  slovo: BŮŮŮH
-  podnadpis: je dobrý, my jsme normální
-  fotka: assets/fotky/hero.webp
-  popis_fotky: Dívka stojí na pastvině vedle skotského náhorního skotu.
-- typ: odstavec
-  nazev: Kdo jsme
-  nadtitulek: Kdo jsme?
-  text: >-
-    Jsme kamarádi, kolegové a sousedi. Rodina křesťanů z Nového Jičína. Od kočárku po hůlku. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani jeden profesionálně svatý. Ale všichni jsme na vlastní kůži poznali, že Bůh je lepší, než jsme se báli. Proto teď děláme, co umíme, ať to ochutná i naše okolí.
-- typ: predmluva
-  nazev: Předmluva
-  nadtitulek: Proč kráva?
-  kapitoly:
-  - tagline: Dobrá zpráva
-    nadpis: Češi nejsou ovce. Potřebují církev jako kráva.
-    text: |
-      Ptali jsme se, jak můžeme proříznout českou náboženskou šeď. Nabídnout čerstvý pohled na Krista, který bourá zeď předsudků a nedůvěry. Pak přišla ze zámoří zpráva. Chcete vidět změnu? Buďte fialová kráva.
+  - typ: uvod
+    nazev: Úvod – BŮŮŮH
+    nadtitulek: manifest
+    slovo: BŮŮŮH
+    podnadpis: je dobrý, my jsme normální
+    fotka: assets/fotky/hero.webp
+    popis_fotky: Dívka stojí na pastvině vedle skotského náhorního skotu.
+  - typ: odstavec
+    nazev: Kdo jsme
+    nadtitulek: Kdo jsme?
+    text: Jsme kamarádi, kolegové a sousedi. Rodina křesťanů z Nového Jičína. Od
+      kočárku po hůlku. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani
+      jeden profesionálně svatý. Ale všichni jsme na vlastní kůži poznali, že
+      Bůh je lepší, než jsme se báli. Proto děláme, co umíme, ať to ochutná i
+      naše okolí.
+  - typ: predmluva
+    nazev: Předmluva
+    nadtitulek: Proč kráva?
+    kapitoly:
+      - tagline: Dobrá zpráva
+        nadpis: Češi nejsou ovce. Potřebují církev jako kráva.
+        text: >-
+          Ptali jsme se, jak můžeme proříznout českou náboženskou šeď. Nabídnout
+          čerstvý pohled na Krista, který bourá zeď předsudků a nedůvěry. Pak
+          přišla ze zámoří zpráva. Chcete vidět změnu? Buďte fialová kráva.
 
-      To má být vtip? Pane, to nemyslíš vážně. A pak nám to došlo. Kráva je Boží! Je to fakt divný název, ale má neskutečnou sílu.
-  - nadpis: Minulost je past. Přítomnost je pastva.
-    text: |
-      Jasně. Jsme Češi. Církev je pro nás minulost. Uzavřená. Prostě past. Ale kráva? Je nadčasová. Normální. Odzbrojující. Lokální. Kde zabučí kráva, na církev nikdo nenadává. Vtahuje nás do děje. Smějeme se → jsme zvědaví → ptáme se:
 
-      > Proč jako kráva?
+          To má být vtip? Pane, to nemyslíš vážně. A pak nám to došlo. Kráva je
+          Boží! Je to fakt divný název, ale má neskutečnou sílu.
+      - nadpis: Minulost je past. Přítomnost je pastva.
+        text: >-
+          Jasně. Jsme Češi. Církev je pro nás minulost. Uzavřená. Prostě past.
+          Ale kráva? Je nadčasová. Normální. Odzbrojující. Lokální. Kde zabučí
+          kráva, na církev nikdo nenadává. Vtahuje nás do děje. Smějeme se →
+          jsme zvědaví → ptáme se:
 
-      Protože kráva patří na pastvu, ne do kostela. Žijeme tím, čím žije naše město. Fandíme všemu, co v něm Bůh dělá. Přidáváme se, ať to s námi roste. Tam, kde pracujeme a platíme nájem. Dáváme srdce, čas a neředěný zájem.
-  - nadpis: Lásko, to je Kravařsko!
-    text: |
-      Kráva je tu domácí. Patří do krajiny stejně jako tráva. Přežvýká jetel, bodláčí i plevel. A pak přijde zázrak. Kráva se rozdává. Vrací zpátky víc, než si bere. Mléko. Smetanu. Telata. Dokonce i kravince jsou baterie pro půdní bakterie. Pastva pulzuje. Kráva ji kultivuje. Prospívá životu. Na každém kroku přidává hodnotu.
 
-      Kráva je úkaz. Dokud je tu, připomíná světu, že má laskavého Hospodáře. Kdyby odsud zmizela, tvář Kravařska by se k nepoznání změnila. Takoví chceme být i my.
+          > Proč jako kráva?
 
-      Církev, která *by* Kravařsku chyběla.
-  otazka: Co to znamená?
+
+          Protože kráva patří na pastvu, ne do kostela. Žijeme tím, čím žije
+          naše město. Fandíme všemu, co v něm Bůh dělá. Přidáváme se, ať to s
+          námi roste. Tam, kde pracujeme a platíme nájem. Dáváme srdce, čas a
+          neředěný zájem.
+      - nadpis: Lásko, to je Kravařsko!
+        text: >-
+          Kráva je tu domácí. Patří do krajiny stejně jako tráva. Přežvýká
+          jetel, bodláčí i plevel. A pak přijde zázrak. Kráva se rozdává. Vrací
+          zpátky víc, než si bere. Mléko. Smetanu. Telata. Dokonce i kravince
+          jsou baterie pro půdní bakterie. Pastva pulzuje. Kráva ji kultivuje.
+          Prospívá životu. Na každém kroku přidává hodnotu.
+
+
+          Kráva je úkaz. Dokud je tu, připomíná světu, že má laskavého
+          Hospodáře. Kdyby odsud zmizela, tvář Kravařska by se k nepoznání
+          změnila. Takoví chceme být i my.
+
+
+          Církev, která *by* Kravařsku chyběla.
+    otazka: Co to znamená?
