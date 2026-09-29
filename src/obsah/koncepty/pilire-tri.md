@@ -68,7 +68,8 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, formu (tagline, nadpis, slajdy) řešíme
 **Návrh obsahu:**
 - Tagline: Každá kráva / má svoje mléko. (varianta autora: Každý něco umí. / Každý něco dává.)
 - Nadpis: Něco přineseme i sami. Hlavně pro lidi, kteří kostel neřeší.
-- Text: Jeden napíše písničku, druhá uvaří polévku pro celý barák, třetí opraví sousedce zásuvku. Nikoho nelákáme. Děláme to rádi. O Bohu nechceme jen mluvit. Chceme, aby ho bylo vidět, slyšet a cítit.
+- Text (autor): Tvoříme pastvu. Pro oči, uši a duši našeho města. Jeden napíše písničku, druhá uvaří polévku pro celý barák, třetí opraví sousedce zásuvku. Nikoho nelákáme. Děláme to rádi. O Bohu nechceme jen mluvit. Chceme, aby ho bylo vidět, slyšet a cítit.
+- Pozor: trojice „oči, uši, duši“ a „vidět, slyšet, cítit“ říká v jednom odstavci totéž dvakrát; text má 45 slov. Kratší varianta: …O Bohu nechceme jen mluvit. (35 slov)
 - Otázka: Co umíš? Pro koho to uděláš?
 
 **Banka:** Každý něco umí. / Každý něco dává. · Krása je Boží jazyk. · Pro oči, uši a duši. · Otázky: Co umíš tak dobře, že by to chybělo? · Co umíš ty – a kdo z toho má radost?
