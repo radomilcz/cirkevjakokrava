@@ -1,20 +1,20 @@
 # Pilíře poslání – tři pilíře (obsahový podklad)
 Návrh sloučení čtyř pilířů do tří. Původní čtyři jsou v `pilire-obsah.md` (odtud zdroje a citace). Build tuhle složku nečte.
-Sepsáno 29. 9. 2026. Nejdřív obsah, forma (tagline, nadpis, slajdy) se řeší potom.
+Sepsáno 29. 9. 2026. Nejdřív obsah, formu (tagline, nadpis, slajdy) řešíme potom.
 
-**Proč tři:** Fandit a přidat se je jeden pohyb: všimnu si dobra, ocením ho, přiložím ruku. Ve čtyřech pilířích se 01 a 02 pořád překrývaly. Boží dobrotu, tvořivost a lásku ke kraji už nese úvod („BŮŮŮH je dobrý“), předmluva a obrazové slajdy, takže nepotřebuje vlastní pilíř.
+**Proč tři:** Fandit a přidat se je jeden pohyb: všimnu si dobra, ocením ho, přiložím ruku. Ve čtyřech pilířích se 01 a 02 pořád překrývaly. Boží dobrotu, tvořivost a lásku ke kraji už nesou úvod („BŮŮŮH je dobrý“), předmluva a obrazové slajdy. Vlastní pilíř nepotřebují.
 
-**Jednou větou:** Přidáváme se k dobru, které Bůh už dělá v druhých. Tvoříme i vlastní věci. Aby lidi poznali, že na nich Bohu záleží.
+**Stručně:** Přidáváme se k dobru, které Bůh už dělá v druhých. Tvoříme i vlastní věci. Aby lidi poznali, že na nich Bohu záleží.
 
 **Čtenář:** hlavně lidé ze sboru. Manifest je dovnitř: pojmenovat, kdo jsme a proč to děláme, a dodat chuť jít do toho.
 
 | # | Sloveso | Otázka | Čí dílo | Postoj | Hranice |
 |---|---|---|---|---|---|
 | 01 | Přidáváme se | Kde začínáme? | **cizí** – co už žije | Fanoušci, ne kritici. Nejdřív koukat, pak přiložit ruku. | Dílo zůstává jejich. Nepřebíráme ho, nelepíme na něj nálepku. |
-| 02 | Tvoříme | Co přinášíme? | **naše** – co chybí | O Bohu nejen mluvit, dát ho zažít. | Tvoříme pro město, ne akce, na které lákáme. |
+| 02 | Tvoříme | Co přinášíme? | **naše** – co chybí | O Bohu nejen mluvit, dát ho zažít. | Netvoříme akce, na které lákáme, ale věci pro město. |
 | 03 | Proč | Proč to děláme? | – | Nenabíráme, známe jménem. | Cíl celého snažení, ne další činnost. |
 
-**Mezi 01 a 02 rozhoduje jedna otázka:** Už to tu někdo dělá? Ano → přidáme se (01). Ne, a chybí to → uděláme to sami (02).
+**Mezi 01 a 02 rozhoduje jedna otázka:** Kdo s tím přišel? Někdo jiný → přidáme se (01). My → přineseme to sami (02). Petr to řekl po svém: „Když to už někdo dělá, jdu mu pomoct. Když to nedělá nikdo, udělám to sám.“
 
 ---
 
@@ -39,11 +39,11 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, forma (tagline, nadpis, slajdy) se řeš�
 
 **Návrh obsahu:**
 - Tagline: Tráva roste / dřív než kráva.
-- Nadpis: Bůh tu pracuje dřív než my. Všímáme si toho a přidáváme se.
-- Text: Lidi trénují děti, uklízejí potok, otevírají kavárny. Věříme, že i v tom je Bůh. Proto jim fandíme a říkáme jim to nahlas. Pak se zeptáme, s čím potřebují pomoct, a dáme ruce, čas, peníze i modlitby.
-- Otázka: Komu tady fandíš? S čím mu pomůžeš?
+- Nadpis: Bůh tu už pracuje. / My se přidáváme.
+- Text: Lidi trénují děti, uklízejí potok, otevírají kavárny. Věřící i nevěřící. Fandíme jim a říkáme, že to dělají dobře. Pak se zeptáme, s čím pomoct. Přijdeme, nanosíme židle, přispějeme, pomodlíme se.
+- Otázka: Komu tady fandíš? Ví o tom?
 
-**Banka:** Bůh tvoří. / My fandíme. (tagline nebo nadpis) · Nejdřív koukáme. / Pak pomáháme. · Otázky: Komu tady fandíš? Ví o tom? · Kde kolem tebe Bůh už pracuje? · Který spolek, škola či soused by tě uvítal?
+**Banka:** Bůh tvoří. / My fandíme. · Kdo s tím přišel? · Nejdřív koukáme. / Pak pomáháme. · Otázky: Komu tady fandíš? Ví o tom? · Kde kolem tebe Bůh už pracuje? · Který spolek, škola či soused by tě uvítal?
 
 ---
 
@@ -51,7 +51,7 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, forma (tagline, nadpis, slajdy) se řeš�
 
 **Cíl:** Tam, kde něco chybí, tvořit sami něco dobrého pro město. Každý dává to, co umí: od písničky po opravenou zásuvku. Hlavně pro lidi, kteří kostel ani víru neřeší.
 
-**Význam:** Každý něco umí a každý to může dát. Tvořivost nepatří jen pár lidem na pódiu, patří i elektrikáři, kuchařce a účetní. Krása je Boží jazyk: přes hudbu, jídlo, poctivou práci i pohostinnost může člověk zahlédnout Boha tak, že ho to nezahltí, ale probudí. Netvoříme, abychom lidi nalákali, tvoříme, protože je to dobré pro město.
+**Význam:** Každý něco umí a každý to může dát. Tvořivost nepatří jen pár lidem na pódiu, patří i elektrikáři, kuchařce a účetní. Krása je Boží jazyk: v hudbě, jídle, poctivé práci i pohostinnosti může člověk zahlédnout Boha tak, že ho to nezahltí, ale probudí. Netvoříme, abychom lidi nalákali, tvoříme, protože je to dobré pro město.
 
 **Zdroje a citace:**
 - „Krása pro nás není luxus, ale Boží jazyk. Nechceme o Bohu jen kázat. Hledáme nové způsoby, jak ho lidem ukázat.“ (Hodnoty 1.0)
@@ -66,12 +66,12 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, forma (tagline, nadpis, slajdy) se řeš�
 **Co to NENÍ:** lákání na akci, obsah jen pro věřící, výkon pár talentů, kvalita pro kvalitu bez vztahu k městu, konkurence tomu, co už ve městě funguje (to patří do 01).
 
 **Návrh obsahu:**
-- Tagline: Každý něco umí. / Každý něco dává.
-- Nadpis: Kde něco chybí, uděláme to sami. Hlavně pro lidi, kteří kostel neřeší.
-- Text: Jeden napíše písničku, druhá uvaří polévku pro celý barák, třetí sousedce opraví zásuvku. Nikoho tím nelákáme. Děláme to, protože je to dobré. O Bohu nechceme jen mluvit. Ať ho lidi zažijou.
+- Tagline: Každá kráva / má svoje mléko. (varianta autora: Každý něco umí. / Každý něco dává.)
+- Nadpis: Něco přineseme i sami. Hlavně pro lidi, kteří kostel neřeší.
+- Text: Jeden napíše písničku, druhá uvaří polévku pro celý barák, třetí opraví sousedce zásuvku. Nikoho nelákáme. Děláme to rádi. O Bohu nechceme jen mluvit. Chceme, aby ho bylo vidět, slyšet a cítit.
 - Otázka: Co umíš? Pro koho to uděláš?
 
-**Banka:** Krása je Boží jazyk. · Pro oči, uši a duši. · Otázky: Co umíš tak dobře, že by to chybělo? · Co umíš ty – a kdo z toho má radost?
+**Banka:** Každý něco umí. / Každý něco dává. · Krása je Boží jazyk. · Pro oči, uši a duši. · Otázky: Co umíš tak dobře, že by to chybělo? · Co umíš ty – a kdo z toho má radost?
 
 ---
 
@@ -95,17 +95,24 @@ Sepsáno 29. 9. 2026. Nejdřív obsah, forma (tagline, nadpis, slajdy) se řeš�
 
 **Návrh obsahu:**
 - Tagline: Číslo v kravíně. / Jméno na pastvě.
-- Nadpis: Nejde nám o nové členy. Chceme, aby lidi věděli, že na nich Bohu záleží.
-- Text: Bůh zná jméno každého. My se ta jména teprve učíme. Nečekáme, až lidi přijdou do kostela. Jsme s nimi doma, v práci, ve škole i v hospodě. A hlavně když je jim těžko.
+- Nadpis: Nesháníme členy. Jde nám o to, aby lidi poznali, že na nich Bohu záleží.
+- Text: Bůh zná každého jménem. My se ta jména teprve učíme. Nečekáme, až za námi někdo přijde. Jsme s nimi u plotu, v práci, ve škole i v hospodě. A zvlášť když je jim těžko.
 - Otázka: Co si o Bohu myslí ti, co znají tebe?
 
-**Banka:** Nejde o čísla. / Jde o lidi. · Nenabíráme členy. · Otázky: Komu bys na Kravařsku chyběl, kdyby ses odstěhoval? · Co si o Bohu řeknou kolegové po obědě s tebou?
+**Banka:** Nejde o čísla. / Jde o lidi. · Kterého souseda znáš jen od vidění? · Nenabíráme členy. · Otázky: Komu bys na Kravařsku chyběl, kdyby ses odstěhoval? · Co si o Bohu řeknou kolegové po obědě s tebou?
 
 ---
 
 ## Pravidla (aby se pilíře nepřekrývaly)
-- „fandit“, „přidat se“, „pomoct“ jen v 01 · „umět“, „tvořit“, „dávat“ jen v 02 · „jméno“, „záleží“, „členové“ jen v 03.
-- Tráva jen v 01, mléko/tvoření jen v 02, kravín/jména jen v 03. Kreativita/tvořivost nejvýš jednou mimo 02.
+- „fandit“, „přidat se“, „pomoct“ jen v 01 · „umět“, „tvořit“, „přinést“ jen v 02 · „jméno“, „záleží“, „členové“ jen v 03.
+- Kostelní slovník ani „Bůh je v tom“ v textu pro čtenáře. Víru nese nadpis, text mluví o tom, co děláme.
+- Tráva jen v 01, mléko jen v 02, kravín/jména jen v 03. Kreativita/tvořivost nejvýš jednou mimo 02.
 - Každý pilíř má jen jeden kravský obraz (v tagline). Nadpis, text a otázka mluví civilně.
 - Neopakovat hlášky z jiných částí manifestu („Past budí strach. Pastva nemá práh.“, „Minulost je past“, „normální“).
 - Text 25–40 slov, otázka max 10 slov, tykání. Žádný trpný rod, instrumentály, řetězy infinitivů, korporát, kostelština.
+
+## Hodnocení (29. 9. 2026)
+- **Petr:** trojka je lepší než čtyřka („Fandit a nic neudělat je jako dát lajk.“). První verze návrhu: 01 8/10, 02 6/10, 03 7/10. Vadilo mu: „Věříme, že i v tom je Bůh“ (co jim mám říct, že je v jeho fotbale Bůh?), tagline „Každý něco umí“ (nástěnka ze školky), „Ať ho lidi zažijou“, „jsme s nimi doma“ (lezeme lidem do obýváku). Úpravy výše jsou z velké části jeho.
+- **Gemini:** trojka jednoznačně lepší. Varoval, ať 01 není jen „brigáda u cizích“, fandění musí zůstat. Navrhoval i jiné dělení (01 fandíme jako postoj, 02 veškerá akce), to jde proti autorově myšlence „všimnout si a přidat se“, proto ne.
+- **Jazyková kontrola:** po opravách projde. Tagline „Každá kráva má svoje mléko“ má nízké riziko nadávky, jen o tom vědět.
+- **Otevřené:** tagline 02 (kráva s mlékem, nebo autorovo „Každý něco umí / Každý něco dává“); pořadí obrazových slajdů; `zadani-pro-modely.md` pořád počítá se čtyřmi pilíři.
