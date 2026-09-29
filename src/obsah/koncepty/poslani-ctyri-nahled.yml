@@ -1,0 +1,70 @@
+slajdy:
+- typ: pilir
+  nazev: Co děláme?
+  nadtitulek: Co děláme?
+  vyrok: |
+    Bůh tvoří.
+    My fandíme.
+  podnadpis: 'Vidíme Boží rukopis v lidech a městech kolem nás.'
+  text: >-
+    Bůh tu pracoval dávno před námi a dělá to i teď. Lidi trénují děti, uklízejí potok, otevírají kavárny. Nejsme kritici, jsme fanoušci. Říkáme jim, že to dělají dobře.
+  otazka: 'Komu tady fandíš? Ví o tom?'
+  otisk: '01'
+- typ: vyrok_ruzovy
+  nazev: Lásko, to je Kravařsko!
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Lásko, to je
+    Kravařsko!
+  podpis: Herzenssache.
+  otisk: '05'
+- typ: pilir
+  nazev: Jak to děláme?
+  nadtitulek: Jak to děláme?
+  vyrok: |
+    Tráva roste
+    dřív než kráva.
+  podnadpis: 'Přidáváme se k lidem, kteří už dělají něco dobrého. Učíme se od nich a investujeme vlastní čas, ruce a peníze, aby to rostlo.'
+  text: >-
+    Nevymýšlíme akce od stolu. Nejdřív se jich zeptáme, s čím pomoct. Vedou to oni, my pomáháme: nanosíme židle, doučíme matiku, pomodlíme se.
+  otazka: 'Ke komu se přidáš?'
+  otisk: '02'
+- typ: kennedy
+  nazev: Ich bin ein Kuhländler
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Ich bin ein
+    Kuhländler
+  otazka: Je Kravařsko i tvoje srdeční záležitost?
+  podpis: Herzenssache.
+  popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
+- typ: pilir
+  nazev: Pro koho?
+  nadtitulek: Pro koho?
+  vyrok: |
+    Každá kráva
+    má svoje mléko.
+  podnadpis: 'Tvoříme pastvu pro oči, uši a duši našeho města.'
+  text: >-
+    Každý něco umí. Elektrikář poctivě natáhne dráty a rodina bydlí v bezpečí. Jeden napíše písničku, druhá uvaří polévku pro celý barák. Děláme to rádi a pořádně. Nechceme o Bohu jen mluvit.
+  otazka: 'Co umíš? Pro koho to uděláš?'
+  otisk: '03'
+- typ: fotka
+  nazev: Kráva – má Boží design
+  nadtitulek: pastva
+  slovo: kráva
+  dovetek: má Boží design
+  bez_zavorek: true
+  fotka: assets/fotky/krava-manifest.webp
+  popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
+- typ: pilir
+  nazev: Proč vlastně?
+  nadtitulek: Proč vlastně?
+  vyrok: |
+    Číslo v kravíně.
+    Jméno na pastvě.
+  podnadpis: 'Chceme, aby lidi poznávali Boha tam, kde žijí.'
+  text: >-
+    Nesháníme členy. Bůh zná každého jménem, my se ta jména teprve učíme. Jsme s nimi u plotu, v práci, ve škole i v hospodě. Bez podmínek. A zvlášť když je jim těžko.
+  otazka: 'Co si o Bohu myslí ti, co znají tebe?'
+  otisk: '04'
