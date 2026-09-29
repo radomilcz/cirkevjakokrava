@@ -1,6 +1,6 @@
 # Zadání pro AI modely – manifest Církev jako kráva
 Společný kontext pro Gemini, Codex, Claude a další modely, které pomáhají s texty manifestu. Vlož celý soubor na začátek konverzace a pod něj napiš konkrétní úkol (šablona je na konci).
-Obsahové definice pilířů jsou v `pilire-obsah.md`. Build tuhle složku nečte.
+Závazná osa pilířů je v `osa-pilire.md` (neměnit bez autora). Obsahové definice a zdroje jsou v `pilire-pointa.md` a `pilire-obsah.md`. Build tuhle složku nečte.
 
 ---
 
@@ -21,7 +21,7 @@ Obsahové definice pilířů jsou v `pilire-obsah.md`. Build tuhle složku nečt
 2. **Kdo jsme?:** „Jsme kamarádi, kolegové a sousedi. Rodina křesťanů z Nového Jičína. Od kočárku po hůlku. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani jeden profesionálně svatý. Ale všichni jsme na vlastní kůži poznali, že Bůh je lepší, než jsme se báli. Proto teď děláme, co umíme, ať to ochutná i naše okolí.“
 3. **Proč kráva? (předmluva, 3 kapitoly):** „Češi nejsou ovce. Potřebují církev jako kráva.“ – „Minulost je past. Přítomnost je pastva.“ – „Lásko, to je Kravařsko!“ Končí vizí: „Církev, která by Kravařsku chyběla.“
 4. **Poslání – 4 pilíře** (mezi nimi obrazové slajdy „Lásko, to je Kravařsko!“, „Ich bin ein Kuhländler“, „kráva – má Boží design“):
-   01 Fandíme · 02 Zapojujeme se · 03 Tvoříme · 04 Proč
+   01 Vidíme a fandíme (postoj) · 02 Přidáváme se (čin s druhými) · 03 Tvoříme (vlastní čin, i v práci) · 04 Proč. Každý slajd: nadtitulek, tagline (kravský obraz), civilní nadpis (autorova věta), krátký text, otázka. Přesně v `osa-pilire.md`.
 5. **Kultura – 100 % živá:** odstavec o hodnotách + 10 hodnot jako dvojice slov: otevřená přitažlivě, srozumitelná pronikavě, štědrá bytostně, tvořivá nespoutaně, zdravá vnitřně, radostná hluboce, odvážná radikálně, blízká důvěrně, opravdová přirozeně, jednoduchá nadpřirozeně.
 6. **Zrcadlo:** „Co odráží naše životy? Podobá se realita našeho života tomu, co říkáme?“
 
@@ -51,7 +51,7 @@ Pravidlo: obrazy jen z kravského světa. Žádný kompas, nákaza, jízdenka, s
 - Max jedna slovní hříčka na slajd.
 
 **Ne:**
-- Zbožný patos a kostelština: spása, evangelizace, zvěstovat, požehnání, hříšník, ztracení, nevěřící, Boží dotek, Boží rukopis.
+- Zbožný patos a kostelština: spása, evangelizace, zvěstovat, požehnání, hříšník, ztracení, nevěřící, Boží dotek. (Výjimka: „Boží rukopis“ v pilíři 01 autor chce.)
 - Korporát: hodnota („přidat hodnotu“), dopad, sdílet, prostor, autentický, komunita (max 1×), v rámci, za účelem.
 - Anglické kalky: „dělat rozdíl“, „být tu pro“, „So…“ na začátku věty („Tak jim tleskáme.“), dvojtečka s odkazem dopředu („Ať to poznají: Bohu…“).
 - Trpný rod, instrumentály („mluvit jím“, „tepe kreativitou“), řetězy infinitivů, knižnost (jenž, aniž, přechodníky).
@@ -59,6 +59,8 @@ Pravidlo: obrazy jen z kravského světa. Žádný kompas, nákaza, jízdenka, s
 - Rýpnutí do nedělního kázání („Kráva nekáže“, „nechceme kázat“ bez „jen“).
 
 ## 6. Rozhodnutí a proč (neotevírat znovu bez důvodu)
+- Osa pilířů (29. 9. 2026): 4 pilíře, tagline + civilní nadpis + text + otázka. Tři pilíře autor zvážil a odmítl. Viz `osa-pilire.md`.
+- Bůh v nadpisech jen tam, kde nese pointu (01, 04), jinak to vyčerpává. Metaforu v textu nevysvětlovat.
 - „Bůh je lepší, než **jsme se báli**“ – ne „doufali“, „čekali“, „ještě lepší“, „100×“. Otočená fráze („horší, než jsme se báli“) a přiznání strachu nesou pointu.
 - „Dobytek“ v patičce, ne „kráva“ (kráva = nadávka hlavně ženám).
 - „Normální“ je motto úvodu – jinde ho neopakovat.
@@ -76,7 +78,7 @@ Pravidlo: obrazy jen z kravského světa. Žádný kompas, nákaza, jízdenka, s
 
 ## 8. Šablona zadání
 ```
-[vlož celý tento soubor + pilire-obsah.md]
+[vlož celý tento soubor + osa-pilire.md + pilire-pointa.md]
 
 ÚKOL: <např. Napiš 3 varianty nadpisu pro pilíř 03 Tvoříme.>
 SOUČASNÝ TEXT: <vlož>

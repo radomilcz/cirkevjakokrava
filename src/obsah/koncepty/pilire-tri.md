@@ -1,4 +1,5 @@
 # Pilíře poslání – tři pilíře (obsahový podklad)
+> **Archiv.** Autor 29. 9. 2026 rozhodl zůstat u čtyř pilířů, viz `osa-pilire.md`.
 Návrh sloučení čtyř pilířů do tří. Původní čtyři jsou v `pilire-obsah.md` (odtud zdroje a citace). Build tuhle složku nečte.
 Sepsáno 29. 9. 2026. Nejdřív obsah, formu (tagline, nadpis, slajdy) řešíme potom.
 

@@ -1,4 +1,5 @@
 # Pilíře poslání – pointa (přesná definice)
+> **Rozhodnuto 29. 9. 2026:** zůstávají **čtyři pilíře**. Závazná osa je v `osa-pilire.md`. Tady je hloubka: stará 01 „Přidáváme se“ se dělí na 01 Vidíme a fandíme (postoj) a 02 Přidáváme se (čin); „Přinášíme, co umíme“ = 03 Tvoříme; „Proč“ = 04. Test, praxe, hranice a zdroje níže platí dál.
 Co který pilíř říká, co z něj plyne a kde končí. Jen obsah: nadpisy, hesla a obrazy doladíme až potom.
 Pracovní dokument pro vedení a další práci s formou. Pro lidi ze sboru z něj vznikne krátká verze (základ je v oddílu „Pro každého“).
 Sepsáno 29. 9. 2026 z Radomilových zdrojů (kázání 24. a 25. Rozhoď sítě, Počátek (2), 22. Překroč práh, Setkání s Paulem 04, 06 a 07/2026, Hodnoty 1.0–1.6, Shrnutí 1.7–1.8, Koncept 0.1, Slovník, Hlášky) a 121 jeho výroků z rozhovorů. Zpracoval nový tým (rešerše, teologie a strategie, komunitní praxe, srozumitelnost), otestoval Petr a jazyková kontrola. Build tuhle složku nečte.
