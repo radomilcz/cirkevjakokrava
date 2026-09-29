@@ -127,7 +127,7 @@ Pilíř 3 není třetí hromádka akcí. Je to důvod a měřítko pilířů 1 a
 - Nepatří sem: lákání na akci, obsah jen pro věřící, výkon pár talentů na pódiu, velké programy, které malý sbor neunese.
 - Když totéž už ve městě někdo vede → pilíř 1. Nekonkurujeme.
 - Dvojka nezačíná seznamem děr ve městě, ale tím, co umíme dát. „Nikdo jiný to nedělá“ je jen pojistka, abychom nezdvojovali.
-- Placená práce sem patří: je to hlavní místo, kde přinášíme, co umíme (viz „Zdroj: Re-thinkit“). Test mezi 1 a 2 se týká toho, co děláme navíc, ne zaměstnání.
+- Placená práce sem patří: je to hlavní místo, kde přinášíme, co umíme (návrh podle inspirace Re-thinkit). Test mezi 1 a 2 se týká toho, co děláme navíc, ne zaměstnání.
 
 **Časté nedorozumění:**
 - „Tohle je pro umělce.“ Není. Slovo „tvoříme“ si lidé spojí s hudbou a designem, proto u tohoto pilíře vždycky mluvíme i o řemesle, jídle, číslech a péči.
@@ -179,8 +179,8 @@ Pilíř 3 není třetí hromádka akcí. Je to důvod a měřítko pilířů 1 a
 
 ---
 
-## Zdroj: Re-thinkit (Paul Bartlett, pracovní sešit)
-Radomil přinesl 29. 9. jako zdroj inspirace.
+## Inspirace: Re-thinkit (Paul Bartlett, pracovní sešit)
+Radomil poslal 29. 9. jen pro inspiraci, není to závazný zdroj. Co z toho plyne pro pilíře, jsou návrhy.
 - **Ef 2,10 (Klara Martin, „Workship“):** „Za prvé, jsme Božím dílem. Jsme jeho výtvorem. Bůh nás s láskou stvořil jako dar pro tento svět. A za druhé, stvořil nás pro dobré skutky. Dal nám dar smysluplné a účelné práce. Připravil pro nás tuto práci a obdařil nás schopnostmi, abychom ji mohli vykonat.“ → teologický základ pilíře 2. Zároveň se propojuje s pilířem 1: Boží rukopis vidíme v druhých a sami jsme jeho dílo.
 - **Účel církve:** „Vytvořit kulturu, která ukazuje povahu a charakter živého Boha světu, který nás pozoruje.“ → mise a oddíl Kultura.
 - **Kulturní poslání (Darrow L. Miller, Life Work):** sociální a komunitní poslání + rozvojové poslání. „Každému z nás dal dary a talenty, abychom sloužili našim komunitám, pomáhali jim růst, aby byly zdravé a nesly další život. Bůh chce, abychom ve své práci spojovali půdu a duši.“ Práce není prokletí: „Bůh stvořil práci, aby náš čas měl smysl.“
