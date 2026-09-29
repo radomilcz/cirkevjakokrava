@@ -188,6 +188,14 @@ Radomil poslal 29. 9. jen pro inspiraci, není to závazný zdroj. Co z toho ply
 - **Jazyk (lekce 4):** „Pomáhá náš jazyk lépe porozumět Kristu?“ Sedm problémů náboženského žargonu: exkluzivita, nedorozumění, zdi, nedostatek relevance, duchovní povrchnost, nadřazenost, odrazuje lidi od Krista. → podporuje pravidla jazyka manifestu.
 - **Pozor na rozpor:** sešit říká „je zdravé i biblické zlepšovat zdraví měst“, Hodnoty 1.6 „nejsme tu, abychom Jičín měnili k Božímu obrazu“. Smíření: zlepšujeme město tím, co přinášíme (dar), ne tím, že ho předěláváme podle sebe (projekt).
 
+## Inspirace: Mobilise Playbook (Paul Bartlett)
+Radomil poslal 29. 9. jako referenci. Celý přepis je autorský materiál, do repa ho nedáváme; tady jen body, které se týkají pilířů.
+- **01 = objevit a oslavit (ABCD krok 1 a 4):** „Jaké jsou silné stránky a přednosti naší komunity? Často máme to nejdůležitější přímo před očima, ale nevidíme to.“ Hrdinský posun: oslavovat to, co dělá komunita a jednotlivci v ní – „děláte něco, co komunita od vás neočekává, a právě to z vás dělá Purple Cow Church“. Mapa zdrojů: místa, místní ekonomika, příběhy a pověst města, jednotlivci, spolky, instituce.
+- **02 = propojit a zmobilizovat (ABCD krok 2 a 3):** nejdřív rozhovory (obavy, sny, co kdo umí nabídnout), „nepředpokládat, že víme, co je potřeba“. Zapojení místo péče: stavět na silných stránkách, ne na potřebách; lidé jsou občané, ne klienti.
+- **03 = dary a práce:** „Smyslem života je najít své obdarování. Účelem života je ho rozdávat.“ Práce jako půda a duše, Ef 2,10.
+- **04 = strategie Království:** „komunita je vnímána a milována, i když do církve nikdy nepřijde“; „Lidem dáme nejen najíst – chceme je opravdu poznat.“ Test: „Kdyby byla naše církev vytržena z komunity, co by chybělo?“
+- **Jazyk:** „V neděli nechceme říkat nic, čemu by v pondělí nikdo nerozuměl.“
+
 ## Slova
 - **Nesou pointu:** 1 = „přidat se k někomu / k něčemu“, „fandit“, „dobro“ · 2 = „přinést“, „umět“ · 3 = „záležet“, „jméno“. Ve formě (nadpisy, hesla) je držet u svého pilíře.
 - **Vyřadit z obsahu pilířů:** „přidat hodnotu“ (korporát, sedí na 1 i 2), „oslavovat“ (patří do mise), „pastva“ ve více významech (ve formě jen v jednom).
