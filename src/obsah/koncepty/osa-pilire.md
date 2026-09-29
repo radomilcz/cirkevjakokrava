@@ -1,6 +1,6 @@
 # Osa pilířů – závazná verze
 Radomil 29. 9. 2026: „Chci, abys tu osu udržel, bylo to kulervoucí a přitom srozumitelné.“
-Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný model, nový člověk v týmu) začíná tady a osu nemění bez Radomilova výslovného souhlasu. Obsah slajdů je v `poslani-ctyri-nahled.yml`, hloubka a zdroje v `pilire-pointa.md`. Build tuhle složku nečte.
+Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný model, nový člověk v týmu) začíná tady a osu nemění bez Radomilova výslovného souhlasu. Obsah slajdů je v `poslani-ctyri-nahled.yml`. Obsah pilířů (tým Mobilise) je v `pilire-obsah-4.md`, verze pro lidi ze sboru v `pilire-karticky.md`, hloubka a zdroje v `pilire-pointa.md`. Build tuhle složku nečte.
 
 ## Osa jednou větou
 **Vidíme Boží rukopis → přidáváme se → tvoříme → aby lidi poznávali Boha tam, kde žijí.**
