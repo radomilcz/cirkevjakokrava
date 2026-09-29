@@ -1,0 +1,68 @@
+slajdy:
+- typ: vyrok
+  nazev: Poslání
+  nadtitulek: Naše poslání.
+  vyrok: |
+    Oslavujeme Boží kreativitu
+    a lásku -> k lidem a městům
+    na Kravařsku.
+  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  otisk: '01'
+- typ: vyrok_ruzovy
+  nazev: Lásko, to je Kravařsko!
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Lásko, to je
+    Kravařsko!
+  podpis: Herzenssache.
+  otisk: '05'
+- typ: pilir
+  nazev: Kde začínáme?
+  nadtitulek: Kde začínáme?
+  vyrok: |
+    Tráva roste
+    dřív než kráva.
+  podnadpis: 'Bůh tu pracoval dávno před námi. Dělá to i teď. Stačí se rozhlédnout.'
+  text: >-
+    Lidi trénují děti, uklízejí potok, otevírají kavárny. My v tom vidíme Boží rukopis. Nejsme kritici, jsme fanoušci. Řekneme jim, že to dělají dobře, a zeptáme se, s čím pomoct. Vedou to oni, my přiložíme ruku.
+  otazka: 'Komu tady fandíš? Ví o tom?'
+  otisk: '02'
+- typ: kennedy
+  nazev: Ich bin ein Kuhländler
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Ich bin ein
+    Kuhländler
+  otazka: Je Kravařsko i tvoje srdeční záležitost?
+  podpis: Herzenssache.
+  popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
+- typ: pilir
+  nazev: Co přinášíme?
+  nadtitulek: Co přinášíme?
+  vyrok: |
+    Tvoříme pastvu
+    pro oči, uši a duši.
+  podnadpis: 'Sami přinášíme to, co umíme. Hlavně lidem, kteří kostel neřeší.'
+  text: >-
+    Jeden napíše písničku, druhá uvaří polévku pro celý barák, třetí opraví sousedce zásuvku. Nikoho nelákáme. Děláme to rádi a pořádně. O Bohu nechceme jen mluvit.
+  otazka: 'Co umíš? Pro koho to uděláš?'
+  otisk: '03'
+- typ: fotka
+  nazev: Kráva – má Boží design
+  nadtitulek: pastva
+  slovo: kráva
+  dovetek: má Boží design
+  bez_zavorek: true
+  fotka: assets/fotky/krava-manifest.webp
+  popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
+- typ: pilir
+  nazev: Proč vlastně?
+  nadtitulek: Proč vlastně?
+  vyrok: |
+    Číslo v kravíně.
+    Jméno na pastvě.
+  podnadpis: 'Aby lidé tam, kde žijí, poznali, že na nich Bohu záleží.'
+  text: >-
+    Nesháníme členy. Bůh zná každého jménem, my se ta jména teprve učíme. Jsme s lidmi u plotu, v práci, ve škole i v hospodě. Bez podmínek. A zvlášť když je jim těžko.
+  otazka: 'Co si o Bohu myslí ti, co znají tebe?'
+  otisk: '04'
