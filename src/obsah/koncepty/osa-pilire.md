@@ -56,3 +56,11 @@ Texty na slajdech jsou teď jen obecné. Konkrétní obrazy, připravené a zkon
 - 02: Za partou od potoka nechodíme s lepším plánem, ale v holínkách. A za rok tam budeme zas.
 - 03: Koncert v Beskydském divadle sklidí potlesk, kabel pod pódiem nikdy. Bez něj by ale nebylo co poslouchat.
 - 04: Třeba sousedka u plotu: časem zjistíme, že se jmenuje Věra a má nemocného vnuka.
+
+## Stav: v šuplíku (29. 9. 2026)
+Radomil: „zatím to hoďme do šuplíku.“ Živý web má pořád původní pilíře. Rozpracovaná verze je v `poslani-ctyri-nahled.yml` (nadpisy 01 a 03 už v duchu původní osy, popisy plnými větami).
+Až se k tomu vrátíme:
+1. Nadpis 02 – vrátit k „Vnímáme, co Bůh kolem dělá. Přidáváme k tomu naše srdce, slova i ruce.“, nebo nechat („investujeme … ruce“)?
+2. Nadpis 04 – vrátit k „Aby lidé poznali, že Bohu na nich záleží…“, nebo nechat?
+3. Otázky pod pilíři projít s novými nadpisy.
+4. Nasadit: zkopírovat `poslani-ctyri-nahled.yml` do `src/obsah/skupiny/poslani.yml` (šablona s polem `podnadpis` je už v dev).
