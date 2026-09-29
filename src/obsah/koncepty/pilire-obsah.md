@@ -33,7 +33,7 @@ Sepsáno 28. 9. 2026 podle Radomilova výkladu (kázání „Rozhoď sítě (2)�
 **Co to NENÍ:** kritika města, hledání chyb, „oni tam venku“, fandění jen křesťanským akcím.
 
 **Nadpisy:** Bůh tvoří. / My fandíme. (vybraný)
-**Odstavec (ukázka):** Fandíme lidem, kteří pro svoje město makají. Trénují děti, uklízejí potok, otevírají kavárny. Poznáváme v tom Boží rukopis: jeho dobrotu a kreativitu. Tak jim tleskáme. Nahlas.
+**Odstavec (ukázka):** Na Kravařsku vzniká spousta dobrého. I mimo kostel. Lidi trénují děti, uklízejí potok, otevírají kavárny. Vidíme v tom Boží dobrotu a tvořivost. Nejsme kritici, jsme fanoušci. A tleskáme jim nahlas.
 **Otázky:** Komu tady fandíš? Ví o tom? · Co dobrého tě letos na Kravařsku překvapilo? · Komu na Kravařsku fandíš ty? A ví o tom?
 **Obrazové slajdy k pilíři:** „Lásko, to je Kravařsko!“ (Herzenssache → srdcovka)
 
@@ -60,7 +60,7 @@ Sepsáno 28. 9. 2026 podle Radomilova výkladu (kázání „Rozhoď sítě (2)�
 **Co to NENÍ:** „naše akce, kam zveme“, převzetí cizího projektu, nálepka církve na cizí dílo, aktivismus bez naslouchání.
 
 **Nadpisy:** Tráva roste / dřív než kráva. (vybraný, autor: „top“) · Nevymýšlíme akce od stolu. · Bůh tu byl dřív. Jako vždy.
-**Odstavec (ukázka):** Kráva se pase na trávě, kterou nezasela, a přece ji zúrodní. My taky. Nevymýšlíme akce od stolu. Zapojíme se tam, kde to už žije, a přidáme svoje dary: modlitby, ruce, čas i peníze.
+**Odstavec (ukázka):** Kráva se pase na trávě, kterou nezasela, a přitom pastvu zúrodní. My taky nevymýšlíme akce od stolu. Přidáváme se k tomu, co už dělají jiní. Nejdřív koukáme a učíme se. Pak dáme, co máme: modlitby, ruce, čas i peníze.
 **Otázky:** Kde kolem tebe Bůh už pracuje? · Ke komu se tenhle týden přidáš? · Který spolek, škola či soused by tě uvítal?
 **Obrazové slajdy k pilíři:** „Ich bin ein Kuhländler“ (Je Kravařsko i tvoje srdeční záležitost?)
 
@@ -85,8 +85,8 @@ Sepsáno 28. 9. 2026 podle Radomilova výkladu (kázání „Rozhoď sítě (2)�
 
 **Co to NENÍ:** lákání na akci (bije se s 02), obsah jen pro věřící, „kvalita pro kvalitu“ bez vztahu k městu, výkon pár talentů na pódiu.
 
-**Nadpisy:** Míň bučení. / Víc mléka. (aktuální, zatím netestovaný) · Žereme trávu. / Dáváme mléko. (Petr 8/10, ale míchá se s trávou z 02) · Kráva nekáže. / Dává mléko. (riziko: rýpnutí do kázání) · Krása je Boží jazyk. · Pro oči, uši a duši. · Negooglí kostel. / Přijdou na koncert. (zamítnuto)
-**Odstavec (ukázka):** Tvoříme pastvu pro oči, uši a duši našeho města. Jeden napíše hit, druhá uvaří polévku pro celý barák, třetí sousedce opraví zásuvku. Každý přidá hodnotu tím, co umí. O Bohu nechceme jen mluvit. Chceme, aby ho bylo vidět, slyšet a cítit.
+**Nadpisy:** Míň bučení. / Víc mléka. (aktuální, zatím netestovaný) · Žereme trávu. / Dáváme mléko. (míchá se s trávou z 02) · Žereme trávu. / Dáváme mléko. (Petr 8/10, ale míchá se s trávou z 02) · Kráva nekáže. / Dává mléko. (riziko: rýpnutí do kázání) · Krása je Boží jazyk. · Pro oči, uši a duši. · Negooglí kostel. / Přijdou na koncert. (zamítnuto)
+**Odstavec (ukázka):** Něco dobrého tvoříme i sami. Pro lidi, kteří kostel ani víru neřeší. Jeden napíše hit, druhá uvaří polévku pro celý barák, třetí sousedce opraví zásuvku. O Bohu nechceme jen mluvit. Chceme, aby ho bylo vidět, slyšet a cítit.
 **Otázky:** Co je tvoje mléko? Kdo ho pije? · Co umíš ty – a kdo z toho má radost? · Co umíš tak dobře, že by to chybělo?
 **Obrazové slajdy k pilíři:** „kráva – má Boží design“
 
@@ -112,7 +112,7 @@ Sepsáno 28. 9. 2026 podle Radomilova výkladu (kázání „Rozhoď sítě (2)�
 **Co to NENÍ:** nábor, statistika návštěvnosti, „projekt obrácení“, podmíněné přijetí.
 
 **Nadpisy:** Číslo v kravíně. / Jméno na pastvě. (vybraný) · Pastva má jména. / Kravín má čísla. · Kráva má v uchu číslo. / Člověk má u Boha jméno. · Nenabíráme členy.
-**Odstavec (ukázka):** Nenabíráme členy. Bůh zná každého jménem, my se ta jména teprve učíme. Ať to lidé poznají doma, v práci i ve škole: Bohu na nich záleží. A třeba si pak řeknou: „Bůh je dobrý a oni jsou normální.“
+**Odstavec (ukázka):** Nejde nám o nové členy. Bůh zná každého jménem, my se ta jména teprve učíme. Chceme, aby lidi poznali, že na nich Bohu záleží. Doma, v práci i ve škole.
 **Otázky:** Co si o Bohu myslí ti, co znají tebe? · Komu bys na Kravařsku chyběl, kdyby ses odstěhoval? · Co si o Bohu řeknou kolegové po obědě s tebou?
 
 ---
