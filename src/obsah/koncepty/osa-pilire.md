@@ -5,6 +5,13 @@ Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný mo
 ## Osa jednou větou
 **Vidíme Boží rukopis → přidáváme se → tvoříme → aby lidi poznávali Boha tam, kde žijí.**
 
+**Původní hlavní osa (živý web, Radomil 29. 9.: „pilíře jsou mimo tu hlavní osu, kterou jsme měli na začátku“):** každý pilíř odpovídá na svou otázku a začíná Bohem.
+- Co děláme? Oslavujeme Boží kreativitu a lásku → k lidem a městům na Kravařsku.
+- Jak to děláme? Vnímáme, co Bůh kolem dělá. Přidáváme k tomu naše srdce, slova i ruce.
+- Pro koho? Tvoříme pastvu pro oči, uši a duši. Pro lidi, co kostel ani víru neřeší.
+- Proč vlastně? Aby lidé poznali, že Bohu na nich záleží. Uprostřed komunity, kam patříš i ty.
+Popisy pod nadpisy se k téhle ose vždycky vracejí. Krása a poctivost (03) k ní patří.
+
 | # | Nadtitulek | Sloveso | Tagline (obraz) | Nadpis (civilně, Radomilova věta) | Druh |
 |---|---|---|---|---|---|
 | 01 | Co děláme? | vidíme, fandíme | Bůh tvoří. / My fandíme. | Vidíme Boží rukopis v lidech a městech kolem nás. | postoj |
