@@ -23,7 +23,7 @@ Mezi pilíři: „Lásko, to je Kravařsko!“ (za 01), „Ich bin ein Kuhländl
 ## Hranice (aby se pilíře neslévaly)
 - **01 je postoj, 02 čin.** 01 = vidět a fandit (slova, pohled). Jakmile přikládáme ruku, je to 02.
 - **02 × 03, test:** *Pomáhám tím něčemu, co vede někdo jiný?* Ano → 02 (jsem host: jejich pravidla, jejich tempo). Ne, vedu to já → 03 (ručím za to). Dovednost nerozhoduje.
-- **03 zahrnuje i práci:** poctivá práce, řemeslo, péče jsou „mléko“ (Re-thinkit: půda → duše). Nejen umělci.
+- **03 není jen pro umělce:** řemeslo, jídlo a péče jsou taky „mléko“.
 - **04 není další činnost,** ale důvod a měřítko 01–03. Nábor, lákání a „nesháníme členy“ patří jen sem.
 
 ## Vrstvy každého slajdu
@@ -41,4 +41,5 @@ Mezi pilíři: „Lásko, to je Kravařsko!“ (za 01), „Ich bin ein Kuhländl
 ## Kde se dá ještě ladit (osa zůstává)
 - Texty a otázky pod nadpisy (přes jazykovou kontrolu a Petra).
 - „Investujeme … ruce“ v nadpisu 02 (korektor: „investovat ruce“ česky moc nedrží; Radomil zatím nechává).
+- Jestli do 03 patří i placená práce (návrh podle inspirace Re-thinkit: půda → duše; v textu 03 je zatím elektrikář a dráty).
 - Tagline 03 („Každá kráva má svoje mléko“ je týmový návrh; Radomilova alternativa „Každý něco umí. / Každý něco dává.“).
