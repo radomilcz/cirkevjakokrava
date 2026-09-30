@@ -262,16 +262,20 @@ body{
 .detail::backdrop{background:var(--ground)}
 .detail[open]{animation:detailIn .6s var(--ease)}
 @keyframes detailIn{from{opacity:0;transform:translateY(2vh)}}
-.detail-in{padding:var(--pad);padding-right:calc(var(--pad) + 14px);min-height:100%}
+.detail-in{outline:0;padding:var(--pad);padding-right:calc(var(--pad) + 14px);min-height:100%}
 .detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;position:sticky;top:calc(min(18px,var(--pad)) - var(--pad));z-index:1;
   margin:calc(-1*var(--pad)) 0 0;padding:var(--pad) 0 1rem;background:var(--ground)}
 .zavrit{border:0;background:none;color:inherit;cursor:pointer;padding:0}
+.zavrit:focus-visible{outline:2px solid currentColor;outline-offset:4px}
 .detail-head .zavrit{font-family:var(--body);font-size:clamp(2rem,3.4vw,3.6rem);line-height:.8;margin-top:-.05em}
 .detail-t{
-  margin:clamp(3rem,14vh,10rem) 0 0;margin-left:min(6.75vw,130px);max-width:18ch;
+  margin:clamp(3rem,14vh,10rem) 0 0;margin-left:min(6.75vw,130px);max-width:18ch;text-wrap:balance;
   font-family:var(--display);font-weight:800;font-size:clamp(2rem,5.9vw,7.25rem);line-height:1.18;letter-spacing:-.01em;
 }
-.detail .essay{margin:clamp(2rem,8vh,6rem) 0 0;margin-left:min(6.75vw,130px);opacity:1;transform:none}
+.detail-t>span{display:block}
+.detail .essay{margin:clamp(1.5rem,5vh,3.5rem) 0 0;margin-left:min(6.75vw,130px);opacity:1;transform:none}
+/* bez osiřelých slov na konci odstavce a bez rozsypaných řádků */
+.detail .essay p{text-wrap:pretty}
 .detail .essay .lead{font-weight:700}
 .detail .zpet{
   margin:clamp(3rem,12vh,8rem) 0 clamp(2rem,8vh,5rem) min(6.75vw,130px);

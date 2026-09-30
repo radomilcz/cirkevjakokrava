@@ -179,6 +179,11 @@ def zkontroluj(pole, data, cesta):
             chyba(f'{kde}: je povinné')
 
 
+def vety(text):
+    """Nadpis rozkliku: každá věta i půlka za čárkou na vlastní řádek („Bůh tvoří, / my fandíme.“)."""
+    return [v for v in re.split(r'(?<=[.!?,])\s+', str(text or '').strip()) if v]
+
+
 def radky(text):
     """Výrok z víceřádkového pole: co řádek v CMS, to řádek na slajdu (prázdné řádky se nepočítají)."""
     return [r.strip() for r in str(text or '').splitlines() if r.strip()]
@@ -317,7 +322,7 @@ def nacti_obsah():
 
 def render(tpl):
     env = Environment(undefined=StrictUndefined, autoescape=True, keep_trailing_newline=True)
-    env.filters.update(txt=txt, vyrok=vyrok, blok=blok, bloky=bloky, radky=radky, rozvrh=rozvrh, fotka=fotka)
+    env.filters.update(txt=txt, vyrok=vyrok, blok=blok, bloky=bloky, radky=radky, vety=vety, rozvrh=rozvrh, fotka=fotka)
     o = nacti_obsah()
     ctx = {k: '{{%s}}' % k for k in PASSTHROUGH}
     try:
