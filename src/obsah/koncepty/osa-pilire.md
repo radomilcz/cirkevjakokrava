@@ -72,3 +72,4 @@ Schváleno 30. 9. (Radomil: „Takhle se mi to líbí.“) – rozklik 01: nadpi
 ## Slovesa pilířů (Radomil 30. 9.: „Super.“)
 **Oslavujeme → Přidáváme → Tvoříme → Toužíme**, aby lidé poznali, že Bohu na nich záleží.
 Tři činy a jeden důvod. Ne „Poznáváme“: čtyřka je o nich (oni poznávají Boha), ne o nás, a není to čtvrtá činnost. „Poznáváme“ navíc patří dvojce (silné stránky města).
+Výrok 02 na webu (30. 9.): „Dobré slovo. Obě ruce. / Celé srdce. / Přidáváme se k tomu, / co Bůh svěřil druhým.“ – „svěřil“ = dar i úkol, „druhým“ = hranice 02 (jejich dílo, my hosté).
