@@ -63,3 +63,7 @@ Až se k tomu vrátíme:
 2. Nadpis 04 – vrátit k „Aby lidé poznali, že Bohu na nich záleží…“, nebo nechat?
 3. Otázky pod pilíři projít s novými nadpisy.
 4. Nasadit: zkopírovat `poslani-ctyri-nahled.yml` do `src/obsah/skupiny/poslani.yml` (šablona s polem `podnadpis` je už v dev).
+
+## Nový směr: rozklik (Radomil 30. 9.)
+„Ty moje stávající slidy na webu se mi líbí. Obsah, co tvoříme teď, bych dal jako detail na rozkliknutí.“
+Slajdy pilířů na webu zůstávají (výrok z Figmy). Pod výrokem je odkaz s taglinem (např. „Tráva roste dřív než kráva.“), který otevře vrstvu s dlouhým vysvětlením bez omezení délky. V Pages CMS pole „Rozklik – odkaz“ a „Rozklik – text“ u slajdu Výrok. Náhled: `poslani-rozklik-nahled.yml`. Konkrétní příklady (viz výš) teď mají kam jít.
