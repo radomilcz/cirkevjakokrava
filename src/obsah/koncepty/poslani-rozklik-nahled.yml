@@ -60,20 +60,20 @@ slajdy:
   fotka: assets/fotky/krava-manifest.webp
   popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
 - typ: vyrok
-  nazev: Proč vlastně?
-  nadtitulek: Proč vlastně?
+  nazev: Proč to děláme?
+  nadtitulek: Proč to děláme?
   vyrok: |
-    Nechodíme do církve.
-    Jsme církev, kudy chodíme.
     Toužíme, aby lidé poznali,
     že Bohu na nich záleží.
   otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
   otisk: '04'
-  detail_odkaz: 'Číslo v kravíně. Jméno na pastvě.'
+  detail_odkaz: 'Nechodíme do církve. Jsme církev, kudy chodíme.'
   detail: |
-    Doma. V práci. Ve škole. V hospodě. U plotu se sousedem. Všude tam je církev, protože tam chodíme my. Uprostřed komunity, kam patříš i ty.
+    Doma. V práci. Ve škole. V hospodě. U plotu se sousedem. Uprostřed komunity, kam patříš i ty.
 
     Bohu na každém z těch lidí záleží. Přejeme si, aby to poznali na vlastní kůži. Ne z kazatelny, ale od souseda, kolegyně nebo spolužáka.
+
+    ### Číslo v kravíně. Jméno na pastvě.
 
     Bůh zná každého jménem. My se ta jména teprve učíme.
 
