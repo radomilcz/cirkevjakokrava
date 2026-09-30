@@ -68,3 +68,7 @@ Až se k tomu vrátíme:
 „Ty moje stávající slidy na webu se mi líbí. Obsah, co tvoříme teď, bych dal jako detail na rozkliknutí.“
 Slajdy pilířů na webu zůstávají (výrok z Figmy). Pod výrokem je odkaz s taglinem (např. „Tráva roste dřív než kráva.“), který otevře vrstvu s dlouhým vysvětlením bez omezení délky. V Pages CMS pole „Rozklik – odkaz“ a „Rozklik – text“ u slajdu Výrok. Náhled: `poslani-rozklik-nahled.yml`. Konkrétní příklady (viz výš) teď mají kam jít.
 Schváleno 30. 9. (Radomil: „Takhle se mi to líbí.“) – rozklik 01: nadpis „Bůh tvoří, / my fandíme.“ (čárka, ne tečka – aby to nebylo pasivní), text po myšlenkách ve třech odstavcích. Sazba: nadpis se láme po větách a za čárkou, odstavce bez osiřelých slov.
+
+## Slovesa pilířů (Radomil 30. 9.: „Super.“)
+**Oslavujeme → Přidáváme → Tvoříme → Toužíme**, aby lidé poznali, že Bohu na nich záleží.
+Tři činy a jeden důvod. Ne „Poznáváme“: čtyřka je o nich (oni poznávají Boha), ne o nás, a není to čtvrtá činnost. „Poznáváme“ navíc patří dvojce (silné stránky města).
