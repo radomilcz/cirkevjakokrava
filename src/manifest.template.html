@@ -88,7 +88,7 @@
 {%- if x.get('detail') %}
     <div class="stred">
     {{ vyrok(x.vyrok) }}
-      <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}">{{ (x.get('detail_odkaz') or 'Víc')|txt }}<span class="plus" aria-hidden="true">+</span></button>
+      <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span><span class="plus" aria-hidden="true"></span></button>
     </div>
 {%- else %}
     {{ vyrok(x.vyrok) }}

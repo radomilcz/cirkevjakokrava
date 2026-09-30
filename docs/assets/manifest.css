@@ -245,12 +245,18 @@ body{
   display:inline-flex;align-items:center;gap:.55em;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
   border:0;background:none;color:inherit;cursor:pointer;
   font-family:var(--display);font-weight:800;font-size:clamp(1rem,1.9vw,2.2rem);letter-spacing:-.01em;line-height:1.1;
-  text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.22em;
 }
+.vic-t{text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.22em}
+/* plus kreslený dvěma čárkami, ne znakem: glyf „+“ sedí v písmu nad středem a podtržení by jím prošlo */
 .vic .plus{
-  display:inline-grid;place-items:center;width:1.25em;height:1.25em;border:.09em solid currentColor;border-radius:50%;
-  font-family:var(--body);font-weight:400;line-height:1;text-decoration:none;transition:transform .5s var(--ease);
+  position:relative;flex:none;width:1.2em;height:1.2em;border:.085em solid currentColor;border-radius:50%;
+  transition:transform .5s var(--ease);
 }
+.vic .plus::before,.vic .plus::after{
+  content:"";position:absolute;left:50%;top:50%;width:48%;height:.085em;background:currentColor;
+  border-radius:.05em;transform:translate(-50%,-50%);
+}
+.vic .plus::after{transform:translate(-50%,-50%) rotate(90deg)}
 .vic:hover .plus,.vic:focus-visible .plus{transform:rotate(90deg)}
 .vic:focus-visible{outline:2px solid currentColor;outline-offset:6px}
 .detail{
