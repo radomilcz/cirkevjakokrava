@@ -1,0 +1,80 @@
+slajdy:
+- typ: vyrok
+  nazev: Co děláme?
+  nadtitulek: Co děláme?
+  vyrok: |
+    Oslavujeme Boží náturu,
+    kreativitu a lásku -> mezi
+    lidmi na Kravařsku.
+  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  otisk: '01'
+  detail_odkaz: 'Bůh tvoří. My fandíme.'
+  detail: |
+    Když lidi tvoří pro druhé něco dobrého, není to náhoda. Vidíme v tom Boží charakter a rukopis. Máme z toho radost až na kost a dáváme jim to znát. Boha oslavujeme i tím, komu fandíme.
+- typ: vyrok_ruzovy
+  nazev: Lásko, to je Kravařsko!
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Lásko, to je
+    Kravařsko!
+  podpis: Herzenssache.
+  otisk: '05'
+- typ: vyrok
+  nazev: Jak to děláme?
+  nadtitulek: Jak to děláme?
+  vyrok: |
+    Vnímáme, co Bůh kolem
+    dělá. Přidáváme k tomu
+    naše srdce, slova i ruce.
+  otazka: Jak se přidáváš k Boží práci ve svém sousedství?
+  otisk: '02'
+  detail_odkaz: 'Tráva roste dřív než kráva.'
+  detail: |
+    ### Poznáváme silné stránky našeho města. Učíme se z nich a přidáváme své vlastní.
+
+    Bůh ve městě pracoval dávno před námi. Učíme se od něj. Stačí se podívat, co kolem vzniká a kdo o to s láskou pečuje. Do jejich práce pak vložíme své srdce, peníze i ruce. Modlíme se za ně a jdeme do toho s nimi.
+- typ: kennedy
+  nazev: Ich bin ein Kuhländler
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Ich bin ein
+    Kuhländler
+  otazka: Je Kravařsko i tvoje srdeční záležitost?
+  podpis: Herzenssache.
+  popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
+- typ: vyrok
+  nazev: Pro koho?
+  nadtitulek: Pro koho?
+  vyrok: |
+    Tvoříme pastvu pro oči,
+    uši a duši. Pro publikum,
+    co kostel ani víru neřeší.
+  otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
+  otisk: '03'
+  detail_odkaz: 'Každý něco umí. Každá něco dává.'
+  detail: |
+    ### Krása je univerzální Boží jazyk.
+
+    Hlavně pro lidi, co kostel ani víru neřeší. Tvoříme pastvu pro oči, uši a duši našeho města. Místo, kde se může každý nadechnout, najíst a růst. Děláme to poctivě i tam, kde se nikdo nekouká.
+- typ: fotka
+  nazev: Kráva – má Boží design
+  nadtitulek: pastva
+  slovo: kráva
+  dovetek: má Boží design
+  bez_zavorek: true
+  fotka: assets/fotky/krava-manifest.webp
+  popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
+- typ: vyrok
+  nazev: Proč vlastně?
+  nadtitulek: Proč vlastně?
+  vyrok: |
+    Aby lidé poznali, že Bohu
+    na nich záleží. Uprostřed
+    komunity, kam patříš i ty.
+  otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  otisk: '04'
+  detail_odkaz: 'Číslo v kravíně. Jméno na pastvě.'
+  detail: |
+    ### Chceme, aby lidi poznávali Boha tam, kde žijí.
+
+    Bohu na každém z nich záleží a přejeme si, aby to zažili na vlastní kůži. Uprostřed komunity, kam patříš i ty. Doma, v práci, ve škole. Bůh zná každého jménem, my se ta jména teprve učíme. Není to o nás. Je to o nich a o Něm.

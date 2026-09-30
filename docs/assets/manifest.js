@@ -119,9 +119,21 @@
     if(/^https?:$/.test(location.protocol)||location.protocol==='file:'){try{history.replaceState(null,'','#'+slides[i].id)}catch(e){}}
   }
 
+  /* ---------- rozklik z výroku: otevřená vrstva má klávesy, kolečko i dotyk pro sebe ---------- */
+  const detailOpen=()=>!!document.querySelector('dialog.detail[open]');
+  document.querySelectorAll('.vic').forEach(b=>b.addEventListener('click',()=>{
+    const d=document.getElementById(b.getAttribute('aria-controls'));if(!d||!d.showModal)return;
+    d.scrollTop=0;d.showModal();d._from=b;
+  }));
+  document.querySelectorAll('dialog.detail').forEach(d=>{
+    d.querySelectorAll('.zavrit').forEach(z=>z.addEventListener('click',()=>d.close()));
+    d.addEventListener('close',()=>{if(d._from)try{d._from.focus({preventScroll:true})}catch(e){}});
+  });
+
   /* ---------- klávesy ---------- */
   addEventListener('keydown',e=>{
-    if(e.target.matches('input,textarea'))return;
+    if(detailOpen()||e.target.matches('input,textarea'))return;
+    if(e.target.closest('button')&&(e.key===' '||e.key==='Enter'))return;   /* tlačítko se mačká, ne listuje */
     if(['ArrowDown','PageDown',' ','ArrowRight','j'].includes(e.key)){e.preventDefault();if(!busy)fwd()}
     else if(['ArrowUp','PageUp','ArrowLeft','k'].includes(e.key)){e.preventDefault();if(!busy)back()}
     else if(e.key==='Home'){e.preventDefault();go(0)}
@@ -131,6 +143,7 @@
   /* ---------- kolečko / touchpad: nasbírat delta, jeden krok, pak chvíli ignorovat setrvačnost ---------- */
   let acc=0,quiet=0;
   addEventListener('wheel',e=>{
+    if(detailOpen())return;
     e.preventDefault();
     const now=performance.now();
     if(busy||now<quiet){acc=0;return}
@@ -142,7 +155,7 @@
 
   /* ---------- dotyk: swipe ---------- */
   let ty=null,ti=0;
-  addEventListener('touchstart',e=>{ty=e.touches[0].clientY;const r=slides[cur]._read;ti=r?r.inner:0},{passive:true});
+  addEventListener('touchstart',e=>{if(detailOpen()){ty=null;return}ty=e.touches[0].clientY;const r=slides[cur]._read;ti=r?r.inner:0},{passive:true});
   addEventListener('touchmove',e=>{
     const r=slides[cur]._read;if(ty===null||!r||reduced||busy)return;
     setInner(slides[cur],ti+(ty-e.touches[0].clientY)*1.15,true);
@@ -227,7 +240,7 @@
 
   /* v iframu (artefakt) musí mít dokument fokus, jinak klávesy chodí rodiči */
   try{document.body.tabIndex=-1;document.body.focus({preventScroll:true})}catch(e){}
-  addEventListener('pointerdown',()=>{try{document.body.focus({preventScroll:true})}catch(e){}});
+  addEventListener('pointerdown',()=>{if(detailOpen())return;try{document.body.focus({preventScroll:true})}catch(e){}});
 
   /* ---------- start (i z hashe) ---------- */
   const h=location.hash&&document.getElementById(location.hash.slice(1));

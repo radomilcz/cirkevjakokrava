@@ -85,7 +85,14 @@
 {%- elif t in ('vyrok', 'vyrok_ruzovy') %}
   {{ sekce(x, 'love' if t == 'vyrok_ruzovy' else '') }}
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+{%- if x.get('detail') %}
+    <div class="stred">
     {{ vyrok(x.vyrok) }}
+      <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}">{{ (x.get('detail_odkaz') or 'Víc')|txt }}<span class="plus" aria-hidden="true">+</span></button>
+    </div>
+{%- else %}
+    {{ vyrok(x.vyrok) }}
+{%- endif %}
     {{ pata(x.get('otazka'), x.get('podpis')) }}
   </section>
 
@@ -153,6 +160,24 @@
 {%- endfor %}
 </main>
 </div>
+{#- Rozklik z výroku: dlouhé vysvětlení bez omezení délky, vlastní vrstva nad prezentací. -#}
+{%- for x in o.poradi|rozvrh if x.get('detail') %}
+<dialog class="detail" id="d-{{ x.id }}" aria-labelledby="d-{{ x.id }}-t">
+  <div class="detail-in">
+    <div class="detail-head">
+      <p class="eyebrow">{{ x.nadtitulek }}</p>
+      <button type="button" class="zavrit" aria-label="Zavřít">×</button>
+    </div>
+    <h2 class="detail-t" id="d-{{ x.id }}-t">{{ (x.get('detail_odkaz') or x.nadtitulek)|txt }}</h2>
+    <div class="essay">
+{%- for b in x.detail|bloky %}
+      {{ b|blok }}
+{%- endfor %}
+    </div>
+    <button type="button" class="zpet zavrit">Zpátky na manifest</button>
+  </div>
+</dialog>
+{%- endfor %}
 <ul class="rail" id="rail" aria-label="Slajdy"></ul>
 <div class="hint" id="hint">{{ s.get('napoveda') or '' }}</div>
 {{JS}}

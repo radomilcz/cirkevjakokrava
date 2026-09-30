@@ -65,6 +65,11 @@ components:
           - {name: otazka, component: otazka}
           - {name: podpis, component: podpis}
           - {name: otisk, component: otisk}
+          - {name: detail_odkaz, type: string, label: Rozklik – odkaz pod výrokem}
+          - name: detail
+            type: rich-text
+            label: Rozklik – text (bez omezení délky)
+            options: {format: markdown, switcher: false, media: false}
       - name: pilir
         label: Pilíř
         fields:
