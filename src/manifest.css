@@ -37,6 +37,7 @@ body{
 .track.snap{transition:none}
 .slide{
   position:relative;height:100%;padding:var(--pad);
+  background:var(--ground);color:var(--ink);transition:background-color .6s,color .6s;
   display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);overflow:hidden;
   contain:layout paint;
 }
@@ -374,6 +375,11 @@ body{
 .progress.on-light{background:rgba(59,47,47,.15)}
 .progress.on-light i{background:var(--ground)}
 body,.rail button,.progress i{transition:color .6s,border-color .6s,background-color .6s}
+/* barvy z palety: lišta a progress jdou vždycky za barvami slajdu (JS jim je nastaví), on-light netřeba */
+.progress,.progress.on-light{background:color-mix(in srgb,var(--ink) 15%,transparent)}
+.progress i,.progress.on-light i{background:var(--ink);transition:width .6s var(--ease),background-color .6s}
+.rail button,.rail.on-light button{border-color:var(--ink)}
+.rail button[aria-current="true"],.rail.on-light button[aria-current="true"]{background:var(--ink)}
 
 /* ---------- na výšku: otisk na střed slajdu, velký, jen s rotací daného slajdu ---------- */
 @media (max-aspect-ratio:1/1){

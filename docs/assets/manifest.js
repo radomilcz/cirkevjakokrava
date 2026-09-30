@@ -91,12 +91,39 @@
   }
   function startPaint(){plast=null;pstill=0;pfrom=performance.now();if(!praf)praf=requestAnimationFrame(ptick)}
 
+  /* ---------- barvy: slajd bez fotky si při každém příchodu vylosuje dvojici z palety webu ----------
+     Stejné dvojice jako přepínač na cirkevjakokrava.cz (data-paleta). Dvakrát za sebou nepadne
+     stejná. Pevné prvky (lišta, progress) i otevřený rozklik berou barvy aktuálního slajdu. */
+  const PALETA=[          /* [pozadí, písmo] */
+    ['#3b2f2f','#e6acac'],['#e6acac','#3b2f2f'],['#498660','#f9e7dd'],
+    ['#f9e7dd','#498660'],['#464994','#f9e7dd'],['#f9e7dd','#464994'],
+    ['#498660','#e6acac'],['#e6acac','#464994'],['#f9e7dd','#3b2f2f']
+  ];
+  const ZAKLAD=PALETA[0];
+  const pevne=[rail,document.querySelector('.progress'),hint].filter(Boolean);
+  let posledni=-1,barvyTed=ZAKLAD;
+  function obarvi(el,[g,i]){
+    el.style.setProperty('--ground',g);el.style.setProperty('--ink',i);
+    el.style.setProperty('--print',`color-mix(in srgb,${i} ${['#e6acac','#f9e7dd'].includes(g)?18:30}%,transparent)`);
+  }
+  function barvy(s){
+    if(!s.querySelector('.photo,.portret')){
+      let k;do{k=Math.floor(Math.random()*PALETA.length)}while(k===posledni);
+      posledni=k;obarvi(s,PALETA[k]);
+      const [g,i]=PALETA[k];
+      s._barvy=s.classList.contains('love')?[i,g]:[g,i];   /* .love má pozadí v --ink, pevné prvky jdou naopak */
+    }
+    barvyTed=s._barvy||ZAKLAD;
+    pevne.forEach(el=>obarvi(el,barvyTed));
+  }
+
   /* ---------- přechod mezi slajdy ---------- */
   let cur=0,busy=false,t1,t2;
   function go(i,instant){
     i=Math.max(0,Math.min(N-1,i));
     if(i===cur&&!instant)return;
     const prev=cur;cur=i;
+    if(i!==prev||instant&&!slides[i]._barvy)barvy(slides[i]);
     track.classList.toggle('snap',!!instant||reduced);
     track.classList.remove('flow');
     if(slides[i]._read&&i!==prev)slides[i]._read.inner=i>prev?0:slides[i]._read.max;
@@ -123,7 +150,7 @@
   const detailOpen=()=>!!document.querySelector('dialog.detail[open]');
   document.querySelectorAll('.vic').forEach(b=>b.addEventListener('click',()=>{
     const d=document.getElementById(b.getAttribute('aria-controls'));if(!d||!d.showModal)return;
-    d.scrollTop=0;d.showModal();d._from=b;
+    obarvi(d,barvyTed);d.scrollTop=0;d.showModal();d._from=b;
   }));
   document.querySelectorAll('dialog.detail').forEach(d=>{
     d.querySelectorAll('.zavrit').forEach(z=>z.addEventListener('click',()=>d.close()));
