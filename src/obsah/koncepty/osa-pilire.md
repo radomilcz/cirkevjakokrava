@@ -15,7 +15,7 @@ Popisy pod nadpisy se k téhle ose vždycky vracejí. Krása a poctivost (03) k 
 | # | Nadtitulek | Sloveso | Tagline (obraz) | Nadpis (civilně, Radomilova věta) | Druh |
 |---|---|---|---|---|---|
 | 01 | Co děláme? | vidíme, fandíme | Bůh tvoří. / My fandíme. | Oslavujeme Boží kreativitu a lásku → mezi lidmi na Kravařsku. | postoj |
-| 02 | Jak to děláme? | přidáváme se | Tráva roste / dřív než kráva. | Poznáváme silné stránky našeho města. Učíme se z nich, zapojujeme se a přidáváme svoje vlastní. | čin s druhými |
+| 02 | Jak to děláme? | přidáváme se | Tráva roste / dřív než kráva. | Poznáváme silné stránky našeho města. Učíme se z nich a přidáváme své vlastní. | čin s druhými |
 | 03 | Pro koho? | tvoříme | Každý něco umí. / Každá něco dává. | Krása je univerzální Boží jazyk. (Popis: Hlavně pro lidi, co kostel ani víru neřeší. Tvoříme pastvu pro oči, uši a duši našeho města…) | vlastní čin |
 | 04 | Proč vlastně? | – | Číslo v kravíně. / Jméno na pastvě. | Chceme, aby lidi poznávali Boha tam, kde žijí. | důvod |
 
