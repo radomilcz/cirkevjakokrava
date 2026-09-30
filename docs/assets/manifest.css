@@ -242,22 +242,18 @@ body{
 .stred{grid-row:2;align-self:center;min-width:0}
 .stred .statement{margin:0}
 .vic{
-  display:inline-flex;align-items:center;gap:.55em;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
-  border:0;background:none;color:inherit;cursor:pointer;
-  font-family:var(--display);font-weight:800;font-size:clamp(1rem,1.9vw,2.2rem);letter-spacing:-.01em;line-height:1.1;
+  display:inline-flex;align-items:baseline;gap:.5em;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
+  border:0;background:none;color:inherit;cursor:pointer;text-align:left;
+  font-family:var(--body);font-weight:400;font-size:clamp(1rem,1.55vw,1.875rem);line-height:1.25;
 }
-.vic-t{text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.22em}
-/* plus kreslený dvěma čárkami, ne znakem: glyf „+“ sedí v písmu nad středem a podtržení by jím prošlo */
-.vic .plus{
-  position:relative;flex:none;width:1.2em;height:1.2em;border:.085em solid currentColor;border-radius:50%;
-  transition:transform .5s var(--ease);
+/* jemná linka jen naznačí, že se dá kliknout; zesílí až pod myší */
+.vic-t{
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.3em;
+  text-decoration-color:color-mix(in srgb,currentColor 40%,transparent);transition:text-decoration-color .35s;
 }
-.vic .plus::before,.vic .plus::after{
-  content:"";position:absolute;left:50%;top:50%;width:48%;height:.085em;background:currentColor;
-  border-radius:.05em;transform:translate(-50%,-50%);
-}
-.vic .plus::after{transform:translate(-50%,-50%) rotate(90deg)}
-.vic:hover .plus,.vic:focus-visible .plus{transform:rotate(90deg)}
+.vic .sipka{flex:none;transition:transform .5s var(--ease)}
+.vic:hover .vic-t,.vic:focus-visible .vic-t{text-decoration-color:currentColor}
+.vic:hover .sipka,.vic:focus-visible .sipka{transform:translateX(.3em)}
 .vic:focus-visible{outline:2px solid currentColor;outline-offset:6px}
 .detail{
   position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;
@@ -279,9 +275,11 @@ body{
 .detail .essay .lead{font-weight:700}
 .detail .zpet{
   margin:clamp(3rem,12vh,8rem) 0 clamp(2rem,8vh,5rem) min(6.75vw,130px);
-  font-family:var(--display);font-weight:800;font-size:clamp(1rem,1.9vw,2.2rem);
-  text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.22em;
+  font-family:var(--body);font-weight:400;font-size:clamp(1rem,1.55vw,1.875rem);
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.3em;
+  text-decoration-color:color-mix(in srgb,currentColor 40%,transparent);
 }
+.detail .zpet:hover{text-decoration-color:currentColor}
 .detail .zpet::before{content:"← ";font-family:var(--body);font-weight:400}
 
 /* ---------- hodnoty · vysoký slajd, odstavec se čte scrollováním ---------- */
@@ -408,7 +406,7 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .pilir .nadpis>span{display:inline;white-space:normal}
   .pilir .nadpis{font-size:clamp(1.7rem,8.4vw,3rem);line-height:1.22}
   .pilir .podnadpis{font-size:clamp(1.15rem,5vw,1.5rem)}
-  .vic{font-size:1.05rem}
+  .vic{font-size:.95rem}
   .detail-t{font-size:clamp(1.9rem,9vw,3rem);margin-left:0}
   .detail .essay,.detail .zpet{margin-left:0}
 }
