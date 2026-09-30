@@ -15,7 +15,7 @@ Popisy pod nadpisy se k téhle ose vždycky vracejí. Krása a poctivost (03) k 
 | # | Nadtitulek | Sloveso | Tagline (obraz) | Nadpis (civilně, Radomilova věta) | Druh |
 |---|---|---|---|---|---|
 | 01 | Co děláme? | vidíme, fandíme | Bůh tvoří. / My fandíme. | Oslavujeme Boží kreativitu a lásku → mezi lidmi na Kravařsku. | postoj |
-| 02 | Jak to děláme? | přidáváme se | Tráva roste / dřív než kráva. | Přidáváme se k lidem, kteří už dělají něco dobrého. Učíme se od nich a investujeme vlastní čas, ruce a peníze, aby to rostlo. | čin s druhými |
+| 02 | Jak to děláme? | přidáváme se | Tráva roste / dřív než kráva. | Poznáváme silné stránky našeho města. Učíme se z nich, zapojujeme se a přidáváme svoje vlastní. | čin s druhými |
 | 03 | Pro koho? | tvoříme | Každý něco umí. / Každá něco dává. | Krása je univerzální Boží jazyk. (Popis: Hlavně pro lidi, co kostel ani víru neřeší. Tvoříme pastvu pro oči, uši a duši našeho města…) | vlastní čin |
 | 04 | Proč vlastně? | – | Číslo v kravíně. / Jméno na pastvě. | Chceme, aby lidi poznávali Boha tam, kde žijí. | důvod |
 
@@ -47,7 +47,6 @@ Mezi pilíři: „Lásko, to je Kravařsko!“ (za 01), „Ich bin ein Kuhländl
 
 ## Kde se dá ještě ladit (osa zůstává)
 - Texty a otázky pod nadpisy (přes jazykovou kontrolu a Petra).
-- „Investujeme … ruce“ v nadpisu 02 (korektor: „investovat ruce“ česky moc nedrží; Radomil zatím nechává).
 - Jestli do 03 patří i placená práce (návrh podle inspirace Re-thinkit: půda → duše; v textu 03 je zatím elektrikář a dráty).
 
 ## Příklady na potom (Radomil 29. 9.: „ty konkrétní věci nechme na potom“)
@@ -60,7 +59,7 @@ Texty na slajdech jsou teď jen obecné. Konkrétní obrazy, připravené a zkon
 ## Stav: v šuplíku (29. 9. 2026)
 Radomil: „zatím to hoďme do šuplíku.“ Živý web má pořád původní pilíře. Rozpracovaná verze je v `poslani-ctyri-nahled.yml` (nadpisy 01 a 03 už v duchu původní osy, popisy plnými větami).
 Až se k tomu vrátíme:
-1. Nadpis 02 – vrátit k „Vnímáme, co Bůh kolem dělá. Přidáváme k tomu naše srdce, slova i ruce.“, nebo nechat („investujeme … ruce“)?
+1. Nadpis 02 – hotovo 30. 9. (Radomil: „Poznáváme silné stránky našeho města…“).
 2. Nadpis 04 – vrátit k „Aby lidé poznali, že Bohu na nich záleží…“, nebo nechat?
 3. Otázky pod pilíři projít s novými nadpisy.
 4. Nasadit: zkopírovat `poslani-ctyri-nahled.yml` do `src/obsah/skupiny/poslani.yml` (šablona s polem `podnadpis` je už v dev).
