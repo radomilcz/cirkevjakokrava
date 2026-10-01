@@ -74,3 +74,5 @@ Schváleno 30. 9. (Radomil: „Takhle se mi to líbí.“) – rozklik 01: nadpi
 Tři činy a jeden důvod. Ne „Poznáváme“: čtyřka je o nich (oni poznávají Boha), ne o nás, a není to čtvrtá činnost. „Poznáváme“ navíc patří dvojce (silné stránky města).
 Výrok 02 na webu (30. 9.): „Dobré slovo. Obě ruce. / Celé srdce. / Přidáváme k tomu, / co Bůh svěřil druhým.“ (trojici přidáváme my) – „svěřil“ = dar i úkol, „druhým“ = hranice 02 (jejich dílo, my hosté).
 Výrok 04 na webu (30. 9.): „Nechodíme do církve. / Jsme církev, kudy chodíme. / Toužíme, aby lidé poznali, / že Bohu na nich záleží.“ Zápor na začátku tu Radomil výslovně bere („tady ten zápor snesu“). „Uprostřed komunity, kam patříš i ty“ patří do rozkliku 04. Pozor na překryv s koncem rozkliku 01 („Nejen v kostele. Ale na pastvě.“).
+
+**Pravidlo (Radomil 1. 10.):** na webu je zatím jen rozklik 01. Rozkliky 02–04 se ladí jen v náhledu (artefakt), dokud Radomil výslovně neřekne „nasaď“ / „publishni“. „Perfektní“ ani „super“ není pokyn k nasazení.
