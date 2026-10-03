@@ -76,3 +76,4 @@ Výrok 02 na webu (30. 9.): „Dobré slovo. Obě ruce. / Celé srdce. / Přidá
 Výrok 04 na webu (30. 9.): „Nechodíme do církve. / Jsme církev, kudy chodíme. / Toužíme, aby lidé poznali, / že Bohu na nich záleží.“ Zápor na začátku tu Radomil výslovně bere („tady ten zápor snesu“). „Uprostřed komunity, kam patříš i ty“ patří do rozkliku 04. Pozor na překryv s koncem rozkliku 01 („Nejen v kostele. Ale na pastvě.“).
 
 **Pravidlo (Radomil 1. 10.):** na webu je zatím jen rozklik 01. Rozkliky 02–04 se ladí jen v náhledu (artefakt), dokud Radomil výslovně neřekne „nasaď“ / „publishni“. „Perfektní“ ani „super“ není pokyn k nasazení.
+- „Křesťani“ (ne „křesťané“) je Radomilův záměr, hovorově jako „lidi“ (3. 10.).
