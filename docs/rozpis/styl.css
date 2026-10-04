@@ -333,7 +333,7 @@ a.kolize:hover,button.kolize:hover{border-color:rgba(var(--ink-rgb),.8)}
 .pole{display:flex;flex-direction:column;gap:.4em;min-width:0}
 .pole>span{font-size:.9em;opacity:.8}
 .pole small{opacity:.55;font-size:.82em}
-input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea{
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea{
   width:100%;min-width:0;padding:.72em 1.05em .58em;border:1px solid var(--obrys);border-radius:999px;
   background:rgba(var(--ink-rgb),.06);color:var(--ink);outline:none;transition:border-color .2s,background .2s;
 }
@@ -397,6 +397,45 @@ select option{background:var(--ground);color:var(--ink)}
 .kandidati li.tezky button{opacity:.55}
 .kandidati li.tezky button:hover{opacity:1}
 
+/* ---------- pořad ----------
+   Body jdou za sebou, čas vlevo se dopočítá. Šipky nahoru a dolů jsou otočená „→“ –
+   ↑ a ↓ v subsetu písma nejsou. */
+.porad{list-style:none;margin:0;padding:0}
+.porad>li{
+  display:grid;grid-template-columns:3.4em minmax(0,1fr) auto auto;gap:.3em .9em;align-items:center;
+  padding:.55em 0;border-top:1px solid var(--linka);
+}
+.porad>li:last-child{border-bottom:1px solid var(--linka)}
+.porad .kdy{font-family:var(--narrow);font-weight:900;font-size:1.05em;padding-top:.12em}
+.porad .co{display:flex;flex-direction:column;align-items:flex-start;gap:.1em;min-width:0;text-align:left;background:none;border:0;padding:.2em 0;cursor:pointer}
+.porad span.co{cursor:default}
+.porad button.co:hover .nazev-bodu{text-decoration:underline;text-underline-offset:.2em}
+.porad .nazev-bodu{font-size:1.05em}
+.porad .co small{opacity:.6;font-size:.82em}
+.porad .minut{opacity:.6;font-size:.88em;white-space:nowrap}
+.porad .posun{display:flex;align-items:center;gap:2px}
+.porad select{width:auto;min-width:0;max-width:100%}
+.tl-sipka{
+  display:inline-grid;place-items:center;width:1.9em;height:1.9em;padding:0;flex:none;
+  border:1px solid transparent;border-radius:50%;background:none;cursor:pointer;opacity:.6;line-height:1;
+}
+.tl-sipka::before{content:"→";display:inline-block}
+.tl-sipka.nahoru::before{transform:rotate(-90deg)}
+.tl-sipka.dolu::before{transform:rotate(90deg)}
+.tl-sipka:hover:not(:disabled){opacity:1;border-color:var(--obrys)}
+.tl-sipka:disabled{opacity:.15;cursor:default}
+.pridat-format{margin:.9em 0 0}
+.pridat-format .stitek{font-size:.82em}
+.list-poradu{max-width:900px}
+.porad.velky>li{grid-template-columns:4.4em minmax(0,1fr) auto;padding:.9em 0}
+.porad.velky .kdy{font-size:clamp(1.3rem,2.6vw,2rem)}
+.porad.velky .nazev-bodu{font-size:clamp(1.25rem,2.4vw,1.9rem);line-height:1.15}
+.porad.velky .co small{font-size:clamp(.9rem,1.2vw,1.1rem)}
+@media (max-width:560px){
+  .porad>li{grid-template-columns:3em minmax(0,1fr) auto}
+  .porad .posun{grid-column:2/-1;justify-content:flex-end}
+}
+
 /* ---------- rozpis (tabulka) ---------- */
 .tabulka-obal{overflow-x:auto;margin:0 calc(-1*var(--okraj));padding:0 var(--okraj)}
 .tabulka{border-collapse:collapse;width:100%;min-width:640px;font-size:.92em}
@@ -457,4 +496,13 @@ select option{background:var(--ground);color:var(--ink)}
   .tabulka tr{break-inside:avoid}
   .tabulka td.prazdne{opacity:1}
   .rule{margin:4mm 0}
+  /* pořad jde na výšku a větším písmem – visí u pultu */
+  .list-poradu{page:porad;max-width:none}
+  .porad.velky>li{grid-template-columns:24mm minmax(0,1fr) auto;padding:3.2mm 0;break-inside:avoid}
+  .list-poradu .tisk-hlavicka,.list-poradu .rule,.list-poradu .porad{margin-right:2mm}
+  .porad.velky .kdy{font-size:17pt}
+  .porad.velky .nazev-bodu{font-size:17pt}
+  .porad.velky .co small{font-size:10pt}
+  .porad.velky .minut{font-size:10pt}
 }
+@page porad{size:A4 portrait;margin:14mm}

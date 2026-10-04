@@ -8,6 +8,7 @@
 // Odmítnutá přiřazení a zrušené události se do kolizí nepočítají (kromě K14).
 
 import { prekryv, vBlokaci, denZ, mesicZ, posunDny, posunMinuty, denVTydnu, hezkyDen, hezkyCas } from './cas.js';
+import { casyPoradu, delkaPoradu, delkaUdalosti, nazevBodu, vedouciBodu } from './porad.js';
 
 export const KODY = {
   K1: 'Dvakrát naráz',
@@ -25,6 +26,9 @@ export const KODY = {
   K12: 'Málo dospělých u dětí',
   K13: 'Neaktivní',
   K14: 'Zrušená událost',
+  K15: 'Pořad přetéká',
+  K16: 'Bod pořadu',
+  K17: 'Nikdo nevede',
 };
 
 const POVOLENO_DNI_K5 = 7;   // klíčová služba neobsazená týden před = chyba
@@ -280,6 +284,44 @@ export function najdiKolize(data, { dnes } = {}) {
           klic: `K6:${p.id}`, kod: 'K6', zavaznost: 'varovani', udalost: u.id, osoba: p.osoba, prirazeni: [p],
           text: `${sluzby.get(p.sluzba)?.nazev || 'Služba'}: ${jmeno(lide.get(p.osoba))} – zatím bez potvrzení.`,
         });
+      }
+    }
+
+    // K15–K17 – pořad (jen u budoucích setkání)
+    if (budouci && (u.porad || []).length) {
+      const poradMin = delkaPoradu(u);
+      const setkaniMin = delkaUdalosti(u);
+      if (poradMin > setkaniMin) {
+        pridej({
+          klic: `K15:${u.id}`, kod: 'K15', zavaznost: 'varovani', udalost: u.id,
+          text: `Pořad má ${poradMin} min, setkání jen ${setkaniMin}. Něco zkrať, nebo prodluž setkání.`,
+        });
+      }
+      for (const { bod, zacatek, konec } of casyPoradu(u)) {
+        const nazev = nazevBodu(data, bod);
+        if (bod.osoba) {
+          const osoba = lide.get(bod.osoba);
+          const blokace = (osoba?.blokace || []).find((b) => vBlokaci({ zacatek, konec }, b));
+          if (!osoba) {
+            pridej({ klic: `K16:${bod.id}:pryc`, kod: 'K16', zavaznost: 'varovani', udalost: u.id, text: `${nazev}: vede někdo, kdo už v rozpisu není.` });
+          } else if (blokace) {
+            pridej({
+              klic: `K16:${bod.id}`, kod: 'K16', zavaznost: 'chyba', udalost: u.id, osoba: osoba.id,
+              text: `${nazev}: ${jmeno(osoba)} v tu dobu nemůže${blokace.duvod ? ` (${blokace.duvod})` : ''}.`,
+            });
+          } else if (osoba.stav === 'neaktivni') {
+            pridej({ klic: `K16:${bod.id}`, kod: 'K16', zavaznost: 'varovani', udalost: u.id, osoba: osoba.id, text: `${nazev}: ${jmeno(osoba)} je neaktivní.` });
+          }
+          continue;
+        }
+        const format = (data.formaty || []).find((f) => f.id === bod.format);
+        if (format?.sluzba && !vedouciBodu(data, u, bod).length
+          && !(u.potreba || []).some((p) => p.sluzba === format.sluzba)) {
+          pridej({
+            klic: `K17:${bod.id}`, kod: 'K17', zavaznost: 'varovani', udalost: u.id,
+            text: `${nazev}: nikdo to nevede. Přidej službu ${sluzby.get(format.sluzba)?.nazev || '?'}, nebo vyber člověka.`,
+          });
+        }
       }
     }
 

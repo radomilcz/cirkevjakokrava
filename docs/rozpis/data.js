@@ -8,13 +8,13 @@
 // čerstvá verze a změny se sloučí po záznamech: co jsem změnil já, vezmu svoje, co změnil
 // druhý, vezmu jeho. Přepíše se jen to, co jsme změnili oba – a to dostane přednost moje.
 
-export const KOLEKCE = ['sluzby', 'tymy', 'mista', 'domacnosti', 'lide', 'sablony', 'udalosti'];
+export const KOLEKCE = ['sluzby', 'tymy', 'mista', 'domacnosti', 'lide', 'formaty', 'sablony', 'udalosti'];
 
 export function prazdna() {
   return {
     verze: 1,
     nastaveni: { nazev: 'Církev jako kráva', adresa: '' },
-    sluzby: [], tymy: [], kombinace: [], mista: [], domacnosti: [], lide: [], sablony: [], udalosti: [],
+    sluzby: [], tymy: [], kombinace: [], mista: [], domacnosti: [], lide: [], formaty: [], sablony: [], udalosti: [],
   };
 }
 

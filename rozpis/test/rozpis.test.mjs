@@ -7,6 +7,7 @@ import * as cas from '../../docs/rozpis/cas.js';
 import { najdiKolize, kandidati, navrhnoutZbytek } from '../../docs/rozpis/kolize.js';
 import { sluc, prazdna, normalizuj, Github, Synchronizace, Konflikt } from '../../docs/rozpis/data.js';
 import { ics, icsOsoby } from '../../docs/rozpis/ics.js';
+import { casyPoradu, delkaPoradu, pridejFormat, zkopirujPorad, posunBod, vedouciBodu } from '../../docs/rozpis/porad.js';
 import { vytvorUkazku } from '../../docs/rozpis/ukazka.js';
 
 const DNES = '2026-10-04';   // neděle
@@ -186,6 +187,76 @@ test('kandidáti: nejdřív volní, s důvody u ostatních; návrh doplní díry
   assert.deepEqual(nova.map((p) => `${p.sluzba}:${p.osoba}`).sort(), ['deti:iva', 'deti:jana', 'zvuk:petr']);
   assert.ok(nova.every((p) => p.stav === 'navrzeno'));
   assert.ok(!najdiKolize(d, { dnes: DNES }).some((x) => x.zavaznost === 'chyba'), 'návrh nesmí vyrobit chybu');
+});
+
+// ---------- pořad ----------
+
+function sPoradem() {
+  const d = zaklad();
+  d.sluzby.push({ id: 'kazani', nazev: 'Kázání', pocet: 1 }, { id: 'vecere', nazev: 'Večeře Páně', pocet: 2 });
+  d.formaty = [
+    { id: 'f-kazani', nazev: 'Kázání', delka: 35, sluzba: 'kazani' },
+    { id: 'f-otazky', nazev: 'Otázky na tělo', delka: 20, sluzba: 'zpev' },
+    { id: 'f-vecere', nazev: 'Večeře Páně', delka: 10, sluzba: 'vecere', potreba: [{ sluzba: 'vecere', pocet: 2 }] },
+    { id: 'f-pribeh', nazev: 'Příběh', delka: 10 },
+  ];
+  d.udalosti = [udalost('a', '2026-10-11T10:00', '2026-10-11T11:00')];
+  return d;
+}
+
+test('pořad: časy jdou za sebou, posun mění pořadí', () => {
+  const d = sPoradem();
+  const u = d.udalosti[0];
+  let n = 0;
+  const id = () => `b${++n}`;
+  pridejFormat(d, u, 'f-kazani', id);
+  pridejFormat(d, u, 'f-otazky', id);
+  pridejFormat(d, u, 'f-vecere', id);
+  assert.deepEqual(casyPoradu(u).map((x) => x.zacatek.slice(11)), ['10:00', '10:35', '10:55']);
+  assert.equal(delkaPoradu(u), 65);
+  posunBod(u, 'b3', -1);
+  assert.deepEqual(u.porad.map((b) => b.format), ['f-kazani', 'f-vecere', 'f-otazky']);
+  assert.ok(!posunBod(u, 'b1', -1), 'první bod výš nejde');
+});
+
+test('pořad: formát přidá potřebné služby, kopie dostane nová id', () => {
+  const d = sPoradem();
+  const u = d.udalosti[0];
+  u.potreba = [{ sluzba: 'vecere', pocet: 1 }];
+  pridejFormat(d, u, 'f-vecere', () => 'b1');
+  assert.deepEqual(u.potreba, [{ sluzba: 'vecere', pocet: 2 }], 'počet se nesčítá, bere se větší');
+  const cil = udalost('c', '2026-10-18T10:00', '2026-10-18T11:00');
+  let n = 0;
+  zkopirujPorad(d, cil, [{ format: 'f-kazani', delka: 30 }, { format: 'f-vecere' }], () => `n${++n}`);
+  assert.deepEqual(cil.porad, [{ id: 'n1', format: 'f-kazani', delka: 30 }, { id: 'n2', format: 'f-vecere', delka: 10 }]);
+  assert.deepEqual(cil.potreba.map((p) => `${p.sluzba}:${p.pocet}`).sort(), ['kazani:1', 'vecere:2']);
+});
+
+test('pořad: kdo vede – služba, nebo ručně vybraný člověk', () => {
+  const d = sPoradem();
+  const u = d.udalosti[0];
+  u.prirazeni = [{ id: 'p1', sluzba: 'kazani', osoba: 'petr', stav: 'potvrzeno' }, { id: 'p2', sluzba: 'zpev', osoba: 'jana', stav: 'odmitnuto' }];
+  assert.deepEqual(vedouciBodu(d, u, { format: 'f-kazani' }), ['petr']);
+  assert.deepEqual(vedouciBodu(d, u, { format: 'f-otazky' }), [], 'odmítnutý nevede');
+  assert.deepEqual(vedouciBodu(d, u, { format: 'f-pribeh', osoba: 'jana' }), ['jana']);
+});
+
+test('K15 pořad přetéká, K16 vede někdo v blokaci, K17 nikdo nevede', () => {
+  const d = sPoradem();
+  const u = d.udalosti[0];   // 10.00–11.00
+  d.lide[1].blokace = [{ id: 'b', od: '2026-10-11', do: '2026-10-11', duvod: 'nemoc' }];
+  u.porad = [
+    { id: 'b1', format: 'f-kazani', delka: 35 },
+    { id: 'b2', format: 'f-otazky', delka: 20 },
+    { id: 'b3', format: 'f-pribeh', delka: 10, osoba: 'jana' },
+  ];
+  const k = najdiKolize(d, { dnes: DNES });
+  assert.deepEqual(kody(k), ['K15:varovani', 'K16:chyba', 'K17:varovani', 'K17:varovani']);
+  assert.match(k.find((x) => x.kod === 'K15').text, /65 min, setkání jen 60/);
+  assert.match(k.find((x) => x.kod === 'K16').text, /Příběh: Jana v tu dobu nemůže \(nemoc\)/);
+  // když je služba v potřebě setkání, hlídá to K5 – K17 se neopakuje
+  u.potreba = [{ sluzba: 'kazani', pocet: 1 }, { sluzba: 'zpev', pocet: 1 }];
+  assert.ok(!najdiKolize(d, { dnes: DNES }).some((x) => x.kod === 'K17'));
 });
 
 // ---------- slučování ----------

@@ -9,6 +9,7 @@ import { navrhnoutZbytek } from './kolize.js';
 const SLUZBY = [
   ['kazani', 'Kázání', 'slovo', { klicova: true, jenDospely: true }],
   ['vedeni', 'Vedení', 'slovo', { klicova: true, jenDospely: true }],
+  ['vecere', 'Večeře Páně', 'slovo', { pocet: 2, jenDospely: true }],
   ['zpev', 'Zpěv', 'chvaly', { pocet: 2 }],
   ['kytara', 'Kytara', 'chvaly'],
   ['klavesy', 'Klávesy', 'chvaly'],
@@ -30,27 +31,27 @@ const LIDE = [
   ['Jana', 'Nováková', 'novakovi', 'clen', null, 'zpev:u deti:u uvitani:u'],
   ['Matěj', 'Novák', 'novakovi', 'dite', 2017, ''],
   ['Ema', 'Nováková', 'novakovi', 'dite', 2021, ''],
-  ['Radim', 'Kovář', null, 'clen', null, 'kazani:u vedeni:u'],
+  ['Radim', 'Kovář', null, 'clen', null, 'kazani:u vedeni:u vecere:u'],
   ['Tomáš', 'Svoboda', 'svobodovi', 'clen', null, 'bici:u zvuk:z'],
   ['Lucie', 'Svobodová', 'svobodovi', 'clen', null, 'deti:u kafe:u'],
   ['Adam', 'Svoboda', 'svobodovi', 'dite', 2019, ''],
   ['Martina', 'Dvořáková', null, 'clen', null, 'klavesy:u zpev:u vedeni:z'],
   ['Ondřej', 'Černý', null, 'clen', null, 'projekce:u zvuk:u'],
   ['Kateřina', 'Procházková', null, 'clen', null, 'zpev:u uvitani:u kafe:u'],
-  ['David', 'Kučera', 'kucerovi', 'clen', null, 'kazani:u vedeni:u kytara:u'],
+  ['David', 'Kučera', 'kucerovi', 'clen', null, 'kazani:u vedeni:u kytara:u vecere:u'],
   ['Eva', 'Kučerová', 'kucerovi', 'clen', null, 'deti:u uvitani:u'],
   ['Josef', 'Veselý', null, 'clen', null, 'kafe:u uvitani:u'],
   ['Barbora', 'Horáková', null, 'pravidelny', null, 'projekce:u zpev:z'],
   ['Jakub', 'Marek', null, 'clen', null, 'klavesy:u bici:u'],
   ['Tereza', 'Pokorná', null, 'clen', null, 'deti:u kafe:u'],
-  ['Michal', 'Král', null, 'clen', null, 'vedeni:u zvuk:u projekce:u'],
+  ['Michal', 'Král', null, 'clen', null, 'vedeni:u zvuk:u projekce:u vecere:u'],
   ['Anna', 'Růžičková', null, 'pravidelny', null, 'kafe:u'],
   ['Pavel', 'Beneš', null, 'neaktivni', null, 'kytara:u'],
   ['Veronika', 'Fialová', null, 'host', null, ''],
   ['Lukáš', 'Šťastný', null, 'clen', null, 'kytara:u zpev:u'],
   ['Filip', 'Doležal', null, 'clen', null, 'zvuk:u projekce:u bici:z'],
   ['Klára', 'Němcová', null, 'clen', null, 'zpev:u klavesy:u'],
-  ['Jiří', 'Zeman', null, 'clen', null, 'kazani:u uvitani:u vedeni:u'],
+  ['Jiří', 'Zeman', null, 'clen', null, 'kazani:u uvitani:u vedeni:u vecere:u'],
   ['Simona', 'Holubová', null, 'clen', null, 'deti:u kafe:u'],
   ['Hana', 'Malá', null, 'pravidelny', null, 'deti:u uvitani:u'],
 ];
@@ -65,6 +66,25 @@ const POTREBA_PASTVA = [['kazani', 1], ['vedeni', 1], ['zpev', 2], ['kytara', 1]
   ['zvuk', 1], ['projekce', 1], ['deti', 2], ['kafe', 2], ['uvitani', 1]];
 const POTREBA_ZKOUSKA = [['zpev', 2], ['kytara', 1], ['klavesy', 1], ['bici', 1], ['zvuk', 1]];
 
+// formáty, ze kterých se skládá pořad: id, název, minuty, kdo vede (služba), co dalšího potřebuje
+const FORMATY = [
+  ['f-privitani', 'Přivítání', 5, 'vedeni'],
+  ['f-chvaly', 'Chvály', 25, 'zpev'],
+  ['f-ohlasky', 'Ohlášky', 5, 'vedeni'],
+  ['f-deti', 'Děti jdou do skupinky', 2, 'deti'],
+  ['f-kazani', 'Kázání', 35, 'kazani'],
+  ['f-otazky', 'Otázky na tělo', 20, 'vedeni', {
+    popis: 'Pár otázek ke kultuře, ve dvojicích nebo po třech. Otázky jsou na webu i na A4.',
+    odkaz: 'https://otazky.cirkevjakokrava.cz',
+  }],
+  ['f-vecere', 'Večeře Páně', 10, 'vecere', { potreba: [{ sluzba: 'vecere', pocet: 2 }] }],
+  ['f-modlitby', 'Modlitby', 10, 'vedeni'],
+  ['f-pribeh', 'Příběh ze života', 10, null, { popis: 'Někdo ze sboru vypráví, co s Bohem zažil. Kdo, se vybírá ručně.' }],
+  ['f-video', '(B)učení – video', 5, 'projekce'],
+  ['f-pisen', 'Píseň na konec', 5, 'zpev'],
+];
+const PORAD_PASTVA = ['f-privitani', 'f-chvaly', 'f-ohlasky', 'f-deti', 'f-kazani', 'f-otazky', 'f-modlitby', 'f-pisen'];
+
 const potreba = (seznam) => seznam.map(([sluzba, pocet]) => ({ sluzba, pocet }));
 
 export function vytvorUkazku(dnes) {
@@ -75,7 +95,7 @@ export function vytvorUkazku(dnes) {
 
   data.tymy = TYMY.map(([tid, nazev]) => ({ id: tid, nazev, vedouci: [] }));
   data.sluzby = SLUZBY.map(([sid, nazev, tym, x = {}]) => ({ id: sid, nazev, tym, ...x, pocet: x.pocet || 1 }));
-  data.kombinace = [['zpev', 'kytara'], ['zpev', 'klavesy'], ['vedeni', 'zpev'], ['uvitani', 'kafe']];
+  data.kombinace = [['zpev', 'kytara'], ['zpev', 'klavesy'], ['vedeni', 'zpev'], ['uvitani', 'kafe'], ['kazani', 'vecere'], ['vedeni', 'vecere']];
   data.mista = MISTA.map(([mid, nazev, sdilene]) => ({ id: mid, nazev, sdilene }));
   data.domacnosti = DOMACNOSTI.map(([did, nazev]) => ({ id: did, nazev }));
   data.lide = LIDE.map(([jmeno, prijmeni, domacnost, stav, narozeni, umi], i) => ({
@@ -97,8 +117,13 @@ export function vytvorUkazku(dnes) {
   data.tymy.find((t) => t.id === 'deti').vedouci = [osoba('Lucie').id];
   data.tymy.find((t) => t.id === 'slovo').vedouci = [osoba('Radim').id];
 
+  data.formaty = FORMATY.map(([fid, nazev, delka, sluzba, x = {}]) => ({ id: fid, nazev, delka, ...(sluzba ? { sluzba } : {}), ...x }));
+  const delkaFormatu = (fid) => data.formaty.find((f) => f.id === fid).delka;
   data.sablony = [
-    { id: 'pastva', nazev: 'Setkání na pastvě', typ: 'bohosluzba', cas: '10:00', delka: 120, mista: ['sal', 'mala'], potreba: potreba(POTREBA_PASTVA) },
+    {
+      id: 'pastva', nazev: 'Setkání na pastvě', typ: 'bohosluzba', cas: '10:00', delka: 120, mista: ['sal', 'mala'],
+      potreba: potreba(POTREBA_PASTVA), porad: PORAD_PASTVA.map((format) => ({ format, delka: delkaFormatu(format) })),
+    },
     { id: 'zkouska', nazev: 'Zkouška chval', typ: 'zkouska', cas: '18:30', delka: 120, mista: ['sal'], potreba: potreba(POTREBA_ZKOUSKA) },
     { id: 'skupinka', nazev: 'Skupinka', typ: 'skupina', cas: '19:00', delka: 90, mista: ['mala'], potreba: [] },
   ];
@@ -119,6 +144,7 @@ export function vytvorUkazku(dnes) {
     return opakovani(zacatekText, konecText, sablona === 'skupinka' ? '14dni' : 'tyden', konec).map((t) => ({
       id: id('u'), nazev: s.nazev, typ: s.typ, ...t, mista: [...s.mista], rada,
       potreba: s.potreba.map((p) => ({ ...p })), prirazeni: [],
+      ...(s.porad ? { porad: s.porad.map((b) => ({ id: id('b'), ...b })) } : {}),
     }));
   };
 
@@ -134,6 +160,17 @@ export function vytvorUkazku(dnes) {
   const jana = osoba('Jana');
   jana.blokace.push({ id: id('b'), od: posunDny(pristiNedele, 13), do: posunDny(pristiNedele, 21), duvod: 'dovolená' });
   osoba('Jakub').blokace.push({ id: id('b'), od: posunDny(pristiNedele, 20), do: posunDny(pristiNedele, 22), duvod: 'pracovní cesta' });
+
+  for (const u of data.udalosti) {
+    if (u.typ !== 'bohosluzba' || Number(u.zacatek.slice(8, 10)) > 7) continue;
+    const poKazani = u.porad.findIndex((x) => x.format === 'f-kazani') + 1;
+    u.porad.splice(poKazani, 0, { id: id('b'), format: 'f-vecere', delka: 10 });
+    u.porad = u.porad.filter((x) => x.format !== 'f-otazky');   // ten den bez otázek, ať se to vejde
+    u.potreba.push({ sluzba: 'vecere', pocet: 2 });
+  }
+  // za dva týdny vypráví příběh Veronika (host) – bod s ručně vybraným člověkem
+  const pribeh = pastvaZa(2);
+  if (pribeh) pribeh.porad.splice(4, 0, { id: id('b'), format: 'f-pribeh', delka: 10, osoba: osoba('Veronika').id });
 
   for (const u of data.udalosti) {
     if (u.typ !== 'zkouska') navrhnoutZbytek(data, u.id, () => id('p'), { dnes });

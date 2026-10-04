@@ -1,6 +1,6 @@
 # Rozpis – kdo co kdy dělá
 
-Plánovač setkání pro Církev jako kráva: **kalendář, lidi, služby a kolize**. Běží jen na GitHubu –
+Plánovač setkání pro Církev jako kráva: **kalendář, lidi, služby, pořad a kolize**. Běží jen na GitHubu –
 aplikace na GitHub Pages, data v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další služba.
 
 **Živě (ukázka s vymyšlenými lidmi):** https://manifest.cirkevjakokrava.cz/rozpis/
@@ -14,9 +14,10 @@ Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stej
 | --- | --- |
 | **Kalendář** | měsíc v mřížce (na mobilu seznam dnů), klik do dne = nové setkání, šablony, opakování (týden, 14 dní, měsíc) |
 | **Setkání** | kdo co dělá po týmech, výběr lidí seřazený podle toho, kdo může a kdo má nejmíň služeb, „Navrhnout zbytek“, „Stejní lidi jako minule“, stavy navrženo → potvrzeno → nemůže, zrušení, řady |
+| **Pořad** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně, Příběh ze života…) – časy se dopočítají, vedoucí se doplní podle služeb, posouvání nahoru/dolů, „Stejný pořad jako minule“, pořad v šabloně, list na A4 na výšku k pultu |
 | **Rozpis** | tabulka měsíce (řádky neděle, sloupce služby po týmech), filtr týmů, tisk na A4 na šířku – na bílý papír, bez telefonů |
 | **Lidé** | hledání, stav (člen, chodí pravidelně, host, dítě, neaktivní), domácnosti, co umí (umí / učí se), kdy nemůže, kdy slouží, souhlas se zpracováním údajů, kalendář do telefonu (.ics) |
-| **Služby** | služby po týmech, vedoucí, služby, které jeden člověk zvládne naráz (zpěv + kytara), šablony setkání, místa |
+| **Služby** | služby po týmech, vedoucí, služby, které jeden člověk zvládne naráz (zpěv + kytara), formáty pořadu, šablony setkání, místa |
 | **Kolize** | všechny problémy od dneška po měsících, filtr chyby / pozor / info |
 | **Nastavení** | připojení k GitHubu, záloha a nahrání JSON, celý kalendář .ics |
 
@@ -41,6 +42,9 @@ Chybu jde u konkrétního přiřazení **přebít s důvodem** – pak z ní je 
 | K12 | u dětí méně než dva dospělí | pozor |
 | K13 | neaktivní člověk v rozpisu | pozor |
 | K14 | zrušené setkání, na kterém pořád někdo je | info |
+| K15 | pořad je delší než setkání | pozor |
+| K16 | bod pořadu vede člověk, který v tu dobu nemůže (nebo je neaktivní) | chyba / pozor |
+| K17 | bod pořadu nikdo nevede – služba formátu v setkání není | pozor |
 
 Pravidla jsou v `docs/rozpis/kolize.js` a stejný kód běží v aplikaci, v testech i v GitHub Action.
 
@@ -72,6 +76,7 @@ docs/rozpis/index.html   kostra stránky, CSP
 docs/rozpis/styl.css     design (tokeny z Otázek na tělo), tisk A4
 docs/rozpis/app.js       obrazovky a dialogy
 docs/rozpis/kolize.js    pravidla kolizí, výběr lidí, „Navrhnout zbytek“
+docs/rozpis/porad.js     pořad z formátů: časy, kdo vede, přidání formátu i s jeho službami
 docs/rozpis/cas.js       datumy (místní čas jako text „2026-10-11T10:00“), opakování, česky
 docs/rozpis/data.js      úložiště (prohlížeč / GitHub), slučování, fronta ukládání
 docs/rozpis/ics.js       export do kalendáře v telefonu

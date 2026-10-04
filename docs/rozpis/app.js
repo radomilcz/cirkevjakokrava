@@ -8,6 +8,7 @@ import { najdiKolize, kandidati, navrhnoutZbytek, index, jmeno, celeJmeno, KODY 
 import { Lokalni, Github, Synchronizace, normalizuj, noveId, prazdna, kopie } from './data.js';
 import { ics, icsOsoby } from './ics.js';
 import { vytvorUkazku } from './ukazka.js';
+import { casyPoradu, delkaPoradu, delkaUdalosti, nazevBodu, vedouciBodu, pridejFormat, zkopirujPorad, posunBod } from './porad.js';
 
 // ---------- stav ----------
 
@@ -150,6 +151,18 @@ const najdiUdalost = (id) => S.data.udalosti.find((u) => u.id === id);
 const najdiOsobu = (id) => S.data.lide.find((o) => o.id === id);
 const najdiSluzbu = (id) => S.data.sluzby.find((s) => s.id === id);
 
+/** Pořadí služeb: po týmech (jak jdou týmy), uvnitř týmu jak jdou služby – ať se tým nerozpadne na dva kusy. */
+function poradiSluzby() {
+  const tymy = S.data.tymy.map((t) => t.id);
+  const sluzby = S.data.sluzby.map((x) => x.id);
+  const tymSluzby = new Map(S.data.sluzby.map((x) => [x.id, x.tym]));
+  const klic = (id) => {
+    const t = tymy.indexOf(tymSluzby.get(id));
+    return [t < 0 ? tymy.length : t, sluzby.indexOf(id)];
+  };
+  return (a, b) => { const [ta, sa] = klic(a); const [tb, sb] = klic(b); return ta - tb || sa - sb; };
+}
+
 function seradUdalosti() {
   S.data.udalosti.sort((a, b) => (a.zacatek < b.zacatek ? -1 : a.zacatek > b.zacatek ? 1 : 0));
 }
@@ -186,6 +199,7 @@ function trasa() {
 const VYKRESLENI = {
   kalendar: vykresliKalendar,
   udalost: vykresliUdalost,
+  porad: vykresliPorad,
   rozpis: vykresliRozpis,
   lide: vykresliLidi,
   osoba: vykresliOsobu,
@@ -194,7 +208,7 @@ const VYKRESLENI = {
   nastaveni: vykresliNastaveni,
 };
 
-const AKTIVNI_MENU = { udalost: 'kalendar', osoba: 'lide' };
+const AKTIVNI_MENU = { udalost: 'kalendar', porad: 'kalendar', osoba: 'lide' };
 
 function vykresli({ nahoru = false } = {}) {
   const { sekce, parametr } = trasa();
@@ -327,6 +341,7 @@ function dialogNovaUdalost(den, puvodni) {
   const sablony = S.data.sablony;
   const form = h('form', { method: 'dialog', novalidate: true });
   const potrebaPracovni = u.potreba.map((p) => ({ ...p }));
+  let poradSablony = null;   // pořad z vybrané šablony – dostane ho každé nové setkání
   const editorPotreby = h('div', { class: 'cela' });
   const prekresliPotrebu = () => {
     editorPotreby.replaceChildren(potrebaEditor(potrebaPracovni));
@@ -348,6 +363,7 @@ function dialogNovaUdalost(den, puvodni) {
           form.elements.konec.value = `${String(Math.floor(k / 60) % 24).padStart(2, '0')}:${String(k % 60).padStart(2, '0')}`;
           form.querySelectorAll('input[name=mista]').forEach((i) => { i.checked = s.mista.includes(i.value); });
           potrebaPracovni.splice(0, potrebaPracovni.length, ...s.potreba.map((p) => ({ ...p })));
+          poradSablony = s.porad || null;
           prekresliPotrebu();
         },
       },
@@ -416,6 +432,7 @@ function dialogNovaUdalost(den, puvodni) {
       : [{ zacatek, konec }];
     const rada = terminy.length > 1 ? noveId('r') : undefined;
     const nove = terminy.map((t) => ({ id: noveId('u'), ...kopie(spolecne), ...t, rada, prirazeni: [] }));
+    if (poradSablony?.length) for (const x of nove) zkopirujPorad(S.data, x, poradSablony, () => noveId('b'));
     S.data.udalosti.push(...nove);
     seradUdalosti();
     zavriDialog();
@@ -457,8 +474,8 @@ function vykresliUdalost(id) {
   // služby po týmech; služby přiřazené bez potřeby taky ukázat
   const potreba = [...(u.potreba || [])];
   for (const p of u.prirazeni || []) if (!potreba.some((x) => x.sluzba === p.sluzba)) potreba.push({ sluzba: p.sluzba, pocet: 0 });
-  const poradiSluzeb = S.data.sluzby.map((s) => s.id);
-  potreba.sort((a, b) => poradiSluzeb.indexOf(a.sluzba) - poradiSluzeb.indexOf(b.sluzba));
+  const srovnej = poradiSluzby();
+  potreba.sort((a, b) => srovnej(a.sluzba, b.sluzba));
 
   const plan = h('ul', { class: 'plan' });
   let tym = null;
@@ -535,7 +552,8 @@ function vykresliUdalost(id) {
       h('section', { class: 'sekce' },
         h('h2', {}, 'Kdo co dělá'),
         potreba.length ? plan : prazdno('Žádná služba.', 'Tohle setkání nikoho nepotřebuje. Nebo jo? Přidej služby v úpravě.', tl('Upravit', () => dialogNovaUdalost(null, u))),
-        h('p', { class: 'poznamka' }, 'Kurzívou = navrženo. Klik na stav ho přepne: navrženo → potvrzeno → nemůže.')),
+        h('p', { class: 'poznamka' }, 'Kurzívou = navrženo. Klik na stav ho přepne: navrženo → potvrzeno → nemůže.'),
+        sekcePoradu(u, predchozi)),
       h('section', { class: 'sekce' },
         h('h2', {}, 'Kolize', h('span', { class: 'n' }, kolize.length ? String(kolize.length) : '')),
         kolize.length
@@ -545,6 +563,177 @@ function vykresliUdalost(id) {
           predchozi ? odkaz(`${cas.hezkyDen(predchozi.zacatek)}`, `#udalost/${predchozi.id}`, 'tl male sipka-zpet') : null,
           dalsi ? odkaz(`${cas.hezkyDen(dalsi.zacatek)} →`, `#udalost/${dalsi.id}`, 'tl male') : null) : null)),
   ];
+}
+
+// ---------- pořad ----------
+
+function sekcePoradu(u, predchozi) {
+  const casy = casyPoradu(u);
+  const celkem = delkaPoradu(u);
+  const setkani = delkaUdalosti(u);
+  const lide = index(S.data.lide);
+  const formaty = S.data.formaty || [];
+
+  const seznam = h('ol', { class: 'porad' }, casy.map(({ bod, zacatek }, i) => {
+    const format = formaty.find((f) => f.id === bod.format);
+    const vedouci = vedouciBodu(S.data, u, bod).map((id) => jmeno(lide.get(id)));
+    return h('li', {},
+      h('span', { class: 'kdy' }, cas.hezkyCas(zacatek)),
+      h('button', { type: 'button', class: 'co', onclick: () => dialogBod(u, bod), title: 'Upravit bod' },
+        h('span', { class: 'nazev-bodu' }, nazevBodu(S.data, bod)),
+        h('small', {}, [vedouci.length ? vedouci.join(', ') : (format?.sluzba || bod.osoba ? 'kdo?' : ''), bod.poznamka].filter(Boolean).join(' · '))),
+      h('span', { class: 'minut' }, `${bod.delka} min`),
+      h('span', { class: 'posun' },
+        h('button', { type: 'button', class: 'tl-sipka nahoru', 'aria-label': 'Posunout výš', disabled: i === 0, onclick: () => { posunBod(u, bod.id, -1); zmena(`pořad ${u.nazev}`); } }),
+        h('button', { type: 'button', class: 'tl-sipka dolu', 'aria-label': 'Posunout níž', disabled: i === casy.length - 1, onclick: () => { posunBod(u, bod.id, 1); zmena(`pořad ${u.nazev}`); } }),
+        h('button', { type: 'button', class: 'tl-x', 'aria-label': `Odebrat ${nazevBodu(S.data, bod)}`, onclick: () => { u.porad = u.porad.filter((x) => x !== bod); zmena(`pořad ${u.nazev}`); } })));
+  }));
+
+  const pridat = h('div', { class: 'stitky pridat-format' }, formaty.map((f) => h('button', {
+    type: 'button', class: 'stitek', title: f.popis || `${f.delka} min`,
+    onclick: () => { pridejFormat(S.data, u, f.id, () => noveId('b')); zmena(`${f.nazev} do pořadu`); },
+  }, `+ ${f.nazev}`)));
+
+  return h('div', { class: 'sekce' },
+    h('h2', {}, 'Pořad', h('span', { class: 'n' }, casy.length ? `${celkem} z ${setkani} min` : '')),
+    casy.length ? seznam : h('p', { class: 'poznamka' }, 'Pořad je zatím prázdný. Slož ho z formátů níž – časy se dopočítají samy.'),
+    casy.length && celkem > setkani ? h('p', { class: 'chyba-formulare chyba-plocha' }, `Pořad přetéká o ${celkem - setkani} min.`) : null,
+    formaty.length ? pridat : h('p', { class: 'poznamka' }, 'Formáty (Kázání, Otázky na tělo, Večeře Páně…) si nadefinuj ve Službách.'),
+    h('div', { class: 'akce' },
+      casy.length ? odkaz('Pořad na papír a plátno', `#porad/${u.id}`, 'tl male') : null,
+      predchozi && (predchozi.porad || []).length ? tl('Stejný pořad jako minule', () => {
+        const puvodni = u.porad || [];
+        const kopirovat = () => { zkopirujPorad(S.data, u, predchozi.porad, () => noveId('b')); zmena(`pořad z minula na ${u.nazev}`); };
+        if (puvodni.length) potvrd('Nahradit pořad?', 'Teď složený pořad se nahradí tím z minula.', kopirovat, { tlacitko: 'Nahradit' });
+        else kopirovat();
+      }, 'male') : null));
+}
+
+function dialogBod(u, bod) {
+  const format = (S.data.formaty || []).find((f) => f.id === bod.format);
+  const lide = S.data.lide.filter((o) => o.stav !== 'neaktivni').sort((a, b) => celeJmeno(a).localeCompare(celeJmeno(b), 'cs'));
+  const podleSluzby = format?.sluzba ? `— podle služby ${najdiSluzbu(format.sluzba)?.nazev || ''} —` : '— nikdo —';
+  jednoduchyDialog({
+    eyebrow: `${cas.hezkyDen(u.zacatek)} · ${u.nazev}`,
+    titul: nazevBodu(S.data, bod),
+    pole: [
+      poleText('nazev', 'Název v pořadu', bod.nazev || '', { cela: true, napoveda: format ? `Prázdné = ${format.nazev}.` : '', attr: { placeholder: format?.nazev || '' } }),
+      poleText('delka', 'Minut', bod.delka, { typ: 'number', attr: { min: 0, max: 600 } }),
+      poleVyber('osoba', 'Kdo vede', [['', podleSluzby], ...lide.map((o) => [o.id, celeJmeno(o)])], bod.osoba || ''),
+      poleText('poznamka', 'Poznámka', bod.poznamka || '', { cela: true, attr: { placeholder: 'tónina, text, kdo podá mikrofon…' } }),
+      format?.popis || format?.odkaz ? h('p', { class: 'poznamka cela' }, format.popis || '', format.odkaz ? [' ', h('a', { href: format.odkaz, target: '_blank', rel: 'noopener' }, format.odkaz.replace(/^https?:\/\//, ''))] : null) : null,
+    ],
+    ulozit: (f) => {
+      bod.delka = Math.max(0, Number(f.delka.value) || 0);
+      if (f.nazev.value.trim()) bod.nazev = f.nazev.value.trim(); else delete bod.nazev;
+      if (f.osoba.value) bod.osoba = f.osoba.value; else delete bod.osoba;
+      if (f.poznamka.value.trim()) bod.poznamka = f.poznamka.value.trim(); else delete bod.poznamka;
+      zmena(`pořad ${u.nazev}`);
+      return null;
+    },
+    smazat: () => { u.porad = u.porad.filter((x) => x !== bod); zmena(`pořad ${u.nazev}`); },
+  });
+}
+
+/** Pořad na papír (A4 na výšku) i na plátno – velké písmo, nic navíc. */
+function vykresliPorad(id) {
+  const u = najdiUdalost(id);
+  if (!u) return [odkaz('Kalendář', '#kalendar', 'zpet'), prazdno('Tohle setkání tu není.', 'Možná ho někdo smazal.', null)];
+  const lide = index(S.data.lide);
+  const mista = index(S.data.mista);
+  const kde = (u.mista || []).map((m) => mista.get(m)?.nazev).filter(Boolean).join(', ');
+  const casy = casyPoradu(u);
+  return [
+    odkaz(u.nazev, `#udalost/${u.id}`, 'zpet'),
+    h('div', { class: 'list-poradu' },
+      h('div', { class: 'tisk-hlavicka' }, h('p', { class: 'eyebrow' }, 'pořad'), h('p', { class: 'brand' }, 'církev jako kráva')),
+      h('p', { class: 'eyebrow netisknout' }, 'pořad'),
+      h('h1', { class: 'title mensi' }, u.nazev),
+      h('p', { class: 'meta' }, h('span', {}, cas.hezkyDenDlouze(u.zacatek)), h('span', {}, `${cas.hezkyCas(u.zacatek)}–${cas.hezkyCas(u.konec)}`), kde ? h('span', {}, kde) : null),
+      h('div', { class: 'akce netisknout' }, tl('Vytisknout', () => window.print(), 'hlavni male')),
+      h('div', { class: 'rule' }),
+      casy.length ? h('ol', { class: 'porad velky' }, casy.map(({ bod, zacatek }) => {
+        const format = (S.data.formaty || []).find((f) => f.id === bod.format);
+        const vedouci = vedouciBodu(S.data, u, bod).map((x) => jmeno(lide.get(x)));
+        return h('li', {},
+          h('span', { class: 'kdy' }, cas.hezkyCas(zacatek)),
+          h('span', { class: 'co' },
+            h('span', { class: 'nazev-bodu' }, nazevBodu(S.data, bod)),
+            h('small', {}, [vedouci.join(', '), bod.poznamka, format?.odkaz && format.odkaz.replace(/^https?:\/\//, '')].filter(Boolean).join(' · '))),
+          h('span', { class: 'minut' }, `${bod.delka} min`));
+      })) : prazdno('Pořad je prázdný.', 'Slož ho v detailu setkání.', odkaz('Zpátky', `#udalost/${u.id}`, 'tl')),
+      casy.length ? h('p', { class: 'poznamka' }, `Konec podle pořadu ${cas.hezkyCas(cas.posunMinuty(u.zacatek, delkaPoradu(u)))}.`) : null),
+  ];
+}
+
+/** Editor pořadu pro šablonu: řádky formát + minuty. */
+function poradEditor(porad) {
+  const obal = h('div', { class: 'cela' });
+  const formaty = S.data.formaty || [];
+  const prekresli = () => {
+    obal.replaceChildren(
+      h('p', { class: 'pole' }, h('span', {}, 'Pořad (každé nové setkání podle šablony ho dostane)')),
+      h('ol', { class: 'porad' }, porad.map((bod, i) => h('li', {},
+        h('span', { class: 'kdy' }, `${i + 1}.`),
+        h('select', { 'aria-label': 'Formát', onchange: (e) => { bod.format = e.target.value; bod.delka = formaty.find((f) => f.id === bod.format)?.delka ?? bod.delka; prekresli(); } },
+          formaty.map((f) => h('option', { value: f.id, selected: f.id === bod.format }, f.nazev))),
+        h('input', { type: 'number', min: 0, max: 600, value: bod.delka, 'aria-label': 'Minut', class: 'pocet-lidi', oninput: (e) => { bod.delka = Math.max(0, Number(e.target.value) || 0); } }),
+        h('span', { class: 'posun' },
+          h('button', { type: 'button', class: 'tl-sipka nahoru', 'aria-label': 'Výš', disabled: i === 0, onclick: () => { [porad[i - 1], porad[i]] = [porad[i], porad[i - 1]]; prekresli(); } }),
+          h('button', { type: 'button', class: 'tl-x', 'aria-label': 'Odebrat', onclick: () => { porad.splice(i, 1); prekresli(); } }))))),
+      formaty.length ? h('div', { class: 'stitky pridat-format' }, formaty.map((f) => h('button', {
+        type: 'button', class: 'stitek', onclick: () => { porad.push({ format: f.id, delka: f.delka }); prekresli(); },
+      }, `+ ${f.nazev}`))) : h('p', { class: 'poznamka' }, 'Nejdřív přidej formáty.'));
+    obal.querySelectorAll('.pocet-lidi').forEach(nastavPocty);
+  };
+  prekresli();
+  return obal;
+}
+
+function dialogFormat(f) {
+  const potreba = (f?.potreba || []).map((p) => ({ ...p }));
+  const editor = potrebaEditor(potreba);
+  editor.querySelectorAll('.pocet-lidi').forEach(nastavPocty);
+  jednoduchyDialog({
+    eyebrow: f ? 'upravit formát' : 'nový formát',
+    titul: f ? f.nazev : 'Přidat formát',
+    pole: [
+      poleText('nazev', 'Název', f?.nazev, { attr: { autofocus: true, placeholder: 'Otázky na tělo' } }),
+      poleText('delka', 'Obvykle minut', f?.delka ?? 10, { typ: 'number', attr: { min: 0, max: 600 } }),
+      poleVyber('sluzba', 'Kdo to vede', [['', '— vybere se ručně —'], ...S.data.sluzby.map((x) => [x.id, `ten, kdo má ${x.nazev}`])], f?.sluzba || '', { cela: true }),
+      poleText('odkaz', 'Odkaz', f?.odkaz, { cela: true, typ: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
+      h('label', { class: 'pole cela' }, h('span', {}, 'Popis'), h('textarea', { name: 'popis', rows: 2 }, f?.popis || '')),
+      h('div', { class: 'cela' }, h('p', { class: 'poznamka' }, 'Služby, které formát přidá do setkání (Večeře Páně třeba 2 lidi):'), editor),
+    ],
+    ulozit: (fe) => {
+      const nazev = fe.nazev.value.trim();
+      if (!nazev) return 'Doplň název.';
+      const hodnoty = {
+        nazev, delka: Math.max(0, Number(fe.delka.value) || 0), sluzba: fe.sluzba.value || undefined,
+        odkaz: fe.odkaz.value.trim() || undefined, popis: fe.popis.value.trim() || undefined,
+        potreba: potreba.filter((p) => p.pocet > 0),
+      };
+      if (!hodnoty.potreba.length) delete hodnoty.potreba;
+      if (f) {
+        const cil = S.data.formaty.find((x) => x.id === f.id);
+        ['sluzba', 'odkaz', 'popis', 'potreba'].forEach((k) => delete cil[k]);
+        Object.assign(cil, JSON.parse(JSON.stringify(hodnoty)));
+      } else {
+        S.data.formaty.push({ id: noveId('f'), ...JSON.parse(JSON.stringify(hodnoty)) });
+      }
+      zmena(`formát ${nazev}`);
+      return null;
+    },
+    smazat: f ? () => {
+      const pouziti = S.data.udalosti.filter((u) => (u.porad || []).some((b) => b.format === f.id)).length;
+      potvrd(`Smazat formát ${f.nazev}?`, pouziti ? `Je v pořadu ${pouziti}× – odtud zmizí.` : '', () => {
+        S.data.formaty = S.data.formaty.filter((x) => x.id !== f.id);
+        for (const u of S.data.udalosti) if (u.porad) u.porad = u.porad.filter((b) => b.format !== f.id);
+        for (const sab of S.data.sablony) if (sab.porad) sab.porad = sab.porad.filter((b) => b.format !== f.id);
+        zmena(`smazaný formát ${f.nazev}`);
+      });
+    } : null,
+  });
 }
 
 function dialogSmazatUdalost(u) {
@@ -633,8 +822,10 @@ function vykresliRozpis(parametr) {
   const typ = S.filtr.rozpisTyp;
   const tymF = S.filtr.rozpisTym;
   const udalosti = S.data.udalosti.filter((u) => cas.mesicZ(u.zacatek) === mesic && (!typ || u.typ === typ));
+  const srovnej = poradiSluzby();
   const sluzbyVse = S.data.sluzby.filter((s) => (!tymF || s.tym === tymF)
-    && udalosti.some((u) => (u.potreba || []).some((p) => p.sluzba === s.id) || (u.prirazeni || []).some((p) => p.sluzba === s.id)));
+    && udalosti.some((u) => (u.potreba || []).some((p) => p.sluzba === s.id) || (u.prirazeni || []).some((p) => p.sluzba === s.id)))
+    .sort((a, b) => srovnej(a.id, b.id));
   const tymy = index(S.data.tymy);
 
   const skupinyTymu = [];
@@ -966,9 +1157,19 @@ function vykresliSluzby() {
       })() : null),
 
     h('section', { class: 'sekce' },
+      h('h2', {}, 'Formáty', h('span', { class: 'n' }, 'kostky, ze kterých se skládá pořad')),
+      (S.data.formaty || []).length ? h('ul', { class: 'seznam' }, S.data.formaty.map((f) => h('li', {}, h('button', { type: 'button', class: 'radek', onclick: () => dialogFormat(f) },
+        h('span', { class: 'jmeno' }, f.nazev, h('small', {}, f.sluzba ? `vede, kdo má ${najdiSluzbu(f.sluzba)?.nazev || '?'}` : 'kdo vede, se vybírá ručně')),
+        h('span', { class: 'stitky' },
+          (f.potreba || []).map((p) => h('span', { class: 'stitek' }, `${najdiSluzbu(p.sluzba)?.nazev || '?'}${p.pocet > 1 ? ` ${p.pocet}×` : ''}`)),
+          f.odkaz ? h('span', { class: 'stitek uci' }, 'odkaz') : null),
+        h('span', { class: 'vpravo' }, `${f.delka} min`))))) : h('p', { class: 'poznamka' }, 'Zatím žádné. Třeba Kázání, Otázky na tělo, Večeře Páně.'),
+      h('div', { class: 'akce' }, tl([h('span', { class: 'plus' }), ' Přidat formát'], () => dialogFormat(), 'male'))),
+
+    h('section', { class: 'sekce' },
       h('h2', {}, 'Šablony', h('span', { class: 'n' }, 'předvyplní nové setkání')),
       h('ul', { class: 'seznam' }, S.data.sablony.map((s) => h('li', {}, h('button', { type: 'button', class: 'radek', onclick: () => dialogSablona(s) },
-        h('span', { class: 'jmeno' }, s.nazev, h('small', {}, `${TYPY[s.typ]} · ${s.cas.replace(':', '.')} · ${s.delka} min`)),
+        h('span', { class: 'jmeno' }, s.nazev, h('small', {}, `${TYPY[s.typ]} · ${s.cas.replace(':', '.')} · ${s.delka} min${(s.porad || []).length ? ` · pořad ${s.porad.length} bodů` : ''}`)),
         h('span', { class: 'stitky' }, (s.potreba || []).map((p) => h('span', { class: 'stitek' }, `${najdiSluzbu(p.sluzba)?.nazev || '?'}${p.pocet > 1 ? ` ${p.pocet}×` : ''}`))),
         h('span', { class: 'vpravo' }, ''))))),
       h('div', { class: 'akce' }, tl([h('span', { class: 'plus' }), ' Přidat šablonu'], () => dialogSablona(), 'male'))),
@@ -1109,6 +1310,7 @@ function dialogMisto(m) {
 
 function dialogSablona(s) {
   const potreba = (s?.potreba || []).map((p) => ({ ...p }));
+  const porad = (s?.porad || []).map((b) => ({ ...b }));
   const editor = potrebaEditor(potreba);
   editor.querySelectorAll('.pocet-lidi').forEach(nastavPocty);
   jednoduchyDialog({
@@ -1121,6 +1323,7 @@ function dialogSablona(s) {
       poleText('delka', 'Délka (min)', s?.delka || 120, { typ: 'number', attr: { min: 5, max: 1440 } }),
       S.data.mista.length ? h('div', { class: 'pole cela' }, h('span', {}, 'Kde'), volby('mista', S.data.mista.map((m) => [m.id, m.nazev]), s?.mista || [])) : null,
       editor,
+      poradEditor(porad),
     ],
     ulozit: (f, form) => {
       const nazev = f.nazev.value.trim();
@@ -1129,6 +1332,7 @@ function dialogSablona(s) {
         nazev, typ: f.typ.value, cas: f.cas.value || '10:00', delka: Math.max(5, Number(f.delka.value) || 60),
         mista: [...form.querySelectorAll('input[name=mista]:checked')].map((i) => i.value),
         potreba: potreba.filter((p) => p.pocet > 0),
+        porad: porad.map(({ format, delka }) => ({ format, delka })),
       };
       if (s) Object.assign(S.data.sablony.find((x) => x.id === s.id), hodnoty);
       else S.data.sablony.push({ id: noveId('sab'), ...hodnoty });
