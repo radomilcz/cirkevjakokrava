@@ -1,8 +1,8 @@
 // Data a kam se ukládají.
 //
 // Celý rozpis je jeden JSON. Bydlí buď jen v tomhle prohlížeči (ukázka, zkoušení), nebo
-// v souboru v SOUKROMÉM repu na GitHubu – aplikace ho čte a zapisuje přes REST API
-// s osobním tokenem vedoucího. Na veřejném webu žádná jména ani telefony nejsou.
+// v souboru v SOUKROMÉM repu na GitHubu – aplikace ho čte a zapisuje přes REST API jedním
+// klíčem, který si přihlášený otevře jménem a heslem (pristup.js). Na web jména ani telefony nejdou.
 //
 // Když dva lidi upravují naráz, GitHub druhé uložení odmítne (jiné sha). Pak se načte
 // čerstvá verze a změny se sloučí po záznamech: co jsem změnil já, vezmu svoje, co změnil
@@ -93,7 +93,6 @@ export function sluc(zaklad, moje, jejich) {
 // ---------- úložiště ----------
 
 const KLIC_DATA = 'rozpis-data';
-const KLIC_PRIPOJENI = 'rozpis-github';
 
 function zkus(fn, nahradni) {
   try { return fn(); } catch { return nahradni; }
@@ -172,8 +171,14 @@ export class Github {
     throw new ChybaGithubu(zpravy[odpoved.status] || `GitHub odpověděl ${odpoved.status}.`, odpoved.status);
   }
 
-  /** Vrátí data, nebo null, když soubor ještě neexistuje. */
+  /** Vrátí data rozpisu, nebo null, když soubor ještě neexistuje. */
   async nacti() {
+    const json = await this.nactiJson();
+    return json ? normalizuj(json) : null;
+  }
+
+  /** Libovolný JSON z repa (rozpis.json, pristup.json…), null když soubor neexistuje. */
+  async nactiJson() {
     let odpoved;
     try {
       odpoved = await this.volej(`${this.adresa}?ref=${encodeURIComponent(this.vetev)}`);
@@ -192,7 +197,31 @@ export class Github {
     let text;
     if (soubor.encoding === 'base64' && soubor.content) text = zBase64(soubor.content);
     else text = await (await this.volej(`${this.adresa}?ref=${encodeURIComponent(this.vetev)}`, {}, 'application/vnd.github.raw+json')).text();
-    return normalizuj(JSON.parse(text));
+    return JSON.parse(text);
+  }
+
+  /** Jiný soubor ve stejném repu se stejným klíčem. */
+  soubor(cesta) {
+    return new Github({ vlastnik: this.vlastnik, repo: this.repo, cesta, vetev: this.vetev, token: this.token });
+  }
+
+  /**
+   * Jedna změna nad čerstvou verzí souboru: načte, `zmena(json)` ho upraví, uloží. Když mezitím
+   * uložil někdo jiný, zkusí to znovu – změny se nikdy nepřepíšou (jako správa lidí v Playbooku).
+   */
+  async uprav(zmena, zprava, vychozi = {}) {
+    for (let pokus = 0; pokus < 4; pokus++) {
+      const json = (await this.nactiJson()) ?? structuredClone(vychozi);
+      const vysledek = await zmena(json);
+      try {
+        await this.uloz(json, zprava);
+        return { json, vysledek };
+      } catch (chyba) {
+        if (!(chyba instanceof Konflikt)) throw chyba;
+        await new Promise((hotovo) => setTimeout(hotovo, 300 + Math.random() * 900));
+      }
+    }
+    throw new Konflikt('Pořád to někdo mezitím ukládá. Zkus to za chvíli.');
   }
 
   async uloz(data, zprava = 'Rozpis: úprava') {
@@ -205,34 +234,6 @@ export class Github {
     const odpoved = await this.volej(this.adresa, { method: 'PUT', body: JSON.stringify(telo) });
     this.sha = (await odpoved.json()).content.sha;
     return data;
-  }
-
-  // připojení si pamatuje prohlížeč; token buď natrvalo (vlastní zařízení), nebo do zavření okna
-  static ulozPripojeni(nastaveni, natrvalo) {
-    const { token, ...zbytek } = nastaveni;
-    zkus(() => localStorage.setItem(KLIC_PRIPOJENI, JSON.stringify(zbytek)));
-    zkus(() => {
-      localStorage.removeItem(`${KLIC_PRIPOJENI}-token`);
-      sessionStorage.removeItem(`${KLIC_PRIPOJENI}-token`);
-      (natrvalo ? localStorage : sessionStorage).setItem(`${KLIC_PRIPOJENI}-token`, token);
-    });
-  }
-
-  static nactiPripojeni() {
-    const zbytek = zkus(() => JSON.parse(localStorage.getItem(KLIC_PRIPOJENI) || 'null'), null);
-    if (!zbytek) return null;
-    const token = zkus(() => localStorage.getItem(`${KLIC_PRIPOJENI}-token`)
-      || sessionStorage.getItem(`${KLIC_PRIPOJENI}-token`), null);
-    const natrvalo = zkus(() => !!localStorage.getItem(`${KLIC_PRIPOJENI}-token`), false);
-    return { ...zbytek, token: token || '', natrvalo };
-  }
-
-  static odpoj() {
-    zkus(() => {
-      localStorage.removeItem(KLIC_PRIPOJENI);
-      localStorage.removeItem(`${KLIC_PRIPOJENI}-token`);
-      sessionStorage.removeItem(`${KLIC_PRIPOJENI}-token`);
-    });
   }
 }
 
@@ -303,6 +304,20 @@ export class Synchronizace {
       popisy.forEach((p) => { if (!this.popisy.includes(p)) this.popisy.push(p); });
       this.nastavStav('chyba', chyba.message || String(chyba));
     }
+  }
+
+  /**
+   * Dotáhne, co mezitím uložil někdo jiný (jiný vedoucí, registrace z pozvánky). Jen když tu
+   * nic neuloženého nečeká – rozpracované změny se sloučí až při ukládání.
+   */
+  async obnov() {
+    if (this.uloziste.druh !== 'github' || this.stav !== 'ulozeno' || this.bezi) return false;
+    const pred = this.uloziste.sha;
+    const cerstva = await this.uloziste.nacti();
+    if (!cerstva || this.uloziste.sha === pred || this.stav !== 'ulozeno') return false;
+    this.zaklad = kopie(cerstva);
+    this.nahradData(cerstva);
+    return true;
   }
 
   /** Po sloučení: data v aplikaci přepíšeme na místě, ať všechny odkazy zůstanou platné. */

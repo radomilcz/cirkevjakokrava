@@ -50,31 +50,50 @@ Pravidla jsou v `docs/rozpis/kolize.js` a stejný kód běží v aplikaci, v tes
 
 ## Jak je to postavené
 
-```
-veřejné repo radomilcz/cirkevjakokrava        soukromé repo (např. cirkevjakokrava/sbor-data)
+Jako [Mobilise Playbook](https://playbook.cirkevjakokrava.cz): **GitHub klíč je jeden, ostatní lidi jsou jen data.**
 
-docs/rozpis/  → GitHub Pages                  rozpis.json  (lidi, služby, setkání)
-aplikace, žádná data       ── čte a zapisuje ─▶  každé uložení = commit
-                              tokenem vedoucího
-rozpis/kontrola.mjs        ◀── bere si kód ───  .github/workflows/kontrola.yml
-                              kontroly           (po uložení a v pondělí ráno)
+```
+veřejné repo radomilcz/cirkevjakokrava           soukromé repo radomilcz/sbor-data
+
+docs/rozpis/  aplikace (kód)  ── bere si ho ──▶  .github/workflows/web.yml
+                                                    aplikace + pristup.json → Pages
+                                                    https://rozpis.cirkevjakokrava.cz
+                                                 pristup.json  zapečetěná přihlášení (bez jmen)
+                                                 rozpis.json   lidi, služby, setkání – na web NIKDY
+prohlížeč: jméno + heslo → otevře GitHub klíč ──▶  čte a zapisuje rozpis.json přes API
+rozpis/kontrola.mjs  ◀── bere si kód ───────────  .github/workflows/kontrola.yml
 ```
 
-- **Aplikace** je statická (`docs/rozpis/`, bez buildu a bez frameworku). Obsah skládá přes DOM, nikdy
-  přes `innerHTML`, a má přísnou CSP – ven smí jen na `api.github.com`. V prohlížeči leží token, tak na tom záleží.
-- **Data** jsou jeden JSON v **soukromém** repu. Aplikace ho čte a zapisuje přes Contents API osobním
-  tokenem vedoucího. Pages jsou vždycky veřejné (i ze soukromého repa), proto data na Pages nikdy nejdou.
+- **Jeden GitHub klíč.** Správce ho jednou vyrobí (fine-grained token jen k `sbor-data`, Contents: read and write)
+  a vloží při založení. Nikdo jiný GitHub účet ani token nepotřebuje.
+- **Přihlášení = data.** Každé přihlášení má vlastní pár klíčů RSA. Soukromou půlku zamyká jméno + heslo
+  (PBKDF2, 310 000 iterací, jako Playbook), k veřejné je zapečetěný GitHub klíč. Kdo zná jméno a heslo,
+  otevře si klíč a pracuje. `pristup.json` jde na web, ale jména ani klíč v něm čitelně nejsou – záznam se
+  najde až odvozením ze jména a hesla. Výměna GitHub klíče hesla nepotřebuje: nový se zapečetí ke všem
+  veřejným půlkám (Nastavení → GitHub klíč).
+- **Role** – správce (všechno, přihlášení, klíč), vedoucí (plánuje, zve lidi), člen (vidí kalendář, rozpis
+  a pořad, potvrzuje nebo odmítá svoje služby, zapisuje, kdy nemůže, upravuje svůj kontakt). Role hlídá
+  aplikace. Kdo má přihlášení, drží ve svém prohlížeči klíč, takže technicky zdatný člen by se k datům
+  dostal i mimo aplikaci – přihlášení proto dostávají lidi, kterým sbor věří, a klíč jde kdykoli vyměnit.
+- **Pozvánka = online registrace.** Vedoucí vytvoří pozvánku (Nastavení → Pozvat nového člověka, nebo
+  u konkrétního člověka). Odkaz platí 14 dní a jen jednou: nový člověk vyplní jméno, kontakt, s čím pomůže,
+  **souhlas** a vlastní heslo – a je v rozpisu (jako host, služby jako „učí se“, vedoucí to pak upraví).
+- **Data** jsou jeden JSON v soukromém repu. Pages jsou vždycky veřejné, proto `rozpis.json` na web nikdy
+  nejde (workflow to i hlídá).
 - **Ukládání**: změny se sbírají a po vteřině a půl odejdou jedním commitem („Rozpis: Petr na Zvuk, …“).
   Když mezitím uložil někdo jiný, GitHub vrátí 409 – aplikace načte čerstvou verzi, **sloučí po záznamech**
-  (moje změny + jeho změny, u stejného pole vyhrává moje) a uloží znovu.
-- **Bez připojení** běží ukázka v `localStorage` prohlížeče – na vyzkoušení a na školení vedoucích.
+  a uloží znovu. Co uložil někdo jiný, se dotáhne při návratu do okna a každou minutu.
+- **Nové a zrušené přihlášení** se projeví za pár minut – až workflow přestaví web s novým `pristup.json`.
+- **Bez `pristup.json`** vedle sebe (manifest.cirkevjakokrava.cz/rozpis/) běží aplikace jako ukázka
+  v `localStorage` s vymyšlenými lidmi – na vyzkoušení a na školení vedoucích.
 - **Kontrola v Actions**: `rozpis/kontrola.mjs` pustí stejná pravidla nad `rozpis.json`; při chybě v budoucnu
-  běh zčervená a GitHub pošle e-mail. Vzor workflow je v `rozpis/sbor-data/kontrola.yml`.
+  běh zčervená a GitHub pošle e-mail.
 
 ```
-docs/rozpis/index.html   kostra stránky, CSP
+docs/rozpis/index.html   kostra stránky, CSP (ven jen api.github.com)
 docs/rozpis/styl.css     design (tokeny z Otázek na tělo), tisk A4
-docs/rozpis/app.js       obrazovky a dialogy
+docs/rozpis/app.js       obrazovky, dialogy, přihlášení, pozvánky
+docs/rozpis/pristup.js   přihlášení jako v Playbooku: klíče, pečetění, hesla
 docs/rozpis/kolize.js    pravidla kolizí, výběr lidí, „Navrhnout zbytek“
 docs/rozpis/porad.js     pořad z formátů: časy, kdo vede, přidání formátu i s jeho službami
 docs/rozpis/cas.js       datumy (místní čas jako text „2026-10-11T10:00“), opakování, česky
@@ -84,7 +103,7 @@ docs/rozpis/ukazka.js    vymyšlená ukázková data počítaná od dneška
 docs/rozpis/otisk.svg    otisk z Figmy (55 cest)
 rozpis/kontrola.mjs      kontrola z příkazové řádky / Actions
 rozpis/test/             testy (node --test rozpis/test/*.test.mjs)
-rozpis/sbor-data/        vzor workflow pro datové repo
+rozpis/sbor-data/        vzory workflow pro datové repo (web.yml, kontrola.yml)
 ```
 
 Fonty, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`build.py`) do
@@ -92,50 +111,42 @@ Fonty, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`
 
 ## Spuštění naostro (jednou, ~15 minut)
 
-1. **Organizace na GitHubu** pro sbor (zdarma), třeba `cirkevjakokrava`. Proč organizace: fine-grained token
-   neumí cizí osobní repo, kde je člověk jen pozvaný. V nastavení organizace zapnout povinné 2FA a
-   *Personal access tokens → Require approval* (tokeny jde pak vidět a rušit).
-2. **Soukromé repo** `sbor-data` v organizaci. Pozvat do něj jen vedoucí (role *Write*).
-3. Každý vedoucí si udělá **fine-grained token**: Settings → Developer settings → Fine-grained tokens →
-   Resource owner = organizace, *Only select repositories* = `sbor-data`,
-   Permissions → Repository → **Contents: Read and write**. Platnost rok.
-4. V Rozpisu → **Nastavení** vyplnit organizaci, repo a token → Připojit. Soubor ještě není, takže aplikace
-   nabídne **založit prázdný** (nebo z ukázky – lidi v ní jsou ale vymyšlení).
-5. Do `sbor-data` zkopírovat `rozpis/sbor-data/kontrola.yml` jako `.github/workflows/kontrola.yml`.
-6. Naplnit: služby a týmy → šablona „Setkání na pastvě“ → lidi → v kalendáři setkání s opakováním každý týden.
+1. **Soukromé repo** `radomilcz/sbor-data` (prázdné).
+2. Do něj zkopírovat `rozpis/sbor-data/web.yml` a `rozpis/sbor-data/kontrola.yml` do `.github/workflows/`.
+3. **Pages**: v `sbor-data` Settings → Pages → Source: **GitHub Actions**, Custom domain
+   `rozpis.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `rozpis` typu **CNAME** →
+   `radomilcz.github.io.` (stejně jako u Playbooku; Pages ze soukromého repa = GitHub Pro).
+   Actions → Web → *Run workflow*.
+4. **GitHub klíč**: Settings → Developer settings → Fine-grained tokens → Generate new token,
+   *Only select repositories* → `sbor-data`, Permissions → Repository → **Contents: Read and write**. Nic víc.
+5. Otevřít https://rozpis.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Rozpis**:
+   vložit klíč, svoje jméno a heslo. Začít se dá se základem z ukázky (služby, týmy, formáty, šablony – bez lidí).
+6. Naplnit: lidi (nebo poslat pozvánky), šablona „Setkání na pastvě“ → v kalendáři setkání s opakováním
+   každý týden. Vedoucím dát roli vedoucí (u člověka → Přihlášení → Nové heslo / role).
 
 ## Co jde a co nejde jen s GitHubem
 
 | chceme | jde? | jak |
 | --- | --- | --- |
-| plánování, kolize, správa lidí | ano | aplikace + soukromé repo |
+| plánování, kolize, pořad, správa lidí | ano | aplikace + soukromé repo |
+| přihlášení bez GitHub účtu | ano | jméno + heslo, jeden zapečetěný klíč (jako Playbook) |
+| online registrace nových lidí | ano, pozvánkou | odkaz na 14 dní, jednou; vyplní údaje, souhlas a heslo |
+| členové potvrzují / odmítají svoje služby | ano | po přihlášení u svojí služby |
 | historie změn, kdo co změnil | ano | každé uložení je commit |
-| přihlášení vedoucích | ano, tokenem | OAuth bez serveru nejde (GitHub na přihlašovacích adresách nepovoluje volání z prohlížeče) |
 | upozornění vedoucím | ano | Actions + e-mail od GitHubu při chybě v rozpisu |
 | kalendář v telefonu | ano, stažením .ics | odběr (feed) by musel ležet na veřejných Pages – jména by šla ven |
 | připomínky e-mailem členům | ne | GitHub neposílá e-maily lidem bez účtu |
-| online registrace bez GitHub účtu | **ne** | viz níž |
+| registrace úplně bez pozvánky (formulář pro kohokoli) | ne | kdo by mohl zapisovat bez pozvánky, dostal by klíč i k datům ostatních |
 
-## Online registrace členů (další fáze)
-
-Každý zápis do repa potřebuje token a ten nesmí být ve stránce. Čistě přes GitHub proto registrace
-člověka bez GitHub účtu nejde. Možnosti od nejmenšího kompromisu:
-
-1. **Formulář, který sestaví e-mail** (`mailto:`) na adresu sboru – vedoucí ho přepíše do Rozpisu.
-   Nic nového, souhlas je doložený e-mailem. *Doporučení na start.*
-2. **Odkaz „Přidej se“ přímo v Rozpisu** pro vedoucí: formulář pro nového člověka s polem souhlasu
-   (to už je – Lidé → Přidat člověka).
-3. **Jedna malá funkce mimo GitHub** (např. Cloudflare Worker s tokenem v tajemství), která zapíše
-   přihlášku do `sbor-data` jako issue nebo rovnou do `rozpis.json`. To už je služba mimo GitHub – rozhodnutí na vás.
-
-Další na seznamu: samoobslužné „Moje služby“ (potvrdit / nemůžu) – potřebuje stejný kompromis jako registrace;
-pořad setkání (písně, délky); databáze písní; výměna služby mezi lidmi.
+Další na seznamu: databáze písní k pořadu; výměna služby mezi lidmi; připomínky (potřebují službu,
+která umí poslat e-mail nebo SMS – to už je mimo GitHub).
 
 ## Osobní údaje
 
 - Členství ve sboru prozrazuje vyznání – zvláštní kategorie údajů. Data proto jen v **soukromém** repu,
-  přístup jen vedoucí. Na veřejném webu jsou jen vymyšlená ukázková jména (`@example.cz`).
-- U každého člověka je pole **souhlas** (datum). Rozpis na nástěnku telefony netiskne.
+  na web jde jen `pristup.json` bez jmen. Na veřejné ukázce jsou jen vymyšlená jména (`@example.cz`).
+- U každého člověka je pole **souhlas** (datum); při registraci pozvánkou ho člověk dává sám.
+  Rozpis na nástěnku telefony netiskne. Důvod, proč někdo nemůže, a kolize vidí jen vedoucí.
 - Smazaný člověk zůstane v historii gitu. Úplný výmaz = přepsat historii datového repa
   (`git filter-repo`) – proto osobní data nikdy ne do veřejného repa, ani zašifrovaná.
 - Zpracovatel je GitHub (data v USA, EU-US Data Privacy Framework) – patří do informace pro členy.
@@ -143,9 +154,11 @@ pořad setkání (písně, délky); databáze písní; výměna služby mezi lid
 ## Vývoj
 
 ```
-node --test rozpis/test/*.test.mjs        # testy jádra (kolize, slučování, .ics, GitHub s podvrženým API)
-cd docs && python3 -m http.server 8000    # pak http://localhost:8000/rozpis/
+node --test rozpis/test/*.test.mjs        # testy jádra (kolize, pořad, přihlášení, slučování, .ics, GitHub s podvrženým API)
+cd docs && python3 -m http.server 8000    # pak http://localhost:8000/rozpis/ (ukázka)
 ```
+
+Ostrý režim lokálně: polož vedle aplikace `pristup.json` s obsahem `{"v":1,"pristupy":[]}` – ukáže se založení.
 
 Testy pouští i GitHub Action `.github/workflows/rozpis.yml` při každé změně Rozpisu.
 

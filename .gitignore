@@ -6,3 +6,6 @@ Thumbs.db
 !docs/**/*.png
 # ikony jsou sice generované (build.py --icons), ale patří do repa – build je jen kopíruje
 !src/assets/*.png
+# ostrý režim lokálně (rozpis/README.md) – na veřejnou ukázku nepatří
+docs/rozpis/pristup.json
+docs/rozpis/repo.json

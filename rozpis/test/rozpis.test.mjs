@@ -7,6 +7,7 @@ import * as cas from '../../docs/rozpis/cas.js';
 import { najdiKolize, kandidati, navrhnoutZbytek } from '../../docs/rozpis/kolize.js';
 import { sluc, prazdna, normalizuj, Github, Synchronizace, Konflikt } from '../../docs/rozpis/data.js';
 import { ics, icsOsoby } from '../../docs/rozpis/ics.js';
+import { vytvorPristup, prihlas, obnov, zmenHeslo, prebal, noveHeslo, slozJmeno } from '../../docs/rozpis/pristup.js';
 import { casyPoradu, delkaPoradu, pridejFormat, zkopirujPorad, posunBod, vedouciBodu } from '../../docs/rozpis/porad.js';
 import { vytvorUkazku } from '../../docs/rozpis/ukazka.js';
 
@@ -392,4 +393,58 @@ test('Synchronizace: při konfliktu sloučí moje i cizí změny a uloží', asy
   assert.equal(vysledek.lide.find((o) => o.id === 'petr').telefon, '777 000 000', 'moje změna přežila');
   assert.ok(data.lide.some((o) => o.id === 'cizi'), 'aplikace vidí sloučená data');
   assert.deepEqual(stav.zapisy, ['Rozpis: telefon Petr']);
+});
+
+// ---------- přihlášení (jako Playbook) ----------
+
+const GH = { token: `github_pat_${'x'.repeat(82)}`, vlastnik: 'radomilcz', repo: 'sbor-data', cesta: 'rozpis.json', vetev: 'main' };
+const RYCHLE = 1000;   // v testech stačí málo iterací – princip je stejný
+
+test('přihlášení: jméno bez diakritiky, špatné heslo neprojde, nic tajného v záznamu', async () => {
+  const z = await vytvorPristup({ jmeno: 'Řehoř Šťastný', heslo: 'tajne-heslo', osoba: 'o1', role: 'clen', github: GH, id: 'k1', dnes: DNES, iterace: RYCHLE });
+  const text = JSON.stringify(z);
+  assert.ok(!text.includes('Řehoř') && !text.includes('rehor') && !text.includes(GH.token) && !text.includes('sbor-data'), 'jméno ani klíč nesmí být čitelné');
+  const ok = await prihlas([z], '  rehor   STASTNY ', 'tajne-heslo', RYCHLE);
+  assert.equal(ok.github.token, GH.token);
+  assert.equal(ok.zaznam.osoba, 'o1');
+  assert.equal(await prihlas([z], 'Řehoř Šťastný', 'spatne', RYCHLE), null);
+  assert.equal(await prihlas([z], 'Jiný Člověk', 'tajne-heslo', RYCHLE), null);
+  assert.equal(slozJmeno(' Žluťoučký  Kůň '), 'zlutoucky kun');
+});
+
+test('přihlášení: nový GitHub klíč všem bez hesel, změna hesla, zapamatované přihlášení', async () => {
+  const a = await vytvorPristup({ jmeno: 'Anna', heslo: 'heslo-anna', osoba: 'oa', role: 'spravce', github: GH, id: 'ka', dnes: DNES, iterace: RYCHLE });
+  const b = await vytvorPristup({ jmeno: 'Bára', heslo: 'heslo-bara', osoba: 'ob', role: 'clen', github: GH, id: 'kb', dnes: DNES, iterace: RYCHLE });
+  await prebal([a, b], { ...GH, token: 'novy-klic' });
+  assert.equal((await prihlas([a, b], 'Bara', 'heslo-bara', RYCHLE)).github.token, 'novy-klic');
+  const anna = await prihlas([a, b], 'Anna', 'heslo-anna', RYCHLE);
+  await zmenHeslo(a, anna.priv, 'Anna Nová', 'nove-heslo', RYCHLE);
+  assert.equal(await prihlas([a, b], 'Anna', 'heslo-anna', RYCHLE), null);
+  assert.equal((await prihlas([a, b], 'anna nova', 'nove-heslo', RYCHLE)).zaznam.id, 'ka');
+  assert.equal((await obnov([a, b], { id: 'ka', priv: anna.priv })).github.token, 'novy-klic');
+  assert.equal(await obnov([b], { id: 'ka', priv: anna.priv }), null, 'zrušené přihlášení se neobnoví');
+  assert.match(noveHeslo(), /^([a-z]{4}-){3}[a-z]{4}$/);
+});
+
+test('Synchronizace: dotáhne cizí změny, jen když nic nečeká na uložení', async () => {
+  const d = zaklad();
+  const stav = falesnyGithub(d);
+  const gh = new Github({ vlastnik: 'sbor', repo: 'data', token: 'tajne' });
+  const data = await gh.nacti();
+  const sync = new Synchronizace(gh, data, { prodleva: 10000 });
+  assert.equal(await sync.obnov(), false, 'nic nového');
+  const cizi = structuredClone(d);
+  cizi.lide.push({ id: 'nova', jmeno: 'Nová', stav: 'host' });
+  stav.obsah = JSON.stringify(cizi);
+  stav.sha = 'cizi-sha';
+  data.lide[0].telefon = '111';
+  sync.zmena('rozpracováno');
+  assert.equal(await sync.obnov(), false, 'rozpracované se nepřepíše');
+  assert.ok(!data.lide.some((o) => o.id === 'nova'));
+  await sync.uloz();
+  assert.ok(data.lide.some((o) => o.id === 'nova'), 'po uložení je cizí změna sloučená');
+  stav.obsah = JSON.stringify({ ...JSON.parse(stav.obsah), lide: [...JSON.parse(stav.obsah).lide, { id: 'dalsi', jmeno: 'Další', stav: 'host' }] });
+  stav.sha = 'jeste-jina';
+  assert.equal(await sync.obnov(), true);
+  assert.ok(data.lide.some((o) => o.id === 'dalsi'));
 });
