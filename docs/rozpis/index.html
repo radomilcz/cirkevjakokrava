@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Jen vlastní skripty a GitHub API. Token leží v prohlížeči, tak sem nesmí nic cizího. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Rozpis – Církev jako kráva</title>
+<meta name="description" content="Kdo co kdy dělá: kalendář, lidi, služby a kolize.">
+<meta name="theme-color" content="#3b2f2f">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="preload" href="../assets/fonts/Agrandir-NarrowBlack.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="../assets/fonts/Agrandir-Regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="styl.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+
+<div class="pozadi" aria-hidden="true">
+  <svg class="otisk a"><use href="otisk.svg#o"/></svg>
+  <svg class="otisk b"><use href="otisk.svg#o"/></svg>
+</div>
+
+<header class="lista">
+  <a class="brand" href="#kalendar">církev jako kráva</a>
+  <nav class="menu" aria-label="Hlavní">
+    <a href="#kalendar" data-sekce="kalendar">Kalendář</a>
+    <a href="#rozpis" data-sekce="rozpis">Rozpis</a>
+    <a href="#lide" data-sekce="lide">Lidé</a>
+    <a href="#sluzby" data-sekce="sluzby">Služby</a>
+    <a href="#kolize" data-sekce="kolize">Kolize <span class="pocet" hidden></span></a>
+    <a href="#nastaveni" data-sekce="nastaveni" class="nastaveni" aria-label="Nastavení"><span class="terc" aria-hidden="true"></span></a>
+  </nav>
+  <p class="ulozeni" role="status" aria-live="polite"></p>
+</header>
+
+<main id="obsah" class="page" tabindex="-1">
+  <p class="nacitam">Načítám rozpis…</p>
+  <noscript><p>Rozpis běží v prohlížeči – bez JavaScriptu to nepůjde.</p></noscript>
+</main>
+
+<footer class="pata">
+  <p>Rádi tě poznáme, i když se zrovna cítíš jako dobytek.</p>
+  <p class="brand">církev jako kráva</p>
+</footer>
+
+<dialog class="dialog" id="dialog"></dialog>
+<div class="hlasky" aria-live="polite"></div>
+
+</body>
+</html>

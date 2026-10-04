@@ -1,0 +1,26 @@
+# Testy Rozpisu (kolize, slučování, kalendář). Běží jen když se Rozpis změní.
+name: Rozpis
+
+on:
+  push:
+    branches: [main]
+    paths: [docs/rozpis/**, rozpis/**]
+  pull_request:
+    paths: [docs/rozpis/**, rozpis/**]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Testy
+        run: node --test rozpis/test/*.test.mjs
+      - name: Syntaxe všech modulů
+        run: for f in docs/rozpis/*.js rozpis/*.mjs; do node --check "$f"; done
