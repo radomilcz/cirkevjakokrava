@@ -4,9 +4,9 @@
 // picture, the month bar, an event row, the fill count and the role order.
 
 import {
-  h, btn, link, plus, list, row, dateBlock, pageHeader, emptyState, eventCover, statusIcon, openDialog,
+  h, btn, link, plus, list, row, dateBlock, pageHeader, emptyState, eventCover, coverKey, andJoin, metaJoin, statusIcon, openDialog,
   closeDialog, confirmDialog, toast, formError, formErrorLine, textField, textArea, selectField, choices,
-  checkboxField, checkedValues, fieldGroup, textButton, segment, plural,
+  checkedValues, fieldGroup, textButton, segment, plural,
 } from './dom.js';
 import { S, can, change, myId, navigate, newId, render, EVENT_KIND_LABELS, SEVERITY_LABELS } from './state.js';
 import {
@@ -14,6 +14,7 @@ import {
   eventsInRange, followingInSeries, needsOf, sortEvents, updateSeries,
 } from '../lib/events.js';
 import { roleById } from '../lib/groups.js';
+import { publishField } from './formats.js';
 import { saveImage, loadImageUrl, deleteImage } from '../lib/store/store.js';
 import {
   MONTHS_GENITIVE, addDays, addMinutes, addMonths, dayOf, monthGrid, monthName, monthOf, prettyDay,
@@ -135,18 +136,19 @@ export const imageNameOf = (event) => event.image || eventTypeById(S.data, event
 
 /**
  * eventCover() of an event with its photo when it has one: the generated cover first, swapped for the
- * photo as soon as it has loaded (and right away when it is known already).
+ * photo as soon as it has loaded (and right away when it is known already). Events with the same title
+ * (one template, one series) get the same generated cover – the public program does the same.
+ * `title: false` leaves the words out (the event page has its title and date right under the picture).
  */
-export function coverOf(original, { size = 'card' } = {}) {
-  // the generated cover picks its look from the id: one look per series / template, not per Sunday
-  const event = { ...original, id: original.seriesId || original.typeId || original.id };
-  const name = imageNameOf(original);
-  if (!name || !S.store) return eventCover(event, { size });
-  if (imageUrls.has(name)) return eventCover(event, { size, imageUrl: imageUrls.get(name) || undefined });
-  const el = eventCover(event, { size });
+export function coverOf(event, { size = 'card', title = true } = {}) {
+  const options = { size, title, variantKey: coverKey(event) };
+  const name = imageNameOf(event);
+  if (!name || !S.store) return eventCover(event, options);
+  if (imageUrls.has(name)) return eventCover(event, { ...options, imageUrl: imageUrls.get(name) || undefined });
+  const el = eventCover(event, options);
   loadImageUrl(S.store, name).then((url) => {
     imageUrls.set(name, url);
-    if (url && el.isConnected) el.replaceWith(eventCover(event, { size, imageUrl: url }));
+    if (url && el.isConnected) el.replaceWith(eventCover(event, { ...options, imageUrl: url }));
   }, () => imageUrls.set(name, null));
   return el;
 }
@@ -208,12 +210,12 @@ export function monthBar(shown, base, extra = null) {
 /** One event in a list: date, picture, title, „10.00–12.00 · Sál“, fill count. */
 export function eventRow(event, { past = false } = {}) {
   const mine = myRoles(event);
-  const places = placesOf(event).map((p) => p.name);
+  const places = andJoin(placesOf(event).map((p) => p.name));
   const warning = eventWarning(event);
   return row({
     lead: [dateBlock(dayOf(event.start)), coverOf(event, { size: 'thumb' })],
     title: event.title,
-    meta: [timeText(event), places.join(', '), mine.length ? `sloužíš: ${mine.join(', ')}` : null].filter(Boolean).join(' · '),
+    meta: metaJoin([timeText(event), places, mine.length ? `sloužíš: ${mine.join(', ')}` : null]),
     trail: fillCount(event),
     href: `#setkani/${event.id}`,
     tone: event.cancelled ? 'cancelled' : warning || (past ? 'quiet' : null),
@@ -412,7 +414,7 @@ function imageField(state, previewEvent) {
     const ownName = state.current && state.current !== state.typeImage ? state.current : null;
     const name = state.current || state.typeImage;
     if (state.pending) previewBox.replaceChildren(eventCover(ev, { size: 'card', imageUrl: state.pending.data }));
-    else previewBox.replaceChildren(name ? coverOf({ ...ev, image: name }, { size: 'card' }) : eventCover(ev, { size: 'card' }));
+    else previewBox.replaceChildren(coverOf({ ...ev, image: name || undefined }, { size: 'card' }));
     const has = !!(state.pending || name);
     pickButton.textContent = has ? 'Vyměnit obrázek' : 'Nahrát obrázek';
     removeButton.hidden = !(state.pending || ownName);
@@ -520,11 +522,9 @@ export function eventDialog({ day, event } = {}) {
       textArea('note', 'Poznámka pro tým', base.note || '', {
         attr: { rows: 2, placeholder: 'sraz v 9.30, klíče má Petr…' }, hint: 'Uvidí jen přihlášení.',
       }),
-      h('div', { class: 'field full public-field' },
-        checkboxField('public', 'Zveřejnit na webu', base.public === true),
-        h('small', {}, 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.')),
+      publishField('public', 'Zveřejnit na webu', 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', base.public === true),
       fieldGroup('Kolik lidí je potřeba', editor.element),
-      groups.length ? selectField('groupId', 'Tým', [['', 'žádný'], ...groups.map((g) => [g.id, g.name])], base.groupId || '', {
+      groups.length ? selectField('groupId', 'Tým', [['', 'celý sbor'], ...groups.map((g) => [g.id, g.name])], base.groupId || '', {
         full: true, hint: 'Čí je to setkání – třeba zkouška chval nebo skupinka.',
       }) : null,
       following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null),

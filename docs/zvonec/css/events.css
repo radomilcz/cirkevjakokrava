@@ -129,7 +129,6 @@
   .event-layout.with-side{grid-template-columns:minmax(0,1fr) 320px}
 }
 .event-main{max-width:var(--w-list)}
-.map-caption{margin:0;font-size:var(--t4)}
 .event-side .place-map{height:220px}
 .series-links{display:flex;flex-wrap:wrap;gap:var(--s2)}
 .series-prev::before{content:"";width:.42em;height:.42em;border-left:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);margin-right:.1em}
@@ -179,8 +178,6 @@
 .event-form .form-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .time-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 12px;align-items:end;min-width:0}
 @media (max-width:560px){.event-form .form-grid{grid-template-columns:minmax(0,1fr)}}
-.public-field{gap:var(--s1)}
-.public-field small{padding-left:2em}
 
 .image-row{display:grid;grid-template-columns:200px minmax(0,1fr);gap:var(--s4);align-items:center}
 .image-preview .cover{width:100%}
@@ -223,10 +220,6 @@
 .conflict-row.sev-info .item-title{color:var(--muted)}
 .conflict-row .item-trail .text-btn{color:var(--muted)}
 .conflict-row .item-trail .text-btn:hover{color:var(--ink)}
-/* older screens put conflictCard() <li>s in their own <ul class="conflict-list"> */
-ul.conflict-list{list-style:none;margin:0;padding:0;max-width:var(--w-list)}
-ul.conflict-list>li{border-top:1px solid var(--line)}
-ul.conflict-list>li:last-child{border-bottom:1px solid var(--line)}
 
 /* ---------- home (#moje) ---------- */
 .home-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0 var(--s7)}
@@ -285,7 +278,6 @@ ul.conflict-list>li:last-child{border-bottom:1px solid var(--line)}
 .event-side .conflict-row .item-body{flex:1 1 0}
 .time-pair input[type=time]{padding:.72em .6em .58em .9em}
 @media (min-width:1180px){.event-main>.only-narrow+.section{margin-top:0}}
-.event-hero .cover-generated.cover-hero{max-height:220px}
 .my-answer{flex-direction:column;align-items:stretch;gap:var(--s2);max-width:var(--w-list);margin:calc(-1*var(--s3)) 0 var(--s6)}
 .my-answer-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}
 .my-answer-row p{margin:0}

@@ -55,11 +55,6 @@ export const plus = (text) => [h('span', { class: 'plus' }), ` ${text}`];
 /** Round × button (remove a row). */
 export const removeButton = (label, onclick) => h('button', { type: 'button', class: 'btn-x', 'aria-label': label, title: label, onclick });
 
-/** Round arrow button for reordering; direction 'up' | 'down'. */
-export const arrowButton = (direction, label, onclick, disabled = false) => h('button', {
-  type: 'button', class: ['btn-arrow', direction], 'aria-label': label, title: label, onclick, disabled,
-});
-
 /** Back link above a page header: backLink('Kalendář', '#kalendar'). */
 export const backLink = (text, href) => link(text, href, 'back');
 
@@ -68,16 +63,19 @@ export const backLink = (text, href) => link(text, href, 'back');
 /**
  * The header of a page: big title (h1), optional lead sentence, the page's actions on the right
  * (the primary action is the one `btn(…, 'primary')`). No eyebrow – if the title needs a tagline,
- * fix the title. Returns one element.
+ * fix the title. `media` goes in front of the title: the large avatar of a person, the mark of a team.
+ * Returns one element.
  *   pageHeader({ title: 'Lidé', actions: [btn(plus('Přidat člověka'), add, 'primary')] })
- * @param {{ title: any, lead?: any, actions?: any }} options title/lead: text or nodes; actions: node(s)
+ *   pageHeader({ title: fullName(p), media: avatar(p, { size: 'l' }), actions: … })
+ * @param {{ title: any, lead?: any, actions?: any, media?: Node }} options title/lead: text or nodes; actions: node(s)
  */
-export function pageHeader({ title, lead, actions: buttons } = {}) {
+export function pageHeader({ title, lead, actions: buttons, media } = {}) {
   const tools = nodes(buttons || []);
-  return h('header', { class: 'page-header' },
+  return h('header', { class: ['page-header', media && 'with-media'] },
+    media ? h('div', { class: 'page-header-media' }, media) : null,
     h('div', { class: 'page-header-text' },
       h('h1', { class: 'title' }, title),
-      lead ? h('p', { class: 'lead' }, lead) : null),
+      lead ? h('p', { class: 'lead' }, typeof lead === 'string' ? lead.replaceAll(' · ', SEP) : lead) : null),
     tools.length ? h('div', { class: 'page-header-actions' }, tools) : null);
 }
 
@@ -118,11 +116,28 @@ export function plural(n, one, few, many) {
   return `${n} ${form}`;
 }
 
+/** The separator of a meta line: a no-break space before „·“, so a wrapped line never starts with the dot. */
+export const SEP = '\u00a0· ';
+
+/**
+ * Join the parts of a meta line with „ · “ (empty parts skipped). The dot stays at the end of a line
+ * when the line wraps. Text parts give a string, nodes give an array of nodes.
+ *   metaJoin(['10.00–12.00', 'Sál', null]) → '10.00–12.00\u00a0· Sál'
+ */
+export function metaJoin(parts) {
+  const kept = parts.flat().filter((x) => x != null && x !== false && x !== '');
+  if (kept.every((x) => typeof x === 'string' || typeof x === 'number')) return kept.join(SEP);
+  return kept.flatMap((x, i) => (i ? [h('span', { class: 'sep', 'aria-hidden': 'true' }, SEP), x] : [x]));
+}
+
+/** „Sál“, „Sál a Malá místnost“, „Sál, Malá místnost a Zahrada“. */
+export function andJoin(words) {
+  const list_ = words.filter(Boolean);
+  return list_.length > 1 ? `${list_.slice(0, -1).join(', ')} a ${list_[list_.length - 1]}` : list_[0] || '';
+}
+
 /** Muted small paragraph. */
 export const note = (...children) => h('p', { class: 'note' }, children);
-
-/** A tag (chip with a word). cls: 'filled', 'learning' (italic), 'quiet'. */
-export const tag = (text, cls = '') => h('span', { class: ['tag', cls] }, text);
 
 /** Meta line under a title: items are text or [label, value] (label is muted). */
 export function meta(items) {
@@ -165,7 +180,8 @@ export function list(items, renderRow, { empty, cls, label } = {}) {
 }
 
 /**
- * One row of a list: leading (avatar / date block / dot), title, one meta line, trailing
+ * One row of a list: leading (avatar / date block / dot), title, one meta line (a text meta line
+ * joined with „ · “ keeps the dot at the end of a line when it wraps – see metaJoin), trailing
  * (status / count / small actions). With `href` or `onclick` the whole row opens it: the title becomes
  * the link (or button) and its hit area covers the row, so buttons in `trail` still work on their own.
  * `tone`: 'quiet' (muted: archived, former), 'cancelled' (struck through), 'error' (filled dot),
@@ -186,7 +202,7 @@ export function row({ lead, title, meta: metaLine, trail, href, onclick, tone, l
     lead != null ? h('span', { class: 'item-lead' }, lead) : null,
     h('span', { class: 'item-body' },
       h('span', { class: 'item-title' }, titleEl),
-      metaLine != null && metaLine !== '' ? h('span', { class: 'item-meta' }, metaLine) : null),
+      metaLine != null && metaLine !== '' ? h('span', { class: 'item-meta' }, typeof metaLine === 'string' ? metaLine.replaceAll(' · ', SEP) : metaLine) : null),
     trailNodes.length ? h('span', { class: 'item-trail' }, trailNodes) : null,
     opens ? h('span', { class: 'item-chevron', 'aria-hidden': 'true' }) : null);
 }
@@ -254,6 +270,22 @@ export function avatar(person, { size = 'm' } = {}) {
     class: ['avatar', `avatar-${size}`, person ? `avatar-v${hash % AVATAR_VARIANTS}` : 'avatar-gone'],
     'aria-hidden': 'true',
   }, initials(person));
+}
+
+/**
+ * The mark of a group (team, home group, leadership) where a person would have an avatar: one or two
+ * initials in a rounded square, one of five ink/ground mixes derived from the id (square = a group,
+ * round = a person). Decorative (aria-hidden): put the name next to it.
+ * @param {{ id?: string, name?: string }|null} group
+ * @param {{ size?: 'm'|'l' }} [options] m = 36px (lists), l = 64px (page header)
+ */
+export function groupMark(group, { size = 'm' } = {}) {
+  let hash = 0;
+  for (const ch of String(group?.id || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
+  const words = String(group?.name || '?').split(/\s+/).filter(Boolean);
+  const letters = (words.length > 1 ? [words[0], words[1]] : [words[0] || '?']).map((w) => [...w][0]).join('');
+  return h('span', { class: ['group-mark', `group-mark-${size}`, `group-mark-v${hash % AVATAR_VARIANTS}`], 'aria-hidden': 'true' },
+    letters.toLocaleUpperCase('cs'));
 }
 
 // ---------- assignment status ----------
@@ -349,18 +381,21 @@ const hashOf = (text) => {
 /**
  * The picture of an event (DESIGN §4b). With `imageUrl` (an object URL / data URL of event.image or
  * the type's image) the photo; otherwise a generated cover in the brand: palette colours, the imprint
- * pattern and the title in Narrow Black with the date small. Which of four compositions it gets is
- * derived from the event id, so the same event always looks the same. Decorative: the title is in the
- * page anyway (aria-hidden). Prints as a light outline.
+ * pattern and the title in Narrow Black with the date small. Which of four compositions (and light or
+ * dark tone) it gets comes from `variantKey` – pass the same key for events of one template or series
+ * (e.g. the title) so a row of Sundays looks alike; without it the event id. Decorative (aria-hidden).
+ * Prints as a light outline.
  * @param {{ id?: string, title?: string, start?: string }} event
- * @param {{ size?: 'card'|'hero'|'thumb', imageUrl?: string }} [options]
- *   card = 16:9 in a grid, hero = wide banner on the detail page, thumb = small square in a list row
+ * @param {{ size?: 'card'|'hero'|'thumb', imageUrl?: string, title?: boolean, variantKey?: string }} [options]
+ *   card = 16:9 in a grid, hero = wide banner on the detail page, thumb = small square in a list row.
+ *   title: false = colours and imprint only (the page shows the title and the date anyway).
  */
-export function eventCover(event, { size = 'card', imageUrl } = {}) {
+export function eventCover(event, { size = 'card', imageUrl, title = true, variantKey } = {}) {
   if (imageUrl) {
-    return h('figure', { class: ['cover', `cover-${size}`, 'cover-photo'] },
+    return h('figure', { class: ['cover', `cover-${size}`, 'cover-photo'], 'aria-hidden': 'true' },
       h('img', { src: imageUrl, alt: '', loading: 'lazy', decoding: 'async' }));
   }
+  const words = title && size !== 'thumb';   // a thumb is too small for words
   const day = event?.start ? event.start.slice(0, 10) : '';
   const date = day ? new Date(`${day}T12:00`) : null;
   const dateText = date ? `${date.getDate()}. ${date.getMonth() + 1}.` : '';
@@ -371,11 +406,14 @@ export function eventCover(event, { size = 'card', imageUrl } = {}) {
   const use = document.createElementNS(SVG_NS, 'use');
   use.setAttribute('href', 'imprint.svg#o');
   imprint.append(use);
-  return h('div', { class: ['cover', `cover-${size}`, 'cover-generated', `cover-v${hashOf(event?.id || event?.title) % COVER_VARIANTS}`], 'aria-hidden': 'true' },
+  const key = variantKey || event?.id || event?.title;
+  return h('div', { class: ['cover', `cover-${size}`, 'cover-generated', `cover-v${hashOf(String(key || '').trim().toLocaleLowerCase('cs')) % COVER_VARIANTS}`, !words && 'cover-plain'], 'aria-hidden': 'true' },
     imprint,
-    size === 'thumb' ? null   // too small for words: just the colours and the imprint
-      : [h('span', { class: 'cover-title' }, event?.title || ''), dateText ? h('span', { class: 'cover-date' }, dateText) : null]);
+    words ? [h('span', { class: 'cover-title' }, event?.title || ''), dateText ? h('span', { class: 'cover-date' }, dateText) : null] : null);
 }
+
+/** The key that gives events of one template or series the same cover: the title (what people see as „the same thing“). */
+export const coverKey = (event) => String(event?.title || event?.id || '');
 
 const hasCoords = (place) => place && place.lat !== '' && place.lon !== '' && place.lat != null && place.lon != null
   && Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lon));
@@ -387,17 +425,41 @@ export function mapUrl(place) {
 }
 
 /**
- * A place in one line: name, address (when there is one) and „Otevřít v mapě“ (mapy.cz, new tab).
- *   placeLine({ name: 'Sál', address: 'Komenského 5, Nový Jičín' })
+ * Places that share an address, together: [{ names: ['Sál', 'Malá místnost'], address, place }] in the
+ * order of the first place of each address (`place` = the first one with coordinates, for the map link).
  */
-export function placeLine(place) {
-  if (!place) return null;
-  const canMap = hasCoords(place) || place.address || place.name;
-  return h('span', { class: 'place-line' },
-    h('span', { class: 'place-name' }, place.name || ''),
-    place.address ? [h('span', { class: 'place-sep', 'aria-hidden': 'true' }, ' · '), h('span', { class: 'place-address' }, place.address)] : null,
-    canMap ? [h('span', { class: 'place-sep', 'aria-hidden': 'true' }, ' · '),
-      h('a', { class: 'place-map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě')] : null);
+export function groupPlaces(places) {
+  const groups = [];
+  for (const place of [places].flat().filter(Boolean)) {
+    const address = (place.address || '').trim();
+    const same = address ? groups.find((g) => g.address === address) : null;
+    if (same) {
+      same.names.push(place.name || '');
+      if (!hasCoords(same.place) && hasCoords(place)) same.place = place;
+    } else groups.push({ names: [place.name || ''], address, place });
+  }
+  return groups;
+}
+
+/**
+ * A place in one line: name, address (when there is one) and „Otevřít v mapě“ (mapy.cz, new tab).
+ * An array of places: places at one address share the line („Sál a Malá místnost · Sokolovská 12 ·
+ * Otevřít v mapě“); several addresses give one line each. The „·“ never starts a wrapped line.
+ *   placeLine({ name: 'Sál', address: 'Komenského 5, Nový Jičín' })
+ *   placeLine(placesOf(event))
+ */
+export function placeLine(places) {
+  const groups = groupPlaces(places);
+  if (!groups.length) return null;
+  const line = ({ names, address, place }) => {
+    const canMap = hasCoords(place) || address || place.name;
+    return h('span', { class: 'place-line' }, metaJoin([
+      h('span', { class: 'place-name' }, andJoin(names)),
+      address ? h('span', { class: 'place-address' }, address) : null,
+      canMap ? h('a', { class: 'place-map-link', href: mapUrl({ ...place, address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě') : null,
+    ]));
+  };
+  return groups.length === 1 ? line(groups[0]) : h('span', { class: 'place-lines' }, groups.map(line));
 }
 
 /**
@@ -595,9 +657,10 @@ export const formErrorLine = (text = '', { full = false } = {}) => h('p', { clas
 /**
  * A form in a dialog: (eyebrow,) title (+ `sub` under it), a two-column grid of fields, Smazat / Zrušit / Uložit.
  * `save(elements, form)` returns an error text (shown, dialog stays open) or nothing (dialog closes);
- * it may be async – the Uložit button is disabled meanwhile. `remove` adds a Smazat button on the left.
+ * it may be async – the Uložit button is disabled meanwhile. `remove` adds a quiet button on the left,
+ * „Smazat“ unless `removeLabel` says otherwise („Odebrat z týmu“). `extra` follows the form in the dialog.
  */
-export function simpleDialog({ eyebrow, title, sub, fields, save, remove, wide = true, saveLabel = 'Uložit' }) {
+export function simpleDialog({ eyebrow, title, sub, fields, save, remove, removeLabel = 'Smazat', wide = true, saveLabel = 'Uložit', extra }) {
   const submit = h('button', { type: 'submit', class: 'btn primary' }, saveLabel);
   const form = h('form', { method: 'dialog', novalidate: true },
     eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null, h('h2', {}, title),
@@ -605,7 +668,7 @@ export function simpleDialog({ eyebrow, title, sub, fields, save, remove, wide =
     h('div', { class: 'form-grid' }, fields),
     formErrorLine(),
     h('div', { class: 'actions' },
-      remove ? btn('Smazat', () => { closeDialog(); remove(); }, 'left plain') : null,
+      remove ? btn(removeLabel, () => { closeDialog(); remove(); }, 'left plain') : null,
       btn('Zrušit', closeDialog), submit));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -616,7 +679,7 @@ export function simpleDialog({ eyebrow, title, sub, fields, save, remove, wide =
     if (error) { formError(form, error); return; }
     closeDialog();
   });
-  openDialog(form, { wide });
+  openDialog(extra ? [form, extra] : form, { wide });
   return form;
 }
 
@@ -653,12 +716,15 @@ export function choices(name, options, selected = [], type = 'checkbox') {
     h('input', { type, name, value: v, checked: picked.includes(v) }), h('span', {}, text))));
 }
 
-/** Checkbox with a sentence (consent, longer options). Spans the full grid row. */
-export function checkboxField(name, text, checked = false, value = 'yes') {
-  return h('label', { class: 'check-row full' },
+/**
+ * Checkbox with a sentence (consent, longer options). Spans the full grid row. `hint` = a muted line
+ * under the sentence (checkboxField('public', 'Zveřejnit na webu', true, 'yes', { hint: 'Uvidí každý.' })).
+ */
+export function checkboxField(name, text, checked = false, value = 'yes', { hint } = {}) {
+  return h('label', { class: ['check-row', 'full', hint && 'with-hint'] },
     h('input', { type: 'checkbox', name, value, checked }),
     h('span', { class: 'box', 'aria-hidden': 'true' }),
-    h('span', { class: 'caption' }, text));
+    h('span', { class: 'caption' }, text, hint ? h('small', {}, hint) : null));
 }
 
 /** Segment control: one of a few short options side by side (ne / učí se / umí). */

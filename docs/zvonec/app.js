@@ -52,7 +52,7 @@ const ROUTES = {
   domacnost: { render: ([id]) => renderHousehold(id), access: 'leader', menu: 'lide' },
   tymy: { render: () => renderGroups(), access: 'leader' },
   tym: { render: ([id]) => renderGroup(id), access: 'leader', menu: 'tymy' },
-  formaty: { render: () => renderFormats(), access: 'member' },
+  formaty: { render: ([id]) => renderFormats(id || ''), access: 'member' },
   upozorneni: { render: () => renderConflicts(), access: 'leader' },
   nastaveni: {
     render: ([section]) => renderSettings(section || ''),

@@ -178,7 +178,7 @@ lib/demo.js            fictitious demo data relative to today
 ui/state.js            app state S, can(), change(), render(), navigate(), actAs() (demo), shared Czech labels
 ui/dom.js              h(), buttons, dialogs, form fields, toasts; the shared components: pageHeader, section,
                        list/row, avatar, personName/shortName, statusIcon/statusLabel, assignee, menuButton,
-                       emptyState, eventCover, placeLine/placeMap
+                       emptyState, groupMark, eventCover/coverKey, placeLine/placeMap, metaJoin/andJoin
 ui/palette.js          colour picker (classic script, loaded in <head>)
 ui/home.js             #moje – member home
 ui/calendar.js         month grid / day list, new event

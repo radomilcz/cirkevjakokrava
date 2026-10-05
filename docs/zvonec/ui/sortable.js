@@ -42,7 +42,9 @@ export function sortable(list, onMove) {
     const from = [...list.children].indexOf(item);
     item.classList.add('dragging');
     list.classList.add('sorting');
-    handle.setPointerCapture?.(e.pointerId);
+    // move / up are heard on the window: insertBefore() takes the item out of the document for a moment,
+    // which drops a pointer capture of its handle (Chromium) – the drag must not stop half way
+    const pointerId = e.pointerId;
     let scrollTimer = null;
     let lastY = e.clientY;
 
@@ -63,20 +65,21 @@ export function sortable(list, onMove) {
       const scroller = list.closest('.dialog') || document.scrollingElement;
       scrollTimer = setInterval(() => { scroller.scrollBy(0, dir * 12); place(lastY); }, 16);
     };
-    const move = (ev) => { lastY = ev.clientY; place(lastY); autoScroll(); };
-    const end = () => {
+    const move = (ev) => { if (ev.pointerId !== pointerId) return; lastY = ev.clientY; place(lastY); autoScroll(); };
+    const end = (ev) => {
+      if (ev.pointerId !== pointerId) return;
       clearInterval(scrollTimer);
-      handle.removeEventListener('pointermove', move);
-      handle.removeEventListener('pointerup', end);
-      handle.removeEventListener('pointercancel', end);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
       item.classList.remove('dragging');
       list.classList.remove('sorting');
       const to = [...list.children].indexOf(item);
       if (to !== from) onMove(from, to);
     };
-    handle.addEventListener('pointermove', move);
-    handle.addEventListener('pointerup', end);
-    handle.addEventListener('pointercancel', end);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
   });
   return list;
 }

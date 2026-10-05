@@ -2,17 +2,16 @@
 // my teams and my contact. Works for leaders with a person card too.
 
 import {
-  h, btn, link, pageHeader, section, list, row, emptyState, toast, dateBlock, statusBadge,
-  menuButton, avatar, personName, simpleDialog, textField, plural, plus, download, confirmDialog,
+  h, btn, link, pageHeader, section, list, row, emptyState, toast, statusBadge,
+  menuButton, groupMark, personName, metaJoin, confirmDialog,
 } from './dom.js';
-import { S, can, myId, change, render, actAs, logout, newId, ACCESS_LABELS, SKILL_LABELS } from './state.js';
-import * as peopleUi from './people.js';
+import { S, can, myId, change, render, actAs, logout, ACCESS_LABELS, SKILL_LABELS } from './state.js';
+import { availabilitySection, contactDialog, downloadDuties, dutyRow } from './people.js';
 import { coverOf } from './calendar.js';
 import { personById, fullName, sortPeople, statusOf } from '../lib/people.js';
 import { groupsOf, leadersOf, skillsOf, roleById, memberRecord } from '../lib/groups.js';
 import { upcomingDuties, eventById } from '../lib/events.js';
-import { ics, icsForPerson } from '../lib/ics.js';
-import { today, addDays, inBlockout, prettyDay, prettyTime } from '../lib/time.js';
+import { today, addDays, prettyDay, prettyTime } from '../lib/time.js';
 
 const WEEKS_AHEAD = 8;
 
@@ -86,85 +85,17 @@ function dutiesSection(person, duties) {
     count: duties.length || null,
     actions: duties.length ? btn('Do kalendáře (.ics)', () => downloadDuties(person), 'small plain') : null,
   },
-  list(duties, ({ event, assignment }) => {
+  list(duties, (duty) => {
+    const { event, assignment } = duty;
     const role = roleById(S.data, assignment.roleId)?.name || 'Služba';
-    return row({
-      lead: dateBlock(event.start.slice(0, 10)),
-      title: role,
-      meta: `${prettyTime(event.start)} · ${event.title}${event.cancelled ? ' · zrušeno' : ''}`,
-      trail: [
-        event.cancelled ? null : statusBadge(assignment.status, person),
-        assignment.status === 'confirmed' && !event.cancelled
+    return dutyRow(duty, {
+      trail: event.cancelled ? h('span', {}, 'zrušeno') : [
+        statusBadge(assignment.status, person),
+        assignment.status === 'confirmed'
           ? menuButton([['Nakonec nemůžu', () => decline(event, assignment)]], { label: `Možnosti: ${role} ${prettyDay(event.start)}` }) : null,
       ],
-      href: `#setkani/${event.id}`,
-      tone: event.cancelled ? 'cancelled' : null,
     });
-  }, { empty: `Na příštích ${WEEKS_AHEAD} týdnů nemáš žádnou potvrzenou službu.` }));
-}
-
-/** .ics with my duties from a month back on. */
-function downloadDuties(person) {
-  const items = icsForPerson(S.data, person.id, addDays(today(), -30));
-  const ascii = fullName(person).normalize('NFD').replace(/\p{M}/gu, '').replace(/[^A-Za-z0-9]+/g, '-').toLowerCase();
-  download(`sluzby-${ascii}.ics`, ics(S.data, items, `Služby – ${fullName(person)}`), 'text/calendar');
-}
-
-// ---------- when I can't ----------
-
-const rangeText = (v) => (v.from === v.to ? prettyDay(v.from) : `${prettyDay(v.from)} – ${prettyDay(v.to)}`);
-
-function availabilitySection(person) {
-  const day = today();
-  const records = (S.data.availability || []).filter((v) => v.personId === person.id && v.to >= day)
-    .sort((a, b) => a.from.localeCompare(b.from));
-  return section('Kdy nemůžu sloužit', {
-    count: records.length || null,
-    actions: btn(plus('Přidat'), () => availabilityDialog(person), 'small'),
-  },
-  list(records, (v) => row({
-    title: rangeText(v),
-    meta: v.reason || null,
-    onclick: () => availabilityDialog(person, v),
-    label: `Upravit: ${rangeText(v)}`,
-  }), { empty: 'Když víš, že nemůžeš, zapiš to sem. Nikdo tě pak nenaplánuje.' }));
-}
-
-/** Add or edit a „can't“ record (dates and a reason only leaders see); Smazat in the dialog. */
-function availabilityDialog(person, record = null) {
-  const day = today();
-  simpleDialog({
-    title: record ? 'Kdy nemůžu sloužit' : 'Přidat, kdy nemůžu',
-    wide: false,
-    fields: [
-      textField('from', 'Od', record?.from || day, { type: 'date', attr: { required: true } }),
-      textField('to', 'Do', record?.to || day, { type: 'date', attr: { required: true } }),
-      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: 'Vidí ho jen vedoucí.', attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80 } }),
-    ],
-    save: (f) => {
-      if (!f.from.value || !f.to.value) return 'Vyplň, od kdy do kdy.';
-      const [from, to] = [f.from.value, f.to.value].sort();
-      if (to < day) return 'Tohle už je za námi.';
-      S.data.availability = S.data.availability || [];
-      const target = record ? S.data.availability.find((x) => x.id === record.id) : null;
-      const entry = target || { id: newId('v'), personId: person.id };
-      Object.assign(entry, { from, to });
-      const reason = f.reason.value.trim();
-      if (reason) entry.reason = reason; else delete entry.reason;
-      if (!target) S.data.availability.push(entry);
-      const clash = upcomingDuties(S.data, person.id, { from, to, includeDeclined: false, includeCancelled: false })
-        .filter(({ event }) => inBlockout(event, entry));
-      change(`${fullName(person)} nemůže ${prettyDay(from, false)}`);
-      if (clash.length) toast(`V tu dobu máš ${plural(clash.length, 'službu', 'služby', 'služeb')}.`, 'Vedoucí to uvidí v Upozorněních.');
-      else toast('Zapsáno.');
-      return null;
-    },
-    remove: record ? () => {
-      S.data.availability = (S.data.availability || []).filter((x) => x.id !== record.id);
-      change(`${fullName(person)} zase může ${prettyDay(record.from, false)}`);
-      toast('Smazáno.');
-    } : null,
-  });
+  }, { cls: 'duty-rows', empty: `Na příštích ${WEEKS_AHEAD} týdnů nemáš žádnou potvrzenou službu.` }));
 }
 
 // ---------- teams, contact ----------
@@ -180,10 +111,9 @@ function teamsSection(person) {
         .map((s) => `${roleById(S.data, s.roleId)?.name || '?'}${s.level === 'learning' ? ` (${SKILL_LABELS.learning})` : ''}`);
       const leaders = leadersOf(S.data, g.id).map((m) => personById(S.data, m.personId)).filter((p) => p && p.id !== person.id);
       return row({
-        lead: avatar({ id: g.id, firstName: g.name }, { size: 'm' }),
+        lead: groupMark(g),
         title: g.name,
-        meta: [own.join(', '), leaders.length ? `${leaders.length > 1 ? 'vedou' : 'vede'} ${leaders.map(personName).join(', ')}` : null]
-          .filter(Boolean).join(' · ') || null,
+        meta: metaJoin([own.join(', '), leaders.length ? `${leaders.length > 1 ? 'vedou' : 'vede'} ${leaders.map(personName).join(', ')}` : null]) || null,
         trail: record?.leader ? h('span', { class: 'tag filled' }, 'vedeš') : null,
         href: leader ? `#tym/${g.id}` : undefined,
       });
@@ -191,13 +121,13 @@ function teamsSection(person) {
 }
 
 function contactSection(person) {
-  const edit = () => (peopleUi.contactDialog ? peopleUi.contactDialog(person) : location.assign(`#osoba/${person.id}`));
+  const edit = () => contactDialog(person);
   const fact = (label, value) => [h('dt', {}, label), h('dd', {}, value || h('span', { class: 'faint' }, 'nevyplněno'))];
   return section('Můj kontakt', { actions: btn('Upravit', edit, 'small') },
     h('dl', { class: 'facts' },
       fact('Telefon', person.phone),
       fact('E-mail', person.email),
-      fact('Vidí ho', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí')));
+      fact('Kdo je vidí', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí')));
 }
 
 /** Members have no Nastavení in the menu – the account (password) is reached from here. */

@@ -6,7 +6,7 @@
 // in place or links to where it is edited.
 
 import {
-  h, btn, link, plus, nodes, plural, pageHeader, backLink, section, note, list, row, avatar, personName,
+  h, btn, link, plus, nodes, plural, pageHeader, backLink, section, note, list, row, avatar, personName, groupMark, SEP,
   dateBlock, statusBadge, textButton, menuButton, emptyState, filterLinks, toast, download, openDialog, closeDialog,
   confirmDialog, simpleDialog, textField, textArea, selectField, checkboxField,
 } from './dom.js';
@@ -15,7 +15,8 @@ import {
 } from './state.js';
 import { personLoginSection } from './login.js';
 import { openPicker } from './picker.js';
-import { groupMark, personGroupRows, addToGroupDialog } from './groups.js';
+import { personGroupRows, addToGroupDialog } from './groups.js';
+import { conflictList } from './conflicts.js';
 import {
   personById, householdById, displayName, fullName, sortPeople, matchesText, matchesFilter, filterCounts,
   childAgeOf, age, isChild, statusOf, householdMembers, sortHouseholds, birthdaysBetween, MEMBERSHIP_STATUSES,
@@ -49,7 +50,7 @@ const childAge = () => childAgeOf(S.data.settings);
 const isKid = (person) => isChild(person, today(), childAge());
 const isFormer = (person) => statusOf(person) === 'former';
 const peopleCount = (n) => plural(n, 'člověk', 'lidé', 'lidí');
-const sep = () => h('span', { class: 'sep', 'aria-hidden': 'true' }, ' · ');
+const sep = () => h('span', { class: 'sep', 'aria-hidden': 'true' }, SEP);
 
 /** Phone and e-mail of this person may be shown to the current user. */
 export const seesContact = (person) => can('leader') || person.id === myId() || !!person.showInDirectory;
@@ -248,10 +249,7 @@ async function copyEmails(people) {
 
 /** Page header of a person: large avatar, full name, one muted line under it, the actions. */
 function personHeader(person, { lead, actions }) {
-  const header = pageHeader({ title: fullName(person), lead, actions });
-  header.classList.add('person-header');
-  header.prepend(avatar(person, { size: 'l' }));
-  return header;
+  return pageHeader({ title: fullName(person), media: avatar(person, { size: 'l' }), lead, actions });
 }
 
 export function renderPerson(id) {
@@ -413,7 +411,7 @@ function dutiesSection(person) {
   const shown = all.slice(0, DUTIES_SHOWN);
   return section(self ? 'Moje nejbližší služby' : 'Nejbližší služby', {
     count: all.length || null,
-    actions: all.length ? btn('Do kalendáře', () => downloadDuties(person), 'small', { title: 'Stáhnout služby do kalendáře (.ics)' }) : null,
+    actions: all.length ? btn('Do kalendáře (.ics)', () => downloadDuties(person), 'small plain') : null,
   },
   list(shown, (duty) => dutyRow(duty), { cls: 'duty-rows', empty: note(self ? 'Teď žádnou službu nemáš.' : 'Teď nemá žádnou službu.') }),
   all.length > shown.length ? h('p', { class: 'list-foot' }, `A ještě ${plural(all.length - shown.length, 'další', 'další', 'dalších')}.`) : null);
@@ -546,16 +544,9 @@ function limitsDialog(person) {
 function conflictsSection(person) {
   const found = S.conflicts.filter((c) => c.personId === person.id && isUpcoming(c));
   if (!found.length) return null;
+  const start = (c) => S.data.events.find((e) => e.id === c.eventId)?.start || '';
   return section('Upozornění', { count: found.length, actions: link('Všechna', '#upozorneni', 'btn small') },
-    list(found, (c) => {
-      const event = S.data.events.find((e) => e.id === c.eventId);
-      return row({
-        title: c.text,
-        meta: [event ? `${prettyDay(event.start)} · ${event.title}` : null, c.overrideNote ? `v pořádku: ${c.overrideNote}` : null].filter(Boolean).join(' · ') || null,
-        href: event ? `#setkani/${event.id}` : null,
-        tone: c.severity === 'error' ? 'error' : c.severity === 'warning' ? 'warning' : 'quiet',
-      });
-    }, { cls: 'conflict-rows' }));
+    conflictList(found.slice().sort((a, b) => start(a).localeCompare(start(b)))));
 }
 
 // ---------- dialogs ----------
@@ -824,7 +815,7 @@ export function renderHousehold(id) {
       lead: household.address || null,
       actions: btn('Upravit', () => householdDialog(household), 'primary'),
     }),
-    section('Kdo tu bydlí', { cls: 'list-section', count: members.length || null, actions: members.length ? btn(plus('Přidat'), add, 'small') : null },
+    section('Kdo tu bydlí', { count: members.length || null, actions: members.length ? btn(plus('Přidat'), add, 'small') : null },
       list(members, (p) => {
         const links = contactLinks(p);
         return row({
@@ -836,7 +827,7 @@ export function renderHousehold(id) {
           trail: menuButton([['Odebrat z domácnosti', () => removeFrom(p), { danger: true }]], { label: `Možnosti: ${fullName(p)}` }),
         });
       }, {
-        empty: emptyState('Zatím tu nikdo nebydlí.', btn(plus('Přidat lidi'), add, 'primary')),
+        empty: emptyState('Zatím tu nikdo nebydlí.', btn(plus('Přidat lidi'), add, 'small')),
       })),
   ];
 }

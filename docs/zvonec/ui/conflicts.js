@@ -74,11 +74,6 @@ export function conflictList(conflicts, { empty, hrefOf, ...options } = {}) {
     { empty, cls: 'conflict-items', label: 'Upozornění' });
 }
 
-/** @deprecated – an <li> for an own <ul>; use conflictList(). Kept for screens not migrated yet. */
-export function conflictCard(conflict, options = {}) {
-  return h('li', { class: 'conflict-li' }, conflictRow(conflict, options));
-}
-
 /**
  * „Vím o tom, platí to i tak“: a reason on the assignment turns its errors into info.
  * Stored as assignment.override { reason, by, at }.

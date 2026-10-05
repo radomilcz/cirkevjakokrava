@@ -58,7 +58,7 @@ export function renderEvent(id) {
 
   return [
     backLink(monthTitle(monthOf(event.start)), `#kalendar/${monthOf(event.start)}`),
-    h('div', { class: 'event-hero' }, coverOf(event, { size: 'hero' })),
+    h('div', { class: 'event-hero' }, coverOf(event, { size: 'hero', title: false })),
     pageHeader({
       title: event.title,
       lead: event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.' : null,
@@ -109,7 +109,7 @@ function facts(event, leader) {
   const edit = () => eventDialog({ event: fresh(event.id) });
   return h('div', { class: 'event-facts' },
     h('p', { class: 'event-when' }, `${capital(prettyDayLong(event.start))} · ${timeText(event)}`),
-    places.map((p) => h('p', { class: 'event-place' }, placeLine(p))),
+    places.length ? h('p', { class: 'event-place' }, placeLine(places)) : null,
     event.description
       ? h('p', { class: 'event-description' }, event.description)
       : leader ? h('p', { class: 'event-description faint' }, 'Zatím bez popisu. ', textButton('Napsat popis', edit)) : null,
@@ -136,10 +136,10 @@ function myAnswer(event) {
   }));
 }
 
-/** The map of the first place with coordinates (side column). */
+/** The map of the first place with coordinates (side column; the address is in the facts already). */
 function mapSection(event) {
-  const place = placesOf(event).find((p) => placeMap(p));
-  return place ? section('Kde to je', h('p', { class: 'map-caption' }, placeLine(place)), placeMap(place)) : null;
+  const map = placesOf(event).map((p) => placeMap(p)).find(Boolean);
+  return map ? section('Kde to je', map) : null;
 }
 
 /** Previous and next event of the series. */
@@ -354,7 +354,6 @@ function programSection(event, previous, leader) {
   }, { cls: 'program-items', label: 'Osnova' });
   if (leader && items) {
     sortable(items, (from, to) => { const e = fresh(id); if (e && moveInArray(e.program || [], from, to)) edited(); });
-    keepCapture(items);
   }
 
   const takePrevious = () => {
@@ -374,7 +373,7 @@ function programSection(event, previous, leader) {
     actions: [
       times.length ? link('Na papír a plátno', `#setkani/${id}/osnova`, 'btn small plain') : null,
       leader && previous && (previous.program || []).length ? btn('Převzít minulou', takePrevious, 'small plain') : null,
-      leader ? btn(plus('Přidat bod'), () => addItemDialog(id), 'small') : null,
+      leader && times.length ? btn(plus('Přidat bod'), () => addItemDialog(id), 'small') : null,
     ],
   },
   items || (leader
@@ -383,18 +382,6 @@ function programSection(event, previous, leader) {
   leader && times.length && total > length
     ? h('p', { class: 'program-over' }, h('span', { class: 'sev-dot warning', 'aria-hidden': 'true' }), `Osnova je o ${total - length} min delší než setkání.`)
     : null);
-}
-
-/**
- * sortable.js moves the dragged <li> with insertBefore(); taking the node out of the document drops
- * the pointer capture of its handle in Chromium, and the drag would stop half way. Take it back.
- */
-function keepCapture(listEl) {
-  listEl.addEventListener('lostpointercapture', (e) => {
-    const handle = e.target.closest?.('.drag-handle');
-    if (!handle || !handle.isConnected || !listEl.classList.contains('sorting')) return;
-    try { handle.setPointerCapture(e.pointerId); } catch { /* the button is up already */ }
-  });
 }
 
 /** Pick a format to add at the end of the osnova. */
@@ -467,7 +454,7 @@ function itemDialog(eventId, itemId, draft) {
     wide: false,
     fields: [
       textField('title', 'Název', d.title, { attr: { placeholder: format?.name || '' } }),
-      textField('minutes', 'Minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } }),
+      textField('minutes', 'Kolik minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } }),
       fieldGroup('Kdo vede', h('div', { class: 'leader-pick' }, who,
         h('span', { class: 'leader-tools' },
           d.personId ? textButton(roleName ? `Podle role ${roleName}` : 'Nikdo', () => keep('')) : null,

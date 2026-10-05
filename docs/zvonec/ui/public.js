@@ -2,11 +2,12 @@
 // from publicData() (lib/public.js shape) – never S.data directly, so nothing private can slip in.
 // #program – upcoming published events, grouped by week · #jak-se-schazime – published formats.
 
-import { h, pageHeader, section, emptyState, eventCover, placeLine, placeMap, mapUrl, textButton } from './dom.js';
+import { h, pageHeader, section, emptyState, eventCover, coverKey, placeLine, placeMap, mapUrl, textButton, count, SEP } from './dom.js';
 import { S, publicData } from './state.js';
 import { addDays, dayOf, DAYS_FULL, MONTHS_GENITIVE, parseDate, prettyDay, prettyTime, timeOf, today, weekday } from '../lib/time.js';
 
 const FALLBACK_NAME = 'Církev jako kráva';
+const WEEKS_OPEN = 6;   // the next six weeks are open, the rest waits under „Další setkání“
 
 // ---------- dates ----------
 
@@ -31,7 +32,7 @@ function whenParts(event) {
 function whenLine(event) {
   const parts = whenParts(event);
   if (dayOf(event.start) !== dayOf(event.end || event.start)) return h('time', { datetime: event.start }, `${parts[0]} – ${parts[1]}`);
-  return h('time', { datetime: event.start }, parts[0], h('span', { class: 'pub-dot', 'aria-hidden': 'true' }, ' · '), parts[1]);
+  return h('time', { datetime: event.start }, parts[0], h('span', { class: 'sep', 'aria-hidden': 'true' }, SEP), parts[1]);
 }
 
 /** Monday of the week the day belongs to. */
@@ -62,11 +63,16 @@ function groupByWeek(events, now) {
 
 // ---------- event card ----------
 
-/** The photo from public.json (`images/<name>`, relative to the page) or the generated cover. A picture that does not load falls back to the cover. */
+/**
+ * The photo from public.json (`images/<name>`, relative to the page) or the generated cover – the same
+ * one for events with the same title, as in the signed-in calendar. A picture that does not load falls
+ * back to the cover.
+ */
 function coverOf(event) {
+  const options = { size: 'card', variantKey: coverKey(event) };
   const imageUrl = event.image && S.mode === 'live' ? `./${event.image}` : null;
-  const cover = eventCover(event, { size: 'card', imageUrl });
-  if (imageUrl) cover.querySelector('img')?.addEventListener('error', () => cover.replaceWith(eventCover(event, { size: 'card' })), { once: true });
+  const cover = eventCover(event, { ...options, imageUrl });
+  if (imageUrl) cover.querySelector('img')?.addEventListener('error', () => cover.replaceWith(eventCover(event, options)), { once: true });
   return cover;
 }
 
@@ -114,7 +120,7 @@ function eventCard(event) {
         h('p', { class: 'pub-when' },
           whenLine(event),
           event.cancelled ? h('span', { class: 'pub-badge' }, 'Zrušeno') : soon ? h('span', { class: 'pub-badge quiet' }, soon) : null),
-        places.length ? h('p', { class: 'pub-places' }, places.map((p) => h('span', {}, placeLine(p)))) : null,
+        places.length ? h('p', { class: 'pub-places' }, placeLine(places)) : null,
         moreText(event, places))));
 }
 
@@ -128,11 +134,20 @@ export function renderPublicProgram() {
 
   const now = today();
   const groups = groupByWeek(data.events || [], now);
+  const limit = addDays(weekStart(now), WEEKS_OPEN * 7);
+  let cut = groups.findIndex((g) => g.start >= limit);
+  if (cut === -1) cut = groups.length;
+  cut = Math.max(cut, 1);   // nothing in the next weeks: the first week with something stays open
+  const soon = groups.slice(0, cut);
+  const later = groups.slice(cut);
+  const week = (g) => section(g.label, { cls: 'pub-week' }, h('ul', { class: 'pub-grid' }, g.events.map(eventCard)));
+  const laterCount = later.reduce((n, g) => n + g.events.length, 0);
   return [
     header,
-    groups.length
-      ? groups.map((g) => section(g.label, { cls: 'pub-week' }, h('ul', { class: 'pub-grid' }, g.events.map(eventCard))))
-      : emptyState('Teď nic nechystáme. Mrkni sem později.'),
+    groups.length ? soon.map(week) : emptyState('Teď nic nechystáme. Mrkni sem později.'),
+    later.length ? h('details', { class: 'pub-later' },
+      h('summary', {}, h('span', { class: 'pub-later-title' }, 'Další setkání'), ' ', count(String(laterCount))),
+      later.map(week)) : null,
     footer(data),
   ];
 }
@@ -141,7 +156,7 @@ function footer(data) {
   const updated = data.generated && /^\d{4}-\d{2}-\d{2}$/.test(data.generated) ? `Aktualizováno ${longDay(data.generated).replace(/^\S+ /, '')}` : null;
   if (!data.address && !updated) return null;
   return h('footer', { class: 'pub-foot' },
-    data.address ? h('p', {}, h('span', {}, data.address), h('span', { class: 'pub-dot', 'aria-hidden': 'true' }, ' · '),
+    data.address ? h('p', {}, h('span', {}, data.address), h('span', { class: 'sep', 'aria-hidden': 'true' }, SEP),
       h('a', { class: 'place-map-link', href: mapUrl({ address: data.address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě')) : null,
     updated ? h('p', {}, updated) : null);
 }

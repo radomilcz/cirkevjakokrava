@@ -4,8 +4,8 @@
 // together, with leaders. The person card reuses memberDialog() and addToGroupDialog() from here.
 
 import {
-  h, btn, link, plus, plural, pageHeader, backLink, section, list, row, avatar, personName,
-  emptyState, toast, confirmDialog, simpleDialog, openDialog, closeDialog, formError, formErrorLine,
+  h, btn, link, plus, plural, pageHeader, backLink, section, list, row, avatar, personName, groupMark, andJoin,
+  emptyState, toast, confirmDialog, simpleDialog, closeDialog,
   textField, textArea, selectField, checkboxField, checkedValues, segment, choices, menuButton,
 } from './dom.js';
 import { S, change, navigate, newId, SKILL_LABELS, GROUP_KIND_LABELS } from './state.js';
@@ -38,25 +38,11 @@ const peopleCount = (n) => plural(n, 'člověk', 'lidé', 'lidí');
 
 // ---------- small shared pieces ----------
 
-/**
- * The leading mark of a group in a list: one or two initials in a rounded square, one of five
- * ink/ground mixes derived from the id (like avatar(), but square – a group, not a person).
- */
-export function groupMark(group, { size = 'm' } = {}) {
-  let hash = 0;
-  for (const ch of String(group?.id || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
-  const words = String(group?.name || '?').split(/\s+/).filter(Boolean);
-  const letters = (words.length > 1 ? [words[0], words[1]] : [words[0] || '?']).map((w) => [...w][0]).join('');
-  return h('span', { class: ['group-mark', `group-mark-${size}`, `group-mark-v${hash % 5}`], 'aria-hidden': 'true' },
-    letters.toLocaleUpperCase('cs'));
-}
-
 /** „vede Jana Nováková“, „vedou Jana Nováková a Petr Novák“, „zatím bez vedoucího“. */
 export function leadersText(groupId) {
   const names = leadersOf(S.data, groupId).map((m) => personName(personById(S.data, m.personId)));
   if (!names.length) return 'zatím bez vedoucího';
-  const joined = names.length > 1 ? `${names.slice(0, -1).join(', ')} a ${names[names.length - 1]}` : names[0];
-  return `${names.length > 1 ? 'vedou' : 'vede'} ${joined}`;
+  return `${names.length > 1 ? 'vedou' : 'vede'} ${andJoin(names)}`;
 }
 
 /** Compact skill marks of one member: „Zvuk: umí“, „Projekce: učí se“ (text chips, not buttons). */
@@ -138,30 +124,6 @@ function deleteRoles(roleIds) {
   }
 }
 
-/**
- * A form dialog like simpleDialog(), with its own label for the quiet action on the left
- * („Odebrat z týmu“ instead of „Smazat“). save(form) returns an error text or nothing.
- */
-function formDialog({ eyebrow, title, fields, save, remove, removeLabel = 'Smazat', saveLabel = 'Uložit', extra }) {
-  const form = h('form', { method: 'dialog', novalidate: true },
-    eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null,
-    h('h2', {}, title),
-    fields,
-    formErrorLine(),
-    h('div', { class: 'actions' },
-      remove ? btn(removeLabel, () => { closeDialog(); remove(); }, 'left plain') : null,
-      btn('Zrušit', closeDialog),
-      h('button', { type: 'submit', class: 'btn primary' }, saveLabel)));
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const error = save(form);
-    if (error) { formError(form, error); return; }
-    closeDialog();
-  });
-  openDialog([form, extra]);
-  return form;
-}
-
 // ---------- #tymy ----------
 
 export function renderGroups() {
@@ -178,10 +140,10 @@ export function renderGroups() {
     groups.length ? null : emptyState('Zatím tu není žádný tým ani skupinka.', btn(plus('Přidat tým'), add, 'primary')),
     GROUP_KINDS.map((kind) => {
       const items = active.filter((g) => g.kind === kind).sort(byName);
-      return items.length ? section(KIND_HEADINGS[kind], { cls: 'list-section', count: items.length }, groupList(items)) : null;
+      return items.length ? section(KIND_HEADINGS[kind], { count: items.length }, groupList(items)) : null;
     }),
-    other.length ? section('Ostatní', { cls: 'list-section', count: other.length }, groupList(other)) : null,
-    archived.length ? section('V archivu', { cls: 'list-section', count: archived.length }, groupList(archived, { quiet: true })) : null,
+    other.length ? section('Ostatní', { count: other.length }, groupList(other)) : null,
+    archived.length ? section('V archivu', { count: archived.length }, groupList(archived, { quiet: true })) : null,
   ];
 }
 
@@ -289,12 +251,11 @@ export function renderGroup(id) {
     .filter(Boolean).join(' · ');
   const header = pageHeader({
     title: group.name,
+    media: groupMark(group, { size: 'l' }),
     lead: [group.description ? h('span', { class: 'lead-text' }, group.description) : null,
       h('span', { class: 'lead-meta' }, kindLine.charAt(0).toLocaleUpperCase('cs') + kindLine.slice(1))],
     actions: btn('Upravit', () => groupDialog(group), 'primary'),
   });
-  header.classList.add('group-header');
-  header.prepend(groupMark(group, { size: 'l' }));
   return [
     backLink('Týmy a role', '#tymy'),
     header,
@@ -307,9 +268,9 @@ export function renderGroup(id) {
 
 function rolesSection(group, roles) {
   const add = () => roleDialog(group);
-  return section('Role', { cls: 'list-section', count: roles.length || null, actions: roles.length ? btn(plus('Přidat roli'), add, 'small') : null },
+  return section('Role', { count: roles.length || null, actions: roles.length ? btn(plus('Přidat roli'), add, 'small') : null },
     list(roles, (r) => roleRow(r), {
-      empty: emptyState('Tým zatím nemá žádnou roli. Přidej třeba Zvuk nebo Projekci.', btn(plus('Přidat roli'), add, 'primary')),
+      empty: emptyState('Tým zatím nemá žádnou roli. Přidej třeba Zvuk nebo Projekci.', btn(plus('Přidat roli'), add, 'small')),
     }));
 }
 
@@ -446,10 +407,10 @@ function deleteRole(role) {
 function membersSection(group, members, roles) {
   const words = kindWords(group);
   const add = () => addPeople(group);
-  return section(words.people, { cls: 'list-section', count: members.length || null, actions: members.length ? btn(plus(words.add), add, 'small') : null },
+  return section(words.people, { count: members.length || null, actions: members.length ? btn(plus(words.add), add, 'small') : null },
     list(members, (m) => memberRow(group, m, roles), {
       cls: 'member-rows',
-      empty: emptyState(group.kind === 'team' ? 'V týmu zatím nikdo není.' : 'Zatím tu nikdo není.', btn(plus(words.add), add, 'primary')),
+      empty: emptyState(group.kind === 'team' ? 'V týmu zatím nikdo není.' : 'Zatím tu nikdo není.', btn(plus(words.add), add, 'small')),
     }));
 }
 
@@ -484,10 +445,11 @@ export function memberDialog(group, personId) {
   const words = kindWords(fresh);
   const roles = fresh.kind === 'team' ? rolesOf(S.data, fresh.id) : [];
   const member = memberRecord(S.data, fresh.id, personId);
-  formDialog({
+  simpleDialog({
     eyebrow: fresh.name,
     title: personName(person),
-    fields: h('div', { class: 'member-form' },
+    wide: false,
+    fields: h('div', { class: 'member-form full' },
       roles.length ? h('div', { class: 'skill-rows', role: 'group', 'aria-label': 'Co umí' },
         roles.map((r) => h('div', { class: 'skill-row' },
           h('span', { class: 'skill-role' }, r.name),
@@ -497,7 +459,7 @@ export function memberDialog(group, personId) {
       person ? h('p', { class: 'member-card-link' }, link('Otevřít kartu', `#osoba/${person.id}`, '', { onclick: () => closeDialog() })) : null),
     remove: () => removeFromGroup(fresh, personId),
     removeLabel: words.remove,
-    save: (form) => {
+    save: (f, form) => {
       if (!groupById(S.data, fresh.id)) return 'Mezitím ho někdo smazal.';
       addMember(S.data, fresh.id, personId);
       for (const r of roles) {
@@ -534,12 +496,13 @@ export function addToGroupDialog(person) {
   const select = selectField('group', 'Kam', offered.map((g) => [g.id, `${g.name} · ${GROUP_KIND_LABELS[g.kind] || ''}`]), offered[0].id, { full: true });
   select.querySelector('select').addEventListener('change', (e) => paintRoles(e.target.value));
   paintRoles(offered[0].id);
-  formDialog({
+  simpleDialog({
     eyebrow: personName(person),
     title: 'Přidat do týmu',
     saveLabel: 'Přidat',
-    fields: h('div', { class: 'member-form' }, select, rolesHolder, leaderHolder),
-    save: (form) => {
+    wide: false,
+    fields: h('div', { class: 'member-form full' }, select, rolesHolder, leaderHolder),
+    save: (f, form) => {
       const group = groupById(S.data, form.elements.group.value);
       if (!group) return 'Vyber, kam ho přidat.';
       addMember(S.data, group.id, person.id, { since: today() });

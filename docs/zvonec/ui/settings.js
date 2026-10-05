@@ -6,7 +6,7 @@ import {
   h, btn, plus, plural, pageHeader, section, actions, note, emptyState, list, row,
   toast, download, confirmDialog, simpleDialog, formError, formErrorLine,
   textField, textArea, selectField, choices, checkboxField, checkedValues, fieldGroup, filterLinks,
-  removeButton, eventCover, mapUrl,
+  removeButton, eventCover, coverKey, mapUrl,
 } from './dom.js';
 import {
   S, can, change, newId, replaceAll, actAs, logout, EVENT_KIND_LABELS, ACCESS_LABELS,
@@ -162,9 +162,10 @@ async function dropImage(name, exceptTypeId) {
 /** The cover of a template: its picture (when it has one) or the generated brand cover. */
 function typeCover(type, size = 'thumb') {
   const event = { id: type.id, title: type.name };
-  const wrap = h('span', { class: 'type-cover' }, eventCover(event, { size }));
+  const options = { size, variantKey: coverKey(event) };   // the same cover as the events made from it
+  const wrap = h('span', { class: 'type-cover' }, eventCover(event, options));
   if (type.image && S.store) {
-    loadImageUrl(S.store, type.image).then((url) => { if (url) wrap.replaceChildren(eventCover(event, { size, imageUrl: url })); }, () => {});
+    loadImageUrl(S.store, type.image).then((url) => { if (url) wrap.replaceChildren(eventCover(event, { ...options, imageUrl: url })); }, () => {});
   }
   return wrap;
 }
@@ -183,11 +184,12 @@ function imageField(type, state) {
   const titleNow = () => node.closest('form')?.elements.name?.value.trim() || type?.name || '';
   const drawPreview = async () => {
     const event = { id: type?.id || 'new', title: titleNow() };
-    if (state.pending) { preview.replaceChildren(eventCover(event, { size: 'card', imageUrl: state.pending.dataUrl })); return; }
-    preview.replaceChildren(eventCover(event, { size: 'card' }));
+    const options = { size: 'card', variantKey: coverKey(event) };
+    if (state.pending) { preview.replaceChildren(eventCover(event, { ...options, imageUrl: state.pending.dataUrl })); return; }
+    preview.replaceChildren(eventCover(event, options));
     if (type?.image && !state.removed && S.store) {
       const url = await loadImageUrl(S.store, type.image).catch(() => null);
-      if (url && type.image && !state.removed && !state.pending) preview.replaceChildren(eventCover(event, { size: 'card', imageUrl: url }));
+      if (url && type.image && !state.removed && !state.pending) preview.replaceChildren(eventCover(event, { ...options, imageUrl: url }));
     }
   };
   const drawButtons = () => {
@@ -300,7 +302,7 @@ function eventTypeDialog(type) {
     fields: [
       textField('name', 'Název setkání', type?.name, { full: true, attr: { autofocus: true, placeholder: 'Setkání na pastvě' } }),
       selectField('kind', 'Účel', EVENT_KINDS.map((k) => [k, EVENT_KIND_LABELS[k]]), type?.kind || 'service'),
-      selectField('groupId', 'Tým', [['', 'Celý sbor'], ...groups.map((g) => [g.id, g.name])], type?.groupId || ''),
+      selectField('groupId', 'Tým', [['', 'celý sbor'], ...groups.map((g) => [g.id, g.name])], type?.groupId || ''),
       textField('startTime', 'Začátek', type?.startTime || '10:00', { type: 'time' }),
       minutesField,
       S.data.places.length ? fieldGroup('Kde', choices('placeIds', S.data.places.map((p) => [p.id, p.name]), type?.placeIds || [])) : null,
@@ -506,7 +508,7 @@ function backupPage() {
     try { data = readBackup(JSON.parse(await chosen.text())); } catch { data = null; }
     if (data === 'old') { toast('Tohle je záloha starého Zvonce.', 'Tu nahrát neumím. Pošli ji správci.', { duration: 7000 }); return; }
     if (!data) { toast('Tohle není záloha Zvonce.', 'Soubor se nedá přečíst.'); return; }
-    const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'skupina', 'skupiny', 'skupin'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
+    const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'tým', 'týmy', 'týmů'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
     confirmDialog('Nahradit všechna data souborem?',
       `V souboru je ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše. ${live ? 'Na GitHubu zůstane stará verze v historii.' : ''}`,
       () => {

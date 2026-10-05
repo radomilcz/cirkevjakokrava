@@ -1,12 +1,10 @@
 // #formaty, #formaty/<id> – the Formáty module: the building blocks of the osnova, each with Proč a Jak.
 // List → detail (a page of its own, readable text) → edit dialog. Leaders add, edit, delete and publish;
 // members read. The editors shared with the settings (needs per role, „Zveřejnit na webu“) live here too.
-//
-// app.js passes no part of the route to renderFormats(), so the detail id is read from the hash here;
-// it works the same once app.js hands it over (renderFormats(id)).
+// app.js hands over the id of #formaty/<id> (renderFormats(id)).
 
 import {
-  h, btn, plus, plural, pageHeader, backLink, section, emptyState, note, meta, actions, list, row, toast, removeButton,
+  h, btn, link, plus, plural, pageHeader, backLink, section, emptyState, note, meta, actions, list, row, toast, removeButton,
   openDialog, closeDialog, confirmDialog, simpleDialog, textField, textArea, checkboxField,
 } from './dom.js';
 import { S, can, change, newId, navigate } from './state.js';
@@ -67,11 +65,10 @@ export function needsEditor(needs, { label = 'Kolik lidí je potřeba', empty = 
 
 export const cleanNeeds = (needs) => needs.filter((n) => n.count > 0).map(({ roleId, count }) => ({ roleId, count }));
 
-/** A checkbox with a title and a hint under it: the „Zveřejnit na webu“ switch of formats and templates. */
+/** A checkbox with a title and a hint under it in a quiet box: the „Zveřejnit na webu“ switch of formats, templates and events. */
 export function publishField(name, label, hint, checked) {
-  const field = checkboxField(name, label, !!checked);
+  const field = checkboxField(name, label, !!checked, 'yes', { hint });
   field.classList.add('publish-field');
-  field.querySelector('.caption').append(h('small', {}, hint));
   return field;
 }
 
@@ -128,7 +125,7 @@ const hashId = () => {
 };
 
 /** `id` = format id of #formaty/<id>; without it the list. */
-export function renderFormats(id = hashId()) {
+export function renderFormats(id = '') {
   return id ? renderFormat(id) : renderList();
 }
 
@@ -157,8 +154,7 @@ function renderList() {
 function renderFormat(id) {
   const format = formatById(S.data, id);
   if (!format) {
-    return [backLink('Formáty', '#formaty'), pageHeader({ title: 'Formát nenalezen' }),
-      emptyState('Tenhle formát už neexistuje.', btn('Zpátky na formáty', () => navigate('#formaty'), 'primary'))];
+    return [backLink('Formáty', '#formaty'), emptyState('Tenhle formát tu není. Možná ho někdo smazal.', link('Na Formáty', '#formaty', 'btn'))];
   }
   const leader = can('leader');
   const role = roleById(S.data, format.leadRoleId);
@@ -182,7 +178,7 @@ function renderFormat(id) {
     text('Proč to děláme', format.why),
     text('Jak to probíhá', format.how),
     format.why || format.how ? null : emptyState(leader ? 'Zatím tu chybí, proč to děláme a jak to probíhá.' : 'Popis zatím chybí.',
-      leader ? btn('Doplnit', () => formatDialog(format), 'primary') : null));
+      leader ? btn('Doplnit', () => formatDialog(format), 'small') : null));
 }
 
 /** The Proč / Jak dialog of a format – the event and program screens open it from a program item. */

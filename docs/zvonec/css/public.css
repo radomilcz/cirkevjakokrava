@@ -28,7 +28,6 @@
 .pub-when{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2)}
 .pub-places{display:flex;flex-direction:column;gap:2px;font-size:var(--t4);color:var(--muted)}
 .pub-places .place-name{color:var(--ink)}
-.pub-dot{color:var(--muted);white-space:pre}
 
 /* Zrušeno: a filled pill; the whole card steps back and the title is struck */
 .pub-badge{
@@ -50,6 +49,20 @@
 .pub-more .text-btn{min-height:44px;padding-right:var(--s4);margin-top:calc(-1*var(--s1))}
 .pub-maps{display:flex;flex-direction:column;gap:var(--s3);margin-top:var(--s2)}
 .pub-maps .place-map{margin:0;max-width:none}
+
+/* „Další setkání“: the weeks after the first six, folded */
+.pub-later{margin-top:clamp(32px,5vw,56px);max-width:var(--w-list)}
+.pub-later>summary{
+  display:flex;align-items:center;gap:var(--s3);width:fit-content;min-height:44px;padding:var(--s2) var(--s4);cursor:pointer;list-style:none;
+  border:1px solid var(--outline);border-radius:999px;transition:background .15s;
+}
+.pub-later>summary::-webkit-details-marker{display:none}
+.pub-later>summary:hover{background:var(--hover)}
+.pub-later>summary::after{content:"";width:.45em;height:.45em;margin:-.25em .1em 0 .2em;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg)}
+.pub-later[open]>summary::after{margin-top:.2em;transform:rotate(-135deg)}
+.pub-later-title{font-family:var(--narrow);font-weight:900;font-size:var(--t2);line-height:1.1;padding-top:.1em}
+.pub-later>summary .n{color:var(--muted);font-size:var(--t4)}
+@media (min-width:1100px){.pub-later{max-width:calc(var(--w-list) + 9.5rem + var(--s5))}}
 
 /* address and update line at the end of the page */
 .pub-foot{

@@ -24,10 +24,19 @@ function stepButton(input, direction) {
   return button;
 }
 
+let counter = 0;
+
 export function enhance(input) {
   if (input.dataset.stepper || input.closest('.stepper')) return;
   input.dataset.stepper = '1';
   if (!input.getAttribute('step') && /minutes/i.test(input.name)) input.step = '5';   // durations go by five minutes
+  // a <label> around the field would pass a click on its text to the first button inside it (−):
+  // point the label at the field itself
+  const label = input.closest('label');
+  if (label && !label.htmlFor) {
+    if (!input.id) input.id = `stepper-${++counter}`;
+    label.htmlFor = input.id;
+  }
   const wrap = document.createElement('span');
   wrap.className = 'stepper';
   input.replaceWith(wrap);

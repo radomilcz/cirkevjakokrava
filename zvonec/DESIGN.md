@@ -105,7 +105,8 @@ someone's roles can also be reached from the person's detail, which links to the
 
 ## 5. Components (ui/dom.js and friends)
 
-- `pageHeader({ title, lead?, actions? })` – no eyebrow parameter.
+- `pageHeader({ title, lead?, actions?, media? })` – no eyebrow parameter; `media` = the large avatar of a
+  person or the mark of a team in front of the title.
 - `list(items, row)` + `row({ lead, title, meta, trail, href|onclick })`.
 - `avatar(person, size)` – initials circle (colour derived from the palette, not random hues).
 - `personName(person, { full = true })` – full name; `shortName` only for the roster table.
@@ -113,8 +114,12 @@ someone's roles can also be reached from the person's detail, which links to the
   word; answer buttons „Potvrdit“ / „Nemůžu“ when it's mine; leader actions in a small menu.
 - `statusIcon(status)` – the three symbols from §1.5.
 - `emptyState(text, action?)`, `section(title, actions?)`, dialogs ≤ 560px.
-- `eventCover(event, { size })` – the picture or the generated brand cover (§4b).
-- `placeLine(place)` – name, address, „Otevřít v mapě“; `placeMap(place)` – OSM iframe when coordinates exist.
+- `eventCover(event, { size, title?, variantKey? })` – the picture or the generated brand cover (§4b). Events
+  with the same `variantKey` (`coverKey(event)` = the title: one template, one series) get the same
+  composition and tone; `title: false` on the event page, which shows title and date right under it.
+- `placeLine(place | places)` – name, address, „Otevřít v mapě“; places at one address share a line
+  („Sál a Malá místnost · Sokolovská 12 · Otevřít v mapě“). `placeMap(place)` – OSM iframe when coordinates exist.
+- Meta lines join their parts with „ · “ (`metaJoin`); the dot stays at the end of a wrapped line.
 
 ## 6. Done means
 

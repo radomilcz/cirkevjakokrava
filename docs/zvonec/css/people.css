@@ -30,7 +30,6 @@
 .list-foot{display:flex;flex-wrap:wrap;align-items:baseline;max-width:var(--w-list);margin:var(--s3) 0 0;padding:0 var(--s3);font-size:var(--t4);color:var(--muted)}
 .list-foot .text-btn{color:var(--ink)}
 .list-empty{max-width:var(--w-list);margin:0;padding:var(--s4) var(--s3);border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted)}
-.sep{color:var(--muted);white-space:pre}
 
 /* teams in the trail of a person row: two names and +N (one name and +N on a phone) */
 .team-trail{display:inline-flex;align-items:baseline;flex-wrap:nowrap;gap:0;max-width:24em;overflow:hidden}
@@ -45,13 +44,6 @@
 }
 
 /* ---------- person card ---------- */
-.person-header,.group-header{align-items:center;flex-wrap:wrap}
-.person-header .page-header-text,.group-header .page-header-text{flex:1 1 14em}
-.person-header>.avatar,.group-header>.group-mark{align-self:center}
-@media (max-width:620px){
-  .person-header .avatar-l,.group-header .group-mark-l{width:52px;height:52px;font-size:1.15rem}
-  .person-header .page-header-actions,.group-header .page-header-actions{flex-basis:100%}
-}
 .person-notice{max-width:var(--w-list);margin:calc(-1*var(--s3)) 0 var(--s6)}
 
 /* two columns from 980px: teams, duties and warnings in the wide one; contact, household,
@@ -70,8 +62,6 @@
 }
 .person-grid .facts{row-gap:var(--s2);grid-template-columns:minmax(0,9.5em) minmax(0,1fr)}
 @media (max-width:420px){.person-grid .facts{grid-template-columns:minmax(0,1fr)}}
-/* sections that hold one list stay as wide as the list */
-.section.list-section{max-width:var(--w-list)}
 .person-grid .section .note{margin:0}
 .household-line{margin:0 0 var(--s3)}
 .household-name{color:var(--ink)}
@@ -83,20 +73,6 @@
 .reason-error::before{background:var(--ink)}
 .reason-warning::before{box-shadow:inset 0 0 0 1.5px var(--ink)}
 .reason-error,.reason-warning{color:var(--ink)}
-
-/* ---------- groups: a mark instead of an avatar (square = a group, round = a person) ---------- */
-.group-mark{
-  display:inline-grid;place-items:center;flex:none;padding-top:.14em;
-  font-family:var(--narrow);font-weight:900;line-height:1;letter-spacing:.02em;user-select:none;
-}
-.group-mark-m{width:36px;height:36px;border-radius:10px;font-size:.88rem}
-.group-mark-l{width:64px;height:64px;border-radius:18px;font-size:1.45rem}
-.group-mark-v0{background:rgba(var(--ink-rgb),.1)}
-.group-mark-v1{box-shadow:inset 0 0 0 1.5px var(--ink)}
-.group-mark-v2{background:var(--ink);color:var(--ground)}
-.group-mark-v3{background:rgba(var(--ink-rgb),.18)}
-.group-mark-v4{background:var(--ink);color:var(--ground);box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 3.5px var(--ground)}
-.item.tone-quiet .group-mark{opacity:.55}
 
 /* team header: description, then kind and who leads in a smaller line */
 .lead .lead-text{display:block}

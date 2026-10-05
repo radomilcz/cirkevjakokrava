@@ -82,7 +82,7 @@
 /* palettes with less luminance contrast need a stronger muted text */
 :root[data-palette="pink-clay"],:root[data-palette="cream-blue"]{--muted:rgba(var(--ink-rgb),.88)}   /* 5.2 and 5.1 : 1 */
 /* on a solid "error" fill the colours are inverted – muted text flips with them */
-.error-fill,.chip.error,.slot.error,td.error,.toast{--muted:rgba(var(--ground-rgb),.82)}
+.error-fill,.toast{--muted:rgba(var(--ground-rgb),.82)}
 
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -214,6 +214,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .page-header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s4) var(--s5);margin:0 0 var(--s6)}
 .page-header-text{flex:1 1 22em;min-width:0}
 .page-header-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+/* with media (a person's avatar, a team's mark) in front of the title */
+.page-header.with-media{align-items:center}
+.page-header.with-media .page-header-text{flex-basis:14em}
+.page-header-media{flex:none;display:flex}
+@media (max-width:620px){
+  .page-header-media .avatar-l,.page-header-media .group-mark-l{width:52px;height:52px;font-size:1.15rem}
+  .page-header.with-media .page-header-actions{flex-basis:100%}
+}
 /* a small muted line above a dialog title (which event, which team) and in print headers */
 .eyebrow{font-size:var(--t4);line-height:1.3;color:var(--muted);margin:0}
 /* level 1 */
@@ -228,13 +236,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .label{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted)}
 .visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .back{display:inline-flex;align-items:center;gap:.5em;text-decoration:none;color:var(--muted);margin:0 0 var(--s2);min-height:44px}
-.back:hover{opacity:1}
-.back::before,.arrow-back::before{content:"→";display:inline-block;transform:scaleX(-1)}   /* ← is not in the font subset */
+.back::before{content:"→";display:inline-block;transform:scaleX(-1)}   /* ← is not in the font subset */
 .rule{height:1px;background:var(--line);border:0;margin:var(--s5) 0}
 .page-header+.rule{margin-top:calc(-1*var(--s3))}
 
 .section{margin:clamp(32px,4vw,48px) 0 0}
 .page-header+.section,.rule+.section{margin-top:0}
+/* a section that holds a list (or its empty state) is as wide as the list: its actions sit at the list's edge */
+.section:has(>.items:not(.wide)),.section:has(>.empty-state){max-width:var(--w-list)}
 /* section head: h2 (+ count) left, quiet actions right */
 .section-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s4);margin:0 0 var(--s4)}
 .section-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
@@ -246,7 +255,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 .dialog h2{margin:0 0 .7em}
 .section-head>h2 .n,.dialog h2 .n{font-family:var(--body);font-weight:400;font-size:var(--t4);color:var(--muted);letter-spacing:0}
-.section-head>h2 .btn{font-weight:400;font-family:var(--body);font-size:var(--t4);align-self:center}
 .dialog h2+.sub{margin:-.35em 0 1em}
 .spaced{margin-top:clamp(22px,3vw,34px)}
 .section>h3,.section h3.label,.form-grid h3{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted);margin:1.6em 0 .6em}
@@ -300,167 +308,57 @@ button,input,select,textarea{font:inherit;color:inherit}
 .bullseye::before{content:"";width:39%;height:39%;border-radius:50%;background:var(--dot,var(--ink))}
 
 /* ---------- tags ---------- */
-/* A tag that is only information is text (level 4) – separated by a dot, no outline:
-   outlines are for things you can click (button.tag, a.tag). */
-.tags{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .45em}
+/* A tag that is only information is text (level 4, no outline); outlines are for things you can
+   click (button.tag: „+ Kázání“ in the osnova of a template). */
 .tag{display:inline-flex;align-items:center;gap:.4em;font-size:var(--t4);line-height:1.3;white-space:nowrap;color:var(--muted)}
-span.tag:has(+ span.tag)::after{content:"·";margin-left:.05em;color:var(--muted);font-style:normal}
 .tag.filled{color:var(--ink)}
-.tag.learning{font-style:italic}
-.tag.quiet{color:var(--muted)}
-/* severity in front of a word: filled dot = error, ring = warning */
-.tag.error::before,.tag.warning::before{content:"";width:.5em;height:.5em;border-radius:50%;flex:none}
-.tag.error::before{background:currentColor}
-.tag.warning::before{box-shadow:inset 0 0 0 1.5px currentColor}
-.tag.error,.tag.warning{color:var(--ink)}
-button.tag,a.tag{
-  font-size:.88em;line-height:1.1;color:inherit;
+button.tag{
+  font-size:.88em;line-height:1.1;color:inherit;background:none;cursor:pointer;
   padding:.45em .85em .33em;border:1px solid var(--outline);border-radius:999px;
 }
-button.tag{background:none;cursor:pointer}
-a.tag.filled{background:var(--ink);color:var(--ground);border-color:var(--ink)}
-a.tag.quiet{color:var(--muted)}
 button.tag:hover{background:var(--hover)}
-button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 
 /* ---------- states ---------- */
-.error-fill,.chip.error,.slot.error,td.error{background:var(--ink);color:var(--ground);border-color:var(--ink)}
-.chip.warning,.slot.warning,td.warning{border:1.5px dashed var(--ink)}
+/* error = solid fill (the line of a form error) */
+.error-fill{background:var(--ink);color:var(--ground);border-color:var(--ink)}
 
-/* ---------- calendar ---------- */
-.month-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:clamp(18px,2.6vw,28px) 0 clamp(16px,2.4vw,26px)}
-.month-nav .month-title{
-  font-family:var(--narrow);font-weight:900;text-transform:uppercase;font-size:clamp(1.7rem,3.6vw,2.6rem);
-  line-height:1;margin:0 .3em;min-width:7.5em;text-align:center;padding-top:.12em;
-}
-.month-nav .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-.legend{display:flex;flex-wrap:wrap;gap:.6em 1.4em;font-size:.85em;color:var(--muted);margin:0 0 1em;padding:0;list-style:none}
-.legend li{display:flex;align-items:center;gap:.5em}
-.legend .swatch{display:inline-block;width:1.6em;height:.95em;border-radius:999px;border:1px solid var(--outline)}
-
-.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
-.calendar .col-head{
-  padding:.5em .6em .4em;font-size:.82em;color:var(--muted);border-right:1px solid var(--line);border-bottom:1px solid var(--line);
-}
-.calendar .day{
-  position:relative;min-height:clamp(96px,10vw,132px);padding:.45em .4em .5em;display:flex;flex-direction:column;gap:4px;
-  border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;
-  transition:background .2s;
-}
-.calendar .day:hover{background:rgba(var(--ink-rgb),.05)}
-.calendar .day.sunday{background:var(--fill)}
-.calendar .day.other-month{opacity:.35}
-.calendar .day-number{
-  display:flex;align-items:center;justify-content:space-between;
-  font-family:var(--narrow);font-weight:900;font-size:1.15em;line-height:1;padding:.12em .2em 0;
-}
-.calendar .day.today .day-number span{
-  display:inline-grid;place-items:center;width:1.75em;height:1.75em;border-radius:50%;margin:-.3em 0 -.2em -.3em;
-  background:var(--ink);color:var(--ground);padding-top:.12em;
-}
-.chip{
-  display:block;width:100%;text-align:left;font-size:.8em;line-height:1.2;text-decoration:none;
-  padding:.38em .55em .3em;border:1px solid var(--outline);border-radius:10px;
-  background:rgba(var(--ink-rgb),.06);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.chip:hover{border-color:rgba(var(--ink-rgb),.85)}
-.chip .time{color:var(--muted);margin-right:.35em}
-.calendar .chip{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.chip.mine{box-shadow:inset 0 0 0 2px var(--ink)}
-.chip.cancelled{text-decoration:line-through;opacity:.55}
-.chip.type-service{font-weight:400}
-.more{font-size:.78em;color:var(--muted);padding-left:.4em}
-
-.agenda{display:none;list-style:none;margin:0;padding:0}
-.agenda>li{border-top:1px solid var(--line);padding:.8em 0}
-.agenda>li:last-child{border-bottom:1px solid var(--line)}
-.agenda .day-name{font-size:var(--t4);color:var(--muted);margin:0 0 .5em}
-.agenda .day-name.today{color:var(--ink)}
-.agenda .day-name.today::after{content:" · dnes"}
-.agenda .chip{font-size:.95em;white-space:normal;padding:.6em .8em .5em;border-radius:14px}
-.agenda .chip+.chip{margin-top:6px}
-@media (max-width:760px){
-  .calendar{display:none}
-  .agenda{display:block}
-  .month-nav .month-title{min-width:0;margin:0 .2em}
-}
-
-/* ---------- card / panel ---------- */
+/* ---------- small blocks ---------- */
+/* two columns from 980px (the sign-in page) */
 .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(26px,4vw,48px)}
 @media (min-width:980px){.grid{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}}
+/* meta(): inline facts under a dialog title („20 min · vede role Kazatel“) */
 .meta{display:flex;flex-wrap:wrap;gap:.3em 1.4em;margin:clamp(10px,1.4vw,16px) 0 0;font-size:var(--t3)}
 .meta>span{display:inline-flex;gap:.5em;align-items:baseline}
 .meta .what{color:var(--muted)}
+/* the „ · “ between parts of a line (metaJoin): muted, the dot stays at the end of a wrapped line */
+.sep{color:var(--muted)}
+/* facts of a person, a format, a team: label left, value right */
+.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.45em 1.2em;margin:0}
+.facts dt{color:var(--muted);font-size:var(--t4);padding-top:.12em}
+.facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.facts a{text-underline-offset:.2em}
+@media (max-width:420px){.facts{grid-template-columns:minmax(0,1fr);gap:.1em 0}.facts dd{margin-bottom:.5em}}
+/* a quiet box: something to finish (card created quickly), my answer on an event, demo „looking as“ */
+.notice{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6em 1.2em;padding:.8em 1.1em .7em;background:var(--fill);border-radius:14px}
+.notice p{margin:0;max-width:60ch}
+.demo-bar{margin:0 0 clamp(18px,2.6vw,26px)}
+.quick-add-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+/* Proč / Jak of a format in a dialog */
+.why-how{display:flex;flex-direction:column;gap:.85em}
+.why-how p{margin:0}
+.why-how .subhead{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted);margin:0 0 .35em}
+.why-how .text{white-space:pre-line;line-height:1.5;max-width:65ch}
+.why-how a{opacity:.8}
+.dialog .why-how{margin:1.2em 0 .2em}
+/* numbered steps (setting up a live Zvonec) */
+.steps{counter-reset:step;list-style:none;margin:0;padding:0}
+.steps li{counter-increment:step;display:flex;gap:.8em;padding:.55em 0;border-top:1px solid var(--line)}
+.steps li::before{content:counter(step);font-family:var(--narrow);font-weight:900;min-width:1.2em}
+.steps code,.note code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;padding:.08em .35em;border-radius:6px;background:var(--fill)}
+.print-header,.print-only{display:none}
 
-/* ---------- duties in an event ---------- */
-.plan{list-style:none;margin:0;padding:0}
-.plan>li{
-  display:grid;grid-template-columns:minmax(7em,11em) minmax(0,1fr) auto;gap:.5em 1em;align-items:start;
-  padding:.8em 0;border-top:1px solid var(--line);
-}
-.plan>li:last-child{border-bottom:1px solid var(--line)}
-.plan .duty-name{padding-top:.5em}
-.plan .duty-name small{display:block;color:var(--muted);font-size:var(--t4);margin-top:.15em}
-.plan .team-heading{grid-column:1/-1;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted);padding:1.1em 0 0;border:0}
-.slots{display:flex;flex-wrap:wrap;gap:6px}
-.slot{
-  display:inline-flex;align-items:center;gap:.35em;max-width:100%;
-  padding:.2em .2em .2em .9em;border:1px solid var(--outline);border-radius:999px;
-}
-.slot .who{background:none;border:0;padding:.42em 0 .3em;cursor:pointer;text-align:left}
-.slot .who:hover{text-decoration:underline;text-underline-offset:.2em}
-.slot.empty{border-style:dashed;padding:.2em .9em;cursor:pointer;opacity:.85;background:none}
-.slot.empty:hover{opacity:1;background:var(--hover)}
-.slot.empty.add-more{padding:.25em .8em;font-size:var(--t4);color:var(--muted);opacity:1}
-.slot.empty.add-more:hover{color:var(--ink)}
-.dialog .sub{font-size:var(--t4);color:var(--muted)}
-.slot.proposed .who{font-style:italic}
-.slot.declined{opacity:.5}
-.slot.declined .who{text-decoration:line-through}
-.status-choice{display:inline-flex;gap:6px;flex-wrap:wrap}
-.slot .status{
-  font-size:var(--t4);line-height:1;padding:.5em .15em .38em;border:0;color:var(--muted);
-  background:none;cursor:pointer;white-space:nowrap;
-}
-.slot button.status{text-decoration:underline dotted;text-underline-offset:.25em}
-.slot button.status:hover{color:var(--ink);text-decoration-style:solid}
-.slot.error .btn-x,.slot.error .status{color:var(--ground)}
-.plan .btn-x{margin-top:.15em}
-@media (max-width:620px){
-  .plan>li{grid-template-columns:minmax(0,1fr) auto}
-  .plan .duty-name{grid-column:1/2;padding-top:0}
-  .plan .slots{grid-column:1/-1;order:3}
-}
-
-/* ---------- conflicts ---------- */
-/* a list of problems: a dot (filled = chyba, ring = pozor, faint = info), one sentence, muted meta */
-.conflict-list{list-style:none;margin:0;padding:0}
-.conflict{display:grid;grid-template-columns:.6em minmax(0,1fr) auto;gap:.15em .8em;align-items:baseline;padding:.7em 0;border-top:1px solid var(--line)}
-.conflict:last-child{border-bottom:1px solid var(--line)}
-.conflict .marker{width:.6em;height:.6em;border-radius:50%;align-self:start;margin-top:.5em}
-.conflict.error .marker{background:var(--ink)}
-.conflict.warning .marker{box-shadow:inset 0 0 0 1.5px var(--ink)}
-.conflict.info .marker{background:var(--outline)}
-.conflict p{margin:0}
-.conflict .conflict-meta{grid-column:2;font-size:var(--t4);color:var(--muted)}
-.conflict .conflict-meta a{color:inherit;text-underline-offset:.2em}
-.conflict .conflict-meta a:hover{color:var(--ink)}
-.conflict .text-btn{grid-column:3;grid-row:1;font-size:var(--t4);color:var(--muted);white-space:nowrap}
-.conflict .text-btn:hover{color:var(--ink)}
-.conflict.info .conflict-text{color:var(--muted)}
-.dot{display:inline-block;width:.55em;height:.55em;border-radius:50%;margin-right:.45em;vertical-align:.05em}
-.dot.error{background:currentColor}
-.dot.warning{box-shadow:inset 0 0 0 1.5px currentColor}
-.dot.info{background:currentColor;opacity:.4}
-.all-ok{display:flex;align-items:center;gap:.8em;padding:.9em 0;color:var(--muted)}
-@media (max-width:520px){
-  .conflict{grid-template-columns:.6em minmax(0,1fr)}
-  .conflict .conflict-meta{grid-row:2}
-  .conflict .text-btn{grid-column:2;grid-row:3;justify-self:start;margin-top:.15em}
-}
-
+/* ---------- filter pills ---------- */
 .filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 clamp(18px,2.6vw,26px)}
-.filter .group{display:flex;flex-wrap:wrap;gap:6px;margin-right:1.2em}
 .filter button{
   font-size:.92em;cursor:pointer;background:none;
   padding:.55em .95em .42em;border:1px solid var(--outline);border-radius:999px;transition:background .2s;
@@ -475,39 +373,11 @@ button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 .filter a:hover{background:var(--hover)}
 .filter a[aria-current="page"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
 
-/* ---------- lists (people, duties) ---------- */
-.list{list-style:none;margin:0;padding:0}
-.list>li{border-top:1px solid var(--line)}
-.list>li:last-child{border-bottom:1px solid var(--line)}
-.list .row{
-  display:grid;grid-template-columns:minmax(10em,1.1fr) minmax(0,2fr) auto;gap:.4em 1.2em;align-items:center;
-  padding:.85em clamp(.4em,1vw,.9em);text-decoration:none;transition:background .2s;
-}
-.list a.row:hover,.list button.row:hover{background:var(--fill)}
-.list button.row{width:100%;text-align:left;background:none;border:0;cursor:pointer}
-.list .name{font-size:var(--t3)}
-.list .name small{display:block;font-size:var(--t4);color:var(--muted);margin-top:.15em}
-.list .right{text-align:right;color:var(--muted);font-size:var(--t4);white-space:nowrap}
-@media (max-width:700px){
-  .list .row{grid-template-columns:minmax(0,1fr) auto}
-  .list .row .tags{grid-column:1/-1;order:3}
-}
-.search{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:clamp(18px,2.6vw,28px) 0 clamp(14px,2vw,20px)}
-.search input{flex:1 1 16em;max-width:28em}
 /* the native clear button of a search field is blue – draw it in the ink colour */
 input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;width:.9em;height:.9em;margin-left:.4em;cursor:pointer;background:currentColor;opacity:.7;
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1 1l8 8M9 1l-8 8' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;
   mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1 1l8 8M9 1l-8 8' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
 input[type=search]::-webkit-search-cancel-button:hover{opacity:1}
-
-.overview{list-style:none;margin:0;padding:0}
-.overview li{display:flex;gap:.6em;align-items:baseline;padding:.6em 0;border-top:1px solid var(--line)}
-.overview li:last-child{border-bottom:1px solid var(--line)}
-.overview li::before{content:"→";flex:none;opacity:.55}
-.overview li.plain::before{content:none}
-.overview .grow{flex:1;min-width:0}
-.overview a{text-decoration:none}
-.overview a:hover{text-decoration:underline;text-underline-offset:.2em}
 
 /* ---------- forms ---------- */
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
@@ -564,6 +434,7 @@ select option{background:var(--ground);color:var(--ink)}
 .check-row:hover .box{background:var(--hover)}
 .check-row:hover input:checked+.box{background:var(--ink)}
 .check-row .caption{font-size:.95em;max-width:65ch}
+.check-row .caption small{display:block;margin-top:2px;color:var(--muted);font-size:var(--t4);line-height:1.4}
 
 /* segment control: one of a few options side by side, no radio dots */
 .segment{display:inline-flex;border:1px solid var(--outline);border-radius:999px;overflow:hidden;flex:none}
@@ -575,12 +446,9 @@ select option{background:var(--ground);color:var(--ink)}
 .segment input:checked+span{background:var(--ink);color:var(--ground)}
 .segment input:focus-visible+span{outline:2px solid var(--ink);outline-offset:-3px}
 
-/* three skill states: no / learning / trained */
-.skills{list-style:none;margin:0;padding:0}
-.skills li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.4em 1em;padding:.45em 0;border-top:1px solid var(--line)}
-.skills li:last-child{border-bottom:1px solid var(--line)}
-.skills small{color:var(--muted);margin-left:.4em}
 input.count-input{width:5.2em;text-align:center}   /* number of people per role in a needs editor */
+.minute-range{display:flex;align-items:center;gap:.5em}
+.minute-range input.count-input{width:6em}
 
 /* ---------- dialog ---------- */
 .dialog{
@@ -592,119 +460,16 @@ input.count-input{width:5.2em;text-align:center}   /* number of people per role 
 .dialog::backdrop{background:rgba(20,16,16,.55)}
 .dialog form,.dialog .inner{padding:clamp(20px,3.5vw,32px)}
 .dialog .eyebrow{margin:0 0 .3em}
+.dialog .sub{font-size:var(--t4);color:var(--muted)}
 .dialog .actions{position:sticky;bottom:0;z-index:2;margin:clamp(20px,3vw,28px) 0 0;padding:.8em 0 .2em;justify-content:flex-end;
   background:var(--ground) linear-gradient(rgba(var(--ink-rgb),.08),rgba(var(--ink-rgb),.08));border-top:1px solid var(--line)}
 .dialog .actions .left{margin-right:auto}
 .dialog .form-error{margin:1em 0 0;padding:.7em 1em .55em;border-radius:14px}
 
-.candidates{list-style:none;margin:0;padding:0;max-height:min(60vh,520px);overflow:auto;border-top:1px solid var(--line)}
-.candidates li{border-bottom:1px solid var(--line)}
-.candidates button{
-  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.3em 1em;align-items:center;width:100%;
-  text-align:left;padding:.75em .7em .65em;background:none;border:0;cursor:pointer;transition:background .2s;
-}
-.candidates button:hover{background:var(--hover)}
-.candidates .name{font-size:var(--t3)}
-.candidates .right{font-size:var(--t4);color:var(--muted);white-space:nowrap}
-.candidates .reasons{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .45em}
-.candidates li.hard button{opacity:.55}
-.candidates li.hard button:hover{opacity:1}
-
 /* ---------- forms on a page ---------- */
 .narrow{max-width:var(--w-form)}
 .login-form{grid-template-columns:minmax(0,1fr)}
 .secret{font-family:ui-monospace,Menlo,monospace;font-weight:400;word-break:break-all;user-select:all}
-.slot span.who{padding:.42em 0 .3em}
-.slot span.status{cursor:default}
-.slot.empty:is(span){cursor:default}
-.slot.mine{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-
-/* ---------- program ----------
-   Items follow each other, the time on the left is computed. Up and down arrows are a rotated "→" –
-   ↑ and ↓ are not in the font subset. */
-.program{list-style:none;margin:0;padding:0}
-.program>li{
-  display:grid;grid-template-columns:3.4em minmax(0,1fr) auto auto;gap:.3em .9em;align-items:center;
-  padding:.55em 0;border-top:1px solid var(--line);
-}
-.program>li:last-child{border-bottom:1px solid var(--line)}
-.program .when{font-family:var(--narrow);font-weight:900;font-size:1.05em;padding-top:.12em}
-.program .what{display:flex;flex-direction:column;align-items:flex-start;gap:.1em;min-width:0;text-align:left;background:none;border:0;padding:.2em 0;cursor:pointer}
-.program span.what{cursor:default}
-.program button.what:hover .item-name{text-decoration:underline;text-underline-offset:.2em}
-.program .item-name{font-size:var(--t3)}
-.program .what small{color:var(--muted);font-size:var(--t4)}
-.program .minutes{color:var(--muted);font-size:var(--t4);white-space:nowrap}
-.program .move{display:flex;align-items:center;gap:2px}
-.program select{width:auto;min-width:0;max-width:100%}
-.btn-arrow{
-  display:inline-grid;place-items:center;width:1.9em;height:1.9em;padding:0;flex:none;
-  border:1px solid transparent;border-radius:50%;background:none;cursor:pointer;opacity:.6;line-height:1;
-}
-.btn-arrow::before{content:"→";display:inline-block}
-.btn-arrow.up::before{transform:rotate(-90deg)}
-.btn-arrow.down::before{transform:rotate(90deg)}
-.btn-arrow:hover:not(:disabled){opacity:1;border-color:var(--outline)}
-.btn-arrow:disabled{opacity:.15;cursor:default}
-.add-format{margin:.9em 0 0}
-.add-format{gap:6px}
-.add-format .tag{font-size:.82em}
-.program-sheet{max-width:900px}
-.program.large>li{grid-template-columns:max-content minmax(0,1fr) auto;column-gap:clamp(.8rem,2vw,1.4rem);padding:.9em 0}
-.program.large .when{font-size:clamp(1.3rem,2.6vw,2rem)}
-.program.large .item-name{font-size:clamp(1.25rem,2.4vw,1.9rem);line-height:1.15}
-.program.large .what small{font-size:clamp(.9rem,1.2vw,1.1rem)}
-@media (max-width:560px){
-  .program>li{grid-template-columns:3em minmax(0,1fr) auto}
-  .program .move{grid-column:2/-1;justify-content:flex-end}
-}
-
-/* ---------- formats: why we do it and how it goes ---------- */
-.formats{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(14px,2vw,20px)}
-@media (min-width:900px){.formats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.format-card{
-  display:flex;flex-direction:column;gap:.7em;
-  padding:clamp(18px,2.4vw,26px);border:1px solid var(--outline);border-radius:22px;
-  background:rgba(var(--ink-rgb),.035);
-}
-.format-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1em}
-.format-card h2{
-  font-family:var(--narrow);font-weight:900;letter-spacing:.01em;
-  font-size:var(--t2);line-height:1.15;margin:0;padding-top:.1em;overflow-wrap:anywhere;
-}
-.format-meta{margin:0;font-size:var(--t4);color:var(--muted)}
-.why-how{display:flex;flex-direction:column;gap:.85em}
-.why-how p{margin:0}
-.why-how .subhead{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted);margin:0 0 .35em}
-.why-how .text{white-space:pre-line;line-height:1.5;max-width:65ch}
-.why-how a{opacity:.8}
-.dialog .why-how{margin:1.2em 0 .2em}
-.program .program-how{display:block;white-space:pre-line;font-size:.88em;color:var(--muted);margin-top:.35em;max-width:65ch}
-
-/* ---------- roster (table) ---------- */
-.schedule-table-wrap{overflow-x:auto;margin:0 calc(-1*var(--gutter));padding:0 var(--gutter)}
-.schedule-table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92em}
-.schedule-table th,.schedule-table td{padding:.55em .6em .45em;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-.schedule-table thead th{font-weight:400;color:var(--muted);font-size:.88em;white-space:nowrap;border-bottom-color:var(--outline)}
-.schedule-table thead tr.teams th{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem;color:var(--muted);border-bottom:0;padding-bottom:0}
-.schedule-table tbody th{white-space:nowrap;font-weight:400}
-.schedule-table tbody th,.schedule-table thead th:first-child{position:sticky;left:calc(-1*var(--gutter));z-index:1;background:var(--ground);box-shadow:8px 0 8px -8px rgba(0,0,0,.25)}   /* sticks to the edge despite the wrapper padding */
-.schedule-table tbody th a{text-decoration:none}
-.schedule-table tbody th a:hover{text-decoration:underline;text-underline-offset:.2em}
-.schedule-table tbody th small{display:block;color:var(--muted);font-size:.85em}
-.schedule-table td{min-width:5.5em}
-.schedule-table td.empty{opacity:.45}
-/* the table stays a table: no boxes inside cells, a problem is marked by a dot in front of the text */
-.schedule-table td.error,.schedule-table td.warning{background:none;color:inherit;border:0;border-bottom:1px solid var(--line);border-radius:0}
-.schedule-table td.error::before,.schedule-table td.warning::before{
-  content:"";display:inline-block;width:.5em;height:.5em;margin:0 .4em .08em 0;border-radius:50%;vertical-align:middle;
-}
-.schedule-table td.error::before{background:currentColor}
-.schedule-table td.warning::before{border:1.5px solid currentColor}
-.schedule-table td.empty.error{opacity:1}
-.schedule-table .proposed{font-style:italic}
-.schedule-table tr.cancelled{text-decoration:line-through;opacity:.5}
-.print-header{display:none}
 
 /* ---------- empty state: one sentence + the primary action, in a dashed frame ---------- */
 .empty-state{
@@ -725,179 +490,7 @@ input.count-input{width:5.2em;text-align:center}   /* number of people per role 
 @keyframes slide-in{from{opacity:0;transform:translateY(12px)}}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
 
-.steps{counter-reset:step;list-style:none;margin:0;padding:0}
-.steps li{counter-increment:step;display:flex;gap:.8em;padding:.55em 0;border-top:1px solid var(--line)}
-.steps li::before{content:counter(step);font-family:var(--narrow);font-weight:900;min-width:1.2em}
-.steps code,.note code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;padding:.08em .35em;border-radius:6px;background:var(--fill)}
-
-/* ---------- print: the roster for the notice board ----------
-   Home printers have no bleed, so print on white paper: the ink turns to clay.
-   Lines and states run on --ink-rgb, so they keep working. */
-@media print{
-  :root,:root[data-palette]{--ground:#fff;--ground-rgb:255,255,255;--ink:#3b2f2f;--ink-rgb:59,47,47;--print:rgba(59,47,47,.06)}   /* always print on white paper */
-  @page{size:A4 landscape;margin:11mm}
-  html,body{background:#fff;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:9.5pt}
-  .topbar,.sidebar,.scrim,.actions,.page-header-actions,.section-actions,.menu-btn,.month-nav,.filter,.toasts,.back,.no-print,.dialog,.imprint.b{display:none !important}
-  body{padding-left:0 !important}
-  .imprint.a{width:120mm;top:-30mm;right:-30mm}
-  .page{max-width:none;padding:0}
-  .print-header{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 5mm}
-  .print-header .brand{font-size:11pt}
-  .title{font-size:34pt;margin:0}
-  .page-header{margin:0 0 4mm}
-  .avatar{background:none !important;color:#000 !important;box-shadow:inset 0 0 0 1px #000 !important}
-  .item.opens:hover{background:none}
-  .item-chevron{display:none}
-  .cover{background:none !important;color:#000 !important;border:1px solid rgba(0,0,0,.25)}
-  .cover-imprint{fill:rgba(0,0,0,.06) !important}
-  .place-map{display:none}
-  .eyebrow{font-size:10pt}
-  .schedule-table-wrap{overflow:visible;margin:0;padding:0}
-  .schedule-table{min-width:0;font-size:8.5pt}
-  .schedule-table th,.schedule-table td{padding:1.6mm 1.4mm 1.2mm}
-  .schedule-table tr{break-inside:avoid}
-  .schedule-table td.empty{opacity:1}
-  .rule{margin:4mm 0}
-  /* the program prints portrait and larger – it hangs at the lectern */
-  .program-sheet{page:program;max-width:none}
-  .program.large>li{grid-template-columns:24mm minmax(0,1fr) auto;padding:3.2mm 0;break-inside:avoid}
-  .program-sheet .print-header,.program-sheet .rule,.program-sheet .program{margin-right:2mm}
-  .program.large .when{font-size:17pt}
-  .program.large .item-name{font-size:17pt}
-  .program.large .what small{font-size:10pt}
-  .program.large .minutes{font-size:10pt}
-  .program .program-how{font-size:9pt;opacity:1}
-  .actions.no-print{display:none}
-}
-@page program{size:A4 portrait;margin:14mm}
-
-/* touch: at least 44 px per finger, even when the button looks smaller */
-@media (pointer:coarse){
-  .btn-x,.btn-arrow{width:2.6em;height:2.6em}
-  .btn.small,.btn.mini,.slot .status,.tag,button.tag,.btn-x,.btn-arrow,.back{position:relative}
-  .btn.small::after,.btn.mini::after,.slot .status::after,button.tag::after,.back::after{content:"";position:absolute;inset:-8px -2px}
-  .month-nav .btn{min-width:44px;min-height:44px}
-}
-
-/* calendar and event screens */
-button.more{background:none;border:0;cursor:pointer;text-align:left;padding:.1em .4em}
-button.more:hover{text-decoration:underline;text-underline-offset:.2em;color:var(--ink)}
-.day-list{display:flex;flex-direction:column;gap:6px;margin:.4em 0 0}
-.day-list .chip{font-size:.95em;white-space:normal;padding:.6em .8em .5em;border-radius:14px}
-.agenda-empty{display:none}
-@media (max-width:760px){.agenda-empty{display:block;margin:0 0 1em}}
-.skills .team-heading{display:block;border-top:0;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem;color:var(--muted);padding:1em 0 .2em}
-.skills .team-heading+li{border-top:1px solid var(--line)}
-.skills.needs li:not(.team-heading){padding:.3em 0}
-.filter-row{display:flex;flex-wrap:wrap;column-gap:1.2em}
-.series-nav{display:flex;flex-wrap:wrap;gap:8px}
-.leader-pick{display:flex;flex-wrap:wrap;align-items:center;gap:.5em .7em}
-.leader-pick .leader-name{margin-right:auto}
-.leader-pick .text-btn{font-size:var(--t4)}
-/* two fields on one row: a wide one and a short one (name + minutes) */
-.field-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 16px;align-items:end}
-@media (max-width:360px){.field-row{grid-template-columns:minmax(0,1fr)}}
-.conflict-actions{display:flex;justify-content:flex-end;margin:.3em 0 0}
-.status-choice .tag{font-size:.75em;padding:.42em .65em .3em}
-.schedule-table .mine{text-decoration:underline;text-underline-offset:.2em}
-.print-only{display:none}
-.legend .swatch.warning{border:1.5px dashed var(--ink)}
-@media print{
-  .print-only{display:block}
-  .program-sheet .meta{font-size:11pt}
-  .schedule-table tbody th,.schedule-table thead th:first-child{position:static;background:none;box-shadow:none}
-  .schedule-table td.error::before,.schedule-table td.warning::before{display:none}
-  .schedule-table td.error,.schedule-table td.warning{background:none;color:inherit;border:0;border-bottom:1px solid var(--line);border-radius:0}   /* the notice board shows people, not the leaders' alarms */
-}
-
-/* groups and settings screens */
-.list .group-description{color:var(--muted);font-size:.92em;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
-@media (max-width:700px){.list .row .group-description{grid-column:1/-1;order:3}}
-.minute-range{display:flex;align-items:center;gap:.5em}
-.minute-range input.count-input{width:6em}
-/* members × roles: one row per member, skill segments per role */
-.member-list{list-style:none;margin:0;padding:0}
-.member{display:grid;grid-template-columns:minmax(16em,20em) minmax(0,1fr);gap:.5em 1.4em;align-items:start;padding:.75em 0;border-top:1px solid var(--line)}
-.member:last-child{border-bottom:1px solid var(--line)}
-.member-head{display:flex;align-items:center;justify-content:space-between;gap:.4em .8em;min-width:0}
-.member-name{flex:1;min-width:0;font-size:var(--t3);text-decoration:none;overflow-wrap:anywhere;padding:.3em 0}
-a.member-name:hover{text-decoration:underline;text-underline-offset:.2em}
-.member-tools{display:flex;align-items:center;gap:.4em}
-.member-tools .choice span{font-size:.82em;padding:.38em .8em .3em .45em}
-.member-roles{display:flex;flex-wrap:wrap;gap:.5em 1.2em}
-.member-role{display:flex;align-items:center;gap:.55em}
-.member-role .role-name{font-size:var(--t4);color:var(--muted);min-width:4.5em}
-.member-role .segment span{min-height:32px;padding:.3em .75em .22em;font-size:.82em}
-.member-role .segment label:first-child input:checked+span{background:var(--hover);color:var(--ink)}   /* „ne“ stays quiet, skills stand out */
-.member-tools{flex:none}
-@media (max-width:760px){
-  .member{grid-template-columns:minmax(0,1fr)}
-  .member-roles{flex-direction:column;gap:.35em}
-  .member-role{justify-content:space-between}
-}
-/* needs editor (event types, formats) and the program of an event type */
-.needs-editor li.team-heading{border:0;padding:1em 0 .2em;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem;color:var(--muted)}
-.needs-editor li.team-heading:first-child{padding-top:.2em}
-.needs-editor li.team-heading+li{border-top:1px solid var(--line)}
-@media (min-width:760px){.needs-editor{columns:2;column-gap:2.2em}.needs-editor li{break-inside:avoid}}
-.program-editor>li{grid-template-columns:2.2em minmax(0,1fr) auto auto}
-.program-editor select{width:100%}
-@media (max-width:560px){
-  .program-editor>li{grid-template-columns:2.2em minmax(0,1fr) auto}
-  .program-editor .move{grid-column:2/-1}
-}
-.settings-nav{margin-top:clamp(18px,2.6vw,28px)}
-.settings-nav .filter{margin-bottom:0}
-
-/* people screens */
-/* facts on the person card: label left, value right */
-.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.45em 1.2em;margin:0}
-.facts dt{color:var(--muted);font-size:var(--t4);padding-top:.12em}
-.facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
-.facts a{text-underline-offset:.2em}
-@media (max-width:420px){.facts{grid-template-columns:minmax(0,1fr);gap:.1em 0}.facts dd{margin-bottom:.5em}}
-/* dashed box: something to finish (card created quickly, demo "looking as") */
-.notice{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6em 1.2em;padding:.8em 1.1em .7em;background:var(--fill);border-radius:14px}
-.notice p{margin:0;max-width:60ch}
-.demo-bar{margin:0 0 clamp(18px,2.6vw,26px)}
-.quick-add-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-a.tag{text-decoration:none}
-a.tag:hover{background:var(--hover)}
-a.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
-.birthdays{display:flex;flex-wrap:wrap;align-items:center;gap:6px .5em;margin:clamp(14px,2vw,20px) 0 0;font-size:.95em}
-.overview li.off{opacity:.55}
-.overview li .tags{justify-content:flex-end}
-.list .name a{text-decoration:none}
-.list .name a:hover{text-decoration:underline;text-underline-offset:.2em}
-.list .tags a{font-size:.9em;color:var(--muted)}
-.availability-form{margin-top:.2em}
-/* picker */
-.picker .search input{max-width:none}
-.candidates button[aria-pressed="true"]{background:var(--fill);box-shadow:inset 3px 0 0 var(--ink)}
-.candidates button[aria-pressed="true"] .name::after{content:"";display:inline-block;width:.55em;height:.55em;margin-left:.55em;border-radius:50%;background:var(--ink);vertical-align:.1em}
-.candidates li.create button{color:var(--muted)}
-.candidates li.create button:hover{color:var(--ink)}
-.candidates li.create .name{display:inline-flex;align-items:center;gap:.4em}
-.dialog form.quick-add{margin-top:.4em;padding:0}
-.similar .note{margin:0 0 .5em}
-/* #moje: what waits for an answer */
-.answer-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,16em),1fr));gap:10px}
-.answer{padding:clamp(14px,2.2vw,20px);border:1px solid var(--outline);border-radius:22px;background:rgba(var(--ink-rgb),.035)}
-.answer p{margin:0}
-.answer-when{color:var(--muted);font-size:var(--t4)}
-.answer-role{font-family:var(--narrow);font-weight:900;font-size:var(--t2);line-height:1.15;margin:.25em 0 .1em !important}
-.answer-event a{text-underline-offset:.2em}
-.answer-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:.9em}
-.answer-buttons .btn{flex:1 1 0;min-width:6em;min-height:46px}
-.my-groups{list-style:none;margin:0;padding:0}
-.my-groups>li{padding:.8em 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:.45em}
-.my-groups>li:last-child{border-bottom:1px solid var(--line)}
-.my-groups p{margin:0}
-.my-groups .group-name{font-size:var(--t3)}
-.my-groups .group-leaders{line-height:1.7}
-.my-groups .group-leaders a{text-underline-offset:.2em}
-
-/* number stepper (ui/stepper.js): − 2 + instead of the browser's spinner arrows */
+/* ---------- number stepper (ui/stepper.js): − 2 + instead of the browser's spinner arrows ---------- */
 input[type="number"]{-moz-appearance:textfield;appearance:textfield}
 input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .stepper{display:inline-flex;align-items:center;gap:.3em;max-width:100%}
@@ -911,7 +504,7 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 .stepper-btn::before,.stepper-btn.up::after{content:"";grid-area:1/1;width:40%;height:1.5px;border-radius:1px;background:currentColor}
 .stepper-btn.up::after{transform:rotate(90deg)}
 
-/* drop-downs (ui/select.js): pill button + rounded list; the native <select> stays hidden in the form */
+/* ---------- drop-downs (ui/select.js): pill button + rounded list; the native <select> stays hidden ---------- */
 .select{display:block;min-width:0}
 .select>select{display:none}
 .select .select-btn{font-size:inherit}
@@ -939,9 +532,8 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 .select-option[aria-selected="true"]{background:var(--ink);color:var(--ground)}
 .select-option[aria-disabled="true"]{opacity:.4;cursor:default}
 .select-heading{padding:.8em .95em .3em;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.72rem;color:var(--muted)}
-.program select,.program .select{width:auto;max-width:100%}
 
-/* date fields (ui/datepicker.js): pill button with the Czech date + our own calendar */
+/* ---------- date fields (ui/datepicker.js): pill button with the Czech date + our own calendar ---------- */
 .date{display:block;min-width:0}
 .date>input{display:none}
 .date .date-btn{font-size:inherit}
@@ -984,12 +576,7 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 /* the enhanced controls are spans inside .field – they must not look like the field's label */
 .field>span.select,.field>span.date,.field>span.stepper{font-size:inherit;opacity:1}
 
-/* lead under the month navigation (calendar, roster): the nav already makes the gap above */
-.month-nav + .lead{margin:0 0 clamp(14px,2vw,22px)}
-
-/* drag to reorder (ui/sortable.js): ⠿ grip in front of every item */
-.program.sortable>li{grid-template-columns:2em 3.4em minmax(0,1fr) auto auto}
-.program-editor.sortable>li{grid-template-columns:2em 2.2em minmax(0,1fr) auto auto}
+/* ---------- drag to reorder (ui/sortable.js): ⠿ grip in front of every item ---------- */
 .drag-handle{
   width:2em;height:2.4em;padding:0;border:0;border-radius:10px;cursor:grab;touch-action:none;color:inherit;opacity:.55;
   background:radial-gradient(circle,currentColor 1.4px,transparent 1.8px) center/8px 8px no-repeat content-box;
@@ -1003,10 +590,6 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
   box-shadow:0 10px 26px -10px rgba(0,0,0,.45);border-top-color:transparent;
 }
 .sortable>li.dragging .drag-handle{opacity:1}
-@media (max-width:620px){
-  .program-editor.sortable>li{grid-template-columns:2em 2.2em minmax(0,1fr) auto}
-  .program-editor.sortable .move{grid-column:3/-1}
-}
 
 /* ============================================================
    Components from ui/dom.js – the shared look of every module
@@ -1065,6 +648,20 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 .avatar-v3{background:rgba(var(--ink-rgb),.16);box-shadow:inset 0 0 0 1px var(--outline)}
 .avatar-v4{background:var(--ink);color:var(--ground);box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 3.5px var(--ground)}
 .avatar-gone{box-shadow:inset 0 0 0 1.5px var(--outline);color:var(--muted)}
+
+/* ---------- groupMark(): a team in a rounded square (square = a group, round = a person) ---------- */
+.group-mark{
+  display:inline-grid;place-items:center;flex:none;padding-top:.14em;
+  font-family:var(--narrow);font-weight:900;line-height:1;letter-spacing:.02em;user-select:none;
+}
+.group-mark-m{width:36px;height:36px;border-radius:10px;font-size:.88rem}
+.group-mark-l{width:64px;height:64px;border-radius:18px;font-size:1.45rem}
+.group-mark-v0{background:rgba(var(--ink-rgb),.1)}
+.group-mark-v1{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.group-mark-v2{background:var(--ink);color:var(--ground)}
+.group-mark-v3{background:rgba(var(--ink-rgb),.18)}
+.group-mark-v4{background:var(--ink);color:var(--ground);box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 3.5px var(--ground)}
+.item.tone-quiet .group-mark{opacity:.55}
 
 /* ---------- statusIcon() / statusBadge(): symbol + word ---------- */
 .status-icon{display:inline-block;width:1em;height:1em;flex:none;vertical-align:-.14em;overflow:visible}
@@ -1131,9 +728,47 @@ a.assignee-name:hover{text-decoration:underline;text-underline-offset:.2em}
 .cover-v2{background:rgba(var(--ink-rgb),.05);box-shadow:inset 0 0 0 1px var(--line)}
 .cover-thumb.cover-generated{padding:0}
 .cover-thumb .cover-imprint{width:170%}
+/* no words (title: false): a hero becomes a calm band – the page shows the title right under it */
+.cover-hero.cover-plain{aspect-ratio:auto;height:clamp(72px,9vw,120px)}
+.cover-hero.cover-plain .cover-imprint{width:46%;right:-6%;top:-120%}
+.cover-hero.cover-plain.cover-v2 .cover-imprint,.cover-hero.cover-plain.cover-v3 .cover-imprint{left:-8%;bottom:-140%;top:auto;right:auto}
 
 /* ---------- placeLine() / placeMap() ---------- */
-.place-address,.place-sep{color:var(--muted)}
+.place-address{color:var(--muted)}
+.place-lines{display:flex;flex-direction:column;gap:2px}
 .place-map-link{white-space:nowrap;text-underline-offset:.2em}
 .place-map{max-width:var(--w-list);height:240px;margin:var(--s3) 0 0;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius)}
 .place-map iframe{display:block;width:100%;height:100%;border:0}
+
+/* ---------- print: the roster and the osnova for the notice board, the lectern ----------
+   Home printers have no bleed, so print on white paper: the ink turns to clay.
+   Lines and states run on --ink-rgb, so they keep working. */
+@media print{
+  :root:not([data-palette]),:root[data-palette]{--ground:#fff;--ground-rgb:255,255,255;--ink:#3b2f2f;--ink-rgb:59,47,47;--print:rgba(59,47,47,.06)}   /* always print on white paper */
+  @page{size:A4 landscape;margin:11mm}
+  html,body{background:#fff;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:9.5pt}
+  .topbar,.sidebar,.scrim,.actions,.page-header-actions,.section-actions,.menu-btn,.filter,.toasts,.back,.no-print,.dialog,.imprint.b{display:none !important}
+  body{padding-left:0 !important}
+  .imprint.a{width:120mm;top:-30mm;right:-30mm}
+  .page{max-width:none;padding:0}
+  .print-header{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 5mm}
+  .print-header .brand{font-size:11pt}
+  .title{font-size:34pt;margin:0}
+  .page-header{margin:0 0 4mm}
+  .avatar,.group-mark{background:none !important;color:#000 !important;box-shadow:inset 0 0 0 1px #000 !important}
+  .item.opens:hover{background:none}
+  .item-chevron{display:none}
+  .cover{background:none !important;color:#000 !important;border:1px solid rgba(0,0,0,.25)}
+  .cover-imprint{fill:rgba(0,0,0,.06) !important}
+  .place-map{display:none}
+  .eyebrow{font-size:10pt}
+  .rule{margin:4mm 0}
+  .print-only{display:block}
+}
+
+/* ---------- touch: at least 44 px per finger, even when the button looks smaller ---------- */
+@media (pointer:coarse){
+  .btn-x{width:2.6em;height:2.6em}
+  .btn.small,.btn.mini,.tag,button.tag,.btn-x,.back{position:relative}
+  .btn.small::after,.btn.mini::after,button.tag::after,.back::after{content:"";position:absolute;inset:-8px -2px}
+}

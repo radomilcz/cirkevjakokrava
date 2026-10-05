@@ -21,7 +21,5 @@
 .needs-name small{color:var(--muted);font-size:var(--t4)}
 .needs-field>.select,.needs-field>select{align-self:flex-start;width:auto;min-width:12em}
 
-/* „Zveřejnit na webu“: a checkbox with a title and a hint under it */
+/* „Zveřejnit na webu“ (formats, templates, events): the checkbox with its hint in a quiet box */
 .publish-field{padding:var(--s3) var(--s4);background:var(--fill);border-radius:var(--radius)}
-.publish-field .caption{display:flex;flex-direction:column;gap:2px}
-.publish-field .caption small{color:var(--muted);font-size:var(--t4);line-height:1.4}
