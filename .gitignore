@@ -8,4 +8,5 @@ Thumbs.db
 !src/assets/*.png
 # ostrý režim lokálně (zvonec/README.md) – na veřejnou ukázku nepatří
 docs/zvonec/pristup.json
+docs/zvonec/access.json
 docs/zvonec/repo.json
