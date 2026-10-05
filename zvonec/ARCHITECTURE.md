@@ -1,0 +1,211 @@
+# Zvonec – architecture
+
+Zvonec is the base of a church-management and events system for Církev jako kráva (AC Nový Jičín).
+It runs only on GitHub: static app on GitHub Pages, data in a private repo, checks in GitHub Actions.
+
+Everything about development is English (identifiers, files, data keys, comments, tests, commits).
+Everything people read is Czech (UI text, URL slugs, downloaded file names, commit messages the app
+writes into the data repo, the user guide `README.md`).
+
+## 1. Modules
+
+Three layers with a one-way dependency. The **people registry** is the foundation and knows nothing
+about planning. Groups pick people from the registry; planning picks people from groups.
+
+```
+people     people, households, membership                 imports: nothing
+groups     groups, roles (duties a team covers), members  imports: people (ids only)
+events     event types, events, program, assignments,     imports: people, groups
+           formats, places, availability, serving limits
+conflicts  rules K1–K17, candidate ranking                imports: all, read-only, pure
+access     logins, sealing the GitHub token               imports: nothing (links by personId)
+```
+
+Three different things, three different records:
+1. **Belonging to a group**: `groupMember` (Petr is in the Tech team). Durable.
+2. **Role within the group**: `groupMember.leader` and the skill level per role
+   (`roles: { sound: "trained" }`). Answers *who can*.
+3. **Duty at an event**: `assignment` (Petr does sound on 11 Oct). Answers *who will, when*.
+
+Availability (blocked dates) and serving limits belong to planning, not to the registry: only the
+scheduler reads them. The person card still shows them, read from planning.
+
+App permission (`access`: admin / leader / member / invite) and a role in a group (sound tech) are
+separate concepts and never share names.
+
+## 2. Data files (private data repo)
+
+```
+data/people.json     { "schema": 2, "people": [], "households": [] }
+data/groups.json     { "schema": 2, "groups": [], "roles": [], "groupMembers": [] }
+data/events.json     { "schema": 2, "eventTypes": [], "events": [], "formats": [], "places": [],
+                       "availability": [], "servingLimits": [] }
+data/settings.json   { "schema": 2, "settings": { … } }
+access.json          { "v": 2, "logins": [] }            published to Pages, contains no names
+```
+
+- Each file has its own sha. A save writes only the files that changed. A 409 on a file triggers the
+  three-way merge per record id for that file (settings merge per key).
+- Refresh lists `data/` once and fetches only files whose sha changed.
+- Cross-file operations are not atomic. A deleted person leaves dangling `personId`s; they render as
+  „někdo smazaný“ and are dropped on the next save of the file that holds them.
+- **Privacy, plainly:** one token means every logged-in browser can read every file. Hiding data from
+  members is a UI rule, not access control. Therefore no pastoral, health or financial notes, ever.
+- `web.yml` refuses to publish anything under `data/`.
+
+## 3. Schema
+
+Dates `YYYY-MM-DD`. Local date-times `YYYY-MM-DDTHH:mm` (Europe/Prague). `?` = optional.
+Ids are a prefix + random string unless noted.
+
+### people.json
+```
+person {
+  id: "p…", firstName, lastName?, nickname?, phone?, email?,
+  householdId?, birthDate?,                 // "YYYY-MM-DD" or just "YYYY"
+  membership: { status: "member" | "regular" | "guest" | "former", since?: date, until?: date },
+  consentDate?: date,                       // required for guests before storing more than a name
+  registeredAt?: date,                      // came through an invite
+  showInDirectory?: bool,                   // members may see phone/e-mail
+  needsReview?: bool,                       // created quickly while planning, card incomplete
+  note?                                     // short, non-sensitive, leaders only
+}
+household { id: "h…", name, address? }
+```
+A child is derived: `birthDate` younger than `settings.rules.childAge` (default 15). Not a status.
+
+### groups.json
+```
+group       { id: "g…", name, kind: "team" | "community" | "leadership", description?, archived?: bool }
+role        { id: "r…", groupId, name, count: int (default 1), essential?: bool, adultsOnly?: bool,
+              childcare?: bool, window?: { startMin: int, endMin?: int },   // minutes from event start
+              combinableWith?: [roleId] }                                   // symmetric
+groupMember { id: "<groupId>~<personId>", groupId, personId, leader?: bool,
+              roles?: { [roleId]: "trained" | "learning" }, since?: date }
+```
+Only `team` groups have roles and feed planning.
+
+### events.json
+```
+eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" | "event",
+                startTime: "HH:mm", minutes: int, placeIds: [], needs: [need],
+                program?: [{ formatId, minutes }], groupId? }
+event         { id: "e…", title, kind, typeId?, start, end, placeIds: [], seriesId?,
+                cancelled?: bool, groupId?, note?, needs: [need], program?: [programItem],
+                assignments: [assignment] }
+need          { roleId, count: int }
+programItem   { id: "i…", formatId, minutes: int, title?, personId?, note? }
+assignment    { id: "a…", roleId, personId, status: "proposed" | "confirmed" | "declined",
+                override?: { reason, by?: personId, at?: date } }
+format        { id: "f…", name, minutes: int, leadRoleId?, why?, how?, link?, needs?: [need] }
+place         { id: "l…", name, shared: bool }
+availability  { id: "v…", personId, from: date, to: date, reason? }
+servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWeeks?: int,
+                paused?: bool }             // paused = do not plan now (moved away, break)
+```
+
+### settings.json
+```
+settings { churchName, address?, timezone: "Europe/Prague",
+           defaults: { maxPerMonth: 4, maxConsecutiveWeeks: 3 },
+           rules: { essentialDaysBefore: 7, unconfirmedDaysBefore: 5, childAge: 15 } }
+```
+
+### access.json
+```
+{ v: 2, logins: [{ id, personId?, access: "admin" | "leader" | "member" | "invite",
+                   created: date, expires?: date, lookup, pub, iv, ct, gh }] }
+```
+The sealed `gh` payload keeps its short keys (`t` token, `o` owner, `r` repo, `c` path = `"data"`,
+`v` branch). PBKDF2 salt: `cirkevjakokrava-zvonec:login`.
+
+Browser storage keys: `zvonec-me` (remembered login), `zvonec-demo` (demo data),
+`zvonec-palette` (colour choice).
+
+## 4. Code layout (`docs/zvonec/`, ES modules, no build, CSP unchanged)
+
+```
+index.html, style.css, imprint.svg
+app.js                 boot, mode (demo / live), session, router, save-status badge
+lib/time.js            dates, recurrence, Czech formatting
+lib/access.js          keypairs, PBKDF2, sealing, sign-in, invites
+lib/store/merge.js     three-way merge per record id (pure)
+lib/store/github.js    Contents API client (GET/PUT, directory listing, raw fallback)
+lib/store/local.js     localStorage backend for the demo
+lib/store/store.js     file map {collection → file}, load all, one save queue per file, refresh by sha
+lib/people.js          names, households, age, membership queries (no planning)
+lib/groups.js          members of a group, roles of a person, leaders, skill level
+lib/events.js          event types → events, series, needs
+lib/program.js         program times, leader of an item
+lib/scheduling.js      candidate ranking, availability and limits, "propose the rest", "same as last time"
+lib/conflicts.js       rules K1–K17 (used by the app, tests and check.mjs)
+lib/ics.js             calendar export
+lib/demo.js            fictitious demo data relative to today
+ui/dom.js              h(), buttons, dialogs, form fields, toasts, empty states
+ui/palette.js          colour picker (classic script, loaded in <head>)
+ui/home.js             #moje – member home
+ui/calendar.js         month grid / day list, new event
+ui/event.js            event detail: needs, assignments, program editor
+ui/program.js          printable program (A4)
+ui/roster.js           month table (rozpis), print
+ui/people.js           registry list, person card, person dialog, households, directory
+ui/groups.js           groups, roles, members and skill levels
+ui/picker.js           shared people picker (event slots, group members, households), quick-add
+ui/settings.js         church, event types, places, formats, logins, backup
+ui/conflicts.js        conflict list and override
+ui/login.js            sign-in, first setup, invite registration
+```
+Rules: `lib/*` never touches the DOM. `lib/people.js` imports nothing from groups or events.
+`lib/groups.js` never imports from events or scheduling. A test checks the import lines.
+
+## 5. Screens and routes
+
+Leader navigation: **Kalendář · Rozpis · Lidé · Skupiny · Kolize · Nastavení**.
+Member navigation: **Moje · Kalendář · Rozpis · Lidé** (Lidé = directory).
+
+| route | screen | who |
+|---|---|---|
+| `#moje` | member home: waiting for answer, my duties (.ics), when I can't, my groups, my contact | logged in |
+| `#kalendar`, `#kalendar/2026-10` | month | all |
+| `#setkani/<id>` | event detail | all, edit leader |
+| `#setkani/<id>/porad` | printable program | all |
+| `#rozpis`, `#rozpis/2026-10` | month table | all |
+| `#lide`, `#lide/clenove` · `neclenove` · `deti` · `nechodi` · `vsichni` · `doplnit` | registry + filter | leader; member = directory |
+| `#osoba/<id>` | person card | leader; member = reduced card |
+| `#domacnosti`, `#domacnost/<id>` | households | leader |
+| `#skupiny`, `#skupina/<id>` | groups, group card with members × roles | leader |
+| `#kolize` | conflicts | leader |
+| `#nastaveni`, `#nastaveni/sablony` · `mista` · `formaty` · `prihlaseni` · `zaloha` | settings | leader (formats readable by all) |
+| `#formaty` | alias of `#nastaveni/formaty` | all |
+| `#pozvanka/<code>` | registration | logged out |
+
+Old slugs `#udalost/<id>` and `#porad/<id>` redirect to `#setkani/…`.
+
+Person card: left column is owned by the registry (contact, household, membership, consent, note,
+login); right column shows read-only blocks from other modules with a link to where they are edited
+(groups and roles, upcoming duties, availability and limits, conflicts).
+
+Picking people: one picker for event slots, group members and households. Pills **Umí to · Celý tým ·
+Všichni lidé**; search covers the whole registry; when nothing matches, „+ Nový člověk“ creates a
+minimal card (`guest`, `needsReview`) and picks it in one step.
+
+## 6. Who sees what
+
+| | admin / leader | member |
+|---|---|---|
+| name, household | yes | yes |
+| phone, e-mail | yes | only if the person set `showInDirectory` |
+| membership, birth date, note, consent, login | yes | no |
+| groups | yes | names only |
+| duties, availability, conflicts | yes | own only (rota is public to members) |
+
+Membership reveals religion (GDPR Art. 9), so it never appears in member views or print.
+
+## 7. GDPR
+
+- Members, former members and regular attenders: Art. 9(2)(d) (legitimate activities of a religious
+  body), data never leaves the church. Guests: consent before storing more than a first name.
+- Children under 15: contact goes through a parent; no own phone or e-mail.
+- Retention: guests without a visit for 12 months are deleted; former members keep only name and
+  membership dates after 12 months.
+- Git history keeps old versions; full erasure means rewriting the data repo history.
