@@ -77,7 +77,7 @@ export function pageHeader({ title, lead, actions: buttons, media } = {}) {
   return h('header', { class: ['page-header', media && 'with-media'] },
     media ? h('div', { class: 'page-header-media' }, media) : null,
     h('div', { class: 'page-header-text' },
-      h('h1', { class: 'title' }, title),
+      h('h1', { class: ['title', typeof title === 'string' && title.length > 22 && 'long'] }, title),
       lead ? h('p', { class: 'lead' }, typeof lead === 'string' ? lead.replaceAll(' · ', SEP) : lead) : null),
     tools.length ? h('div', { class: 'page-header-actions' }, tools) : null);
 }
@@ -300,6 +300,39 @@ const svg = (tag, attrs = {}, ...children) => {
   for (const c of children) el.append(c);
   return el;
 };
+
+// ---------- icons ----------
+
+/* One line-icon set for the navigation: 20 × 20, one stroke (1.7), round ends, currentColor.
+   Shapes are drawn here (no icon font, no extra file: the CSP stays 'self' and nothing loads). */
+const ICONS = {
+  moje: ['M3.4 9.2 10 3.6l6.6 5.6', 'M5.2 7.9v8.6h9.6V7.9', 'M8.4 16.5v-4.2h3.2v4.2'],
+  kalendar: [['rect', { x: 3, y: 4.4, width: 14, height: 12.6, rx: 2.6 }], 'M3 8.6h14', 'M7 2.8v3.2M13 2.8v3.2', 'M7 12h.01M10 12h.01M13 12h.01M7 14.6h.01M10 14.6h.01'],
+  rozpis: [['rect', { x: 3, y: 3.5, width: 14, height: 13, rx: 2.6 }], 'M3 8h14M3 12.3h14', 'M8 3.5v13'],
+  lide: [['circle', { cx: 7.6, cy: 7, r: 2.7 }], 'M2.8 16.4c.5-2.8 2.4-4.4 4.8-4.4s4.3 1.6 4.8 4.4', ['circle', { cx: 13.9, cy: 7.7, r: 2.1 }], 'M13.5 12c2.1.1 3.6 1.5 4 4.1'],
+  tymy: [['circle', { cx: 10, cy: 6.3, r: 2.4 }], ['circle', { cx: 4.6, cy: 9.2, r: 1.8 }], ['circle', { cx: 15.4, cy: 9.2, r: 1.8 }], 'M5.9 16.6c.6-2.7 2.1-4.1 4.1-4.1s3.5 1.4 4.1 4.1', 'M1.9 15.6c.3-1.7 1.2-2.7 2.7-2.9M18.1 15.6c-.3-1.7-1.2-2.7-2.7-2.9'],
+  formaty: [['rect', { x: 2.9, y: 10.6, width: 6.2, height: 6.2, rx: 1.4 }], ['rect', { x: 10.9, y: 10.6, width: 6.2, height: 6.2, rx: 1.4 }], ['rect', { x: 6.9, y: 3.2, width: 6.2, height: 6.2, rx: 1.4 }]],
+  upozorneni: ['M5.4 13.6V9.2a4.6 4.6 0 0 1 9.2 0v4.4l1.6 2H3.8z', 'M8.2 17.4a2 2 0 0 0 3.6 0'],
+  nastaveni: ['M15.36 8.05 17.41 8.29 17.41 11.71 15.36 11.95 15.17 12.41 16.45 14.03 14.03 16.45 12.41 15.17 11.95 15.36 11.71 17.41 8.29 17.41 8.05 15.36 7.59 15.17 5.97 16.45 3.55 14.03 4.83 12.41 4.64 11.95 2.59 11.71 2.59 8.29 4.64 8.05 4.83 7.59 3.55 5.97 5.97 3.55 7.59 4.83 8.05 4.64 8.29 2.59 11.71 2.59 11.95 4.64 12.41 4.83 14.03 3.55 16.45 5.97 15.17 7.59Z', ['circle', { cx: 10, cy: 10, r: 2.4 }]],
+  'jak-se-schazime': ['M4.2 3.9h11.6a1.7 1.7 0 0 1 1.7 1.7v7.1a1.7 1.7 0 0 1-1.7 1.7H9.6l-3.9 3v-3H4.2a1.7 1.7 0 0 1-1.7-1.7V5.6a1.7 1.7 0 0 1 1.7-1.7z', 'M10 11.6 7.7 9.4a1.4 1.4 0 0 1 2.3-1.6 1.4 1.4 0 0 1 2.3 1.6z'],
+  prihlaseni: ['M11.6 3.4h2.9a2 2 0 0 1 2 2v9.2a2 2 0 0 1-2 2h-2.9', 'M3 10h9.2', 'M9 6.7l3.3 3.3L9 13.3'],
+  verejne: [['circle', { cx: 10, cy: 10, r: 7.1 }], 'M2.9 10h14.2', 'M10 2.9c2 1.9 3 4.3 3 7.1s-1 5.2-3 7.1c-2-1.9-3-4.3-3-7.1s1-5.2 3-7.1z'],
+};
+ICONS.program = ICONS.kalendar;
+
+/**
+ * A line icon from the set above, 1.25em by default (20 px at 16 px text), currentColor, decorative.
+ *   icon('kalendar') → <svg class="icon icon-kalendar">
+ * @param {string} name
+ */
+export function icon(name) {
+  const el = svg('svg', { class: `icon icon-${name}`, viewBox: '0 0 20 20', 'aria-hidden': 'true', focusable: 'false',
+    fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+  for (const part of ICONS[name] || []) {
+    el.append(typeof part === 'string' ? svg('path', { d: part.startsWith('M') ? part : `M${part}` }) : svg(part[0], part[1]));
+  }
+  return el;
+}
 
 /**
  * The drawn symbol of an assignment status (DESIGN §1.5), 1em, currentColor, aria-hidden – always put

@@ -3,7 +3,7 @@
 // and talk to the rest only through ui/state.js and ui/dom.js.
 
 import { S, setHooks, can, myId, recompute, isUpcoming, loadRemembered, forgetRemembered, ACCESS_LABELS } from './ui/state.js';
-import { h, btn, nodes, emptyState, pageHeader, isDialogOpen, avatar, personName } from './ui/dom.js';
+import { h, btn, nodes, emptyState, pageHeader, isDialogOpen, avatar, personName, icon } from './ui/dom.js';
 import './ui/stepper.js';   // − and + buttons on every number field
 import './ui/select.js';    // drop-downs in the Zvonec style
 import './ui/datepicker.js'; // date fields with our own calendar
@@ -160,6 +160,7 @@ function updateShell(route, section, parts) {
     navKey = key;
     nav.replaceChildren(h('ul', {}, items.map(([slug, label]) => h('li', {},
       h('a', { href: `#${slug}`, dataset: { section: slug } },
+        icon(slug),
         h('span', { class: 'nav-label' }, label),
         slug === 'upozorneni' ? h('span', { class: 'count', hidden: true }) : null)))));
   }
@@ -175,27 +176,28 @@ function updateShell(route, section, parts) {
     badge.setAttribute('aria-label', `${upcoming} upozornění`);
   }
 
-  // bottom: who is signed in (→ Můj účet), or Přihlásit se; in the demo the way to the public part
-  const account = document.querySelector('.sidebar-account');
+  // the header's right side: who is signed in (→ Můj účet), or Přihlásit se; in the demo the sidebar
+  // also offers the way to the public part
+  const account = document.querySelector('.account');
   const links = document.querySelector('.sidebar-links');
   const person = signedIn() ? personById(S.data || {}, myId()) : null;
   if (!signedIn()) {
     account.replaceChildren(h('a', {
-      class: 'btn primary signin', href: '#prihlaseni', 'aria-current': active === 'prihlaseni' ? 'page' : null,
-    }, 'Přihlásit se'));
+      class: 'btn small primary signin', href: '#prihlaseni', 'aria-current': active === 'prihlaseni' ? 'page' : null,
+    }, icon('prihlaseni'), 'Přihlásit se'));
   } else if (isPublic) {
-    account.replaceChildren(h('a', { class: 'btn signin', href: `#${homeSection()}` }, 'Zpátky do Zvonce'));
+    account.replaceChildren(h('a', { class: 'btn small signin', href: `#${homeSection()}` }, 'Zpátky do Zvonce'));
   } else {
     const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
+    const role = ACCESS_LABELS[S.me.access] || '';
     account.replaceChildren(h('a', {
-      class: 'me', href: '#nastaveni/ucet', 'aria-current': active === 'ucet' ? 'page' : null, title: 'Můj účet',
+      class: 'me', href: '#nastaveni/ucet', 'aria-current': active === 'ucet' ? 'page' : null, title: role ? `Můj účet · ${role}` : 'Můj účet',
     },
-    person ? avatar(person, { size: 'm' }) : h('span', { class: 'avatar avatar-m avatar-v0', 'aria-hidden': 'true' }, S.mode === 'demo' ? 'U' : '?'),
-    h('span', { class: 'me-text' }, h('span', { class: 'me-name' }, name),
-      h('span', { class: 'me-role' }, ACCESS_LABELS[S.me.access] || ''))));
+    person ? avatar(person, { size: 's' }) : h('span', { class: 'avatar avatar-s avatar-v0', 'aria-hidden': 'true' }, S.mode === 'demo' ? 'U' : '?'),
+    h('span', { class: 'me-text' }, h('span', { class: 'me-name' }, name), role ? h('span', { class: 'me-role' }, role) : null)));
   }
   links.replaceChildren(...nodes(S.mode === 'demo' && !isPublic
-    ? h('a', { class: 'quiet-link', href: '#program' }, 'Veřejná část') : null));
+    ? h('a', { class: 'quiet-link', href: '#program' }, icon('verejne'), h('span', {}, 'Veřejná část')) : null));
   document.querySelector('.topbar-signin').hidden = signedIn() || active === 'prihlaseni';
 }
 
@@ -228,7 +230,15 @@ document.addEventListener('keydown', (e) => {
   if (!document.querySelector('.palette-menu').hidden) return;   // the palette closes first
   setSheet(false);
 });
-sheetQuery.addEventListener?.('change', () => setSheet(false, { focus: false }));
+/** Desktop: colours and the person sit in the header. Phone: the header has room for the brand and
+ * Menu only, so they move into the sheet (the same elements – their listeners come along). */
+function placeTools() {
+  const target = sheetQuery.matches ? document.querySelector('.sheet-tools') : document.querySelector('.appbar-tools');
+  const before = sheetQuery.matches ? null : document.querySelector('.appbar-tools .topbar-signin');
+  for (const sel of sheetQuery.matches ? ['.account', '.palette'] : ['.palette', '.account']) target.insertBefore(document.querySelector(sel), before);
+}
+placeTools();
+sheetQuery.addEventListener?.('change', () => { setSheet(false, { focus: false }); placeTools(); });
 
 // ---------- rendering ----------
 

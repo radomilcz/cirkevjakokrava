@@ -22,19 +22,22 @@
 /* pills with counts (warnings, roster filters) */
 .pill-bar{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s5);margin:0 0 var(--s5)}
 .pill-bar .filter{margin:0}
-.pill-bar .filter button{display:inline-flex;align-items:center;gap:.45em}
-.pill-count{color:var(--muted);font-size:.9em}
-.filter button[aria-pressed="true"] .pill-count{color:inherit;opacity:.8}
+.pill-bar .filter .sev-dot{margin-top:calc(-1*var(--optical))}
 .filter button[aria-pressed="true"] .sev-dot.error{background:var(--ground)}
 .filter button[aria-pressed="true"] .sev-dot.warning{box-shadow:inset 0 0 0 1.5px var(--ground)}
 .filter button[aria-pressed="true"] .sev-dot.info{background:rgba(var(--ground-rgb),.5)}
 
-/* ---------- month bar: ‹ Říjen 2026 › Dnes ---------- */
+/* ---------- month bar: ‹ ŘÍJEN 2026 › Dnes ---------- */
 .month-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s4);margin:0 0 var(--s5)}
-.month-step{display:flex;align-items:center;gap:var(--s2)}
-.month-name{margin:0;min-width:7.8em;text-align:center;font-family:var(--narrow);font-weight:900;font-size:var(--t2);line-height:1.1;padding-top:.1em}
-.month-arrow{display:inline-grid;place-items:center;width:40px;height:40px;border:1px solid var(--outline);border-radius:50%;text-decoration:none;transition:background .15s}
-.month-arrow:hover{background:var(--hover)}
+.month-step{display:flex;align-items:center;gap:var(--s3)}
+.month-name{
+  margin:0;min-width:7.4em;text-align:center;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.01em;
+  font-size:var(--t2);line-height:1;
+}
+@supports (text-box:trim-both cap alphabetic){.month-name{text-box:trim-both cap alphabetic}}
+@supports not (text-box:trim-both cap alphabetic){.month-name{margin:-.02em 0 -.257em}}
+.month-arrow{display:inline-grid;place-items:center;flex:none;width:var(--pill-m);height:var(--pill-m);border:1px solid var(--outline);border-radius:50%;text-decoration:none;transition:background .15s,border-color .15s}
+.month-arrow:hover{background:var(--hover);border-color:rgba(var(--ink-rgb),.8)}
 .month-arrow::before{content:"";width:.5em;height:.5em;border-left:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateX(.1em) rotate(45deg)}
 .month-arrow.next::before{transform:translateX(-.1em) rotate(-135deg)}
 .month-step .btn.plain{margin-left:var(--s1)}
@@ -50,41 +53,53 @@
   .month-name{min-width:0;text-align:left}
 }
 
-.month-grid{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.month-grid{border:1px solid var(--outline);border-radius:var(--radius);overflow:hidden}
 .month-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 .month-row+.month-row{border-top:1px solid var(--line)}
-.month-dow{padding:var(--s2) var(--s3);font-size:var(--t4);color:var(--muted)}
-.month-head{background:var(--fill)}
+.month-dow{
+  display:flex;align-items:center;height:36px;padding:var(--optical-n) var(--s3) 0;
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:11px;line-height:1;
+}
+.month-head{background:var(--ink);color:var(--ground)}
 .month-day{
-  min-height:118px;padding:var(--s2) 6px var(--s2);display:flex;flex-direction:column;gap:3px;min-width:0;
+  min-height:124px;padding:var(--s2) 6px var(--s2);display:flex;flex-direction:column;gap:4px;min-width:0;
   transition:background .15s;
 }
 .month-day+.month-day{border-left:1px solid var(--line)}
 .month-day[title]{cursor:pointer}
-.month-day[title]:hover{background:rgba(var(--ink-rgb),.035)}
-.month-day.sunday{background:rgba(var(--ink-rgb),.03)}
-.month-day-number{display:flex;padding:0 2px 2px;font-size:var(--t4);line-height:1;color:var(--muted)}
-.month-day-number span{display:inline-grid;place-items:center;min-width:1.9em;height:1.9em;padding-top:.12em;border-radius:50%}
+.month-day[title]:hover{background:rgba(var(--ink-rgb),.04)}
+.month-day.sunday{background:rgba(var(--ink-rgb),.045)}
+.month-day-number{display:flex;padding:0 0 2px;font-family:var(--narrow);font-weight:900;font-size:1.0625rem;line-height:1}
+.month-day-number span{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:var(--optical-n) 6px 0;border-radius:999px}
 .month-day.today .month-day-number span{background:var(--ink);color:var(--ground)}
-.month-day.other-month .month-day-number{opacity:.5}
-.month-day.other-month .cal-chip{opacity:.55}
-.month-day.past:not(.today) .cal-chip{color:var(--muted)}
+.month-day.other-month .month-day-number{opacity:.4}
+.month-day.other-month .cal-chip{opacity:.5}
+.month-day.past:not(.today) .cal-chip:not(.kind-service){color:var(--muted);background:rgba(var(--ink-rgb),.05)}
 
 .cal-chip{
-  display:flex;align-items:baseline;gap:6px;min-width:0;padding:4px 6px 3px;border-radius:8px;
-  font-size:.8125rem;line-height:1.25;text-decoration:none;background:rgba(var(--ink-rgb),.06);transition:background .15s;
+  display:flex;align-items:baseline;gap:6px;min-width:0;padding:5px 7px 4px;border-radius:10px;
+  font-size:.8125rem;line-height:1.25;text-decoration:none;background:rgba(var(--ink-rgb),.08);transition:background .15s;
 }
-.cal-chip:hover{background:var(--hover)}
+.cal-chip:hover{background:rgba(var(--ink-rgb),.16)}
 .cal-chip .kind-dot{position:relative;top:-.05em}
 .cal-chip-text{flex:1;min-width:0;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow-wrap:anywhere}
-.cal-chip-time{color:var(--muted)}
+.cal-chip-time{font-variant-numeric:tabular-nums}
 .cal-chip .sev-dot{align-self:center;width:.4rem;height:.4rem}
+/* the Sunday meeting is the anchor of the week: a solid chip */
+.cal-chip.kind-service{background:var(--ink);color:var(--ground)}
+.cal-chip.kind-service:hover{background:rgba(var(--ink-rgb),.86)}
+.cal-chip.kind-service .kind-dot{background:var(--ground)}
+.cal-chip.kind-service .sev-dot.error{background:var(--ground)}
+.cal-chip.kind-service .sev-dot.warning{box-shadow:inset 0 0 0 1.5px var(--ground)}
 .cal-chip.mine{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cal-chip.kind-service.mine{box-shadow:inset 0 0 0 1.5px var(--ink),inset 0 0 0 3px var(--ground)}
 .cal-chip.cancelled .cal-chip-text{text-decoration:line-through;color:var(--muted)}
+.cal-chip.kind-service.cancelled{background:rgba(var(--ink-rgb),.08);color:var(--ink)}
+.cal-chip.kind-service.cancelled .kind-dot{background:var(--ink)}
 .cal-more{align-self:flex-start;padding:2px 6px;border:0;background:none;color:var(--muted);font:inherit;font-size:.78rem;cursor:pointer}
 .cal-more:hover{color:var(--ink);text-decoration:underline;text-underline-offset:.2em}
 
-.cal-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin:var(--s4) 0 0;padding:0;list-style:none;font-size:var(--t4);color:var(--muted)}
+.cal-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin:var(--s4) 0 0;padding:0;list-style:none;font-size:var(--t4);color:var(--ink)}
 .cal-legend li{display:inline-flex;align-items:center;gap:var(--s2)}
 .legend-mine{display:inline-block;width:1.4em;height:.9em;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--ink)}
 @media (max-width:760px){.cal-legend li:has(.legend-mine){display:none}}
@@ -110,7 +125,7 @@
 .event-hero .cover-hero{max-height:320px}
 .event-facts{display:flex;flex-direction:column;gap:var(--s2);max-width:var(--w-text);margin:calc(-1*var(--s4)) 0 var(--s6)}
 .event-facts p{margin:0}
-.event-when{font-size:1.1rem}
+.event-when{font-size:1.25rem;line-height:1.35}
 .event-place{font-size:var(--t3)}
 .event-description{margin-top:var(--s2) !important;white-space:pre-line;line-height:1.55}
 .event-description.faint{font-size:var(--t4)}
@@ -167,7 +182,7 @@
 /* osnova on the event: drag handle and time in the leading slot */
 .program-row .item-lead{gap:var(--s2)}
 .program-row .drag-handle{position:relative;z-index:1;margin-left:calc(-1*var(--s2))}
-.program-time{min-width:3.1em;font-family:var(--narrow);font-weight:900;font-size:1.05rem;padding-top:.12em}
+.program-time{min-width:3.1em;font-family:var(--narrow);font-weight:900;font-size:1.125rem;font-variant-numeric:tabular-nums}
 .program-items .sortable>li.dragging,.program-items>li.dragging{background:var(--ground)}
 .program-over{display:flex;align-items:center;gap:var(--s2);margin:var(--s3) 0 0;font-size:var(--t4)}
 .leader-pick{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3)}
@@ -189,7 +204,7 @@
 
 .needs-details{border:1px solid var(--outline);border-radius:18px;background:rgba(var(--ink-rgb),.06)}
 .needs-details>summary{
-  display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:.72em 1.05em .58em;cursor:pointer;list-style:none;
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:var(--pill-l);padding:var(--optical) 1.05em 0;line-height:1.2;cursor:pointer;list-style:none;
 }
 .needs-details>summary::-webkit-details-marker{display:none}
 .needs-open{font-size:var(--t4);text-decoration:underline;text-decoration-color:rgba(var(--ink-rgb),.45);text-underline-offset:.22em;color:var(--muted)}
@@ -228,7 +243,6 @@
   .home-grid{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
 }
 @media (max-width:1179.98px){.home-side>.section:first-child{margin-top:clamp(32px,4vw,48px)}}
-.answer-row .item-trail .btn{min-height:36px}
 @media (max-width:520px){
   .answer-row{flex-wrap:wrap}
   .answer-row .item-body{flex:1 1 0}
@@ -276,7 +290,7 @@
 .osnova-how{align-items:center}
 .osnova-how .box{margin-top:0}
 .event-side .conflict-row .item-body{flex:1 1 0}
-.time-pair input[type=time]{padding:.72em .6em .58em .9em}
+.time-pair input[type=time]{padding-inline:.9em .6em}
 @media (min-width:1180px){.event-main>.only-narrow+.section{margin-top:0}}
 .my-answer{flex-direction:column;align-items:stretch;gap:var(--s2);max-width:var(--w-list);margin:calc(-1*var(--s3)) 0 var(--s6)}
 .my-answer-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}

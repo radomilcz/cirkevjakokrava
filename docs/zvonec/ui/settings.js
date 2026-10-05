@@ -255,7 +255,7 @@ function outlineEditor(program, minutesInput) {
       formats.length
         ? h('div', { class: 'outline-add' }, formats.map((f) => h('button', {
           type: 'button', class: 'tag', onclick: () => { program.push({ formatId: f.id, minutes: f.minutes ?? 10 }); redraw(); },
-        }, `+ ${f.name}`)))
+        }, plus(f.name))))
         : h('small', {}, 'Nejdřív přidej formáty.'),
       totalLine);
     updateTotal();

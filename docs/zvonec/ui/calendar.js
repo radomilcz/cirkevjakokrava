@@ -244,7 +244,7 @@ function chip(event) {
   const mine = myRoles(event).length > 0;
   return h('a', {
     href: `#setkani/${event.id}`,
-    class: ['cal-chip', mine && 'mine', event.cancelled && 'cancelled'],
+    class: ['cal-chip', `kind-${event.kind}`, mine && 'mine', event.cancelled && 'cancelled'],
     title: [event.title, timeText(event), event.cancelled ? 'zrušeno' : null, mine ? 'sloužíš' : null,
       warning ? SEVERITY_LABELS[warning] : null].filter(Boolean).join(' · '),
     onclick: (e) => e.stopPropagation(),

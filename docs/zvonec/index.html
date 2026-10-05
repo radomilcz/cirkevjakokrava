@@ -32,44 +32,47 @@
   <svg class="imprint b"><use href="imprint.svg#o"/></svg>
 </div>
 
-<!-- phone only: brand, save status, sign-in (signed out) and the button that opens the sidebar as a sheet -->
-<header class="topbar">
-  <a class="brand" href="#">církev jako kráva</a>
-  <p class="save-status" role="status" aria-live="polite"></p>
-  <a class="btn small topbar-signin" href="#prihlaseni" hidden>Přihlásit se</a>
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar"><span class="menu-toggle-icon" aria-hidden="true"></span>Menu</button>
+<!-- the header across the whole app: brand and app name left; save status, colours and the signed-in
+     person (or Přihlásit se) right. On a phone it is the top bar with the Menu button; app.js moves the
+     colours and the person into the sheet there. -->
+<header class="appbar">
+  <a class="brand-link" href="#"><span class="brand">církev jako kráva</span><span class="app-name">Zvonec</span></a>
+  <div class="appbar-tools">
+    <p class="save-status" role="status" aria-live="polite"></p>
+    <div class="palette">
+      <button class="switcher" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Barvy" title="Barvy"><span class="bullseye"></span></button>
+      <div class="palette-menu" role="menu" aria-label="Barvy" hidden>
+        <!-- green and cream, cream and green, green and pink, pink and blue: not enough contrast for
+             small app text (below 4.5 : 1) – they stay in Otázky na tělo, not here -->
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="clay-pink" title="Hlína a růžová" aria-label="Hlína a růžová"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="pink-clay" title="Růžová a hlína" aria-label="Růžová a hlína"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="blue-cream" title="Modrá a krém" aria-label="Modrá a krém"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-blue" title="Krém a modrá" aria-label="Krém a modrá"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-clay" title="Krém a hlína" aria-label="Krém a hlína"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="" class="auto">Podle zařízení</button>
+      </div>
+    </div>
+    <div class="account"></div>
+    <a class="btn small primary topbar-signin" href="#prihlaseni" hidden>Přihlásit se</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar"><span class="menu-toggle-icon" aria-hidden="true"></span><span class="menu-toggle-label">Menu</span></button>
+  </div>
 </header>
 
 <div class="scrim" hidden></div>
 
-<!-- desktop: fixed on the left; phone: the sheet behind the Menu button. app.js fills the navigation
-     and the person link per access level (and for visitors who are not signed in). -->
+<!-- desktop: the column on the left under the header, as tall as the page; phone: the sheet behind the
+     Menu button. app.js fills the navigation per access level (and for visitors who are not signed in). -->
 <aside class="sidebar" id="sidebar" aria-label="Menu">
-  <div class="sidebar-head">
-    <a class="brand" href="#">církev jako kráva</a>
-    <p class="app-name">Zvonec</p>
-    <button class="btn small sheet-close" type="button" aria-label="Zavřít menu">Zavřít</button>
-  </div>
-  <nav class="nav" aria-label="Hlavní menu"></nav>
-  <div class="sidebar-foot">
-    <div class="sidebar-account"></div>
-    <div class="sidebar-tools">
-      <div class="palette">
-        <button class="switcher" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Barvy" title="Barvy"><span class="bullseye"></span></button>
-        <div class="palette-menu" role="menu" aria-label="Barvy" hidden>
-          <!-- green and cream, cream and green, green and pink, pink and blue: not enough contrast for
-               small app text (below 4.5 : 1) – they stay in Otázky na tělo, not here -->
-          <button type="button" role="menuitemradio" aria-checked="false" data-palette="clay-pink" title="Hlína a růžová" aria-label="Hlína a růžová"><span class="bullseye"></span></button>
-          <button type="button" role="menuitemradio" aria-checked="false" data-palette="pink-clay" title="Růžová a hlína" aria-label="Růžová a hlína"><span class="bullseye"></span></button>
-          <button type="button" role="menuitemradio" aria-checked="false" data-palette="blue-cream" title="Modrá a krém" aria-label="Modrá a krém"><span class="bullseye"></span></button>
-          <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-blue" title="Krém a modrá" aria-label="Krém a modrá"><span class="bullseye"></span></button>
-          <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-clay" title="Krém a hlína" aria-label="Krém a hlína"><span class="bullseye"></span></button>
-          <button type="button" role="menuitemradio" aria-checked="false" data-palette="" class="auto">Podle zařízení</button>
-        </div>
-      </div>
+  <div class="sidebar-inner">
+    <div class="sidebar-head">
+      <span class="brand">církev jako kráva</span>
+      <button class="btn small sheet-close" type="button" aria-label="Zavřít menu">Zavřít</button>
+    </div>
+    <nav class="nav" aria-label="Hlavní menu"></nav>
+    <div class="sidebar-foot">
+      <div class="sheet-tools"></div>
       <div class="sidebar-links"></div>
     </div>
-    <p class="save-status" role="status" aria-live="polite"></p>
   </div>
 </aside>
 

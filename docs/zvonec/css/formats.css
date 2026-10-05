@@ -1,9 +1,13 @@
 /* formats module – owned by the formats team. Uses tokens and components from ../style.css. */
 
 /* list lead: how long the format takes, set like the date block of an event row */
-.minutes-block{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:3rem;line-height:1}
-.minutes-block-n{font-family:var(--narrow);font-weight:900;font-size:1.5rem;padding-top:.1em}
-.minutes-block-u{font-size:var(--t4);color:var(--muted);margin-top:.15em}
+/* the same leaf as the date block of an event row: number over the unit */
+.minutes-block{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:48px;height:52px;
+  padding-top:calc(var(--optical-n) + 1px);border:1px solid var(--outline);border-radius:12px;line-height:1;   /* +1px: the big number sits on top here */
+}
+.minutes-block-n{order:-1;font-family:var(--narrow);font-weight:900;font-size:22px;line-height:.8;font-variant-numeric:tabular-nums}
+.minutes-block-u{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-right:-.08em;font-size:11px}
 
 /* detail page: facts, then Proč and Jak as running text */
 .format-page .facts,.format-page .section{max-width:var(--w-text)}

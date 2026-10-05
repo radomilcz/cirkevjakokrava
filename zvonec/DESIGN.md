@@ -28,18 +28,27 @@ public part is made of what we publish from the private part (events, meetings�
 6. **Space:** content column max ~72ch for text, lists up to ~880px, wide tables may use the full
    main area. Consistent spacing scale (4/8/12/16/24/32/48). No 1280px-wide forms; dialogs ≤ 560px
    (wide variant 760px).
-7. **Type:** Agrandir Regular for everything readable; Narrow Black only for page titles (h1) and
-   section headings (h2); Grand only for the brand mark. Minimum 15px body on phone, 14px meta.
-   Muted text must pass 4.5:1 contrast in every palette.
+7. **Type:** Agrandir Regular for everything readable; Narrow Black for page titles (h1, uppercase,
+   big – as in Otázky na tělo), section headings (h2, uppercase) and marks (initials in avatars, team
+   marks, day numbers, times); Grand Heavy only for the brand mark. Minimum 15px body on phone, 14px
+   meta. Muted text only for real meta, and it must pass 4.5:1 contrast in every palette.
 8. **Czech** natural and plain (CLAUDE.md). Buttons = verb (+ object). No calques
    („mít přihlášení“ → „může se přihlásit“).
+9. **Pills are one family:** radius 999px, three heights (46 · 38 · 30 px); navigation, filters,
+   segments and buttons all use them. Outline = can be clicked, ink fill = chosen / primary. The text is
+   optically centred on the cap height (see the PILLS note at the top of style.css); font sizes in pills
+   are whole pixels that Agrandir lays out without rounding (12, 13, 15, 16, 17 px).
 
 ## 2. Layout
 
-- **Desktop (≥ 960px):** fixed left sidebar 248px: brand at top, navigation, at the bottom the
-  signed-in person (avatar + name → Můj účet), palette picker, save status (only while saving / on
-  error). Main area: page header (title, optional lead, primary action) then content.
-- **Phone:** top bar with brand + menu button; the menu opens the same navigation as a sheet.
+- **Desktop (≥ 960px):** a header across the page: brand „církev jako kráva“ on one line with the
+  quiet label „Zvonec“; on the right the save status (only while saving / on error), the palette
+  picker and the signed-in person (avatar + name → Můj účet) or „Přihlásit se“. Under it the sidebar
+  (256px) – a column as tall as the page whose navigation (an icon + label per item) sticks under the
+  header; at its bottom only „Veřejná část“ in the demo. Main area: page header (title, optional lead,
+  primary action) then content.
+- **Phone:** the header is the top bar with brand + menu button; the menu opens the same navigation as a
+  sheet, with the signed-in person and the palette picker at its bottom.
   No horizontal scrolling anywhere except inside the roster table.
 - Print: no sidebar, no top bar.
 

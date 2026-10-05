@@ -70,5 +70,5 @@
 @media (max-width:520px){
   .roster-page .pill-bar{gap:var(--s2)}
   .roster-page .filter{gap:4px}
-  .roster-page .filter button{font-size:.84em;padding:.45em .8em .34em}
+  .roster-page .filter button{height:var(--pill-s);font-size:13px;padding-inline:.8em}
 }

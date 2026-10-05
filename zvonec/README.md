@@ -8,8 +8,8 @@ kontrola v GitHub Actions. Žádný server, žádná další služba.
 
 Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, otisk z Figmy,
 pilulky, šipky, tykání a stejná paleta. Bez volby se Zvonec řídí zařízením: ve světlém režimu krém a hlína
-(`#f9e7dd` / `#3b2f2f`), v tmavém hlína a růžová (`#3b2f2f` / `#e6acac`). Terč dole v menu nabídne pět dvojic
-z palety, které mají dost kontrastu i na drobný text; volbu si pamatuje prohlížeč. Tisk jde vždycky na bílý papír.
+(`#f9e7dd` / `#3b2f2f`), v tmavém hlína a růžová (`#3b2f2f` / `#e6acac`). Terč vpravo nahoře (na telefonu v menu) nabídne
+pět dvojic z palety, které mají dost kontrastu i na drobný text; volbu si pamatuje prohlížeč. Tisk jde vždycky na bílý papír.
 
 ## Tři části: Lidé, Skupiny, Setkání
 
@@ -27,8 +27,9 @@ něco jiného než role v týmu a nikdy se nejmenují stejně.
 
 ## Co to umí
 
-Menu je na počítači vlevo, na telefonu pod tlačítkem **Menu** nahoře. Dole v menu je tvoje jméno (vede
-na Můj účet) a terč s barvami. Kdo není přihlášený, vidí jen **Program** a **Jak se scházíme** – tedy
+Nahoře je hlavička: vlevo název církve, vpravo terč s barvami a tvoje jméno (vede na Můj účet). Menu
+s ikonami je na počítači vlevo pod hlavičkou, na telefonu pod tlačítkem **Menu** – tam najdeš i svoje jméno
+a terč. Kdo není přihlášený, vidí jen **Program** a **Jak se scházíme** – tedy
 setkání a formáty, které vedoucí zveřejnili – a tlačítko **Přihlásit se**.
 
 | obrazovka | co tam je |
