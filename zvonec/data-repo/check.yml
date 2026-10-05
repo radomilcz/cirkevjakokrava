@@ -1,4 +1,4 @@
-# Template for the PRIVATE data repo (e.g. radomilcz/sbor-data) – copy to .github/workflows/check.yml.
+# Template for the PRIVATE data repo (radomilcz/church-data) – copy to .github/workflows/check.yml.
 #
 # After every save from Zvonec (each save is a commit to data/) and every Monday morning it checks
 # the schedule with the same rules as the app. When something in the future will not work, the run

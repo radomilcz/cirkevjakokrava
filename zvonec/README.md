@@ -93,7 +93,7 @@ v GitHub Actions.
 Jako [Mobilise Playbook](https://playbook.cirkevjakokrava.cz): **GitHub klíč je jeden, ostatní lidé jsou jen data.**
 
 ```
-veřejné repo radomilcz/cirkevjakokrava          soukromé datové repo (např. radomilcz/sbor-data)
+veřejné repo radomilcz/cirkevjakokrava          soukromé datové repo radomilcz/church-data
 
 docs/zvonec/  aplikace ── bere si ji ─────────▶  .github/workflows/web.yml
                                                    aplikace + access.json → Pages
@@ -161,7 +161,7 @@ Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (
 
 ## Spuštění naostro (jednou, asi 15 minut)
 
-1. **Soukromé repo** pro data, třeba `radomilcz/sbor-data` (prázdné).
+1. **Soukromé repo** pro data `radomilcz/church-data` (prázdné).
 2. Zkopírovat `zvonec/data-repo/web.yml` a `zvonec/data-repo/check.yml` do jeho `.github/workflows/`.
 3. **Pages:** v datovém repu Settings → Pages → Source: **GitHub Actions**, Custom domain
    `zvonec.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `zvonec` typu **CNAME** →

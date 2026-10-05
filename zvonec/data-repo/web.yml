@@ -1,4 +1,4 @@
-# Template for the PRIVATE data repo (e.g. radomilcz/sbor-data) – copy to .github/workflows/web.yml.
+# Template for the PRIVATE data repo (radomilcz/church-data) – copy to .github/workflows/web.yml.
 #
 # Publishes Zvonec at https://zvonec.cirkevjakokrava.cz: the app is taken from the public website
 # repo, access.json (sealed logins – no names, no readable token) is added, and the result goes to

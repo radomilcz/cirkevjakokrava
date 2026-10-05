@@ -9,7 +9,7 @@ import {
 } from '../../docs/zvonec/lib/access.js';
 
 const TODAY = '2026-10-04';
-const GH = { token: `github_pat_${'x'.repeat(82)}`, owner: 'radomilcz', repo: 'sbor-data', path: 'data', branch: 'main' };
+const GH = { token: `github_pat_${'x'.repeat(82)}`, owner: 'radomilcz', repo: 'church-data', path: 'data', branch: 'main' };
 const FAST = 1000;   // few iterations are enough in tests – the principle is the same
 
 test('access: constants and empty file', () => {
@@ -26,7 +26,7 @@ test('sign-in: name without diacritics, wrong password fails, nothing secret in 
   assert.equal(r.access, 'member');
   assert.equal(r.created, TODAY);
   const text = JSON.stringify(r);
-  assert.ok(!text.includes('Řehoř') && !text.includes('rehor') && !text.includes(GH.token) && !text.includes('sbor-data'), 'neither name nor token may be readable');
+  assert.ok(!text.includes('Řehoř') && !text.includes('rehor') && !text.includes(GH.token) && !text.includes('church-data'), 'neither name nor token may be readable');
   const ok = await signIn([r], '  rehor   STASTNY ', 'secret-password', FAST);
   assert.deepEqual(ok.github, GH);
   assert.equal(ok.record.personId, 'p1');
