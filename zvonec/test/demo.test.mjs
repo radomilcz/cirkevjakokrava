@@ -5,6 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createDemo } from '../../docs/zvonec/lib/demo.js';
+import { findConflicts } from '../../docs/zvonec/lib/conflicts.js';
 
 const TODAY = '2026-10-05';
 // a Sunday, month ends, a leap day and a year boundary
@@ -318,5 +319,12 @@ test('demo content: the deliberate conflicts are there', () => {
     for (const n of e.needs.filter((x) => essential.has(x.roleId))) {
       assert.ok(e.assignments.filter((a) => a.roleId === n.roleId).length >= n.count, `${e.start}: ${n.roleId} open`);
     }
+  }
+});
+
+test('demo conflicts: exactly the deliberate errors K1, K3 and K9', () => {
+  for (const today of TODAYS) {
+    const errors = findConflicts(createDemo(today), { today }).filter((c) => c.severity === 'error').map((c) => c.code).sort();
+    assert.deepEqual(errors, ['K1', 'K3', 'K9'], `demo for ${today}`);
   }
 });

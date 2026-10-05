@@ -6,7 +6,6 @@ Thumbs.db
 !docs/**/*.png
 # ikony jsou sice generované (build.py --icons), ale patří do repa – build je jen kopíruje
 !src/assets/*.png
-# ostrý režim lokálně (zvonec/README.md) – na veřejnou ukázku nepatří
-docs/zvonec/pristup.json
+# Zvonec live mode for local testing (zvonec/README.md) – never part of the public demo
 docs/zvonec/access.json
 docs/zvonec/repo.json

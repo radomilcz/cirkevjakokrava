@@ -303,7 +303,7 @@ function withProgram() {
   return d;
 }
 
-test('K15 program overflows, K16 leader unavailable, K17 nobody leads', () => {
+test('K15 program overflows, K16 leader unavailable, K5 for lead roles the program brings', () => {
   const d = withProgram();
   const e = d.events[0];   // 10.00–11.00
   d.availability = [{ id: 'v', personId: 'jana', from: '2026-10-11', to: '2026-10-11', reason: 'nemoc' }];
@@ -313,13 +313,45 @@ test('K15 program overflows, K16 leader unavailable, K17 nobody leads', () => {
     { id: 'i3', formatId: 'f-pribeh', minutes: 10, personId: 'jana' },
   ];
   const k = findConflicts(d, { today: TODAY });
-  assert.deepEqual(codes(k), ['K15:warning', 'K16:error', 'K17:warning', 'K17:warning']);
+  assert.deepEqual(codes(k), ['K15:warning', 'K16:error', 'K5:warning', 'K5:warning']);
   assert.match(k.find((x) => x.code === 'K15').text, /65 min, setkání jen 60/);
   assert.match(k.find((x) => x.code === 'K16').text, /Příběh: Jana v tu dobu nemůže \(nemoc\)/);
-  assert.ok(k.some((x) => x.text === 'Kázání: nikdo to nevede. Přidej službu Kázání, nebo vyber člověka.'));
-  // when the role is in the event needs, K5 watches it – K17 does not repeat
-  e.needs = [{ roleId: 'kazani', count: 1 }, { roleId: 'zpev', count: 1 }];
-  assert.ok(!findConflicts(d, { today: TODAY }).some((x) => x.code === 'K17'));
+  assert.deepEqual(k.filter((x) => x.code === 'K5').map((x) => x.roleId).sort(), ['kazani', 'zpev'],
+    'the lead roles of the formats are needs of the event');
+  assert.ok(!k.some((x) => x.code === 'K17'), 'K5 watches an existing lead role – K17 does not repeat');
+  // a hand-picked leader replaces the lead role
+  e.program[0].personId = 'petr';
+  assert.deepEqual(findConflicts(d, { today: TODAY }).filter((x) => x.code === 'K5').map((x) => x.roleId), ['zpev']);
+  // somebody in the lead role leads the item
+  e.assignments = [asg('a1', 'zpev', 'petr')];
+  assert.ok(!findConflicts(d, { today: TODAY }).some((x) => x.code === 'K5'));
+});
+
+test('K17: a format leads with a role that no longer exists', () => {
+  const d = withProgram();
+  const e = d.events[0];
+  d.formats.push({ id: 'f-gone', name: 'Modlitba', minutes: 5, leadRoleId: 'deleted' });
+  e.program = [{ id: 'i1', formatId: 'f-gone', minutes: 5 }];
+  const k = findConflicts(d, { today: TODAY });
+  assert.deepEqual(codes(k), ['K17:warning'], 'no K5 for the unknown role');
+  assert.equal(k[0].text, 'Modlitba: nikdo to nevede, služba z formátu už neexistuje. Vyber člověka, nebo uprav formát.');
+  e.program[0].personId = 'petr';
+  assert.deepEqual(findConflicts(d, { today: TODAY }), []);
+});
+
+test('K5 and K12 count the roles the program brings, the larger count wins', () => {
+  const d = withProgram();
+  d.formats.push({ id: 'f-kids', name: 'Děti zvlášť', minutes: 30, needs: [{ roleId: 'deti', count: 2 }] });
+  d.groupMembers.push(member('kaz', 'petr', { vecere: 'trained' }));
+  const e = d.events[0];
+  e.needs = [{ roleId: 'vecere', count: 1 }];
+  e.program = [{ id: 'i1', formatId: 'f-vecere', minutes: 10 }, { id: 'i2', formatId: 'f-kids', minutes: 30 }];
+  e.assignments = [asg('a1', 'vecere', 'petr'), asg('a2', 'deti', 'jana')];
+  const k = findConflicts(d, { today: TODAY });
+  assert.deepEqual(codes(k), ['K12:warning', 'K5:warning', 'K5:warning']);
+  assert.equal(k.find((x) => x.roleId === 'vecere').text, 'Večeře Páně: chybí 1 z 2.');
+  assert.equal(k.find((x) => x.roleId === 'deti').text, 'U dětí: chybí 1 z 2.');
+  assert.match(k.find((x) => x.code === 'K12').text, /jen jeden dospělý/);
 });
 
 test('K16: a leader who is gone, former or paused', () => {
@@ -456,6 +488,20 @@ test('proposeRemaining leaves learning people to the leader and skips cancelled 
   assert.deepEqual(proposeRemaining(d, 'a', () => 'x', { today: TODAY }), []);
 });
 
+test('proposeRemaining fills the roles the program brings too', () => {
+  const d = withProgram();
+  d.people.push({ id: 'ota', firstName: 'Ota', membership: { status: 'member' } });
+  d.groupMembers.push(member('kaz', 'ota', { kazani: 'trained', vecere: 'trained' }), member('kaz', 'jana', { vecere: 'trained' }));
+  const e = d.events[0];
+  e.needs = [{ roleId: 'zvuk', count: 1 }];
+  e.program = [{ id: 'i1', formatId: 'f-kazani', minutes: 30 }, { id: 'i2', formatId: 'f-vecere', minutes: 10 }];
+  let n = 0;
+  const added = proposeRemaining(d, 'a', () => `n${++n}`, { today: TODAY });
+  assert.deepEqual(added.map((a) => `${a.roleId}:${a.personId}`).sort(), ['kazani:ota', 'vecere:jana', 'zvuk:petr'],
+    'Ota preaches, so Večeře Páně gets only Jana (one of two) – K2 keeps Ota out');
+  assert.ok(findConflicts(d, { today: TODAY }).some((x) => x.code === 'K5' && x.roleId === 'vecere'));
+});
+
 test('skillLevel reads groupMembers.roles of the role’s team', () => {
   const d = baseData();
   const roles = new Map(d.roles.map((r) => [r.id, r]));
@@ -484,6 +530,20 @@ test('sameAsLastTime copies people from the previous event of the series', () =>
   const added = sameAsLastTime(d, 's2', () => `c${++n}`);
   assert.deepEqual(added.map((a) => `${a.id}:${a.roleId}:${a.personId}:${a.status}`), ['c1:zvuk:petr:proposed', 'c2:zpev:jana:proposed']);
   assert.deepEqual(sameAsLastTime(d, 's2', () => 'again'), [], 'nothing twice');
+});
+
+test('sameAsLastTime copies people into roles the program brings', () => {
+  const d = withProgram();
+  d.groupMembers.push(member('kaz', 'jana', { kazani: 'trained' }));
+  d.events = [
+    event('s1', '2026-10-04T10:00', '2026-10-04T11:00', { seriesId: 'S', assignments: [asg('p1', 'kazani', 'jana')] }),
+    event('s2', '2026-10-11T10:00', '2026-10-11T11:00', { seriesId: 'S', program: [{ id: 'i1', formatId: 'f-kazani', minutes: 30 }] }),
+  ];
+  const added = sameAsLastTime(d, 's2', () => 'c1');
+  assert.deepEqual(added.map((a) => `${a.roleId}:${a.personId}`), ['kazani:jana']);
+  d.events[1].program[0].personId = 'petr';
+  d.events[1].assignments = [];
+  assert.deepEqual(sameAsLastTime(d, 's2', () => 'c2'), [], 'a hand-picked leader – no lead role to fill');
 });
 
 test('sameAsLastTime skips people who cannot come, are busy, former or paused', () => {

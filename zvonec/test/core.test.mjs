@@ -310,6 +310,9 @@ test('events: needs = event needs plus format needs from the program', () => {
   assert.deepEqual(events.needsOf(d, e, { withAssigned: true }).at(-1), { roleId: 'r-coffee', count: 0 });
   assert.equal(events.missingCount(d, e, 'r-supper'), 1, 'declined does not fill');
   assert.equal(events.missingCount(d, e, 'r-coffee'), 0);
+  // a hand-picked leader of the sermon: its lead role is no longer needed
+  e.program[0].personId = 'petr';
+  assert.ok(!events.needsOf(d, e).some((n) => n.roleId === 'r-sermon'));
 });
 
 test('events: series creation, update of the following, cancel and delete', () => {
@@ -435,4 +438,8 @@ test('module boundaries: people imports nothing from planning, groups never impo
   }
   // the check itself must see import lines
   assert.deepEqual(importsOf('events.js').sort(), ['./program.js', './time.js']);
+  // scheduling and conflicts read needsOf from events.js – never the other way round (no cycle)
+  for (const file of ['events.js', 'program.js', 'time.js']) {
+    for (const path of importsOf(file)) assert.ok(!/(scheduling|conflicts)\.js$/.test(path), `${file} imports ${path}`);
+  }
 });

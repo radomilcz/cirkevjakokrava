@@ -1,0 +1,41 @@
+# Template for the PRIVATE data repo (e.g. radomilcz/sbor-data) – copy to .github/workflows/check.yml.
+#
+# After every save from Zvonec (each save is a commit to data/) and every Monday morning it checks
+# the schedule with the same rules as the app. When something in the future will not work, the run
+# turns red – GitHub e-mails the leaders and the Czech summary is in the Actions tab.
+# The check's code comes from the public website repo; the data never leaves this repo.
+name: Collision check
+
+on:
+  push:
+    paths: [data/**]
+  schedule:
+    - cron: "17 5 * * 1"        # Monday 6:17 / 7:17 Prague time
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the data
+        uses: actions/checkout@v4
+
+      - name: Check out the check from the public repo
+        uses: actions/checkout@v4
+        with:
+          repository: radomilcz/cirkevjakokrava
+          path: web
+          sparse-checkout: |
+            docs/zvonec
+            zvonec
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check for collisions
+        run: node web/zvonec/check.mjs data

@@ -10,6 +10,7 @@
 
 import { overlaps, inBlockout, dayOf, monthOf, addDays, weekday, prettyDay, prettyTime, today as todayLocal } from './time.js';
 import { programTimes, programDuration, eventDuration, itemName, itemLeaders } from './program.js';
+import { needsOf } from './events.js';
 import {
   index, displayName, isActive, rules, limitsOf, isFormer, isChild, memberIndex, skillLevel,
   isCombinable, unavailability, timeWindow, activeAssignments,
@@ -234,9 +235,14 @@ export function findConflicts(data, { today } = {}) {
       continue;
     }
 
-    for (const need of upcoming ? e.needs || [] : []) {   // gaps in the past no longer hurt anyone
+    // full needs: event.needs plus the roles the program's formats bring (what the slots show)
+    const needs = needsOf(data, e);
+    const ownNeed = (roleId) => (e.needs || []).some((n) => n.roleId === roleId);
+
+    for (const need of upcoming ? needs : []) {   // gaps in the past no longer hurt anyone
       const role = roles.get(need.roleId);
-      const count = need.count || 1;
+      if (!role && !ownNeed(need.roleId)) continue;   // a format leads with a deleted role – K17 says it
+      const count = Number(need.count) || 0;
       const have = assignments.filter((a) => a.roleId === need.roleId && isActive(a) && a.personId).length;
       const missing = count - have;
       if (missing > 0) {
@@ -291,19 +297,20 @@ export function findConflicts(data, { today } = {}) {
           }
           continue;
         }
+        // An existing lead role is a need of the event (needsOf), so K5 reports it while empty.
+        // K17 is left for a format whose lead role no longer exists.
         const format = formats.get(item.formatId);
-        if (format?.leadRoleId && !itemLeaders(data, e, item).length
-          && !(e.needs || []).some((n) => n.roleId === format.leadRoleId)) {
+        if (format?.leadRoleId && !roles.has(format.leadRoleId) && !itemLeaders(data, e, item).length) {
           add({
             key: `K17:${item.id}`, code: 'K17', severity: 'warning', eventId: e.id,
-            text: `${name}: nikdo to nevede. Přidej službu ${roleName(format.leadRoleId) || '?'}, nebo vyber člověka.`,
+            text: `${name}: nikdo to nevede, služba z formátu už neexistuje. Vyber člověka, nebo uprav formát.`,
           });
         }
       }
     }
 
     // K12 – at least two adults with the children (only when the event needs a childcare role)
-    if ((e.needs || []).some((n) => roles.get(n.roleId)?.childcare)) {
+    if (needs.some((n) => roles.get(n.roleId)?.childcare)) {
       const adults = new Set(assignments
         .filter((a) => isActive(a) && a.personId && roles.get(a.roleId)?.childcare && !child(people.get(a.personId)))
         .map((a) => a.personId));

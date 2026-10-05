@@ -10,10 +10,14 @@
 //
 // This module also holds the small planning lookups that lib/conflicts.js shares (skill level,
 // availability, serving limits, child age, time window of an assignment). It does not import
-// lib/people.js or lib/groups.js, so the few lookups it needs are implemented here.
+// lib/groups.js, so the few lookups it needs are implemented here.
+//
+// Needs always mean the full needs of an event (`needsOf`: event.needs merged with the roles the
+// program's formats bring), the same list the event screen shows as slots.
 
 import { displayName, fullName, age as ageOn, isChild } from './people.js';
 import { overlaps, inBlockout, dayOf, monthOf, addDays, addMinutes, weekday, today as todayLocal } from './time.js';
+import { needsOf } from './events.js';
 
 export const DEFAULT_LIMITS = { maxPerMonth: 4, maxConsecutiveWeeks: 3 };
 export const DEFAULT_RULES = { essentialDaysBefore: 7, unconfirmedDaysBefore: 5, childAge: 15 };
@@ -236,8 +240,8 @@ export function proposeRemaining(data, eventId, newId, options = {}) {
   if (!event || event.cancelled) return [];
   event.assignments = event.assignments || [];
   const added = [];
-  for (const need of event.needs || []) {
-    const count = need.count || 1;
+  for (const need of needsOf(data, event)) {
+    const count = Number(need.count) || 0;
     let have = filled(event, need.roleId);
     while (have < count) {
       const who = candidates(data, eventId, need.roleId, { ...options, scope: 'skilled', includeInactive: false })
@@ -280,13 +284,14 @@ export function sameAsLastTime(data, eventId, newId, { from } = {}) {
   const roles = index(data.roles);
   const people = index(data.people);
   const all = activeAssignments(data);
+  const needs = needsOf(data, event);
   const added = [];
   for (const prev of source.assignments || []) {
     if (!isActive(prev) || !prev.personId) continue;
-    if (!(event.needs || []).some((n) => n.roleId === prev.roleId)) continue;
+    const need = needs.find((n) => n.roleId === prev.roleId);
+    if (!need) continue;
     if (event.assignments.some((a) => a.roleId === prev.roleId && a.personId === prev.personId)) continue;
-    const need = event.needs.find((n) => n.roleId === prev.roleId);
-    if (filled(event, prev.roleId) >= (need.count || 1)) continue;
+    if (filled(event, prev.roleId) >= (Number(need.count) || 0)) continue;
     const person = people.get(prev.personId);
     if (!person || isInactive(data, person)) continue;
     const mine = timeWindow(event, roles.get(prev.roleId));

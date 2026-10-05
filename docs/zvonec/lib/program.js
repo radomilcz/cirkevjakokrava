@@ -71,9 +71,15 @@ export function formatNeeds(format) {
   return mergeNeeds(format.needs, format.leadRoleId ? [{ roleId: format.leadRoleId, count: 1 }] : []);
 }
 
-/** Needs of all formats in the program, merged. */
+/**
+ * Needs of all formats in the program, merged. An item with a hand-picked leader (personId)
+ * does not ask for its lead role – only for the format's other needs.
+ */
 export function programNeeds(data, event) {
-  return mergeNeeds(...(event.program || []).map((item) => formatNeeds(formatById(data, item.formatId))));
+  return mergeNeeds(...(event.program || []).map((item) => {
+    const format = formatById(data, item.formatId);
+    return item.personId ? mergeNeeds(format?.needs) : formatNeeds(format);
+  }));
 }
 
 /** Inserts a program item for the format at `position` (default: end). Returns the item or null. */

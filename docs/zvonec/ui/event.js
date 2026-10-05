@@ -49,7 +49,7 @@ export function renderEvent(id) {
   const places = (event.placeIds || []).map((p) => (S.data.places || []).find((x) => x.id === p)?.name).filter(Boolean);
   const sameDay = dayOf(event.start) === dayOf(addMinutes(event.end, -1));
   const kindLabel = EVENT_KIND_LABELS[event.kind];
-  const hasNeeds = !!(event.needs || []).length;
+  const hasNeeds = needsOf(S.data, event).length > 0;   // program formats bring roles too
 
   return [
     backLink('Kalendář', `#kalendar/${monthOf(event.start)}`),
