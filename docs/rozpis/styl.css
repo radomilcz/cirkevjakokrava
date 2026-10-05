@@ -11,6 +11,7 @@
 @font-face{font-family:"Agrandir Grand";src:url(../assets/fonts/Agrandir-Grand.woff) format("woff");font-weight:400;font-display:swap}
 :root{
   --ground:#3b2f2f;
+  --ground-rgb:59,47,47;
   --ink:#e6acac;
   --ink-rgb:230,172,172;
   --print:rgba(var(--ink-rgb),.13);
@@ -25,6 +26,31 @@
   --okraj:clamp(16px,4vw,56px);
   color-scheme:dark;
 }
+/* ---------- palety značky (jako Otázky na tělo) ----------
+   Bez volby se Rozpis řídí zařízením: světlé = krém a hlína, tmavé = hlína a růžová.
+   Volbu v rohu lišty drží :root[data-paleta] (nastaví ji paleta.js ještě před vykreslením). */
+@media (prefers-color-scheme:light){
+  :root:not([data-paleta]){--ground:#f9e7dd;--ground-rgb:249,231,221;--ink:#3b2f2f;--ink-rgb:59,47,47;color-scheme:light}
+}
+/* Hlína a růžová */
+:root[data-paleta="hlina-ruzova"]{--ground:#3b2f2f;--ground-rgb:59,47,47;--ink:#e6acac;--ink-rgb:230,172,172;color-scheme:dark}
+/* Růžová a hlína */
+:root[data-paleta="ruzova-hlina"]{--ground:#e6acac;--ground-rgb:230,172,172;--ink:#3b2f2f;--ink-rgb:59,47,47;color-scheme:light}
+/* Zelená a krém */
+:root[data-paleta="zelena-krem"]{--ground:#498660;--ground-rgb:73,134,96;--ink:#f9e7dd;--ink-rgb:249,231,221;color-scheme:light}
+/* Krém a zelená */
+:root[data-paleta="krem-zelena"]{--ground:#f9e7dd;--ground-rgb:249,231,221;--ink:#498660;--ink-rgb:73,134,96;color-scheme:light}
+/* Modrá a krém */
+:root[data-paleta="modra-krem"]{--ground:#464994;--ground-rgb:70,73,148;--ink:#f9e7dd;--ink-rgb:249,231,221;color-scheme:dark}
+/* Krém a modrá */
+:root[data-paleta="krem-modra"]{--ground:#f9e7dd;--ground-rgb:249,231,221;--ink:#464994;--ink-rgb:70,73,148;color-scheme:light}
+/* Zelená a růžová */
+:root[data-paleta="zelena-ruzova"]{--ground:#498660;--ground-rgb:73,134,96;--ink:#e6acac;--ink-rgb:230,172,172;color-scheme:light}
+/* Růžová a modrá */
+:root[data-paleta="ruzova-modra"]{--ground:#e6acac;--ground-rgb:230,172,172;--ink:#464994;--ink-rgb:70,73,148;color-scheme:light}
+/* Krém a hlína */
+:root[data-paleta="krem-hlina"]{--ground:#f9e7dd;--ground-rgb:249,231,221;--ink:#3b2f2f;--ink-rgb:59,47,47;color-scheme:light}
+
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -49,7 +75,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .lista{
   position:sticky;top:0;z-index:10;display:flex;flex-wrap:wrap;align-items:center;gap:.6em 1.4em;
   padding:.9em var(--okraj);
-  background:rgba(59,47,47,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  background:rgba(var(--ground-rgb),.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   border-bottom:1px solid var(--linka);
 }
 .brand{
@@ -64,9 +90,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 .menu a:hover{background:var(--hover);border-color:rgba(var(--ink-rgb),.8)}
 .menu a[aria-current="page"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
-.menu .nastaveni{padding:0;width:2.55em;height:2.55em;justify-content:center;border:0}
-.menu .nastaveni .terc{width:100%;height:100%;box-shadow:inset 0 0 0 1px var(--obrys)}
-.menu .nastaveni[aria-current="page"] .terc{--v:var(--ink);--s:var(--ground)}
 .pocet{
   display:inline-grid;place-items:center;min-width:1.55em;height:1.55em;padding:.12em .4em 0;border-radius:999px;
   background:var(--ink);color:var(--ground);font-size:.8em;line-height:1;
@@ -80,6 +103,36 @@ button,input,select,textarea{font:inherit;color:inherit}
   .ulozeni{flex-basis:auto;order:-1;margin:0 0 0 1em;text-align:left}
   .lista .brand{order:-2}
 }
+
+/* ---------- volba barev: terč v liště (stejný jako v Otázkách na tělo) ---------- */
+.paleta{position:relative;display:flex}
+.paleta button{display:grid;place-items:center;padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;line-height:0}
+.paleta .prepinac .terc{width:2.55em;height:2.55em;box-shadow:inset 0 0 0 1px var(--obrys)}
+.paleta .prepinac:hover .terc,.paleta .prepinac:focus-visible .terc{box-shadow:inset 0 0 0 1px rgba(var(--ink-rgb),.8),0 0 0 .28em rgba(var(--ink-rgb),.12)}
+.paleta-menu{
+  position:absolute;top:calc(100% + .6em);right:0;z-index:20;
+  display:grid;grid-template-columns:repeat(3,auto);gap:.6em;padding:.75em;
+  background:var(--ground) linear-gradient(rgba(var(--ink-rgb),.1),rgba(var(--ink-rgb),.1));
+  border:1px solid var(--obrys);border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,.28);
+}
+.paleta-menu[hidden]{display:none}
+.paleta-menu .terc{width:2.2em;height:2.2em}
+.paleta-menu button:hover .terc,.paleta-menu button:focus-visible .terc{box-shadow:0 0 0 2px rgba(var(--ink-rgb),.7)}
+.paleta-menu button[aria-checked="true"] .terc{box-shadow:0 0 0 2px var(--ink)}
+.paleta-menu .auto{
+  grid-column:1/-1;line-height:1.1;font-size:.82em;padding:.55em .8em .42em;border-radius:999px;
+  border:1px solid var(--obrys);
+}
+.paleta-menu .auto[aria-checked="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.paleta-menu [data-paleta="hlina-ruzova"] .terc{--v:#3b2f2f;--s:#e6acac}
+.paleta-menu [data-paleta="ruzova-hlina"] .terc{--v:#e6acac;--s:#3b2f2f}
+.paleta-menu [data-paleta="zelena-krem"] .terc{--v:#498660;--s:#f9e7dd}
+.paleta-menu [data-paleta="krem-zelena"] .terc{--v:#f9e7dd;--s:#498660}
+.paleta-menu [data-paleta="modra-krem"] .terc{--v:#464994;--s:#f9e7dd}
+.paleta-menu [data-paleta="krem-modra"] .terc{--v:#f9e7dd;--s:#464994}
+.paleta-menu [data-paleta="zelena-ruzova"] .terc{--v:#498660;--s:#e6acac}
+.paleta-menu [data-paleta="ruzova-modra"] .terc{--v:#e6acac;--s:#464994}
+.paleta-menu [data-paleta="krem-hlina"] .terc{--v:#f9e7dd;--s:#3b2f2f}
 
 /* ---------- stránka ---------- */
 .page{position:relative;z-index:1;flex:1;width:100%;max-width:1320px;margin:0 auto;padding:clamp(26px,4.5vw,64px) var(--okraj) clamp(36px,5vw,64px)}
@@ -340,7 +393,7 @@ input[type=text],input[type=email],input[type=tel],input[type=url],input[type=da
 textarea{border-radius:18px;min-height:5.5em;resize:vertical;line-height:1.4}
 input:focus,select:focus,textarea:focus{border-color:var(--ink);background:rgba(var(--ink-rgb),.1)}
 input::placeholder,textarea::placeholder{color:var(--ink);opacity:.45}
-input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.8) sepia(.4) hue-rotate(-30deg);cursor:pointer}
+input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{cursor:pointer}   /* barvu ikonky řídí color-scheme palety */
 select{
   appearance:none;-webkit-appearance:none;padding-right:2.4em;cursor:pointer;
   background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
@@ -395,7 +448,7 @@ select option{background:var(--ground);color:var(--ink)}
   border:1px solid var(--obrys);border-radius:22px;box-shadow:0 14px 34px rgba(0,0,0,.35);
 }
 .dialog.siroky{width:min(900px,calc(100vw - 24px))}
-.dialog::backdrop{background:rgba(42,33,33,.72)}
+.dialog::backdrop{background:rgba(20,16,16,.55)}
 .dialog form,.dialog .vnitrek{padding:clamp(20px,3.5vw,32px)}
 .dialog .eyebrow{margin:0 0 .6em}
 .dialog .akce{margin-top:clamp(20px,3vw,28px);justify-content:flex-end}
@@ -417,7 +470,7 @@ select option{background:var(--ground);color:var(--ink)}
 .kandidati li.tezky button:hover{opacity:1}
 
 /* ---------- přihlášení ---------- */
-body.neprihlaseny .menu,body.neprihlaseny .ulozeni{display:none}
+body.neprihlaseny .menu>a,body.neprihlaseny .ulozeni{display:none}   /* barvy jdou přepnout i před přihlášením */
 .uzky{max-width:560px}
 .prihlaseni{grid-template-columns:minmax(0,1fr)}
 .tajne{font-family:ui-monospace,Menlo,monospace;font-weight:400;word-break:break-all;user-select:all}
@@ -518,7 +571,7 @@ body.neprihlaseny .menu,body.neprihlaseny .ulozeni{display:none}
   box-shadow:0 14px 34px rgba(0,0,0,.35);animation:vyjed .35s cubic-bezier(.16,1,.3,1);
 }
 .hlaska strong{font-family:var(--display);font-weight:800}
-.hlaska .tl{color:var(--ground);border-color:rgba(59,47,47,.5)}
+.hlaska .tl{color:var(--ground);border-color:rgba(var(--ground-rgb),.5)}
 @keyframes vyjed{from{opacity:0;transform:translateY(12px)}}
 @media (prefers-reduced-motion:reduce){.hlaska{animation:none}}
 
@@ -531,7 +584,8 @@ body.neprihlaseny .menu,body.neprihlaseny .ulozeni{display:none}
    Doma se tiskne bez spadávky, takže na bílý papír: inkoust se obrátí na hlínu.
    Linky i stavy jedou přes --ink-rgb, takže fungují dál. */
 @media print{
-  :root{--ground:#fff;--ink:#3b2f2f;--ink-rgb:59,47,47;--print:rgba(59,47,47,.06)}
+  :root,:root[data-paleta]{--ground:#fff;--ground-rgb:255,255,255;--ink:#3b2f2f;--ink-rgb:59,47,47;--print:rgba(59,47,47,.06)}   /* tisk vždycky na bílý papír */
+  .paleta{display:none}
   @page{size:A4 landscape;margin:11mm}
   html,body{background:#fff;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:9.5pt}
   .lista,.pata,.akce,.mesic-nav,.filtr,.hlasky,.zpet,.netisknout,.dialog,.otisk.b{display:none !important}

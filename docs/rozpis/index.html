@@ -15,6 +15,7 @@
 <link rel="apple-touch-icon" href="../assets/icon-180.png">
 <link rel="preload" href="../assets/fonts/Agrandir-NarrowBlack.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="../assets/fonts/Agrandir-Regular.woff" as="font" type="font/woff" crossorigin>
+<script src="paleta.js"></script>
 <link rel="stylesheet" href="styl.css">
 <script type="module" src="app.js"></script>
 </head>
@@ -34,7 +35,22 @@
     <a href="#sluzby" data-sekce="sluzby">Služby</a>
     <a href="#formaty" data-sekce="formaty">Formáty</a>
     <a href="#kolize" data-sekce="kolize">Kolize <span class="pocet" hidden></span></a>
-    <a href="#nastaveni" data-sekce="nastaveni" class="nastaveni" aria-label="Nastavení"><span class="terc" aria-hidden="true"></span></a>
+    <a href="#nastaveni" data-sekce="nastaveni">Nastavení</a>
+    <div class="paleta">
+      <button class="prepinac" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Barvy" title="Barvy"><span class="terc"></span></button>
+      <div class="paleta-menu" role="menu" aria-label="Barvy" hidden>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="hlina-ruzova" title="Hlína a růžová" aria-label="Hlína a růžová"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="ruzova-hlina" title="Růžová a hlína" aria-label="Růžová a hlína"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="zelena-krem" title="Zelená a krém" aria-label="Zelená a krém"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="krem-zelena" title="Krém a zelená" aria-label="Krém a zelená"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="modra-krem" title="Modrá a krém" aria-label="Modrá a krém"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="krem-modra" title="Krém a modrá" aria-label="Krém a modrá"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="zelena-ruzova" title="Zelená a růžová" aria-label="Zelená a růžová"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="ruzova-modra" title="Růžová a modrá" aria-label="Růžová a modrá"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="krem-hlina" title="Krém a hlína" aria-label="Krém a hlína"><span class="terc"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-paleta="" class="auto">Podle zařízení</button>
+      </div>
+    </div>
   </nav>
   <p class="ulozeni" role="status" aria-live="polite"></p>
 </header>
