@@ -658,3 +658,116 @@ body.logged-out .menu>a,body.logged-out .save-status{display:none}   /* colours 
   .btn.small::after,.btn.mini::after,.slot .status::after,button.tag::after,.back::after{content:"";position:absolute;inset:-8px -2px}
   .month-nav .btn{min-width:44px;min-height:44px}
 }
+
+/* calendar and event screens */
+button.more{background:none;border:0;cursor:pointer;text-align:left;padding:.1em .4em}
+button.more:hover{text-decoration:underline;text-underline-offset:.2em;color:var(--ink)}
+.day-list{display:flex;flex-direction:column;gap:6px;margin:.4em 0 0}
+.day-list .chip{font-size:.95em;white-space:normal;padding:.6em .8em .5em;border-radius:14px}
+.agenda-empty{display:none}
+@media (max-width:760px){.agenda-empty{display:block;margin:0 0 1em}}
+.skills .team-heading{display:block;border-top:0;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem;color:var(--muted);padding:1em 0 .2em}
+.skills .team-heading+li{border-top:1px solid var(--line)}
+.skills.needs li:not(.team-heading){padding:.3em 0}
+.filter-row{display:flex;flex-wrap:wrap;column-gap:1.2em}
+.series-nav{display:flex;flex-wrap:wrap;gap:8px}
+.leader-pick{display:flex;flex-wrap:wrap;align-items:center;gap:.5em .7em}
+.leader-pick .leader-name{margin-right:auto}
+.conflict-actions{display:flex;justify-content:flex-end;margin:.3em 0 0}
+.status-choice .tag{font-size:.75em;padding:.42em .65em .3em}
+.schedule-table .mine{text-decoration:underline;text-underline-offset:.2em}
+.print-only{display:none}
+@media print{
+  .print-only{display:block}
+  .program-sheet .meta{font-size:11pt}
+}
+
+/* groups and settings screens */
+.list .group-description{color:var(--muted);font-size:.92em;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
+@media (max-width:700px){.list .row .group-description{grid-column:1/-1;order:3}}
+.minute-range{display:flex;align-items:center;gap:.5em}
+.minute-range input.count-input{width:6em}
+/* members × roles: one row per member, skill segments per role */
+.member-list{list-style:none;margin:0;padding:0}
+.member{display:grid;grid-template-columns:minmax(16em,20em) minmax(0,1fr);gap:.5em 1.4em;align-items:start;padding:.75em 0;border-top:1px solid var(--line)}
+.member:last-child{border-bottom:1px solid var(--line)}
+.member-head{display:flex;align-items:center;justify-content:space-between;gap:.4em .8em;min-width:0}
+.member-name{flex:1;min-width:0;font-size:1.08em;text-decoration:none;overflow-wrap:anywhere;padding:.3em 0}
+a.member-name:hover{text-decoration:underline;text-underline-offset:.2em}
+.member-tools{display:flex;align-items:center;gap:.4em}
+.member-tools .choice span{font-size:.82em;padding:.38em .8em .3em .45em}
+.member-roles{display:flex;flex-wrap:wrap;gap:.5em 1.2em}
+.member-role{display:flex;align-items:center;gap:.55em}
+.member-role .role-name{font-size:.88em;color:var(--muted);min-width:4.5em}
+.member-role .segment span{min-height:32px;padding:.3em .75em .22em;font-size:.82em}
+.member-role .segment label:first-child input:checked+span{background:var(--hover);color:var(--ink)}   /* „ne“ stays quiet, skills stand out */
+.member-tools{flex:none}
+@media (max-width:760px){
+  .member{grid-template-columns:minmax(0,1fr)}
+  .member-roles{flex-direction:column;gap:.35em}
+  .member-role{justify-content:space-between}
+}
+/* needs editor (event types, formats) and the program of an event type */
+.needs-editor li.team-heading{border:0;padding:1em 0 .2em;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem;color:var(--muted)}
+.needs-editor li.team-heading:first-child{padding-top:.2em}
+.needs-editor li.team-heading+li{border-top:1px solid var(--line)}
+@media (min-width:760px){.needs-editor{columns:2;column-gap:2.2em}.needs-editor li{break-inside:avoid}}
+.program-editor>li{grid-template-columns:2.2em minmax(0,1fr) auto auto}
+.program-editor select{width:100%}
+@media (max-width:560px){
+  .program-editor>li{grid-template-columns:2.2em minmax(0,1fr) auto}
+  .program-editor .move{grid-column:2/-1}
+}
+.form-grid h3.eyebrow{margin:1em 0 0;font-size:1rem}
+.settings-nav{margin-top:clamp(18px,2.6vw,28px)}
+.legend .swatch.warning{border:1.5px dashed var(--ink)}
+
+/* people screens */
+/* facts on the person card: label left, value right */
+.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.45em 1.2em;margin:0}
+.facts dt{color:var(--muted);font-size:.92em;padding-top:.08em}
+.facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.facts a{text-underline-offset:.2em}
+@media (max-width:420px){.facts{grid-template-columns:minmax(0,1fr);gap:.1em 0}.facts dd{margin-bottom:.5em}}
+/* dashed box: something to finish (card created quickly, demo "looking as") */
+.notice{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6em 1.2em;padding:.9em 1.1em .8em;border:1.5px dashed var(--ink);border-radius:18px}
+.notice p{margin:0;max-width:60ch}
+.demo-bar{margin:0 0 clamp(18px,2.6vw,26px)}
+.quick-add-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag.warning{border:1.5px dashed var(--ink)}
+a.tag{text-decoration:none}
+a.tag:hover{background:var(--hover)}
+a.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
+.birthdays{display:flex;flex-wrap:wrap;align-items:center;gap:6px .5em;margin:clamp(14px,2vw,20px) 0 0;font-size:.95em}
+.overview li.off{opacity:.55}
+.overview li .tags{justify-content:flex-end}
+.list .name a{text-decoration:none}
+.list .name a:hover{text-decoration:underline;text-underline-offset:.2em}
+.list .tags a{font-size:.9em;color:var(--muted)}
+.availability-form{margin-top:.2em}
+/* picker */
+.picker .search input{max-width:none}
+.candidates button[aria-pressed="true"]{background:var(--fill);box-shadow:inset 3px 0 0 var(--ink)}
+.candidates button[aria-pressed="true"] .name::after{content:"";display:inline-block;width:.55em;height:.55em;margin-left:.55em;border-radius:50%;background:var(--ink);vertical-align:.1em}
+.candidates li.create button{color:var(--muted)}
+.candidates li.create button:hover{color:var(--ink)}
+.candidates li.create .name{display:inline-flex;align-items:center;gap:.4em}
+.candidates li.create .plus::before{content:"+";font-size:1.2em;line-height:0}
+.quick-add{margin-top:.4em}
+.similar .note{margin:0 0 .5em}
+/* #moje: what waits for an answer */
+.answer-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.answer{padding:clamp(14px,2.2vw,20px);border:1px solid var(--outline);border-radius:22px;background:rgba(var(--ink-rgb),.035)}
+.answer p{margin:0}
+.answer-when{color:var(--muted);font-size:.92em}
+.answer-role{font-family:var(--narrow);font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,3.2vw,2.1rem);line-height:1;margin:.3em 0 .15em !important}
+.answer-event a{text-underline-offset:.2em}
+.answer-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:.9em}
+.answer-buttons .btn{min-width:8.5em;min-height:48px;font-size:1.05em}
+.my-groups{list-style:none;margin:0;padding:0}
+.my-groups>li{padding:.8em 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:.45em}
+.my-groups>li:last-child{border-bottom:1px solid var(--line)}
+.my-groups p{margin:0}
+.my-groups .group-name{font-family:var(--display);font-weight:800;font-size:1.05em}
+.my-groups .group-leaders{line-height:1.7}
+.my-groups .group-leaders a{text-underline-offset:.2em}
