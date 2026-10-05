@@ -14,10 +14,11 @@ Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stej
 | --- | --- |
 | **Kalendář** | měsíc v mřížce (na mobilu seznam dnů), klik do dne = nové setkání, šablony, opakování (týden, 14 dní, měsíc) |
 | **Setkání** | kdo co dělá po týmech, výběr lidí seřazený podle toho, kdo může a kdo má nejmíň služeb, „Navrhnout zbytek“, „Stejní lidi jako minule“, stavy navrženo → potvrzeno → nemůže, zrušení, řady |
-| **Pořad** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně, Příběh ze života…) – časy se dopočítají, vedoucí se doplní podle služeb, posouvání nahoru/dolů, „Stejný pořad jako minule“, pořad v šabloně, list na A4 na výšku k pultu |
+| **Formáty** | vlastní stránka: každý formát má název, **Proč to děláme** a **Jak to probíhá**, délku, kdo ho vede, odkaz a služby, které potřebuje. Formáty si zakládáš a upravuješ sám; členové je vidí jen ke čtení |
+| **Pořad** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně, Příběh ze života…) – časy se dopočítají, vedoucí se doplní podle služeb, posouvání nahoru a dolů, „Stejný pořad jako minule“, pořad v šabloně. Klik na bod ukáže Proč a Jak. List na A4 na výšku k pultu, volitelně i s Jak |
 | **Rozpis** | tabulka měsíce (řádky neděle, sloupce služby po týmech), filtr týmů, tisk na A4 na šířku – na bílý papír, bez telefonů |
 | **Lidé** | hledání, stav (člen, chodí pravidelně, host, dítě, neaktivní), domácnosti, co umí (umí / učí se), kdy nemůže, kdy slouží, souhlas se zpracováním údajů, kalendář do telefonu (.ics) |
-| **Služby** | služby po týmech, vedoucí, služby, které jeden člověk zvládne naráz (zpěv + kytara), formáty pořadu, šablony setkání, místa |
+| **Služby** | služby po týmech, vedoucí, služby, které jeden člověk zvládne naráz (zpěv + kytara), šablony setkání, místa |
 | **Kolize** | všechny problémy od dneška po měsících, filtr chyby / pozor / info |
 | **Nastavení** | připojení k GitHubu, záloha a nahrání JSON, celý kalendář .ics |
 

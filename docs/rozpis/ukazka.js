@@ -68,20 +68,52 @@ const POTREBA_ZKOUSKA = [['zpev', 2], ['kytara', 1], ['klavesy', 1], ['bici', 1]
 
 // formáty, ze kterých se skládá pořad: id, název, minuty, kdo vede (služba), co dalšího potřebuje
 const FORMATY = [
-  ['f-privitani', 'Přivítání', 5, 'vedeni'],
-  ['f-chvaly', 'Chvály', 25, 'zpev'],
-  ['f-ohlasky', 'Ohlášky', 5, 'vedeni'],
-  ['f-deti', 'Děti jdou do skupinky', 2, 'deti'],
-  ['f-kazani', 'Kázání', 35, 'kazani'],
+  ['f-privitani', 'Přivítání', 5, 'vedeni', {
+    proc: 'Kdo přijde poprvé, má hned vědět, že je tu vítaný a co ho čeká.',
+    jak: 'Vedoucí pozdraví, řekne, kdo jsme a co dnes bude. Novým lidem ukáže, kde je kafe a záchod. Pět minut, žádné kázání.',
+  }],
+  ['f-chvaly', 'Chvály', 25, 'zpev', {
+    proc: 'Zpíváme Bohu, protože je dobrý. A při zpěvu se přestaneme honit.',
+    jak: 'Kapela zahraje čtyři až pět písní, texty běží na plátně. Mezi písněmi stačí krátká věta.',
+  }],
+  ['f-ohlasky', 'Ohlášky', 5, 'vedeni', {
+    proc: 'Ať všichni vědí, co chystáme a kde můžou přiložit ruku k dílu.',
+    jak: 'Nejvýš tři věci, každá na jednu větu. Zbytek je na webu a ve skupině.',
+  }],
+  ['f-deti', 'Děti jdou do skupinky', 2, 'deti', {
+    proc: 'Děti mají vlastní program, kde si můžou hrát a ptát se po svém.',
+    jak: 'Vedoucí dětí si je vyzvedne vepředu a odvede do malé místnosti. Rodičům řekne, kde je najdou.',
+  }],
+  ['f-kazani', 'Kázání', 35, 'kazani', {
+    proc: 'Otevíráme Bibli, aby k nám mluvila v obyčejném týdnu.',
+    jak: 'Kazatel mluví asi půl hodiny. Jedna hlavní myšlenka, jeden příběh ze života a jedna věc, kterou si odneseme do úterý.',
+  }],
   ['f-otazky', 'Otázky na tělo', 20, 'vedeni', {
-    popis: 'Pár otázek ke kultuře, ve dvojicích nebo po třech. Otázky jsou na webu i na A4.',
+    proc: 'Přežvykujeme, co jsme slyšeli, dokud to nevstřebáme celé.',
+    jak: 'Rozdělíme se do dvojic nebo po třech. Každá skupinka dostane dvě až tři otázky z otazky.cirkevjakokrava.cz. Na konci pár lidí řekne, co je trklo.',
     odkaz: 'https://otazky.cirkevjakokrava.cz',
   }],
-  ['f-vecere', 'Večeře Páně', 10, 'vecere', { potreba: [{ sluzba: 'vecere', pocet: 2 }] }],
-  ['f-modlitby', 'Modlitby', 10, 'vedeni'],
-  ['f-pribeh', 'Příběh ze života', 10, null, { popis: 'Někdo ze sboru vypráví, co s Bohem zažil. Kdo to bude, vybereš v pořadu: klikni na tenhle bod a vyplň Kdo vede.' }],
-  ['f-video', '(B)učení – video', 5, 'projekce'],
-  ['f-pisen', 'Píseň na konec', 5, 'zpev'],
+  ['f-vecere', 'Večeře Páně', 10, 'vecere', {
+    proc: 'Připomínáme si, že Ježíš za nás dal život, a jíme u jednoho stolu jako rodina.',
+    jak: 'Vedoucí přečte krátký text a pomodlí se. Chléb a víno (nebo džus) roznesou dva pomocníci. Kdo nechce, pošle to dál, nic se neděje.',
+    potreba: [{ sluzba: 'vecere', pocet: 2 }],
+  }],
+  ['f-modlitby', 'Modlitby', 10, 'vedeni', {
+    proc: 'Neseme k Bohu, co nás pálí, a nezůstáváme v tom sami.',
+    jak: 'Kdo chce, modlí se nahlas, krátce a vlastními slovy. Na konci modlitby uzavře vedoucí.',
+  }],
+  ['f-pribeh', 'Příběh ze života', 10, null, {
+    proc: 'Bůh je lepší, než jsme se báli. Nejlíp je to vidět na obyčejných lidech.',
+    jak: 'Někdo ze sboru vypráví pět až deset minut, co s Bohem zažil. Kdo to bude, vybereš v pořadu: klikni na tenhle bod a vyplň Kdo vede.',
+  }],
+  ['f-video', '(B)učení – video', 5, 'projekce', {
+    proc: 'Krátké video někdy řekne víc než dlouhý výklad.',
+    jak: 'Projekce pustí video, nejlíp kratší než pět minut. Zvuk vyzkoušet ještě před začátkem.',
+  }],
+  ['f-pisen', 'Píseň na konec', 5, 'zpev', {
+    proc: 'Ať odcházíme s něčím, co si budeme broukat celý týden.',
+    jak: 'Jedna píseň, kterou všichni znají. Po ní vedoucí řekne, že je kafe.',
+  }],
 ];
 const PORAD_PASTVA = ['f-privitani', 'f-chvaly', 'f-ohlasky', 'f-deti', 'f-kazani', 'f-otazky', 'f-modlitby', 'f-pisen'];
 

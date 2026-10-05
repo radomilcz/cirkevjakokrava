@@ -465,6 +465,28 @@ body.neprihlaseny .menu,body.neprihlaseny .ulozeni{display:none}
   .porad .posun{grid-column:2/-1;justify-content:flex-end}
 }
 
+/* ---------- formáty: proč to děláme a jak to probíhá ---------- */
+.formaty{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(14px,2vw,20px)}
+@media (min-width:900px){.formaty{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.karta-formatu{
+  display:flex;flex-direction:column;gap:.7em;
+  padding:clamp(18px,2.4vw,26px);border:1px solid var(--obrys);border-radius:22px;
+  background:rgba(var(--ink-rgb),.035);
+}
+.hlava-formatu{display:flex;align-items:flex-start;justify-content:space-between;gap:1em}
+.karta-formatu h2{
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:0;
+  font-size:clamp(1.4rem,2.6vw,1.9rem);line-height:1;margin:0;padding-top:.1em;overflow-wrap:anywhere;
+}
+.meta-formatu{margin:0;font-size:.88em;opacity:.65}
+.proc-jak{display:flex;flex-direction:column;gap:.85em}
+.proc-jak p{margin:0}
+.proc-jak .nadpisek{font-family:var(--display);font-weight:800;font-size:.86em;margin:0 0 .25em}
+.proc-jak .text{white-space:pre-line;line-height:1.45;max-width:46em}
+.proc-jak a{opacity:.8}
+.dialog .proc-jak{padding:1em 1.1em;border-radius:18px;background:rgba(var(--ink-rgb),.06);margin:.4em 0 .2em}
+.porad .jak-v-poradu{display:block;white-space:pre-line;font-size:.85em;opacity:.75;margin-top:.35em;max-width:46em}
+
 /* ---------- rozpis (tabulka) ---------- */
 .tabulka-obal{overflow-x:auto;margin:0 calc(-1*var(--okraj));padding:0 var(--okraj)}
 .tabulka{border-collapse:collapse;width:100%;min-width:640px;font-size:.92em}
@@ -533,5 +555,7 @@ body.neprihlaseny .menu,body.neprihlaseny .ulozeni{display:none}
   .porad.velky .nazev-bodu{font-size:17pt}
   .porad.velky .co small{font-size:10pt}
   .porad.velky .minut{font-size:10pt}
+  .porad .jak-v-poradu{font-size:9pt;opacity:1}
+  .akce.netisknout{display:none}
 }
 @page porad{size:A4 portrait;margin:14mm}

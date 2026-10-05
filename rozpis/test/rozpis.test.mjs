@@ -448,3 +448,12 @@ test('Synchronizace: dotáhne cizí změny, jen když nic nečeká na uložení'
   assert.equal(await sync.obnov(), true);
   assert.ok(data.lide.some((o) => o.id === 'dalsi'));
 });
+
+test('ukázka: každý formát má proč to děláme a jak to probíhá', () => {
+  const d = vytvorUkazku(DNES);
+  assert.ok(d.formaty.length >= 5);
+  for (const f of d.formaty) {
+    assert.ok(f.proc && f.jak, `${f.nazev}: chybí proč nebo jak`);
+    assert.ok(!('popis' in f), `${f.nazev}: starý popis`);
+  }
+});
