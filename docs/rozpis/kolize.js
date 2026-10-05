@@ -25,7 +25,7 @@ export const KODY = {
   K11: 'Dítě ve službě pro dospělé',
   K12: 'Málo dospělých u dětí',
   K13: 'Neaktivní',
-  K14: 'Zrušená událost',
+  K14: 'Zrušené setkání',
   K15: 'Pořad přetéká',
   K16: 'Bod pořadu',
   K17: 'Nikdo nevede',
@@ -146,7 +146,7 @@ export function najdiKolize(data, { dnes } = {}) {
           pridej({
             klic: `K2:${osobaId}:${a.prirazeni.id}:${b.prirazeni.id}`, kod: 'K2', zavaznost: 'chyba',
             udalost: a.udalost.id, osoba: osobaId, prirazeni: [a.prirazeni, b.prirazeni],
-            text: `${kdo} má naráz dvě služby: ${a.sluzba?.nazev || '?'} a ${b.sluzba?.nazev || '?'}. Jedno mu vezmi.`,
+            text: `${kdo} má naráz dvě služby: ${a.sluzba?.nazev || '?'} a ${b.sluzba?.nazev || '?'}. Jednu mu vezmi.`,
           });
         }
       }
@@ -282,7 +282,7 @@ export function najdiKolize(data, { dnes } = {}) {
         if (p.stav !== 'navrzeno' || !p.osoba) continue;
         pridej({
           klic: `K6:${p.id}`, kod: 'K6', zavaznost: 'varovani', udalost: u.id, osoba: p.osoba, prirazeni: [p],
-          text: `${sluzby.get(p.sluzba)?.nazev || 'Služba'}: ${jmeno(lide.get(p.osoba))} – zatím bez potvrzení.`,
+          text: `${sluzby.get(p.sluzba)?.nazev || 'Služba'}: ${jmeno(lide.get(p.osoba))} zatím nepotvrdil(a).`,
         });
       }
     }

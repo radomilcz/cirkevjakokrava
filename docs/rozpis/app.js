@@ -186,7 +186,7 @@ function ukazStavUlozeni({ stav, chyba }) {
     uklada: 'Ukládám…',
   };
   if (stav === 'chyba') {
-    el.replaceChildren(`Spojení vypadlo. ${chyba || ''} Změny držím.`, tl('Zkusit znova', () => S.sync.uloz(), 'mini'));
+    el.replaceChildren(`Spojení vypadlo. ${chyba || ''} Změny mám schované.`, tl('Zkusit znova', () => S.sync.uloz(), 'mini'));
   } else {
     el.textContent = texty[stav] || '';
   }
@@ -340,6 +340,14 @@ function volby(nazev, moznosti, vybrane, typ = 'checkbox') {
     h('input', { type: typ, name: nazev, value: v, checked: vybrane.includes(v) }), h('span', {}, t))));
 }
 
+/** Zaškrtávátko s větou – pilulky jsou jen na krátké volby (místo, služba), ne na odstavec. */
+function zaskrtnuti(nazev, text, zaskrtnuto = false, hodnota = 'ano') {
+  return h('label', { class: 'zaskrtnuti cela' },
+    h('input', { type: 'checkbox', name: nazev, value: hodnota, checked: zaskrtnuto }),
+    h('span', { class: 'ctverec', 'aria-hidden': 'true' }),
+    h('span', { class: 'veta' }, text));
+}
+
 function potrebaEditor(potreba) {
   const seznam = h('ul', { class: 'dovednosti' });
   const radek = (p) => h('li', {},
@@ -422,8 +430,7 @@ function dialogNovaUdalost(den, puvodni) {
       !upravuji ? poleText('opakovaniDo', 'Do kdy', cas.posunMesice(den, 3), { typ: 'date' }) : null,
       editorPotreby,
       h('label', { class: 'pole cela' }, h('span', {}, 'Poznámka'), h('textarea', { name: 'poznamka', rows: 2 }, u.poznamka || '')),
-      vRade ? h('label', { class: 'volba cela' }, h('input', { type: 'checkbox', name: 'iDalsi' }),
-        h('span', {}, `Změnit i ${vRade} dalších v řadě (název, čas, místo, služby)`)) : null),
+      vRade ? zaskrtnuti('iDalsi', `Změnit stejně i dalších ${vRade} setkání v řadě (název, čas, místo a služby).`) : null),
     h('p', { class: 'chyba-formulare chyba-plocha', hidden: true }),
     h('div', { class: 'akce' },
       tl('Zrušit', zavriDialog),
@@ -488,7 +495,7 @@ function kolizeKarta(k, { sUdalosti = true } = {}) {
       h('span', { class: 'slovo' }, ZAVAZNOST[k.zavaznost]),
       sUdalosti && u ? h('span', { class: 'kdy' }, `${cas.hezkyDen(u.zacatek)} · ${u.nazev}`) : null),
     h('p', {}, k.text),
-    k.prepsano ? h('p', { class: 'prepis' }, `Přebito: ${k.prepsano}`) : null));
+    k.prepsano ? h('p', { class: 'prepis' }, `Výjimka: ${k.prepsano}`) : null));
 }
 
 function vykresliUdalost(id) {
@@ -539,9 +546,9 @@ function vykresliUdalost(id) {
               onclick: () => { pr.stav = DALSI_STAV[pr.stav] || 'navrzeno'; zmena(`${jmeno(osoba)}: ${STAVY_PRIRAZENI[pr.stav]}`); },
             }, STAVY_PRIRAZENI[pr.stav] || pr.stav) : h('span', { class: 'stav' }, STAVY_PRIRAZENI[pr.stav] || pr.stav),
             smi && (zav === 'chyba' || pr.prepis) ? h('button', {
-              type: 'button', class: 'stav', title: 'Vím o tom, platí to',
+              type: 'button', class: 'stav', title: 'Vím o tom, platí to i tak',
               onclick: () => dialogPrepis(pr, osoba),
-            }, pr.prepis ? 'přebito' : 'přebít') : null,
+            }, pr.prepis ? 'výjimka' : 'povolit výjimku') : null,
             smi ? h('button', {
               type: 'button', class: 'tl-x', 'aria-label': `Odebrat ${jmeno(osoba)}`,
               onclick: () => { u.prirazeni = u.prirazeni.filter((x) => x !== pr); zmena(`${jmeno(osoba)} pryč z ${sluzba?.nazev}`); },
@@ -571,7 +578,7 @@ function vykresliUdalost(id) {
     h('div', { class: 'akce' },
       smi && !u.zruseno && (u.potreba || []).length ? tl('Navrhnout zbytek', () => {
         const nova = navrhnoutZbytek(S.data, u.id, () => noveId('p'), { dnes: cas.dnes() });
-        if (nova.length) { zmena(`návrh lidí na ${u.nazev}`); hlaska(`Navrženo ${nova.length} lidí.`, 'Jsou kurzívou, dokud nepotvrdí.'); } else hlaska('Není koho navrhnout.', 'Volní lidé došli, nebo je všechno obsazené.');
+        if (nova.length) { zmena(`návrh lidí na ${u.nazev}`); hlaska(`Navrženo ${nova.length} lidí.`, 'Jsou kurzívou, dokud nepotvrdí.'); } else hlaska('Není koho navrhnout.', 'Volní lidi došli, nebo je všechno obsazené.');
       }, 'hlavni') : null,
       smi && predchozi && (predchozi.prirazeni || []).length ? tl('Stejní lidi jako minule', () => {
         const nove = predchozi.prirazeni.filter((p) => p.stav !== 'odmitnuto' && (u.potreba || []).some((x) => x.sluzba === p.sluzba)
@@ -591,7 +598,7 @@ function vykresliUdalost(id) {
     h('div', { class: 'mrizka' },
       h('section', { class: 'sekce' },
         h('h2', {}, 'Kdo co dělá'),
-        potreba.length ? plan : prazdno('Žádná služba.', smi ? 'Tohle setkání nikoho nepotřebuje. Nebo jo? Přidej služby v úpravě.' : 'Tohle setkání nikoho nepotřebuje.', smi ? tl('Upravit', () => dialogNovaUdalost(null, u)) : null),
+        potreba.length ? plan : prazdno('Žádná služba.', smi ? 'Tohle setkání nikoho nepotřebuje. Nebo jo? Služby přidáš přes Upravit.' : 'Tohle setkání nikoho nepotřebuje.', smi ? tl('Upravit', () => dialogNovaUdalost(null, u)) : null),
         h('p', { class: 'poznamka' }, smi ? 'Kurzívou = navrženo. Klik na stav ho přepne: navrženo → potvrzeno → nemůže.' : 'Kurzívou = navrženo. U svojí služby klikni na stav: potvrzeno, nebo nemůže.'),
         sekcePoradu(u, predchozi, smi)),
       smi ? h('section', { class: 'sekce' },
@@ -644,7 +651,7 @@ function sekcePoradu(u, predchozi, smi = true) {
       smi && predchozi && (predchozi.porad || []).length ? tl('Stejný pořad jako minule', () => {
         const puvodni = u.porad || [];
         const kopirovat = () => { zkopirujPorad(S.data, u, predchozi.porad, () => noveId('b')); zmena(`pořad z minula na ${u.nazev}`); };
-        if (puvodni.length) potvrd('Nahradit pořad?', 'Teď složený pořad se nahradí tím z minula.', kopirovat, { tlacitko: 'Nahradit' });
+        if (puvodni.length) potvrd('Nahradit pořad?', 'Pořad z minula nahradí ten, který tu je teď.', kopirovat, { tlacitko: 'Nahradit' });
         else kopirovat();
       }, 'male') : null));
 }
@@ -739,7 +746,7 @@ function dialogFormat(f) {
     titul: f ? f.nazev : 'Přidat formát',
     pole: [
       poleText('nazev', 'Název', f?.nazev, { attr: { autofocus: true, placeholder: 'Otázky na tělo' } }),
-      poleText('delka', 'Obvykle minut', f?.delka ?? 10, { typ: 'number', attr: { min: 0, max: 600 } }),
+      poleText('delka', 'Kolik minut obvykle', f?.delka ?? 10, { typ: 'number', attr: { min: 0, max: 600 } }),
       poleVyber('sluzba', 'Kdo to vede', [['', '— vybere se ručně —'], ...S.data.sluzby.map((x) => [x.id, `ten, kdo má ${x.nazev}`])], f?.sluzba || '', { cela: true }),
       poleText('odkaz', 'Odkaz', f?.odkaz, { cela: true, typ: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
       h('label', { class: 'pole cela' }, h('span', {}, 'Popis'), h('textarea', { name: 'popis', rows: 2 }, f?.popis || '')),
@@ -792,12 +799,12 @@ function dialogSmazatUdalost(u) {
 
 function dialogPrepis(pr, osoba) {
   const form = h('form', { method: 'dialog' },
-    h('p', { class: 'eyebrow' }, 'přebít chybu'),
+    h('p', { class: 'eyebrow' }, 'výjimka'),
     h('h2', {}, `${jmeno(osoba)} i tak`),
-    h('p', { class: 'poznamka' }, 'Když víš, že to půjde (třeba odejde ze zkoušky dřív), napiš proč. Chyba se změní na info.'),
+    h('p', { class: 'poznamka' }, 'Když víš, že to půjde (třeba odejde ze zkoušky dřív), napiš proč. Rozpis to pak nebude hlásit jako chybu.'),
     h('label', { class: 'pole' }, h('span', {}, 'Proč to platí'), h('input', { type: 'text', name: 'duvod', value: pr.prepis || '', autofocus: true })),
     h('div', { class: 'akce' },
-      pr.prepis ? tl('Zrušit přebití', () => { delete pr.prepis; zavriDialog(); zmena('zrušeno přebití'); }, 'vlevo') : null,
+      pr.prepis ? tl('Zrušit výjimku', () => { delete pr.prepis; zavriDialog(); zmena('zrušená výjimka'); }, 'vlevo') : null,
       tl('Zpět', zavriDialog),
       h('button', { type: 'submit', class: 'tl hlavni' }, 'Platí')));
   form.addEventListener('submit', (e) => {
@@ -806,7 +813,7 @@ function dialogPrepis(pr, osoba) {
     if (!duvod) { form.elements.duvod.focus(); return; }
     pr.prepis = duvod;
     zavriDialog();
-    zmena(`přebito: ${jmeno(osoba)}`);
+    zmena(`výjimka: ${jmeno(osoba)}`);
   });
   otevriDialog(form);
 }
@@ -971,13 +978,13 @@ function vykresliLidi() {
       [['aktivni', 'Slouží'], ['clen', 'Členové'], ['pravidelny', 'Hosté'], ['dite', 'Děti'], ['neaktivni', 'Neaktivní'], ['vsichni', 'Všichni']]
         .map(([v, t]) => h('button', { type: 'button', 'aria-pressed': String(f.lideStav === v), onclick: () => { f.lideStav = v; vykresli(); } },
           `${t} ${S.data.lide.filter(filtry[v]).length}`))),
-    S.data.lide.length ? null : prazdno('Stádo zatím bez jmen.', 'Přidej první lidi, ať je máš komu přidělit.', tl('Přidat člověka', () => dialogOsoba(), 'hlavni')),
+    S.data.lide.length ? null : prazdno('Stádo zatím bez jmen.', 'Přidej první lidi, ať máš komu dávat služby.', tl('Přidat člověka', () => dialogOsoba(), 'hlavni')),
     lide.length ? h('ul', { class: 'seznam' }, lide.map((o) => {
       const pristi = nadchazejiciSluzby(o.id, { limit: 1 })[0];
       return h('li', {}, h('a', { class: 'radek', href: `#osoba/${o.id}` },
         h('span', { class: 'jmeno' }, celeJmeno(o),
           h('small', {}, [STAVY_OSOB[o.stav], o.domacnost && domacnosti.get(o.domacnost)?.nazev,
-            o.registrace && o.registrace >= cas.posunDny(cas.dnes(), -30) ? 'přidal(a) se sám přes pozvánku' : null].filter(Boolean).join(' · '))),
+            o.registrace && o.registrace >= cas.posunDny(cas.dnes(), -30) ? 'přišel(a) přes pozvánku' : null].filter(Boolean).join(' · '))),
         h('span', { class: 'stitky' }, Object.entries(o.dovednosti || {}).map(([s, u]) => h('span', { class: ['stitek', u === 'zauci' && 'uci'] }, sluzby.get(s)?.nazev || '?'))),
         h('span', { class: 'vpravo' }, pristi ? `příště ${cas.hezkyDen(pristi.u.zacatek)}` : '')));
     })) : (S.data.lide.length ? h('p', { class: 'poznamka' }, 'Nikdo takový.') : null),
@@ -1062,7 +1069,7 @@ function vykresliOsobu(id) {
         h('section', { class: 'sekce' },
           h('h2', {}, 'Umí'),
           Object.keys(o.dovednosti || {}).length ? h('div', { class: 'stitky' }, Object.entries(o.dovednosti).map(([s, u]) => h('span', { class: ['stitek', u === 'zauci' && 'uci'] },
-            sluzby.get(s)?.nazev || '?', u === 'zauci' ? h('small', { class: 'slabe' }, ' učí se') : null))) : h('p', { class: 'poznamka' }, smi ? 'Zatím nic. Přidej v úpravě.' : 'Zatím nic. Řekni vedoucímu, s čím pomůžeš.')),
+            sluzby.get(s)?.nazev || '?', u === 'zauci' ? h('small', { class: 'slabe' }, ' učí se') : null))) : h('p', { class: 'poznamka' }, smi ? 'Zatím nic. Přidáš přes Upravit.' : 'Zatím nic. Řekni vedoucímu, s čím pomůžeš.')),
         sekcePrihlaseniOsoby(o),
         kolize.length ? h('section', { class: 'sekce' }, h('h2', {}, 'Kolize'), h('ul', { class: 'kolize-seznam' }, kolize.map((k) => kolizeKarta(k)))) : null,
         rodina.length ? h('section', { class: 'sekce' }, h('h2', {}, domacnost?.nazev || 'Rodina'),
@@ -1071,7 +1078,7 @@ function vykresliOsobu(id) {
           h('h2', {}, 'Souhlas'),
           h('p', { class: 'poznamka' }, o.souhlas
             ? `Souhlas se zpracováním údajů: ${cas.hezkyDenDlouze(o.souhlas)}.`
-            : smi ? 'Souhlas se zpracováním údajů tu zapsaný není. Zeptej se a zapiš datum v úpravě.' : 'Souhlas tu zapsaný není.')))),
+            : smi ? 'Souhlas se zpracováním údajů tu zapsaný není. Zeptej se a datum zapiš přes Upravit.' : 'Souhlas tu zapsaný není.')))),
   ];
 }
 
@@ -1120,8 +1127,8 @@ function dialogOsoba(puvodni) {
       poleText('novaDomacnost', 'Název nové domácnosti', '', { attr: { placeholder: 'Novákovi' } }),
       poleText('narozeni', 'Rok narození', o.narozeni, { typ: 'number', napoveda: 'Jen u dětí – kvůli službám pro dospělé.', attr: { min: 1920, max: 2100 } }),
       poleText('souhlas', 'Souhlas se zpracováním údajů', o.souhlas, { typ: 'date', napoveda: 'Den, kdy souhlas dal(a).' }),
-      poleText('maxMesicne', 'Nejvýš služeb za měsíc', o.maxMesicne ?? 4, { typ: 'number', attr: { min: 0, max: 31 } }),
-      poleText('maxNedelPoSobe', 'Nejvýš neděl po sobě', o.maxNedelPoSobe ?? 3, { typ: 'number', attr: { min: 1, max: 52 } }),
+      poleText('maxMesicne', 'Kolik služeb za měsíc nejvýš', o.maxMesicne ?? 4, { typ: 'number', attr: { min: 0, max: 31 } }),
+      poleText('maxNedelPoSobe', 'Kolik neděl po sobě nejvýš', o.maxNedelPoSobe ?? 3, { typ: 'number', attr: { min: 1, max: 52 } }),
       h('div', { class: 'cela' }, h('p', { class: 'pole' }, h('span', {}, 'Co umí')), seznamDovednosti),
       h('label', { class: 'pole cela' }, h('span', {}, 'Poznámka'), h('textarea', { name: 'poznamka', rows: 2 }, o.poznamka || ''))),
     h('p', { class: 'chyba-formulare chyba-plocha', hidden: true }),
@@ -1225,7 +1232,7 @@ function vykresliSluzby() {
     h('section', { class: 'sekce' },
       h('h2', {}, 'Formáty', h('span', { class: 'n' }, 'kostky, ze kterých se skládá pořad')),
       (S.data.formaty || []).length ? h('ul', { class: 'seznam' }, S.data.formaty.map((f) => h('li', {}, h('button', { type: 'button', class: 'radek', onclick: () => dialogFormat(f) },
-        h('span', { class: 'jmeno' }, f.nazev, h('small', {}, f.sluzba ? `vede, kdo má ${najdiSluzbu(f.sluzba)?.nazev || '?'}` : 'kdo vede, se vybírá ručně')),
+        h('span', { class: 'jmeno' }, f.nazev, h('small', {}, f.sluzba ? `vede, kdo má ${najdiSluzbu(f.sluzba)?.nazev || '?'}` : 'kdo vede, vybereš ručně')),
         h('span', { class: 'stitky' },
           (f.potreba || []).map((p) => h('span', { class: 'stitek' }, `${najdiSluzbu(p.sluzba)?.nazev || '?'}${p.pocet > 1 ? ` ${p.pocet}×` : ''}`)),
           f.odkaz ? h('span', { class: 'stitek uci' }, 'odkaz') : null),
@@ -1278,9 +1285,10 @@ function dialogSluzba(s) {
           h('input', { type: 'number', name: 'oknoOd', value: s?.okno?.od ?? '', placeholder: 'od', 'aria-label': 'Od minuty' }),
           h('input', { type: 'number', name: 'oknoDo', value: s?.okno?.do ?? '', placeholder: 'do', 'aria-label': 'Do minuty' })),
         h('small', {}, 'Prázdné = celou dobu. Kafe po skončení třeba 90–130, uvítání −15–15.')),
-      h('div', { class: 'pole cela' }, h('span', {}, 'Vlastnosti'), volby('vlastnosti', [
-        ['klicova', 'bez toho to nejde (týden předem = chyba)'], ['jenDospely', 'jen dospělí'], ['detska', 'je to u dětí (hlídá dva dospělé a rodiče)'],
-      ], ['klicova', 'jenDospely', 'detska'].filter((k) => s?.[k]))),
+      h('div', { class: 'pole cela' }, h('span', {}, 'Vlastnosti'),
+        zaskrtnuti('vlastnosti', 'Bez toho to nejde. Když týden předem nikdo není, Rozpis hlásí chybu.', !!s?.klicova, 'klicova'),
+        zaskrtnuti('vlastnosti', 'Jen pro dospělé.', !!s?.jenDospely, 'jenDospely'),
+        zaskrtnuti('vlastnosti', 'Je to služba u dětí. Rozpis pohlídá, aby tam byli aspoň dva dospělí a aby rodiče malých dětí nesloužili oba naráz jinde.', !!s?.detska, 'detska')),
     ],
     ulozit: (f, form) => {
       const nazev = f.nazev.value.trim();
@@ -1354,7 +1362,7 @@ function dialogMisto(m) {
     titul: m ? m.nazev : 'Přidat místo',
     pole: [
       poleText('nazev', 'Název', m?.nazev, { cela: true, attr: { autofocus: true, placeholder: 'Sál' } }),
-      h('div', { class: 'cela' }, volby('sdilene', [['ano', 'víc věcí naráz nevadí (kuchyňka, venku)']], m?.sdilene ? ['ano'] : [])),
+      zaskrtnuti('sdilene', 'Tady se vejde víc věcí naráz (kuchyňka, venku). Dvě setkání ve stejnou dobu nebudou chyba.', !!m?.sdilene),
     ],
     ulozit: (f, form) => {
       const nazev = f.nazev.value.trim();
@@ -1469,8 +1477,8 @@ function vykresliNastaveni() {
 function sekceUkazka() {
   return h('section', { class: 'sekce' },
     h('h2', {}, 'Kde jsou data'),
-    h('p', { class: 'lead' }, 'Tohle je ukázka jen v tvém prohlížeči. Lidi v ní jsou vymyšlení a nic odsud neodchází.'),
-    h('p', { class: 'poznamka' }, 'Ostrý Rozpis běží na vlastní adrese z ', h('strong', {}, 'soukromého'), ' datového repa. Tam se lidi přihlašují jménem a heslem – GitHub účet nepotřebuje nikdo kromě toho, kdo jednou vyrobí klíč. Jak ho rozjet, je v README v repu (rozpis/README.md).'));
+    h('p', { class: 'lead' }, 'Tohle je ukázka. Lidi v ní jsou vymyšlení a všechno zůstává jen v tvém prohlížeči.'),
+    h('p', { class: 'poznamka' }, 'Ostrý Rozpis běží na kalendar.cirkevjakokrava.cz a data má v ', h('strong', {}, 'soukromém'), ' repu na GitHubu. Lidi se tam přihlašují jménem a heslem. GitHub účet potřebuje jen správce, který jednou vyrobí klíč. Návod je v repu v souboru rozpis/README.md.'));
 }
 
 function sekceUcet() {
@@ -1494,13 +1502,13 @@ function sekceUcet() {
         if (muj) Object.assign(muj, { lookup: zaznam.lookup, iv: zaznam.iv, ct: zaznam.ct });
       }, 'nové heslo');
       if (osoba) { osoba.prihlaseni = f.jmeno.value.trim(); zmena('přihlašovací jméno'); }
-      hlaska('Heslo změněné.', 'Nové platí za pár minut, až se web přestaví. Do té doby to staré.', { trvani: 7000 });
+      hlaska('Heslo změněné.', 'Nové začne platit za pár minut. Do té doby platí staré.', { trvani: 7000 });
       form.reset();
     } catch (chybaGh) { chyba.hidden = false; chyba.textContent = chybaGh.message; }
   });
   return h('section', { class: 'sekce' },
     h('h2', {}, 'Můj účet', h('span', { class: 'n' }, ROLE[S.ja.zaznam.role] || '')),
-    h('p', { class: 'lead' }, `Jsi přihlášený jako ${celeJmeno(osoba)}.`),
+    h('p', { class: 'lead' }, `Přihlášení: ${celeJmeno(osoba)}.`),
     h('div', { class: 'akce' },
       osoba ? odkaz('Moje služby', `#osoba/${osoba.id}`, 'tl male') : null,
       tl('Odhlásit', odhlas, 'male')),
@@ -1514,7 +1522,7 @@ function sekcePristupy() {
     .sort((a, b) => (a.role === 'pozvanka') - (b.role === 'pozvanka') || celeJmeno(lide.get(a.osoba)).localeCompare(celeJmeno(lide.get(b.osoba)), 'cs'));
   return h('section', { class: 'sekce' },
     h('h2', {}, 'Přihlášení', h('span', { class: 'n' }, `${seznam.filter((p) => p.role !== 'pozvanka').length} lidí`)),
-    h('p', { class: 'poznamka' }, 'Kdo má přihlášení, ten se dostane k rozpisu jménem a heslem. Přihlášení se dělá u člověka (Lidé → člověk → Přihlášení), nebo pozvánkou, kde si nový člověk vyplní údaje a heslo sám. Nové i zrušené přihlášení se projeví za pár minut, až se web přestaví.'),
+    h('p', { class: 'poznamka' }, 'Kdo má přihlášení, dostane se do Rozpisu jménem a heslem. Přihlášení založíš u člověka (Lidé → jméno → Přihlášení), nebo pošleš pozvánku a nový člověk si údaje a heslo vyplní sám. Nové i zrušené přihlášení začne platit za pár minut.'),
     h('ul', { class: 'prehled' }, seznam.map((p) => h('li', { class: p.plati && p.plati < cas.dnes() ? 'slabe' : '' },
       h('span', { class: 'roztah' },
         p.role === 'pozvanka'
@@ -1545,13 +1553,13 @@ function sekceKlic() {
       }, 'Rozpis – přístupy: nový GitHub klíč');
       S.ja.github = github;
       S.uloziste.token = token;
-      hlaska('Klíč vyměněný.', 'Starý na GitHubu zruš až za pár minut, až se web přestaví.', { trvani: 9000 });
+      hlaska('Klíč vyměněný.', 'Starý klíč na GitHubu zruš až za pár minut.', { trvani: 9000 });
       form.reset();
     } catch (chybaGh) { chyba.hidden = false; chyba.textContent = chybaGh.message; }
   });
   return h('section', { class: 'sekce' },
     h('h2', {}, 'GitHub klíč'),
-    h('p', { class: 'poznamka' }, `Rozpis ukládá do ${S.ja.github.vlastnik}/${S.ja.github.repo} jedním klíčem, zapečetěným ke každému přihlášení. Když klíč vyprší nebo ho chceš vyměnit, vlož sem nový – všem se přebalí bez znalosti jejich hesel.`),
+    h('p', { class: 'poznamka' }, `Rozpis ukládá do ${S.ja.github.vlastnik}/${S.ja.github.repo} jedním GitHub klíčem. Každý přihlášený ho má schovaný pod svým heslem. Když klíč vyprší nebo ho chceš vyměnit, vlož sem nový. Rozpis ho předá všem a jejich hesla k tomu nepotřebuje.`),
     form);
 }
 
@@ -1598,7 +1606,7 @@ function sekceZaloha() {
         nahradVsechno(vytvorUkazku(cas.dnes()), 'nová ukázka');
         hlaska('Ukázka je zpátky.');
       }, { tlacitko: 'Začít znovu' }), 'bez') : null,
-      !ostry ? tl('Začít načisto', () => potvrd('Začít s prázdným rozpisem?', 'Ukázka zmizí. Vhodné, když si chceš rozpis zkusit naostro jen v prohlížeči.', () => {
+      !ostry ? tl('Začít načisto', () => potvrd('Začít s prázdným rozpisem?', 'Ukázka zmizí. Hodí se, když si chceš rozpis zkusit naostro jen v prohlížeči.', () => {
         nahradVsechno(prazdna(), 'prázdný rozpis');
       }, { tlacitko: 'Vyprázdnit' }), 'bez') : null));
 }
@@ -1690,7 +1698,7 @@ function vykresliPrihlaseni(zprava) {
   const form = h('form', { class: 'formular prihlaseni', novalidate: true },
     poleText('jmeno', 'Jméno a příjmení', '', { cela: true, attr: { autocomplete: 'username', autofocus: true, placeholder: 'Petr Novák' } }),
     poleText('heslo', 'Heslo', '', { cela: true, typ: 'password', attr: { autocomplete: 'current-password' } }),
-    h('div', { class: 'cela' }, volby('natrvalo', [['ano', 'Pamatovat si na tomhle zařízení']], ['ano'])),
+    zaskrtnuti('natrvalo', 'Pamatovat si mě na tomhle zařízení. Na cizím počítači nech prázdné.', true),
     h('p', { class: 'chyba-formulare chyba-plocha cela', hidden: !zprava }, zprava || ''),
     h('div', { class: 'cela' }, h('button', { type: 'submit', class: 'tl hlavni' }, 'Přihlásit')));
   form.addEventListener('submit', async (e) => {
@@ -1705,7 +1713,7 @@ function vykresliPrihlaseni(zprava) {
     tlacitko.textContent = 'Přihlásit';
     if (!vysledek || vysledek.zaznam.role === 'pozvanka') {
       chyba.hidden = false;
-      chyba.textContent = 'Jméno nebo heslo nesedí. Nové přihlášení začne fungovat pár minut po tom, co ti ho vedoucí udělá.';
+      chyba.textContent = 'Jméno nebo heslo nesedí. Nové přihlášení začne fungovat pár minut po tom, co ti ho vedoucí založí.';
       return;
     }
     zapamatuj(vysledek, !!form.querySelector('input[name=natrvalo]:checked'));
@@ -1763,11 +1771,11 @@ function vykresliZalozeni() {
       const vysledek = await prihlas([zaznam], prihlaseni, f.heslo.value);
       zapamatuj(vysledek, true);
       await prihlasen(vysledek);
-      hlaska('Rozpis je založený.', 'Ostatní se přihlásí, až se web přestaví (pár minut).', { trvani: 9000 });
+      hlaska('Rozpis je založený.', 'Ostatní se můžou přihlásit za pár minut.', { trvani: 9000 });
     } catch (chybaGh) { ukaz(chybaGh.message || String(chybaGh)); }
   });
   return [
-    hlavaStranky('první krok', 'Založit Rozpis', 'Tady ještě nikdo není. Vlož GitHub klíč k datovému repu a založ sám sebe jako správce. Klíč pak zůstane zapečetěný – ostatní lidi ho nikdy nepotřebují znát.'),
+    hlavaStranky('první krok', 'Založit Rozpis', 'Tady ještě nikdo není. Vlož GitHub klíč k datovému repu a zapiš se jako správce. Klíč pak Rozpis schová pod hesla a nikdo další ho znát nemusí.'),
     h('div', { class: 'rule' }),
     h('div', { class: 'mrizka' },
       form,
@@ -1775,7 +1783,7 @@ function vykresliZalozeni() {
         h('li', {}, h('span', {}, 'Na GitHubu: Settings → Developer settings → Fine-grained tokens → Generate new token.')),
         h('li', {}, h('span', {}, 'Repository access: ', h('em', {}, 'Only select repositories'), ' → jen datové repo.')),
         h('li', {}, h('span', {}, 'Permissions → Repository → ', h('strong', {}, 'Contents: Read and write'), '. Nic víc. Platnost klidně rok.')),
-        h('li', {}, h('span', {}, 'Klíč vlož sem. Kdyby se někdy ztratil nebo vypršel, v Nastavení ho vyměníš všem naráz.')))),
+        h('li', {}, h('span', {}, 'Klíč vlož sem. Kdyby se ztratil nebo vypršel, v Nastavení ho vyměníš všem najednou.')))),
   ];
 }
 
@@ -1799,7 +1807,7 @@ function dialogHeslo({ titul, veta, radky }) {
       tl('Kopírovat', async (e) => {
         try { await navigator.clipboard.writeText(hodnota); e.target.textContent = 'Zkopírováno'; } catch { e.target.textContent = 'Označ a zkopíruj ručně'; }
       }, 'mini')))),
-    h('p', { class: 'poznamka' }, 'Heslo se nikde neukládá – po zavření ho už neuvidíš. Přihlášení začne fungovat za pár minut, až se web přestaví.'),
+    h('p', { class: 'poznamka' }, 'Heslo se nikde neukládá, po zavření ho už neuvidíš. Přihlášení začne fungovat za pár minut.'),
     h('div', { class: 'akce' }, tl('Hotovo', zavriDialog, 'hlavni'))));
 }
 
@@ -1812,7 +1820,7 @@ function dialogVytvorPrihlaseni(o) {
     pole: [
       poleText('jmeno', 'Přihlašovací jméno', o.prihlaseni || celeJmeno(o), { cela: true, napoveda: 'Diakritika a velká písmena nevadí.' }),
       poleVyber('role', 'Co smí', role, ma?.role || 'clen', { cela: true }),
-      h('p', { class: 'poznamka cela' }, ma ? 'Staré heslo přestane platit. ' : '', 'Heslo vymyslí Rozpis a ukáže ti ho jednou. Raději pošli pozvánku – tam si člověk heslo zvolí sám.'),
+      h('p', { class: 'poznamka cela' }, ma ? 'Staré heslo přestane platit. ' : '', 'Heslo vymyslí Rozpis a ukáže ti ho jen jednou. Lepší je poslat pozvánku – heslo si pak každý zvolí sám.'),
     ],
     ulozit: (f) => {
       const jmenoText = f.jmeno.value.trim();
@@ -1827,7 +1835,7 @@ function dialogVytvorPrihlaseni(o) {
           }, `přihlášení pro ${jmeno(o)}`);
           o.prihlaseni = jmenoText;
           zmena(`přihlášení pro ${jmeno(o)}`);
-          dialogHeslo({ titul: `Přihlášení: ${celeJmeno(o)}`, veta: 'Předej mu tohle (nejlíp osobně nebo zprávou, která nezůstane veřejně viset):', radky: [['jméno', jmenoText], ['heslo', heslo], ['adresa', location.origin + location.pathname]] });
+          dialogHeslo({ titul: `Přihlášení: ${celeJmeno(o)}`, veta: 'Předej mu to osobně nebo soukromou zprávou, ne do skupiny:', radky: [['jméno', jmenoText], ['heslo', heslo], ['adresa', location.origin + location.pathname]] });
         } catch (chyba) { hlaska('Nepovedlo se.', chyba.message); }
       })();
       return null;
@@ -1844,7 +1852,7 @@ async function vytvorPozvanku(o) {
     vykresli();
     dialogHeslo({
       titul: o ? `Pozvánka pro ${celeJmeno(o)}` : 'Pozvánka',
-      veta: `Pošli odkaz. Kdo ho otevře, vyplní svoje údaje, souhlas a vlastní heslo. Platí ${PLATNOST_POZVANKY} dní a jen jednou.`,
+      veta: `Pošli odkaz. Kdo ho otevře, vyplní svoje údaje, zvolí si heslo a dá souhlas. Odkaz platí ${PLATNOST_POZVANKY} dní a jde použít jen jednou.`,
       radky: [['odkaz', `${location.origin}${location.pathname}#pozvanka/${kod}`]],
     });
   } catch (chyba) { hlaska('Nepovedlo se.', chyba.message); }
@@ -1852,7 +1860,7 @@ async function vytvorPozvanku(o) {
 
 function zrusPristup(p) {
   const kdo = p.role === 'pozvanka' ? 'pozvánku' : `přihlášení: ${celeJmeno(najdiOsobu(p.osoba))}`;
-  potvrd(`Zrušit ${kdo}?`, 'Přestane platit za pár minut, až se web přestaví.', async () => {
+  potvrd(`Zrušit ${kdo}?`, 'Přestane platit za pár minut.', async () => {
     try {
       await upravPristupy((seznam) => { const i = seznam.findIndex((x) => x.id === p.id); if (i >= 0) seznam.splice(i, 1); }, `zrušeno ${p.role}`);
       vykresli();
@@ -1886,8 +1894,8 @@ async function otevriPozvanku(kod) {
     vykresli();
   };
   const vysledek = await prihlas(S.pristupy, JMENO_POZVANKY, kod);
-  if (!vysledek || vysledek.zaznam.role !== 'pozvanka') return neplati('Pozvánka je použitá, zrušená, nebo ještě není venku – nová začne fungovat pár minut po vytvoření.');
-  if (vysledek.zaznam.plati && vysledek.zaznam.plati < cas.dnes()) return neplati('Pozvánce vypršela platnost. Požádej o novou.');
+  if (!vysledek || vysledek.zaznam.role !== 'pozvanka') return neplati('Pozvánka je už použitá nebo zrušená. Jestli je úplně nová, začne fungovat za pár minut.');
+  if (vysledek.zaznam.plati && vysledek.zaznam.plati < cas.dnes()) return neplati('Tahle pozvánka už je stará. Požádej o novou.');
   const gh = new Github(vysledek.github);
   let data;
   try { data = (await gh.nacti()) || prazdna(); } catch (chyba) { return neplati(`Rozpis se nepovedlo načíst: ${chyba.message}`); }
@@ -1907,8 +1915,8 @@ function vykresliRegistraci(pozvanka, gh, data) {
       volby('sluzby', data.sluzby.map((x) => [x.id, x.nazev]), Object.keys(o.dovednosti || {}))) : null,
     poleText('heslo', 'Heslo (aspoň 8 znaků)', '', { typ: 'password', attr: { autocomplete: 'new-password' } }),
     poleText('heslo2', 'Ještě jednou', '', { typ: 'password', attr: { autocomplete: 'new-password' } }),
-    h('div', { class: 'cela' }, volby('souhlas', [['ano', `Souhlasím, aby ${nazev} vedla tyhle údaje kvůli plánování služeb. Vidí je jen lidi z rozpisu, ven nejdou.`]], o.souhlas ? ['ano'] : [])),
-    h('div', { class: 'cela' }, volby('natrvalo', [['ano', 'Pamatovat si mě na tomhle zařízení']], ['ano'])),
+    zaskrtnuti('souhlas', `Souhlasím, že ${nazev} si tyhle údaje zapíše, aby mohla plánovat služby. Uvidí je jen lidi, kteří mají přihlášení do Rozpisu, a nikam dál je nedá. Souhlas můžu kdykoli vzít zpět.`, !!o.souhlas),
+    zaskrtnuti('natrvalo', 'Pamatovat si mě na tomhle zařízení. Na cizím počítači nech prázdné.', true),
     h('p', { class: 'chyba-formulare chyba-plocha cela', hidden: true }),
     h('div', { class: 'cela' }, h('button', { type: 'submit', class: 'tl hlavni' }, 'Přidat se')));
   form.addEventListener('submit', async (e) => {
@@ -1958,7 +1966,7 @@ function vykresliRegistraci(pozvanka, gh, data) {
     }
   });
   return [
-    hlavaStranky('pozvánka', 'Přidej se', `Rádi tě poznáme. Vyplň pár údajů a vlastní heslo – pak uvidíš rozpis a svoje služby. ${nazev}.`),
+    hlavaStranky('pozvánka', 'Přidej se', `Rádi tě poznáme. Vyplň pár údajů a zvol si heslo. Pak uvidíš rozpis a svoje služby.`),
     h('div', { class: 'rule' }),
     h('div', { class: 'uzky' }, form),
   ];
@@ -2016,7 +2024,7 @@ async function spust() {
       const vysledek = await obnov(S.pristupy, zapamatovane);
       if (vysledek) { await prihlasen(vysledek); return; }
       if (S.pristupy.some((p) => p.id === zapamatovane.id)) zapomenJa();   // záznam tu je, ale nesedí – pryč s tím
-      else S.obrazovka = () => vykresliPrihlaseni('Tvoje přihlášení ještě není venku, nebo bylo zrušené. Pokud jsi ho právě dostal(a), zkus to za pár minut.');
+      else S.obrazovka = () => vykresliPrihlaseni('Tvoje přihlášení tu ještě není, nebo ho někdo zrušil. Jestli jsi ho dostal(a) teď, zkus to za pár minut.');
     }
     S.obrazovka = S.obrazovka || (S.pristupy.length ? () => vykresliPrihlaseni() : vykresliZalozeni);
     vykresli();

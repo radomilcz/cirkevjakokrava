@@ -79,7 +79,7 @@ const FORMATY = [
   }],
   ['f-vecere', 'Večeře Páně', 10, 'vecere', { potreba: [{ sluzba: 'vecere', pocet: 2 }] }],
   ['f-modlitby', 'Modlitby', 10, 'vedeni'],
-  ['f-pribeh', 'Příběh ze života', 10, null, { popis: 'Někdo ze sboru vypráví, co s Bohem zažil. Kdo, se vybírá ručně.' }],
+  ['f-pribeh', 'Příběh ze života', 10, null, { popis: 'Někdo ze sboru vypráví, co s Bohem zažil. Kdo to bude, vybereš ručně.' }],
   ['f-video', '(B)učení – video', 5, 'projekce'],
   ['f-pisen', 'Píseň na konec', 5, 'zpev'],
 ];

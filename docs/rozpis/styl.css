@@ -363,6 +363,25 @@ select option{background:var(--ground);color:var(--ink)}
 .volba input:focus-visible+span{outline:2px solid var(--ink);outline-offset:3px}
 .volba span:hover{background:var(--hover)}
 
+/* zaškrtávátko s větou: na souhlas a delší volby. Pilulka (.volba) je jen na krátká slova.
+   Fajfka je z okrajů – v subsetu písma žádná není. */
+.zaskrtnuti{position:relative;display:flex;gap:.75em;align-items:flex-start;cursor:pointer;line-height:1.4;padding:.15em 0}
+.zaskrtnuti+.zaskrtnuti{margin-top:.55em}
+.zaskrtnuti input{position:absolute;opacity:0;pointer-events:none}
+.zaskrtnuti .ctverec{
+  position:relative;flex:none;width:1.25em;height:1.25em;margin-top:.05em;
+  border:1.5px solid var(--ink);border-radius:5px;transition:background .15s;
+}
+.zaskrtnuti input:checked+.ctverec{background:var(--ink)}
+.zaskrtnuti input:checked+.ctverec::after{
+  content:"";position:absolute;left:.36em;top:.1em;width:.3em;height:.62em;
+  border:solid var(--ground);border-width:0 .16em .16em 0;transform:rotate(45deg);
+}
+.zaskrtnuti input:focus-visible+.ctverec{outline:2px solid var(--ink);outline-offset:3px}
+.zaskrtnuti:hover .ctverec{background:var(--hover)}
+.zaskrtnuti:hover input:checked+.ctverec{background:var(--ink)}
+.zaskrtnuti .veta{font-size:.95em;max-width:46em}
+
 /* tři stavy dovednosti: —  /  učí se  /  umí */
 .dovednosti{list-style:none;margin:0;padding:0}
 .dovednosti li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.4em 1em;padding:.45em 0;border-top:1px solid var(--linka)}
