@@ -449,7 +449,7 @@ function limitsSection(person) {
   const day = today();
   const thisMonth = monthCount(S.data, person.id, monthOf(day));
   const self = person.id === myId();
-  return section([self ? 'Kolik služeb zvládnu' : 'Kolik služeb zvládne', btn('Upravit', () => limitsDialog(person), 'mini plain')],
+  return section(['Břemeno', btn('Upravit', () => limitsDialog(person), 'mini plain')],
     facts([
       ['Tento měsíc', `${thisMonth} ${outOf(limits.maxPerMonth)}`],
       ['Za měsíc', `nejvýš ${plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')}`],
@@ -463,7 +463,7 @@ function limitsDialog(person) {
   const limits = limitsOf(S.data, person.id);
   simpleDialog({
     eyebrow: fullName(person),
-    title: 'Kolik služeb zvládne',
+    title: 'Břemeno',
     fields: [
       textField('maxPerMonth', 'Kolik služeb za měsíc nejvýš', limits.maxPerMonth, { type: 'number', attr: { min: 0, max: 31 }, hint: `Obvykle ${defaults.maxPerMonth}.` }),
       textField('maxConsecutiveWeeks', 'Kolik nedělí po sobě nejvýš', limits.maxConsecutiveWeeks, { type: 'number', attr: { min: 1, max: 52 }, hint: `Obvykle ${defaults.maxConsecutiveWeeks}.` }),
