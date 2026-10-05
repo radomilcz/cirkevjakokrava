@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Only our own scripts and the GitHub API. The token lives in the browser, so nothing foreign may load here. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Zvonec – Církev jako kráva</title>
+<meta name="description" content="Kdo co kdy dělá: kalendář, lidi, služby a kolize.">
+<meta name="theme-color" content="#3b2f2f">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="preload" href="../assets/fonts/Agrandir-NarrowBlack.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="../assets/fonts/Agrandir-Regular.woff" as="font" type="font/woff" crossorigin>
+<script src="ui/palette.js"></script>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true">
+  <svg class="imprint a"><use href="imprint.svg#o"/></svg>
+  <svg class="imprint b"><use href="imprint.svg#o"/></svg>
+</div>
+
+<header class="topbar">
+  <a class="brand" href="#">církev jako kráva</a>
+  <!-- app.js rebuilds the links per access level; these are the leader's -->
+  <nav class="menu" aria-label="Hlavní">
+    <a href="#kalendar" data-section="kalendar">Kalendář</a>
+    <a href="#rozpis" data-section="rozpis">Rozpis</a>
+    <a href="#lide" data-section="lide">Lidé</a>
+    <a href="#skupiny" data-section="skupiny">Skupiny</a>
+    <a href="#kolize" data-section="kolize">Kolize <span class="count" hidden></span></a>
+    <a href="#nastaveni" data-section="nastaveni">Nastavení</a>
+    <div class="palette">
+      <button class="switcher" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Barvy" title="Barvy"><span class="bullseye"></span></button>
+      <div class="palette-menu" role="menu" aria-label="Barvy" hidden>
+        <!-- green and cream, cream and green, green and pink, pink and blue: not enough contrast for
+             small app text (below 4.5 : 1) – they stay in Otázky na tělo, not here -->
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="clay-pink" title="Hlína a růžová" aria-label="Hlína a růžová"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="pink-clay" title="Růžová a hlína" aria-label="Růžová a hlína"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="blue-cream" title="Modrá a krém" aria-label="Modrá a krém"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-blue" title="Krém a modrá" aria-label="Krém a modrá"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-clay" title="Krém a hlína" aria-label="Krém a hlína"><span class="bullseye"></span></button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-palette="" class="auto">Podle zařízení</button>
+      </div>
+    </div>
+  </nav>
+  <p class="save-status" role="status" aria-live="polite"></p>
+</header>
+
+<main id="content" class="page" tabindex="-1">
+  <p class="loading">Načítám…</p>
+  <noscript><p>Zvonec běží v prohlížeči – bez JavaScriptu to nepůjde.</p></noscript>
+</main>
+
+<footer class="site-footer">
+  <p class="brand">církev jako kráva</p>
+</footer>
+
+<dialog class="dialog" id="dialog"></dialog>
+<div class="toasts" aria-live="polite"></div>
+
+</body>
+</html>

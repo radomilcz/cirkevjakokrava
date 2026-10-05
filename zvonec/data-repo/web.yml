@@ -1,0 +1,91 @@
+# Template for the PRIVATE data repo (radomilcz/church-data) – copy to .github/workflows/web.yml.
+#
+# Publishes Zvonec at https://zvonec.cirkevjakokrava.cz: the app is taken from the public website
+# repo, access.json (sealed logins – no names, no readable token) is added, and the result goes to
+# this repo's GitHub Pages. Nothing under data/ (people, phones, duties) is ever published – the app
+# reads it through the GitHub API after sign-in.
+#
+# One-time setup: Settings → Pages → Source: GitHub Actions; Custom domain zvonec.cirkevjakokrava.cz;
+# DNS record CNAME zvonec → radomilcz.github.io. (Pages from a private repo needs GitHub Pro / Team.)
+name: Web
+
+on:
+  push:
+    branches: [main]
+    paths: [access.json, .github/workflows/web.yml]   # new or revoked login → live within minutes
+  schedule:
+    - cron: "41 3 * * *"        # daily, so app updates from the public repo get published too
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out access.json only
+        uses: actions/checkout@v4
+        with:
+          path: private
+          sparse-checkout: access.json
+          sparse-checkout-cone-mode: false
+
+      - name: Check out the app from the public repo
+        uses: actions/checkout@v4
+        with:
+          repository: radomilcz/cirkevjakokrava
+          path: web
+          sparse-checkout: |
+            docs/zvonec
+            docs/assets/fonts
+            docs/assets/favicon.svg
+            docs/assets/favicon-32.png
+            docs/assets/icon-180.png
+          sparse-checkout-cone-mode: false
+
+      - name: Assemble the site
+        run: |
+          # The app sits at the domain root. index.html and style.css load ../assets/…, which on the
+          # root resolves to /assets/… – so the icons and fonts go to site/assets.
+          mkdir -p site/assets
+          for f in index.html app.js style.css imprint.svg; do cp "web/docs/zvonec/$f" site/; done
+          cp -r web/docs/zvonec/lib web/docs/zvonec/ui site/
+          cp -r web/docs/assets/fonts site/assets/
+          cp web/docs/assets/favicon.svg web/docs/assets/favicon-32.png web/docs/assets/icon-180.png site/assets/
+          if [ -f private/access.json ]; then cp private/access.json site/; else echo '{"v":2,"logins":[]}' > site/access.json; fi
+          echo "{\"owner\":\"${GITHUB_REPOSITORY%%/*}\",\"repo\":\"${GITHUB_REPOSITORY#*/}\"}" > site/repo.json
+          echo "zvonec.cirkevjakokrava.cz" > site/CNAME
+
+      - name: Refuse personal data
+        run: |
+          # nothing from data/ and no JSON except access.json and repo.json may be published
+          if find site -path '*/data/*' -o -path '*/data' | grep -q .; then echo "::error::data/ must never be published"; exit 1; fi
+          extra=$(find site -name '*.json' ! -name access.json ! -name repo.json)
+          if [ -n "$extra" ]; then echo "::error::unexpected JSON on the site: $extra"; exit 1; fi
+          if grep -Eq '"(firstName|lastName)"' site/access.json; then echo "::error::access.json contains personal names"; exit 1; fi
+          node -e 'const a = JSON.parse(require("fs").readFileSync("site/access.json", "utf8")); if (!Array.isArray(a.logins)) process.exit(1)' \
+            || { echo "::error::access.json is not a valid access file"; exit 1; }
+          find site -type f | sort
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
