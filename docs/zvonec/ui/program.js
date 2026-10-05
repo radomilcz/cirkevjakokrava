@@ -10,7 +10,7 @@ import { addMinutes, prettyDayLong, prettyTime } from '../lib/time.js';
 export function renderProgram(id) {
   const event = eventById(S.data, id);
   if (!event) {
-    return [backLink('Kalendář', '#kalendar'), emptyState('Tohle setkání tu není.', 'Možná ho někdo smazal.', link('Do kalendáře', '#kalendar', 'btn'))];
+    return [backLink('Kalendář', '#kalendar'), emptyState('Tohle setkání tu není. Možná ho někdo smazal.', link('Do kalendáře', '#kalendar', 'btn'))];
   }
   const places = (event.placeIds || []).map((p) => (S.data.places || []).find((x) => x.id === p)?.name).filter(Boolean);
   const times = programTimes(event);
@@ -20,8 +20,7 @@ export function renderProgram(id) {
     backLink(event.title, `#setkani/${id}`),
     h('div', { class: 'program-sheet' },
       printHeader('osnova'),
-      h('p', { class: 'eyebrow no-print' }, 'osnova'),
-      h('h1', { class: 'title smaller' }, event.title),
+      h('h1', { class: 'title' }, `Osnova: ${event.title}`),
       meta([prettyDayLong(event.start), `${prettyTime(event.start)}–${prettyTime(event.end)}`, places.join(', ') || null]),
       event.cancelled ? h('p', { class: 'lead' }, 'Tohle setkání je zrušené.') : null,
       actions([
@@ -45,7 +44,7 @@ export function renderProgram(id) {
               showHow && format?.how ? h('span', { class: 'program-how' }, format.how) : null),
             h('span', { class: 'minutes' }, `${item.minutes} min`));
         }))
-        : emptyState('Osnova je prázdná.', 'Slož ji v detailu setkání.', link('Zpátky', `#setkani/${id}`, 'btn')),
+        : emptyState('Osnova je prázdná. Slož ji v detailu setkání.', link('Zpátky', `#setkani/${id}`, 'btn')),
       times.length ? note(`Konec podle osnovy ${prettyTime(addMinutes(event.start, programDuration(event)))}.`) : null),
   ];
 }

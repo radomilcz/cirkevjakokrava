@@ -3,7 +3,7 @@
 // the rest of its series) – the event detail imports it – and the role order shared by the screens.
 
 import {
-  h, btn, link, plus, pageHeader, emptyState, openDialog, closeDialog, toast, formError, formErrorLine,
+  h, btn, link, plus, emptyState, openDialog, closeDialog, toast, formError, formErrorLine,
   textField, textArea, selectField, choices, checkedValues, fieldGroup, note, actions,
 } from './dom.js';
 import { S, can, change, myId, navigate, newId, EVENT_KIND_LABELS, SEVERITY_LABELS } from './state.js';
@@ -115,8 +115,8 @@ export function renderCalendar(month) {
       h('li', {}, h('span', { class: 'swatch' }), 'v pořádku'),
       leader ? h('li', {}, h('span', { class: 'swatch chip warning' }), 'pozor, něco chybí') : null,
       myId() ? h('li', {}, h('span', { class: 'swatch chip mine' }), 'tady sloužíš') : null),
-    nothingInMonth ? emptyState('Prázdná pastva.', 'Tenhle měsíc tu ještě nic není.',
-      leader ? btn('Přidat setkání', () => eventDialog({ day: firstDay }), 'primary') : null) : null,
+    nothingInMonth ? emptyState('Tenhle měsíc tu ještě nic není.',
+      leader ? btn(plus('Přidat setkání'), () => eventDialog({ day: firstDay }), 'primary') : null) : null,
     grid,
     nothingAhead ? h('div', { class: 'agenda-empty' }, note('Do konce měsíce už nic není.'), link('Další měsíc →', `#kalendar/${monthOf(addMonths(`${shown}-01`, 1))}`, 'btn small')) : null,
     agenda,

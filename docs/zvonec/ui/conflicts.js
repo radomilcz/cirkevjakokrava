@@ -122,7 +122,7 @@ export function renderConflicts() {
     || SEVERITY_WEIGHT[b.severity] - SEVERITY_WEIGHT[a.severity]);
 
   return [
-    pageHeader(null, 'Upozornění', 'Co v rozpisu nesedí. Vyřeš to, dokud je čas.'),
+    pageHeader({ title: 'Upozornění', lead: 'Co v rozpisu nesedí. Vyřeš to, dokud je čas.' }),
     rule(),
     h('div', { class: 'filter-row' },
       filterButtons([['all', `Všechno ${countOf('all')}`], ...severityPills],
@@ -130,8 +130,8 @@ export function renderConflicts() {
       filterButtons([['upcoming', 'Budoucí'], ['all', 'I minulé']], f.conflictScope, pick('conflictScope'), { label: 'Kdy' })),
     list.length
       ? h('ul', { class: 'conflict-list' }, list.map((c) => conflictCard(c)))
-      : emptyState('Nikdo nebučí.', f.conflictSeverity === 'all'
-        ? (f.conflictScope === 'all' ? 'Rozpis sedí.' : `Rozpis od ${prettyDay(today())} sedí.`)
-        : 'Tady nic. Zkus jiný filtr.', null),
+      : emptyState(f.conflictSeverity === 'all'
+        ? (f.conflictScope === 'all' ? 'Nikdo nebučí, rozpis sedí.' : `Nikdo nebučí, rozpis od ${prettyDay(today())} sedí.`)
+        : 'Tady nic. Zkus jiný filtr.'),
   ];
 }

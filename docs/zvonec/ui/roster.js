@@ -95,8 +95,8 @@ export function renderRoster(month) {
     events.length && columns.length
       ? h('div', { class: 'schedule-table-wrap' }, table)
       : events.length
-        ? emptyState('Tady nic.', 'Tahle setkání nepotřebují nikoho z vybraného týmu.', null)
-        : emptyState('Prázdná pastva.', 'Tenhle měsíc tu nic takového není.', link('Do kalendáře', `#kalendar/${shown}`, 'btn')),
+        ? emptyState('Tahle setkání nepotřebují nikoho z vybraného týmu.')
+        : emptyState('Tenhle měsíc tu nic takového není.', link('Do kalendáře', `#kalendar/${shown}`, 'btn')),
     events.length && columns.length ? h('p', { class: 'note no-print' }, leader
       ? 'Kurzívou: ještě nepotvrdil(a). ● takhle to nepůjde, ○ někdo chybí.'
       : 'Kurzívou: ještě nepotvrdil(a). ○ někdo chybí.') : null,

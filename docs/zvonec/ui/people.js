@@ -140,13 +140,12 @@ function renderRegistry(filter) {
     .map(([s, k, label]) => [s ? `#lide/${s}` : '#lide', `${label} ${counts[k]}`]);
 
   return [
-    pageHeader(null, 'Lidé'),
+    pageHeader({ title: 'Lidé', actions: btn(plus('Přidat člověka'), () => personDialog(null), 'primary') }),
     birthdaysLine(),
     h('div', { class: 'search' },
-      searchBox('Jméno, telefon, e-mail…', fill),
-      btn(plus('Přidat člověka'), () => personDialog(null), 'primary small')),
+      searchBox('Jméno, telefon, e-mail…', fill)),
     filterLinks(pills, slug ? `#lide/${slug}` : '#lide', { label: 'Koho ukázat' }),
-    S.data.people.length ? holder : emptyState('Stádo zatím bez jmen.', 'Přidej první lidi, ať máš komu dávat služby.', btn('Přidat člověka', () => personDialog(null), 'primary')),
+    S.data.people.length ? holder : emptyState('Zatím tu nikdo není. Přidej první lidi, ať máš komu dávat služby.', btn(plus('Přidat člověka'), () => personDialog(null), 'primary')),
     actions([
       link('Domácnosti', '#domacnosti', 'btn small'),
       S.data.people.length ? btn('Zkopírovat e-maily', () => copyEmails(visible()), 'small') : null,
@@ -165,7 +164,7 @@ function renderDirectory() {
   };
   fill();
   return [
-    pageHeader(null, 'Lidé', 'Telefon a e-mail uvidíš u těch, kdo je ukazují ostatním.'),
+    pageHeader({ title: 'Lidé', lead: 'Telefon a e-mail uvidíš u těch, kdo je ukazují ostatním.' }),
     h('div', { class: 'search' }, searchBox('Hledat jméno', fill)),
     holder,
   ];
@@ -209,7 +208,7 @@ async function copyEmails(people) {
 export function renderPerson(id) {
   const person = personById(S.data, id);
   if (!person) {
-    return [backLink('Lidé', '#lide'), emptyState('Tenhle člověk tu není.', 'Možná ho někdo smazal.', link('Na Lidi', '#lide', 'btn'))];
+    return [backLink('Lidé', '#lide'), emptyState('Tenhle člověk tu není. Možná ho někdo smazal.', link('Na Lidi', '#lide', 'btn'))];
   }
   const leader = can('leader');
   const self = person.id === myId();
@@ -217,8 +216,7 @@ export function renderPerson(id) {
 
   return [
     backLink('Lidé', '#lide'),
-    pageHeader(leader ? MEMBERSHIP_LABELS[statusOf(person)] : null, fullName(person), self && !leader
-      ? 'Tohle o tobě Zvonec ví. Když se něco změní, uprav si kontakt sám.' : null, { smaller: true }),
+    pageHeader({ title: fullName(person), lead: self && !leader ? 'Tohle o tobě Zvonec ví. Když se něco změní, uprav si kontakt sám.' : null }),
     person.nickname ? h('p', { class: 'meta' }, h('span', {}, h('span', { class: 'what' }, 'říkáme'), person.nickname)) : null,
     actions([
       leader ? btn('Upravit', () => personDialog(person), 'primary small') : btn('Upravit kontakt', () => contactDialog(person), 'primary small'),
@@ -248,7 +246,7 @@ function reducedCard(person) {
   const links = contactLinks(person);
   return [
     backLink('Lidé', '#lide'),
-    pageHeader(null, fullName(person), null, { smaller: true }),
+    pageHeader({ title: fullName(person) }),
     h('div', { class: 'grid spaced' },
       h('div', {},
         section('Kontakt', links.length
@@ -342,12 +340,12 @@ function groupsSection(person) {
   const self = person.id === myId();
   const groups = groupsOf(S.data, person.id);
   const skills = skillsOf(S.data, person.id);
-  return section([self ? 'Moje týmy a skupiny' : 'Týmy a skupiny', groups.length ? count(String(groups.length)) : null, leader ? link('Upravit', '#skupiny', 'btn mini plain') : null],
+  return section([self ? 'Moje týmy a skupiny' : 'Týmy a skupiny', groups.length ? count(String(groups.length)) : null, leader ? link('Upravit', '#tymy', 'btn mini plain') : null],
     groups.length ? h('ul', { class: 'overview' }, groups.map((g) => {
       const member = memberRecord(S.data, g.id, person.id);
       const own = skills.filter((s) => s.groupId === g.id);
       return h('li', {},
-        h('span', { class: 'grow' }, leader ? link(g.name, `#skupina/${g.id}`) : g.name, faint(` · ${GROUP_KIND_LABELS[g.kind] || ''}`)),
+        h('span', { class: 'grow' }, leader ? link(g.name, `#tym/${g.id}`) : g.name, faint(` · ${GROUP_KIND_LABELS[g.kind] || ''}`)),
         h('span', { class: 'tags' },
           member?.leader ? tag('vede', 'filled') : null,
           own.map((s) => tag([roleById(S.data, s.roleId)?.name || '?', s.level === 'learning' ? faint(` ${SKILL_LABELS.learning}`) : null],
@@ -674,8 +672,11 @@ export function renderHouseholds() {
   const alone = S.data.people.filter((p) => !p.householdId && !isFormer(p)).length;
   return [
     backLink('Lidé', '#lide'),
-    pageHeader(null, 'Domácnosti', 'Kdo spolu bydlí. Hodí se, když potřebuješ zavolat rodičům kvůli dětem nebo poslat něco domů.'),
-    actions([btn(plus('Přidat domácnost'), () => householdDialog(null), 'primary small')]),
+    pageHeader({
+      title: 'Domácnosti',
+      lead: 'Kdo spolu bydlí. Hodí se, když potřebuješ zavolat rodičům kvůli dětem nebo poslat něco domů.',
+      actions: btn(plus('Přidat domácnost'), () => householdDialog(null), 'primary'),
+    }),
     rule(),
     households.length ? h('ul', { class: 'list' }, households.map((household) => {
       const members = householdMembers(S.data, household.id, { today: today() });
@@ -683,7 +684,7 @@ export function renderHouseholds() {
         h('span', { class: 'name' }, household.name, household.address ? h('small', {}, household.address) : null),
         h('span', { class: 'tags' }, members.map((p) => tag(displayName(p), isKid(p) ? 'quiet' : ''))),
         h('span', { class: 'right' }, plural(members.length, 'člověk', 'lidé', 'lidí'))));
-    })) : emptyState('Zatím žádná domácnost.', 'Domácnost spojí rodinu: kdo s kým bydlí a komu volat kvůli dětem.', null),
+    })) : emptyState('Zatím tu není žádná domácnost. Domácnost spojí rodinu: kdo s kým bydlí a komu volat kvůli dětem.', btn(plus('Přidat domácnost'), () => householdDialog(null), 'primary')),
     alone ? note(`Bez domácnosti: ${plural(alone, 'člověk', 'lidé', 'lidí')}.`) : null,
   ];
 }
@@ -691,7 +692,7 @@ export function renderHouseholds() {
 export function renderHousehold(id) {
   const household = householdById(S.data, id);
   if (!household) {
-    return [backLink('Domácnosti', '#domacnosti'), emptyState('Tahle domácnost tu není.', 'Možná ji někdo smazal.', link('Na domácnosti', '#domacnosti', 'btn'))];
+    return [backLink('Domácnosti', '#domacnosti'), emptyState('Tahle domácnost tu není. Možná ji někdo smazal.', link('Na domácnosti', '#domacnosti', 'btn'))];
   }
   const members = householdMembers(S.data, household.id, { today: today() });
   const add = () => openPicker({
@@ -713,11 +714,11 @@ export function renderHousehold(id) {
   });
   return [
     backLink('Domácnosti', '#domacnosti'),
-    pageHeader('domácnost', household.name, household.address || 'Kdo tu bydlí a jak se jim dovoláš. Adresu doplníš přes Upravit.', { smaller: true }),
-    actions([
-      btn(plus('Přidat člověka'), add, 'primary small'),
-      btn('Upravit', () => householdDialog(household), 'small'),
-    ]),
+    pageHeader({
+      title: household.name,
+      lead: household.address || null,
+      actions: [btn('Upravit', () => householdDialog(household)), btn(plus('Přidat člověka'), add, 'primary')],
+    }),
     section(['Kdo tu bydlí', count(String(members.length))],
       members.length ? h('ul', { class: 'list' }, members.map((p) => h('li', {}, h('div', { class: 'row' },
         h('span', { class: 'name' }, link(fullName(p), `#osoba/${p.id}`),

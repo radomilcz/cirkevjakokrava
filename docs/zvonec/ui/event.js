@@ -40,7 +40,7 @@ export function renderEvent(id) {
   const event = fresh(id);
   if (!event) {
     return [backLink('Kalendář', '#kalendar'),
-      emptyState('Tohle setkání tu není.', 'Možná ho někdo smazal.', link('Do kalendáře', '#kalendar', 'btn'))];
+      emptyState('Tohle setkání tu není. Možná ho někdo smazal.', link('Do kalendáře', '#kalendar', 'btn'))];
   }
   const leader = can('leader');
   const conflicts = leader ? S.conflicts.filter((c) => (c.eventIds || [c.eventId]).includes(id)) : [];
@@ -54,8 +54,7 @@ export function renderEvent(id) {
 
   return [
     backLink('Kalendář', `#kalendar/${monthOf(event.start)}`),
-    pageHeader(kindLabel && kindLabel !== event.title ? kindLabel : null,
-      event.title, event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.' : null, { smaller: true }),
+    pageHeader({ title: event.title, lead: event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.' : null }),
     meta([
       sameDay ? `${prettyDayLong(event.start)}, ${prettyTime(event.start)}–${prettyTime(event.end)}` : prettyRange(event),
       places.length ? places.join(', ') : null,
@@ -114,7 +113,7 @@ function assignmentSeverity(conflicts) {
 function planList(event, conflicts, leader) {
   const needs = needsOf(S.data, event, { withAssigned: true });
   if (!needs.length) {
-    return emptyState('Žádná služba.', leader ? 'Tohle setkání nikoho nepotřebuje. Nebo jo? Služby přidáš přes Upravit.' : 'Tohle setkání nikoho nepotřebuje.',
+    return emptyState(leader ? 'Tohle setkání zatím nikoho nepotřebuje. Služby přidáš přes Upravit.' : 'Tohle setkání nikoho nepotřebuje.',
       leader ? btn('Upravit', () => eventDialog({ event }), 'small') : null);
   }
   const compare = roleComparator(S.data);

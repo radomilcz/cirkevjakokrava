@@ -1,9 +1,9 @@
-// Zvonec – the app: boot (demo or live), session, router, save-status badge.
+// Zvonec – the app: boot (demo or live), session, router, the shell (sidebar / phone sheet), save status.
 // No framework and no build: the files sit on GitHub Pages as they are. Screens live in ui/*.js
 // and talk to the rest only through ui/state.js and ui/dom.js.
 
-import { S, setHooks, can, recompute, isUpcoming, loadRemembered, forgetRemembered } from './ui/state.js';
-import { h, btn, nodes, emptyState, pageHeader, isDialogOpen } from './ui/dom.js';
+import { S, setHooks, can, myId, recompute, isUpcoming, loadRemembered, forgetRemembered, ACCESS_LABELS } from './ui/state.js';
+import { h, btn, nodes, emptyState, pageHeader, isDialogOpen, avatar, personName } from './ui/dom.js';
 import './ui/stepper.js';   // − and + buttons on every number field
 import './ui/select.js';    // drop-downs in the Zvonec style
 import './ui/datepicker.js'; // date fields with our own calendar
@@ -12,6 +12,8 @@ import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
 import { restore, ACCESS_FILE } from './lib/access.js';
 import { createDemo } from './lib/demo.js';
+import { PUBLIC_FILE } from './lib/public.js';
+import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
 
 import { renderHome } from './ui/home.js';
@@ -23,26 +25,40 @@ import { renderPeople, renderPerson, renderHouseholds, renderHousehold } from '.
 import { renderGroups, renderGroup } from './ui/groups.js';
 import { renderConflicts } from './ui/conflicts.js';
 import { renderSettings } from './ui/settings.js';
+import { renderFormats } from './ui/formats.js';
+import { renderPublicProgram, renderPublicFormats } from './ui/public.js';
 import { renderLogin, renderSetup, renderInvite } from './ui/login.js';
 
 // ---------- routes ----------
 // Slugs are Czech (people see and share them). `parts` = the hash split by '/', without the section.
-// `member`: whether a member (not a leader) may open it – true, or a test of the parts.
-// `menu`: which nav item lights up (defaults to the section itself).
+// `access`: who may open it –
+//   'public'    everyone, signed in or not (the public part: published events and formats)
+//   'signedOut' only visitors who are not signed in (sign-in, invite); signed-in people go home
+//   'member'    anyone signed in · 'leader' leaders and admins · or a function of the parts → one of these
+// `menu`: which nav item lights up (defaults to the section itself; may be a function of the parts).
 
 const ROUTES = {
-  moje: { render: () => renderHome(), member: true },
-  kalendar: { render: ([month]) => renderCalendar(month || ''), member: true },
-  setkani: { render: ([id, sub]) => (sub === 'osnova' ? renderProgram(id) : renderEvent(id)), member: true, menu: 'kalendar' },
-  rozpis: { render: ([month]) => renderRoster(month || ''), member: true },
-  lide: { render: ([filter]) => renderPeople(filter || ''), member: true },
-  osoba: { render: ([id]) => renderPerson(id), member: true, menu: 'lide' },
-  domacnosti: { render: () => renderHouseholds(), menu: 'lide' },
-  domacnost: { render: ([id]) => renderHousehold(id), menu: 'lide' },
-  skupiny: { render: () => renderGroups() },
-  skupina: { render: ([id]) => renderGroup(id), menu: 'skupiny' },
-  upozorneni: { render: () => renderConflicts() },
-  nastaveni: { render: ([section]) => renderSettings(section || ''), member: ([section]) => !section || section === 'formaty' || section === 'ucet' },
+  program: { render: () => renderPublicProgram(), access: 'public' },
+  'jak-se-schazime': { render: () => renderPublicFormats(), access: 'public' },
+  prihlaseni: { render: () => signInPage(), access: 'signedOut' },
+  pozvanka: { render: ([code]) => invitePage(code), access: 'signedOut', menu: 'prihlaseni' },
+  moje: { render: () => renderHome(), access: 'member' },
+  kalendar: { render: ([month]) => renderCalendar(month || ''), access: 'member' },
+  setkani: { render: ([id, sub]) => (sub === 'osnova' ? renderProgram(id) : renderEvent(id)), access: 'member', menu: 'kalendar' },
+  rozpis: { render: ([month]) => renderRoster(month || ''), access: 'member' },
+  lide: { render: ([filter]) => renderPeople(filter || ''), access: 'member' },
+  osoba: { render: ([id]) => renderPerson(id), access: 'member', menu: 'lide' },
+  domacnosti: { render: () => renderHouseholds(), access: 'leader', menu: 'lide' },
+  domacnost: { render: ([id]) => renderHousehold(id), access: 'leader', menu: 'lide' },
+  tymy: { render: () => renderGroups(), access: 'leader' },
+  tym: { render: ([id]) => renderGroup(id), access: 'leader', menu: 'tymy' },
+  formaty: { render: () => renderFormats(), access: 'member' },
+  upozorneni: { render: () => renderConflicts(), access: 'leader' },
+  nastaveni: {
+    render: ([section]) => renderSettings(section || ''),
+    access: ([section]) => (!section || section === 'ucet' ? 'member' : 'leader'),
+    menu: ([section]) => (section === 'ucet' || !can('leader') ? 'ucet' : 'nastaveni'),
+  },
 };
 
 /** Old slugs keep working (printed links, bookmarks). */
@@ -50,15 +66,31 @@ const REDIRECTS = [
   [/^udalost\/(.+)$/, (m) => `setkani/${m[1]}`],
   [/^porad\/(.+)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^setkani\/([^/]+)\/(porad|prubeh)$/, (m) => `setkani/${m[1]}/osnova`],
-  [/^formaty$/, () => 'nastaveni/formaty'],
-  [/^sluzby$/, () => 'skupiny'],
+  [/^nastaveni\/formaty$/, () => 'formaty'],
+  [/^(skupiny|sluzby)$/, () => 'tymy'],
+  [/^skupina\/(.+)$/, (m) => `tym/${m[1]}`],
   [/^kolize$/, () => 'upozorneni'],
 ];
 
-const LEADER_MENU = [['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé'], ['skupiny', 'Skupiny'], ['upozorneni', 'Upozornění'], ['nastaveni', 'Nastavení']];
-const MEMBER_MENU = [['moje', 'Moje'], ['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé']];
+// Navigation per access level (DESIGN §3). [section, label, condition?]
+const LEADER_NAV = [
+  ['moje', 'Moje', () => !!myId()],
+  ['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé'], ['tymy', 'Týmy a role'],
+  ['formaty', 'Formáty'], ['upozorneni', 'Upozornění'], ['nastaveni', 'Nastavení'],
+];
+const MEMBER_NAV = [['moje', 'Moje'], ['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé'], ['formaty', 'Formáty']];
+const PUBLIC_NAV = [['program', 'Program'], ['jak-se-schazime', 'Jak se scházíme']];
 
-const homeSection = () => (can('leader') ? 'kalendar' : 'moje');
+const signedIn = () => !!S.me;
+const homeSection = () => (!signedIn() ? (S.logins.length ? 'program' : 'prihlaseni') : can('leader') ? 'kalendar' : 'moje');
+
+/** May the current visitor open a route with this access? */
+function allowedFor(access, parts) {
+  const level = typeof access === 'function' ? access(parts) : access;
+  if (level === 'public') return true;
+  if (level === 'signedOut') return !signedIn();
+  return signedIn() && can(level);
+}
 
 /** Current route after redirects and the permission check: { section, parts, route }. */
 function resolve() {
@@ -73,110 +105,173 @@ function resolve() {
   }
   let [section, ...parts] = path.split('/');
   let route = ROUTES[section];
-  const allowed = route && (can('leader') || route.member === true || (typeof route.member === 'function' && route.member(parts)));
-  if (!allowed) {
-    section = homeSection();
+  if (!route || !allowedFor(route.access, parts)) {
+    // a signed-out visitor following a link into the app signs in first and then lands there
+    const needsSignIn = route && !signedIn() && S.mode === 'live';
+    if (needsSignIn) S.afterSignIn = path;
+    section = needsSignIn ? 'prihlaseni' : homeSection();
     parts = [];
     route = ROUTES[section];
-    if (path) history.replaceState(null, '', `#${section}`);
+    history.replaceState(null, '', `#${section}`);   // the address says where we are (#program, #kalendar…)
   }
   return { section, parts, route };
 }
 
-// ---------- menu ----------
+// ---------- signed-out pages ----------
 
-let menuKey = null;
+function signInPage() {
+  if (!S.logins.length) return renderSetup();
+  return renderLogin(S.signInMessage || '');
+}
 
-function updateMenu(activeSection) {
-  const live = S.mode === 'live';
-  document.body.classList.toggle('logged-out', live && !S.me);
-  const menu = document.querySelector('.menu');
-  const leader = can('leader');
-  const key = leader ? 'leader' : 'member';
-  if (key !== menuKey) {
-    menuKey = key;
-    menu.querySelectorAll(':scope > a').forEach((a) => a.remove());
-    const palette = menu.querySelector('.palette');
-    for (const [section, label] of leader ? LEADER_MENU : MEMBER_MENU) {
-      menu.insertBefore(h('a', { href: `#${section}`, dataset: { section } },
-        label, section === 'upozorneni' ? [' ', h('span', { class: 'count', hidden: true })] : null), palette);
-    }
+let inviteCode = null;
+/** #pozvanka/<code>: ui/login.js checks the invite (async) and fills S.screen. */
+function invitePage(code) {
+  if (code && code !== inviteCode) {
+    inviteCode = code;
+    S.screen = null;
+    queueMicrotask(() => renderInvite(code));
   }
-  menu.querySelectorAll(':scope > a').forEach((a) => {
-    if (a.dataset.section === activeSection) a.setAttribute('aria-current', 'page');
+  return S.screen ? S.screen() : h('p', { class: 'loading' }, 'Otevírám pozvánku…');
+}
+
+// ---------- shell: sidebar (desktop) / top bar + sheet (phone) ----------
+
+let navKey = null;
+
+/** Which navigation fits: the public one on public routes and for visitors, otherwise per access. */
+function navFor(route) {
+  if (!signedIn() || route.access === 'public') return { key: `public-${signedIn()}`, items: PUBLIC_NAV };
+  const leader = can('leader');
+  const items = (leader ? LEADER_NAV : MEMBER_NAV).filter(([, , when]) => !when || when());
+  return { key: `${leader ? 'leader' : 'member'}-${items.length}`, items };
+}
+
+function updateShell(route, section, parts) {
+  const isPublic = !signedIn() || route.access === 'public';
+  document.body.classList.toggle('signed-out', !signedIn());
+  document.body.classList.toggle('public-view', isPublic);
+  const active = typeof route.menu === 'function' ? route.menu(parts) : route.menu || section;
+
+  const { key, items } = navFor(route);
+  const nav = document.querySelector('.sidebar .nav');
+  if (key !== navKey) {
+    navKey = key;
+    nav.replaceChildren(h('ul', {}, items.map(([slug, label]) => h('li', {},
+      h('a', { href: `#${slug}`, dataset: { section: slug } },
+        h('span', { class: 'nav-label' }, label),
+        slug === 'upozorneni' ? h('span', { class: 'count', hidden: true }) : null)))));
+  }
+  nav.querySelectorAll('a').forEach((a) => {
+    if (a.dataset.section === active) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });
-  const badge = menu.querySelector('.count');
+  const badge = nav.querySelector('.count');
   if (badge) {
     const upcoming = S.data ? S.conflicts.filter((c) => c.severity !== 'info' && isUpcoming(c)).length : 0;
     badge.hidden = !upcoming;
     badge.textContent = upcoming;
+    badge.setAttribute('aria-label', `${upcoming} upozornění`);
+  }
+
+  // bottom: who is signed in (→ Můj účet), or Přihlásit se; in the demo the way to the public part
+  const account = document.querySelector('.sidebar-account');
+  const links = document.querySelector('.sidebar-links');
+  const person = signedIn() ? personById(S.data || {}, myId()) : null;
+  if (!signedIn()) {
+    account.replaceChildren(h('a', {
+      class: 'btn primary signin', href: '#prihlaseni', 'aria-current': active === 'prihlaseni' ? 'page' : null,
+    }, 'Přihlásit se'));
+  } else if (isPublic) {
+    account.replaceChildren(h('a', { class: 'btn signin', href: `#${homeSection()}` }, 'Zpátky do Zvonce'));
+  } else {
+    const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
+    account.replaceChildren(h('a', {
+      class: 'me', href: '#nastaveni/ucet', 'aria-current': active === 'ucet' ? 'page' : null, title: 'Můj účet',
+    },
+    person ? avatar(person, { size: 'm' }) : h('span', { class: 'avatar avatar-m avatar-v0', 'aria-hidden': 'true' }, S.mode === 'demo' ? 'U' : '?'),
+    h('span', { class: 'me-text' }, h('span', { class: 'me-name' }, name),
+      h('span', { class: 'me-role' }, ACCESS_LABELS[S.me.access] || ''))));
+  }
+  links.replaceChildren(...nodes(S.mode === 'demo' && !isPublic
+    ? h('a', { class: 'quiet-link', href: '#program' }, 'Veřejná část') : null));
+  document.querySelector('.topbar-signin').hidden = signedIn() || active === 'prihlaseni';
+}
+
+// the phone sheet: Menu opens it, Esc / a link / the scrim close it
+const sheetQuery = window.matchMedia('(max-width: 959.98px)');
+function setSheet(open, { focus = true } = {}) {
+  const toggle = document.querySelector('.menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const isOpen = document.body.classList.contains('sheet-open');
+  if (open === isOpen) return;
+  document.body.classList.toggle('sheet-open', open);
+  toggle.setAttribute('aria-expanded', String(open));
+  document.querySelector('.scrim').hidden = !open;
+  if (open) {
+    sidebar.setAttribute('role', 'dialog');
+    sidebar.setAttribute('aria-modal', 'true');
+    (sidebar.querySelector('.nav [aria-current="page"]') || sidebar.querySelector('.nav a, a, button'))?.focus();
+  } else {
+    sidebar.removeAttribute('role');
+    sidebar.removeAttribute('aria-modal');
+    if (focus) toggle.focus();
   }
 }
+document.querySelector('.menu-toggle').addEventListener('click', () => setSheet(!document.body.classList.contains('sheet-open')));
+document.querySelector('.scrim').addEventListener('click', () => setSheet(false));
+document.getElementById('sidebar').addEventListener('click', (e) => { if (e.target.closest('a[href]')) setSheet(false, { focus: false }); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || !document.body.classList.contains('sheet-open')) return;
+  if (!document.querySelector('.palette-menu').hidden) return;   // the palette closes first
+  setSheet(false);
+});
+sheetQuery.addEventListener?.('change', () => setSheet(false, { focus: false }));
 
 // ---------- rendering ----------
 
 function renderApp({ toTop = false } = {}) {
   const main = document.getElementById('content');
   if (!S.mode) return;                               // still finding out whether this is the demo or live
-  if (S.mode === 'live' && !S.me) {
-    updateMenu(null);
-    main.replaceChildren(...nodes(S.screen ? S.screen() : []));
-    return;
-  }
-  if (!S.data) return;
+  if (signedIn() && !S.data) return;                 // signed in, data still loading
   const { section, parts, route } = resolve();
-  updateMenu(route.menu || section);
+  updateShell(route, section, parts);
   const position = window.scrollY;
   let content;
   try {
     content = route.render(parts);
   } catch (error) {
     console.error(error);
-    content = [pageHeader(null, 'Jejda'), emptyState('Tohle se nepovedlo zobrazit.', 'Zkus stránku načíst znovu. Kdyby to nepomohlo, dej vědět správci.')];
+    content = [pageHeader({ title: 'Jejda' }), emptyState('Tohle se nepovedlo zobrazit. Zkus stránku načíst znovu, a kdyby to nepomohlo, dej vědět správci.')];
   }
   main.replaceChildren(...nodes(content));
   window.scrollTo(0, toTop ? 0 : position);
 }
 
 window.addEventListener('hashchange', () => {
-  const invite = location.hash.match(/^#pozvanka\/(.+)$/);
-  if (invite && S.mode === 'live' && !S.me) { renderInvite(decodeURIComponent(invite[1])); return; }
+  setSheet(false, { focus: false });
   renderApp({ toTop: true });
   document.getElementById('content').focus({ preventScroll: true });
 });
 
 // ---------- save status ----------
 
-let saveStatusTimer = null;
-let saveStatusSeen = false;   // the very first 'saved' after loading is not news
-
 /**
- * The header stays quiet. Saving shows „Ukládám…“, then „Uloženo“ for two seconds; only a failed
- * save stays on screen with „Zkusit znovu“. The demo says once, for a while, where its data lives.
+ * Quiet unless it matters: „Ukládám…“ while saving, nothing once saved; a failed save stays on screen
+ * with „Zkusit znovu“. There are two places (sidebar on desktop, top bar on phone), both get it.
  */
 function showSaveStatus({ status, error }) {
-  const el = document.querySelector('.save-status');
-  clearTimeout(saveStatusTimer);
   const failed = status === 'error' || status === 'offline';
-  el.classList.toggle('error', failed);
-  el.title = failed && error ? error : '';   // the technical detail for whoever helps, not in the sentence
-  const demo = S.store?.kind !== 'github';
-  if (failed) {
-    const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : 'Neuloženo.';
-    el.replaceChildren(text, ' ', btn('Zkusit znovu', () => S.sync.save(), 'mini'));
-    return;
+  for (const el of document.querySelectorAll('.save-status')) {
+    el.classList.toggle('error', failed);
+    el.title = failed && error ? error : '';   // the technical detail for whoever helps, not in the sentence
+    if (failed) {
+      const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : 'Neuloženo.';
+      el.replaceChildren(h('span', {}, text), ' ', btn('Zkusit znovu', () => S.sync.save(), 'mini'));
+    } else {
+      el.textContent = status === 'saving' || status === 'pending' ? 'Ukládám…' : '';
+    }
   }
-  if (status === 'saving' || status === 'pending') { el.textContent = 'Ukládám…'; return; }
-  if (status === 'saved') {
-    const first = !saveStatusSeen;
-    saveStatusSeen = true;
-    if (first && !demo) { el.textContent = ''; return; }
-    el.textContent = demo ? 'Ukázka – ukládá se jen v tomhle prohlížeči.' : 'Uloženo';
-    saveStatusTimer = setTimeout(() => { el.textContent = ''; }, demo && first ? 6000 : 2000);
-    return;
-  }
-  el.textContent = '';
 }
 
 window.addEventListener('beforeunload', (e) => {
@@ -213,16 +308,22 @@ function useStore(store, data) {
 async function startLive(result) {
   S.me = { login: result.record, priv: result.priv, github: result.github, personId: result.record.personId || null, access: result.record.access };
   S.screen = null;
+  S.signInMessage = null;
   const store = new GithubStore(result.github);
   let data;
   try {
     data = await load(store);
   } catch (error) {
     S.me = null;
-    S.screen = () => renderLogin(`Nepovedlo se načíst data. Zkus to za chvíli znovu. (${error.message})`);
-    renderApp();
+    S.signInMessage = `Nepovedlo se načíst data. Zkus to za chvíli znovu. (${error.message})`;
+    navigateTo('prihlaseni');
     return;
   }
+  // after signing in: the page the visitor wanted, otherwise home
+  const wanted = S.afterSignIn;
+  S.afterSignIn = null;
+  if (wanted) history.replaceState(null, '', `#${wanted}`);
+  else if (/^#(prihlaseni|pozvanka\/|program|jak-se-schazime)/.test(location.hash)) history.replaceState(null, '', '#');
   useStore(store, data || emptyData());
   if (can('leader')) refreshLogins();
 }
@@ -254,6 +355,12 @@ async function fetchPublic(file) {
   } catch { return null; }
 }
 
+/** Change the hash without a hashchange render of its own, then render once. */
+function navigateTo(path) {
+  history.replaceState(null, '', `#${path}`);
+  renderApp({ toTop: true });
+}
+
 async function boot() {
   setHooks({ render: renderApp, signedIn: startLive });
   // Live mode shows itself by access.json next to the app – the data repo workflow publishes it.
@@ -262,17 +369,17 @@ async function boot() {
     S.mode = 'live';
     S.logins = access.logins || [];
     S.repoInfo = await fetchPublic('./repo.json');
-    const invite = location.hash.match(/^#pozvanka\/(.+)$/);
-    if (invite) { await renderInvite(decodeURIComponent(invite[1])); return; }
     const remembered = loadRemembered();
-    if (remembered) {
+    if (remembered && !location.hash.startsWith('#pozvanka/')) {
       const result = await restore(S.logins, remembered);
       if (result && result.record.access !== 'invite') { await startLive(result); return; }
       if (S.logins.some((l) => l.id === remembered.id)) forgetRemembered();   // the record is here but does not fit – drop it
-      else S.screen = () => renderLogin('Tvoje přihlášení tu ještě není, nebo ho někdo zrušil. Jestli jsi ho dostal(a) teď, zkus to za pár minut.');
+      else S.signInMessage = 'Tvoje přihlášení tu ještě není, nebo ho někdo zrušil. Jestli jsi ho dostal(a) teď, zkus to za pár minut.';
     }
-    S.screen = S.screen || (S.logins.length ? () => renderLogin() : () => renderSetup());
     renderApp();
+    // the public part (published events and formats) – it may come a moment later
+    S.publicData = await fetchPublic(`./${PUBLIC_FILE}`);
+    if (!S.me) renderApp();
     return;
   }
   S.mode = 'demo';
@@ -283,4 +390,3 @@ async function boot() {
 }
 
 boot();
-

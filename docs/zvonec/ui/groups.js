@@ -1,4 +1,4 @@
-// #skupiny, #skupina/<id> – groups, roles (duties a team covers), members and skill levels.
+// #tymy, #tym/<id> (old #skupiny, #skupina/<id>) – groups, roles (duties a team covers), members and skill levels.
 // Leaders only (the router keeps members out). Only teams have roles and feed planning;
 // community groups and the leadership are just people who belong together, with leaders.
 
@@ -7,7 +7,7 @@ import {
   emptyState, toast, confirmDialog, simpleDialog, textField, textArea, selectField, checkboxField,
   checkedValues, fieldGroup, segment, removeButton,
 } from './dom.js';
-import { S, change, navigate, newId, GROUP_KIND_LABELS, SKILL_LABELS } from './state.js';
+import { S, change, navigate, newId, SKILL_LABELS } from './state.js';
 import { openPicker } from './picker.js';
 import {
   GROUP_KINDS, groupById, roleById, rolesOf, membersOf, leadersOf, addMember, removeMember, setLeader, setSkill,
@@ -104,7 +104,7 @@ function deleteRoles(roleIds) {
   }
 }
 
-// ---------- #skupiny ----------
+// ---------- #tymy ----------
 
 export function renderGroups() {
   const groups = S.data.groups;
@@ -112,10 +112,13 @@ export function renderGroups() {
   const archived = groups.filter((g) => g.archived).sort(byName);
   const other = active.filter((g) => !GROUP_KINDS.includes(g.kind)).sort(byName);
   return [
-    pageHeader(null, 'Skupiny', 'Týmy slouží na setkáních a z jejich rolí se skládá rozpis. Ve skupinkách a ve vedení jsou lidé, kteří se pravidelně scházejí.'),
-    actions(btn(plus('Přidat skupinu'), () => groupDialog(), 'primary small')),
+    pageHeader({
+      title: 'Týmy a role',
+      lead: 'Týmy slouží na setkáních a z jejich rolí se skládá rozpis. Ve skupinkách a ve vedení jsou lidé, kteří se pravidelně scházejí.',
+      actions: btn(plus('Přidat skupinu'), () => groupDialog(), 'primary'),
+    }),
     rule(),
-    groups.length ? null : emptyState('Zatím žádná skupina.', 'Začni třeba týmem Technika nebo středeční skupinkou.', btn('Přidat skupinu', () => groupDialog(), 'primary')),
+    groups.length ? null : emptyState('Zatím tu není žádný tým ani skupina. Začni třeba týmem Technika nebo středeční skupinkou.', btn(plus('Přidat skupinu'), () => groupDialog(), 'primary')),
     GROUP_KINDS.map((kind) => {
       const list = active.filter((g) => g.kind === kind).sort(byName);
       return list.length ? section([KIND_HEADINGS[kind], count(String(list.length))], groupList(list)) : null;
@@ -130,7 +133,7 @@ function groupList(groups) {
   return h('ul', { class: 'list' }, groups.map((g) => {
     const leaders = leaderNames(g.id);
     const roles = g.kind === 'team' ? rolesOf(S.data, g.id) : [];
-    return h('li', {}, h('a', { class: 'row', href: `#skupina/${g.id}` },
+    return h('li', {}, h('a', { class: 'row', href: `#tym/${g.id}` },
       h('span', { class: 'name' }, g.name, h('small', {}, leaders.length ? `vede ${leaders.join(', ')}` : 'bez vedoucího')),
       g.kind === 'team'
         ? h('span', { class: 'tags' }, roles.length ? roles.map((r) => tag(r.name, 'quiet')) : h('span', { class: 'faint' }, 'zatím bez rolí'))
@@ -167,28 +170,27 @@ function groupDialog(group) {
       const id = newId('g');
       S.data.groups.push({ id, name, kind, ...(description ? { description } : {}) });
       change(`nová skupina ${name}`);
-      navigate(`#skupina/${id}`);
+      navigate(`#tym/${id}`);
       return null;
     },
   });
 }
 
-// ---------- #skupina/<id> ----------
+// ---------- #tym/<id> ----------
 
 export function renderGroup(id) {
   const group = groupById(S.data, id);
   if (!group) {
-    return [backLink('Skupiny', '#skupiny'), pageHeader(null, 'Nenašlo se'),
-      emptyState('Tahle skupina tu není.', 'Možná ji mezitím někdo smazal.', link('Všechny skupiny', '#skupiny', 'btn'))];
+    return [backLink('Týmy a role', '#tymy'), pageHeader({ title: 'Nenašlo se' }),
+      emptyState('Tahle skupina tu není. Možná ji mezitím někdo smazal.', link('Všechny týmy a skupiny', '#tymy', 'btn'))];
   }
   const team = group.kind === 'team';
   const members = sortedMembers(group.id);
   const roles = team ? rolesOf(S.data, group.id) : [];
   const leaders = leadersOf(S.data, group.id);
   return [
-    backLink('Skupiny', '#skupiny'),
-    pageHeader([GROUP_KIND_LABELS[group.kind] || 'skupina', group.archived ? ' · v archivu' : ''], group.name, group.description || null,
-      { smaller: group.name.length > 16 }),
+    backLink('Týmy a role', '#tymy'),
+    pageHeader({ title: group.name, lead: group.description || null }),
     meta([
       ['vede', leaders.length ? leaders.map((m, i) => [i ? ', ' : '', link(fullName(personById(S.data, m.personId)), `#osoba/${m.personId}`)]) : 'zatím nikdo'],
       people(members.length),
@@ -244,7 +246,7 @@ function deleteGroup(group) {
     for (const t of S.data.eventTypes) if (t.groupId === g.id) delete t.groupId;
     for (const e of S.data.events) if (e.groupId === g.id) delete e.groupId;
     change(`smazaná skupina ${g.name}`);
-    navigate('#skupiny');
+    navigate('#tymy');
     toast('Smazáno.', g.name);
   });
 }

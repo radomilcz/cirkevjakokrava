@@ -8,7 +8,7 @@ kontrola v GitHub Actions. Žádný server, žádná další služba.
 
 Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, otisk z Figmy,
 pilulky, šipky, tykání a stejná paleta. Bez volby se Zvonec řídí zařízením: ve světlém režimu krém a hlína
-(`#f9e7dd` / `#3b2f2f`), v tmavém hlína a růžová (`#3b2f2f` / `#e6acac`). Terč v liště nabídne pět dvojic
+(`#f9e7dd` / `#3b2f2f`), v tmavém hlína a růžová (`#3b2f2f` / `#e6acac`). Terč dole v menu nabídne pět dvojic
 z palety, které mají dost kontrastu i na drobný text; volbu si pamatuje prohlížeč. Tisk jde vždycky na bílý papír.
 
 ## Tři části: Lidé, Skupiny, Setkání
@@ -27,6 +27,10 @@ něco jiného než role v týmu a nikdy se nejmenují stejně.
 
 ## Co to umí
 
+Menu je na počítači vlevo, na telefonu pod tlačítkem **Menu** nahoře. Dole v menu je tvoje jméno (vede
+na Můj účet) a terč s barvami. Kdo není přihlášený, vidí jen **Program** a **Jak se scházíme** – tedy
+setkání a formáty, které vedoucí zveřejnili – a tlačítko **Přihlásit se**.
+
 | obrazovka | co tam je |
 | --- | --- |
 | **Moje** | úvod pro členy: co čeká na odpověď (Jdu / Nemůžu), moje služby na osm týdnů dopředu i do kalendáře v telefonu (.ics), kdy nemůžu, moje skupiny s vedoucími, můj kontakt |
@@ -35,9 +39,11 @@ něco jiného než role v týmu a nikdy se nejmenují stejně.
 | **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…) – časy se dopočítají, kdo vede, se doplní podle rolí, body jdou posouvat, „Převzít minulou osnovu“. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
 | **Rozpis** | tabulka měsíce (řádky setkání, sloupce role po týmech), výběr druhu setkání a týmu, tisk na A4 na šířku – bez telefonů |
 | **Lidé** | hledání podle jména, telefonu i e-mailu, pilulky Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí (a Chybí údaje, když nějaké chybí), domácnosti, karta člověka (vlevo údaje z registru, vpravo týmy a skupiny, služby, kdy nemůže sloužit, kolik služeb zvládne a upozornění) |
-| **Skupiny** | týmy, skupinky a vedení, role týmu (kolik lidí, bez čeho to nejde, jen pro dospělé, u dětí, časové okno, které role zvládne jeden člověk naráz), členové a co umí, vedoucí, archiv |
+| **Týmy a role** | týmy, skupinky a vedení, role týmu (kolik lidí, bez čeho to nejde, jen pro dospělé, u dětí, časové okno, které role zvládne jeden člověk naráz), členové a co umí, vedoucí, archiv |
 | **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně, filtr chyby / pozor / info |
-| **Nastavení** | Sbor (název, adresa, kolik služeb je moc, kdy Zvonec bučí), Šablony setkání, Místa, Formáty, Přihlášení, Záloha, Můj účet |
+| **Formáty** | z čeho se skládá osnova: u každého formátu proč ho děláme a jak probíhá. Členové čtou, vedoucí upravují |
+| **Nastavení** | Sbor (název, adresa, kolik služeb je moc, kdy Zvonec bučí), Šablony setkání, Místa, Přihlašování, Záloha |
+| **Program**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: zveřejněná setkání a formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
 Celý tým · Všichni lidé**, hledání vždycky prochází všechny lidi. Když nikdo takový není,

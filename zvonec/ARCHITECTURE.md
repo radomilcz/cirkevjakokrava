@@ -176,7 +176,9 @@ lib/ics.js             calendar export
 lib/public.js          public view of the data: buildPublic() → public.json, publicImages() (pure, §4b)
 lib/demo.js            fictitious demo data relative to today
 ui/state.js            app state S, can(), change(), render(), navigate(), actAs() (demo), shared Czech labels
-ui/dom.js              h(), buttons, dialogs, form fields, toasts, empty states
+ui/dom.js              h(), buttons, dialogs, form fields, toasts; the shared components: pageHeader, section,
+                       list/row, avatar, personName/shortName, statusIcon/statusLabel, assignee, menuButton,
+                       emptyState, eventCover, placeLine/placeMap
 ui/palette.js          colour picker (classic script, loaded in <head>)
 ui/home.js             #moje – member home
 ui/calendar.js         month grid / day list, new event
@@ -184,11 +186,13 @@ ui/event.js            event detail: needs, assignments, program editor
 ui/program.js          printable program „osnova“ (A4)
 ui/roster.js           month table (rozpis), print
 ui/people.js           registry list, person card, person dialog, households, directory
-ui/groups.js           groups, roles, members and skill levels
+ui/groups.js           teams and groups (#tymy), roles, members and skill levels
+ui/formats.js          #formaty – the Formáty module (members read, leaders edit)
+ui/public.js           the public part: #program, #jak-se-schazime (from publicData(), never S.data)
 ui/picker.js           shared people picker (event slots, group members, households), quick-add
-ui/settings.js         church, event types, places, formats, logins, backup, my account („Dívat se jako“ in the demo)
+ui/settings.js         church, event types, places, logins, backup, my account („Dívat se jako“ in the demo)
 ui/conflicts.js        conflict list and override
-ui/login.js            sign-in, first setup, invite registration
+ui/login.js            sign-in (#prihlaseni), first setup, invite registration
 ```
 Rules: `lib/*` never touches the DOM. `lib/people.js` imports nothing. `lib/groups.js` never imports
 from events, program, scheduling or conflicts. `lib/events.js` and `lib/program.js` never import
@@ -249,28 +253,42 @@ images/<name>   the pictures of the published events (copied from data/images/)
 
 ## 5. Screens and routes
 
-Leader navigation: **Kalendář · Rozpis · Lidé · Skupiny · Upozornění · Nastavení**.
-Member navigation: **Moje · Kalendář · Rozpis · Lidé** (Lidé = directory).
+The shell (app.js): a fixed left sidebar on desktop (≥ 960 px) – brand, navigation, at the bottom the
+signed-in person (→ Můj účet), the colour picker and the save status (only while saving or on error);
+on a phone a top bar with the brand and „Menu“, which opens the same sidebar as a sheet.
+
+Leader navigation: **Moje** (only when the login has a person) **· Kalendář · Rozpis · Lidé · Týmy a role ·
+Formáty · Upozornění · Nastavení**. Member navigation: **Moje · Kalendář · Rozpis · Lidé · Formáty**
+(Lidé = directory). Public navigation (signed out, and on public routes): **Program · Jak se scházíme**
+and the button **Přihlásit se**. The demo is signed in as admin; „Veřejná část“ at the bottom of the
+sidebar opens the public pages as a visitor sees them („Zpátky do Zvonce“ returns).
 
 | route | screen | who |
 |---|---|---|
-| `#moje` | member home: waiting for answer, my duties (.ics), when I can't, my groups, my contact | logged in |
-| `#kalendar`, `#kalendar/2026-10` | month | all |
-| `#setkani/<id>` | event detail | all, edit leader |
-| `#setkani/<id>/osnova` | printable program („osnova“) | all |
-| `#rozpis`, `#rozpis/2026-10` | month table | all |
+| `#program` | upcoming published events | everyone |
+| `#jak-se-schazime` | published formats | everyone |
+| `#prihlaseni` | sign-in (first setup while there are no logins) | signed out |
+| `#pozvanka/<code>` | registration | signed out |
+| `#moje` | member home: waiting for answer, my duties (.ics), when I can't, my groups, my contact | signed in |
+| `#kalendar`, `#kalendar/2026-10` | month | signed in |
+| `#setkani/<id>` | event detail | signed in, edit leader |
+| `#setkani/<id>/osnova` | printable program („osnova“) | signed in |
+| `#rozpis`, `#rozpis/2026-10` | month table | signed in |
 | `#lide`, `#lide/clenove` · `pratele` · `hoste` · `deti` · `nechodi` · `doplnit` (old `vsichni`, `neclenove` still open) | registry + filter | leader; member = directory |
 | `#osoba/<id>` | person card | leader; member = reduced card |
 | `#domacnosti`, `#domacnost/<id>` | households | leader |
-| `#skupiny`, `#skupina/<id>` | groups, group card with members × roles | leader |
+| `#tymy`, `#tym/<id>` | teams and groups, team card with members × roles | leader |
+| `#formaty` | formats | signed in, edit leader |
 | `#upozorneni` | conflicts („Upozornění“) | leader |
-| `#nastaveni`, `#nastaveni/sablony` · `mista` · `formaty` · `prihlaseni` · `zaloha` · `ucet` | settings | leader; member only `formaty` (read-only) and `ucet` (`#nastaveni` shows a member the account) |
-| `#formaty` | alias of `#nastaveni/formaty` | all |
-| `#pozvanka/<code>` | registration | logged out |
+| `#nastaveni`, `#nastaveni/sablony` · `mista` · `prihlaseni` · `zaloha` | settings | leader |
+| `#nastaveni/ucet` | Můj účet (`#nastaveni` shows a member the account) | signed in |
 
 Old slugs redirect: `#udalost/<id>` → `#setkani/<id>`; `#porad/<id>`, `#setkani/<id>/porad` and
-`#setkani/<id>/prubeh` → `#setkani/<id>/osnova`; `#sluzby` → `#skupiny`; `#kolize` → `#upozorneni`. An empty or unknown hash opens
-`#kalendar` for leaders and `#moje` for members; a member opening a leader route lands on `#moje`.
+`#setkani/<id>/prubeh` → `#setkani/<id>/osnova`; `#skupiny`, `#sluzby` → `#tymy`; `#skupina/<id>` →
+`#tym/<id>`; `#nastaveni/formaty` → `#formaty`; `#kolize` → `#upozorneni`. An empty or unknown hash opens
+`#kalendar` for leaders, `#moje` for members and `#program` for visitors (`#prihlaseni` while there are
+no logins). A member opening a leader route lands on `#moje`; a visitor opening an app route lands on
+`#prihlaseni` and, after signing in, on the route they asked for (`S.afterSignIn`).
 Inside a screen the UI still hides what members must not see (§6).
 
 Person card: left column is owned by the registry (contact, household, membership, consent, note,

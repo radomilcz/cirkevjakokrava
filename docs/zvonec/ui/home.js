@@ -21,7 +21,7 @@ export function renderHome() {
   const duties = upcomingDuties(S.data, person.id, { from: day, to: addDays(day, WEEKS_AHEAD * 7), includeDeclined: false });
   return [
     demoBar(person),
-    pageHeader(fullName(person), 'Moje', 'Tvoje služby na dva měsíce dopředu a co čeká na tvoji odpověď.'),
+    pageHeader({ title: 'Moje', lead: 'Tvoje služby na dva měsíce dopředu a co čeká na tvoji odpověď.' }),
     h('div', { class: 'grid spaced' },
       h('div', {},
         waitingSection(person, waiting),
@@ -132,7 +132,6 @@ function signOut() {
   if (S.mode !== 'live') return null;
   return section(null, actions([
     link('Heslo a účet', '#nastaveni/ucet', 'btn small'),
-    link('Formáty', '#nastaveni/formaty', 'btn small plain'),
     btn('Odhlásit se', () => logout(), 'small plain'),
   ]));
 }
@@ -158,16 +157,14 @@ function actAsForm() {
 }
 
 function noPerson() {
-  const header = pageHeader(null, 'Moje', 'Tady každý vidí svoje služby, co čeká na jeho odpověď a kdy nemůže.');
+  const header = pageHeader({ title: 'Moje', lead: 'Tady každý vidí svoje služby, co čeká na jeho odpověď a kdy nemůže.' });
   if (S.mode === 'demo') {
     return [header,
-      emptyState('V ukázce nejsi nikdo z Lidí.',
-        'Vyber si někoho a podívej se jeho očima. Zpátky se dostaneš tlačítkem nahoře.',
-        null),
+      emptyState('V ukázce nejsi nikdo z Lidí. Vyber si někoho a podívej se jeho očima, zpátky se dostaneš tlačítkem nahoře.'),
       people().length ? actAsForm() : null,
       actions([link('Na Lidi', '#lide', 'btn small')])];
   }
-  return [header, emptyState('Tady chybí tvoje karta.', 'Tvoje přihlášení nepatří k nikomu z Lidí. Řekni správci, ať to propojí.',
+  return [header, emptyState('Tvoje přihlášení nepatří k nikomu z Lidí. Řekni správci, ať to propojí.',
     can('leader') ? link('Na Lidi', '#lide', 'btn') : null)];
 }
 

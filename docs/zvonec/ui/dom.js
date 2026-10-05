@@ -1,6 +1,9 @@
 // Generic DOM helpers shared by every screen. No app state here (that is ui/state.js).
+// The components (pageHeader, section, list/row, avatar, assignee…) are the shared look of every module.
 // Content is always built with h(): text goes in as text, never as HTML, so a name like
 // "<script>" in the data runs nothing (the GitHub token lives in this browser, that matters).
+
+import { fullName, DELETED_NAME, NO_NAME } from '../lib/people.js';
 
 // ---------- elements ----------
 
@@ -63,25 +66,45 @@ export const backLink = (text, href) => link(text, href, 'back');
 // ---------- page structure ----------
 
 /**
- * (Eyebrow +) big title (+ lead). The eyebrow is a small muted line – pass null unless it says
- * something the title does not. `smaller` for long titles. Returns an array of nodes.
+ * The header of a page: big title (h1), optional lead sentence, the page's actions on the right
+ * (the primary action is the one `btn(…, 'primary')`). No eyebrow – if the title needs a tagline,
+ * fix the title. Returns one element.
+ *   pageHeader({ title: 'Lidé', actions: [btn(plus('Přidat člověka'), add, 'primary')] })
+ * @param {{ title: any, lead?: any, actions?: any }} options title/lead: text or nodes; actions: node(s)
  */
-export function pageHeader(eyebrow, title, lead, { smaller = false } = {}) {
-  return [
-    eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null,
-    h('h1', { class: ['title', smaller && 'smaller'] }, title),
-    lead ? h('p', { class: 'lead' }, lead) : null,
-  ];
+export function pageHeader({ title, lead, actions: buttons } = {}) {
+  const tools = nodes(buttons || []);
+  return h('header', { class: 'page-header' },
+    h('div', { class: 'page-header-text' },
+      h('h1', { class: 'title' }, title),
+      lead ? h('p', { class: 'lead' }, lead) : null),
+    tools.length ? h('div', { class: 'page-header-actions' }, tools) : null);
 }
 
 /** Thin horizontal rule between the header and the content. */
 export const rule = () => h('div', { class: 'rule' });
 
+const isOptions = (x) => !!x && typeof x === 'object' && !Array.isArray(x) && !(x instanceof Node);
+
 /**
- * A page section with an uppercase h2. `heading` may be text or an array, e.g.
- * ['Týmy', count('3'), btn('upravit', fn, 'mini plain')].
+ * A block of a page with an h2 (Narrow Black, mixed case), an optional count next to it and quiet
+ * actions on the right of the heading. Children follow; the options object may be left out.
+ *   section('Členové', { count: 12, actions: btn(plus('Přidat'), add, 'small') }, list(…))
+ *   section('Kontakt', facts(…))
+ * `title` may be text or nodes (older screens still pass [text, count(…), btn(…)]); null = no heading.
+ * @param {any} title
+ * @param {{ count?: string|number, actions?: any, id?: string, cls?: string }} [options]
  */
-export const section = (heading, ...children) => h('section', { class: 'section' }, heading != null ? h('h2', {}, heading) : null, children);
+export function section(title, ...rest) {
+  const options = isOptions(rest[0]) ? rest.shift() : {};
+  const tools = nodes(options.actions || []);
+  const head = title != null || tools.length
+    ? h('div', { class: 'section-head' },
+      title != null ? h('h2', {}, title, options.count != null && options.count !== '' ? [' ', count(String(options.count))] : null) : null,
+      tools.length ? h('div', { class: 'section-actions' }, tools) : null)
+    : null;
+  return h('section', { class: ['section', options.cls], id: options.id || null }, head, rest);
+}
 
 /** The small grey text next to a section heading (count, who leads…). */
 export const count = (text) => h('span', { class: 'n' }, text);
@@ -112,10 +135,357 @@ export function meta(items) {
 export const printHeader = (eyebrow) => h('div', { class: 'print-header' },
   h('p', { class: 'eyebrow' }, eyebrow), h('p', { class: 'brand' }, 'církev jako kráva'));
 
-/** Empty state with the bullseye: emptyState('Prázdná pastva.', 'Tenhle měsíc tu ještě nic není.', action). */
-export function emptyState(title, text, action) {
-  return h('div', { class: 'empty-state' },
-    h('span', { class: 'bullseye', 'aria-hidden': 'true' }), h('h2', {}, title), text ? h('p', {}, text) : null, action || null);
+/**
+ * Nothing here yet: one sentence and, when it helps, the page's primary action.
+ *   emptyState('Zatím tu není žádný tým.', btn(plus('Přidat tým'), add, 'primary'))
+ */
+export function emptyState(text, action) {
+  return h('div', { class: 'empty-state' }, h('p', {}, text), action || null);
+}
+
+// ---------- lists ----------
+
+/**
+ * The one list look for every collection (people, teams, roles, formats, events, warnings, duties).
+ * `renderRow(item, index)` returns a row() (or any node). With no items the `empty` sentence shows as
+ * an emptyState (pass a node to show your own, e.g. emptyState(text, action)).
+ *   list(people, (p) => row({ lead: avatar(p), title: personName(p), meta: '…', href: `#osoba/${p.id}` }),
+ *     { empty: 'Nikdo takový.' })
+ * @param {any[]} items
+ * @param {(item: any, index: number) => Node} renderRow
+ * @param {{ empty?: string|Node, cls?: string, label?: string }} [options] label = aria-label of the list
+ */
+export function list(items, renderRow, { empty, cls, label } = {}) {
+  if (!items || !items.length) {
+    if (empty == null) return null;
+    return empty instanceof Node ? empty : emptyState(empty);
+  }
+  return h('ul', { class: ['items', cls], 'aria-label': label || null },
+    items.map((item, i) => h('li', {}, renderRow(item, i))));
+}
+
+/**
+ * One row of a list: leading (avatar / date block / dot), title, one meta line, trailing
+ * (status / count / small actions). With `href` or `onclick` the whole row opens it: the title becomes
+ * the link (or button) and its hit area covers the row, so buttons in `trail` still work on their own.
+ * `tone`: 'quiet' (muted: archived, former), 'cancelled' (struck through), 'error' (filled dot),
+ * 'warning' (ring), 'mine' (marked as the viewer's own).
+ *   row({ lead: dateBlock(day), title: event.title, meta: '10.00 · Sál', trail: statusIcon('confirmed'), href })
+ * @param {{ lead?: any, title: any, meta?: any, trail?: any, href?: string, onclick?: Function,
+ *   tone?: string, label?: string, cls?: string }} options label = accessible name when the title is not enough
+ */
+export function row({ lead, title, meta: metaLine, trail, href, onclick, tone, label, cls } = {}) {
+  const opens = !!(href || onclick);
+  const titleEl = href
+    ? h('a', { class: 'item-link', href, 'aria-label': label || null }, title)
+    : onclick
+      ? h('button', { type: 'button', class: 'item-link', onclick, 'aria-label': label || null }, title)
+      : h('span', {}, title);
+  const trailNodes = nodes(trail == null ? [] : trail);
+  return h('div', { class: ['item', opens && 'opens', tone && `tone-${tone}`, cls] },
+    lead != null ? h('span', { class: 'item-lead' }, lead) : null,
+    h('span', { class: 'item-body' },
+      h('span', { class: 'item-title' }, titleEl),
+      metaLine != null && metaLine !== '' ? h('span', { class: 'item-meta' }, metaLine) : null),
+    trailNodes.length ? h('span', { class: 'item-trail' }, trailNodes) : null,
+    opens ? h('span', { class: 'item-chevron', 'aria-hidden': 'true' }) : null);
+}
+
+/**
+ * Date block for the leading slot of an event row: weekday over the day number.
+ *   dateBlock('2026-10-11') → „ne / 11“ (the month is in the meta line or the list heading).
+ */
+export function dateBlock(day) {
+  const date = new Date(`${day}T12:00`);
+  const weekday = ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'][date.getDay()];
+  return h('span', { class: 'date-block', 'aria-hidden': 'true' },
+    h('span', { class: 'date-block-dow' }, weekday), h('span', { class: 'date-block-day' }, String(date.getDate())));
+}
+
+// ---------- people ----------
+
+/**
+ * The name to show wherever a person is assigned to something: full name, with the nickname in
+ * parentheses when there is one that differs from the first name. Deleted person → „Někdo smazaný“.
+ */
+export function personName(person) {
+  if (!person) return DELETED_NAME;
+  const full = fullName(person);
+  const nick = (person.nickname || '').trim();
+  return nick && nick !== person.firstName && nick !== full ? `${full} (${nick})` : full;
+}
+
+/**
+ * „Veronika F.“ – for the dense roster table only. First name + initial of the last name; when two
+ * people in `people` share both, the whole last name. A person without a last name: first name.
+ */
+export function shortName(person, people = []) {
+  if (!person) return DELETED_NAME;
+  const first = person.firstName || person.nickname || NO_NAME;
+  const last = (person.lastName || '').trim();
+  if (!last) return first;
+  const initial = `${[...last][0]}.`;
+  const clash = people.some((p) => p && p.id !== person.id && p.firstName === person.firstName
+    && (p.lastName || '').trim() && [...p.lastName.trim()][0] === [...last][0]);
+  return `${first} ${clash ? last : initial}`;
+}
+
+const AVATAR_VARIANTS = 5;
+
+/** Initials of a person: „VF“ (first + last name), „V“ without a last name, „?“ when deleted. */
+export function initials(person) {
+  if (!person) return '?';
+  const first = [...(person.firstName || person.nickname || '?')][0];
+  const last = [...(person.lastName || '')][0] || '';
+  return `${first}${last}`.toLocaleUpperCase('cs');
+}
+
+/**
+ * Initials in a circle. Its look is one of five ink/ground mixes of the current palette (fill, ring,
+ * solid…), always the same for the same person (derived from the id), never a random hue.
+ * Decorative (aria-hidden): put the name next to it. Prints as a plain circle.
+ * @param {object|null} person
+ * @param {{ size?: 's'|'m'|'l' }} [options] s = 28px (duties, dense rows), m = 36px (lists), l = 64px (person card)
+ */
+export function avatar(person, { size = 'm' } = {}) {
+  let hash = 0;
+  for (const ch of String(person?.id || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
+  return h('span', {
+    class: ['avatar', `avatar-${size}`, person ? `avatar-v${hash % AVATAR_VARIANTS}` : 'avatar-gone'],
+    'aria-hidden': 'true',
+  }, initials(person));
+}
+
+// ---------- assignment status ----------
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const svg = (tag, attrs = {}, ...children) => {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  for (const c of children) el.append(c);
+  return el;
+};
+
+/**
+ * The drawn symbol of an assignment status (DESIGN §1.5), 1em, currentColor, aria-hidden – always put
+ * statusLabel() next to it. confirmed = filled circle with a tick, proposed = dashed ring with a
+ * clock, declined = ring with a cross.
+ * @param {'confirmed'|'proposed'|'declined'} status
+ */
+export function statusIcon(status) {
+  const icon = svg('svg', { class: `status-icon status-${status}`, viewBox: '0 0 16 16', width: '1em', height: '1em', 'aria-hidden': 'true', focusable: 'false' });
+  if (status === 'confirmed') {
+    icon.append(
+      svg('circle', { cx: 8, cy: 8, r: 7.25, fill: 'currentColor' }),
+      svg('path', { class: 'status-icon-cut', d: 'M4.7 8.3l2.2 2.2 4.4-4.6', fill: 'none', 'stroke-width': 1.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+  } else if (status === 'declined') {
+    icon.append(
+      svg('circle', { cx: 8, cy: 8, r: 6.6, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.4 }),
+      svg('path', { d: 'M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.5, 'stroke-linecap': 'round' }));
+  } else {
+    icon.append(
+      svg('circle', { cx: 8, cy: 8, r: 6.6, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.4, 'stroke-dasharray': '2.6 1.85' }),
+      svg('path', { d: 'M8 4.9V8.2l2.2 1.4', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+  }
+  return icon;
+}
+
+const STATUS_WORDS = { confirmed: 'potvrzeno', proposed: 'čeká na potvrzení', declined: 'nemůže' };
+
+/**
+ * Czech word for an assignment status, gender-neutral: „potvrzeno“, „čeká na potvrzení“, „nemůže“.
+ * `person` is accepted for a future gendered form and ignored now.
+ */
+export function statusLabel(status, person) {
+  return STATUS_WORDS[status] || STATUS_WORDS.proposed;
+}
+
+/** Status symbol + word in one span: statusBadge('proposed') → ◌ čeká na potvrzení. */
+export const statusBadge = (status, person) => h('span', { class: ['status-badge', `status-${status}`] },
+  statusIcon(status), h('span', {}, statusLabel(status, person)));
+
+/**
+ * A person on a duty: avatar, FULL name, status symbol and word. For the person themselves (`mine`)
+ * a proposed duty gets „Potvrdit“ / „Nemůžu“ (onAnswer('confirmed' | 'declined')). A leader
+ * (`canEdit`) gets a small ⋯ menu instead of many inline controls: Vyměnit (onEdit), the other
+ * statuses (onStatus), Vím o tom / Upravit důvod (onOverride), Odebrat (onRemove) – only those passed.
+ * `tone` 'error' | 'warning' marks a conflict on this assignment (dot before the name, `title` = why).
+ * @param {{ assignment: {status: string}, person: object|null, mine?: boolean, canEdit?: boolean,
+ *   onAnswer?: Function, onEdit?: Function, onRemove?: Function, onStatus?: Function,
+ *   onOverride?: Function, overrideLabel?: string, tone?: string, title?: string, href?: string }} options
+ *   href: the name links there (e.g. #osoba/<id>) when nobody can edit.
+ */
+export function assignee({ assignment, person, mine = false, canEdit = false, onAnswer, onEdit, onRemove, onStatus, onOverride, overrideLabel, tone, title, href } = {}) {
+  const status = assignment?.status || 'proposed';
+  const name = personName(person);
+  const menuItems = canEdit ? [
+    onEdit ? ['Vyměnit', onEdit] : null,
+    ...(onStatus ? ['confirmed', 'proposed', 'declined'].filter((s) => s !== status)
+      .map((s) => [s === 'confirmed' ? 'Potvrdit' : s === 'declined' ? 'Nemůže' : 'Zatím nepotvrzeno', () => onStatus(s)]) : []),
+    onOverride ? [overrideLabel || 'Vím o tom', onOverride] : null,
+    onRemove ? ['Odebrat', onRemove, { danger: true }] : null,
+  ].filter(Boolean) : [];
+  const answer = mine && status === 'proposed' && onAnswer;
+  return h('div', { class: ['assignee', `status-${status}`, mine && 'mine', tone && `tone-${tone}`], title: title || null },
+    avatar(person, { size: 's' }),
+    h('span', { class: 'assignee-text' },
+      href && !canEdit ? h('a', { class: 'assignee-name', href }, name) : h('span', { class: 'assignee-name' }, name),
+      statusBadge(status, person)),
+    answer ? h('span', { class: 'assignee-answer' },
+      btn('Potvrdit', () => onAnswer('confirmed'), 'mini primary'),
+      btn('Nemůžu', () => onAnswer('declined'), 'mini')) : null,
+    menuItems.length ? menuButton(menuItems, { label: `Možnosti: ${name}` }) : null);
+}
+
+// ---------- events and places ----------
+
+const COVER_VARIANTS = 4;
+const hashOf = (text) => {
+  let hash = 0;
+  for (const ch of String(text || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
+  return hash;
+};
+
+/**
+ * The picture of an event (DESIGN §4b). With `imageUrl` (an object URL / data URL of event.image or
+ * the type's image) the photo; otherwise a generated cover in the brand: palette colours, the imprint
+ * pattern and the title in Narrow Black with the date small. Which of four compositions it gets is
+ * derived from the event id, so the same event always looks the same. Decorative: the title is in the
+ * page anyway (aria-hidden). Prints as a light outline.
+ * @param {{ id?: string, title?: string, start?: string }} event
+ * @param {{ size?: 'card'|'hero'|'thumb', imageUrl?: string }} [options]
+ *   card = 16:9 in a grid, hero = wide banner on the detail page, thumb = small square in a list row
+ */
+export function eventCover(event, { size = 'card', imageUrl } = {}) {
+  if (imageUrl) {
+    return h('figure', { class: ['cover', `cover-${size}`, 'cover-photo'] },
+      h('img', { src: imageUrl, alt: '', loading: 'lazy', decoding: 'async' }));
+  }
+  const day = event?.start ? event.start.slice(0, 10) : '';
+  const date = day ? new Date(`${day}T12:00`) : null;
+  const dateText = date ? `${date.getDate()}. ${date.getMonth() + 1}.` : '';
+  const imprint = document.createElementNS(SVG_NS, 'svg');
+  imprint.setAttribute('class', 'cover-imprint');
+  imprint.setAttribute('aria-hidden', 'true');
+  imprint.setAttribute('focusable', 'false');
+  const use = document.createElementNS(SVG_NS, 'use');
+  use.setAttribute('href', 'imprint.svg#o');
+  imprint.append(use);
+  return h('div', { class: ['cover', `cover-${size}`, 'cover-generated', `cover-v${hashOf(event?.id || event?.title) % COVER_VARIANTS}`], 'aria-hidden': 'true' },
+    imprint,
+    size === 'thumb' ? null   // too small for words: just the colours and the imprint
+      : [h('span', { class: 'cover-title' }, event?.title || ''), dateText ? h('span', { class: 'cover-date' }, dateText) : null]);
+}
+
+const hasCoords = (place) => place && place.lat !== '' && place.lon !== '' && place.lat != null && place.lon != null
+  && Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lon));
+
+/** mapy.cz link for a place: the coordinates when known, otherwise a search for the address (or name). */
+export function mapUrl(place) {
+  if (hasCoords(place)) return `https://mapy.cz/zakladni?x=${Number(place.lon)}&y=${Number(place.lat)}&z=16`;
+  return `https://mapy.cz/zakladni?q=${encodeURIComponent(place?.address || place?.name || '')}`;
+}
+
+/**
+ * A place in one line: name, address (when there is one) and „Otevřít v mapě“ (mapy.cz, new tab).
+ *   placeLine({ name: 'Sál', address: 'Komenského 5, Nový Jičín' })
+ */
+export function placeLine(place) {
+  if (!place) return null;
+  const canMap = hasCoords(place) || place.address || place.name;
+  return h('span', { class: 'place-line' },
+    h('span', { class: 'place-name' }, place.name || ''),
+    place.address ? [h('span', { class: 'place-sep', 'aria-hidden': 'true' }, ' · '), h('span', { class: 'place-address' }, place.address)] : null,
+    canMap ? [h('span', { class: 'place-sep', 'aria-hidden': 'true' }, ' · '),
+      h('a', { class: 'place-map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě')] : null);
+}
+
+/**
+ * OpenStreetMap of a place (lazy iframe, rounded, about 240 px tall) – only when lat/lon are known,
+ * otherwise null. The CSP allows frames from www.openstreetmap.org only.
+ */
+export function placeMap(place) {
+  if (!hasCoords(place)) return null;
+  const lat = Number(place.lat);
+  const lon = Number(place.lon);
+  const bbox = [lon - 0.006, lat - 0.0035, lon + 0.006, lat + 0.0035].map((n) => n.toFixed(5)).join(',');
+  return h('div', { class: 'place-map' },
+    h('iframe', {
+      src: `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`,
+      title: `Mapa: ${place.name || 'místo'}`, loading: 'lazy', referrerpolicy: 'no-referrer',
+    }));
+}
+
+// ---------- small menu ----------
+
+let openMenu = null;   // { button, list } of the one open ⋯ menu
+
+function closeMenu({ focus = false } = {}) {
+  if (!openMenu) return;
+  const { button, list: menu } = openMenu;
+  openMenu = null;
+  menu.hidden = true;
+  button.setAttribute('aria-expanded', 'false');
+  if (focus) button.focus();
+}
+
+let menuListeners = false;
+function listenForMenus() {
+  if (menuListeners) return;
+  menuListeners = true;
+  document.addEventListener('click', (e) => { if (openMenu && !openMenu.button.parentNode.contains(e.target)) closeMenu(); });
+  document.addEventListener('keydown', (e) => {
+    if (!openMenu) return;
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeMenu({ focus: true }); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const items = [...openMenu.list.querySelectorAll('[role=menuitem]')];
+      const i = items.indexOf(document.activeElement);
+      const next = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
+      items[next]?.focus({ preventScroll: true });
+    }
+  }, true);
+  window.addEventListener('resize', () => closeMenu());
+  // the menu is fixed: when the page under it moves, it closes (a scroll inside the menu does not count)
+  window.addEventListener('scroll', (e) => {
+    if (!openMenu || openMenu.list.contains(e.target)) return;
+    if (Math.abs(openMenu.button.getBoundingClientRect().top - openMenu.top) > 2) closeMenu();
+  }, true);
+}
+
+/**
+ * A round ⋯ button with a small menu for secondary actions (leader actions in lists).
+ * items: [[label, onclick, { danger }?], …]. The menu opens below the button (above near the bottom
+ * of the window), closes on Escape, on a click elsewhere and after a choice. Arrow keys move.
+ *   menuButton([['Upravit', edit], ['Odebrat', remove, { danger: true }]], { label: 'Možnosti: Petr' })
+ */
+export function menuButton(items, { label = 'Další možnosti' } = {}) {
+  listenForMenus();
+  const menu = h('div', { class: 'menu-list', role: 'menu', hidden: true },
+    items.map(([text, onclick, opts = {}]) => h('button', {
+      type: 'button', role: 'menuitem', class: opts.danger ? 'danger' : null,
+      onclick: (e) => { e.stopPropagation(); closeMenu({ focus: true }); onclick(); },
+    }, text)));
+  const button = h('button', {
+    type: 'button', class: 'menu-btn', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': label, title: label,
+    onclick: (e) => {
+      e.stopPropagation();
+      if (openMenu?.button === button) { closeMenu(); return; }
+      closeMenu();
+      menu.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
+      openMenu = { button, list: menu, top: button.getBoundingClientRect().top };
+      // fixed position: dialogs and scrolling lists must not clip it
+      const r = button.getBoundingClientRect();
+      const width = menu.offsetWidth;
+      const height = menu.offsetHeight;
+      const below = r.bottom + 6 + height <= window.innerHeight;
+      menu.style.left = `${Math.max(8, Math.min(r.right - width, window.innerWidth - width - 8))}px`;
+      menu.style.top = `${below ? r.bottom + 6 : Math.max(8, r.top - 6 - height)}px`;
+      menu.querySelector('[role=menuitem]')?.focus({ preventScroll: true });
+    },
+  });
+  return h('span', { class: 'menu-wrap' }, button, menu);
 }
 
 // ---------- filters ----------

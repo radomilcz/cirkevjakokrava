@@ -59,7 +59,7 @@ export function renderLogin(message) {
     await signedIn(result);
   });
   return [
-    pageHeader(null, 'Zvonec', 'Kdo kdy slouží a co se ve sboru chystá. Přihlas se svým jménem a heslem.'),
+    pageHeader({ title: 'Přihlásit se', lead: 'Přihlas se svým jménem a heslem. Uvidíš rozpis, svoje služby a lidi ze sboru.' }),
     rule(),
     h('div', { class: 'narrow' }, form),
   ];
@@ -134,7 +134,7 @@ export function renderSetup() {
     }
   });
   return [
-    pageHeader(null, 'Založit Zvonec', 'Zvonec tu zatím nikoho nemá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.'),
+    pageHeader({ title: 'Založit Zvonec', lead: 'Zvonec tu zatím nikoho nemá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.' }),
     rule(),
     h('div', { class: 'grid' },
       form,
@@ -150,10 +150,10 @@ export function renderSetup() {
 
 /** Route #pozvanka/<code> while signed out: check the invite, then show the registration form. */
 export async function renderInvite(code) {
-  S.screen = () => pageHeader('pozvánka', 'Vítej', 'Otevírám pozvánku…');
+  S.screen = () => pageHeader({ title: 'Vítej', lead: 'Otevírám pozvánku…' });
   render();
   const invalid = (text) => {
-    S.screen = () => [pageHeader('pozvánka', 'Pozvánka neplatí', 'S touhle pozvánkou se dovnitř nedostaneš.'), emptyState('Tudy ne.', text, link('Přihlásit se', '#', 'btn'))];
+    S.screen = () => [pageHeader({ title: 'Pozvánka neplatí' }), emptyState(text, link('Přihlásit se', '#prihlaseni', 'btn primary'))];
     render();
   };
   const invite = await signIn(S.logins, INVITE_NAME, code);
@@ -251,7 +251,7 @@ function renderRegistration(invite, store, data) {
     }
   });
   return [
-    pageHeader('pozvánka', 'Přidej se', 'Rádi tě poznáme. Vyplň pár údajů a zvol si heslo. Pak uvidíš rozpis a svoje služby.'),
+    pageHeader({ title: 'Přidej se', lead: 'Rádi tě poznáme. Vyplň pár údajů a zvol si heslo, pak uvidíš rozpis a svoje služby.' }),
     rule(),
     h('div', { class: 'narrow' }, form),
   ];

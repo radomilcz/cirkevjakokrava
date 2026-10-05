@@ -1,6 +1,6 @@
-// #nastaveni, #nastaveni/<section> – church (''), event types (sablony), places (mista), formats
-// (formaty, readable by members), logins (prihlaseni), backup (zaloha), my account (ucet).
-// Members see only the formats (read-only) and their account.
+// #nastaveni, #nastaveni/<section> – church (''), event types (sablony), places (mista), logins
+// (prihlaseni), backup (zaloha), my account (ucet). Members see only their account.
+// The format cards and the format dialog are used by #formaty (ui/formats.js) until it gets its own.
 
 import {
   h, btn, plus, plural, pageHeader, rule, section, actions, note, tag, meta, emptyState,
@@ -23,16 +23,13 @@ import { emptyData, normalize, COLLECTIONS, SCHEMA } from '../lib/store/store.js
 import { today, dayOf } from '../lib/time.js';
 
 const LEADER_PILLS = [
-  ['', 'Sbor'], ['sablony', 'Šablony'], ['mista', 'Místa'], ['formaty', 'Formáty'],
-  ['prihlaseni', 'Přihlášení'], ['zaloha', 'Záloha'], ['ucet', 'Můj účet'],
+  ['', 'Sbor'], ['sablony', 'Šablony setkání'], ['mista', 'Místa'], ['prihlaseni', 'Přihlašování'], ['zaloha', 'Záloha'],
 ];
-const MEMBER_PILLS = [['formaty', 'Formáty'], ['ucet', 'Můj účet']];
 /** One sentence under the title: what this part of the settings is for. */
 const LEADS = {
   '': () => 'Název sboru, adresa a pravidla, podle kterých Zvonec hlídá rozpis: kolik služeb je moc a kdy začne bučet.',
   sablony: () => 'Šablona předvyplní nové setkání: čas, místo, koho je potřeba a osnovu. Nedělní bohoslužbu tak nezakládáš pokaždé od nuly.',
   mista: () => 'Kde se scházíme. Když chtějí dvě setkání stejné místo ve stejnou dobu, Zvonec bučí.',
-  formaty: () => 'Z formátů se skládá osnova setkání. U každého je napsané, proč ho děláme a jak probíhá.',
   prihlaseni: () => 'Kdo se může do Zvonce přihlásit a co smí. Tady taky pošleš pozvánku novým lidem.',
   zaloha: () => 'Všechna data v jednom souboru, ať o nic nepřijdeš. A všechna setkání do kalendáře v telefonu.',
   ucet: () => (S.mode === 'live'
@@ -47,24 +44,26 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
 const prettyClock = (hhmm) => (hhmm ? hhmm.replace(/^0(\d)/, '$1').replace(':', '.') : '');
 const toInt = (value, fallback) => (value === '' || !Number.isFinite(Number(value)) ? fallback : Math.round(Number(value)));
 
-/** `section` = slug from #nastaveni/<section>, '' for the church settings (members: their account). */
+/**
+ * `section` = slug from #nastaveni/<section>, '' for the church settings. „ucet“ (Můj účet) is a page
+ * of its own, reached from the person at the bottom of the sidebar; members get only that one.
+ * (#nastaveni/formaty redirects to #formaty in app.js.)
+ */
 export function renderSettings(section) {
-  const leader = can('leader');
-  const pills = leader ? LEADER_PILLS : MEMBER_PILLS;
-  let slug = pills.some(([s]) => s === section) ? section : pills[0][0];
-  if (!leader && section !== 'formaty') slug = 'ucet';
+  if (section === 'ucet' || !can('leader')) {
+    return [pageHeader({ title: 'Můj účet', lead: LEADS.ucet() }), myAccountSection()];
+  }
+  const slug = LEADER_PILLS.some(([s]) => s === section) ? section : '';
   const body = {
     '': churchSection,
     sablony: eventTypesSection,
     mista: placesSection,
-    formaty: formatsSection,
     prihlaseni: loginSection,
     zaloha: backupSection,
-    ucet: myAccountSection,
   }[slug];
   return [
-    pageHeader(null, 'Nastavení', null, { smaller: true }),
-    h('div', { class: 'settings-nav' }, filterLinks(pills.map(([s, text]) => [hrefOf(s), text]), hrefOf(slug), { label: 'Části nastavení' })),
+    pageHeader({ title: 'Nastavení' }),
+    h('div', { class: 'settings-nav' }, filterLinks(LEADER_PILLS.map(([s, text]) => [hrefOf(s), text]), hrefOf(slug), { label: 'Části nastavení' })),
     h('p', { class: 'lead' }, LEADS[slug]()),
     rule(),
     body(),
@@ -342,13 +341,13 @@ export function openFormatInfo(formatId) {
     ])));
 }
 
-function formatsSection() {
+/** The formats as cards – ui/formats.js shows them on #formaty (the formats team rebuilds this). */
+export function formatCards() {
   const leader = can('leader');
   const now = today();
   const planned = (id) => S.data.events.filter((e) => !e.cancelled && dayOf(e.start) >= now && (e.program || []).some((i) => i.formatId === id)).length;
   const formats = S.data.formats;
   return section(null,
-    leader ? actions(btn(plus('Přidat formát'), () => formatDialog(), 'primary small')) : null,
     formats.length
       ? h('div', { class: 'formats spaced' }, formats.map((f) => {
         const needs = needsText(f);
@@ -358,10 +357,10 @@ function formatsSection() {
           h('p', { class: 'format-meta' }, [`${f.minutes ?? 0} min`, leadText(f), needs ? `potřebuje ${needs}` : '', leader && used ? `naplánovaný ${used}×` : ''].filter(Boolean).join(' · ')),
           formatWhyHow(f) || note(leader ? 'Zatím tu chybí, proč to děláme a jak to probíhá. Doplníš přes Upravit.' : 'Popis zatím chybí.'));
       }))
-      : emptyState('Zatím žádný formát.', 'Začni třeba kázáním, chválami nebo Otázkami na tělo.', leader ? btn('Přidat formát', () => formatDialog(), 'primary') : null));
+      : emptyState('Zatím tu není žádný formát. Začni třeba kázáním, chválami nebo Otázkami na tělo.', leader ? btn(plus('Přidat formát'), () => formatDialog(), 'primary') : null));
 }
 
-function formatDialog(format) {
+export function formatDialog(format) {
   if (!can('leader')) return;
   const needs = clone(format?.needs || []);
   const teams = rolesByTeam(format?.leadRoleId ? [format.leadRoleId] : []);

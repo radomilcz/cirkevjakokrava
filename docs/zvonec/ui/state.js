@@ -6,6 +6,7 @@ import { findConflicts } from '../lib/conflicts.js';
 import { eventById, randomId } from '../lib/events.js';
 import { dayOf, today } from '../lib/time.js';
 import { ACCESS_FILE, ACCESS_VERSION, emptyAccess } from '../lib/access.js';
+import { buildPublic } from '../lib/public.js';
 
 // ---------- state ----------
 
@@ -20,7 +21,10 @@ export const S = {
   repoInfo: null,          // repo.json next to the app: { owner, repo }
   conflicts: [],           // findConflicts(S.data) – recomputed on every change
   eventSeverity: new Map(),   // eventId → worst severity ('error' | 'warning' | 'info')
-  screen: null,            // what to show while nobody is signed in (live mode): () => nodes
+  screen: null,            // live, signed out: the invite pages (#pozvanka/…) – () => nodes, set by ui/login.js
+  signInMessage: null,     // live, signed out: an error line for the sign-in page (#prihlaseni)
+  afterSignIn: null,       // live: the route a signed-out visitor asked for, opened after signing in
+  publicData: null,        // live: public.json next to the app (null until loaded or when missing)
   filters: {               // remembered for the session; screens may add their own keys
     conflictScope: 'upcoming',      // 'upcoming' | 'all'
     conflictSeverity: 'all',        // 'all' | 'error' | 'warning' | 'info'
@@ -34,7 +38,7 @@ export const S = {
 // ---------- Czech labels of stored values (shared so every screen says the same) ----------
 
 export const EVENT_KIND_LABELS = { service: 'Setkání na pastvě', rehearsal: 'Zkouška', smallGroup: 'Skupinka', event: 'Akce' };
-export const ASSIGNMENT_STATUS_LABELS = { proposed: 'navrženo', confirmed: 'potvrzeno', declined: 'nemůže' };
+export const ASSIGNMENT_STATUS_LABELS = { proposed: 'čeká na potvrzení', confirmed: 'potvrzeno', declined: 'nemůže' };
 export const SEVERITY_LABELS = { error: 'chyba', warning: 'pozor', info: 'info' };
 export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel sboru', guest: 'host', former: 'už nechodí' };
 export const SKILL_LABELS = { trained: 'umí', learning: 'učí se' };
@@ -84,6 +88,21 @@ export function actAs(personId, access = 'admin') {
   if (S.mode !== 'demo') return;
   S.me = { ...S.me, personId: personId || null, access };
   render({ toTop: true });
+}
+
+/** Is someone signed in? Always in the demo; live only after signing in. */
+export const signedInNow = () => !!S.me;
+
+// ---------- public part ----------
+
+/**
+ * What a visitor who is not signed in may see (lib/public.js shape: { churchName, address, events,
+ * formats }). Demo: built from the demo data right now. Live: public.json as published next to the
+ * app; null when it is not there (yet).
+ */
+export function publicData() {
+  if (S.mode === 'demo') return S.data ? buildPublic(S.data, { today: today() }) : null;
+  return S.publicData;
 }
 
 // ---------- data changes ----------
