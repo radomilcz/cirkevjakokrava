@@ -659,7 +659,7 @@ function sekcePoradu(u, predchozi, smi = true) {
 function dialogBod(u, bod) {
   const format = (S.data.formaty || []).find((f) => f.id === bod.format);
   const lide = S.data.lide.filter((o) => o.stav !== 'neaktivni').sort((a, b) => celeJmeno(a).localeCompare(celeJmeno(b), 'cs'));
-  const podleSluzby = format?.sluzba ? `— podle služby ${najdiSluzbu(format.sluzba)?.nazev || ''} —` : '— nikdo —';
+  const podleSluzby = format?.sluzba ? `— ten, kdo má službu ${najdiSluzbu(format.sluzba)?.nazev || ''} —` : '— vyber člověka —';
   jednoduchyDialog({
     eyebrow: `${cas.hezkyDen(u.zacatek)} · ${u.nazev}`,
     titul: nazevBodu(S.data, bod),
@@ -747,7 +747,7 @@ function dialogFormat(f) {
     pole: [
       poleText('nazev', 'Název', f?.nazev, { attr: { autofocus: true, placeholder: 'Otázky na tělo' } }),
       poleText('delka', 'Kolik minut obvykle', f?.delka ?? 10, { typ: 'number', attr: { min: 0, max: 600 } }),
-      poleVyber('sluzba', 'Kdo to vede', [['', '— vybere se ručně —'], ...S.data.sluzby.map((x) => [x.id, `ten, kdo má ${x.nazev}`])], f?.sluzba || '', { cela: true }),
+      poleVyber('sluzba', 'Kdo to vede', [['', '— nikdo, vyberu v pořadu u bodu —'], ...S.data.sluzby.map((x) => [x.id, `ten, kdo má na setkání službu ${x.nazev}`])], f?.sluzba || '', { cela: true }),
       poleText('odkaz', 'Odkaz', f?.odkaz, { cela: true, typ: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
       h('label', { class: 'pole cela' }, h('span', {}, 'Popis'), h('textarea', { name: 'popis', rows: 2 }, f?.popis || '')),
       h('div', { class: 'cela' }, h('p', { class: 'poznamka' }, 'Služby, které formát přidá do setkání (Večeře Páně třeba 2 lidi):'), editor),
@@ -1232,7 +1232,7 @@ function vykresliSluzby() {
     h('section', { class: 'sekce' },
       h('h2', {}, 'Formáty', h('span', { class: 'n' }, 'kostky, ze kterých se skládá pořad')),
       (S.data.formaty || []).length ? h('ul', { class: 'seznam' }, S.data.formaty.map((f) => h('li', {}, h('button', { type: 'button', class: 'radek', onclick: () => dialogFormat(f) },
-        h('span', { class: 'jmeno' }, f.nazev, h('small', {}, f.sluzba ? `vede, kdo má ${najdiSluzbu(f.sluzba)?.nazev || '?'}` : 'kdo vede, vybereš ručně')),
+        h('span', { class: 'jmeno' }, f.nazev, h('small', {}, f.sluzba ? `vede ten, kdo má službu ${najdiSluzbu(f.sluzba)?.nazev || '?'}` : 'kdo vede, vybereš v pořadu u bodu')),
         h('span', { class: 'stitky' },
           (f.potreba || []).map((p) => h('span', { class: 'stitek' }, `${najdiSluzbu(p.sluzba)?.nazev || '?'}${p.pocet > 1 ? ` ${p.pocet}×` : ''}`)),
           f.odkaz ? h('span', { class: 'stitek uci' }, 'odkaz') : null),
