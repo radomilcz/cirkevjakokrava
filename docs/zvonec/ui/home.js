@@ -1,34 +1,39 @@
-// #moje – home of the signed-in person: what waits for an answer, my duties (.ics), when I can't,
-// my groups (with the leaders' contact) and my contact. Works for leaders with a person card too.
+// #moje – home of the signed-in person: duties waiting for an answer, my duties, when I can't serve,
+// my teams and my contact. Works for leaders with a person card too.
 
-import { h, btn, link, pageHeader, section, count, actions, note, tag, emptyState, confirmDialog, toast } from './dom.js';
-import { S, can, myId, change, render, actAs, logout, GROUP_KIND_LABELS, SKILL_LABELS, ACCESS_LABELS } from './state.js';
-import { availabilitySection, contactDialog, downloadDuties, dutyItem, facts, telHref } from './people.js';
-import { personById, fullName, displayName, sortPeople, statusOf } from '../lib/people.js';
+import {
+  h, btn, link, pageHeader, section, list, row, emptyState, toast, dateBlock, statusBadge,
+  menuButton, avatar, personName, simpleDialog, textField, plural, plus, download, confirmDialog,
+} from './dom.js';
+import { S, can, myId, change, render, actAs, logout, newId, ACCESS_LABELS, SKILL_LABELS } from './state.js';
+import * as peopleUi from './people.js';
+import { coverOf } from './calendar.js';
+import { personById, fullName, sortPeople, statusOf } from '../lib/people.js';
 import { groupsOf, leadersOf, skillsOf, roleById, memberRecord } from '../lib/groups.js';
 import { upcomingDuties, eventById } from '../lib/events.js';
-import { today, addDays, dayOf, prettyDay, prettyDayLong, prettyTime } from '../lib/time.js';
+import { ics, icsForPerson } from '../lib/ics.js';
+import { today, addDays, inBlockout, prettyDay, prettyTime } from '../lib/time.js';
 
 const WEEKS_AHEAD = 8;
-const faint = (text) => h('span', { class: 'faint' }, text);
 
 export function renderHome() {
   const person = personById(S.data, myId());
   if (!person) return noPerson();
   const day = today();
-  const waiting = upcomingDuties(S.data, person.id, { from: day, includeDeclined: false, includeCancelled: false })
-    .filter(({ assignment }) => assignment.status === 'proposed');
-  const duties = upcomingDuties(S.data, person.id, { from: day, to: addDays(day, WEEKS_AHEAD * 7), includeDeclined: false });
+  const duties = upcomingDuties(S.data, person.id, { from: day, includeDeclined: false });
+  const waiting = duties.filter(({ event, assignment }) => assignment.status === 'proposed' && !event.cancelled);
+  const later = addDays(day, WEEKS_AHEAD * 7);
+  const mine = duties.filter(({ event, assignment }) => (assignment.status !== 'proposed' || event.cancelled) && event.start.slice(0, 10) <= later);
   return [
     demoBar(person),
-    pageHeader({ title: 'Moje', lead: 'Tvoje služby na dva měsíce dopředu a co čeká na tvoji odpověď.' }),
-    h('div', { class: 'grid spaced' },
-      h('div', {},
+    pageHeader({ title: 'Moje' }),
+    h('div', { class: 'home-grid' },
+      h('div', { class: 'home-main' },
         waitingSection(person, waiting),
-        dutiesSection(person, duties),
-        availabilitySection(person)),
-      h('div', {},
-        groupsSection(person),
+        dutiesSection(person, mine)),
+      h('div', { class: 'home-side' },
+        availabilitySection(person),
+        teamsSection(person),
         contactSection(person),
         signOut())),
   ];
@@ -45,95 +50,162 @@ function answer(person, eventId, assignmentId, status, { quiet = false } = {}) {
   assignment.status = status;
   const role = roleById(S.data, assignment.roleId)?.name || 'službu';
   const what = status === 'confirmed' ? 'jde na' : status === 'declined' ? 'nemůže na' : 'zase neví, jestli na';
-  change(`${displayName(person)} ${what} ${role} ${prettyDay(event.start, false)}`);
+  change(`${fullName(person)} ${what} ${role} ${prettyDay(event.start, false)}`);
   if (quiet) return;
   const undo = () => answer(person, eventId, assignmentId, before, { quiet: true });
   if (status === 'confirmed') toast('Díky, počítáme s tebou.', '', { action: undo, actionLabel: 'Vrátit' });
   else toast('Dobře, vedoucí uvidí, že nemůžeš.', '', { action: undo, actionLabel: 'Vrátit' });
 }
 
-const WAITING_SHOWN = 4;
-let showAllWaiting = false;   // view state: the whole list of proposed duties is open
+const when = (event) => `${prettyDay(event.start)} · ${prettyTime(event.start)}`;
 
 function waitingSection(person, waiting) {
-  const shown = showAllWaiting ? waiting : waiting.slice(0, WAITING_SHOWN);
-  const hidden = waiting.length - shown.length;
-  return section(['Čeká na tebe', waiting.length ? count(String(waiting.length)) : null],
-    waiting.length ? h('ul', { class: 'answer-list' }, shown.map(({ event, assignment }) => {
-      const role = roleById(S.data, assignment.roleId);
-      return h('li', { class: 'answer' },
-        h('p', { class: 'answer-when' }, `${prettyDayLong(dayOf(event.start))} · ${prettyTime(event.start)}`),
-        h('p', { class: 'answer-role' }, role?.name || 'Služba'),
-        h('p', { class: 'answer-event' }, link(event.title, `#setkani/${event.id}`)),
-        h('div', { class: 'answer-buttons' },
-          btn('Jdu', () => answer(person, event.id, assignment.id, 'confirmed'), 'primary'),
-          btn('Nemůžu', () => answer(person, event.id, assignment.id, 'declined'))));
-    })) : note('Nic nečeká. Všechno máš potvrzené.'),
-    hidden ? actions([btn(`Ukázat další (${hidden})`, () => { showAllWaiting = true; render(); }, 'small')]) : null);
+  return section('Čeká na tebe', { count: waiting.length || null },
+    list(waiting, ({ event, assignment }) => {
+      const role = roleById(S.data, assignment.roleId)?.name || 'Služba';
+      return row({
+        lead: coverOf(event, { size: 'thumb' }),
+        title: role,
+        meta: `${when(event)} · ${event.title}`,
+        trail: [
+          btn('Potvrdit', () => answer(person, event.id, assignment.id, 'confirmed'), 'mini primary', { 'aria-label': `Potvrdit: ${role} ${prettyDay(event.start)}` }),
+          btn('Nemůžu', () => answer(person, event.id, assignment.id, 'declined'), 'mini', { 'aria-label': `Nemůžu: ${role} ${prettyDay(event.start)}` }),
+        ],
+        href: `#setkani/${event.id}`,
+        cls: 'answer-row',
+        label: `${role}, ${event.title} ${prettyDay(event.start)}`,
+      });
+    }, { empty: h('p', { class: 'all-ok' }, statusBadge('confirmed'), 'Nic nečeká. Všechno máš vyřízené.') }));
 }
 
 function dutiesSection(person, duties) {
   const decline = (event, assignment) => confirmDialog('Nakonec nemůžeš?',
     'Vedoucí uvidí, že za tebe musí najít náhradu. Jestli víš o dalších dnech, zapiš je do „Kdy nemůžu sloužit“.',
     () => answer(person, event.id, assignment.id, 'declined'), { buttonLabel: 'Nemůžu' });
-  return section(['Moje služby', count(`příštích ${WEEKS_AHEAD} týdnů`),
-    duties.length ? btn('Do svého kalendáře', () => downloadDuties(person), 'mini plain') : null],
-  duties.length ? h('ul', { class: 'overview' }, duties.map((duty) => dutyItem(duty,
-    duty.assignment.status === 'confirmed' && !duty.event.cancelled ? btn('Nemůžu', () => decline(duty.event, duty.assignment), 'mini plain') : null)))
-    : note('Teď žádnou službu nemáš. Užij si volnou neděli na pastvě.'));
+  return section('Moje služby', {
+    count: duties.length || null,
+    actions: duties.length ? btn('Do kalendáře (.ics)', () => downloadDuties(person), 'small plain') : null,
+  },
+  list(duties, ({ event, assignment }) => {
+    const role = roleById(S.data, assignment.roleId)?.name || 'Služba';
+    return row({
+      lead: dateBlock(event.start.slice(0, 10)),
+      title: role,
+      meta: `${prettyTime(event.start)} · ${event.title}${event.cancelled ? ' · zrušeno' : ''}`,
+      trail: [
+        event.cancelled ? null : statusBadge(assignment.status, person),
+        assignment.status === 'confirmed' && !event.cancelled
+          ? menuButton([['Nakonec nemůžu', () => decline(event, assignment)]], { label: `Možnosti: ${role} ${prettyDay(event.start)}` }) : null,
+      ],
+      href: `#setkani/${event.id}`,
+      tone: event.cancelled ? 'cancelled' : null,
+    });
+  }, { empty: `Na příštích ${WEEKS_AHEAD} týdnů nemáš žádnou potvrzenou službu.` }));
 }
 
-// ---------- groups, contact ----------
-
-/** A leader's name as a tel: link (mailto: without a phone) – only when they share the contact. */
-function leaderContact(leader) {
-  const shared = can('leader') || leader.showInDirectory;
-  const name = fullName(leader);
-  return h('span', { class: 'group-leader' },
-    shared && leader.phone ? h('a', { href: telHref(leader.phone), title: `Zavolat: ${leader.phone}` }, name)
-      : shared && leader.email ? h('a', { href: `mailto:${leader.email}` }, name) : name,
-    shared && leader.phone ? faint(` · ${leader.phone}`) : null,
-    shared && leader.email ? [faint(' · '), h('a', { href: `mailto:${leader.email}`, class: 'faint' }, leader.email)] : null);
+/** .ics with my duties from a month back on. */
+function downloadDuties(person) {
+  const items = icsForPerson(S.data, person.id, addDays(today(), -30));
+  const ascii = fullName(person).normalize('NFD').replace(/\p{M}/gu, '').replace(/[^A-Za-z0-9]+/g, '-').toLowerCase();
+  download(`sluzby-${ascii}.ics`, ics(S.data, items, `Služby – ${fullName(person)}`), 'text/calendar');
 }
 
-function groupsSection(person) {
+// ---------- when I can't ----------
+
+const rangeText = (v) => (v.from === v.to ? prettyDay(v.from) : `${prettyDay(v.from)} – ${prettyDay(v.to)}`);
+
+function availabilitySection(person) {
+  const day = today();
+  const records = (S.data.availability || []).filter((v) => v.personId === person.id && v.to >= day)
+    .sort((a, b) => a.from.localeCompare(b.from));
+  return section('Kdy nemůžu sloužit', {
+    count: records.length || null,
+    actions: btn(plus('Přidat'), () => availabilityDialog(person), 'small'),
+  },
+  list(records, (v) => row({
+    title: rangeText(v),
+    meta: v.reason || null,
+    onclick: () => availabilityDialog(person, v),
+    label: `Upravit: ${rangeText(v)}`,
+  }), { empty: 'Když víš, že nemůžeš, zapiš to sem. Nikdo tě pak nenaplánuje.' }));
+}
+
+/** Add or edit a „can't“ record (dates and a reason only leaders see); Smazat in the dialog. */
+function availabilityDialog(person, record = null) {
+  const day = today();
+  simpleDialog({
+    title: record ? 'Kdy nemůžu sloužit' : 'Přidat, kdy nemůžu',
+    wide: false,
+    fields: [
+      textField('from', 'Od', record?.from || day, { type: 'date', attr: { required: true } }),
+      textField('to', 'Do', record?.to || day, { type: 'date', attr: { required: true } }),
+      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: 'Vidí ho jen vedoucí.', attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80 } }),
+    ],
+    save: (f) => {
+      if (!f.from.value || !f.to.value) return 'Vyplň, od kdy do kdy.';
+      const [from, to] = [f.from.value, f.to.value].sort();
+      if (to < day) return 'Tohle už je za námi.';
+      S.data.availability = S.data.availability || [];
+      const target = record ? S.data.availability.find((x) => x.id === record.id) : null;
+      const entry = target || { id: newId('v'), personId: person.id };
+      Object.assign(entry, { from, to });
+      const reason = f.reason.value.trim();
+      if (reason) entry.reason = reason; else delete entry.reason;
+      if (!target) S.data.availability.push(entry);
+      const clash = upcomingDuties(S.data, person.id, { from, to, includeDeclined: false, includeCancelled: false })
+        .filter(({ event }) => inBlockout(event, entry));
+      change(`${fullName(person)} nemůže ${prettyDay(from, false)}`);
+      if (clash.length) toast(`V tu dobu máš ${plural(clash.length, 'službu', 'služby', 'služeb')}.`, 'Vedoucí to uvidí v Upozorněních.');
+      else toast('Zapsáno.');
+      return null;
+    },
+    remove: record ? () => {
+      S.data.availability = (S.data.availability || []).filter((x) => x.id !== record.id);
+      change(`${fullName(person)} zase může ${prettyDay(record.from, false)}`);
+      toast('Smazáno.');
+    } : null,
+  });
+}
+
+// ---------- teams, contact ----------
+
+function teamsSection(person) {
   const groups = groupsOf(S.data, person.id);
   const skills = skillsOf(S.data, person.id);
-  return section(['Moje týmy a skupiny', groups.length ? count(String(groups.length)) : null],
-    groups.length ? h('ul', { class: 'my-groups' }, groups.map((g) => {
-      const mine = memberRecord(S.data, g.id, person.id);
-      const own = skills.filter((s) => s.groupId === g.id);
+  const leader = can('leader');
+  return section('Moje týmy', { count: groups.length || null },
+    list(groups, (g) => {
+      const record = memberRecord(S.data, g.id, person.id);
+      const own = skills.filter((s) => s.groupId === g.id)
+        .map((s) => `${roleById(S.data, s.roleId)?.name || '?'}${s.level === 'learning' ? ` (${SKILL_LABELS.learning})` : ''}`);
       const leaders = leadersOf(S.data, g.id).map((m) => personById(S.data, m.personId)).filter((p) => p && p.id !== person.id);
-      return h('li', {},
-        h('p', { class: 'group-name' }, g.name, faint(` · ${GROUP_KIND_LABELS[g.kind] || ''}`)),
-        mine?.leader || own.length ? h('div', { class: 'tags' },
-          mine?.leader ? tag('vedeš', 'filled') : null,
-          own.map((s) => tag([roleById(S.data, s.roleId)?.name || '?', s.level === 'learning' ? faint(` ${SKILL_LABELS.learning}`) : null],
-            s.level === 'learning' ? 'learning' : ''))) : null,
-        g.description ? h('p', { class: 'note' }, g.description) : null,
-        leaders.length ? h('p', { class: 'group-leaders' }, faint(leaders.length > 1 ? 'Vedou: ' : 'Vede: '),
-          leaders.map((l, i) => [i ? h('br') : null, leaderContact(l)])) : null);
-    })) : note('Zatím nejsi v žádném týmu ani skupině. Řekni vedoucímu, s čím rád(a) pomůžeš.'));
+      return row({
+        lead: avatar({ id: g.id, firstName: g.name }, { size: 'm' }),
+        title: g.name,
+        meta: [own.join(', '), leaders.length ? `${leaders.length > 1 ? 'vedou' : 'vede'} ${leaders.map(personName).join(', ')}` : null]
+          .filter(Boolean).join(' · ') || null,
+        trail: record?.leader ? h('span', { class: 'tag filled' }, 'vedeš') : null,
+        href: leader ? `#tym/${g.id}` : undefined,
+      });
+    }, { empty: 'Zatím nejsi v žádném týmu. Řekni vedoucímu, s čím rád(a) pomůžeš.' }));
 }
 
 function contactSection(person) {
-  return section('Můj kontakt',
-    facts([
-      ['Říkají mi', person.nickname || faint('–')],
-      ['Telefon', person.phone || faint('–')],
-      ['E-mail', person.email || faint('–')],
-      ['Telefon a e-mail vidí', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí'],
-    ]),
-    actions([btn('Upravit kontakt', () => contactDialog(person), 'small')]));
+  const edit = () => (peopleUi.contactDialog ? peopleUi.contactDialog(person) : location.assign(`#osoba/${person.id}`));
+  const fact = (label, value) => [h('dt', {}, label), h('dd', {}, value || h('span', { class: 'faint' }, 'nevyplněno'))];
+  return section('Můj kontakt', { actions: btn('Upravit', edit, 'small') },
+    h('dl', { class: 'facts' },
+      fact('Telefon', person.phone),
+      fact('E-mail', person.email),
+      fact('Vidí ho', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí')));
 }
 
-/** Members have no Nastavení in the menu – the account (password) and the formats are reached from here. */
+/** Members have no Nastavení in the menu – the account (password) is reached from here. */
 function signOut() {
   if (S.mode !== 'live') return null;
-  return section(null, actions([
+  return h('div', { class: 'home-account' },
     link('Heslo a účet', '#nastaveni/ucet', 'btn small'),
-    btn('Odhlásit se', () => logout(), 'small plain'),
-  ]));
+    btn('Odhlásit se', () => logout(), 'small plain'));
 }
 
 // ---------- demo and people without a card ----------
@@ -142,30 +214,28 @@ function signOut() {
 function demoBar(person) {
   if (S.mode !== 'demo') return null;
   return h('div', { class: 'notice demo-bar' },
-    h('p', {}, 'Ukázka: díváš se jako ', h('strong', {}, fullName(person)), ` (${ACCESS_LABELS[S.me.access] || S.me.access}).`),
+    h('p', {}, 'Ukázka: díváš se jako ', h('strong', {}, personName(person)), ` (${ACCESS_LABELS[S.me.access] || S.me.access}).`),
     btn('Zpátky jako správce', () => actAs(null, 'admin'), 'small'));
 }
 
 /** Demo: pick someone to look as. */
 function actAsForm() {
-  const people = sortPeople(S.data.people.filter((p) => statusOf(p) !== 'former'));
+  const people = sortPeople((S.data.people || []).filter((p) => statusOf(p) !== 'former'));
   const select = h('select', { name: 'person', 'aria-label': 'Čí očima' },
-    people.map((p) => h('option', { value: p.id }, fullName(p))));
-  const form = h('form', { class: 'search' }, select, h('button', { type: 'submit', class: 'btn primary small' }, 'Podívat se'));
+    people.map((p) => h('option', { value: p.id }, personName(p))));
+  const form = h('form', { class: 'act-as' }, select, h('button', { type: 'submit', class: 'btn primary' }, 'Podívat se'));
   form.addEventListener('submit', (e) => { e.preventDefault(); actAs(select.value, 'member'); });
   return form;
 }
 
 function noPerson() {
-  const header = pageHeader({ title: 'Moje', lead: 'Tady každý vidí svoje služby, co čeká na jeho odpověď a kdy nemůže.' });
+  const header = pageHeader({ title: 'Moje' });
   if (S.mode === 'demo') {
     return [header,
-      emptyState('V ukázce nejsi nikdo z Lidí. Vyber si někoho a podívej se jeho očima, zpátky se dostaneš tlačítkem nahoře.'),
-      people().length ? actAsForm() : null,
-      actions([link('Na Lidi', '#lide', 'btn small')])];
+      emptyState('V ukázce nejsi nikdo z Lidí. Vyber si někoho a podívej se jeho očima.'),
+      (S.data.people || []).length ? actAsForm() : null];
   }
   return [header, emptyState('Tvoje přihlášení nepatří k nikomu z Lidí. Řekni správci, ať to propojí.',
     can('leader') ? link('Na Lidi', '#lide', 'btn') : null)];
 }
 
-const people = () => S.data.people || [];

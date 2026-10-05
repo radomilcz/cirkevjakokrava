@@ -1,1 +1,74 @@
-/* roster module – owned by the roster team. Uses tokens and components from ../style.css. */
+/* roster module – owned by the events team. Uses tokens and components from ../style.css.
+   #rozpis: one table for the month. The first column (date + title) stays put while the roles scroll.
+   Every person carries the status symbol (✓ potvrzeno, clock čeká, ✕ nemůže); print keeps the symbols
+   and drops everything else that is not on paper. */
+
+.roster-wrap{background:var(--ground);overflow-x:auto;margin:0 calc(-1*var(--gutter));padding:0 var(--gutter) var(--s2)}
+.roster-wrap:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.roster-table{border-collapse:separate;border-spacing:0;min-width:100%;font-size:.9rem;line-height:1.35}
+.roster-table th,.roster-table td{padding:var(--s2) var(--s3);text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.roster-table thead th{font-weight:400;white-space:nowrap}
+.roster-teams th{
+  padding-top:0;padding-bottom:var(--s1);border-bottom:0;
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.72rem;color:var(--muted);
+}
+.roster-teams td{border-bottom:0}
+.roster-roles th{font-size:var(--t4);color:var(--muted);border-bottom:1px solid var(--outline);padding-bottom:var(--s2)}
+.roster-table .team-start{border-left:1px solid var(--line)}
+.roster-table .roster-corner{border-bottom-color:var(--outline)}
+.roster-teams .roster-corner{border-bottom:0}
+
+/* the first column: date and time (link to the event), title under it – sticks while scrolling */
+.roster-table tbody th,.roster-table thead .roster-corner{
+  position:sticky;left:calc(-1*var(--gutter));z-index:1;background:var(--ground);
+  box-shadow:inset -1px 0 0 var(--line);
+}
+.roster-table tbody th{min-width:9.5em;max-width:15em;font-weight:400;padding-left:var(--s2)}
+.roster-when{display:block;text-decoration:none;white-space:nowrap}
+.roster-when:hover .roster-day{text-decoration:underline;text-underline-offset:.2em}
+.roster-day{font-size:var(--t3)}
+.roster-time{color:var(--muted);font-size:var(--t4)}
+.roster-title{display:block;color:var(--muted);font-size:var(--t4);overflow-wrap:anywhere}
+.roster-table tbody tr:hover td{background:var(--fill)}
+.roster-table tbody tr:hover th{background:var(--ground) linear-gradient(var(--fill),var(--fill))}
+.roster-table tr.my-row th{box-shadow:inset 3px 0 0 var(--ink),inset -1px 0 0 var(--line)}
+
+.roster-table td{position:relative;min-width:8.5em}
+.roster-person{display:flex;align-items:center;gap:6px;white-space:nowrap;min-height:1.6em}
+.roster-person .status-icon{color:var(--ink);font-size:1.05em}
+.roster-person.status-proposed .roster-name{color:var(--muted)}
+.roster-person.status-proposed .status-icon{color:var(--muted)}
+.roster-person.status-declined .roster-name{text-decoration:line-through;color:var(--muted)}
+.roster-person.status-declined .status-icon{color:var(--muted)}
+.roster-person.mine .roster-name{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.22em}
+.roster-missing{display:flex;align-items:center;gap:6px;min-height:1.6em;color:var(--muted);font-size:var(--t4);white-space:nowrap}
+.roster-table td>.sev-dot{position:absolute;top:var(--s2);right:var(--s2);width:.42rem;height:.42rem}
+.roster-table tr.cancelled td>*{opacity:.45}
+.roster-table tr.cancelled .roster-day{text-decoration:line-through}
+
+.roster-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin:var(--s4) 0 0;padding:0;list-style:none;font-size:var(--t4);color:var(--muted)}
+.roster-legend li{display:inline-flex;align-items:center;gap:6px}
+.roster-legend .status-icon{color:var(--ink);font-size:1.05em}
+.roster-legend .status-open{color:var(--muted)}
+.roster-print-title{margin:0 0 4mm;font-family:var(--narrow);font-weight:900;text-transform:uppercase;font-size:26pt;line-height:1}
+
+@media print{
+  .roster-page .page-header,.roster-page .month-bar,.roster-page .pill-bar{display:none !important}
+  .roster-wrap{overflow:visible;margin:0;padding:0;background:none}
+  .roster-table{min-width:0;width:100%;font-size:8.5pt}
+  .roster-table th,.roster-table td{padding:1.5mm 1.4mm 1.2mm}
+  .roster-table tbody th,.roster-table thead .roster-corner{position:static;background:none;box-shadow:none}
+  .roster-table tr{break-inside:avoid}
+  .roster-table td{min-width:0}
+  .roster-table td>.sev-dot{display:none}
+  .roster-table tbody tr:hover td,.roster-table tbody tr:hover th{background:none}
+  .roster-person.mine .roster-name{text-decoration:none}
+  .roster-person.status-proposed .roster-name,.roster-person .status-icon,.roster-missing{color:#000}
+  .roster-legend{margin-top:3mm;font-size:8pt;color:#000}
+  .roster-legend .status-icon{color:#000}
+}
+@media (max-width:520px){
+  .roster-page .pill-bar{gap:var(--s2)}
+  .roster-page .filter{gap:4px}
+  .roster-page .filter button{font-size:.84em;padding:.45em .8em .34em}
+}

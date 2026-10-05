@@ -1,15 +1,16 @@
-// #rozpis, #rozpis/2026-10 – month table of duties for the notice board, print (A4 landscape).
-// Rows = events of the chosen kind, columns = roles grouped by team. No phone numbers anywhere.
+// #rozpis, #rozpis/2026-10 – who serves when: one table for the month, for the screen and for the
+// notice board (A4 landscape). Rows = events, columns = roles grouped by team. No phone numbers.
 
-import { h, btn, link, emptyState, filterButtons, printHeader } from './dom.js';
-import { S, can, myId, render, EVENT_KIND_LABELS } from './state.js';
-import { roleComparator } from './calendar.js';
+import { h, btn, link, emptyState, filterButtons, pageHeader, printHeader, shortName, personName, statusIcon, statusLabel } from './dom.js';
+import { S, can, myId, render, EVENT_KIND_LABELS, SEVERITY_LABELS } from './state.js';
+import { monthBar, monthTitle, openIcon, roleComparator } from './calendar.js';
 import { needsOf } from '../lib/events.js';
-import { displayName, personById } from '../lib/people.js';
-import { addMonths, monthName, monthOf, prettyDay, prettyTime, today } from '../lib/time.js';
+import { personById } from '../lib/people.js';
+import { monthOf, prettyDay, prettyTime, today } from '../lib/time.js';
 
 const KIND_FILTERS = [['service', EVENT_KIND_LABELS.service], ['rehearsal', 'Zkoušky'], ['smallGroup', 'Skupinky'], ['event', 'Akce'], ['', 'Všechno']];
 const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
+const STATUS_ORDER = { confirmed: 0, proposed: 1, declined: 2 };
 
 /** `month` = 'YYYY-MM' from the hash, or '' for the current month. */
 export function renderRoster(month) {
@@ -21,6 +22,7 @@ export function renderRoster(month) {
   const roles = new Map((S.data.roles || []).map((r) => [r.id, r]));
   const groups = new Map((S.data.groups || []).map((g) => [g.id, g]));
   const teams = (S.data.groups || []).filter((g) => g.kind === 'team' && !g.archived);
+  const people = S.data.people || [];
 
   const events = (S.data.events || []).filter((e) => monthOf(e.start) === shown && (!kind || e.kind === kind))
     .sort((a, b) => a.start.localeCompare(b.start));
@@ -28,7 +30,7 @@ export function renderRoster(month) {
 
   // columns: roles some event of the month needs or has people in
   const used = new Set();
-  for (const list of needsByEvent.values()) for (const n of list) used.add(n.roleId);
+  for (const needs of needsByEvent.values()) for (const n of needs) used.add(n.roleId);
   const columns = [...used].filter((rid) => roles.has(rid) && (!teamFilter || roles.get(rid).groupId === teamFilter))
     .sort(roleComparator(S.data));
   const teamSpans = [];
@@ -39,9 +41,9 @@ export function renderRoster(month) {
     else teamSpans.push({ groupId, count: 1 });
   }
 
-  // worst severity of a cell from the conflicts (leaders only – members see only their own)
+  // worst severity of a cell (leaders only; never printed)
   const cellSeverity = (event, roleId) => {
-    if (!leader) return null;
+    if (!leader || event.cancelled) return null;
     let worst = null;
     for (const c of S.conflicts) {
       if (!(c.eventIds || [c.eventId]).includes(event.id) || c.severity === 'info') continue;
@@ -53,53 +55,68 @@ export function renderRoster(month) {
   };
 
   const cell = (event, roleId) => {
-    const people = (event.assignments || []).filter((a) => a.roleId === roleId && a.status !== 'declined');
+    const here = (event.assignments || []).filter((a) => a.roleId === roleId)
+      .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+    const active = here.filter((a) => a.status !== 'declined').length;
     const need = needsByEvent.get(event.id).find((n) => n.roleId === roleId)?.count || 0;
-    const severity = event.cancelled ? null : cellSeverity(event, roleId);
-    const missing = event.cancelled ? 0 : Math.max(0, need - people.length);
-    if (!people.length) {
-      return h('td', { class: [need && !event.cancelled ? severity || 'warning' : 'empty'] }, need && !event.cancelled ? 'nikdo' : '');
-    }
-    return h('td', { class: severity || null },
-      people.map((a, i) => [i ? ', ' : '', h('span', { class: [a.status === 'proposed' && 'proposed', me && a.personId === me && 'mine'] },
-        displayName(personById(S.data, a.personId)))]),
-      missing ? ` a chybí ${missing}` : '');
+    const missing = event.cancelled ? 0 : Math.max(0, need - active);
+    const severity = cellSeverity(event, roleId);
+    return h('td', { class: [!need && !here.length && 'none', severity && `sev-${severity}`], title: severity ? SEVERITY_LABELS[severity] : null },
+      severity ? h('span', { class: ['sev-dot', severity] }, h('span', { class: 'visually-hidden' }, `${SEVERITY_LABELS[severity]}: `)) : null,
+      here.map((a) => {
+        const person = personById(S.data, a.personId);
+        return h('span', {
+          class: ['roster-person', `status-${a.status}`, me && a.personId === me && 'mine'],
+          title: `${personName(person)} – ${statusLabel(a.status, person)}`,
+        }, statusIcon(a.status), h('span', { class: 'roster-name' }, shortName(person, people)),
+        h('span', { class: 'visually-hidden' }, ` (${statusLabel(a.status, person)})`));
+      }),
+      missing ? h('span', { class: 'roster-missing' }, openIcon(), missing > 1 ? `chybí ${missing}` : 'chybí') : null);
   };
 
-  const table = h('table', { class: 'schedule-table' },
+  const showTitle = (e) => !kind || e.title !== EVENT_KIND_LABELS[e.kind];
+  const table = h('table', { class: 'roster-table' },
     h('thead', {},
-      h('tr', { class: 'teams' }, h('th', {}), teamSpans.map((t) => h('th', { colspan: t.count, scope: 'colgroup' }, groups.get(t.groupId)?.name || ''))),
-      h('tr', {}, h('th', { scope: 'col' }, 'kdy'), columns.map((rid) => h('th', { scope: 'col' }, roles.get(rid).name)))),
-    h('tbody', {}, events.map((e) => h('tr', { class: e.cancelled ? 'cancelled' : null },
+      h('tr', { class: 'roster-teams' }, h('td', { class: 'roster-corner' }),
+        teamSpans.map((t) => h('th', { colspan: t.count, scope: 'colgroup' }, groups.get(t.groupId)?.name || ''))),
+      h('tr', { class: 'roster-roles' }, h('th', { scope: 'col', class: 'roster-corner' }, h('span', { class: 'visually-hidden' }, 'Setkání')),
+        columns.map((rid, i) => h('th', {
+          scope: 'col', class: i && roles.get(columns[i - 1]).groupId !== roles.get(rid).groupId ? 'team-start' : null,
+        }, roles.get(rid).name)))),
+    h('tbody', {}, events.map((e) => h('tr', { class: [e.cancelled && 'cancelled', (e.assignments || []).some((a) => a.personId === me && a.status !== 'declined') && 'my-row'] },
       h('th', { scope: 'row' },
-        h('a', { href: `#setkani/${e.id}` }, prettyDay(e.start)),
-        h('small', {}, [prettyTime(e.start), kind && e.title === EVENT_KIND_LABELS[e.kind] ? null : e.title, e.cancelled ? 'zrušeno' : null].filter(Boolean).join(' · '))),
-      columns.map((rid) => cell(e, rid))))));
+        h('a', { href: `#setkani/${e.id}`, class: 'roster-when' }, h('span', { class: 'roster-day' }, prettyDay(e.start)), ' ', h('span', { class: 'roster-time' }, prettyTime(e.start))),
+        showTitle(e) || e.cancelled ? h('span', { class: 'roster-title' }, [showTitle(e) ? e.title : null, e.cancelled ? 'zrušeno' : null].filter(Boolean).join(' · ')) : null),
+      columns.map((rid, i) => {
+        const td = cell(e, rid);
+        if (i && roles.get(columns[i - 1]).groupId !== roles.get(rid).groupId) td.classList.add('team-start');
+        return td;
+      })))));
+  // the first column of team headers also starts a team
+  [...table.querySelectorAll('.roster-teams th')].slice(1).forEach((th) => th.classList.add('team-start'));
 
   const kindName = KIND_FILTERS.find(([v]) => v === kind)?.[1] || 'Všechno';
-  return [
+  const filled = events.length && columns.length;
+  return h('div', { class: 'roster-page' },
     printHeader(`rozpis služeb${kind ? ` · ${kindName.toLowerCase()}` : ''}`),
-    h('div', { class: 'month-nav' },
-      link('', `#rozpis/${monthOf(addMonths(`${shown}-01`, -1))}`, 'btn small arrow-back', { 'aria-label': 'Předchozí měsíc', title: 'Předchozí měsíc' }),
-      h('h1', { class: 'month-title' }, monthName(shown)),
-      link('→', `#rozpis/${monthOf(addMonths(`${shown}-01`, 1))}`, 'btn small', { 'aria-label': 'Další měsíc', title: 'Další měsíc' }),
-      shown !== monthOf(today()) ? link('Tento měsíc', '#rozpis', 'btn small plain') : null,
-      h('span', { class: 'right' },
-        events.length ? btn('Vytisknout rozpis', () => window.print(), 'primary small', { title: 'Na bílý papír, na šířku' }) : null)),
-    h('p', { class: 'lead no-print' }, 'Kdo kdy slouží, celý měsíc v jedné tabulce. Můžeš ho vytisknout na nástěnku.'),
-    h('p', { class: 'title print-only', 'aria-hidden': 'true' }, monthName(shown)),
-    h('div', { class: 'filter-row' },
+    h('p', { class: 'roster-print-title print-only' }, monthTitle(shown)),
+    pageHeader({
+      title: 'Rozpis',
+      actions: filled ? btn('Vytisknout', () => window.print(), 'primary', { title: 'Na bílý papír, na šířku' }) : null,
+    }),
+    monthBar(shown, '#rozpis'),
+    h('div', { class: 'pill-bar' },
       filterButtons(KIND_FILTERS, kind, (v) => { S.filters.rosterKind = v; render(); }, { label: 'Účel' }),
       teams.length > 1 ? filterButtons([['', 'Všechny týmy'], ...teams.map((t) => [t.id, t.name])], teamFilter,
         (v) => { S.filters.rosterGroup = v; render(); }, { label: 'Tým' }) : null),
-    events.length && columns.length
-      ? h('div', { class: 'schedule-table-wrap' }, table)
+    filled
+      ? h('div', { class: 'roster-wrap', tabindex: 0, role: 'region', 'aria-label': `Rozpis ${monthTitle(shown)}` }, table)
       : events.length
-        ? emptyState('Tahle setkání nepotřebují nikoho z vybraného týmu.')
-        : emptyState('Tenhle měsíc tu nic takového není.', link('Do kalendáře', `#kalendar/${shown}`, 'btn')),
-    events.length && columns.length ? h('p', { class: 'note no-print' }, leader
-      ? 'Kurzívou: ještě nepotvrdil(a). ● takhle to nepůjde, ○ někdo chybí.'
-      : 'Kurzívou: ještě nepotvrdil(a). ○ někdo chybí.') : null,
-    events.length && columns.length ? h('p', { class: 'note print-only' }, 'Kurzívou: ještě nepotvrdil(a). Kdo nemůže, ať dá vědět vedoucímu.') : null,
-  ];
+        ? emptyState('Tahle setkání nepotřebují nikoho z vybraného týmu.', btn('Všechny týmy', () => { S.filters.rosterGroup = ''; render(); }, 'small'))
+        : emptyState('Tenhle měsíc tu nic takového není.', link('Do kalendáře', `#kalendar/${shown}`, 'btn small')),
+    filled ? h('ul', { class: 'roster-legend', 'aria-label': 'Co znamenají značky' },
+      ['confirmed', 'proposed', 'declined'].map((s) => h('li', {}, statusIcon(s), statusLabel(s))),
+      h('li', {}, openIcon(), 'chybí'),
+      leader ? h('li', { class: 'no-print' }, h('span', { class: 'sev-dot warning', 'aria-hidden': 'true' }), 'něco nesedí') : null) : null,
+    filled ? h('p', { class: 'note print-only' }, 'Kdo nemůže, ať dá vědět vedoucímu týmu.') : null);
 }

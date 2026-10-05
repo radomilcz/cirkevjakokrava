@@ -1,31 +1,35 @@
-// #setkani/<id> – event detail: needs per role with slots, assignment states, program editor,
-// conflicts of this event (leaders), cancel / delete.
+// #setkani/<id> – one event: picture, title, when and where, description; who serves (by team and
+// role, with the status of every person); the osnova (program); for leaders the warnings of the event.
 
 import {
-  h, btn, textButton, link, backLink, pageHeader, section, count, actions, note, meta, emptyState, toast, download,
-  removeButton, confirmDialog, choices, closeDialog, simpleDialog, textField,
-  fieldGroup, checkedValues, plural, plus,
+  h, btn, textButton, link, backLink, pageHeader, section, list, row, emptyState, toast, download,
+  closeDialog, openDialog, confirmDialog, simpleDialog, textField, fieldGroup, plural, plus, note,
+  assignee, personName, placeLine, placeMap, statusIcon,
 } from './dom.js';
-import { S, can, change, myId, navigate, newId, ASSIGNMENT_STATUS_LABELS, EVENT_KIND_LABELS } from './state.js';
+import { S, can, change, myId, newId, ASSIGNMENT_STATUS_LABELS } from './state.js';
 import { openPicker } from './picker.js';
-import { openFormatInfo } from './settings.js';
-import { andFollowing, eventDialog, roleComparator } from './calendar.js';
-import { conflictCard, overrideDialog } from './conflicts.js';
+import * as formatsUi from './formats.js';
+import * as settingsUi from './settings.js';
 import {
-  cancelEvent, deleteEvent, eventById, followingInSeries, needsOf, seriesOf,
-} from '../lib/events.js';
+  coverOf, eventDialog, fillOf, monthTitle, placesOf, roleComparator, timeText,
+} from './calendar.js';
+import { canOverride, conflictList, overrideDialog } from './conflicts.js';
+import { eventById, needsOf, seriesOf } from '../lib/events.js';
 import {
   addFormat, copyProgram, eventDuration, formatById, itemLeaders, itemName, programDuration, programTimes,
 } from '../lib/program.js';
 import { proposeRemaining, previousEvent, sameAsLastTime } from '../lib/scheduling.js';
 import { ics } from '../lib/ics.js';
-import { displayName, fullName, personById } from '../lib/people.js';
+import { personById } from '../lib/people.js';
 import { groupById, roleById, memberRecord, setSkill } from '../lib/groups.js';
 import { sortable, dragHandle, moveInArray } from './sortable.js';
-import { addMinutes, dayOf, monthOf, prettyDay, prettyDayLong, prettyRange, prettyTime, today } from '../lib/time.js';
+import { dayOf, monthOf, prettyDay, prettyDayLong, prettyTime, today } from '../lib/time.js';
 
-const NEXT_STATUS = { proposed: 'confirmed', confirmed: 'declined', declined: 'proposed' };
 const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
+const capital = (text) => text.charAt(0).toLocaleUpperCase('cs') + text.slice(1);
+
+/** „Proč a jak“ of a format – the formats module owns it (older builds kept it in settings). */
+const formatInfo = (formatId) => (formatsUi.openFormatInfo || settingsUi.openFormatInfo)?.(formatId);
 
 /** Person id from what the picker hands over (an array of ids; a person or an id also works). */
 function pickedId(picked) {
@@ -35,6 +39,7 @@ function pickedId(picked) {
 
 /** Re-find the event at click time – a refresh may have swapped S.data.events meanwhile. */
 const fresh = (id) => eventById(S.data, id);
+const nameOf = (personId) => personName(personById(S.data, personId));
 
 export function renderEvent(id) {
   const event = fresh(id);
@@ -44,167 +49,219 @@ export function renderEvent(id) {
   }
   const leader = can('leader');
   const conflicts = leader ? S.conflicts.filter((c) => (c.eventIds || [c.eventId]).includes(id)) : [];
-  const series = seriesOf(S.data, event);
-  const position = series.indexOf(event);
   const previous = previousEvent(S.data, id);
-  const places = (event.placeIds || []).map((p) => (S.data.places || []).find((x) => x.id === p)?.name).filter(Boolean);
-  const sameDay = dayOf(event.start) === dayOf(addMinutes(event.end, -1));
-  const kindLabel = EVENT_KIND_LABELS[event.kind];
-  const hasNeeds = needsOf(S.data, event).length > 0;   // program formats bring roles too
+  const hasNeeds = needsOf(S.data, event).length > 0;
+  const open = leader && !event.cancelled && hasNeeds;
+  const fill = fillOf(event);
+  const icsButton = btn('Do kalendáře (.ics)', () => download(`${event.title}-${dayOf(event.start)}.ics`,
+    ics(S.data, [{ event }], event.title), 'text/calendar'), leader ? 'plain' : '');
 
   return [
-    backLink('Kalendář', `#kalendar/${monthOf(event.start)}`),
-    pageHeader({ title: event.title, lead: event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.' : null }),
-    meta([
-      sameDay ? `${prettyDayLong(event.start)}, ${prettyTime(event.start)}–${prettyTime(event.end)}` : prettyRange(event),
-      places.length ? places.join(', ') : null,
-    ]),
-    event.note ? h('p', { class: 'lead' }, event.note) : null,
-    actions([
-      leader && !event.cancelled && hasNeeds ? btn('Navrhnout lidi', () => proposeRest(id), 'primary') : null,
-      leader && !event.cancelled && previous && (previous.assignments || []).some((a) => a.status !== 'declined') && hasNeeds
-        ? btn('Obsadit jako minule', () => copyPeople(id)) : null,
-      leader ? btn('Upravit', () => eventDialog({ event })) : null,
-      btn('Do svého kalendáře', () => download(`${event.title}-${dayOf(event.start)}.ics`, ics(S.data, [{ event }], event.title), 'text/calendar'), 'plain'),
-    ]),
+    backLink(monthTitle(monthOf(event.start)), `#kalendar/${monthOf(event.start)}`),
+    h('div', { class: 'event-hero' }, coverOf(event, { size: 'hero' })),
+    pageHeader({
+      title: event.title,
+      lead: event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.' : null,
+      actions: [
+        icsButton,
+        open && previous && (previous.assignments || []).some((a) => a.status !== 'declined')
+          ? btn('Obsadit jako minule', () => copyPeople(id)) : null,
+        open && fill.state === 'open' ? btn('Navrhnout lidi', () => proposeRest(id)) : null,
+        leader ? btn('Upravit', () => eventDialog({ event: fresh(id) }), 'primary') : null,
+      ],
+    }),
+    facts(event, leader),
+    myAnswer(event),
     layout([
-      section('Kdo co dělá', planList(event, conflicts, leader)),
+      leader && conflicts.length ? warningsSection(event, conflicts, 'only-narrow') : null,
+      section('Kdo slouží', { count: fill.needed ? `${fill.filled} z ${fill.needed}` : null, id: 'kdo-slouzi' }, duties(event, conflicts, leader)),
       leader || (event.program || []).length ? programSection(event, previous, leader) : null,
     ], [
-      leader ? section(['Upozornění', conflicts.length ? count(String(conflicts.length)) : null],
-        conflicts.length
-          ? h('ul', { class: 'conflict-list' }, conflicts.map((c) => {
-            const other = (c.eventIds || []).find((x) => x !== id);
-            return conflictCard(c, { href: other ? `#setkani/${other}` : null, withEvent: !!other });
-          }))
-          : h('p', { class: 'all-ok' }, h('span', { class: 'bullseye', 'aria-hidden': 'true' }), 'Nikdo nebučí. Rozpis sedí.')) : null,
-      series.length > 1 ? section(['Předchozí a další', count(`${position + 1}. z ${series.length}`)],
-        h('div', { class: 'series-nav' },
-          series[position - 1] ? link(prettyDay(series[position - 1].start), `#setkani/${series[position - 1].id}`, 'btn small arrow-back') : null,
-          series[position + 1] ? link(`${prettyDay(series[position + 1].start)} →`, `#setkani/${series[position + 1].id}`, 'btn small') : null)) : null,
+      mapSection(event),
+      leader ? warningsSection(event, conflicts, 'only-wide') : null,
+      seriesSection(event),
     ]),
-    leader ? actions([
-      btn(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', () => cancelDialog(id), 'small plain'),
-      btn('Smazat', () => deleteDialog(id), 'small plain'),
-    ], { cls: 'spaced' }) : null,
   ];
 }
 
-/** Two columns when the right one has something, otherwise one. */
-function layout(left, right) {
-  const side = right.filter(Boolean);
-  return side.length ? h('div', { class: 'grid spaced' }, h('div', {}, left), h('div', {}, side)) : h('div', { class: 'spaced' }, left);
+/** The warnings of this event; a row leads to the other event of a clash. On narrow screens they go first. */
+function warningsSection(event, conflicts, cls) {
+  return section('Upozornění', { count: conflicts.length || null, cls: `event-warnings ${cls}` },
+    conflictList(sortConflicts(conflicts), {
+      hrefOf: (c) => { const other = (c.eventIds || []).find((x) => x !== event.id); return other ? `#setkani/${other}` : null; },
+      withEvent: false,
+      empty: h('p', { class: 'all-ok' }, statusIcon('confirmed'), 'Všechno sedí.'),
+    }));
 }
 
-// ---------- duties ----------
+const sortConflicts = (list_) => list_.slice().sort((a, b) => SEVERITY_WEIGHT[b.severity] - SEVERITY_WEIGHT[a.severity]);
 
-/** Worst severity per assignment id among the event's conflicts. */
-function assignmentSeverity(conflicts) {
+/** Two columns when the side has something, otherwise one. */
+function layout(main, side) {
+  const right = side.filter(Boolean);
+  return h('div', { class: ['event-layout', right.length && 'with-side'] },
+    h('div', { class: 'event-main' }, main), right.length ? h('aside', { class: 'event-side' }, right) : null);
+}
+
+/** When, where, the description, the note for the team, and whether it is on the web. */
+function facts(event, leader) {
+  const places = placesOf(event);
+  const edit = () => eventDialog({ event: fresh(event.id) });
+  return h('div', { class: 'event-facts' },
+    h('p', { class: 'event-when' }, `${capital(prettyDayLong(event.start))} · ${timeText(event)}`),
+    places.map((p) => h('p', { class: 'event-place' }, placeLine(p))),
+    event.description
+      ? h('p', { class: 'event-description' }, event.description)
+      : leader ? h('p', { class: 'event-description faint' }, 'Zatím bez popisu. ', textButton('Napsat popis', edit)) : null,
+    event.note ? h('p', { class: 'event-note' }, h('span', { class: 'label' }, 'Pro tým'), ' ', event.note) : null,
+    h('p', { class: 'event-public' },
+      h('span', { class: ['public-mark', event.public && 'on'], 'aria-hidden': 'true' }),
+      event.public ? 'Veřejné na webu' : 'Jen pro přihlášené',
+      leader ? [' · ', textButton('Změnit', edit)] : null));
+}
+
+/** My duties here that wait for my answer – right under the facts, so nobody has to look for them. */
+function myAnswer(event) {
+  const me = myId();
+  if (!me || event.cancelled) return null;
+  const waiting = (event.assignments || []).filter((a) => a.personId === me && a.status === 'proposed');
+  if (!waiting.length) return null;
+  return h('div', { class: 'notice my-answer' }, waiting.map((a) => {
+    const role = roleById(S.data, a.roleId)?.name || 'službu';
+    return h('div', { class: 'my-answer-row' },
+      h('p', {}, 'Počítáme s tebou: ', h('strong', {}, role), '. Můžeš?'),
+      h('span', { class: 'my-answer-buttons' },
+        btn('Potvrdit', () => setStatus(event.id, a.id, 'confirmed'), 'small primary'),
+        btn('Nemůžu', () => setStatus(event.id, a.id, 'declined'), 'small')));
+  }));
+}
+
+/** The map of the first place with coordinates (side column). */
+function mapSection(event) {
+  const place = placesOf(event).find((p) => placeMap(p));
+  return place ? section('Kde to je', h('p', { class: 'map-caption' }, placeLine(place)), placeMap(place)) : null;
+}
+
+/** Previous and next event of the series. */
+function seriesSection(event) {
+  const series = seriesOf(S.data, event);
+  if (series.length < 2) return null;
+  const at = series.indexOf(event);
+  const before = series[at - 1];
+  const after = series[at + 1];
+  return section('V řadě', { count: `${at + 1}. z ${series.length}` },
+    h('div', { class: 'series-links' },
+      before ? link(prettyDay(before.start), `#setkani/${before.id}`, 'btn small series-prev', { 'aria-label': `Předchozí: ${prettyDay(before.start)}` }) : null,
+      after ? link(prettyDay(after.start), `#setkani/${after.id}`, 'btn small series-next', { 'aria-label': `Další: ${prettyDay(after.start)}` }) : null));
+}
+
+// ---------- who serves ----------
+
+/** Worst severity and the reasons per assignment id among the event's conflicts. */
+function assignmentProblems(conflicts) {
   const map = new Map();
   for (const c of conflicts) {
     for (const aid of c.assignmentIds || []) {
-      const current = map.get(aid);
-      if (!current || SEVERITY_WEIGHT[c.severity] > SEVERITY_WEIGHT[current]) map.set(aid, c.severity);
+      const current = map.get(aid) || { severity: null, texts: [] };
+      if (c.severity !== 'info' && (!current.severity || SEVERITY_WEIGHT[c.severity] > SEVERITY_WEIGHT[current.severity])) current.severity = c.severity;
+      current.texts.push(c.text);
+      current.overridable = current.overridable || canOverride(c);
+      map.set(aid, current);
     }
   }
   return map;
 }
 
-function planList(event, conflicts, leader) {
+function duties(event, conflicts, leader) {
   const needs = needsOf(S.data, event, { withAssigned: true });
   if (!needs.length) {
-    return emptyState(leader ? 'Tohle setkání zatím nikoho nepotřebuje. Služby přidáš přes Upravit.' : 'Tohle setkání nikoho nepotřebuje.',
-      leader ? btn('Upravit', () => eventDialog({ event }), 'small') : null);
+    return emptyState(leader ? 'Tohle setkání zatím nikoho nepotřebuje.' : 'Tohle setkání nikoho nepotřebuje.',
+      leader ? btn('Určit, kolik lidí je potřeba', () => eventDialog({ event: fresh(event.id) }), 'small') : null);
   }
-  const compare = roleComparator(S.data);
-  needs.sort((a, b) => compare(a.roleId, b.roleId));
-  const severity = assignmentSeverity(conflicts);
-  const me = myId();
-  const list = h('ul', { class: 'plan' });
-  let team;
+  needs.sort((a, b) => roleComparator(S.data)(a.roleId, b.roleId));
+  const problems = assignmentProblems(conflicts);
+  const teams = [];
   for (const need of needs) {
     const role = roleById(S.data, need.roleId);
-    if (role?.groupId !== team) {
-      team = role?.groupId;
-      list.append(h('li', { class: 'team-heading' }, groupById(S.data, team)?.name || 'Ostatní'));   // a group label (.label look)
+    let team = teams[teams.length - 1];
+    if (!team || team.id !== (role?.groupId || null)) {
+      team = { id: role?.groupId || null, name: groupById(S.data, role?.groupId)?.name || 'Ostatní', needs: [] };
+      teams.push(team);
     }
-    const people = (event.assignments || []).filter((a) => a.roleId === need.roleId);
-    const active = people.filter((a) => a.status !== 'declined').length;
-    const empty = Math.max(0, (need.count || 0) - active);
-    const roleName = role?.name || 'Služba';
-    list.append(h('li', {},
-      h('span', { class: 'duty-name' }, roleName, h('small', {}, need.count ? `${active} z ${need.count}` : 'navíc')),
-      h('span', { class: 'slots' },
-        people.map((a) => slot(event, a, roleName, { leader, me, severity: severity.get(a.id), conflicts })),
-        Array.from({ length: empty }, () => (leader && !event.cancelled
-          ? h('button', { type: 'button', class: 'slot empty', onclick: () => pickFor(event.id, need.roleId), 'aria-label': `Vybrat člověka: ${roleName}` }, plus('Vybrat člověka'))
-          : h('span', { class: 'slot empty' }, 'zatím nikdo'))),
-        leader && !empty && !event.cancelled
-          ? h('button', { type: 'button', class: 'slot empty add-more', onclick: () => pickFor(event.id, need.roleId), 'aria-label': `Přidat dalšího: ${roleName}`, title: 'Přidat dalšího' }, plus('další')) : null),
-      h('span', {})));
+    team.needs.push(need);
   }
-  return [list, note(leader
-    ? 'Kurzívou jsou návrhy. Klikni na stav a přepneš ho, klikni na jméno a vyměníš člověka.'
-    : 'Kurzívou jsou návrhy. U svojí služby dej vědět, jestli můžeš.')];
+  return h('div', { class: 'duties' }, teams.map((team) => h('div', { class: 'duty-team' },
+    h('h3', { class: 'label' }, team.name),
+    h('ul', { class: 'duty-list' }, team.needs.map((need) => dutyRow(event, need, { leader, problems }))))));
 }
 
-function slot(event, a, roleName, { leader, me, severity, conflicts }) {
-  const person = personById(S.data, a.personId);
-  const name = displayName(person);
-  const mine = !!me && a.personId === me;
-  const statusLabel = ASSIGNMENT_STATUS_LABELS[a.status] || a.status;
-  if (!leader) {
-    return h('span', { class: ['slot', a.status, mine && 'mine'] },
-      h('span', { class: 'who' }, name),
-      mine && !event.cancelled ? statusChoice(event.id, a.id, name) : h('span', { class: 'status' }, statusLabel));
-  }
-  const why = conflicts.filter((c) => (c.assignmentIds || []).includes(a.id)).map((c) => c.text).join(' ');
-  return h('span', {
-    class: ['slot', a.status, severity === 'error' && 'error', severity === 'warning' && 'warning', mine && 'mine'],
-    title: why || null,
-  },
-  h('button', { type: 'button', class: 'who', title: 'Vyměnit', onclick: () => pickFor(event.id, a.roleId, a.id) }, name),
-  h('button', {
-    type: 'button', class: 'status', title: 'Přepnout stav: navrženo → potvrzeno → nemůže',
-    onclick: () => setStatus(event.id, a.id, NEXT_STATUS[a.status] || 'proposed', name),
-  }, statusLabel),
-  severity === 'error' || a.override ? h('button', {
-    type: 'button', class: 'status', title: a.override ? `V pořádku: ${a.override.reason}` : 'Vím o tom, půjde to i tak',
-    onclick: () => overrideDialog(a.id),
-  }, a.override ? 'v pořádku' : 'vím o tom') : null,
-  removeButton(`Odebrat: ${name}`, () => {
-    const e = fresh(event.id);
-    if (!e) return;
-    e.assignments = (e.assignments || []).filter((x) => x.id !== a.id);
-    change(`${name} pryč z ${roleName}`);
-  }));
+/** One role: name and „1 z 2“, then the people (full name + status) and the empty places. */
+function dutyRow(event, need, { leader, problems }) {
+  const role = roleById(S.data, need.roleId);
+  const roleName = role?.name || 'Služba';
+  const people = (event.assignments || []).filter((a) => a.roleId === need.roleId);
+  const active = people.filter((a) => a.status !== 'declined').length;
+  const empty = Math.max(0, (need.count || 0) - active);
+  const editable = leader && !event.cancelled;
+  const me = myId();
+  return h('li', { class: 'duty' },
+    h('div', { class: 'duty-head' },
+      h('span', { class: 'duty-role' }, roleName),
+      h('span', { class: ['duty-count', empty && 'missing'] }, need.count ? `${active} z ${need.count}` : 'navíc')),
+    h('div', { class: 'duty-people' },
+      people.map((a) => {
+        const problem = problems.get(a.id);
+        const mine = !!me && a.personId === me;
+        return assignee({
+          assignment: a,
+          person: personById(S.data, a.personId),
+          mine,
+          canEdit: editable,
+          onAnswer: mine && !event.cancelled ? (status) => setStatus(event.id, a.id, status) : null,
+          onEdit: () => pickFor(event.id, a.roleId, a.id),
+          onStatus: (status) => setStatus(event.id, a.id, status),
+          onOverride: problem?.overridable || a.override ? () => overrideDialog(a.id) : null,
+          overrideLabel: a.override ? 'Upravit důvod' : 'Vím o tom',
+          onRemove: () => removeAssignment(event.id, a.id),
+          tone: problem?.severity || null,
+          title: problem?.texts.join(' ') || (a.override ? `V pořádku: ${a.override.reason}` : null),
+          href: `#osoba/${a.personId}`,
+        });
+      }),
+      Array.from({ length: empty }, () => (editable
+        ? h('button', { type: 'button', class: 'slot-pick', onclick: () => pickFor(event.id, need.roleId) },
+          h('span', { class: 'slot-ring', 'aria-hidden': 'true' }), 'Vybrat člověka',
+          h('span', { class: 'visually-hidden' }, `: ${roleName}`))
+        : h('span', { class: 'slot-pick empty' }, h('span', { class: 'slot-ring', 'aria-hidden': 'true' }), 'zatím nikdo'))),
+      editable && !empty
+        ? h('p', { class: 'duty-more' }, textButton('Přidat dalšího', () => pickFor(event.id, need.roleId), { 'aria-label': `Přidat dalšího: ${roleName}` }))
+        : null));
 }
 
-/** A member answers their own duty: two clear buttons, or the answer and „změnit“. */
-function statusChoice(eventId, assignmentId, name) {
-  const e = fresh(eventId);
-  const a = e?.assignments.find((x) => x.id === assignmentId);
-  if (!a) return null;
-  if (a.status === 'proposed') {
-    return h('span', { class: 'status-choice' },
-      btn('Potvrdit', () => setStatus(eventId, assignmentId, 'confirmed', name), 'mini primary'),
-      btn('Nemůžu', () => setStatus(eventId, assignmentId, 'declined', name), 'mini'));
-  }
-  return h('span', { class: 'status-choice' },
-    h('span', { class: ['tag', a.status === 'confirmed' && 'filled'] }, ASSIGNMENT_STATUS_LABELS[a.status] || a.status),
-    btn('změnit', () => setStatus(eventId, assignmentId, 'proposed', name), 'mini plain'));
-}
-
-function setStatus(eventId, assignmentId, status, name) {
+function setStatus(eventId, assignmentId, status) {
   const a = fresh(eventId)?.assignments.find((x) => x.id === assignmentId);
   if (!a) return;
-  // a member may only answer their own duty
-  if (!can('leader') && a.personId !== myId()) return;
+  if (!can('leader') && a.personId !== myId()) return;   // a member answers only their own duty
   a.status = status;
-  change(`${name}: ${ASSIGNMENT_STATUS_LABELS[status]}`);
+  const role = roleById(S.data, a.roleId)?.name || 'službu';
+  change(`${nameOf(a.personId)} ${role}: ${ASSIGNMENT_STATUS_LABELS[status]}`);
+  if (a.personId === myId()) toast(status === 'confirmed' ? 'Díky, počítáme s tebou.' : status === 'declined' ? 'Dobře, vedoucí uvidí, že nemůžeš.' : 'Uloženo.');
 }
 
-/** Fill an empty slot (or replace `assignmentId`) through the shared picker. */
+function removeAssignment(eventId, assignmentId) {
+  const e = fresh(eventId);
+  const a = e?.assignments.find((x) => x.id === assignmentId);
+  if (!a) return;
+  e.assignments = e.assignments.filter((x) => x.id !== assignmentId);
+  const role = roleById(S.data, a.roleId)?.name || 'služby';
+  change(`${nameOf(a.personId)} pryč z ${role}`);
+  toast(`Odebráno: ${nameOf(a.personId)}.`, '', {
+    actionLabel: 'Vrátit',
+    action: () => { const again = fresh(eventId); if (again) { again.assignments.push(a); change(`${nameOf(a.personId)} zpátky na ${role}`); } },
+  });
+}
+
+/** Fill an empty place (or replace `assignmentId`) through the shared picker. */
 function pickFor(eventId, roleId, assignmentId) {
   const event = fresh(eventId);
   if (!event) return;
@@ -212,7 +269,7 @@ function pickFor(eventId, roleId, assignmentId) {
   const replacing = assignmentId ? event.assignments.find((a) => a.id === assignmentId) : null;
   const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && a.status !== 'declined').map((a) => a.personId);
   openPicker({
-    title: replacing ? `Vyměnit: ${displayName(personById(S.data, replacing.personId))}` : `Kdo na ${role?.name || 'službu'}?`,
+    title: replacing ? `Vyměnit: ${nameOf(replacing.personId)} (${role?.name || 'služba'})` : `Kdo na ${role?.name || 'službu'}?`,
     eventId,
     roleId,
     scope: 'skilled',
@@ -231,7 +288,7 @@ function pickFor(eventId, roleId, assignmentId) {
         e.assignments.push({ id: newId('a'), roleId, personId, status: 'proposed' });
       }
       closeDialog();
-      const name = displayName(personById(S.data, personId));
+      const name = nameOf(personId);
       change(`${name} na ${role?.name || 'službu'}`);
       // someone outside the team is fine (a guest preacher) – offer to add them if they'll do it again
       const team = role && groupById(S.data, role.groupId);
@@ -251,11 +308,11 @@ function proposeRest(eventId) {
   if (!event) return;
   const added = proposeRemaining(S.data, eventId, () => newId('a'), { today: today() });
   if (!added.length) {
-    toast('Není koho navrhnout.', 'Volní lidi došli, nebo je všechno obsazené.');
+    toast('Není koho navrhnout.', 'Kdo umí a má čas, už je zapsaný.');
     return;
   }
   change(`návrh lidí na ${event.title} ${prettyDay(event.start, false)}`);
-  toast(`Navrženo: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Jsou kurzívou, dokud nepotvrdí.');
+  toast(`Navrženo: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Čekají na potvrzení.');
 }
 
 function copyPeople(eventId) {
@@ -267,114 +324,102 @@ function copyPeople(eventId) {
     return;
   }
   change(`lidi z minula na ${event.title} ${prettyDay(event.start, false)}`);
-  toast(`Přidáno z minula: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Jsou kurzívou, dokud nepotvrdí.');
+  toast(`Z minula: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Čekají na potvrzení.');
 }
 
-// ---------- cancel / delete ----------
-
-/** Radio „jen tohle / i N dalších v řadě“ when the event has following ones. */
-function seriesChoice(event) {
-  const following = followingInSeries(S.data, event).length;
-  return following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null;
-}
-
-function cancelDialog(eventId) {
-  const event = fresh(eventId);
-  if (!event) return;
-  const restoring = !!event.cancelled;
-  const run = (form) => {
-    const e = fresh(eventId);
-    if (!e) return;
-    const following = !!form && checkedValues(form, 'scope')[0] === 'following';
-    const changed = cancelEvent(S.data, e, { following, cancelled: !restoring });
-    change(`${restoring ? 'obnoveno' : 'zrušeno'} ${e.title} ${prettyDay(e.start, false)}${changed.length > 1 ? ` (+${changed.length - 1})` : ''}`);
-    if (!restoring) toast('Zrušeno.', 'Lidi z rozpisu to uvidí v kalendáři. Dej jim vědět i jinak.');
-  };
-  const extra = seriesChoice(event);
-  if (!extra) { run(null); return; }
-  confirmDialog(restoring ? `Obnovit ${event.title} ${prettyDay(event.start, false)}?` : `Zrušit ${event.title} ${prettyDay(event.start, false)}?`,
-    restoring ? 'Setkání se vrátí do kalendáře i s lidmi, kteří na něm byli.' : 'Setkání zůstane v kalendáři přeškrtnuté a lidi v něm zůstanou zapsaní.',
-    run, { buttonLabel: restoring ? 'Obnovit' : 'Zrušit setkání', extra });
-}
-
-function deleteDialog(eventId) {
-  const event = fresh(eventId);
-  if (!event) return;
-  confirmDialog(`Smazat ${event.title} ${prettyDay(event.start, false)}?`,
-    'Lidi z rozpisu se o tom nedozví. Když to jen odpadá, je lepší „Zrušit setkání“.',
-    (form) => {
-      const e = fresh(eventId);
-      if (!e) return;
-      const following = checkedValues(form, 'scope')[0] === 'following';
-      const removed = deleteEvent(S.data, e, { following });
-      navigate(`#kalendar/${monthOf(e.start)}`);
-      change(`smazáno ${e.title} ${prettyDay(e.start, false)}${removed.length > 1 ? ` (+${removed.length - 1})` : ''}`);
-      toast('Smazáno.');
-    }, { extra: seriesChoice(event) });
-}
-
-// ---------- program ----------
+// ---------- osnova ----------
 
 function programSection(event, previous, leader) {
+  const id = event.id;
   const times = programTimes(event);
   const total = programDuration(event);
   const length = eventDuration(event);
-  const formats = S.data.formats || [];
-  const id = event.id;
-  const edit = () => change(`osnova ${prettyDay(event.start, false)}`);
+  const edited = () => change(`osnova ${prettyDay(fresh(id)?.start || event.start, false)}`);
 
-  const list = h('ol', { class: 'program' }, times.map(({ item, start }) => {
+  const items = list(times, ({ item, start }) => {
     const format = formatById(S.data, item.formatId);
-    const leaders = itemLeaders(S.data, event, item).map((pid) => displayName(personById(S.data, pid)));
-    const sub = [leaders.length ? leaders.join(', ') : (format?.leadRoleId || item.personId ? 'vede: zatím nikdo' : ''), item.note].filter(Boolean).join(' · ');
-    return h('li', {},
-      leader ? dragHandle(item.id, `Přesunout: ${itemName(S.data, item)}`) : null,
-      h('span', { class: 'when' }, prettyTime(start)),
-      h('button', {
-        type: 'button', class: 'what',
-        onclick: leader ? () => itemDialog(id, item.id) : () => openFormatInfo(item.formatId),
-        title: leader ? 'Upravit bod' : 'Proč a jak',
-      }, h('span', { class: 'item-name' }, itemName(S.data, item)), sub ? h('small', {}, sub) : null),
-      h('span', { class: 'minutes' }, `${item.minutes} min`),
-      leader ? h('span', { class: 'move' },
-        removeButton(`Odebrat: ${itemName(S.data, item)}`, () => {
-          const e = fresh(id);
-          if (!e) return;
-          e.program = (e.program || []).filter((x) => x.id !== item.id);
-          edit();
-        })) : h('span', {}));
-  }));
+    const leaders = itemLeaders(S.data, event, item).map(nameOf);
+    const who = leaders.length ? leaders.join(', ') : format?.leadRoleId || item.personId ? 'vede: zatím nikdo' : '';
+    const info = !leader && format && (format.why || format.how);
+    return row({
+      lead: [leader ? dragHandle(item.id, `Přesunout: ${itemName(S.data, item)}`) : null,
+        h('span', { class: 'program-time' }, prettyTime(start))],
+      title: itemName(S.data, item),
+      meta: [who, item.note].filter(Boolean).join(' · ') || null,
+      trail: `${item.minutes} min`,
+      onclick: leader ? () => itemDialog(id, item.id) : info ? () => formatInfo(format.id) : undefined,
+      label: leader ? `Upravit: ${itemName(S.data, item)}` : null,
+      cls: 'program-row',
+    });
+  }, { cls: 'program-items', label: 'Osnova' });
+  if (leader && items) {
+    sortable(items, (from, to) => { const e = fresh(id); if (e && moveInArray(e.program || [], from, to)) edited(); });
+    keepCapture(items);
+  }
 
-  const add = h('div', { class: 'tags add-format' }, formats.map((f) => h('button', {
-    type: 'button', class: 'tag', title: `${f.minutes} min`,
-    onclick: () => {
+  const takePrevious = () => {
+    const run = () => {
       const e = fresh(id);
-      if (!e) return;
-      addFormat(S.data, e, f.id, newId);
-      change(`${f.name} do osnovy ${prettyDay(e.start, false)}`);
-    },
-  }, `+ ${f.name}`)));
+      const p = previousEvent(S.data, id);
+      if (!e || !p) return;
+      copyProgram(S.data, e, p.program, newId);
+      change(`osnova z minula ${prettyDay(e.start, false)}`);
+    };
+    if ((fresh(id)?.program || []).length) confirmDialog('Nahradit osnovu?', 'Současná osnova zmizí a místo ní bude ta z minula.', run, { buttonLabel: 'Nahradit' });
+    else run();
+  };
 
-  if (leader) sortable(list, (from, to) => { const e = fresh(id); if (e && moveInArray(e.program || [], from, to)) edit(); });
+  return section('Osnova', {
+    count: times.length ? `${total} z ${length} min` : null,
+    actions: [
+      times.length ? link('Na papír a plátno', `#setkani/${id}/osnova`, 'btn small plain') : null,
+      leader && previous && (previous.program || []).length ? btn('Převzít minulou', takePrevious, 'small plain') : null,
+      leader ? btn(plus('Přidat bod'), () => addItemDialog(id), 'small') : null,
+    ],
+  },
+  items || (leader
+    ? emptyState('Osnova je zatím prázdná. Slož ji z formátů – časy se dopočítají samy.', btn(plus('Přidat bod'), () => addItemDialog(id), 'small'))
+    : note('Osnova ještě není.')),
+  leader && times.length && total > length
+    ? h('p', { class: 'program-over' }, h('span', { class: 'sev-dot warning', 'aria-hidden': 'true' }), `Osnova je o ${total - length} min delší než setkání.`)
+    : null);
+}
 
-  return section(['Osnova', count(times.length ? `${total} z ${length} min` : '')],
-    times.length ? list : note(leader ? 'Osnova je zatím prázdná. Slož ji z formátů níž – časy se dopočítají samy.' : 'Osnova ještě není.'),
-    leader && times.length && total > length ? h('p', { class: 'form-error error-fill' }, `Osnova přetéká o ${total - length} min.`) : null,
-    !leader ? null : formats.length ? add : note('Formáty (Kázání, Otázky na tělo, Večeře Páně…) si založ v Nastavení.'),
-    actions([
-      times.length ? link('Osnova na papír a plátno', `#setkani/${id}/osnova`, 'btn small') : null,
-      leader && previous && (previous.program || []).length ? btn('Převzít minulou osnovu', () => {
-        const run = () => {
-          const e = fresh(id);
-          const p = previousEvent(S.data, id);
-          if (!e || !p) return;
-          copyProgram(S.data, e, p.program, newId);
-          change(`osnova z minula ${prettyDay(e.start, false)}`);
-        };
-        if ((event.program || []).length) confirmDialog('Nahradit osnovu?', 'Současná osnova zmizí a místo ní bude ta z minula.', run, { buttonLabel: 'Nahradit' });
-        else run();
-      }, 'small') : null,
-    ]));
+/**
+ * sortable.js moves the dragged <li> with insertBefore(); taking the node out of the document drops
+ * the pointer capture of its handle in Chromium, and the drag would stop half way. Take it back.
+ */
+function keepCapture(listEl) {
+  listEl.addEventListener('lostpointercapture', (e) => {
+    const handle = e.target.closest?.('.drag-handle');
+    if (!handle || !handle.isConnected || !listEl.classList.contains('sorting')) return;
+    try { handle.setPointerCapture(e.pointerId); } catch { /* the button is up already */ }
+  });
+}
+
+/** Pick a format to add at the end of the osnova. */
+function addItemDialog(eventId) {
+  const formats = S.data.formats || [];
+  const add = (format) => {
+    const e = fresh(eventId);
+    if (!e) return;
+    addFormat(S.data, e, format.id, newId);
+    closeDialog();
+    change(`${format.name} do osnovy ${prettyDay(e.start, false)}`);
+  };
+  openDialog(h('div', { class: 'inner' },
+    h('h2', {}, 'Přidat bod do osnovy'),
+    list(formats, (f) => row({
+      title: f.name,
+      meta: [f.leadRoleId ? `vede ${roleById(S.data, f.leadRoleId)?.name || '?'}` : null, f.why ? f.why.split(/(?<=[.!?])\s/)[0] : null].filter(Boolean).join(' · ') || null,
+      trail: `${f.minutes || 10} min`,
+      onclick: () => add(f),
+      label: `Přidat: ${f.name}`,
+    }), {
+      cls: 'in-dialog',
+      empty: emptyState('Zatím tu nejsou žádné formáty.', link('Na Formáty', '#formaty', 'btn small', { onclick: closeDialog })),
+    }),
+    h('div', { class: 'actions' }, btn('Zavřít', closeDialog))));
 }
 
 /**
@@ -388,10 +433,8 @@ function itemDialog(eventId, itemId, draft) {
   const format = formatById(S.data, item.formatId);
   const d = draft || { title: item.title || '', minutes: item.minutes, personId: item.personId || '', note: item.note || '' };
   const roleName = format?.leadRoleId ? roleById(S.data, format.leadRoleId)?.name : '';
-  const byRole = itemLeaders(S.data, event, { formatId: item.formatId }).map((pid) => displayName(personById(S.data, pid)));
-  const readForm = (f) => ({
-    title: f.title.value.trim(), minutes: f.minutes.value, personId: d.personId, note: f.note.value.trim(),
-  });
+  const byRole = itemLeaders(S.data, event, { formatId: item.formatId }).map(nameOf);
+  const readForm = (f) => ({ title: f.title.value.trim(), minutes: f.minutes.value, personId: d.personId, note: f.note.value.trim() });
 
   let form;
   const choosePerson = () => {
@@ -409,26 +452,26 @@ function itemDialog(eventId, itemId, draft) {
       },
     });
   };
-
   const keep = (personId) => { const kept = readForm(form.elements); kept.personId = personId; itemDialog(eventId, itemId, kept); };
-  // who leads: the picked person, or the default from the format's role
+
+  // who leads: the picked person, or whoever has the format's role
   const who = d.personId
-    ? [fullName(personById(S.data, d.personId)), h('span', { class: 'faint' }, ' · '),
-      textButton('zrušit výběr', () => keep(''), { class: 'text-btn faint', title: roleName ? `Povede ten, kdo má roli ${roleName}` : 'Nepovede nikdo' })]
-    : roleName
-      ? [byRole.length ? `${byRole.join(', ')} ` : 'zatím nikdo ', h('span', { class: 'faint' }, `(podle role ${roleName})`)]
-      : h('span', { class: 'faint' }, 'nikdo');
+    ? h('span', { class: 'leader-name' }, nameOf(d.personId))
+    : h('span', { class: 'leader-name' }, roleName
+      ? [byRole.length ? byRole.join(', ') : 'zatím nikdo', h('span', { class: 'faint' }, ` · podle role ${roleName}`)]
+      : h('span', { class: 'faint' }, 'nikdo'));
   form = simpleDialog({
+    eyebrow: `Osnova · ${event.title} ${prettyDay(event.start)}`,
     title: itemName(S.data, item),
-    sub: format && (format.why || format.how) ? textButton('Proč a jak', () => openFormatInfo(format.id)) : null,
+    sub: format && (format.why || format.how) ? textButton('Proč a jak', () => formatInfo(format.id)) : null,
     wide: false,
     fields: [
-      h('div', { class: 'field-row full' },
-        textField('title', 'Název', d.title, { attr: { placeholder: format?.name || '' } }),
-        textField('minutes', 'Minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } })),
-      fieldGroup('Kdo vede', h('div', { class: 'leader-pick' },
-        h('span', { class: 'leader-name' }, who),
-        btn('Vybrat', choosePerson, 'small'))),
+      textField('title', 'Název', d.title, { attr: { placeholder: format?.name || '' } }),
+      textField('minutes', 'Minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } }),
+      fieldGroup('Kdo vede', h('div', { class: 'leader-pick' }, who,
+        h('span', { class: 'leader-tools' },
+          d.personId ? textButton(roleName ? `Podle role ${roleName}` : 'Nikdo', () => keep('')) : null,
+          btn(d.personId ? 'Vybrat jiného' : 'Vybrat', choosePerson, 'small')))),
       textField('note', 'Poznámka', d.note, { full: true, attr: { placeholder: 'tónina, text, kdo podá mikrofon…' } }),
     ],
     save: (f) => {
