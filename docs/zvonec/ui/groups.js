@@ -112,7 +112,7 @@ export function renderGroups() {
   const archived = groups.filter((g) => g.archived).sort(byName);
   const other = active.filter((g) => !GROUP_KINDS.includes(g.kind)).sort(byName);
   return [
-    pageHeader('kdo co dělá', 'Skupiny', 'Týmy slouží na setkáních a z jejich rolí se skládá rozpis. Skupinky a vedení jsou lidé, kteří k sobě patří.'),
+    pageHeader('kdo co dělá', 'Skupiny', 'Týmy slouží na setkáních a z jejich rolí se skládá rozpis. Ve skupinkách a ve vedení jsou lidé, kteří se pravidelně scházejí.'),
     actions(btn(plus('Přidat skupinu'), () => groupDialog(), 'primary small')),
     rule(),
     groups.length ? null : emptyState('Zatím žádná skupina.', 'Začni třeba týmem Technika nebo středeční skupinkou.', btn('Přidat skupinu', () => groupDialog(), 'primary')),
@@ -188,7 +188,8 @@ export function renderGroup(id) {
   const leaders = leadersOf(S.data, group.id);
   return [
     backLink('Skupiny', '#skupiny'),
-    pageHeader([GROUP_KIND_LABELS[group.kind] || 'skupina', group.archived ? ' · v archivu' : ''], group.name, group.description, { smaller: group.name.length > 16 }),
+    pageHeader([GROUP_KIND_LABELS[group.kind] || 'skupina', group.archived ? ' · v archivu' : ''], group.name, group.description
+      || (team ? 'Role týmu a kdo co umí. Podle toho Zvonec nabízí lidi do rozpisu.' : 'Kdo do skupiny patří a kdo ji vede.'), { smaller: group.name.length > 16 }),
     meta([
       ['vede', leaders.length ? leaders.map((m, i) => [i ? ', ' : '', link(fullName(personById(S.data, m.personId)), `#osoba/${m.personId}`)]) : 'zatím nikdo'],
       people(members.length),

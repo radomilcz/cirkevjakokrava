@@ -421,10 +421,10 @@ input[type=search]::-webkit-search-cancel-button:hover{opacity:1}
 .field small{color:var(--muted);font-size:.85em}
 input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea{
   width:100%;min-width:0;padding:.72em 1.05em .58em;border:1px solid var(--outline);border-radius:999px;
-  background:rgba(var(--ink-rgb),.06);color:var(--ink);outline:none;transition:border-color .2s,background .2s;
+  background-color:rgba(var(--ink-rgb),.06);color:var(--ink);outline:none;transition:border-color .2s,background-color .2s;
 }
 textarea{border-radius:18px;min-height:5.5em;resize:vertical;line-height:1.4}
-input:focus,select:focus,textarea:focus{border-color:var(--ink);background:rgba(var(--ink-rgb),.1)}
+input:focus,select:focus,textarea:focus{border-color:var(--ink);background-color:rgba(var(--ink-rgb),.1)}   /* background-color only: the select arrow is a background image */
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:.85}
 input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{cursor:pointer}   /* the icon colour follows the palette color-scheme */
 select{
@@ -804,3 +804,100 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 .stepper-btn:hover{background:var(--hover)}
 .stepper-btn::before,.stepper-btn.up::after{content:"";grid-area:1/1;width:40%;height:1.5px;border-radius:1px;background:currentColor}
 .stepper-btn.up::after{transform:rotate(90deg)}
+
+/* drop-downs (ui/select.js): pill button + rounded list; the native <select> stays hidden in the form */
+.select{display:block;min-width:0}
+.select>select{display:none}
+.select .select-btn{font-size:inherit}
+.select-btn{
+  display:flex;align-items:center;justify-content:space-between;gap:.8em;width:100%;min-width:0;text-align:left;cursor:pointer;
+  padding:.72em 1.05em .58em;border:1px solid var(--outline);border-radius:999px;
+  background-color:rgba(var(--ink-rgb),.06);color:var(--ink);transition:border-color .2s,background-color .2s;
+}
+.select-btn:hover{border-color:rgba(var(--ink-rgb),.8)}
+.select-btn:focus-visible,.select-btn[aria-expanded="true"]{outline:none;border-color:var(--ink);background-color:rgba(var(--ink-rgb),.1)}
+.select-btn:disabled{opacity:.5;cursor:default}
+.select-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.select-btn::after{
+  content:"";flex:none;width:.45em;height:.45em;margin:-.25em .15em 0 0;
+  border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);
+}
+.select-btn[aria-expanded="true"]::after{margin-top:.2em;transform:rotate(-135deg)}
+.select-list{
+  position:fixed;z-index:60;margin:0;padding:6px;list-style:none;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--ground);color:var(--ink);border:1px solid var(--outline);border-radius:22px;
+  box-shadow:0 14px 40px -12px rgba(0,0,0,.35);outline:none;
+}
+.select-option{padding:.6em .95em .48em;border-radius:999px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.select-option.active{background:var(--hover)}
+.select-option[aria-selected="true"]{background:var(--ink);color:var(--ground)}
+.select-option[aria-disabled="true"]{opacity:.4;cursor:default}
+.select-heading{padding:.8em .95em .3em;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.72rem;color:var(--muted)}
+.program select,.program .select{width:auto;max-width:100%}
+
+/* date fields (ui/datepicker.js): pill button with the Czech date + our own calendar */
+.date{display:block;min-width:0}
+.date>input{display:none}
+.date .date-btn{font-size:inherit}
+.date-btn{
+  display:flex;align-items:center;justify-content:space-between;gap:.8em;width:100%;min-width:0;text-align:left;cursor:pointer;
+  padding:.72em 1.05em .58em;border:1px solid var(--outline);border-radius:999px;
+  background-color:rgba(var(--ink-rgb),.06);color:var(--ink);transition:border-color .2s,background-color .2s;
+}
+.date-btn:hover{border-color:rgba(var(--ink-rgb),.8)}
+.date-btn:focus-visible,.date-btn[aria-expanded="true"]{outline:none;border-color:var(--ink);background-color:rgba(var(--ink-rgb),.1)}
+.date-btn.placeholder .date-value{color:var(--muted)}
+.date-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.date-icon{flex:none;width:1em;height:.95em;border:1.5px solid currentColor;border-top-width:3.5px;border-radius:3px;margin-top:-.15em}
+.date-panel{
+  position:fixed;z-index:60;width:min(320px,calc(100vw - 24px));padding:14px;
+  background:var(--ground);color:var(--ink);border:1px solid var(--outline);border-radius:22px;
+  box-shadow:0 14px 40px -12px rgba(0,0,0,.35);
+}
+.date-head{display:flex;align-items:center;justify-content:space-between;gap:.5em;margin:0 0 .6em}
+.date-title{margin:0;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.03em;font-size:1rem}
+.date-nav{
+  display:inline-grid;place-items:center;width:2.2em;height:2.2em;padding:0;cursor:pointer;
+  border:1px solid var(--outline);border-radius:50%;background:none;color:inherit;
+}
+.date-nav:hover{background:var(--hover)}
+.date-nav::before{content:"";width:.45em;height:.45em;border-left:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateX(.1em) rotate(45deg)}
+.date-nav.next::before{transform:translateX(-.1em) rotate(-135deg)}
+.date-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.date-dow{text-align:center;font-size:.75rem;color:var(--muted);padding:.2em 0 .4em}
+.date-day{
+  aspect-ratio:1;display:grid;place-items:center;padding:0;border:1px solid transparent;border-radius:50%;
+  background:none;color:inherit;cursor:pointer;font-size:.92em;
+}
+.date-day.weekend,.date-dow.weekend{font-weight:700}
+.date-day:hover,.date-day:focus-visible{outline:none;background:var(--hover)}
+.date-day.today{border-color:var(--ink)}
+.date-day[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.date-day:disabled{opacity:.3;cursor:default;background:none}
+.date-foot{display:flex;gap:.4em;justify-content:space-between;margin-top:.7em}
+/* the enhanced controls are spans inside .field – they must not look like the field's label */
+.field>span.select,.field>span.date,.field>span.stepper{font-size:inherit;opacity:1}
+
+/* lead under the month navigation (calendar, roster): the nav already makes the gap above */
+.month-nav + .lead{margin:0 0 clamp(14px,2vw,22px)}
+
+/* drag to reorder (ui/sortable.js): ⠿ grip in front of every item */
+.program.sortable>li{grid-template-columns:2em 3.4em minmax(0,1fr) auto auto}
+.program-editor.sortable>li{grid-template-columns:2em 2.2em minmax(0,1fr) auto auto}
+.drag-handle{
+  width:2em;height:2.4em;padding:0;border:0;border-radius:10px;cursor:grab;touch-action:none;color:inherit;opacity:.55;
+  background:radial-gradient(circle,currentColor 1.4px,transparent 1.8px) center/8px 8px no-repeat content-box;
+  background-image:radial-gradient(circle,currentColor 1.3px,transparent 1.7px);background-size:7px 7px;background-position:center;
+  background-repeat:repeat;background-origin:content-box;padding:.55em .5em;
+}
+.drag-handle:hover,.drag-handle:focus-visible{opacity:1;background-color:var(--hover);outline:none}
+.sortable.sorting,.sortable.sorting *{cursor:grabbing;user-select:none}
+.sortable>li.dragging{
+  position:relative;z-index:2;background:var(--ground);border-radius:14px;
+  box-shadow:0 10px 26px -10px rgba(0,0,0,.45);border-top-color:transparent;
+}
+.sortable>li.dragging .drag-handle{opacity:1}
+@media (max-width:620px){
+  .program-editor.sortable>li{grid-template-columns:2em 2.2em minmax(0,1fr) auto}
+  .program-editor.sortable .move{grid-column:3/-1}
+}

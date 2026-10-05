@@ -22,7 +22,7 @@ export const CODES = {
   K3: 'Nemá čas',
   K4: 'Neumí',
   K4b: 'Zaučuje se',
-  K5: 'Neobsazeno',
+  K5: 'Chybí lidi',
   K6: 'Nepotvrzeno',
   K7: 'Moc služeb v měsíci',
   K8: 'Neděle po sobě',
@@ -59,7 +59,7 @@ function inactiveText(data, person) {
  */
 export function findConflicts(data, { today } = {}) {
   today = today || todayLocal();
-  const { essentialDaysBefore, unconfirmedDaysBefore, childAge } = rules(data);
+  const { essentialDaysBefore, unconfirmedDaysBefore, openDaysBefore, childAge } = rules(data);
   const child = (p) => isChild(p, today, childAge);
   const people = index(data.people);
   const roles = index(data.roles);
@@ -132,15 +132,9 @@ export function findConflicts(data, { today } = {}) {
         });
       }
 
+      // Someone outside the team (a guest preacher, a stand-in) is the leader's choice, not a problem.
       const level = skillLevel(data, personId, s.role, members);
-      if (!level) {
-        const team = groups.get(s.role?.groupId)?.name;
-        add({
-          key: `K4:${s.assignment.id}`, code: 'K4', severity: 'error',
-          eventId: s.event.id, personId, assignments: [s.assignment],
-          text: `${who} nemá ${team ? `v týmu ${team} ` : ''}roli ${s.role?.name || '?'}. Umí to, nebo je to omyl?`,
-        });
-      } else if (level === 'learning') {
+      if (level === 'learning') {
         const experienced = (s.event.assignments || []).some((a) => isActive(a) && a.roleId === s.assignment.roleId
           && a.personId && a.personId !== personId && skillLevel(data, a.personId, s.role, members) === 'trained');
         if (!experienced) {
@@ -239,22 +233,32 @@ export function findConflicts(data, { today } = {}) {
     const needs = needsOf(data, e);
     const ownNeed = (roleId) => (e.needs || []).some((n) => n.roleId === roleId);
 
+    // K5 – empty roles, one card per event and kind. A freshly created event is not a problem yet:
+    // essential roles start to count 2× essentialDaysBefore ahead (error from essentialDaysBefore),
+    // the others openDaysBefore ahead.
+    const gaps = { essential: [], other: [] };
     for (const need of upcoming ? needs : []) {   // gaps in the past no longer hurt anyone
       const role = roles.get(need.roleId);
       if (!role && !ownNeed(need.roleId)) continue;   // a format leads with a deleted role – K17 says it
       const count = Number(need.count) || 0;
       const have = assignments.filter((a) => a.roleId === need.roleId && isActive(a) && a.personId).length;
       const missing = count - have;
-      if (missing > 0) {
-        const urgent = role?.essential && daysUntil <= essentialDaysBefore;
-        add({
-          key: `K5:${e.id}:${need.roleId}`, code: 'K5', severity: urgent ? 'error' : 'warning', eventId: e.id,
-          roleId: need.roleId,
-          text: missing === 1 && count === 1
-            ? `${role?.name || 'Služba'}: zatím nikdo.`
-            : `${role?.name || 'Služba'}: chybí ${missing} z ${count}.`,
-        });
-      }
+      if (missing > 0) gaps[role?.essential ? 'essential' : 'other'].push({ roleId: need.roleId, name: role?.name || 'Služba', missing });
+    }
+    const listGaps = (list) => list.map((g) => (g.missing > 1 ? `${g.name} (${g.missing})` : g.name)).join(', ');
+    if (gaps.essential.length && daysUntil <= 2 * essentialDaysBefore) {
+      add({
+        key: `K5:${e.id}:essential`, code: 'K5', severity: daysUntil <= essentialDaysBefore ? 'error' : 'warning', eventId: e.id,
+        roleIds: gaps.essential.map((g) => g.roleId), roleId: gaps.essential[0].roleId,
+        text: `Bez tohohle to nepůjde: ${listGaps(gaps.essential)}.`,
+      });
+    }
+    if (gaps.other.length && daysUntil <= openDaysBefore) {
+      add({
+        key: `K5:${e.id}:other`, code: 'K5', severity: 'warning', eventId: e.id,
+        roleIds: gaps.other.map((g) => g.roleId), roleId: gaps.other[0].roleId,
+        text: `Ještě chybí: ${listGaps(gaps.other)}.`,
+      });
     }
 
     if (upcoming && daysUntil <= unconfirmedDaysBefore) {
@@ -314,10 +318,11 @@ export function findConflicts(data, { today } = {}) {
       const adults = new Set(assignments
         .filter((a) => isActive(a) && a.personId && roles.get(a.roleId)?.childcare && !child(people.get(a.personId)))
         .map((a) => a.personId));
-      if (adults.size < 2) {
+      const withKids = assignments.some((a) => isActive(a) && a.personId && roles.get(a.roleId)?.childcare);
+      if (withKids && adults.size < 2) {   // nobody there at all is an empty role (K5), not this
         add({
           key: `K12:${e.id}`, code: 'K12', severity: 'warning', eventId: e.id,
-          text: `U dětí ${adults.size ? 'je jen jeden dospělý' : 'zatím není žádný dospělý'}. Mají tam být aspoň dva.`,
+          text: `U dětí ${adults.size ? 'je jen jeden dospělý' : 'není žádný dospělý'}. Mají tam být aspoň dva.`,
         });
       }
     }

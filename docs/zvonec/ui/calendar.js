@@ -108,6 +108,9 @@ export function renderCalendar(month) {
       shown !== monthOf(now) ? link('Dnes', '#kalendar', 'btn small plain') : null,
       h('span', { class: 'right' },
         leader ? btn(plus('Přidat setkání'), () => eventDialog({ day: firstDay }), 'primary small') : null)),
+    h('p', { class: 'lead' }, leader
+      ? 'Všechna setkání v měsíci. Barva hned ukáže, kde v rozpisu něco chybí. Klikni na den a přidáš setkání.'
+      : 'Co se ve sboru chystá, měsíc po měsíci. Klikni na setkání a uvidíš, kdo tam slouží a jak půjde program.'),
     h('ul', { class: 'legend', 'aria-label': 'Co znamenají barvy' },
       leader ? h('li', {}, h('span', { class: 'swatch error-fill' }), 'chyba v rozpisu') : null,
       h('li', {}, h('span', { class: 'swatch' }), 'v pořádku'),
@@ -214,8 +217,8 @@ export function eventDialog({ day, event } = {}) {
       !editing && types.length ? selectField('type', 'Podle šablony', [['', '— bez šablony —'], ...types.map((t) => [t.id, t.name])], '', {
         full: true, attr: { onchange: (e) => applyType(e.target.value) }, hint: 'Vyplní název, čas, místo, služby i osnovu. Pak to můžeš upravit.',
       }) : null,
-      textField('title', 'Název', base.title, { full: true, attr: { required: true, placeholder: 'Setkání na pastvě', autofocus: true } }),
-      selectField('kind', 'Druh', EVENT_KINDS.map((k) => [k, EVENT_KIND_LABELS[k]]), base.kind),
+      textField('title', 'Název setkání', base.title, { full: true, attr: { required: true, placeholder: 'Setkání na pastvě', autofocus: true } }),
+      selectField('kind', 'Účel', EVENT_KINDS.map((k) => [k, EVENT_KIND_LABELS[k]]), base.kind),
       textField('day', 'Den', dayOf(base.start), { type: 'date', attr: { required: true } }),
       textField('from', 'Od', timeOf(base.start), { type: 'time', attr: { required: true } }),
       textField('to', 'Do', timeOf(base.end), { type: 'time', attr: { required: true } }),
@@ -223,7 +226,7 @@ export function eventDialog({ day, event } = {}) {
       !editing ? selectField('repeat', 'Opakovat', RECURRENCE, '') : null,
       !editing ? textField('until', 'Opakovat do', addMonths(dayOf(base.start), 3), { type: 'date' }) : null,
       fieldGroup('Kolik lidí je potřeba', editor.element,
-        h('small', {}, 'Služby, které potřebuje osnova (třeba u Večeře Páně), Zvonec přidá sám.')),
+        h('small', {}, 'Zvonec sám přidá služby, které potřebuje osnova (třeba u Večeře Páně).')),
       textArea('note', 'Poznámka', base.note || '', { attr: { rows: 2 } }),
       following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null),
     formErrorLine(),

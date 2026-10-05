@@ -59,7 +59,7 @@ export function renderLogin(message) {
     await signedIn(result);
   });
   return [
-    pageHeader('pastva', 'Zvonec', 'Kdo co kdy dělá. Přihlas se svým jménem a heslem.'),
+    pageHeader('pastva', 'Zvonec', 'Kdo kdy slouží a co se ve sboru chystá. Přihlas se svým jménem a heslem.'),
     rule(),
     h('div', { class: 'narrow' }, form),
   ];
@@ -134,7 +134,7 @@ export function renderSetup() {
     }
   });
   return [
-    pageHeader('první krok', 'Založit Zvonec', 'Tady ještě nikdo není. Vlož GitHub klíč k datovému repu a zapiš se jako správce. Klíč pak Zvonec schová pod hesla a nikdo další ho znát nemusí.'),
+    pageHeader('první krok', 'Založit Zvonec', 'Zvonec tu zatím nikoho nemá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.'),
     rule(),
     h('div', { class: 'grid' },
       form,
@@ -142,7 +142,7 @@ export function renderSetup() {
         h('li', {}, h('span', {}, 'Na GitHubu: Settings → Developer settings → Fine-grained tokens → Generate new token.')),
         h('li', {}, h('span', {}, 'Repository access: ', h('em', {}, 'Only select repositories'), ' → jen datové repo.')),
         h('li', {}, h('span', {}, 'Permissions → Repository → ', h('strong', {}, 'Contents: Read and write'), '. Nic víc. Platnost klidně rok.')),
-        h('li', {}, h('span', {}, 'Klíč vlož sem. Kdyby se ztratil nebo vypršel, v Nastavení ho vyměníš všem najednou.')))),
+        h('li', {}, h('span', {}, 'Klíč vlož sem. Zvonec ho schová pod hesla, nikdo další ho znát nemusí. Kdyby se ztratil nebo vypršel, v Nastavení ho vyměníš všem najednou.')))),
   ];
 }
 
@@ -153,7 +153,7 @@ export async function renderInvite(code) {
   S.screen = () => pageHeader('pozvánka', 'Vítej', 'Otevírám pozvánku…');
   render();
   const invalid = (text) => {
-    S.screen = () => [pageHeader('pozvánka', 'Pozvánka neplatí'), emptyState('Tudy ne.', text, link('Přihlásit se', '#', 'btn'))];
+    S.screen = () => [pageHeader('pozvánka', 'Pozvánka neplatí', 'S touhle pozvánkou se dovnitř nedostaneš.'), emptyState('Tudy ne.', text, link('Přihlásit se', '#', 'btn'))];
     render();
   };
   const invite = await signIn(S.logins, INVITE_NAME, code);
@@ -268,7 +268,7 @@ export function passwordDialog({ title, text, rows }) {
     h('ul', { class: 'overview' }, rows.map(([label, value]) => h('li', { class: 'plain' },
       h('span', { class: 'grow' }, h('span', { class: 'faint' }, `${label}: `), h('strong', { class: 'secret' }, value)),
       copyButton(value)))),
-    note('Nikde se to neukládá, po zavření už to neuvidíš. Fungovat to začne za pár minut.'),
+    note('Heslo se nikde neukládá, po zavření ho už neuvidíš. Přihlášení začne fungovat za pár minut.'),
     actions(btn('Hotovo', closeDialog, 'primary'))));
 }
 
@@ -351,13 +351,13 @@ export function personLoginSection(person) {
   const invite = loginList().find((l) => l.personId === person.id && l.access === 'invite');
   const self = person.id === myId();
   const level = existing ? ACCESS_LABELS[existing.access] || existing.access : '';
-  return section('Přístup do Zvonce',
+  return section('Přihlášení do Zvonce',
     note(existing
       ? `${level.charAt(0).toLocaleUpperCase('cs')}${level.slice(1)} · přihlášení od ${prettyDay(existing.created || today(), false)}`
-      : invite ? `Má pozvánku, platí do ${prettyDay(invite.expires, false)}` : self ? 'Zatím se nepřihlašuješ.' : 'Zatím nemá přihlášení.'),
+      : invite ? `Má pozvánku, platí do ${prettyDay(invite.expires, false)}` : self ? 'Zatím nemáš přihlášení.' : 'Zatím nemá přihlášení.'),
     mayManage(existing) ? actions([
       btn(existing ? 'Poslat pozvánku znovu' : 'Poslat pozvánku', () => createInvite(person), 'small'),
-      btn(existing ? 'Změnit heslo nebo přístup' : 'Vytvořit heslo', () => createLoginDialog(person), 'small'),
+      btn(existing ? 'Změnit heslo nebo oprávnění' : 'Vytvořit heslo', () => createLoginDialog(person), 'small'),
       existing && existing.id !== S.me.login.id ? btn('Zrušit přihlášení', () => revokeLogin(existing), 'small plain') : null,
     ]) : null);
 }
@@ -390,7 +390,7 @@ export function accountSection() {
     } catch (error) { formError(form, error.message); }
   });
   return section(['Můj účet', count(ACCESS_LABELS[S.me.access] || '')],
-    h('p', { class: 'lead' }, `Přihlašuješ se jako ${fullName(person)}.`),
+    h('p', { class: 'lead' }, `Jsi přihlášený(á) jako ${fullName(person)}.`),
     actions([
       person ? link('Moje služby', '#moje', 'btn small') : null,
       btn('Odhlásit se', logout, 'small'),
@@ -403,8 +403,8 @@ export function accountSection() {
 export function loginsSection() {
   const list = loginList().slice().sort((a, b) => (a.access === 'invite') - (b.access === 'invite')
     || fullName(personById(S.data, a.personId)).localeCompare(fullName(personById(S.data, b.personId)), 'cs'));
-  return section(['Kdo má přístup', count(plural(list.filter((l) => l.access !== 'invite').length, 'člověk', 'lidé', 'lidí'))],
-    note('Přihlášení založíš na kartě člověka (Lidé → jméno → Přístup do Zvonce). Nebo pošli pozvánku a nový člověk si údaje i heslo vyplní sám. Každá změna začne platit za pár minut.'),
+  return section(['Kdo se může přihlásit', count(plural(list.filter((l) => l.access !== 'invite').length, 'člověk', 'lidé', 'lidí'))],
+    note('Přihlášení založíš na kartě člověka (Lidé → jméno → Přihlášení do Zvonce). Nebo pošleš pozvánku a nový člověk si údaje i heslo vyplní sám. Každá změna začne platit za pár minut.'),
     h('ul', { class: 'overview' }, list.map((l) => h('li', { class: isExpired(l, today()) ? 'faint' : null },
       h('span', { class: 'grow' },
         l.access === 'invite'

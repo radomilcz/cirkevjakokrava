@@ -21,7 +21,7 @@ export function renderHome() {
   const duties = upcomingDuties(S.data, person.id, { from: day, to: addDays(day, WEEKS_AHEAD * 7), includeDeclined: false });
   return [
     demoBar(person),
-    pageHeader(fullName(person), 'Moje'),
+    pageHeader(fullName(person), 'Moje', 'Tvoje služby na dva měsíce dopředu a co čeká na tvoji odpověď. Taky sem zapiš, kdy nemůžeš.'),
     h('div', { class: 'grid spaced' },
       h('div', {},
         waitingSection(person, waiting),
@@ -158,11 +158,11 @@ function actAsForm() {
 }
 
 function noPerson() {
-  const header = pageHeader('moje', 'Moje');
+  const header = pageHeader('moje', 'Moje', 'Tady každý vidí svoje služby, co čeká na jeho odpověď a kdy nemůže.');
   if (S.mode === 'demo') {
     return [header,
       emptyState('V ukázce nejsi nikdo z Lidí.',
-        'Tady každý vidí svoje služby, co čeká na jeho odpověď a kdy nemůže. Vyber si někoho a podívej se jeho očima. Zpátky se dostaneš tlačítkem nahoře.',
+        'Vyber si někoho a podívej se jeho očima. Zpátky se dostaneš tlačítkem nahoře.',
         null),
       people().length ? actAsForm() : null,
       actions([link('Na Lidi', '#lide', 'btn small')])];

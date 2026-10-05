@@ -3,8 +3,8 @@
 
 import {
   h, btn, link, backLink, pageHeader, section, count, actions, note, meta, emptyState, toast, download,
-  removeButton, arrowButton, confirmDialog, choices, closeDialog, simpleDialog, textField,
-  fieldGroup, checkedValues, plural,
+  removeButton, confirmDialog, choices, closeDialog, simpleDialog, textField,
+  fieldGroup, checkedValues, plural, plus,
 } from './dom.js';
 import { S, can, change, myId, navigate, newId, ASSIGNMENT_STATUS_LABELS, EVENT_KIND_LABELS } from './state.js';
 import { openPicker } from './picker.js';
@@ -15,12 +15,13 @@ import {
   cancelEvent, deleteEvent, eventById, followingInSeries, needsOf, seriesOf,
 } from '../lib/events.js';
 import {
-  addFormat, copyProgram, eventDuration, formatById, itemLeaders, itemName, moveItem, programDuration, programTimes,
+  addFormat, copyProgram, eventDuration, formatById, itemLeaders, itemName, programDuration, programTimes,
 } from '../lib/program.js';
 import { proposeRemaining, previousEvent, sameAsLastTime } from '../lib/scheduling.js';
 import { ics } from '../lib/ics.js';
 import { displayName, fullName, personById } from '../lib/people.js';
-import { groupById, roleById } from '../lib/groups.js';
+import { groupById, roleById, memberRecord, setSkill } from '../lib/groups.js';
+import { sortable, dragHandle, moveInArray } from './sortable.js';
 import { addMinutes, dayOf, monthOf, prettyDay, prettyDayLong, prettyRange, prettyTime, today } from '../lib/time.js';
 
 const NEXT_STATUS = { proposed: 'confirmed', confirmed: 'declined', declined: 'proposed' };
@@ -54,7 +55,8 @@ export function renderEvent(id) {
   return [
     backLink('Kalendář', `#kalendar/${monthOf(event.start)}`),
     pageHeader([prettyDayLong(event.start), kindLabel && kindLabel !== event.title ? kindLabel : null, event.cancelled ? 'zrušeno' : null].filter(Boolean).join(' · '),
-      event.title, null, { smaller: true }),
+      event.title, event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.'
+        : leader ? 'Kdo tu slouží a jak půjde program. Doplň, kdo chybí, a slož osnovu.' : 'Kdo tu slouží a jak půjde program.', { smaller: true }),
     meta([
       ['kdy', sameDay ? `${prettyTime(event.start)}–${prettyTime(event.end)}` : prettyRange(event)],
       places.length ? ['kde', places.join(', ')] : null,
@@ -138,10 +140,10 @@ function planList(event, conflicts, leader) {
       h('span', { class: 'slots' },
         people.map((a) => slot(event, a, roleName, { leader, me, severity: severity.get(a.id), conflicts })),
         Array.from({ length: empty }, () => (leader && !event.cancelled
-          ? h('button', { type: 'button', class: 'slot empty', onclick: () => pickFor(event.id, need.roleId), 'aria-label': `Kdo na ${roleName}?` }, 'kdo?')
-          : h('span', { class: 'slot empty' }, 'kdo?'))),
+          ? h('button', { type: 'button', class: 'slot empty', onclick: () => pickFor(event.id, need.roleId), 'aria-label': `Vybrat člověka: ${roleName}` }, plus('Vybrat člověka'))
+          : h('span', { class: 'slot empty' }, 'zatím nikdo'))),
         leader && !empty && !event.cancelled
-          ? btn('+ další', () => pickFor(event.id, need.roleId), 'mini plain', { 'aria-label': `Přidat dalšího na ${roleName}` }) : null),
+          ? btn(plus('Přidat dalšího'), () => pickFor(event.id, need.roleId), 'mini plain', { 'aria-label': `Přidat dalšího: ${roleName}` }) : null),
       h('span', {})));
   }
   return [list, note(leader
@@ -170,9 +172,9 @@ function slot(event, a, roleName, { leader, me, severity, conflicts }) {
     onclick: () => setStatus(event.id, a.id, NEXT_STATUS[a.status] || 'proposed', name),
   }, statusLabel),
   severity === 'error' || a.override ? h('button', {
-    type: 'button', class: 'status', title: a.override ? `Výjimka: ${a.override.reason}` : 'Vím o tom, platí to i tak',
+    type: 'button', class: 'status', title: a.override ? `V pořádku: ${a.override.reason}` : 'Vím o tom, půjde to i tak',
     onclick: () => overrideDialog(a.id),
-  }, a.override ? 'výjimka' : 'povolit výjimku') : null,
+  }, a.override ? 'v pořádku' : 'vím o tom') : null,
   removeButton(`Odebrat: ${name}`, () => {
     const e = fresh(event.id);
     if (!e) return;
@@ -232,7 +234,17 @@ function pickFor(eventId, roleId, assignmentId) {
         e.assignments.push({ id: newId('a'), roleId, personId, status: 'proposed' });
       }
       closeDialog();
-      change(`${displayName(personById(S.data, personId))} na ${role?.name || 'službu'}`);
+      const name = displayName(personById(S.data, personId));
+      change(`${name} na ${role?.name || 'službu'}`);
+      // someone outside the team is fine (a guest preacher) – offer to add them if they'll do it again
+      const team = role && groupById(S.data, role.groupId);
+      if (team && !memberRecord(S.data, team.id, personId)) {
+        toast(`${name} není v týmu ${team.name}.`, 'Bude to dělat častěji?', {
+          actionLabel: 'Přidat do týmu',
+          action: () => { setSkill(S.data, personId, role.id, 'trained'); change(`${name} do týmu ${team.name}`); },
+          duration: 9000,
+        });
+      }
     },
   });
 }
@@ -314,11 +326,12 @@ function programSection(event, previous, leader) {
   const id = event.id;
   const edit = () => change(`osnova ${prettyDay(event.start, false)}`);
 
-  const list = h('ol', { class: 'program' }, times.map(({ item, start }, i) => {
+  const list = h('ol', { class: 'program' }, times.map(({ item, start }) => {
     const format = formatById(S.data, item.formatId);
     const leaders = itemLeaders(S.data, event, item).map((pid) => displayName(personById(S.data, pid)));
-    const sub = [leaders.length ? leaders.join(', ') : (format?.leadRoleId || item.personId ? 'kdo?' : ''), item.note].filter(Boolean).join(' · ');
+    const sub = [leaders.length ? leaders.join(', ') : (format?.leadRoleId || item.personId ? 'vede: zatím nikdo' : ''), item.note].filter(Boolean).join(' · ');
     return h('li', {},
+      leader ? dragHandle(item.id, `Přesunout: ${itemName(S.data, item)}`) : null,
       h('span', { class: 'when' }, prettyTime(start)),
       h('button', {
         type: 'button', class: 'what',
@@ -327,8 +340,6 @@ function programSection(event, previous, leader) {
       }, h('span', { class: 'item-name' }, itemName(S.data, item)), sub ? h('small', {}, sub) : null),
       h('span', { class: 'minutes' }, `${item.minutes} min`),
       leader ? h('span', { class: 'move' },
-        arrowButton('up', 'Posunout výš', () => { const e = fresh(id); if (e && moveItem(e, item.id, -1)) edit(); }, i === 0),
-        arrowButton('down', 'Posunout níž', () => { const e = fresh(id); if (e && moveItem(e, item.id, 1)) edit(); }, i === times.length - 1),
         removeButton(`Odebrat: ${itemName(S.data, item)}`, () => {
           const e = fresh(id);
           if (!e) return;
@@ -346,6 +357,8 @@ function programSection(event, previous, leader) {
       change(`${f.name} do osnovy ${prettyDay(e.start, false)}`);
     },
   }, `+ ${f.name}`)));
+
+  if (leader) sortable(list, (from, to) => { const e = fresh(id); if (e && moveInArray(e.program || [], from, to)) edit(); });
 
   return section(['Osnova', count(times.length ? `${total} z ${length} min` : '')],
     times.length ? list : note(leader ? 'Osnova je zatím prázdná. Slož ji z formátů níž – časy se dopočítají samy.' : 'Osnova ještě není.'),
@@ -402,7 +415,7 @@ function itemDialog(eventId, itemId, draft) {
 
   const whoText = d.personId
     ? fullName(personById(S.data, d.personId))
-    : roleName ? `ten, kdo má službu ${roleName}${byRole.length ? ` (${byRole.join(', ')})` : ''}` : 'nikdo';
+    : roleName ? `ten, kdo má roli ${roleName}${byRole.length ? ` (${byRole.join(', ')})` : ''}` : 'nikdo';
   form = simpleDialog({
     eyebrow: `${prettyDay(event.start)} · ${event.title}`,
     title: itemName(S.data, item),

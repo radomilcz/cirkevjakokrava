@@ -20,7 +20,7 @@ import { overlaps, inBlockout, dayOf, monthOf, addDays, addMinutes, weekday, tod
 import { needsOf } from './events.js';
 
 export const DEFAULT_LIMITS = { maxPerMonth: 4, maxConsecutiveWeeks: 3 };
-export const DEFAULT_RULES = { essentialDaysBefore: 7, unconfirmedDaysBefore: 5, childAge: 15 };
+export const DEFAULT_RULES = { essentialDaysBefore: 7, unconfirmedDaysBefore: 5, openDaysBefore: 7, childAge: 15 };
 
 /** Candidate pool for the picker pills „Umí to · Celý tým · Všichni lidé“. */
 export const SCOPES = ['skilled', 'team', 'all'];
@@ -172,7 +172,8 @@ export function candidates(data, eventId, roleId, { today, scope = 'skilled', in
     const level = member?.roles?.[roleId] || null;
     const limits = limitsOf(data, person.id);
 
-    if (!level) reasons.push({ code: 'K4', severity: 'error', text: member ? 'neumí' : 'není v týmu' });
+    // not a problem, just a fact the leader should see (a guest preacher is never in the team)
+    if (!level) reasons.push({ code: 'K4', severity: 'info', text: member ? 'tuhle roli ještě nedělal(a)' : 'není v týmu' });
     else if (level === 'learning') reasons.push({ code: 'K4b', severity: 'info', text: 'učí se' });
     if (unavailability(data, person.id, mine)) reasons.push({ code: 'K3', severity: 'error', text: 'nemůže' });
     for (const s of theirs) {
@@ -220,7 +221,7 @@ export function candidates(data, eventId, roleId, { today, scope = 'skilled', in
       softCount: reasons.filter((r) => r.severity === 'warning').length,
       learning: level === 'learning' ? 1 : 0,
     };
-  }).sort((a, b) => a.hardCount - b.hardCount || a.softCount - b.softCount || a.learning - b.learning
+  }).sort((a, b) => a.hardCount - b.hardCount || a.softCount - b.softCount || !a.level - !b.level || a.learning - b.learning
     || a.monthCount - b.monthCount || a.lastServed.localeCompare(b.lastServed)
     || fullName(a.person).localeCompare(fullName(b.person), 'cs'));
 }

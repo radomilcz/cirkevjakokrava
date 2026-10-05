@@ -139,7 +139,7 @@ function renderRegistry(filter) {
     .map(([s, k, label]) => [s ? `#lide/${s}` : '#lide', `${label} ${counts[k]}`]);
 
   return [
-    pageHeader('stádo', 'Lidé'),
+    pageHeader('stádo', 'Lidé', 'Všichni, kdo k nám patří nebo chodí. Tady najdeš kontakt, rodinu a kdo kde slouží.'),
     birthdaysLine(),
     h('div', { class: 'search' },
       searchBox('Jméno, telefon, e-mail…', fill),
@@ -164,7 +164,7 @@ function renderDirectory() {
   };
   fill();
   return [
-    pageHeader('stádo', 'Lidé', 'Telefon a e-mail uvidíš u těch, kdo je tu chtějí ukázat.'),
+    pageHeader('stádo', 'Lidé', 'Všichni, kdo k nám patří nebo chodí. Telefon a e-mail uvidíš u těch, kdo je ukazují ostatním.'),
     h('div', { class: 'search' }, searchBox('Hledat jméno', fill)),
     holder,
   ];
@@ -217,7 +217,9 @@ export function renderPerson(id) {
   const eyebrow = leader ? MEMBERSHIP_LABELS[statusOf(person)] : 'to jsem já';
   return [
     backLink('Lidé', '#lide'),
-    pageHeader(eyebrow, fullName(person), null, { smaller: true }),
+    pageHeader(eyebrow, fullName(person), self
+      ? 'Tohle o tobě Zvonec ví. Když se něco změní, uprav si kontakt sám.'
+      : 'Kontakt, rodina, služby a kdy nemůže. Všechno na jedné kartě.', { smaller: true }),
     person.nickname ? h('p', { class: 'meta' }, h('span', {}, h('span', { class: 'what' }, 'říkáme'), person.nickname)) : null,
     actions([
       leader ? btn('Upravit', () => personDialog(person), 'primary small') : btn('Upravit kontakt', () => contactDialog(person), 'primary small'),
@@ -247,7 +249,7 @@ function reducedCard(person) {
   const links = contactLinks(person);
   return [
     backLink('Lidé', '#lide'),
-    pageHeader('ze stáda', fullName(person), null, { smaller: true }),
+    pageHeader('ze stáda', fullName(person), 'Kontakt, domácnost a skupiny, ve kterých je.', { smaller: true }),
     h('div', { class: 'grid spaced' },
       h('div', {},
         section('Kontakt', links.length
@@ -329,7 +331,7 @@ function aboutSection(person) {
   return section('Ve sboru', facts([
     ['Členství', membershipText(person)],
     ['Narozen(a)', birthText(person)],
-    ['Souhlas s údaji', person.consentDate ? `dal(a) ${fullDate(person.consentDate)}`
+    ['Souhlas se zpracováním údajů', person.consentDate ? `${fullDate(person.consentDate)}`
       : needsConsent ? faint('chybí – zeptej se a datum zapiš přes Upravit') : null],
     ['Přišel(a)', person.registeredAt ? `přes pozvánku ${fullDate(person.registeredAt)}` : null],
     ['Poznámka', person.note || null],
@@ -529,8 +531,8 @@ export function personDialog(original) {
   const fields = [
     textField('firstName', 'Jméno', p.firstName, { attr: { required: true, autocomplete: 'off' } }),
     textField('lastName', 'Příjmení', p.lastName, { attr: { autocomplete: 'off' } }),
-    textField('nickname', 'Říkáme mu/jí', p.nickname, { hint: 'V rozpisu se ukáže místo jména.', attr: { autocomplete: 'off', placeholder: 'Péťa' } }),
-    selectField('status', 'Ve sboru', MEMBERSHIP_STATUSES.map((s) => [s, MEMBERSHIP_LABELS[s]]), status),
+    textField('nickname', 'Říkáme mu/jí', p.nickname, { hint: 'Tak ho uvidí ostatní v rozpisu místo celého jména.', attr: { autocomplete: 'off', placeholder: 'Péťa' } }),
+    selectField('status', 'Členství', MEMBERSHIP_STATUSES.map((s) => [s, MEMBERSHIP_LABELS[s]]), status),
     textField('since', 'Ve sboru od', p.membership?.since, { type: 'date' }),
     textField('until', 'Do kdy chodil(a)', p.membership?.until, { type: 'date' }),
     textField('phone', 'Telefon', p.phone, { type: 'tel', attr: { autocomplete: 'off' } }),
@@ -682,7 +684,7 @@ export function renderHouseholds() {
   const alone = S.data.people.filter((p) => !p.householdId && !isFormer(p)).length;
   return [
     backLink('Lidé', '#lide'),
-    pageHeader('kdo spolu bydlí', 'Domácnosti'),
+    pageHeader('kdo spolu bydlí', 'Domácnosti', 'Rodiny pohromadě. Hodí se, když potřebuješ zavolat rodičům kvůli dětem nebo poslat něco domů.'),
     actions([btn(plus('Přidat domácnost'), () => householdDialog(null), 'primary small')]),
     rule(),
     households.length ? h('ul', { class: 'list' }, households.map((household) => {
@@ -721,7 +723,7 @@ export function renderHousehold(id) {
   });
   return [
     backLink('Domácnosti', '#domacnosti'),
-    pageHeader('domácnost', household.name, household.address || null, { smaller: true }),
+    pageHeader('domácnost', household.name, household.address || 'Kdo tu bydlí a jak se jim dovoláš. Adresu doplníš přes Upravit.', { smaller: true }),
     actions([
       btn(plus('Přidat člověka'), add, 'primary small'),
       btn('Upravit', () => householdDialog(household), 'small'),

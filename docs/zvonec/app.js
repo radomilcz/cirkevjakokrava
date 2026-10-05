@@ -5,6 +5,8 @@
 import { S, setHooks, can, recompute, isUpcoming, loadRemembered, forgetRemembered } from './ui/state.js';
 import { h, btn, nodes, emptyState, pageHeader, isDialogOpen } from './ui/dom.js';
 import './ui/stepper.js';   // − and + buttons on every number field
+import './ui/select.js';    // drop-downs in the Zvonec style
+import './ui/datepicker.js'; // date fields with our own calendar
 import { GithubStore } from './lib/store/github.js';
 import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
@@ -146,22 +148,35 @@ window.addEventListener('hashchange', () => {
 
 // ---------- save status ----------
 
+let saveStatusTimer = null;
+let saveStatusSeen = false;   // the very first 'saved' after loading is not news
+
+/**
+ * The header stays quiet. Saving shows „Ukládám…“, then „Uloženo“ for two seconds; only a failed
+ * save stays on screen with „Zkusit znovu“. The demo says once, for a while, where its data lives.
+ */
 function showSaveStatus({ status, error }) {
   const el = document.querySelector('.save-status');
+  clearTimeout(saveStatusTimer);
   const failed = status === 'error' || status === 'offline';
   el.classList.toggle('error', failed);
   el.title = failed && error ? error : '';   // the technical detail for whoever helps, not in the sentence
-  const texts = {
-    saved: S.store?.kind === 'github' ? 'Uloženo.' : 'Uloženo jen v tomhle prohlížeči.',
-    pending: 'Čeká na uložení…',
-    saving: 'Ukládám…',
-  };
+  const demo = S.store?.kind !== 'github';
   if (failed) {
-    const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : 'Uložit se nepovedlo. Změny mám schované.';
+    const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : 'Neuloženo.';
     el.replaceChildren(text, ' ', btn('Zkusit znovu', () => S.sync.save(), 'mini'));
-  } else {
-    el.textContent = texts[status] || '';
+    return;
   }
+  if (status === 'saving' || status === 'pending') { el.textContent = 'Ukládám…'; return; }
+  if (status === 'saved') {
+    const first = !saveStatusSeen;
+    saveStatusSeen = true;
+    if (first && !demo) { el.textContent = ''; return; }
+    el.textContent = demo ? 'Ukázka – ukládá se jen v tomhle prohlížeči.' : 'Uloženo';
+    saveStatusTimer = setTimeout(() => { el.textContent = ''; }, demo && first ? 6000 : 2000);
+    return;
+  }
+  el.textContent = '';
 }
 
 window.addEventListener('beforeunload', (e) => {

@@ -39,7 +39,7 @@ function overrideTarget(conflict) {
 
 /**
  * Conflict card. `href` – where the card leads (default the conflict's event; null = no link).
- * `withEvent` – show the day and title. `overrideButton` – „Povolit výjimku“ under the card.
+ * `withEvent` – show the day and title. `overrideButton` – „Vím o tom“ under the card.
  */
 export function conflictCard(conflict, { href, withEvent = true, overrideButton = true } = {}) {
   const event = eventById(S.data, conflict.eventId);
@@ -50,14 +50,14 @@ export function conflictCard(conflict, { href, withEvent = true, overrideButton 
       h('span', { class: 'word' }, SEVERITY_LABELS[conflict.severity]),
       withEvent && event ? h('span', { class: 'when' }, `${prettyDay(event.start)} · ${event.title}`) : null),
     h('p', {}, conflict.text),
-    conflict.overrideNote ? h('p', { class: 'override' }, `Výjimka: ${conflict.overrideNote}`) : null,
+    conflict.overrideNote ? h('p', { class: 'override' }, `V pořádku: ${conflict.overrideNote}`) : null,
   ];
   const card = target
     ? h('a', { class: ['conflict', conflict.severity], href: target }, body)
     : h('div', { class: ['conflict', conflict.severity] }, body);
   const overridable = overrideButton && canOverride(conflict);
   return h('li', {}, card, overridable ? h('div', { class: 'conflict-actions' },
-    btn(conflict.overrideNote ? 'Upravit výjimku' : 'Povolit výjimku', () => {
+    btn(conflict.overrideNote ? 'Upravit, proč to půjde' : 'Vím o tom', () => {
       const t = overrideTarget(conflict);
       if (t) overrideDialog(t.assignment.id);
     }, 'mini plain', { title: 'Vím o tom, platí to i tak' })) : null);
@@ -75,21 +75,21 @@ export function overrideDialog(assignmentId) {
   const existing = assignment.override;
   const by = existing?.by ? displayName(personById(S.data, existing.by)) : '';
   const form = h('form', { method: 'dialog', novalidate: true },
-    h('p', { class: 'eyebrow' }, 'výjimka'),
-    h('h2', {}, `${displayName(person)} to zvládne i tak?`),
-    note('Napiš proč a Zvonec to přestane hlásit jako chybu.'),
-    existing?.at ? note(`Výjimku ${by ? `dal(a) ${by}` : 'někdo dal'} ${prettyDay(existing.at, false)}`) : null,
+    h('p', { class: 'eyebrow' }, 'vím o tom'),
+    h('h2', {}, 'Je to v pořádku?'),
+    note(`Když víš, že ${displayName(person)} to zvládne, napiš proč. Zvonec to pak přestane hlásit.`),
+    existing?.at ? note(`Potvrdil(a) ${by || 'někdo'} ${prettyDay(existing.at, false)}.`) : null,
     textField('reason', 'Proč to půjde', existing?.reason || '', { attr: { autofocus: true, placeholder: 'odejde ze zkoušky dřív' } }),
     formErrorLine(),
     h('div', { class: 'actions' },
-      existing ? btn('Zrušit výjimku', () => {
+      existing ? btn('Přece jen to hlídat', () => {
         const fresh = findAssignment(S.data, assignmentId);
         if (fresh) delete fresh.assignment.override;
         closeDialog();
         change(`zrušená výjimka ${displayName(person)}`);
       }, 'left plain') : null,
       btn('Zpět', closeDialog),
-      h('button', { type: 'submit', class: 'btn primary' }, 'Povolit')));
+      h('button', { type: 'submit', class: 'btn primary' }, 'Ano, je to v pořádku')));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const reason = form.elements.reason.value.trim();
@@ -116,12 +116,13 @@ export function renderConflicts() {
   const pick = (key) => (value) => { f[key] = value; render(); };
 
   return [
-    pageHeader('bučíme', 'Upozornění', 'Kdo je naráz na dvou místech, kdo má dovolenou a kde ještě nikdo není. Plná karta je chyba, takhle to nepůjde. Čárkovaná znamená, že něco chybí.'),
+    pageHeader('bučíme', 'Upozornění', 'Co v rozpisu nesedí: někdo je na dvou místech naráz, na službě nikdo není, místnost je obsazená. Vyřeš to, dokud je čas.'),
     rule(),
     h('div', { class: 'filter-row' },
       filterButtons([['all', `Všechno ${countOf('all')}`], ...SEVERITIES.map((s) => [s, `${SEVERITY_HEADINGS[s]} ${countOf(s)}`])],
         f.conflictSeverity, pick('conflictSeverity'), { label: 'Jak vážné' }),
       filterButtons([['upcoming', 'Budoucí'], ['all', 'I minulé']], f.conflictScope, pick('conflictScope'), { label: 'Kdy' })),
+    shown.length ? note('Plná karta je chyba, takhle to nepůjde. Čárkovaná znamená, že něco chybí.') : null,
     shown.length
       ? SEVERITIES.filter((s) => shown.some((c) => c.severity === s)).map((s) => {
         const list = shown.filter((c) => c.severity === s).sort((a, b) => start(a).localeCompare(start(b)));
