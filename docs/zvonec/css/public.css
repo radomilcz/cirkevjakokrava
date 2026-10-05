@@ -1,1 +1,83 @@
 /* public module – owned by the public team. Uses tokens and components from ../style.css. */
+
+/* ---------- #program: weeks of event cards ---------- */
+.pub-week{margin-top:clamp(32px,5vw,56px)}
+.pub-week .section-head{margin-bottom:var(--s5)}
+.pub-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s6);max-width:var(--w-list)}
+
+.pub-event{display:flex;flex-direction:column;gap:var(--s4)}
+.pub-event .cover-card{width:100%}
+.pub-body{display:flex;flex-direction:column;gap:var(--s2)}
+/* from tablet up the card lies down: picture left, text right – no half-empty rows */
+@media (min-width:720px){
+  .pub-grid{gap:var(--s5)}
+  .pub-event{flex-direction:row;align-items:flex-start;gap:var(--s5)}
+  .pub-event .cover-card{flex:none;width:clamp(240px,34%,300px)}
+  .pub-body{flex:1 1 auto;min-width:0;padding-top:var(--s1)}
+}
+/* desktop: the week label stands left of its cards */
+@media (min-width:1100px){
+  .pub-week{display:grid;grid-template-columns:9.5rem minmax(0,1fr);gap:0 var(--s5);align-items:start;max-width:calc(var(--w-list) + 9.5rem + var(--s5))}
+  .pub-week .section-head{position:sticky;top:var(--s5);margin:0}
+  .pub-week .section-head h2{font-size:var(--t2)}
+}
+.pub-title{
+  margin:0;font-family:var(--narrow);font-weight:900;font-size:var(--t2);line-height:1.1;overflow-wrap:anywhere;
+}
+.pub-when,.pub-places{margin:0;line-height:1.4}
+.pub-when{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2)}
+.pub-places{display:flex;flex-direction:column;gap:2px;font-size:var(--t4);color:var(--muted)}
+.pub-places .place-name{color:var(--ink)}
+.pub-dot{color:var(--muted);white-space:pre}
+
+/* Zrušeno: a filled pill; the whole card steps back and the title is struck */
+.pub-badge{
+  display:inline-block;padding:.22em .7em .12em;border-radius:999px;background:var(--ink);color:var(--ground);
+  font-family:var(--narrow);font-weight:900;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;
+}
+.pub-badge.quiet{background:none;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--outline)}
+.pub-event.cancelled .cover{opacity:.45;filter:grayscale(1)}
+.pub-event.cancelled .pub-title{text-decoration:line-through;text-decoration-thickness:2px}
+.pub-event.cancelled .pub-when time,.pub-event.cancelled .pub-text{color:var(--muted)}
+
+/* the description: three lines, „Více“ opens the rest and the maps */
+.pub-text{
+  margin:var(--s1) 0 0;max-width:65ch;white-space:pre-line;overflow-wrap:anywhere;line-height:1.5;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
+}
+.pub-text.open{display:block;-webkit-line-clamp:unset;overflow:visible}
+.pub-more{display:flex}
+.pub-more .text-btn{min-height:44px;padding-right:var(--s4);margin-top:calc(-1*var(--s1))}
+.pub-maps{display:flex;flex-direction:column;gap:var(--s3);margin-top:var(--s2)}
+.pub-maps .place-map{margin:0;max-width:none}
+
+/* address and update line at the end of the page */
+.pub-foot{
+  margin:clamp(40px,6vw,72px) 0 0;padding-top:var(--s4);border-top:1px solid var(--line);max-width:var(--w-list);
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s1) var(--s5);color:var(--muted);font-size:var(--t4);
+}
+.pub-foot p{margin:0}
+
+/* ---------- #jak-se-schazime: one readable card per format ---------- */
+.pub-formats{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s4);max-width:var(--w-list)}
+.pub-format{padding:var(--s5);border:1px solid var(--line);border-radius:var(--radius);background:var(--fill)}
+.pub-format-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s4);margin-bottom:var(--s4)}
+.pub-format-name{margin:0;font-family:var(--narrow);font-weight:900;font-size:var(--t2);line-height:1.1;overflow-wrap:anywhere}
+.pub-format-time{margin:0;font-size:var(--t4);color:var(--muted)}
+.pub-facts{margin:0;display:flex;flex-direction:column;gap:var(--s4)}
+.pub-facts dt{margin:0 0 var(--s1)}
+.pub-facts dd{margin:0;max-width:65ch;white-space:pre-line;overflow-wrap:anywhere;line-height:1.55}
+@media (min-width:720px){
+  .pub-format{padding:var(--s5) var(--s6)}
+  .pub-facts>div{display:grid;grid-template-columns:9.5rem minmax(0,1fr);gap:var(--s4)}
+  .pub-facts dt{margin:.45em 0 0}
+}
+
+@media print{
+  .pub-week{display:block}
+  .pub-grid{display:block;max-width:none}
+  .pub-grid>li{break-inside:avoid;margin-bottom:6mm}
+  .pub-text{display:block;-webkit-line-clamp:unset;overflow:visible}
+  .pub-more{display:none}
+  .pub-format{break-inside:avoid;background:none}
+}
