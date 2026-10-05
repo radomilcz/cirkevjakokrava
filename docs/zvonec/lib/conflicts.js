@@ -19,14 +19,14 @@ import {
 export const CODES = {
   K1: 'Dvakrát naráz',
   K2: 'Dvě služby naráz',
-  K3: 'Blokace',
+  K3: 'Nemá čas',
   K4: 'Neumí',
   K4b: 'Zaučuje se',
   K5: 'Neobsazeno',
   K6: 'Nepotvrzeno',
   K7: 'Moc služeb v měsíci',
   K8: 'Neděle po sobě',
-  K9: 'Místo',
+  K9: 'Místo je obsazené',
   K10: 'Kdo pohlídá děti',
   K11: 'Dítě ve službě pro dospělé',
   K12: 'Málo dospělých u dětí',
@@ -138,7 +138,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K4:${s.assignment.id}`, code: 'K4', severity: 'error',
           eventId: s.event.id, personId, assignments: [s.assignment],
-          text: `${who} nemá ${team ? `v týmu ${team} ` : ''}službu ${s.role?.name || '?'}. Umí to, nebo je to omyl?`,
+          text: `${who} nemá ${team ? `v týmu ${team} ` : ''}roli ${s.role?.name || '?'}. Umí to, nebo je to omyl?`,
         });
       } else if (level === 'learning') {
         const experienced = (s.event.assignments || []).some((a) => isActive(a) && a.roleId === s.assignment.roleId
@@ -184,7 +184,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K7:${personId}:${m}`, code: 'K7', severity: 'warning',
           eventId: ids[ids.length - 1], eventIds: ids, personId,
-          text: `${who} má v měsíci ${events.size} služeb, chce nejvýš ${limits.maxPerMonth}.`,
+          text: `${who} má v měsíci ${events.size} ${events.size === 1 ? 'službu' : events.size <= 4 ? 'služby' : 'služeb'}, chce nejvýš ${limits.maxPerMonth}.`,
         });
       }
     }
@@ -229,7 +229,7 @@ export function findConflicts(data, { today } = {}) {
       if (remaining.length) {
         add({
           key: `K14:${e.id}`, code: 'K14', severity: 'info', eventId: e.id, assignments: remaining,
-          text: `${describeEvent(e)} je zrušená, ale ${remaining.length === 1 ? 'jeden člověk o tom možná neví' : `${remaining.length} lidí o tom možná neví`}.`,
+          text: `Zrušeno: ${describeEvent(e)}. ${remaining.length === 1 ? 'Jeden člověk z rozpisu o tom možná neví' : remaining.length <= 4 ? `${remaining.length} lidé z rozpisu o tom možná nevědí` : `${remaining.length} lidí z rozpisu o tom možná neví`}.`,
         });
       }
       continue;
@@ -303,7 +303,7 @@ export function findConflicts(data, { today } = {}) {
         if (format?.leadRoleId && !roles.has(format.leadRoleId) && !itemLeaders(data, e, item).length) {
           add({
             key: `K17:${item.id}`, code: 'K17', severity: 'warning', eventId: e.id,
-            text: `${name}: nikdo to nevede, služba z formátu už neexistuje. Vyber člověka, nebo uprav formát.`,
+            text: `${name}: nikdo to nevede, role z formátu už neexistuje. Vyber člověka, nebo uprav formát.`,
           });
         }
       }

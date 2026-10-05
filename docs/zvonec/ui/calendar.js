@@ -82,7 +82,7 @@ export function renderCalendar(month) {
         class: ['day', monthOf(day) !== shown && 'other-month', day === now && 'today', i % 7 === 6 && 'sunday'],
         role: 'gridcell',
         onclick: leader ? () => eventDialog({ day }) : null,
-        title: leader ? `Přidat na ${prettyDay(day)}` : null,
+        title: leader ? `Nové setkání: ${prettyDay(day)}` : null,
       },
       h('span', { class: 'day-number' }, h('span', {}, Number(day.slice(8)))),
       (hidden > 0 ? list.slice(0, CHIPS_PER_DAY - 1) : list).map((e) => eventChip(e)),
@@ -221,11 +221,11 @@ export function eventDialog({ day, event } = {}) {
       textField('to', 'Do', timeOf(base.end), { type: 'time', attr: { required: true } }),
       places.length ? fieldGroup('Kde', choices('places', places.map((p) => [p.id, p.name]), base.placeIds || [])) : null,
       !editing ? selectField('repeat', 'Opakovat', RECURRENCE, '') : null,
-      !editing ? textField('until', 'Do kdy', addMonths(dayOf(base.start), 3), { type: 'date', hint: 'Jen když se opakuje.' }) : null,
-      fieldGroup('Koho to potřebuje (počet lidí na roli)', editor.element,
-        h('small', {}, 'Služby z osnovy (třeba Večeře Páně) se přidají samy.')),
+      !editing ? textField('until', 'Opakovat do', addMonths(dayOf(base.start), 3), { type: 'date' }) : null,
+      fieldGroup('Kolik lidí je potřeba', editor.element,
+        h('small', {}, 'Služby, které potřebuje osnova (třeba u Večeře Páně), Zvonec přidá sám.')),
       textArea('note', 'Poznámka', base.note || '', { attr: { rows: 2 } }),
-      following ? fieldGroup('Změnit', choices('scope', [['one', 'jen tohle'], ['following', andFollowing(following)]], 'one', 'radio')) : null),
+      following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null),
     formErrorLine(),
     h('div', { class: 'actions' },
       btn('Zrušit', closeDialog),
@@ -256,13 +256,13 @@ export function eventDialog({ day, event } = {}) {
       sortEvents(S.data);
       closeDialog();
       change(`úprava ${title} ${prettyDay(start, false)}${changed.length ? ` (+${changed.length})` : ''}`);
-      toast('Máme to v rozpisu.');
+      toast('Uloženo.');
       return;
     }
 
     const step = f.repeat.value;
     const until = f.until.value;
-    if (step && (!until || until < f.day.value)) { formError(form, 'Do kdy se má opakovat? Datum musí být až po prvním setkání.'); return; }
+    if (step && (!until || until < f.day.value)) { formError(form, 'Do kdy se to má opakovat? Vyber den po prvním setkání.'); return; }
     const type = types.find((t) => t.id === typeId);
     const draft = type ? createFromType(type, f.day.value, { newId, data: S.data }) : { assignments: [] };
     Object.assign(draft, fields);
@@ -276,7 +276,7 @@ export function eventDialog({ day, event } = {}) {
     } else {
       change(`nové setkání ${prettyDay(start, false)}`);
       navigate(`#setkani/${created[0].id}`);
-      toast('Máme to v rozpisu.');
+      toast('Je to v kalendáři.');
     }
   });
   openDialog(form, { wide: true });

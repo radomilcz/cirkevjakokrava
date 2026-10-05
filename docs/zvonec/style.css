@@ -103,7 +103,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .menu a[aria-current="page"] .count{background:var(--ground);color:var(--ink)}
 @media (max-width:700px){
   /* the topbar sticks, the menu scrolls sideways – two rows of pills would take a fifth of the screen */
-  .topbar{padding-block:.55em;gap:.4em}
+  .topbar{padding-block:.55em;gap:.4em;background:var(--ground)}   /* opaque: no content showing through on phones */
   .menu{flex-wrap:nowrap;overflow-x:auto;margin:0 calc(-1*var(--gutter));padding:0 var(--gutter) .1em;scrollbar-width:none;flex-basis:100%}
   .menu::-webkit-scrollbar{display:none}
   .menu a{flex:none}
@@ -178,15 +178,17 @@ button,input,select,textarea{font:inherit;color:inherit}
 .rule{height:1px;background:var(--ink);opacity:.35;border:0;margin:clamp(26px,4vw,46px) 0 clamp(22px,3.2vw,38px)}
 
 .section{margin:clamp(30px,4.5vw,52px) 0 0}
+/* section headings label a block – they must not compete with the page title */
 .section>h2,.dialog h2{
   font-family:var(--narrow);font-weight:900;text-transform:uppercase;
-  font-size:clamp(1.5rem,3.4vw,2.3rem);line-height:1;letter-spacing:0;margin:0 0 .65em;
-  display:flex;align-items:baseline;flex-wrap:wrap;gap:.2em .45em;
+  font-size:clamp(1.1rem,1.7vw,1.35rem);line-height:1.1;letter-spacing:.02em;margin:0 0 .8em;
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:.2em .6em;
 }
-.section>h2 .n,.dialog h2 .n{font-family:var(--body);font-weight:400;font-size:.42em;color:var(--muted);text-transform:none}
+.dialog h2{font-size:clamp(1.4rem,2.6vw,1.9rem);letter-spacing:0}
+.section>h2 .n,.dialog h2 .n{font-family:var(--body);font-weight:400;font-size:.8em;color:var(--muted);text-transform:none;letter-spacing:0}
 .section>h2 .btn{font-weight:400;font-family:var(--body);font-size:clamp(.78rem,1vw,.88rem);text-transform:none;align-self:center}
 .spaced{margin-top:clamp(22px,3vw,34px)}
-.section>h3{font-family:var(--display);font-weight:800;font-size:1.05em;margin:1.6em 0 .6em}
+.section>h3{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.03em;font-size:.82rem;color:var(--muted);margin:1.6em 0 .6em}
 .note{font-size:.92em;line-height:1.45;color:var(--muted);max-width:65ch}
 .faint{color:var(--muted)}
 
@@ -214,7 +216,9 @@ button,input,select,textarea{font:inherit;color:inherit}
   display:inline-grid;place-items:center;width:1.9em;height:1.9em;padding:0;flex:none;
   border:1px solid transparent;border-radius:50%;background:none;cursor:pointer;opacity:.6;line-height:1;
 }
-.btn-x::before{content:"×";font-size:1.25em;margin-top:.08em}
+/* the cross is drawn, not typed: the font's × glyph sits off-centre */
+.btn-x::before,.btn-x::after{content:"";grid-area:1/1;width:42%;height:1.5px;border-radius:1px;background:currentColor;transform:rotate(45deg)}
+.btn-x::after{transform:rotate(-45deg)}
 .btn-x:hover{opacity:1;border-color:var(--outline)}
 
 /* bullseye – the mark from the favicon */
@@ -594,7 +598,14 @@ body.logged-out .menu>a,body.logged-out .save-status{display:none}   /* colours 
 .schedule-table tbody th small{display:block;color:var(--muted);font-size:.85em}
 .schedule-table td{min-width:5.5em}
 .schedule-table td.empty{opacity:.45}
-.schedule-table td.error,.schedule-table td.warning{border-radius:10px}
+/* the table stays a table: no boxes inside cells, a problem is marked by a dot in front of the text */
+.schedule-table td.error,.schedule-table td.warning{background:none;color:inherit;border:0;border-bottom:1px solid var(--line);border-radius:0}
+.schedule-table td.error::before,.schedule-table td.warning::before{
+  content:"";display:inline-block;width:.5em;height:.5em;margin:0 .4em .08em 0;border-radius:50%;vertical-align:middle;
+}
+.schedule-table td.error::before{background:currentColor}
+.schedule-table td.warning::before{border:1.5px solid currentColor}
+.schedule-table td.empty.error{opacity:1}
 .schedule-table .proposed{font-style:italic}
 .schedule-table tr.cancelled{text-decoration:line-through;opacity:.5}
 .print-header{display:none}
@@ -687,6 +698,7 @@ button.more:hover{text-decoration:underline;text-underline-offset:.2em;color:var
   .print-only{display:block}
   .program-sheet .meta{font-size:11pt}
   .schedule-table tbody th,.schedule-table thead th:first-child{position:static;background:none;box-shadow:none}
+  .schedule-table td.error::before,.schedule-table td.warning::before{display:none}
   .schedule-table td.error,.schedule-table td.warning{background:none;color:inherit;border:0;border-bottom:1px solid var(--line);border-radius:0}   /* the notice board shows people, not the leaders' alarms */
 }
 
@@ -778,3 +790,17 @@ a.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 .my-groups .group-name{font-family:var(--display);font-weight:800;font-size:1.05em}
 .my-groups .group-leaders{line-height:1.7}
 .my-groups .group-leaders a{text-underline-offset:.2em}
+
+/* number stepper (ui/stepper.js): − 2 + instead of the browser's spinner arrows */
+input[type="number"]{-moz-appearance:textfield;appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.stepper{display:inline-flex;align-items:center;gap:.3em;max-width:100%}
+.stepper input[type="number"]{width:4.2em;min-width:0;text-align:center;padding-inline:.4em}
+.stepper input.count-input{width:3.4em}
+.stepper-btn{
+  display:inline-grid;place-items:center;flex:none;width:2.2em;height:2.2em;padding:0;
+  border:1px solid var(--outline);border-radius:50%;background:none;color:inherit;cursor:pointer;
+}
+.stepper-btn:hover{background:var(--hover)}
+.stepper-btn::before,.stepper-btn.up::after{content:"";grid-area:1/1;width:40%;height:1.5px;border-radius:1px;background:currentColor}
+.stepper-btn.up::after{transform:rotate(90deg)}

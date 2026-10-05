@@ -29,7 +29,7 @@ export function renderProgram(id) {
         times.length ? h('label', { class: 'check-row' },
           h('input', { type: 'checkbox', checked: showHow, onchange: (e) => { S.filters.programShowHow = e.target.checked; render(); } }),
           h('span', { class: 'box', 'aria-hidden': 'true' }),
-          h('span', { class: 'caption' }, 'Ukázat i Jak to probíhá')) : null,
+          h('span', { class: 'caption' }, 'Ukázat i „Jak to probíhá“')) : null,
       ], { cls: 'no-print' }),
       rule(),
       times.length

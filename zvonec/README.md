@@ -1,7 +1,7 @@
 # Zvonec – kdo co kdy dělá
 
 Zvonec je správa sboru a plánovač setkání pro Církev jako kráva: **lidé, skupiny, kalendář, rozpis služeb,
-osnova setkání a kolize**. Běží jen na GitHubu – aplikace na GitHub Pages, data v soukromém repu,
+osnova setkání a upozornění**. Běží jen na GitHubu – aplikace na GitHub Pages, data v soukromém repu,
 kontrola v GitHub Actions. Žádný server, žádná další služba.
 
 **Ukázka s vymyšlenými lidmi:** https://manifest.cirkevjakokrava.cz/zvonec/
@@ -31,12 +31,12 @@ něco jiného než role v týmu a nikdy se nejmenují stejně.
 | --- | --- |
 | **Moje** | úvod pro členy: co čeká na odpověď (Jdu / Nemůžu), moje služby na osm týdnů dopředu i do kalendáře v telefonu (.ics), kdy nemůžu, moje skupiny s vedoucími, můj kontakt |
 | **Kalendář** | měsíc v mřížce (na mobilu seznam dnů), nové setkání ze šablony nebo bez ní, opakování (každý týden, každých 14 dní, každý měsíc) |
-| **Setkání** | kdo co dělá po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout zbytek“, „Stejní lidi jako minule“, stavy navrženo → potvrzeno → nemůže, výjimka u kolize, zrušení a úpravy celé řady |
-| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…) – časy se dopočítají, kdo vede, se doplní podle rolí, body jdou posouvat, „Stejná osnova jako minule“. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout zbytek“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
+| **Setkání** | kdo co dělá po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout lidi“, „Obsadit jako minule“, stavy navrženo → potvrzeno → nemůže, výjimka u upozornění, zrušení a úpravy celé řady |
+| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…) – časy se dopočítají, kdo vede, se doplní podle rolí, body jdou posouvat, „Převzít minulou osnovu“. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
 | **Rozpis** | tabulka měsíce (řádky setkání, sloupce role po týmech), výběr druhu setkání a týmu, tisk na A4 na šířku – bez telefonů |
-| **Lidé** | hledání podle jména, telefonu i e-mailu, pilulky Kdo chodí · Členové · Nečlenové · Děti · Už nechodí · Všichni · Chybí údaje, domácnosti, karta člověka (vlevo údaje z registru, vpravo skupiny, služby, kdy nemůže, kolik slouží a kolize) |
+| **Lidé** | hledání podle jména, telefonu i e-mailu, pilulky Kdo chodí · Členové · Nečlenové · Děti · Už nechodí · Všichni · Chybí údaje, domácnosti, karta člověka (vlevo údaje z registru, vpravo týmy a skupiny, služby, kdy nemůže sloužit, kolik služeb zvládne a upozornění) |
 | **Skupiny** | týmy, skupinky a vedení, role týmu (kolik lidí, bez čeho to nejde, jen pro dospělé, u dětí, časové okno, které role zvládne jeden člověk naráz), členové a co umí, vedoucí, archiv |
-| **Kolize** | všechno, co v rozpisu nesedí, od dneška i zpětně, filtr chyby / pozor / info |
+| **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně, filtr chyby / pozor / info |
 | **Nastavení** | Sbor (název, adresa, kolik služeb je moc, kdy Zvonec bučí), Šablony setkání, Místa, Formáty, Přihlášení, Záloha, Můj účet |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
@@ -49,10 +49,10 @@ v Lidech pod „Chybí údaje“, ať ji někdo doplní.
 | | správce a vedoucí | člen |
 | --- | --- | --- |
 | jméno, domácnost | ano | ano |
-| telefon, e-mail | ano | jen když to člověk dovolil („Ostatní vidí“) |
+| telefon, e-mail | ano | jen když to člověk dovolil („Telefon a e-mail vidí“) |
 | členství, narození, poznámka, souhlas, přihlášení | ano | ne |
 | skupiny | ano | jen názvy |
-| služby, kdy nemůže, kolize | ano | jen svoje (rozpis vidí celý) |
+| služby, kdy nemůže, upozornění | ano | jen svoje (rozpis vidí celý) |
 
 Správce navíc zakládá a ruší přihlášení a mění GitHub klíč. Vedoucí plánuje, upravuje lidi a skupiny a zve
 nové lidi. Člen vidí kalendář, rozpis a osnovu, odpovídá na svoje služby, zapisuje, kdy nemůže, a upravuje
@@ -60,7 +60,7 @@ svůj kontakt.
 
 Členství ve sboru prozrazuje vyznání, proto se v pohledu pro členy ani v tisku nikdy neukazuje.
 
-### Kolize
+### Upozornění
 
 Chyba = takhle to nepůjde (v aplikaci plná plocha). Pozor = ať o tom víš (čárkovaný obrys). U konkrétní
 služby jde chybu **povolit jako výjimku** a napsat proč – Zvonec ji pak hlásí jen jako info.
@@ -147,11 +147,11 @@ Přesný tvar záznamů je v [ARCHITECTURE.md](ARCHITECTURE.md). Smazaný člov�
 ```
 docs/zvonec/index.html, style.css, imprint.svg   kostra stránky (CSP: ven jen api.github.com), design, tisk A4
 docs/zvonec/app.js        start (ukázka / naostro), přihlášení, adresy obrazovek, stav ukládání
-docs/zvonec/lib/          logika bez obrazovek: lidé, skupiny, setkání, osnova, plánování, kolize,
+docs/zvonec/lib/          logika bez obrazovek: lidé, skupiny, setkání, osnova, plánování, upozornění,
                           přihlášení, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
 docs/zvonec/ui/           obrazovky: Moje, kalendář, setkání, osnova, rozpis, lidé, skupiny, výběr lidí,
-                          kolize, nastavení, přihlášení
-zvonec/check.mjs          kontrola kolizí z příkazové řádky / Actions
+                          upozornění, nastavení, přihlášení
+zvonec/check.mjs          kontrola upozornění z příkazové řádky / Actions
 zvonec/test/              testy (node --test zvonec/test/*.test.mjs)
 zvonec/data-repo/         vzory workflow pro datové repo (web.yml, check.yml)
 ```
@@ -180,7 +180,7 @@ Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (
 
 | chceme | jde? | jak |
 | --- | --- | --- |
-| plánování, kolize, osnova, správa lidí a skupin | ano | aplikace + soukromé repo |
+| plánování, upozornění, osnova, správa lidí a skupin | ano | aplikace + soukromé repo |
 | přihlášení bez GitHub účtu | ano | jméno + heslo, jeden zapečetěný klíč (jako Playbook) |
 | registrace nových lidí online | ano, pozvánkou | odkaz na 14 dní, jen jednou; vyplní údaje, souhlas a heslo |
 | členové potvrzují nebo odmítají svoje služby | ano | po přihlášení v Moje nebo u setkání |
@@ -204,7 +204,7 @@ umí poslat e-mail nebo SMS – to už je mimo GitHub).
 - **Jak dlouho:** hosty, kteří rok nepřišli, smažeme. U bývalých členů po roce necháme jen jméno a data
   členství.
 - **Kdo co vidí:** viz tabulka výš. Členství prozrazuje vyznání (zvláštní kategorie údajů), proto ho člen
-  nevidí u nikoho a netiskne se. Důvod, proč někdo nemůže, a kolize vidí jen vedoucí. Rozpis na nástěnku
+  nevidí u nikoho a netiskne se. Důvod, proč někdo nemůže, a upozornění vidí jen vedoucí. Rozpis na nástěnku
   netiskne telefony.
 - **Kde data leží:** jen v **soukromém** repu, na web jde jen `access.json` bez jmen (workflow to hlídá).
   Na veřejné ukázce jsou jen vymyšlení lidé (`@example.cz`). Žádné pastorační, zdravotní ani finanční
@@ -216,7 +216,7 @@ umí poslat e-mail nebo SMS – to už je mimo GitHub).
 ## Vývoj
 
 ```
-node --test zvonec/test/*.test.mjs          # testy (kolize, plánování, osnova, přihlášení, úložiště a slučování, .ics, ukázka, check.mjs)
+node --test zvonec/test/*.test.mjs          # testy (upozornění, plánování, osnova, přihlášení, úložiště a slučování, .ics, ukázka, check.mjs)
 cd docs && python3 -m http.server 8000      # pak http://localhost:8000/zvonec/ (ukázka)
 node zvonec/check.mjs cesta/k/data --today 2026-10-04 --markdown souhrn.md
 ```

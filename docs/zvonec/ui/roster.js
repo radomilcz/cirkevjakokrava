@@ -8,7 +8,7 @@ import { needsOf } from '../lib/events.js';
 import { displayName, personById } from '../lib/people.js';
 import { addMonths, monthName, monthOf, prettyDay, prettyTime, today } from '../lib/time.js';
 
-const KIND_FILTERS = [['service', 'Neděle'], ['rehearsal', 'Zkoušky'], ['smallGroup', 'Skupinky'], ['event', 'Akce'], ['', 'Všechno']];
+const KIND_FILTERS = [['service', EVENT_KIND_LABELS.service], ['rehearsal', 'Zkoušky'], ['smallGroup', 'Skupinky'], ['event', 'Akce'], ['', 'Všechno']];
 const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
 
 /** `month` = 'YYYY-MM' from the hash, or '' for the current month. */
@@ -98,8 +98,8 @@ export function renderRoster(month) {
         ? emptyState('Tady nic.', 'Tahle setkání nepotřebují nikoho z vybraného týmu.', null)
         : emptyState('Prázdná pastva.', 'Tenhle měsíc tu nic takového není.', link('Do kalendáře', `#kalendar/${shown}`, 'btn')),
     events.length && columns.length ? h('p', { class: 'note no-print' }, leader
-      ? 'Kurzívou = navrženo, ještě nepotvrdil(a). Plná buňka = chyba, čárkovaná = pozor, něco chybí.'
-      : 'Kurzívou = navrženo, ještě nepotvrdil(a). Čárkovaná buňka = tady ještě někdo chybí.') : null,
-    events.length && columns.length ? h('p', { class: 'note print-only' }, 'Kurzívou = ještě nepotvrdil(a). Kdo nemůže, ať dá vědět vedoucímu.') : null,
+      ? 'Kurzívou: ještě nepotvrdil(a). ● takhle to nepůjde, ○ ještě někdo chybí.'
+      : 'Kurzívou: ještě nepotvrdil(a). ○ ještě někdo chybí.') : null,
+    events.length && columns.length ? h('p', { class: 'note print-only' }, 'Kurzívou: ještě nepotvrdil(a). Kdo nemůže, ať dá vědět vedoucímu.') : null,
   ];
 }

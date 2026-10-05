@@ -4,6 +4,7 @@
 
 import { S, setHooks, can, recompute, isUpcoming, loadRemembered, forgetRemembered } from './ui/state.js';
 import { h, btn, nodes, emptyState, pageHeader, isDialogOpen } from './ui/dom.js';
+import './ui/stepper.js';   // − and + buttons on every number field
 import { GithubStore } from './lib/store/github.js';
 import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
@@ -38,7 +39,7 @@ const ROUTES = {
   domacnost: { render: ([id]) => renderHousehold(id), menu: 'lide' },
   skupiny: { render: () => renderGroups() },
   skupina: { render: ([id]) => renderGroup(id), menu: 'skupiny' },
-  kolize: { render: () => renderConflicts() },
+  upozorneni: { render: () => renderConflicts() },
   nastaveni: { render: ([section]) => renderSettings(section || ''), member: ([section]) => !section || section === 'formaty' || section === 'ucet' },
 };
 
@@ -49,9 +50,10 @@ const REDIRECTS = [
   [/^setkani\/([^/]+)\/(porad|prubeh)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^formaty$/, () => 'nastaveni/formaty'],
   [/^sluzby$/, () => 'skupiny'],
+  [/^kolize$/, () => 'upozorneni'],
 ];
 
-const LEADER_MENU = [['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé'], ['skupiny', 'Skupiny'], ['kolize', 'Kolize'], ['nastaveni', 'Nastavení']];
+const LEADER_MENU = [['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé'], ['skupiny', 'Skupiny'], ['upozorneni', 'Upozornění'], ['nastaveni', 'Nastavení']];
 const MEMBER_MENU = [['moje', 'Moje'], ['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé']];
 
 const homeSection = () => (can('leader') ? 'kalendar' : 'moje');
@@ -95,7 +97,7 @@ function updateMenu(activeSection) {
     const palette = menu.querySelector('.palette');
     for (const [section, label] of leader ? LEADER_MENU : MEMBER_MENU) {
       menu.insertBefore(h('a', { href: `#${section}`, dataset: { section } },
-        label, section === 'kolize' ? [' ', h('span', { class: 'count', hidden: true })] : null), palette);
+        label, section === 'upozorneni' ? [' ', h('span', { class: 'count', hidden: true })] : null), palette);
     }
   }
   menu.querySelectorAll(':scope > a').forEach((a) => {
@@ -148,15 +150,15 @@ function showSaveStatus({ status, error }) {
   const el = document.querySelector('.save-status');
   const failed = status === 'error' || status === 'offline';
   el.classList.toggle('error', failed);
-  const where = S.store?.kind === 'github' ? 'na GitHubu' : 'jen v tomhle prohlížeči';
+  el.title = failed && error ? error : '';   // the technical detail for whoever helps, not in the sentence
   const texts = {
-    saved: `Uloženo ${where}.`,
-    pending: 'Neuloženo…',
+    saved: S.store?.kind === 'github' ? 'Uloženo.' : 'Uloženo jen v tomhle prohlížeči.',
+    pending: 'Čeká na uložení…',
     saving: 'Ukládám…',
   };
   if (failed) {
-    const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : `Uložit se nepovedlo. ${error || ''} Změny mám schované.`;
-    el.replaceChildren(text, btn('Zkusit znova', () => S.sync.save(), 'mini'));
+    const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : 'Uložit se nepovedlo. Změny mám schované.';
+    el.replaceChildren(text, ' ', btn('Zkusit znovu', () => S.sync.save(), 'mini'));
   } else {
     el.textContent = texts[status] || '';
   }
@@ -202,7 +204,7 @@ async function startLive(result) {
     data = await load(store);
   } catch (error) {
     S.me = null;
-    S.screen = () => renderLogin(`GitHub se nepovedlo načíst: ${error.message}`);
+    S.screen = () => renderLogin(`Nepovedlo se načíst data. Zkus to za chvíli znovu. (${error.message})`);
     renderApp();
     return;
   }

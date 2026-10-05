@@ -87,7 +87,7 @@ test('K1 does not apply to declined assignments and cancelled events', () => {
   ];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K14:info']);
-  assert.match(k[0].text, /je zrušená, ale jeden člověk o tom možná neví/);
+  assert.match(k[0].text, /^Zrušeno: .*\. Jeden člověk z rozpisu o tom možná neví\.$/);
 });
 
 test('K2: two roles at once – combinableWith pair and a role outside its window pass', () => {
@@ -125,7 +125,7 @@ test('K3 availability, K4 not skilled, override turns the error into info', () =
   let k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K3:error', 'K4:error']);
   assert.match(k.find((x) => x.code === 'K3').text, /^Jana v tu dobu nemůže \(dovolená\)\. V rozpisu má: Zvuk\.$/);
-  assert.equal(k.find((x) => x.code === 'K4').text, 'Jana nemá v týmu Technika službu Zvuk. Umí to, nebo je to omyl?');
+  assert.equal(k.find((x) => x.code === 'K4').text, 'Jana nemá v týmu Technika roli Zvuk. Umí to, nebo je to omyl?');
   d.events[0].assignments[0].override = { reason: 'zvuk jen pustí z mobilu', by: 'petr', at: TODAY };
   k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K3:info', 'K4:info']);
@@ -189,7 +189,7 @@ test('K7 too many in a month, K8 Sundays in a row, rehearsals do not count', () 
   d.events.push(event('zk', '2026-10-08T18:00', '2026-10-08T20:00', { kind: 'rehearsal', assignments: [asg('pz', 'zvuk', 'petr')] }));
   const k = findConflicts(d, { today: '2026-09-01' });
   assert.deepEqual(codes(k), ['K7:warning', 'K8:warning']);
-  assert.match(k.find((x) => x.code === 'K7').text, /3 služeb, chce nejvýš 2/);
+  assert.match(k.find((x) => x.code === 'K7').text, /3 služby, chce nejvýš 2/);
   assert.deepEqual(k.find((x) => x.code === 'K7').eventIds, ['n0', 'n1', 'n2']);
   assert.equal(k.find((x) => x.code === 'K8').eventId, 'n2');
   assert.match(k.find((x) => x.code === 'K8').text, /slouží už 3\. neděli po sobě/);
@@ -334,7 +334,7 @@ test('K17: a format leads with a role that no longer exists', () => {
   e.program = [{ id: 'i1', formatId: 'f-gone', minutes: 5 }];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K17:warning'], 'no K5 for the unknown role');
-  assert.equal(k[0].text, 'Modlitba: nikdo to nevede, služba z formátu už neexistuje. Vyber člověka, nebo uprav formát.');
+  assert.equal(k[0].text, 'Modlitba: nikdo to nevede, role z formátu už neexistuje. Vyber člověka, nebo uprav formát.');
   e.program[0].personId = 'petr';
   assert.deepEqual(findConflicts(d, { today: TODAY }), []);
 });

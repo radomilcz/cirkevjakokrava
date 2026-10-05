@@ -113,9 +113,9 @@ export function renderGroups() {
   const other = active.filter((g) => !GROUP_KINDS.includes(g.kind)).sort(byName);
   return [
     pageHeader('kdo co dělá', 'Skupiny', 'Týmy slouží na setkáních a z jejich rolí se skládá rozpis. Skupinky a vedení jsou lidé, kteří k sobě patří.'),
-    actions(btn(plus('Nová skupina'), () => groupDialog(), 'primary small')),
+    actions(btn(plus('Přidat skupinu'), () => groupDialog(), 'primary small')),
     rule(),
-    groups.length ? null : emptyState('Zatím žádná skupina.', 'Začni třeba týmem Technika nebo středeční skupinkou.', btn('Nová skupina', () => groupDialog(), 'primary')),
+    groups.length ? null : emptyState('Zatím žádná skupina.', 'Začni třeba týmem Technika nebo středeční skupinkou.', btn('Přidat skupinu', () => groupDialog(), 'primary')),
     GROUP_KINDS.map((kind) => {
       const list = active.filter((g) => g.kind === kind).sort(byName);
       return list.length ? section([KIND_HEADINGS[kind], count(String(list.length))], groupList(list)) : null;
@@ -148,7 +148,7 @@ function groupDialog(group) {
     fields: [
       textField('name', 'Název', group?.name, { attr: { autofocus: true, placeholder: 'Technika' } }),
       selectField('kind', 'Druh', GROUP_KINDS.map((k) => [k, KIND_HINTS[k]]), group?.kind || 'team'),
-      textArea('description', 'Popis (nepovinný)', group?.description, { attr: { rows: 3, placeholder: 'Co dělají, kdy se scházejí.' } }),
+      textArea('description', 'Popis', group?.description, { attr: { rows: 3, placeholder: 'Co dělají, kdy se scházejí.' } }),
     ],
     save: (f) => {
       const name = f.name.value.trim();
@@ -196,7 +196,7 @@ export function renderGroup(id) {
     ]),
     actions([
       btn('Upravit', () => groupDialog(group), 'small'),
-      btn(group.archived ? 'Vrátit z archivu' : 'Do archivu', () => toggleArchive(group), 'small'),
+      btn(group.archived ? 'Vrátit z archivu' : 'Dát do archivu', () => toggleArchive(group), 'small'),
       btn('Smazat', () => deleteGroup(group), 'small plain'),
     ]),
     rule(),
@@ -223,7 +223,7 @@ function toggleArchive(group) {
       if (!g) return;
       g.archived = true;
       change(`${g.name} do archivu`);
-    }, { buttonLabel: 'Do archivu' });
+    }, { buttonLabel: 'Dát do archivu' });
 }
 
 function deleteGroup(group) {
@@ -231,7 +231,7 @@ function deleteGroup(group) {
   const use = assignmentUse(roleIds);
   const memberCount = membersOf(S.data, group.id).length;
   const parts = [
-    memberCount ? `Lidé ze skupiny (${memberCount}) zůstanou v registru, jen už v ní nebudou.` : '',
+    memberCount ? `Lidé ze skupiny (${memberCount}) zůstanou v Lidech, jen už v ní nebudou.` : '',
     roleIds.length ? `Zmizí i ${plural(roleIds.length, 'role', 'role', 'rolí')} týmu – ze šablon, formátů i z rozpisu.` : '',
     use.all ? `${useText('Tým', use)} Všechny se z rozpisu smažou. Jestli chceš historii nechat, dej skupinu radši do archivu.` : '',
   ];
@@ -252,7 +252,7 @@ function deleteGroup(group) {
 // ---------- roles ----------
 
 function rolesSection(group, roles) {
-  return section(['Role', count(roles.length ? 'z nich se skládá rozpis' : '')],
+  return section(['Role v týmu', count(roles.length ? 'z nich se skládá rozpis' : '')],
     roles.length
       ? h('ul', { class: 'list' }, roles.map((r) => roleRow(r)))
       : note('Tým zatím nemá žádnou roli. Přidej třeba Zvuk, Projekci nebo Kafe.'),
@@ -321,12 +321,12 @@ function roleDialog(group, role) {
     fields: [
       textField('name', 'Název', role?.name, { attr: { autofocus: true, placeholder: 'Zvuk' } }),
       textField('count', 'Kolik lidí obvykle', role?.count || 1, { type: 'number', attr: { min: 1, max: 20 } }),
-      h('div', { class: 'field full' }, h('span', {}, 'Kdy (minuty od začátku)'),
+      h('div', { class: 'field full' }, h('span', {}, 'Od které do které minuty'),
         h('span', { class: 'minute-range' },
           numberInput('startMin', role?.window?.startMin, 'Od minuty', 'od'),
           h('span', { 'aria-hidden': 'true' }, '–'),
           numberInput('endMin', role?.window?.endMin, 'Do minuty', 'do')),
-        h('small', {}, 'Prázdné = celou dobu. Kafe po skončení třeba 90–130, uvítání −15–15.')),
+        h('small', {}, 'Počítá se od začátku setkání. Nech prázdné, když je to na celou dobu. Třeba kafe po skončení 90–130, uvítání −15–15.')),
       fieldGroup('Vlastnosti',
         checkboxField('flags', 'Bez toho to nejde. Když týden předem nikdo není, Zvonec hlásí chybu.', !!role?.essential, 'essential'),
         checkboxField('flags', 'Jen pro dospělé.', !!role?.adultsOnly, 'adultsOnly'),
@@ -380,14 +380,14 @@ function deleteRole(role) {
 
 function membersSection(group, members, roles) {
   const team = group.kind === 'team';
-  return section(['Lidé', count(people(members.length))],
+  return section([team ? 'Kdo je v týmu' : 'Kdo je ve skupině', count(people(members.length))],
     team && roles.length && members.length
-      ? note('U každé role: umí = Zvonec ho nabízí do rozpisu, učí se = může jít do služby, ale ať je u toho někdo zkušený.')
+      ? note('Kdo roli „umí“, toho Zvonec nabízí do rozpisu. Kdo se „učí“, může sloužit, ale ať je u toho někdo zkušený.')
       : null,
     members.length
       ? h('ul', { class: 'member-list' }, members.map((m) => memberRow(group, m, roles)))
       : note(team ? 'V týmu zatím nikdo není.' : 'Ve skupině zatím nikdo není.'),
-    actions(btn(plus('Přidat do skupiny'), () => addPeople(group), 'primary small')));
+    actions(btn(plus(team ? 'Přidat do týmu' : 'Přidat do skupiny'), () => addPeople(group), 'primary small')));
 }
 
 function memberRow(group, member, roles) {
@@ -408,7 +408,7 @@ function memberRow(group, member, roles) {
       person ? link(fullName(person), `#osoba/${person.id}`, 'member-name') : h('span', { class: 'member-name' }, fullName(null)),
       h('span', { class: 'member-tools' },
         leaderBox,
-        removeButton(`Odebrat ${name} ze skupiny`, () => removeFromGroup(group, member.personId)))),
+        removeButton(`Odebrat ze skupiny: ${name}`, () => removeFromGroup(group, member.personId)))),
     roles.length ? h('div', { class: 'member-roles' }, roles.map((r) => h('div', { class: 'member-role' },
       h('span', { class: 'role-name' }, r.name),
       segment(`skill-${member.personId}-${r.id}`, SKILL_OPTIONS, member.roles?.[r.id] || '', {
@@ -444,8 +444,8 @@ function removeFromGroup(group, personId) {
   const name = displayName(person);
   const duties = group.kind === 'team' ? upcomingAssignments(personId, rolesOf(S.data, group.id).map((r) => r.id)) : [];
   const text = [
-    `${fullName(person)} odejde ze skupiny ${group.name}. V registru zůstane.`,
-    duties.length ? `V rozpisu má ještě ${plural(duties.length, 'službu', 'služby', 'služeb')} za tenhle tým. Když je necháš, Zvonec je ukáže v Kolizích.` : '',
+    `${fullName(person)} odejde ze skupiny ${group.name}. V Lidech zůstane.`,
+    duties.length ? `V rozpisu má ještě ${plural(duties.length, 'službu', 'služby', 'služeb')} za tenhle tým. Když je necháš, Zvonec je ukáže v Upozorněních.` : '',
   ].filter(Boolean).join(' ');
   confirmDialog('Odebrat ze skupiny?', text, (form) => {
     if (!groupById(S.data, group.id)) return;

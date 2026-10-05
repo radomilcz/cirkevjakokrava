@@ -1,4 +1,4 @@
-// #kolize – conflict list and override. Also the conflict card and the override dialog the event
+// #upozorneni – conflict list and override. Also the conflict card and the override dialog the event
 // detail uses.
 
 import {
@@ -76,10 +76,10 @@ export function overrideDialog(assignmentId) {
   const by = existing?.by ? displayName(personById(S.data, existing.by)) : '';
   const form = h('form', { method: 'dialog', novalidate: true },
     h('p', { class: 'eyebrow' }, 'výjimka'),
-    h('h2', {}, `${displayName(person)} i tak`),
-    note('Když víš, že to půjde (třeba odejde ze zkoušky dřív), napiš proč. Zvonec to pak nebude hlásit jako chybu.'),
-    existing?.at ? note(`Výjimku ${by ? `dal(a) ${by}` : 'někdo dal'} ${prettyDay(existing.at)}.`) : null,
-    textField('reason', 'Proč to platí', existing?.reason || '', { attr: { autofocus: true, placeholder: 'odejde ze zkoušky dřív' } }),
+    h('h2', {}, `${displayName(person)} to zvládne i tak?`),
+    note('Napiš proč a Zvonec to přestane hlásit jako chybu.'),
+    existing?.at ? note(`Výjimku ${by ? `dal(a) ${by}` : 'někdo dal'} ${prettyDay(existing.at, false)}`) : null,
+    textField('reason', 'Proč to půjde', existing?.reason || '', { attr: { autofocus: true, placeholder: 'odejde ze zkoušky dřív' } }),
     formErrorLine(),
     h('div', { class: 'actions' },
       existing ? btn('Zrušit výjimku', () => {
@@ -89,11 +89,11 @@ export function overrideDialog(assignmentId) {
         change(`zrušená výjimka ${displayName(person)}`);
       }, 'left plain') : null,
       btn('Zpět', closeDialog),
-      h('button', { type: 'submit', class: 'btn primary' }, 'Platí')));
+      h('button', { type: 'submit', class: 'btn primary' }, 'Povolit')));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const reason = form.elements.reason.value.trim();
-    if (!reason) { formError(form, 'Napiš, proč to platí.'); return; }
+    if (!reason) { formError(form, 'Napiš, proč to půjde.'); return; }
     const fresh = findAssignment(S.data, assignmentId);
     if (!fresh) { closeDialog(); return; }
     fresh.assignment.override = { reason, at: today() };
@@ -116,7 +116,7 @@ export function renderConflicts() {
   const pick = (key) => (value) => { f[key] = value; render(); };
 
   return [
-    pageHeader('bučíme', 'Kolize', 'Kdo je naráz na dvou místech, kdo má dovolenou a kde ještě nikdo není. Plná karta = chyba, takhle to nepůjde. Čárkovaná = pozor, něco chybí.'),
+    pageHeader('bučíme', 'Upozornění', 'Kdo je naráz na dvou místech, kdo má dovolenou a kde ještě nikdo není. Plná karta je chyba, takhle to nepůjde. Čárkovaná znamená, že něco chybí.'),
     rule(),
     h('div', { class: 'filter-row' },
       filterButtons([['all', `Všechno ${countOf('all')}`], ...SEVERITIES.map((s) => [s, `${SEVERITY_HEADINGS[s]} ${countOf(s)}`])],

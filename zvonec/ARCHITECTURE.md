@@ -185,7 +185,7 @@ and writes `repo.json` = `{ "owner", "repo" }` (read by the first-setup screen).
 
 ## 5. Screens and routes
 
-Leader navigation: **Kalendář · Rozpis · Lidé · Skupiny · Kolize · Nastavení**.
+Leader navigation: **Kalendář · Rozpis · Lidé · Skupiny · Upozornění · Nastavení**.
 Member navigation: **Moje · Kalendář · Rozpis · Lidé** (Lidé = directory).
 
 | route | screen | who |
@@ -199,13 +199,13 @@ Member navigation: **Moje · Kalendář · Rozpis · Lidé** (Lidé = directory)
 | `#osoba/<id>` | person card | leader; member = reduced card |
 | `#domacnosti`, `#domacnost/<id>` | households | leader |
 | `#skupiny`, `#skupina/<id>` | groups, group card with members × roles | leader |
-| `#kolize` | conflicts | leader |
+| `#upozorneni` | conflicts („Upozornění“) | leader |
 | `#nastaveni`, `#nastaveni/sablony` · `mista` · `formaty` · `prihlaseni` · `zaloha` · `ucet` | settings | leader; member only `formaty` (read-only) and `ucet` (`#nastaveni` shows a member the account) |
 | `#formaty` | alias of `#nastaveni/formaty` | all |
 | `#pozvanka/<code>` | registration | logged out |
 
 Old slugs redirect: `#udalost/<id>` → `#setkani/<id>`; `#porad/<id>`, `#setkani/<id>/porad` and
-`#setkani/<id>/prubeh` → `#setkani/<id>/osnova`; `#sluzby` → `#skupiny`. An empty or unknown hash opens
+`#setkani/<id>/prubeh` → `#setkani/<id>/osnova`; `#sluzby` → `#skupiny`; `#kolize` → `#upozorneni`. An empty or unknown hash opens
 `#kalendar` for leaders and `#moje` for members; a member opening a leader route lands on `#moje`.
 Inside a screen the UI still hides what members must not see (§6).
 

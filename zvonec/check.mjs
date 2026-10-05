@@ -68,14 +68,14 @@ const line = (c) => {
 };
 
 const errorWord = (n) => (n === 1 ? 'chyba' : n >= 2 && n <= 4 ? 'chyby' : 'chyb');
-console.log(`Kolize k ${today}: ${errors.length} ${errorWord(errors.length)}, ${warnings.length} varování.`);
+console.log(`Upozornění k ${today}: ${errors.length} ${errorWord(errors.length)}, ${warnings.length} varování.`);
 for (const c of errors) console.log(`::error title=${CODES[c.code]}::${line(c)}`);
 for (const c of warnings) console.log(`::warning title=${CODES[c.code]}::${line(c)}`);
 
 const markdown = option('--markdown') || process.env.GITHUB_STEP_SUMMARY;
 if (markdown) {
   const text = [
-    `## Kolize k ${today}`,
+    `## Upozornění k ${today}`,
     errors.length || warnings.length ? '' : 'Nikdo nebučí. Rozpis sedí.',
     errors.length ? `### Chyby (${errors.length})\n${errors.map((c) => `- ${line(c)}`).join('\n')}` : '',
     warnings.length ? `### Pozor (${warnings.length})\n${warnings.map((c) => `- ${line(c)}`).join('\n')}` : '',

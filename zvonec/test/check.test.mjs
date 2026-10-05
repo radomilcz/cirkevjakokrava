@@ -30,11 +30,11 @@ test('check.mjs: the demo has errors – exit 1, Czech annotations and a markdow
     const summary = join(root, 'summary.md');
     const r = run(dir, '--today', TODAY, '--markdown', summary);
     assert.equal(r.status, 1, r.stderr);
-    assert.match(r.stdout, /^Kolize k 2026-10-05: \d+ chyb[ay]?, \d+ varování\./);
+    assert.match(r.stdout, /^Upozornění k 2026-10-05: \d+ chyb[ay]?, \d+ varování\./);
     assert.match(r.stdout, /::error title=Dvakrát naráz::/);
     assert.match(r.stdout, /::warning title=Neobsazeno::/);
     const md = readFileSync(summary, 'utf8');
-    assert.match(md, /^## Kolize k 2026-10-05/);
+    assert.match(md, /^## Upozornění k 2026-10-05/);
     assert.match(md, /### Chyby \(\d+\)/);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

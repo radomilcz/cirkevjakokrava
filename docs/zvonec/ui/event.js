@@ -58,28 +58,28 @@ export function renderEvent(id) {
     meta([
       ['kdy', sameDay ? `${prettyTime(event.start)}–${prettyTime(event.end)}` : prettyRange(event)],
       places.length ? ['kde', places.join(', ')] : null,
-      series.length > 1 ? ['řada', `${position + 1}. z ${series.length}`] : null,
+      series.length > 1 ? ['opakuje se', `${position + 1}. z ${series.length}`] : null,
     ]),
     event.note ? h('p', { class: 'lead' }, event.note) : null,
     actions([
-      leader && !event.cancelled && hasNeeds ? btn('Navrhnout zbytek', () => proposeRest(id), 'primary') : null,
+      leader && !event.cancelled && hasNeeds ? btn('Navrhnout lidi', () => proposeRest(id), 'primary') : null,
       leader && !event.cancelled && previous && (previous.assignments || []).some((a) => a.status !== 'declined') && hasNeeds
-        ? btn('Stejní lidi jako minule', () => copyPeople(id)) : null,
+        ? btn('Obsadit jako minule', () => copyPeople(id)) : null,
       leader ? btn('Upravit', () => eventDialog({ event })) : null,
-      btn('Do kalendáře (.ics)', () => download(`${event.title}-${dayOf(event.start)}.ics`, ics(S.data, [{ event }], event.title), 'text/calendar'), 'plain'),
+      btn('Do svého kalendáře', () => download(`${event.title}-${dayOf(event.start)}.ics`, ics(S.data, [{ event }], event.title), 'text/calendar'), 'plain'),
     ]),
     layout([
       section('Kdo co dělá', planList(event, conflicts, leader)),
       leader || (event.program || []).length ? programSection(event, previous, leader) : null,
     ], [
-      leader ? section(['Kolize', count(conflicts.length ? String(conflicts.length) : '')],
+      leader ? section(['Upozornění', count(conflicts.length ? String(conflicts.length) : '')],
         conflicts.length
           ? h('ul', { class: 'conflict-list' }, conflicts.map((c) => {
             const other = (c.eventIds || []).find((x) => x !== id);
             return conflictCard(c, { href: other ? `#setkani/${other}` : null, withEvent: !!other });
           }))
           : h('p', { class: 'all-ok' }, h('span', { class: 'bullseye', 'aria-hidden': 'true' }), 'Nikdo nebučí. Rozpis sedí.')) : null,
-      series.length > 1 ? section(['Řada', count(`${position + 1}. z ${series.length}`)],
+      series.length > 1 ? section(['Předchozí a další', count(`${position + 1}. z ${series.length}`)],
         h('div', { class: 'series-nav' },
           series[position - 1] ? link(prettyDay(series[position - 1].start), `#setkani/${series[position - 1].id}`, 'btn small arrow-back') : null,
           series[position + 1] ? link(`${prettyDay(series[position + 1].start)} →`, `#setkani/${series[position + 1].id}`, 'btn small') : null)) : null,
@@ -141,12 +141,12 @@ function planList(event, conflicts, leader) {
           ? h('button', { type: 'button', class: 'slot empty', onclick: () => pickFor(event.id, need.roleId), 'aria-label': `Kdo na ${roleName}?` }, 'kdo?')
           : h('span', { class: 'slot empty' }, 'kdo?'))),
         leader && !empty && !event.cancelled
-          ? btn('+ další', () => pickFor(event.id, need.roleId), 'mini plain', { 'aria-label': `Přidat dalšího: ${roleName}` }) : null),
+          ? btn('+ další', () => pickFor(event.id, need.roleId), 'mini plain', { 'aria-label': `Přidat dalšího na ${roleName}` }) : null),
       h('span', {})));
   }
   return [list, note(leader
-    ? 'Kurzívou = navrženo. Klik na stav ho přepne: navrženo → potvrzeno → nemůže. Klik na jméno = vyměnit.'
-    : 'Kurzívou = navrženo. U svojí služby dej vědět: potvrdit, nebo nemůžu.')];
+    ? 'Kurzívou jsou návrhy. Klikni na stav a přepneš ho, klikni na jméno a vyměníš člověka.'
+    : 'Kurzívou jsou návrhy. U svojí služby dej vědět, jestli můžeš.')];
 }
 
 function slot(event, a, roleName, { leader, me, severity, conflicts }) {
@@ -173,7 +173,7 @@ function slot(event, a, roleName, { leader, me, severity, conflicts }) {
     type: 'button', class: 'status', title: a.override ? `Výjimka: ${a.override.reason}` : 'Vím o tom, platí to i tak',
     onclick: () => overrideDialog(a.id),
   }, a.override ? 'výjimka' : 'povolit výjimku') : null,
-  removeButton(`Odebrat ${name}`, () => {
+  removeButton(`Odebrat: ${name}`, () => {
     const e = fresh(event.id);
     if (!e) return;
     e.assignments = (e.assignments || []).filter((x) => x.id !== a.id);
@@ -213,7 +213,7 @@ function pickFor(eventId, roleId, assignmentId) {
   const replacing = assignmentId ? event.assignments.find((a) => a.id === assignmentId) : null;
   const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && a.status !== 'declined').map((a) => a.personId);
   openPicker({
-    title: replacing ? `Místo: ${displayName(personById(S.data, replacing.personId))}` : `Kdo na ${role?.name || 'službu'}?`,
+    title: replacing ? `Vyměnit: ${displayName(personById(S.data, replacing.personId))}` : `Kdo na ${role?.name || 'službu'}?`,
     eventId,
     roleId,
     scope: 'skilled',
@@ -258,7 +258,7 @@ function copyPeople(eventId) {
     return;
   }
   change(`lidi z minula na ${event.title} ${prettyDay(event.start, false)}`);
-  toast(`Zkopírováno: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Jsou kurzívou, dokud nepotvrdí.');
+  toast(`Přidáno z minula: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Jsou kurzívou, dokud nepotvrdí.');
 }
 
 // ---------- cancel / delete ----------
@@ -266,7 +266,7 @@ function copyPeople(eventId) {
 /** Radio „jen tohle / i N dalších v řadě“ when the event has following ones. */
 function seriesChoice(event) {
   const following = followingInSeries(S.data, event).length;
-  return following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle'], ['following', andFollowing(following)]], 'one', 'radio')) : null;
+  return following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null;
 }
 
 function cancelDialog(eventId) {
@@ -329,7 +329,7 @@ function programSection(event, previous, leader) {
       leader ? h('span', { class: 'move' },
         arrowButton('up', 'Posunout výš', () => { const e = fresh(id); if (e && moveItem(e, item.id, -1)) edit(); }, i === 0),
         arrowButton('down', 'Posunout níž', () => { const e = fresh(id); if (e && moveItem(e, item.id, 1)) edit(); }, i === times.length - 1),
-        removeButton(`Odebrat ${itemName(S.data, item)}`, () => {
+        removeButton(`Odebrat: ${itemName(S.data, item)}`, () => {
           const e = fresh(id);
           if (!e) return;
           e.program = (e.program || []).filter((x) => x.id !== item.id);
@@ -353,7 +353,7 @@ function programSection(event, previous, leader) {
     !leader ? null : formats.length ? add : note('Formáty (Kázání, Otázky na tělo, Večeře Páně…) si založ v Nastavení.'),
     actions([
       times.length ? link('Osnova na papír a plátno', `#setkani/${id}/osnova`, 'btn small') : null,
-      leader && previous && (previous.program || []).length ? btn('Stejná osnova jako minule', () => {
+      leader && previous && (previous.program || []).length ? btn('Převzít minulou osnovu', () => {
         const run = () => {
           const e = fresh(id);
           const p = previousEvent(S.data, id);
@@ -361,7 +361,7 @@ function programSection(event, previous, leader) {
           copyProgram(S.data, e, p.program, newId);
           change(`osnova z minula ${prettyDay(e.start, false)}`);
         };
-        if ((event.program || []).length) confirmDialog('Nahradit osnovu?', 'Osnova z minula nahradí tu, která tu je teď.', run, { buttonLabel: 'Nahradit' });
+        if ((event.program || []).length) confirmDialog('Nahradit osnovu?', 'Současná osnova zmizí a místo ní bude ta z minula.', run, { buttonLabel: 'Nahradit' });
         else run();
       }, 'small') : null,
     ]));
@@ -407,8 +407,8 @@ function itemDialog(eventId, itemId, draft) {
     eyebrow: `${prettyDay(event.start)} · ${event.title}`,
     title: itemName(S.data, item),
     fields: [
-      textField('title', 'Název v osnově', d.title, { full: true, hint: format ? `Prázdné = ${format.name}.` : '', attr: { placeholder: format?.name || '' } }),
-      textField('minutes', 'Minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } }),
+      textField('title', 'Název v osnově', d.title, { full: true, hint: format ? `Nech prázdné a bude tu „${format.name}“.` : '', attr: { placeholder: format?.name || '' } }),
+      textField('minutes', 'Kolik minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } }),
       fieldGroup('Kdo vede', h('div', { class: 'leader-pick' },
         h('span', { class: 'leader-name' }, whoText),
         btn(d.personId ? 'Vybrat jiného' : 'Vybrat člověka', choosePerson, 'mini'),

@@ -118,7 +118,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       : group ? `Přidat do ${group.kind === 'team' ? 'týmu' : 'skupiny'} ${group.name}` : null;
     const form = h('form', { class: 'form-grid quick-add', novalidate: true },
       similar.length ? h('div', { class: 'similar full' },
-        h('p', { class: 'note' }, 'Podobně se jmenuje – není to někdo z nich?'),
+        h('p', { class: 'note' }, 'Není to někdo z nich?'),
         h('div', { class: 'tags' }, similar.map((p) => (excluded.has(p.id)
           ? tag(`${fullName(p)} – už tu je`, 'quiet')
           : h('button', { type: 'button', class: 'tag', onclick: () => finish([...selected, p.id]) }, fullName(p)))))) : null,
@@ -126,12 +126,12 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       textField('lastName', 'Příjmení', lastName, { attr: { autocomplete: 'off' } }),
       textField('phone', 'Telefon', '', { type: 'tel', attr: { autocomplete: 'off' } }),
       textField('email', 'E-mail', '', { type: 'email', attr: { autocomplete: 'off' } }),
-      h('p', { class: 'note full' }, 'U hosta bez souhlasu stačí jméno. Zbytek doplníš na kartě.'),
+      h('p', { class: 'note full' }, 'Stačí jméno, zbytek doplníš na kartě.'),
       joinText && group ? checkboxField('join', joinText, true) : null,
       formErrorLine('', { full: true }),
       h('div', { class: 'full quick-add-actions' },
         btn('Zpět na seznam', () => { state.creating = false; paint(); }, 'small plain'),
-        h('button', { type: 'submit', class: 'btn primary small' }, 'Založit a vybrat')));
+        h('button', { type: 'submit', class: 'btn primary small' }, 'Přidat a vybrat')));
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const f = form.elements;
@@ -148,7 +148,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       }
       closeDialog();
       change(`nový člověk ${displayName(person)}`);
-      toast(`${displayName(person)} je v Lidech.`, 'Doplň údaje.', { action: () => navigate(`#osoba/${person.id}`), actionLabel: 'Karta', duration: 6000 });
+      toast(`${displayName(person)} je v Lidech.`, 'Doplň údaje.', { action: () => navigate(`#osoba/${person.id}`), actionLabel: 'Otevřít kartu', duration: 6000 });
       onPick([...selected, person.id]);
     });
     return form;
@@ -187,7 +187,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       }
       listHolder.replaceChildren(
         items.length ? h('ul', { class: 'candidates' }, items)
-          : note(q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle službu u sebe nemá nikdo. Zkus Celý tým nebo Všichni lidé.' : 'Nikdo tu není.'));
+          : note(q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle roli zatím nikdo neumí. Zkus „Celý tým“ nebo „Všichni lidé“.' : 'Nikdo tu není.'));
     }
     footer.replaceChildren(...nodes([
       btn(multiple ? 'Zrušit' : 'Zavřít', closeDialog),
@@ -202,7 +202,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     h('h2', {}, heading),
     pillsHolder,
     h('div', { class: 'search' }, search),
-    ranked ? note('Nahoře jsou ti, kdo můžou a mají v měsíci nejmíň služeb. Plná pilulka = takhle to nepůjde.') : null,
+    ranked ? note('Nahoře jsou ti, kdo můžou a mají v měsíci nejmíň služeb. Plný štítek znamená, že takhle to nepůjde.') : null,
     listHolder,
     footer), { wide: true });
   search.focus();

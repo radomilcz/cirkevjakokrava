@@ -64,14 +64,14 @@ function churchSection() {
   const number = (name, label, value, hint, min = 0, max = 99) => textField(name, label, value, { type: 'number', attr: { min, max, inputmode: 'numeric' }, hint });
   const form = h('form', { class: 'form-grid', novalidate: true },
     textField('churchName', 'Název sboru', s.churchName),
-    textField('address', 'Adresa', s.address, { hint: 'Jde do kalendáře v telefonu.' }),
+    textField('address', 'Adresa', s.address, { hint: 'Ukáže se u setkání v kalendáři v telefonu.' }),
     h('h3', { class: 'eyebrow spaced full' }, 'Kolik služeb je moc'),
     number('maxPerMonth', 'Nejvíc služeb za měsíc', s.defaults.maxPerMonth, 'Platí pro každého, kdo nemá na své kartě jiné číslo.', 1),
     number('maxConsecutiveWeeks', 'Nejvíc nedělí po sobě', s.defaults.maxConsecutiveWeeks, 'I kráva potřebuje volnou neděli na pastvě.', 1),
     h('h3', { class: 'eyebrow spaced full' }, 'Kdy Zvonec bučí'),
-    number('essentialDaysBefore', 'Chybí role „bez toho to nejde“ (dní předem)', s.rules.essentialDaysBefore, 'Tolik dní před setkáním je prázdná nezbytná role chyba. Předtím jen upozornění.'),
-    number('unconfirmedDaysBefore', 'Někdo nepotvrdil (dní předem)', s.rules.unconfirmedDaysBefore, 'Od kdy hlídat služby, které nikdo nepotvrdil.'),
-    number('childAge', 'Dítě je mladší než (let)', s.rules.childAge, 'Děti nemůžou do služeb jen pro dospělé a nepočítají se mezi dospělé u dětí.', 1, 25),
+    number('essentialDaysBefore', 'Kolik dní předem je prázdná nezbytná role chyba', s.rules.essentialDaysBefore, 'Nezbytná je role se zaškrtnutým „bez toho to nejde“. Dřív je to jen upozornění.'),
+    number('unconfirmedDaysBefore', 'Kolik dní předem hlídat nepotvrzené služby', s.rules.unconfirmedDaysBefore, 'Dřív si Zvonec nepotvrzených služeb nevšímá.'),
+    number('childAge', 'Od kolika let je člověk dospělý', s.rules.childAge, 'Děti nemůžou do služeb jen pro dospělé a nepočítají se mezi dospělé u dětí.', 1, 25),
     formErrorLine('', { full: true }),
     h('div', { class: 'full' }, h('button', { type: 'submit', class: 'btn primary small' }, 'Uložit')));
   form.addEventListener('submit', (e) => {
@@ -81,7 +81,7 @@ function churchSection() {
     for (const key of ['maxPerMonth', 'maxConsecutiveWeeks', 'essentialDaysBefore', 'unconfirmedDaysBefore', 'childAge']) {
       const n = Number(f[key].value);
       if (f[key].value === '' || !Number.isInteger(n) || n < Number(f[key].min)) {
-        formError(form, 'Čísla musí být celá a ne záporná.');
+        formError(form, 'Zapiš celá čísla, žádná záporná.');
         f[key].focus();
         return;
       }
@@ -98,7 +98,7 @@ function churchSection() {
     change('nastavení sboru');
     toast('Uloženo.');
   });
-  return section('Sbor', form);
+  return section('Sbor a pravidla', form);
 }
 
 // ---------- shared editors (event types, formats) ----------
@@ -134,7 +134,7 @@ function needsEditor(needs, label) {
     }
   }
   return h('div', { class: 'field full' }, h('span', {}, label),
-    list.children.length ? list : h('small', {}, 'Nejdřív přidej týmy a jejich role (Skupiny).'));
+    list.children.length ? list : h('small', {}, 'Nejdřív založ týmy a jejich role ve Skupinách.'));
 }
 
 const cleanNeeds = (needs) => needs.filter((n) => n.count > 0).map(({ roleId, count: c }) => ({ roleId, count: c }));
@@ -154,7 +154,7 @@ function programEditor(program, minutesInput) {
   minutesInput.addEventListener('input', updateTotal);
   const redraw = () => {
     wrap.replaceChildren(
-      h('span', {}, 'Osnova (každé nové setkání podle šablony ji dostane)'),
+      h('span', {}, 'Osnova pro každé nové setkání'),
       program.length ? h('ol', { class: 'program program-editor' }, program.map((item, i) => h('li', {},
         h('span', { class: 'when' }, `${i + 1}.`),
         h('select', {
@@ -163,7 +163,7 @@ function programEditor(program, minutesInput) {
         }, formatById(S.data, item.formatId) ? null : h('option', { value: item.formatId, selected: true }, 'smazaný formát'),
         formats.map((f) => h('option', { value: f.id, selected: f.id === item.formatId }, f.name))),
         h('input', {
-          type: 'number', min: 0, max: 600, value: item.minutes, class: 'count-input', 'aria-label': 'Minut',
+          type: 'number', min: 0, max: 600, value: item.minutes, class: 'count-input', 'aria-label': 'Minuty',
           oninput: (e) => { item.minutes = Math.max(0, Math.round(Number(e.target.value)) || 0); updateTotal(); },
         }),
         h('span', { class: 'move' },
@@ -201,7 +201,7 @@ function eventTypeDialog(type) {
   const needs = clone(type?.needs || []);
   const program = clone(type?.program || []);
   const groups = S.data.groups.filter((g) => !g.archived || g.id === type?.groupId).sort(byName);
-  const minutesField = textField('minutes', 'Délka (min)', type?.minutes || 120, { type: 'number', attr: { min: 5, max: 1440 } });
+  const minutesField = textField('minutes', 'Kolik minut trvá', type?.minutes || 120, { type: 'number', attr: { min: 5, max: 1440 } });
   simpleDialog({
     eyebrow: type ? 'upravit šablonu' : 'nová šablona',
     title: type ? type.name : 'Přidat šablonu',
@@ -212,7 +212,7 @@ function eventTypeDialog(type) {
       textField('startTime', 'Začátek', type?.startTime || '10:00', { type: 'time' }),
       minutesField,
       S.data.places.length ? fieldGroup('Kde', choices('placeIds', S.data.places.map((p) => [p.id, p.name]), type?.placeIds || [])) : null,
-      needsEditor(needs, 'Koho to potřebuje (počet lidí na roli)'),
+      needsEditor(needs, 'Kolik lidí je potřeba'),
       programEditor(program, minutesField.querySelector('input')),
     ],
     save: (f, form) => {
@@ -252,7 +252,7 @@ function eventTypeDialog(type) {
 function placesSection() {
   const places = S.data.places.slice().sort(byName);
   return section('Místa',
-    note('Když jsou dvě setkání naráz na stejném místě, Zvonec to hlásí. Kromě míst, kde se víc věcí vejde.'),
+    note('Když jsou dvě setkání naráz na stejném místě, Zvonec bučí. Neplatí to pro místa, kde se vejde víc věcí naráz.'),
     places.length ? h('ul', { class: 'list' }, places.map((p) => h('li', {}, h('button', { type: 'button', class: 'row', onclick: () => placeDialog(p) },
       h('span', { class: 'name' }, p.name),
       h('span', { class: 'tags' }, p.shared ? tag('víc věcí naráz nevadí', 'quiet') : null),
@@ -285,7 +285,7 @@ function placeDialog(place) {
     },
     remove: place ? () => {
       const used = S.data.events.filter((e) => (e.placeIds || []).includes(place.id) && dayOf(e.end) >= today()).length;
-      confirmDialog(`Smazat místo ${place.name}?`, used ? `Je u ${plural(used, 'budoucího setkání', 'budoucích setkání', 'budoucích setkání')}. Odtamtud zmizí.` : '', () => {
+      confirmDialog(`Smazat místo ${place.name}?`, used ? 'Zmizí i z budoucích setkání, kde je zapsané.' : '', () => {
         S.data.places = S.data.places.filter((x) => x.id !== place.id);
         for (const e of S.data.events) e.placeIds = (e.placeIds || []).filter((x) => x !== place.id);
         for (const t of S.data.eventTypes) t.placeIds = (t.placeIds || []).filter((x) => x !== place.id);
@@ -308,7 +308,7 @@ export function formatWhyHow(format, { withLink = true } = {}) {
 
 function leadText(format) {
   const role = roleById(S.data, format.leadRoleId);
-  return role ? `vede ten, kdo má na setkání roli ${role.name}` : 'kdo vede, vybereš v osnově u bodu';
+  return role ? `vede ten, kdo má službu ${role.name}` : 'kdo vede, vybereš u bodu v osnově';
 }
 
 function needsText(format) {
@@ -324,7 +324,7 @@ export function openFormatInfo(formatId) {
   openDialog(h('div', { class: 'inner' },
     h('p', { class: 'eyebrow' }, 'formát'),
     h('h2', {}, format.name),
-    meta([`${format.minutes ?? 0} min`, role ? ['vede', `ten, kdo má roli ${role.name}`] : null, needsText(format) ? ['potřebuje', needsText(format)] : null]),
+    meta([`${format.minutes ?? 0} min`, role ? ['vede', `ten, kdo má službu ${role.name}`] : null, needsText(format) ? ['potřebuje', needsText(format)] : null]),
     formatWhyHow(format) || note('Popis zatím chybí.'),
     actions([
       can('leader') ? btn('Upravit', () => formatDialog(format), 'left plain') : null,
@@ -364,13 +364,13 @@ function formatDialog(format) {
       textField('minutes', 'Kolik minut obvykle', format?.minutes ?? 10, { type: 'number', attr: { min: 0, max: 600 } }),
       h('label', { class: 'field full' }, h('span', {}, 'Kdo to vede'),
         h('select', { name: 'leadRoleId' },
-          h('option', { value: '', selected: !format?.leadRoleId }, '— nikdo, vyberu v osnově u bodu —'),
+          h('option', { value: '', selected: !format?.leadRoleId }, '— vyberu u bodu v osnově —'),
           teams.map(({ group, roles }) => h('optgroup', { label: group.name },
-            roles.map((r) => h('option', { value: r.id, selected: r.id === format?.leadRoleId }, `ten, kdo má na setkání roli ${r.name}`)))))),
+            roles.map((r) => h('option', { value: r.id, selected: r.id === format?.leadRoleId }, `ten, kdo má službu ${r.name}`)))))),
       textArea('why', 'Proč to děláme', format?.why, { attr: { rows: 3, placeholder: 'Proč to na setkání máme? Co si z toho lidi odnesou?' } }),
       textArea('how', 'Jak to probíhá', format?.how, { attr: { rows: 4, placeholder: 'Co přesně se děje, kdo co dělá, na co nezapomenout.' } }),
-      textField('link', 'Odkaz (nepovinný)', format?.link, { full: true, type: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
-      needsEditor(needs, 'Koho formát navíc potřebuje (počet lidí na roli)'),
+      textField('link', 'Odkaz', format?.link, { full: true, type: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
+      needsEditor(needs, 'Kolik lidí navíc formát potřebuje'),
     ],
     save: (f) => {
       const name = f.name.value.trim();
@@ -417,7 +417,7 @@ function formatDialog(format) {
 function loginSection() {
   if (S.mode !== 'live') {
     return [
-      section('Přihlášení', note('V ukázce se nikdo nepřihlašuje. V ostrém Zvonci tady uvidíš, kdo má přihlášení, a pošleš pozvánku novým lidem.')),
+      section('Kdo má přístup', note('V ukázce se nikdo nepřihlašuje. V ostrém Zvonci tady uvidíš, kdo má přihlášení, a pošleš pozvánku novým lidem.')),
       demoViewAs(),
     ];
   }
@@ -431,7 +431,7 @@ function demoViewAs() {
   const form = h('form', { class: 'form-grid', novalidate: true },
     selectField('personId', 'Kdo', [['', '— nikdo konkrétní —'], ...people.map((p) => [p.id, fullName(p)])], S.me.personId || ''),
     selectField('access', 'Co smí', ['member', 'leader', 'admin'].map((a) => [a, ACCESS_LABELS[a]]), S.me.access),
-    h('div', { class: 'full' }, h('button', { type: 'submit', class: 'btn small' }, 'Dívat se')));
+    h('div', { class: 'full' }, h('button', { type: 'submit', class: 'btn small' }, 'Podívat se')));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const personId = form.elements.personId.value;
@@ -440,7 +440,7 @@ function demoViewAs() {
     actAs(personId, access);
     toast(access === 'admin' && !personId ? 'Zase vidíš všechno.' : `Díváš se jako ${fullName(S.data.people.find((p) => p.id === personId))} (${ACCESS_LABELS[access]}).`);
   });
-  return section('Dívat se jako',
+  return section('Podívat se jako někdo jiný',
     note('Vyzkoušej, co vidí člen nebo vedoucí. Člen nemá Nastavení v menu – zpátky se dostaneš tlačítkem „Zpátky jako správce“ na stránce Moje.'),
     form,
     S.me.personId || S.me.access !== 'admin' ? actions(btn('Zpátky jako správce', () => actAs(null, 'admin'), 'small plain')) : null);
@@ -493,16 +493,16 @@ function backupSection() {
     download('zvonec.ics', ics(S.data, items, S.data.settings.churchName || 'Zvonec'), 'text/calendar');
   };
   return [
-    section('Záloha a přenos',
+    section('Záloha',
       note(`Všechna data jako jeden soubor. Hodí se na zálohu, nebo když chceš data přenést do ostrého Zvonce.${live ? ' Přihlášení v záloze nejsou.' : ''}`),
       actions([
-        btn('Stáhnout zálohu (.json)', backup, 'small'),
-        btn('Nahrát ze souboru', () => file.click(), 'small'),
+        btn('Stáhnout zálohu', backup, 'small'),
+        btn('Nahrát zálohu', () => file.click(), 'small'),
         file,
       ])),
-    section('Kalendář',
+    section('Kalendář do telefonu',
       note('Všechna setkání jako jeden soubor do kalendáře v telefonu nebo v počítači. Svoje služby si každý stáhne v Moje.'),
-      actions(btn('Celý kalendář (.ics)', calendar, 'small'))),
+      actions(btn('Stáhnout kalendář', calendar, 'small'))),
     live ? null : section('Ukázka',
       note('Ukázka žije jen v tomhle prohlížeči. Můžeš ji vrátit do původního stavu, nebo začít úplně načisto.'),
       actions([

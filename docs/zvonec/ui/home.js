@@ -26,7 +26,7 @@ export function renderHome() {
       h('div', {},
         waitingSection(person, waiting),
         dutiesSection(person, duties),
-        availabilitySection(person, { heading: 'Kdy nemůžu' })),
+        availabilitySection(person)),
       h('div', {},
         groupsSection(person),
         contactSection(person),
@@ -74,13 +74,13 @@ function waitingSection(person, waiting) {
 
 function dutiesSection(person, duties) {
   const decline = (event, assignment) => confirmDialog('Nakonec nemůžeš?',
-    'Místo se uvolní a vedoucí to uvidí. Když víš o dalších dnech, zapiš je do „Kdy nemůžu“.',
+    'Vedoucí uvidí, že za tebe musí najít náhradu. Jestli víš o dalších dnech, zapiš je do „Kdy nemůžu sloužit“.',
     () => answer(person, event.id, assignment.id, 'declined'), { buttonLabel: 'Nemůžu' });
   return section(['Moje služby', count(`příštích ${WEEKS_AHEAD} týdnů`),
-    duties.length ? btn('do kalendáře (.ics)', () => downloadDuties(person), 'mini plain') : null],
+    duties.length ? btn('Do svého kalendáře', () => downloadDuties(person), 'mini plain') : null],
   duties.length ? h('ul', { class: 'overview' }, duties.map((duty) => dutyItem(duty,
     duty.assignment.status === 'confirmed' && !duty.event.cancelled ? btn('Nemůžu', () => decline(duty.event, duty.assignment), 'mini plain') : null)))
-    : note('Zatím nikde. Volná neděle na pastvě.'));
+    : note('Teď žádnou službu nemáš. Užij si volnou neděli na pastvě.'));
 }
 
 // ---------- groups, contact ----------
@@ -99,7 +99,7 @@ function leaderContact(leader) {
 function groupsSection(person) {
   const groups = groupsOf(S.data, person.id);
   const skills = skillsOf(S.data, person.id);
-  return section(['Moje skupiny', groups.length ? count(String(groups.length)) : null],
+  return section(['Moje týmy a skupiny', groups.length ? count(String(groups.length)) : null],
     groups.length ? h('ul', { class: 'my-groups' }, groups.map((g) => {
       const mine = memberRecord(S.data, g.id, person.id);
       const own = skills.filter((s) => s.groupId === g.id);
@@ -113,7 +113,7 @@ function groupsSection(person) {
         g.description ? h('p', { class: 'note' }, g.description) : null,
         leaders.length ? h('p', { class: 'group-leaders' }, faint(leaders.length > 1 ? 'Vedou: ' : 'Vede: '),
           leaders.map((l, i) => [i ? h('br') : null, leaderContact(l)])) : null);
-    })) : note('Zatím v žádné skupině. Řekni vedoucímu, s čím pomůžeš.'));
+    })) : note('Zatím nejsi v žádném týmu ani skupině. Řekni vedoucímu, s čím rád(a) pomůžeš.'));
 }
 
 function contactSection(person) {
@@ -122,7 +122,7 @@ function contactSection(person) {
       ['Říkají mi', person.nickname || faint('–')],
       ['Telefon', person.phone || faint('–')],
       ['E-mail', person.email || faint('–')],
-      ['Ostatní vidí', person.showInDirectory ? 'telefon i e-mail' : 'jen jméno'],
+      ['Telefon a e-mail vidí', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí'],
     ]),
     actions([btn('Upravit kontakt', () => contactDialog(person), 'small')]));
 }
@@ -162,7 +162,7 @@ function noPerson() {
   if (S.mode === 'demo') {
     return [header,
       emptyState('V ukázce nejsi nikdo z Lidí.',
-        'Tady člověk vidí, co čeká na jeho odpověď, svoje služby, kdy nemůže, svoje skupiny a kontakt. Vyber si, čí očima se podíváš – jako člen. Zpátky se dostaneš tlačítkem nahoře.',
+        'Tady každý vidí svoje služby, co čeká na jeho odpověď a kdy nemůže. Vyber si někoho a podívej se jeho očima. Zpátky se dostaneš tlačítkem nahoře.',
         null),
       people().length ? actAsForm() : null,
       actions([link('Na Lidi', '#lide', 'btn small')])];
