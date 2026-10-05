@@ -76,7 +76,7 @@ someone's roles can also be reached from the person's detail, which links to the
 - Publishing is explicit: `event.public` (default from the event type's `public`), optional
   `event.publicNote`; `format.public`. Nothing else is ever public.
 - The public site is built from data the data repo publishes: the data-repo workflow writes
-  `public.json` = `{ churchName, address, events: [{id,title,kind,start,end,places:[names],note}],
+  `public.json` = `{ churchName, address, events: [{id,title,kind,start,end,places:[{name,address,lat,lon}],description,image}],
   formats: [{id,name,minutes,why,how}] }` next to the app; only `public: true` items, upcoming
   (from today −1 day, 120 days ahead), no person data at all. `lib/public.js` builds it (pure,
   tested); the workflow runs it with node.
@@ -84,6 +84,24 @@ someone's roles can also be reached from the person's detail, which links to the
   **Jak se scházíme** (published formats) · **Přihlásit se** (button in the sidebar/top bar).
   The sign-in form is a page, not the whole site.
 - Demo mode shows the public view too (built from demo data with `lib/public.js`).
+
+## 4b. Events and places look like events
+
+- **Every event has: a picture, a title, date, time and a description.**
+  - Picture = an uploaded photo/graphic (`event.image`), else the event type's picture
+    (`eventType.image`), else a **generated cover** in the brand: palette colours, the imprint
+    pattern (imprint.svg) and the title set in Narrow Black. The generated cover is never empty
+    and always looks deliberate.
+  - `event.description` = the text people read about the event (public when the event is public).
+    `event.note` stays internal (for the team). The event type can carry a default description.
+- **Places have an address and a map.** `place.address` (one line), optional `place.lat`/`place.lon`.
+  The place shows the address with „Otevřít v mapě“ (link to mapy.cz search/coords, opens a new
+  tab) and, when coordinates are known, an embedded OpenStreetMap map (iframe; CSP gets
+  `frame-src https://www.openstreetmap.org`). Event detail and public event show the place with
+  its address and map link.
+- Images are stored in the private data repo under `data/images/` (resized in the browser to max
+  1600 px, WebP/JPEG ~80 %). The data-repo workflow copies images of **published** events into the
+  public site; unpublished images never leave the private repo.
 
 ## 5. Components (ui/dom.js and friends)
 
@@ -95,6 +113,8 @@ someone's roles can also be reached from the person's detail, which links to the
   word; answer buttons „Potvrdit“ / „Nemůžu“ when it's mine; leader actions in a small menu.
 - `statusIcon(status)` – the three symbols from §1.5.
 - `emptyState(text, action?)`, `section(title, actions?)`, dialogs ≤ 560px.
+- `eventCover(event, { size })` – the picture or the generated brand cover (§4b).
+- `placeLine(place)` – name, address, „Otevřít v mapě“; `placeMap(place)` – OSM iframe when coordinates exist.
 
 ## 6. Done means
 
