@@ -1,1 +1,27 @@
 /* formats module – owned by the formats team. Uses tokens and components from ../style.css. */
+
+/* list lead: how long the format takes, set like the date block of an event row */
+.minutes-block{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:3rem;line-height:1}
+.minutes-block-n{font-family:var(--narrow);font-weight:900;font-size:1.5rem;padding-top:.1em}
+.minutes-block-u{font-size:var(--t4);color:var(--muted);margin-top:.15em}
+
+/* detail page: facts, then Proč and Jak as running text */
+.format-page .facts,.format-page .section{max-width:var(--w-text)}
+.format-page .facts{margin:0}
+.format-page .facts dd{line-height:1.45}
+.format-page .section{margin-top:var(--s6)}
+.format-page .facts+.section{margin-top:var(--s7)}
+.format-page .empty-state{margin-top:var(--s6);max-width:var(--w-list)}
+.text-block{margin:0;max-width:65ch;white-space:pre-line;line-height:1.6}
+
+/* edit dialog: the roles that are needed, a stepper each, and one drop-down to add another */
+.needs-list{list-style:none;margin:var(--s1) 0 var(--s2);padding:0;border-top:1px solid var(--line)}
+.needs-role{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+.needs-name{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.needs-name small{color:var(--muted);font-size:var(--t4)}
+.needs-field>.select,.needs-field>select{align-self:flex-start;width:auto;min-width:12em}
+
+/* „Zveřejnit na webu“: a checkbox with a title and a hint under it */
+.publish-field{padding:var(--s3) var(--s4);background:var(--fill);border-radius:var(--radius)}
+.publish-field .caption{display:flex;flex-direction:column;gap:2px}
+.publish-field .caption small{color:var(--muted);font-size:var(--t4);line-height:1.4}
