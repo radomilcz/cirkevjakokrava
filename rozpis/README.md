@@ -24,12 +24,12 @@ Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stej
 ### Kolize
 
 Chyba = takhle to nepůjde (v rozhraní plná plocha). Pozor = ať o tom víš (čárkovaný obrys).
-Chybu jde u konkrétního přiřazení **přebít s důvodem** – pak z ní je info.
+U konkrétního přiřazení jde chybu **povolit jako výjimku** a napsat proč. Rozpis ji pak nehlásí.
 
 | kód | co hlídá | závažnost |
 | --- | --- | --- |
 | K1 | člověk na dvou setkáních, která se časově kryjí | chyba |
-| K2 | dvě služby naráz v jednom setkání (kromě povolených dvojic a služeb mimo své okno – kafe po skončení) | chyba |
+| K2 | dvě služby naráz na jednom setkání (kromě povolených dvojic a služeb mimo své okno – kafe po skončení) | chyba |
 | K3 | služba v době, kdy člověk nemůže | chyba |
 | K4 / K4b | služba, kterou člověk nemá v profilu / zaučuje se a nikdo zkušený u toho není | chyba / pozor |
 | K5 | neobsazená služba (u služby „bez toho to nejde“ týden předem chyba) | pozor / chyba |
@@ -44,7 +44,7 @@ Chybu jde u konkrétního přiřazení **přebít s důvodem** – pak z ní je 
 | K14 | zrušené setkání, na kterém pořád někdo je | info |
 | K15 | pořad je delší než setkání | pozor |
 | K16 | bod pořadu vede člověk, který v tu dobu nemůže (nebo je neaktivní) | chyba / pozor |
-| K17 | bod pořadu nikdo nevede – služba formátu v setkání není | pozor |
+| K17 | bod pořadu nikdo nevede – služba formátu na setkání není | pozor |
 
 Pravidla jsou v `docs/rozpis/kolize.js` a stejný kód běží v aplikaci, v testech i v GitHub Action.
 
@@ -66,28 +66,30 @@ rozpis/kontrola.mjs  ◀── bere si kód ───────────  .
 
 - **Jeden GitHub klíč.** Správce ho jednou vyrobí (fine-grained token jen k `sbor-data`, Contents: read and write)
   a vloží při založení. Nikdo jiný GitHub účet ani token nepotřebuje.
-- **Přihlášení = data.** Každé přihlášení má vlastní pár klíčů RSA. Soukromou půlku zamyká jméno + heslo
-  (PBKDF2, 310 000 iterací, jako Playbook), k veřejné je zapečetěný GitHub klíč. Kdo zná jméno a heslo,
-  otevře si klíč a pracuje. `pristup.json` jde na web, ale jména ani klíč v něm čitelně nejsou – záznam se
-  najde až odvozením ze jména a hesla. Výměna GitHub klíče hesla nepotřebuje: nový se zapečetí ke všem
-  veřejným půlkám (Nastavení → GitHub klíč).
+- **Přihlášení = data.** Každé přihlášení má vlastní pár klíčů RSA. Soukromou půlku zamyká jméno a heslo
+  (PBKDF2, 310 000 iterací, jako Playbook). Veřejnou půlkou aplikace zamkne kopii GitHub klíče. Kdo zná
+  jméno a heslo, odemkne si klíč a může pracovat. `pristup.json` jde na web, ale jména ani klíč v něm
+  čitelně nejsou. Svůj záznam najde jen ten, kdo zná jméno a heslo. GitHub klíč jde vyměnit i bez nových
+  hesel: aplikace nový klíč zamkne každou veřejnou půlkou zvlášť (Nastavení → GitHub klíč).
 - **Role** – správce (všechno, přihlášení, klíč), vedoucí (plánuje, zve lidi), člen (vidí kalendář, rozpis
-  a pořad, potvrzuje nebo odmítá svoje služby, zapisuje, kdy nemůže, upravuje svůj kontakt). Role hlídá
-  aplikace. Kdo má přihlášení, drží ve svém prohlížeči klíč, takže technicky zdatný člen by se k datům
-  dostal i mimo aplikaci – přihlášení proto dostávají lidi, kterým sbor věří, a klíč jde kdykoli vyměnit.
+  a pořad, potvrzuje nebo odmítá svoje služby, zapisuje, kdy nemůže, upravuje svůj kontakt). Na role
+  dohlíží aplikace, ne GitHub. Kdo má přihlášení, má klíč ve svém prohlížeči, takže technicky zdatný člen
+  by se k datům dostal i mimo aplikaci. Přihlášení proto dostávají lidi, kterým sbor věří. Klíč jde
+  kdykoli vyměnit.
 - **Pozvánka = online registrace.** Vedoucí vytvoří pozvánku (Nastavení → Pozvat nového člověka, nebo
-  u konkrétního člověka). Odkaz platí 14 dní a jen jednou: nový člověk vyplní jméno, kontakt, s čím pomůže,
-  **souhlas** a vlastní heslo – a je v rozpisu (jako host, služby jako „učí se“, vedoucí to pak upraví).
+  u konkrétního člověka). Odkaz platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno, kontakt,
+  s čím pomůže, a vlastní heslo, zaškrtne **souhlas** a je v rozpisu. Zapíše se jako host a služby
+  dostane jako „učí se“. Vedoucí to pak upraví.
 - **Data** jsou jeden JSON v soukromém repu. Pages jsou vždycky veřejné, proto `rozpis.json` na web nikdy
   nejde (workflow to i hlídá).
 - **Ukládání**: změny se sbírají a po vteřině a půl odejdou jedním commitem („Rozpis: Petr na Zvuk, …“).
   Když mezitím uložil někdo jiný, GitHub vrátí 409 – aplikace načte čerstvou verzi, **sloučí po záznamech**
-  a uloží znovu. Co uložil někdo jiný, se dotáhne při návratu do okna a každou minutu.
+  a uloží znovu. Co uložil někdo jiný, aplikace stáhne, když se vrátíš do okna, a pak každou minutu.
 - **Nové a zrušené přihlášení** se projeví za pár minut – až workflow přestaví web s novým `pristup.json`.
-- **Bez `pristup.json`** vedle sebe (manifest.cirkevjakokrava.cz/rozpis/) běží aplikace jako ukázka
-  v `localStorage` s vymyšlenými lidmi – na vyzkoušení a na školení vedoucích.
-- **Kontrola v Actions**: `rozpis/kontrola.mjs` pustí stejná pravidla nad `rozpis.json`; při chybě v budoucnu
-  běh zčervená a GitHub pošle e-mail.
+- **Ukázka:** když vedle aplikace `pristup.json` neleží (manifest.cirkevjakokrava.cz/rozpis/), běží
+  aplikace jako ukázka v `localStorage` s vymyšlenými lidmi. Hodí se na vyzkoušení a na školení vedoucích.
+- **Kontrola v Actions**: `rozpis/kontrola.mjs` pustí stejná pravidla nad `rozpis.json`. Když najde chybu
+  u setkání, které ještě nebylo, běh zčervená a GitHub pošle e-mail.
 
 ```
 docs/rozpis/index.html   kostra stránky, CSP (ven jen api.github.com)
@@ -112,7 +114,7 @@ Fonty, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`
 ## Spuštění naostro (jednou, ~15 minut)
 
 1. **Soukromé repo** `radomilcz/sbor-data` (prázdné).
-2. Do něj zkopírovat `rozpis/sbor-data/web.yml` a `rozpis/sbor-data/kontrola.yml` do `.github/workflows/`.
+2. Zkopírovat `rozpis/sbor-data/web.yml` a `rozpis/sbor-data/kontrola.yml` do jeho `.github/workflows/`.
 3. **Pages**: v `sbor-data` Settings → Pages → Source: **GitHub Actions**, Custom domain
    `kalendar.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `kalendar` typu **CNAME** →
    `radomilcz.github.io.` (stejně jako u Playbooku; Pages ze soukromého repa = GitHub Pro).
@@ -120,9 +122,9 @@ Fonty, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`
 4. **GitHub klíč**: Settings → Developer settings → Fine-grained tokens → Generate new token,
    *Only select repositories* → `sbor-data`, Permissions → Repository → **Contents: Read and write**. Nic víc.
 5. Otevřít https://kalendar.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Rozpis**:
-   vložit klíč, svoje jméno a heslo. Začít se dá se základem z ukázky (služby, týmy, formáty, šablony – bez lidí).
-6. Naplnit: lidi (nebo poslat pozvánky), šablona „Setkání na pastvě“ → v kalendáři setkání s opakováním
-   každý týden. Vedoucím dát roli vedoucí (u člověka → Přihlášení → Nové heslo / role).
+   vložit klíč, svoje jméno a heslo. Jako základ jde vzít ukázku (služby, týmy, formáty, šablony – bez lidí).
+6. Přidat lidi (nebo poslat pozvánky) a v kalendáři ze šablony „Setkání na pastvě“ založit setkání,
+   které se opakuje každý týden. Vedoucím dát roli vedoucí (u člověka → Přihlášení → Nové heslo / role).
 
 ## Co jde a co nejde jen s GitHubem
 
@@ -145,7 +147,7 @@ která umí poslat e-mail nebo SMS – to už je mimo GitHub).
 
 - Členství ve sboru prozrazuje vyznání – zvláštní kategorie údajů. Data proto jen v **soukromém** repu,
   na web jde jen `pristup.json` bez jmen. Na veřejné ukázce jsou jen vymyšlená jména (`@example.cz`).
-- U každého člověka je pole **souhlas** (datum); při registraci pozvánkou ho člověk dává sám.
+- U každého člověka je pole **souhlas** (datum). Kdo se registruje přes pozvánku, dává souhlas sám.
   Rozpis na nástěnku telefony netiskne. Důvod, proč někdo nemůže, a kolize vidí jen vedoucí.
 - Smazaný člověk zůstane v historii gitu. Úplný výmaz = přepsat historii datového repa
   (`git filter-repo`) – proto osobní data nikdy ne do veřejného repa, ani zašifrovaná.
@@ -166,5 +168,5 @@ Testy pouští i GitHub Action `.github/workflows/rozpis.yml` při každé změn
 
 Tým: doménový analytik (specifikace služeb a 14 pravidel kolizí podle Planning Center, ChurchTools
 a Elvanta, osekaná na malý sbor), architekt (co jde jen nad GitHubem, bezpečnost tokenů, GDPR),
-designér (převod Otázek na tělo na aplikaci – stavy tvarem místo barvy, mikrocopy v hlasu značky)
+designér (převod Otázek na tělo na aplikaci – stavy tvarem místo barvy, texty v rozhraní tak, jak mluví Kráva)
 a vývoj. Zadání a rozhodnutí jsou shrnutá výš.
