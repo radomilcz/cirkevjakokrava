@@ -4,7 +4,7 @@
 // together, with leaders. The person card reuses memberDialog() and addToGroupDialog() from here.
 
 import {
-  h, btn, link, plus, plural, pageHeader, backLink, section, list, row, avatar, personName, groupMark, andJoin,
+  h, btn, link, plus, plural, pageHeader, backLink, backButton, section, list, row, avatar, personName, groupMark, andJoin,
   emptyState, toast, confirmDialog, simpleDialog, closeDialog,
   textField, textArea, selectField, checkboxField, checkedValues, segment, choices, menuButton,
 } from './dom.js';
@@ -19,15 +19,19 @@ import { today, dayOf } from '../lib/time.js';
 const KIND_HEADINGS = { team: 'Týmy', community: 'Skupinky', leadership: 'Vedení' };
 const KIND_CHOICES = [['team', 'Tým'], ['community', 'Skupinka'], ['leadership', 'Vedení']];
 const KIND_HINTS = {
-  team: 'Slouží na setkáních a má role, ze kterých se skládá rozpis.',
+  team: 'Slouží na setkáních a má role, z nichž Zvonec skládá rozpis.',
   community: 'Lidé, kteří se spolu pravidelně scházejí.',
   leadership: 'Rada starších, vedoucí sboru.',
 };
-/** „Lidé v týmu“, „Přidat do týmu“, „Vede tým“ – per kind of group. */
+/**
+ * „Lidé v týmu“, „Přidat do týmu“, „Vede tým“ – per kind of group. Who leads the leadership chairs it:
+ * `leads` (a card, the checkbox), `leadsMine` (my own card), `you` (the tag on Moje), `lead1`/`leadN`
+ * (before the names: „vede Jana“, „vedou Jana a Petr“).
+ */
 const KIND_WORDS = {
-  team: { people: 'Lidé v týmu', add: 'Přidat do týmu', leads: 'Vede tým', remove: 'Odebrat z týmu', in: 'v týmu' },
-  community: { people: 'Lidé ve skupince', add: 'Přidat do skupinky', leads: 'Vede skupinku', remove: 'Odebrat ze skupinky', in: 've skupince' },
-  leadership: { people: 'Lidé ve vedení', add: 'Přidat do vedení', leads: 'Vede schůzky vedení', remove: 'Odebrat z vedení', in: 've vedení' },
+  team: { people: 'Lidé v týmu', add: 'Přidat do týmu', leads: 'Vede tým', leadsMine: 'Vedu tým', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat z týmu', in: 'v týmu' },
+  community: { people: 'Lidé ve skupince', add: 'Přidat do skupinky', leads: 'Vede skupinku', leadsMine: 'Vedu skupinku', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat ze skupinky', in: 've skupince' },
+  leadership: { people: 'Lidé ve vedení', add: 'Přidat do vedení', leads: 'Předsedá vedení', leadsMine: 'Předsedám vedení', you: 'předsedáš', lead1: 'předsedá', leadN: 'předsedají', remove: 'Odebrat z vedení', in: 've vedení' },
 };
 export const kindWords = (group) => KIND_WORDS[group?.kind] || KIND_WORDS.community;
 
@@ -38,11 +42,12 @@ const peopleCount = (n) => plural(n, 'člověk', 'lidé', 'lidí');
 
 // ---------- small shared pieces ----------
 
-/** „vede Jana Nováková“, „vedou Jana Nováková a Petr Novák“, „zatím bez vedoucího“. */
+/** „vede Jana Nováková“, „vedou Jana Nováková a Petr Novák“ („předsedá“ in the leadership), „bez vedoucího“. */
 export function leadersText(groupId) {
   const names = leadersOf(S.data, groupId).map((m) => personName(personById(S.data, m.personId)));
-  if (!names.length) return 'zatím bez vedoucího';
-  return `${names.length > 1 ? 'vedou' : 'vede'} ${andJoin(names)}`;
+  if (!names.length) return 'bez vedoucího';
+  const words = kindWords(groupById(S.data, groupId));
+  return `${names.length > 1 ? words.leadN : words.lead1} ${andJoin(names)}`;
 }
 
 /** Compact skill marks of one member: „Zvuk: umí“, „Projekce: učí se“ (text chips, not buttons). */
@@ -220,9 +225,9 @@ function deleteGroup(group) {
   const parts = [
     memberCount ? `${peopleCount(memberCount)} zůstane v Lidech, jen už tu nebudou.` : '',
     roleIds.length ? `Zmizí i ${plural(roleIds.length, 'role', 'role', 'rolí')} – ze šablon, formátů i z rozpisu.` : '',
-    use.all ? `${useText('Tým', use)} Všechny zmizí. Když chceš historii nechat, dej ho radši do archivu.` : '',
+    use.all ? `${useText('Tým', use)} Všechny zmizí. Když chceš historii nechat, dej to radši do archivu.` : '',
   ];
-  confirmDialog(`Smazat ${group.name}?`, parts.filter(Boolean).join(' ') || 'Je prázdný, nic dalšího nezmizí.', () => {
+  confirmDialog(`Smazat ${group.name}?`, parts.filter(Boolean).join(' ') || 'Nikdo tam není, nic dalšího nezmizí.', () => {
     const g = groupById(S.data, group.id);
     if (!g) return;
     deleteRoles(rolesOf(S.data, g.id).map((r) => r.id));
@@ -241,8 +246,7 @@ function deleteGroup(group) {
 export function renderGroup(id) {
   const group = groupById(S.data, id);
   if (!group) {
-    return [backLink('Týmy a role', '#tymy'),
-      emptyState('Tenhle tým tu není. Možná ho mezitím někdo smazal.', link('Na Týmy a role', '#tymy', 'btn'))];
+    return emptyState('Tenhle tým tu není. Možná ho mezitím někdo smazal.', backButton('Týmy a role', '#tymy'));
   }
   const team = group.kind === 'team';
   const members = sortedMembers(group.id);
@@ -270,7 +274,7 @@ function rolesSection(group, roles) {
   const add = () => roleDialog(group);
   return section('Role', { count: roles.length || null, actions: roles.length ? btn(plus('Přidat roli'), add, 'small') : null },
     list(roles, (r) => roleRow(r), {
-      empty: emptyState('Tým zatím nemá žádnou roli. Přidej třeba Zvuk nebo Projekci.', btn(plus('Přidat roli'), add, 'small')),
+      empty: emptyState('Tým nemá žádnou roli. Přidej třeba Zvuk nebo Projekci.', btn(plus('Přidat roli'), add, 'small')),
     }));
 }
 
@@ -288,7 +292,7 @@ function roleRow(role) {
     `${plural(needed, 'člověk', 'lidé', 'lidí')} na setkání`,
     role.essential ? 'bez toho to nepůjde' : null,
     role.adultsOnly ? 'jen dospělí' : null,
-    role.childcare ? 'u dětí' : null,
+    role.childcare ? 's dětmi' : null,
     role.window ? windowText(role.window) : null,
   ].filter(Boolean).join(' · ');
   return row({
@@ -352,11 +356,11 @@ function roleDialog(group, role) {
           numberInput('endMin', role?.window?.endMin, 'Do minuty', 'do')),
         h('small', {}, 'Minuty od začátku setkání, třeba kafe 90–130. Prázdné = celé setkání.')),
       h('div', { class: 'field full' }, h('span', {}, 'Vlastnosti'),
-        checkboxField('flags', 'Bez toho to nepůjde. Když týden předem nikdo není, Zvonec hlásí chybu.', !!role?.essential, 'essential'),
+        checkboxField('flags', 'Bez toho to nepůjde. Když na roli těsně před setkáním nikdo není, Zvonec to hlásí jako chybu.', !!role?.essential, 'essential'),
         checkboxField('flags', 'Jen pro dospělé.', !!role?.adultsOnly, 'adultsOnly'),
-        checkboxField('flags', 'Služba u dětí. Zvonec pohlídá, aby u nich byli aspoň dva dospělí.', !!role?.childcare, 'childcare')),
-      teams.length ? h('div', { class: 'field full' }, h('span', {}, 'Zvládne naráz s'),
-        h('small', {}, 'Jeden člověk může mít na stejném setkání obě role, třeba zpěv a kytaru.'),
+        checkboxField('flags', 'Je s dětmi. Zvonec pohlídá, aby u nich byli aspoň dva dospělí.', !!role?.childcare, 'childcare')),
+      teams.length ? h('div', { class: 'field full' }, h('span', {}, 'Dá se dělat zároveň'),
+        h('small', {}, 'Jeden člověk může na jednom setkání zastat obě role, třeba zpěv a kytaru.'),
         teams.map(([g, roles]) => h('div', { class: 'partner-team' },
           teams.length > 1 ? h('span', { class: 'label' }, g.name) : null,
           choices('partners', roles.map((r) => [r.id, r.name]), partners)))) : null,
@@ -410,7 +414,7 @@ function membersSection(group, members, roles) {
   return section(words.people, { count: members.length || null, actions: members.length ? btn(plus(words.add), add, 'small') : null },
     list(members, (m) => memberRow(group, m, roles), {
       cls: 'member-rows',
-      empty: emptyState(group.kind === 'team' ? 'V týmu zatím nikdo není.' : 'Zatím tu nikdo není.', btn(plus(words.add), add, 'small')),
+      empty: emptyState(group.kind === 'team' ? 'V týmu nikdo není.' : 'Nikdo tu není.', btn(plus(words.add), add, 'small')),
     }));
 }
 
@@ -420,7 +424,7 @@ function memberRow(group, member, roles) {
   const words = kindWords(group);
   const metaParts = [
     member.leader ? words.leads.toLocaleLowerCase('cs') : null,
-    group.kind === 'team' && roles.length && !chips.length ? 'zatím žádná role' : null,
+    group.kind === 'team' && roles.length && !chips.length ? 'bez role' : null,
   ].filter(Boolean);
   return row({
     lead: avatar(person),
@@ -504,7 +508,7 @@ export function addToGroupDialog(person) {
     fields: h('div', { class: 'member-form full' }, select, rolesHolder, leaderHolder),
     save: (f, form) => {
       const group = groupById(S.data, form.elements.group.value);
-      if (!group) return 'Vyber, kam ho přidat.';
+      if (!group) return 'Vyber, kam přidat.';
       addMember(S.data, group.id, person.id, { since: today() });
       if (group.kind === 'team') {
         for (const r of rolesOf(S.data, group.id)) {
@@ -548,7 +552,7 @@ export function removeFromGroup(group, personId) {
   const duties = group.kind === 'team' ? upcomingAssignments(personId, rolesOf(S.data, group.id).map((r) => r.id)) : [];
   const text = [
     `${personName(person)} už nebude ${words.in} ${group.name}. V Lidech zůstane.`,
-    duties.length ? `V rozpisu má ještě ${plural(duties.length, 'službu', 'služby', 'služeb')} za tenhle tým.` : '',
+    duties.length ? `V rozpisu má ještě ${plural(duties.length, 'službu', 'služby', 'služeb')} v tomhle týmu.` : '',
   ].filter(Boolean).join(' ');
   confirmDialog(`${words.remove}?`, text, (form) => {
     if (!groupById(S.data, group.id)) return;
@@ -573,7 +577,7 @@ export function removeFromGroup(group, personId) {
     });
   }, {
     buttonLabel: 'Odebrat',
-    extra: duties.length ? h('div', { class: 'spaced' }, checkboxField('free', 'Uvolnit i tyhle služby v rozpisu.', true)) : null,
+    extra: duties.length ? h('div', { class: 'spaced' }, checkboxField('free', 'Vyřadit i z těchhle služeb v rozpisu.', true)) : null,
   });
 }
 
@@ -588,7 +592,7 @@ export function personGroupRows(person, { leader, self }) {
     const levels = roles.filter((r) => member?.roles?.[r.id]).map((r) => `${r.name}: ${SKILL_LABELS[member.roles[r.id]]}`);
     const words = kindWords(g);
     const metaLine = [
-      member?.leader ? (self ? words.leads.replace(/^Vede/, 'Vedu') : words.leads).toLocaleLowerCase('cs') : null,
+      member?.leader ? (self ? words.leadsMine : words.leads).toLocaleLowerCase('cs') : null,
       ...levels,
     ].filter(Boolean).join(' · ') || GROUP_KIND_LABELS[g.kind] || '';
     return row({

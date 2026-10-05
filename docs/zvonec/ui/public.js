@@ -79,7 +79,7 @@ function coverOf(event) {
 const hasCoords = (place) => Number.isFinite(place.lat) && Number.isFinite(place.lon);
 
 /**
- * The description, three lines at first. „Více“ opens the rest and the maps; it only shows when
+ * The description, three lines at first. „Ukázat víc“ opens the rest and the maps; it only shows when
  * there is a rest (the text is longer than three lines, or a place has a map).
  */
 function moreText(event, places) {
@@ -87,10 +87,10 @@ function moreText(event, places) {
   const maps = places.filter(hasCoords);
   const body = text ? h('p', { class: 'pub-text' }, text) : null;
   const mapBox = h('div', { class: 'pub-maps', hidden: true });
-  const toggle = textButton('Více', () => {
+  const toggle = textButton('Ukázat víc', () => {
     const open = toggle.getAttribute('aria-expanded') !== 'true';
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.textContent = open ? 'Méně' : 'Více';
+    toggle.textContent = open ? 'Ukázat míň' : 'Ukázat víc';
     body?.classList.toggle('open', open);
     if (open && !mapBox.childElementCount) mapBox.append(...maps.map((p) => placeMap(p)));
     mapBox.hidden = !open;
@@ -153,7 +153,7 @@ export function renderPublicProgram() {
 }
 
 function footer(data) {
-  const updated = data.generated && /^\d{4}-\d{2}-\d{2}$/.test(data.generated) ? `Aktualizováno ${longDay(data.generated).replace(/^\S+ /, '')}` : null;
+  const updated = data.generated && /^\d{4}-\d{2}-\d{2}$/.test(data.generated) ? `Naposledy upraveno ${longDay(data.generated).replace(/^\S+ /, '')}` : null;
   if (!data.address && !updated) return null;
   return h('footer', { class: 'pub-foot' },
     data.address ? h('p', {}, h('span', {}, data.address), h('span', { class: 'sep', 'aria-hidden': 'true' }, SEP),

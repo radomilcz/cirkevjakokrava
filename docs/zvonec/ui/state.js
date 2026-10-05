@@ -44,6 +44,8 @@ export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel sboru', g
 export const SKILL_LABELS = { trained: 'umí', learning: 'učí se' };
 export const GROUP_KIND_LABELS = { team: 'tým', community: 'skupinka', leadership: 'vedení' };
 export const ACCESS_LABELS = { admin: 'správce', leader: 'vedoucí', member: 'člen', invite: 'pozvánka' };
+/** „Pohled člena: Anna Nováková“ – the demo's „look at it as someone else“, without the name's case. */
+export const ACCESS_VIEW = { admin: 'Pohled správce', leader: 'Pohled vedoucího', member: 'Pohled člena' };
 
 // ---------- hooks set by app.js ----------
 

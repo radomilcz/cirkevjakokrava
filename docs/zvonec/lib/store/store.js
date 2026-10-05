@@ -209,7 +209,7 @@ export async function saveImage(store, base64, ext = 'webp', message = 'Zvonec: 
     cacheOf(store).set(name, Promise.resolve(urlFromBase64(store, name, plain)));
     return name;
   }
-  throw new Conflict('Nepovedlo se vybrat název obrázku.');
+  throw new Conflict('Nepodařilo se vybrat název obrázku.');
 }
 
 /**
@@ -347,7 +347,7 @@ export class Sync {
         this.replaceCollections(merge(mine, fileSlice(this.data, path), merged));
       }
     }
-    throw new GithubError('Nepovedlo se to sloučit ani na třetí pokus.', 409);
+    throw new GithubError('Nepodařilo se to sloučit ani na třetí pokus.', 409);
   }
 
   /**

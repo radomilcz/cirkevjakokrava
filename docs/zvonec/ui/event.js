@@ -2,7 +2,7 @@
 // role, with the status of every person); the osnova (program); for leaders the warnings of the event.
 
 import {
-  h, btn, textButton, link, backLink, pageHeader, section, list, row, emptyState, toast, download,
+  h, btn, textButton, link, backLink, backButton, pageHeader, section, list, row, emptyState, toast, download,
   closeDialog, openDialog, confirmDialog, simpleDialog, textField, fieldGroup, plural, plus, note,
   assignee, personName, placeLine, placeMap, statusIcon,
 } from './dom.js';
@@ -44,8 +44,7 @@ const nameOf = (personId) => personName(personById(S.data, personId));
 export function renderEvent(id) {
   const event = fresh(id);
   if (!event) {
-    return [backLink('Kalendář', '#kalendar'),
-      emptyState('Tohle setkání tu není. Možná ho někdo smazal.', link('Do kalendáře', '#kalendar', 'btn'))];
+    return emptyState('Tohle setkání tu není. Možná ho někdo smazal.', backButton('Kalendář', '#kalendar'));
   }
   const leader = can('leader');
   const conflicts = leader ? S.conflicts.filter((c) => (c.eventIds || [c.eventId]).includes(id)) : [];
@@ -53,7 +52,7 @@ export function renderEvent(id) {
   const hasNeeds = needsOf(S.data, event).length > 0;
   const open = leader && !event.cancelled && hasNeeds;
   const fill = fillOf(event);
-  const icsButton = btn('Do kalendáře (.ics)', () => download(`${event.title}-${dayOf(event.start)}.ics`,
+  const icsButton = btn('Stáhnout do kalendáře (.ics)', () => download(`${event.title}-${dayOf(event.start)}.ics`,
     ics(S.data, [{ event }], event.title), 'text/calendar'), leader ? 'plain' : '');
 
   return [
@@ -112,11 +111,11 @@ function facts(event, leader) {
     places.length ? h('p', { class: 'event-place' }, placeLine(places)) : null,
     event.description
       ? h('p', { class: 'event-description' }, event.description)
-      : leader ? h('p', { class: 'event-description faint' }, 'Zatím bez popisu. ', textButton('Napsat popis', edit)) : null,
+      : leader ? h('p', { class: 'event-description faint' }, 'Bez popisu. ', textButton('Napsat popis', edit)) : null,
     event.note ? h('p', { class: 'event-note' }, h('span', { class: 'label' }, 'Pro tým'), ' ', event.note) : null,
     h('p', { class: 'event-public' },
       h('span', { class: ['public-mark', event.public && 'on'], 'aria-hidden': 'true' }),
-      event.public ? 'Veřejné na webu' : 'Jen pro přihlášené',
+      event.public ? 'Veřejné na webu' : 'Jen ve Zvonci',
       leader ? [' · ', textButton('Změnit', edit)] : null));
 }
 
@@ -139,7 +138,7 @@ function myAnswer(event) {
 /** The map of the first place with coordinates (side column; the address is in the facts already). */
 function mapSection(event) {
   const map = placesOf(event).map((p) => placeMap(p)).find(Boolean);
-  return map ? section('Kde to je', map) : null;
+  return map ? section('Místo', map) : null;
 }
 
 /** Previous and next event of the series. */
@@ -149,7 +148,7 @@ function seriesSection(event) {
   const at = series.indexOf(event);
   const before = series[at - 1];
   const after = series[at + 1];
-  return section('V řadě', { count: `${at + 1}. z ${series.length}` },
+  return section('Řada setkání', { count: `${at + 1}. z ${series.length}` },
     h('div', { class: 'series-links' },
       before ? link(prettyDay(before.start), `#setkani/${before.id}`, 'btn small series-prev', { 'aria-label': `Předchozí: ${prettyDay(before.start)}` }) : null,
       after ? link(prettyDay(after.start), `#setkani/${after.id}`, 'btn small series-next', { 'aria-label': `Další: ${prettyDay(after.start)}` }) : null));
@@ -175,7 +174,7 @@ function assignmentProblems(conflicts) {
 function duties(event, conflicts, leader) {
   const needs = needsOf(S.data, event, { withAssigned: true });
   if (!needs.length) {
-    return emptyState(leader ? 'Tohle setkání zatím nikoho nepotřebuje.' : 'Tohle setkání nikoho nepotřebuje.',
+    return emptyState('Tohle setkání nikoho nepotřebuje.',
       leader ? btn('Určit, kolik lidí je potřeba', () => eventDialog({ event: fresh(event.id) }), 'small') : null);
   }
   needs.sort((a, b) => roleComparator(S.data)(a.roleId, b.roleId));
@@ -267,7 +266,9 @@ function pickFor(eventId, roleId, assignmentId) {
   if (!event) return;
   const role = roleById(S.data, roleId);
   const replacing = assignmentId ? event.assignments.find((a) => a.id === assignmentId) : null;
-  const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && a.status !== 'declined').map((a) => a.personId);
+  // not offered: who is on the role already, and the person being replaced (even when they said no)
+  const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && (a.status !== 'declined' || a.id === assignmentId))
+    .map((a) => a.personId);
   openPicker({
     title: replacing ? `Vyměnit: ${nameOf(replacing.personId)} (${role?.name || 'služba'})` : `Kdo na ${role?.name || 'službu'}?`,
     eventId,
@@ -371,13 +372,13 @@ function programSection(event, previous, leader) {
   return section('Osnova', {
     count: times.length ? `${total} z ${length} min` : null,
     actions: [
-      times.length ? link('Na papír a plátno', `#setkani/${id}/osnova`, 'btn small plain') : null,
+      times.length ? link('Vytisknout osnovu', `#setkani/${id}/osnova`, 'btn small plain') : null,
       leader && previous && (previous.program || []).length ? btn('Převzít minulou', takePrevious, 'small plain') : null,
       leader && times.length ? btn(plus('Přidat bod'), () => addItemDialog(id), 'small') : null,
     ],
   },
   items || (leader
-    ? emptyState('Osnova je zatím prázdná. Slož ji z formátů – časy se dopočítají samy.', btn(plus('Přidat bod'), () => addItemDialog(id), 'small'))
+    ? emptyState('Osnova je prázdná. Slož ji z formátů, časy se dopočítají samy.', btn(plus('Přidat bod'), () => addItemDialog(id), 'small'))
     : note('Osnova ještě není.')),
   leader && times.length && total > length
     ? h('p', { class: 'program-over' }, h('span', { class: 'sev-dot warning', 'aria-hidden': 'true' }), `Osnova je o ${total - length} min delší než setkání.`)
@@ -398,13 +399,13 @@ function addItemDialog(eventId) {
     h('h2', {}, 'Přidat bod do osnovy'),
     list(formats, (f) => row({
       title: f.name,
-      meta: [f.leadRoleId ? `vede ${roleById(S.data, f.leadRoleId)?.name || '?'}` : null, f.why ? f.why.split(/(?<=[.!?])\s/)[0] : null].filter(Boolean).join(' · ') || null,
+      meta: [f.leadRoleId ? `vede: ${roleById(S.data, f.leadRoleId)?.name || '?'}` : null, f.why ? f.why.split(/(?<=[.!?])\s/)[0] : null].filter(Boolean).join(' · ') || null,
       trail: `${f.minutes || 10} min`,
       onclick: () => add(f),
       label: `Přidat: ${f.name}`,
     }), {
       cls: 'in-dialog',
-      empty: emptyState('Zatím tu nejsou žádné formáty.', link('Na Formáty', '#formaty', 'btn small', { onclick: closeDialog })),
+      empty: emptyState('Nejsou tu žádné formáty.', link('Otevřít Formáty', '#formaty', 'btn small', { onclick: closeDialog })),
     }),
     h('div', { class: 'actions' }, btn('Zavřít', closeDialog))));
 }
@@ -475,9 +476,21 @@ function itemDialog(eventId, itemId, draft) {
     },
     remove: () => {
       const e = fresh(eventId);
-      if (!e) return;
-      e.program = (e.program || []).filter((x) => x.id !== itemId);
-      change(`osnova ${prettyDay(e.start, false)}`);
+      const index = (e?.program || []).findIndex((x) => x.id === itemId);
+      if (index < 0) return;
+      const [removed] = e.program.splice(index, 1);
+      const name = itemName(S.data, removed);
+      change(`osnova ${prettyDay(e.start, false)} bez ${name}`);
+      toast('Smazáno.', name, {
+        actionLabel: 'Vrátit',
+        action: () => {
+          const again = fresh(eventId);
+          if (!again || (again.program || []).some((x) => x.id === removed.id)) return;
+          again.program = again.program || [];
+          again.program.splice(Math.min(index, again.program.length), 0, removed);
+          change(`osnova ${prettyDay(again.start, false)}: zpátky ${name}`);
+        },
+      });
     },
   });
 }

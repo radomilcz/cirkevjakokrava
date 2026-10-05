@@ -146,7 +146,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .save-status.error{color:var(--ink)}
 .save-status .btn{margin-left:var(--s1)}
 .sidebar .save-status{padding:0 var(--s2)}
-.topbar,.scrim{display:none}
+.topbar,.scrim,.sidebar .sheet-close{display:none}
 @media (min-width:960px){
   body{padding-left:var(--sidebar)}
 }
@@ -172,6 +172,8 @@ button,input,select,textarea{font:inherit;color:inherit}
   body.sheet-open{overflow:hidden}
   .scrim{display:block;position:fixed;inset:0;z-index:35;background:rgba(20,16,16,.55)}
   .scrim[hidden]{display:none}
+  .sidebar-head{position:relative}
+  .sidebar .sheet-close{display:inline-flex;position:absolute;bottom:-.5em;right:0}
 }
 @media (prefers-reduced-motion:reduce){.sidebar{transition:none !important}}
 
@@ -221,6 +223,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 @media (max-width:620px){
   .page-header-media .avatar-l,.page-header-media .group-mark-l{width:52px;height:52px;font-size:1.15rem}
   .page-header.with-media .page-header-actions{flex-basis:100%}
+  /* the mark or avatar above the title: the title gets the whole width */
+  .page-header.with-media{flex-direction:column;align-items:flex-start;gap:var(--s3)}
+  .page-header.with-media .page-header-text{flex-basis:auto;width:100%}
 }
 /* a small muted line above a dialog title (which event, which team) and in print headers */
 .eyebrow{font-size:var(--t4);line-height:1.3;color:var(--muted);margin:0}
@@ -237,6 +242,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .back{display:inline-flex;align-items:center;gap:.5em;text-decoration:none;color:var(--muted);margin:0 0 var(--s2);min-height:44px}
 .back::before{content:"→";display:inline-block;transform:scaleX(-1)}   /* ← is not in the font subset */
+.btn.back-arrow::before{content:"→";display:inline-block;transform:scaleX(-1);margin-right:.45em}
 .rule{height:1px;background:var(--line);border:0;margin:var(--s5) 0}
 .page-header+.rule{margin-top:calc(-1*var(--s3))}
 
@@ -583,7 +589,8 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
   background-image:radial-gradient(circle,currentColor 1.3px,transparent 1.7px);background-size:7px 7px;background-position:center;
   background-repeat:repeat;background-origin:content-box;padding:.55em .5em;
 }
-.drag-handle:hover,.drag-handle:focus-visible{opacity:1;background-color:var(--hover);outline:none}
+.drag-handle:hover,.drag-handle:focus-visible{opacity:1;background-color:var(--hover)}
+.drag-handle:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
 .sortable.sorting,.sortable.sorting *{cursor:grabbing;user-select:none}
 .sortable>li.dragging{
   position:relative;z-index:2;background:var(--ground);border-radius:14px;

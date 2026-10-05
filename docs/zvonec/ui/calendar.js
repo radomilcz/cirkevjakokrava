@@ -17,7 +17,7 @@ import { roleById } from '../lib/groups.js';
 import { publishField } from './formats.js';
 import { saveImage, loadImageUrl, deleteImage } from '../lib/store/store.js';
 import {
-  MONTHS_GENITIVE, addDays, addMinutes, addMonths, dayOf, monthGrid, monthName, monthOf, prettyDay,
+  MONTHS_GENITIVE, addDays, addMinutes, addMonths, dayOf, minutesBetween, monthGrid, monthName, monthOf, prettyDay,
   prettyDayLong, prettyRange, prettyTime, timeOf, today, weekday,
 } from '../lib/time.js';
 
@@ -43,9 +43,9 @@ export function roleComparator(data) {
   return (a, b) => (order.get(a) ?? 9999) - (order.get(b) ?? 9999);
 }
 
-/** „i 3 další v řadě“ – the series choice in Czech. */
+/** „i 3 další“ – the series choice in Czech (under „Platí pro“). */
 export function andFollowing(n) {
-  if (n === 1) return 'i to další v řadě';
+  if (n === 1) return 'i to následující';
   return `i ${n} ${n <= 4 ? 'další' : 'dalších'} v řadě`;
 }
 
@@ -155,6 +155,12 @@ export function coverOf(event, { size = 'card', title = true } = {}) {
 
 const MAX_IMAGE = 1600;
 
+/** What the picture fields say (the event form here, the template form in ui/settings.js). */
+export const NOT_AN_IMAGE = 'Tohle není obrázek. Vyber fotku nebo grafiku (JPG, PNG, WebP).';
+export const IMAGE_NONE_HINT = 'Bez obrázku Zvonec nakreslí obálku s názvem v barvách sboru.';
+/** A picked file that is a picture (by type, or by the name when the browser gives no type). */
+export const isImageFile = (file) => (file.type ? file.type.startsWith('image/') : /\.(jpe?g|png|webp|gif|avif|heic)$/i.test(file.name || ''));
+
 /** A picked file → a data URL of at most 1600 px, WebP (JPEG where the browser cannot write WebP). */
 async function shrinkImage(file) {
   const url = URL.createObjectURL(file);
@@ -162,7 +168,7 @@ async function shrinkImage(file) {
     const img = await new Promise((resolve, reject) => {
       const image = new Image();
       image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error('Tenhle soubor se nedá otevřít jako obrázek.'));
+      image.onerror = () => reject(new Error(NOT_AN_IMAGE));
       image.src = url;
     });
     const scale = Math.min(1, MAX_IMAGE / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
@@ -228,7 +234,8 @@ export function eventRow(event, { past = false } = {}) {
 
 const KIND_ORDER = ['service', 'rehearsal', 'smallGroup', 'event'];
 const CHIPS_PER_DAY = 3;
-const validMonth = (month) => (/^\d{4}-\d{2}$/.test(month || '') ? month : monthOf(today()));
+/** 'YYYY-MM' from the hash when it is a real month, otherwise the current one (#kalendar/2099-13). */
+export const validMonth = (month) => (/^\d{4}-(0[1-9]|1[0-2])$/.test(month || '') ? month : monthOf(today()));
 const kindDot = (kind) => h('span', { class: ['kind-dot', `kind-${kind}`], 'aria-hidden': 'true' });
 
 /** An event in a day of the month grid: kind dot, time, title; my duty outlined; a quiet dot when something is wrong. */
@@ -351,7 +358,7 @@ function needsEditor(needs) {
     const active = needs.filter((n) => n.count > 0);
     const people = active.reduce((s, n) => s + n.count, 0);
     summary.textContent = active.length
-      ? `${plural(people, 'člověk', 'lidé', 'lidí')} · ${plural(active.length, 'služba', 'služby', 'služeb')}`
+      ? `${plural(people, 'člověk', 'lidé', 'lidí')} · ${plural(active.length, 'role', 'role', 'rolí')}`
       : 'Nikdo – jen ti, koho přidá osnova';
   };
   const draw = () => {
@@ -385,11 +392,19 @@ function needsEditor(needs) {
   const element = h('details', { class: 'needs-details' },
     h('summary', {}, h('span', { class: 'needs-summary-text' }, summary), h('span', { class: 'needs-open' }, 'Upravit')),
     body,
-    h('p', { class: 'note' }, 'Služby, které potřebuje osnova (třeba Večeře Páně), přidá Zvonec sám.'));
+    h('p', { class: 'note' }, 'Role, které potřebuje osnova (třeba Večeře Páně), přidá Zvonec sám.'));
   return { element, redraw: draw };
 }
 
 // ---------- the event form ----------
+
+/** „v 1.00“, „ve 2.00“ – Czech says „ve“ before dvě, tři, čtyři, dvanáct… */
+const atTime = (dateTime) => {
+  const hour = Number(timeOf(dateTime).slice(0, 2));
+  return `${[2, 3, 4, 12, 13, 14, 20, 21, 22, 23].includes(hour) ? 've' : 'v'} ${prettyTime(dateTime)}`;
+};
+
+const LONG_EVENT = 12 * 60;   // minutes; a longer event asks once more before saving
 
 const RECURRENCE = [['', 'neopakovat'], ['weekly', 'každý týden'], ['biweekly', 'každé dva týdny'], ['monthly', 'každý měsíc']];
 
@@ -403,9 +418,9 @@ const timePlus = (time, minutes) => timeOf(addMinutes(`2000-01-01T${time}`, minu
  */
 function imageField(state, previewEvent) {
   const wrap = h('div', { class: 'field full image-field' });
-  const input = h('input', { type: 'file', accept: 'image/*', class: 'visually-hidden', name: 'imageFile', tabindex: -1 });
+  const input = h('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp,image/gif,image/*', class: 'visually-hidden', name: 'imageFile', tabindex: -1 });
   const pickButton = btn('', () => input.click(), 'small');
-  const problem = h('small', { class: 'image-problem', hidden: true });
+  const problem = h('small', { class: 'image-problem', role: 'alert', hidden: true });
   const removeButton = btn('Odebrat obrázek', () => { state.current = null; state.pending = null; draw(); }, 'small plain');
   const previewBox = h('div', { class: 'image-preview' });
 
@@ -420,7 +435,7 @@ function imageField(state, previewEvent) {
     removeButton.hidden = !(state.pending || ownName);
     hint.textContent = state.pending || ownName ? 'Uloží se spolu se setkáním.'
       : name ? 'Obrázek je ze šablony. Můžeš nahrát jiný.'
-        : 'Bez obrázku Zvonec udělá obálku sám – z názvu a barev sboru.';
+        : IMAGE_NONE_HINT;
   };
   const hint = h('small', {});
 
@@ -429,11 +444,16 @@ function imageField(state, previewEvent) {
     input.value = '';
     if (!file) return;
     problem.hidden = true;
+    if (!isImageFile(file)) {
+      problem.textContent = NOT_AN_IMAGE;
+      problem.hidden = false;
+      return;
+    }
     pickButton.disabled = true;
     try {
       state.pending = await shrinkImage(file);
     } catch (error) {
-      problem.textContent = error.message || 'Obrázek se nepodařilo načíst.';
+      problem.textContent = error.message || NOT_AN_IMAGE;
       problem.hidden = false;
     }
     pickButton.disabled = false;
@@ -473,7 +493,12 @@ export function eventDialog({ day, event } = {}) {
   let publicDefault = base.public;
 
   const form = h('form', { method: 'dialog', novalidate: true, class: 'event-form' });
-  const previewEvent = () => ({ id: base.id || 'new', title: form.elements.title?.value || 'Nové setkání', start: `${form.elements.day?.value || dayOf(base.start)}T10:00` });
+  // the picture field is built before the title field exists: until then the preview uses the event's own title
+  const previewEvent = () => ({
+    id: base.id || 'new',
+    title: (form.elements.title ? form.elements.title.value : base.title) || 'Nové setkání',
+    start: `${form.elements.day?.value || dayOf(base.start)}T10:00`,
+  });
   const picture = imageField(image, previewEvent);
 
   const applyType = (id) => {
@@ -512,7 +537,7 @@ export function eventDialog({ day, event } = {}) {
       h('div', { class: 'time-pair' },
         textField('from', 'Od', timeOf(base.start), { type: 'time', attr: { required: true } }),
         textField('to', 'Do', timeOf(base.end), { type: 'time', attr: { required: true } })),
-      places.length ? fieldGroup('Kde', choices('places', places.map((p) => [p.id, p.name]), base.placeIds || [])) : null,
+      places.length ? fieldGroup('Místo', choices('places', places.map((p) => [p.id, p.name]), base.placeIds || [])) : null,
       !editing ? selectField('repeat', 'Opakovat', RECURRENCE, '') : null,
       !editing ? textField('until', 'Opakovat do', addMonths(dayOf(base.start), 3), { type: 'date' }) : null,
       picture.element,
@@ -520,20 +545,29 @@ export function eventDialog({ day, event } = {}) {
         attr: { rows: 3, placeholder: 'Co lidi na setkání čeká, co si vzít s sebou…' },
       }),
       textArea('note', 'Poznámka pro tým', base.note || '', {
-        attr: { rows: 2, placeholder: 'sraz v 9.30, klíče má Petr…' }, hint: 'Uvidí jen přihlášení.',
+        attr: { rows: 2, placeholder: 'sraz v 9.30, klíče má Petr…' }, hint: 'Uvidí ji jen lidé ve Zvonci, ne na webu.',
       }),
       publishField('public', 'Zveřejnit na webu', 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', base.public === true),
       fieldGroup('Kolik lidí je potřeba', editor.element),
       groups.length ? selectField('groupId', 'Tým', [['', 'celý sbor'], ...groups.map((g) => [g.id, g.name])], base.groupId || '', {
         full: true, hint: 'Čí je to setkání – třeba zkouška chval nebo skupinka.',
       }) : null,
-      following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null),
+      following ? fieldGroup('Platí pro', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null),
     formErrorLine(),
     h('div', { class: 'actions' },
       editing ? btn(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', () => { closeDialog(); cancelDialog(event.id); }, 'left plain') : null,
       editing ? btn('Smazat', () => { closeDialog(); deleteDialog(event.id); }, 'plain') : null,
       btn('Zavřít', closeDialog),
       submit));
+
+  // an unusual time (over midnight, longer than 12 hours) is saved only after a second click
+  const submitLabel = editing ? 'Uložit' : 'Přidat';
+  let confirmedTime = null;
+  form.addEventListener('input', () => {
+    if (submit.textContent === submitLabel) return;
+    submit.textContent = submitLabel;
+    formError(form, null);
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -542,7 +576,19 @@ export function eventDialog({ day, event } = {}) {
     if (!title || !f.day.value || !f.from.value || !f.to.value) { formError(form, 'Doplň název, den a čas.'); return; }
     const start = `${f.day.value}T${f.from.value}`;
     let end = `${f.day.value}T${f.to.value}`;
-    if (end <= start) end = addDays(end, 1);   // over midnight
+    if (end === start) { formError(form, 'Konec musí být až po začátku.'); return; }
+    const overnight = end < start;
+    if (overnight) end = addDays(end, 1);
+    const minutes = minutesBetween(start, end);
+    if (overnight && minutes > LONG_EVENT) { formError(form, 'Konec je dřív než začátek. Oprav čas „Do“.'); return; }
+    if ((overnight || minutes > LONG_EVENT) && confirmedTime !== `${start}/${end}`) {
+      confirmedTime = `${start}/${end}`;
+      formError(form, overnight
+        ? `Setkání skončí až další den ${atTime(end)}. Je to tak?`
+        : `Setkání bude trvat ${plural(Math.round(minutes / 60), 'hodinu', 'hodiny', 'hodin')}. Je to tak?`);
+      submit.textContent = editing ? 'Ano, uložit' : 'Ano, přidat';
+      return;
+    }
     if (!editing && f.repeat.value && (!f.until.value || f.until.value < f.day.value)) {
       formError(form, 'Do kdy se to má opakovat? Vyber den po prvním setkání.');
       return;
@@ -557,7 +603,7 @@ export function eventDialog({ day, event } = {}) {
         imageName = await saveImage(S.store, image.pending.data, image.pending.ext);
       } catch (error) {
         submit.disabled = false;
-        submit.textContent = editing ? 'Uložit' : 'Přidat';
+        submit.textContent = submitLabel;
         formError(form, `Obrázek se nepodařilo uložit: ${error.message || error}`);
         return;
       }
@@ -607,7 +653,7 @@ export function eventDialog({ day, event } = {}) {
     if (created.length > 1) {
       change(`${created.length}× ${title} od ${prettyDay(start, false)}`);
       navigate(`#kalendar/${monthOf(start)}`);
-      toast(`Přidáno ${created.length} setkání.`, `Poslední ${prettyDay(created[created.length - 1].start)}.`);
+      toast(`Přidáno ${created.length} setkání.`, `Poslední: ${prettyDay(created[created.length - 1].start)}`);
     } else {
       change(`nové setkání ${prettyDay(start, false)}`);
       navigate(`#setkani/${created[0].id}`);
@@ -623,7 +669,7 @@ export function eventDialog({ day, event } = {}) {
 /** Radio „jen tohle / i N dalších v řadě“ when the event has following ones. */
 function seriesChoice(event) {
   const following = followingInSeries(S.data, event).length;
-  return following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null;
+  return following ? fieldGroup('Platí pro', choices('scope', [['one', 'jen tohle setkání'], ['following', andFollowing(following)]], 'one', 'radio')) : null;
 }
 
 /** Cancel an event (it stays in the calendar, struck through) – or restore a cancelled one. */
@@ -633,8 +679,8 @@ export function cancelDialog(eventId) {
   const restoring = !!event.cancelled;
   confirmDialog(
     restoring ? `Obnovit ${event.title} ${prettyDay(event.start, false)}?` : `Zrušit ${event.title} ${prettyDay(event.start, false)}?`,
-    restoring ? 'Setkání se vrátí do kalendáře i s lidmi, kteří na něm byli.'
-      : 'Setkání zůstane v kalendáři přeškrtnuté a lidi v něm zůstanou zapsaní. Dej jim vědět i jinak.',
+    restoring ? 'Setkání se vrátí do kalendáře i s lidmi, kteří na něm byli zapsaní.'
+      : 'Setkání zůstane v kalendáři přeškrtnuté a lidé v něm budou dál zapsaní. Dej jim vědět i jinak.',
     (form) => {
       const e = eventById(S.data, eventId);
       if (!e) return;

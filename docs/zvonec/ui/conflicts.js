@@ -91,7 +91,7 @@ export function overrideDialog(assignmentId) {
     h('p', { class: 'eyebrow' }, `${role?.name || 'Služba'} · ${event.title} ${prettyDay(event.start)}`),
     h('h2', {}, 'Je to v pořádku?'),
     note(`Když víš, že ${name} to zvládne, napiš proč. Zvonec to pak přestane hlásit jako chybu.`),
-    existing?.at ? note(`Potvrdil(a) ${by || 'někdo'} ${prettyDay(existing.at, false)}.`) : null,
+    existing?.at ? note(`Potvrdil(a) ${by || 'někdo'}, ${prettyDay(existing.at, false)}`) : null,
     textField('reason', 'Proč to půjde', existing?.reason || '', { attr: { autofocus: true, placeholder: 'odejde ze zkoušky dřív' } }),
     formErrorLine(),
     h('div', { class: 'actions' },

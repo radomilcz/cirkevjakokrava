@@ -140,7 +140,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     const similar = similarPeople(q).filter((p) => !excluded.has(p.id));
     const joinText = role
       ? `Přidat do týmu ${group?.name || ''} (${role.name}: ${SKILL_LABELS.learning})`
-      : group ? `Přidat do ${group.kind === 'team' ? 'týmu' : 'skupinky'} ${group.name}` : null;
+      : group ? `Přidat i do: ${group.name}` : null;
     const form = h('form', { class: 'form-grid quick-add', novalidate: true },
       similar.length ? h('div', { class: 'similar full' },
         h('p', { class: 'note' }, 'Není to někdo z nich?'),
@@ -237,11 +237,11 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
         h('span', { class: 'pick-plus', 'aria-hidden': 'true' }),
         h('span', { class: 'pick-body' },
           h('span', { class: 'pick-name' }, `Nový člověk „${q}“`),
-          h('span', { class: 'pick-meta' }, rows.length ? 'Když to není nikdo z nich.' : 'Nikdo takový tu zatím není.')))));
+          h('span', { class: 'pick-meta' }, rows.length ? 'Když to není nikdo z nich.' : 'Nikdo takový tu není.')))));
       }
       listHolder.replaceChildren(
         items.length ? h('ul', { class: 'pick-list', role: 'list', onkeydown: onKeys }, items)
-          : h('p', { class: 'picker-empty' }, q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle roli zatím nikdo neumí. Zkus Celý tým nebo Všichni lidé.' : 'Nikdo tu není.'),
+          : h('p', { class: 'picker-empty' }, q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle roli nikdo neumí. Zkus Celý tým nebo Všichni lidé.' : 'Nikdo tu není.'),
         ranked && !q && items.length ? h('p', { class: 'picker-legend note' },
           h('span', { class: 'reason reason-error' }, 'nepůjde'), '\u00a0· ',
           h('span', { class: 'reason reason-warning' }, 'jde to, ale pozor')) : null);

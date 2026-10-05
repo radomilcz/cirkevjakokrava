@@ -6,15 +6,16 @@ import {
   h, btn, plus, plural, pageHeader, section, actions, note, emptyState, list, row,
   toast, download, confirmDialog, simpleDialog, formError, formErrorLine,
   textField, textArea, selectField, choices, checkboxField, checkedValues, fieldGroup, filterLinks,
-  removeButton, eventCover, coverKey, mapUrl,
+  removeButton, eventCover, coverKey, mapUrl, canMap,
 } from './dom.js';
+import { NOT_AN_IMAGE, IMAGE_NONE_HINT, isImageFile } from './calendar.js';
 import {
-  S, can, change, newId, replaceAll, actAs, logout, EVENT_KIND_LABELS, ACCESS_LABELS,
+  S, can, change, newId, replaceAll, actAs, logout, EVENT_KIND_LABELS, ACCESS_LABELS, ACCESS_VIEW,
 } from './state.js';
 import { sortable, dragHandle, moveInArray } from './sortable.js';
 import { accountSection, accountCard, loginsSection, keySection, demoSection, createInvite } from './login.js';
 import {
-  byName, clone, toInt, needsEditor, cleanNeeds, publishField,
+  byName, clone, needsEditor, cleanNeeds, publishField,
 } from './formats.js';
 import { EVENT_KINDS } from '../lib/events.js';
 import { formatById } from '../lib/program.js';
@@ -29,7 +30,7 @@ import { today, dayOf, weekday, DAYS_FULL } from '../lib/time.js';
 export { openFormatInfo, formatWhyHow } from './formats.js';
 
 const PILLS = [
-  ['', 'Sbor'], ['sablony', 'Šablony setkání'], ['mista', 'Místa'], ['prihlaseni', 'Přihlašování'], ['zaloha', 'Záloha'],
+  ['', 'Sbor'], ['sablony', 'Šablony setkání'], ['mista', 'Místa'], ['prihlaseni', 'Přihlášení'], ['zaloha', 'Záloha'],
 ];
 const hrefOf = (slug) => (slug ? `#nastaveni/${slug}` : '#nastaveni');
 /** "09:30" → "9.30" */
@@ -73,14 +74,14 @@ function churchPage() {
   const rows = [
     ['maxPerMonth', 'Nejvíc služeb za měsíc', 'Platí pro každého, kdo nemá na své kartě jiné číslo.', s.defaults.maxPerMonth, { min: 1, max: 99, units: ['služba', 'služby', 'služeb'] }],
     ['maxConsecutiveWeeks', 'Nejvíc nedělí po sobě', 'I kráva potřebuje volnou neděli na pastvě.', s.defaults.maxConsecutiveWeeks, { min: 1, max: 99, units: ['neděle', 'neděle', 'nedělí'] }],
-    ['essentialDaysBefore', 'Prázdná nezbytná role je chyba', 'Od kolika dní před setkáním. Dřív je to jen upozornění. Nezbytná je role se zaškrtnutým „Bez toho to nejde“.', s.rules.essentialDaysBefore, { min: 0, max: 99, units: ['den', 'dny', 'dní'] }],
+    ['essentialDaysBefore', 'Prázdná nezbytná role je chyba', 'Od kolika dní před setkáním. Dřív je to jen upozornění. Nezbytná je role se zaškrtnutým „Bez toho to nepůjde“.', s.rules.essentialDaysBefore, { min: 0, max: 99, units: ['den', 'dny', 'dní'] }],
     ['unconfirmedDaysBefore', 'Nepotvrzená služba je upozornění', 'Od kolika dní před setkáním. Dřív si Zvonec nepotvrzených služeb nevšímá.', s.rules.unconfirmedDaysBefore, { min: 0, max: 99, units: ['den', 'dny', 'dní'] }],
-    ['childAge', 'Dospělý je od', 'Mladší lidé se berou jako děti a nejdou do služeb jen pro dospělé.', s.rules.childAge, { min: 1, max: 25, units: ['rok', 'roky', 'let'] }],
+    ['childAge', 'Dospělý je od', 'Mladší jsou pro Zvonec děti. Když slouží tam, kde mají být jen dospělí, Zvonec hlásí chybu.', s.rules.childAge, { min: 1, max: 25, units: ['rok', 'roky', 'let'] }],
   ];
   const form = h('form', { class: 'church-form', novalidate: true },
     h('div', { class: 'form-grid' },
       textField('churchName', 'Název sboru', s.churchName, { full: true }),
-      textField('address', 'Adresa', s.address, { full: true, hint: 'Ukáže se na webu a u setkání v kalendáři v telefonu.' })),
+      textField('address', 'Adresa', s.address, { full: true, hint: 'Ukáže se na webu a v telefonním kalendáři u setkání.' })),
     section('Kolik služeb je moc', h('div', { class: 'setting-rows' }, rows.slice(0, 2).map((r) => ruleRow(...r)))),
     section('Kdy Zvonec zabučí', h('div', { class: 'setting-rows' }, rows.slice(2).map((r) => ruleRow(...r)))),
     formErrorLine(''),
@@ -120,7 +121,8 @@ const MAX_BYTES = 400 * 1024;
 /** A photo from the user → { dataUrl, ext }: at most 1600 px on the long side, WebP (JPEG where the browser can't), about 80 %. */
 async function prepareImage(file) {
   let bitmap;
-  try { bitmap = await createImageBitmap(file); } catch { throw new Error('Tenhle soubor nejde otevřít jako obrázek.'); }
+  if (!isImageFile(file)) throw new Error(NOT_AN_IMAGE);
+  try { bitmap = await createImageBitmap(file); } catch { throw new Error(NOT_AN_IMAGE); }
   const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(bitmap.width * scale));
@@ -176,7 +178,7 @@ function typeCover(type, size = 'thumb') {
  */
 function imageField(type, state) {
   const preview = h('div', { class: 'image-preview' });
-  const message = h('small', { class: 'image-message' });
+  const message = h('small', { class: 'image-message', role: 'status' });
   const buttons = h('div', { class: 'image-buttons' });
   const file = h('input', { type: 'file', accept: 'image/*', hidden: true, name: 'imageFile', class: 'image-file' });
   const node = h('div', { class: 'field full image-field' }, h('span', {}, 'Obrázek'), preview, buttons, message, file);
@@ -197,7 +199,7 @@ function imageField(type, state) {
       btn(hasImage() ? 'Vybrat jiný obrázek' : 'Nahrát obrázek', () => file.click(), 'small'),
       hasImage() ? btn('Odebrat obrázek', () => { state.pending = null; state.removed = true; draw(); }, 'small plain') : null,
     ].filter(Boolean));
-    message.textContent = hasImage() ? 'Zmenší se na nejvýš 1600 px.' : 'Bez obrázku se nakreslí obálka s názvem.';
+    message.textContent = hasImage() ? 'Větší obrázek Zvonec zmenší na 1600 px.' : IMAGE_NONE_HINT;
   };
   const draw = () => { drawPreview(); drawButtons(); };
   file.addEventListener('change', async () => {
@@ -305,30 +307,32 @@ function eventTypeDialog(type) {
       selectField('groupId', 'Tým', [['', 'celý sbor'], ...groups.map((g) => [g.id, g.name])], type?.groupId || ''),
       textField('startTime', 'Začátek', type?.startTime || '10:00', { type: 'time' }),
       minutesField,
-      S.data.places.length ? fieldGroup('Kde', choices('placeIds', S.data.places.map((p) => [p.id, p.name]), type?.placeIds || [])) : null,
+      S.data.places.length ? fieldGroup('Místo', choices('placeIds', S.data.places.map((p) => [p.id, p.name]), type?.placeIds || [])) : null,
       imageField(type, image),
       textArea('description', 'Popis', type?.description, {
         attr: { rows: 4, placeholder: 'Chvály, slovo, otázky na tělo a kafe. Přijď, jak jsi.' },
         hint: 'Předvyplní se u nových setkání. Čtou ho lidé na stránce setkání a na webu.',
       }),
       publishField('public', 'Zveřejnit na webu', 'Nová setkání z téhle šablony budou veřejná. Název, čas, místo, obrázek a popis uvidí každý, jména lidí nikdy.', type?.public),
-      needsEditor(needs, { empty: 'Zatím nikdo. Role, které formáty v osnově potřebují, se přidají samy.' }),
+      needsEditor(needs, { empty: 'Nikdo. Role, které potřebují formáty v osnově, se přidají samy.' }),
       outlineEditor(program, minutesField.querySelector('input')),
     ],
     save: async (f, form) => {
       const name = f.name.value.trim();
       if (!name) return 'Doplň název.';
       if (!/^\d{1,2}:\d{2}$/.test(f.startTime.value)) return 'Doplň začátek.';
+      const minutes = Number(f.minutes.value);
+      if (!Number.isInteger(minutes) || minutes < 5 || minutes > 1440) return 'Setkání může trvat 5 až 1440 minut (celý den).';
       let target = type ? S.data.eventTypes.find((x) => x.id === type.id) : null;
       if (type && !target) return 'Šablonu mezitím někdo smazal.';
       let imageName = target?.image || null;
       const oldImage = imageName;
       if (image.pending) {
-        try { imageName = await saveImage(S.store, image.pending.dataUrl, image.pending.ext); } catch (error) { return `Obrázek se nepovedlo uložit. ${error.message}`; }
+        try { imageName = await saveImage(S.store, image.pending.dataUrl, image.pending.ext); } catch (error) { return `Obrázek se nepodařilo uložit. ${error.message}`; }
       } else if (image.removed) imageName = null;
       const values = {
         name, kind: f.kind.value, startTime: f.startTime.value.padStart(5, '0'),
-        minutes: Math.max(5, toInt(f.minutes.value, 60)),
+        minutes,
         placeIds: checkedValues(form, 'placeIds'),
         needs: cleanNeeds(needs),
         program: program.filter((item) => formatById(S.data, item.formatId)).map(({ formatId, minutes }) => ({ formatId, minutes })),
@@ -387,7 +391,7 @@ function placesPage() {
       list(places, (p) => row({
         title: p.name,
         meta: [p.address || 'bez adresy', p.shared ? 'víc věcí naráz' : null].filter(Boolean).join(' · '),
-        trail: h('a', { class: 'place-map-link', href: mapUrl(p), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě'),
+        trail: canMap(p) ? h('a', { class: 'place-map-link', href: mapUrl(p), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě') : null,
         onclick: () => placeDialog(p),
         cls: 'place-row',
       }), { label: 'Místa', empty: emptyState('Zatím tu není žádné místo.', btn(plus('Přidat místo'), add, 'primary')) }),
@@ -444,7 +448,7 @@ function loginsPage() {
   if (S.mode !== 'live') {
     return {
       body: emptyState('V ukázce se nikdo nepřihlašuje. V ostrém Zvonci tady uvidíš, kdo se může přihlásit, a pošleš pozvánku novým lidem.',
-        h('a', { class: 'btn', href: '#nastaveni/ucet' }, 'Podívat se jako někdo jiný')),
+        h('a', { class: 'btn', href: '#nastaveni/ucet' }, 'Podívat se očima někoho jiného')),
     };
   }
   return {
@@ -461,20 +465,20 @@ function demoViewAs() {
   const people = sortPeople(S.data.people.filter((p) => p.membership?.status !== 'former'));
   const form = h('form', { class: 'form-grid', novalidate: true },
     selectField('personId', 'Kdo', [['', 'Nikdo konkrétní'], ...people.map((p) => [p.id, fullName(p)])], S.me.personId || ''),
-    selectField('access', 'Co smí', ['member', 'leader', 'admin'].map((a) => [a, ACCESS_LABELS[a]]), S.me.access),
+    selectField('access', 'Oprávnění', ['member', 'leader', 'admin'].map((a) => [a, ACCESS_LABELS[a]]), S.me.access),
     h('div', { class: 'full' }, h('button', { type: 'submit', class: 'btn small' }, 'Podívat se')));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const personId = form.elements.personId.value;
     const access = form.elements.access.value;
-    if (access !== 'admin' && !personId) { toast('Vyber, za koho se chceš dívat.'); return; }
+    if (access !== 'admin' && !personId) { toast('Vyber, čí očima se chceš dívat.'); return; }
     actAs(personId, access);
-    toast(access === 'admin' && !personId ? 'Zase vidíš všechno.' : `Díváš se jako ${fullName(S.data.people.find((p) => p.id === personId))} (${ACCESS_LABELS[access]}).`);
+    toast(access === 'admin' && !personId ? 'Zase vidíš všechno.' : `${ACCESS_VIEW[access]}: ${fullName(S.data.people.find((p) => p.id === personId))}`);
   });
-  return section('Podívat se jako někdo jiný',
-    note('Vyzkoušej, co vidí člen nebo vedoucí. Člen nemá v menu Nastavení, zpátky se dostaneš tlačítkem „Zpátky jako správce“.'),
+  return section('Očima někoho jiného',
+    note('Vyzkoušej, co vidí člen nebo vedoucí. Člen nemá v menu Nastavení, zpátky se dostaneš tlačítkem „Přepnout na správce“.'),
     h('div', { class: 'narrow' }, form),
-    S.me.personId || S.me.access !== 'admin' ? actions(btn('Zpátky jako správce', () => actAs(null, 'admin'), 'small')) : null);
+    S.me.personId || S.me.access !== 'admin' ? actions(btn('Přepnout na správce', () => actAs(null, 'admin'), 'small')) : null);
 }
 
 function accountPage() {
@@ -507,7 +511,7 @@ function backupPage() {
     let data;
     try { data = readBackup(JSON.parse(await chosen.text())); } catch { data = null; }
     if (data === 'old') { toast('Tohle je záloha starého Zvonce.', 'Tu nahrát neumím. Pošli ji správci.', { duration: 7000 }); return; }
-    if (!data) { toast('Tohle není záloha Zvonce.', 'Soubor se nedá přečíst.'); return; }
+    if (!data) { toast('Tohle není záloha Zvonce.', 'Soubor nejde přečíst.'); return; }
     const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'tým', 'týmy', 'týmů'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
     confirmDialog('Nahradit všechna data souborem?',
       `V souboru je ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše. ${live ? 'Na GitHubu zůstane stará verze v historii.' : ''}`,
@@ -527,7 +531,7 @@ function backupPage() {
   const rows = [
     { title: 'Stáhnout zálohu', meta: `Všechna data v jednom souboru, bez obrázků${live ? ' a přihlášení' : ''}.`, trail: btn('Stáhnout', backup, 'small') },
     { title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru.', trail: [btn('Nahrát', () => file.click(), 'small'), file] },
-    { title: 'Kalendář do telefonu', meta: 'Všechna setkání jako soubor .ics. Svoje služby si každý stáhne v Moje.', trail: btn('Stáhnout', calendar, 'small') },
+    { title: 'Kalendář do telefonu', meta: 'Všechna setkání v jednom souboru. Svoje služby si každý stáhne v Moje.', trail: btn('Stáhnout do kalendáře (.ics)', calendar, 'small') },
   ];
   const demoRows = live ? [] : [
     {

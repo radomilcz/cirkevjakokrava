@@ -6,7 +6,7 @@
 // in place or links to where it is edited.
 
 import {
-  h, btn, link, plus, nodes, plural, pageHeader, backLink, section, note, list, row, avatar, personName, groupMark, SEP,
+  h, btn, link, plus, nodes, plural, pageHeader, backLink, backButton, section, note, list, row, avatar, personName, groupMark, SEP,
   dateBlock, statusBadge, textButton, menuButton, emptyState, filterLinks, toast, download, openDialog, closeDialog,
   confirmDialog, simpleDialog, textField, textArea, selectField, checkboxField,
 } from './dom.js';
@@ -25,7 +25,7 @@ import { groupsOf, roleById } from '../lib/groups.js';
 import { upcomingDuties } from '../lib/events.js';
 import { limitsOf, monthCount, DEFAULT_LIMITS } from '../lib/scheduling.js';
 import { ics, icsForPerson } from '../lib/ics.js';
-import { today, addDays, prettyDay, prettyTime, inBlockout, monthOf, dayOf } from '../lib/time.js';
+import { today, addDays, prettyDay, prettyDayLong, prettyTime, inBlockout, monthOf, dayOf } from '../lib/time.js';
 
 // ---------- small helpers ----------
 
@@ -216,7 +216,7 @@ function birthdaysLine() {
   const found = birthdaysBetween(S.data, `${day.slice(0, 7)}-01`, lastDayOfMonth(day));
   if (!found.length) return null;
   return h('p', { class: 'birthdays' },
-    h('span', { class: 'birthdays-label' }, `Narozeniny v ${MONTHS_LOCATIVE[Number(day.slice(5, 7)) - 1]}`),
+    h('span', { class: 'birthdays-label' }, `Narozeniny v ${MONTHS_LOCATIVE[Number(day.slice(5, 7)) - 1]}:`),
     found.map(({ person, date, age: years }, i) => [
       i ? sep() : ' ',
       h('a', { href: `#osoba/${person.id}`, class: [date === day && 'today', date < day && 'past'] },
@@ -255,7 +255,7 @@ function personHeader(person, { lead, actions }) {
 export function renderPerson(id) {
   const person = personById(S.data, id);
   if (!person) {
-    return [backLink('Lidé', '#lide'), emptyState('Tenhle člověk tu není. Možná ho někdo smazal.', link('Na Lidi', '#lide', 'btn'))];
+    return emptyState('Tenhle člověk tu není. Možná ho někdo smazal.', backButton('Lidé', '#lide'));
   }
   const leader = can('leader');
   const self = person.id === myId();
@@ -334,7 +334,7 @@ function contactSection(person) {
     facts([
       ['Telefon', person.phone ? h('a', { href: telHref(person.phone) }, person.phone) : faint('–')],
       ['E-mail', person.email ? h('a', { href: `mailto:${person.email}` }, person.email) : faint('–')],
-      ['Kdo je vidí', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí'],
+      ['Vidí je', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí'],
     ]),
     kidNote);
 }
@@ -346,7 +346,7 @@ function householdSection(person) {
   const household = householdById(S.data, person.householdId);
   if (!household) {
     return leader ? section(heading, { actions: btn('Vybrat domácnost', () => personDialog(person), 'small') },
-      note(self ? 'Zatím nepatříš k žádné domácnosti.' : 'Zatím nepatří k žádné domácnosti.')) : null;
+      note(self ? 'Nepatříš k žádné domácnosti.' : 'Nepatří k žádné domácnosti.')) : null;
   }
   const others = householdMembers(S.data, household.id, { today: today() }).filter((p) => p.id !== person.id);
   return section(heading, { actions: leader ? link('Otevřít', `#domacnost/${household.id}`, 'btn small') : null },
@@ -387,7 +387,7 @@ function groupsSection(person) {
     actions: leader ? btn(plus('Přidat do týmu'), add, 'small') : null,
   },
   list(groups, render, {
-    empty: note(self ? `Zatím nejsi v žádném týmu ani skupince.${leader ? '' : ' Řekni vedoucímu, s čím rád pomůžeš.'}` : 'Zatím v žádném týmu ani skupince.'),
+    empty: note(self ? `Nejsi v žádném týmu ani skupince.${leader ? '' : ' Řekni vedoucímu, s čím chceš pomáhat.'}` : 'Není v žádném týmu ani skupince.'),
   }));
 }
 
@@ -411,7 +411,7 @@ function dutiesSection(person) {
   const shown = all.slice(0, DUTIES_SHOWN);
   return section(self ? 'Moje nejbližší služby' : 'Nejbližší služby', {
     count: all.length || null,
-    actions: all.length ? btn('Do kalendáře (.ics)', () => downloadDuties(person), 'small plain') : null,
+    actions: all.length ? btn('Stáhnout do kalendáře (.ics)', () => downloadDuties(person), 'small plain') : null,
   },
   list(shown, (duty) => dutyRow(duty), { cls: 'duty-rows', empty: note(self ? 'Teď žádnou službu nemáš.' : 'Teď nemá žádnou službu.') }),
   all.length > shown.length ? h('p', { class: 'list-foot' }, `A ještě ${plural(all.length - shown.length, 'další', 'další', 'dalších')}.`) : null);
@@ -427,6 +427,11 @@ export function downloadDuties(person) {
 
 function rangeText(v) {
   return v.from === v.to ? prettyDay(v.from) : `${prettyDay(v.from)} – ${prettyDay(v.to)}`;
+}
+
+/** The same for a screen reader: „pondělí 5. října 2026“ („po“ would read as the preposition). */
+function rangeLong(v) {
+  return v.from === v.to ? prettyDayLong(v.from) : `${prettyDayLong(v.from)} až ${prettyDayLong(v.to)}`;
 }
 
 /**
@@ -447,9 +452,9 @@ export function availabilitySection(person, { heading } = {}) {
     title: rangeText(v),
     meta: v.reason || null,
     onclick: () => availabilityDialog(person, v),
-    label: `Upravit: ${rangeText(v)}`,
+    label: `Upravit: ${rangeLong(v)}`,
   }), {
-    empty: note(self ? 'Zatím nic. Když víš, že nemůžeš, zapiš to – nikdo tě pak nenaplánuje.' : 'Zatím nic.'),
+    empty: note(self ? 'Když víš, že nemůžeš, zapiš to. Zvonec tě pak na ty dny nebude nabízet.' : 'Nic zapsaného.'),
   }));
 }
 
@@ -467,7 +472,7 @@ function availabilityDialog(person, record = null) {
     fields: [
       textField('from', 'Od', record?.from || day, { type: 'date', attr: { required: true } }),
       textField('to', 'Do', record?.to || day, { type: 'date', attr: { required: true } }),
-      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: self && !leader ? 'Uvidí ho jen vedoucí.' : 'Vidí ho jen vedoucí a on sám.', attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80, autocomplete: 'off' } }),
+      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: self && !leader ? 'Uvidí ho jen vedoucí.' : 'Vidí ho jen vedoucí a ten, koho se týká.', attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80, autocomplete: 'off' } }),
     ],
     remove: record ? () => {
       S.data.availability = S.data.availability.filter((x) => x.id !== record.id);
@@ -477,7 +482,7 @@ function availabilityDialog(person, record = null) {
     save: (f) => {
       if (!f.from.value || !f.to.value) return 'Vyplň, od kdy do kdy.';
       const [from, to] = [f.from.value, f.to.value].sort();
-      if (to < day) return 'Tohle už je za námi.';
+      if (to < day) return 'Tohle už bylo. Vyber dnešek nebo pozdější den.';
       const reason = f.reason.value.trim();
       let target = record ? S.data.availability.find((x) => x.id === record.id) : null;
       if (!target) {
@@ -502,11 +507,11 @@ function limitsSection(person) {
   const limits = limitsOf(S.data, person.id);
   const thisMonth = monthCount(S.data, person.id, monthOf(today()));
   return section('Břemeno', { actions: btn('Upravit', () => limitsDialog(person), 'small') },
-    limits.paused ? h('p', { class: 'paused-line' }, h('span', { class: 'reason reason-warning' }, 'Má pauzu, nikam ho teď neplánuj.')) : null,
+    limits.paused ? h('p', { class: 'paused-line' }, h('span', { class: 'reason reason-warning' }, 'Má pauzu, do rozpisu se teď nenabízí.')) : null,
     facts([
       ['Tento měsíc', `${plural(thisMonth, 'služba', 'služby', 'služeb')} ${outOf(limits.maxPerMonth)}`],
-      ['Nejvýš za měsíc', plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')],
-      ['Nejvýš nedělí po sobě', String(limits.maxConsecutiveWeeks)],
+      ['Nejvíc za měsíc', plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')],
+      ['Nejvíc nedělí po sobě', String(limits.maxConsecutiveWeeks)],
     ]));
 }
 
@@ -518,9 +523,9 @@ function limitsDialog(person) {
     title: 'Břemeno',
     wide: false,
     fields: [
-      textField('maxPerMonth', 'Kolik služeb za měsíc nejvýš', limits.maxPerMonth, { full: true, type: 'number', attr: { min: 0, max: 31 }, hint: `Obvykle ${defaults.maxPerMonth}.` }),
-      textField('maxConsecutiveWeeks', 'Kolik nedělí po sobě nejvýš', limits.maxConsecutiveWeeks, { full: true, type: 'number', attr: { min: 1, max: 52 }, hint: `Obvykle ${defaults.maxConsecutiveWeeks}.` }),
-      checkboxField('paused', 'Pauza – teď ho nikam neplánovat. Třeba je pryč nebo si potřebuje odpočinout.', limits.paused),
+      textField('maxPerMonth', 'Nejvíc služeb za měsíc', limits.maxPerMonth, { full: true, type: 'number', attr: { min: 0, max: 31 }, hint: `Obvykle ${defaults.maxPerMonth}.` }),
+      textField('maxConsecutiveWeeks', 'Nejvíc nedělí po sobě', limits.maxConsecutiveWeeks, { full: true, type: 'number', attr: { min: 1, max: 52 }, hint: `Obvykle ${defaults.maxConsecutiveWeeks}.` }),
+      checkboxField('paused', 'Pauza – teď nenabízet do rozpisu. Třeba je pryč nebo si potřebuje odpočinout.', limits.paused),
     ],
     save: (f) => {
       const number = (input) => (input.value === '' ? null : Number(input.value));
@@ -571,12 +576,16 @@ function parseBirth(text) {
 
 const groupLabel = (text) => h('h3', { class: 'full form-group-label' }, text);
 
+/** „Petr Novák“ and „petr  novak“ are the same name. */
+const foldedName = (text) => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
+
 /** Leader: new person (null) or edit; delete on the left. Teams and limits live on the card. */
 export function personDialog(original) {
   const p = original || { firstName: '', membership: { status: lastStatus } };
   const status = statusOf(p);
   const households = sortHouseholds(S.data.households);
   const self = original && original.id === myId();
+  let sameNameOk = '';   // a new card with the name of someone already there: the second click adds it anyway
   const fields = [
     textField('firstName', 'Jméno', p.firstName, { attr: { required: true, autocomplete: 'off' } }),
     textField('lastName', 'Příjmení', p.lastName, { attr: { autocomplete: 'off' } }),
@@ -608,6 +617,15 @@ export function personDialog(original) {
     save: (f) => {
       const firstName = f.firstName.value.trim();
       if (!firstName) return 'Doplň aspoň jméno.';
+      if (!original) {
+        const name = foldedName(`${firstName} ${f.lastName.value}`);
+        const twin = S.data.people.find((x) => foldedName(fullName(x)) === name);
+        if (twin && sameNameOk !== name) {
+          sameNameOk = name;
+          form.querySelector('button[type=submit]').textContent = 'Přidat přesto';
+          return `V Lidech už je ${fullName(twin)}. Přidat přesto?`;
+        }
+      }
       const email = f.email.value.trim();
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'E-mail nevypadá dobře.';
       const birthDate = parseBirth(f.birthDate.value);
@@ -673,6 +691,14 @@ export function personDialog(original) {
   form.elements.status.addEventListener('change', toggle);
   form.elements.household.addEventListener('change', toggle);
   toggle();
+  // a changed name is checked for a twin again
+  const nameChanged = () => {
+    if (!sameNameOk) return;
+    sameNameOk = '';
+    form.querySelector('button[type=submit]').textContent = 'Přidat';
+  };
+  form.elements.firstName.addEventListener('input', nameChanged);
+  form.elements.lastName.addEventListener('input', nameChanged);
 }
 
 /** The person edits their own contact (members may change only this). */
@@ -711,7 +737,7 @@ function deletePerson(person) {
   const text = [
     'Zmizí z Lidí, z týmů i z rozpisu.',
     future ? `Uvolní se ${plural(future, 'služba', 'služby', 'služeb')}.` : '',
-    S.mode === 'live' ? 'V historii na GitHubu ale zůstane. Jak ho smazat úplně, popisuje README.' : '',
+    S.mode === 'live' ? 'Údaje ale zůstanou v historii na GitHubu. Jak je smazat úplně, popisuje README.' : '',
   ].filter(Boolean).join(' ');
   confirmDialog(`Smazat ${name}?`, text, () => {
     S.data.people = S.data.people.filter((p) => p.id !== id);
@@ -725,7 +751,7 @@ function deletePerson(person) {
     if (S.mode === 'live' && loginList().some((l) => l.personId === id)) {
       updateLogins((logins) => {
         for (let i = logins.length - 1; i >= 0; i--) if (logins[i].personId === id) logins.splice(i, 1);
-      }, `smazán(a) ${displayName(person)}`).catch((error) => toast('Přihlašování se nepovedlo zrušit.', error.message));
+      }, `smazán(a) ${displayName(person)}`).catch((error) => toast('Přihlášení se nepodařilo zrušit.', error.message));
     }
     navigate('#lide');
     change(`smazán(a) ${displayName(person)}`);
@@ -750,7 +776,7 @@ export function renderHouseholds() {
     backLink('Lidé', '#lide'),
     pageHeader({
       title: 'Domácnosti',
-      lead: 'Kdo spolu bydlí – komu volat kvůli dětem, kam poslat pozvánku.',
+      lead: 'Domácnost tvoří lidé, kteří spolu bydlí. Víš pak, komu volat kvůli dětem a kam poslat pozvánku.',
       actions: btn(plus('Přidat domácnost'), add, 'primary'),
     }),
     list(households, (household) => {
@@ -758,7 +784,7 @@ export function renderHouseholds() {
       return row({
         lead: avatarStack(members),
         title: household.name,
-        meta: [members.map((p) => personName(p)).join(', ') || 'zatím nikdo', household.address].filter(Boolean).join(' · '),
+        meta: [members.map((p) => personName(p)).join(', ') || 'nikdo', household.address].filter(Boolean).join(' · '),
         trail: members.length ? h('span', {}, peopleCount(members.length)) : null,
         href: `#domacnost/${household.id}`,
       });
@@ -773,11 +799,11 @@ export function renderHouseholds() {
 export function renderHousehold(id) {
   const household = householdById(S.data, id);
   if (!household) {
-    return [backLink('Domácnosti', '#domacnosti'), emptyState('Tahle domácnost tu není. Možná ji někdo smazal.', link('Na domácnosti', '#domacnosti', 'btn'))];
+    return emptyState('Tahle domácnost tu není. Možná ji někdo smazal.', backButton('Domácnosti', '#domacnosti'));
   }
   const members = householdMembers(S.data, household.id, { today: today() });
   const add = () => openPicker({
-    title: 'Kdo tu bydlí?',
+    title: 'Přidat do domácnosti',
     multiple: true,
     exclude: members.map((p) => p.id),
     onPick: (ids) => {
@@ -815,7 +841,7 @@ export function renderHousehold(id) {
       lead: household.address || null,
       actions: btn('Upravit', () => householdDialog(household), 'primary'),
     }),
-    section('Kdo tu bydlí', { count: members.length || null, actions: members.length ? btn(plus('Přidat'), add, 'small') : null },
+    section('Členové domácnosti', { count: members.length || null, actions: members.length ? btn(plus('Přidat'), add, 'small') : null },
       list(members, (p) => {
         const links = contactLinks(p);
         return row({
@@ -827,7 +853,7 @@ export function renderHousehold(id) {
           trail: menuButton([['Odebrat z domácnosti', () => removeFrom(p), { danger: true }]], { label: `Možnosti: ${fullName(p)}` }),
         });
       }, {
-        empty: emptyState('Zatím tu nikdo nebydlí.', btn(plus('Přidat lidi'), add, 'small')),
+        empty: emptyState('Nikdo tu nebydlí.', btn(plus('Přidat lidi'), add, 'small')),
       })),
   ];
 }

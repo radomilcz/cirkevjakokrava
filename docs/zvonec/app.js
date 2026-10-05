@@ -120,6 +120,7 @@ function resolve() {
 // ---------- signed-out pages ----------
 
 function signInPage() {
+  inviteCode = null;   // an invite that did not work sends the visitor here – opening it again checks it again
   if (!S.logins.length) return renderSetup();
   return renderLogin(S.signInMessage || '');
 }
@@ -220,6 +221,7 @@ function setSheet(open, { focus = true } = {}) {
 }
 document.querySelector('.menu-toggle').addEventListener('click', () => setSheet(!document.body.classList.contains('sheet-open')));
 document.querySelector('.scrim').addEventListener('click', () => setSheet(false));
+document.querySelector('.sheet-close').addEventListener('click', () => setSheet(false));
 document.getElementById('sidebar').addEventListener('click', (e) => { if (e.target.closest('a[href]')) setSheet(false, { focus: false }); });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || !document.body.classList.contains('sheet-open')) return;
@@ -242,15 +244,29 @@ function renderApp({ toTop = false } = {}) {
     content = route.render(parts);
   } catch (error) {
     console.error(error);
-    content = [pageHeader({ title: 'Jejda' }), emptyState('Tohle se nepovedlo zobrazit. Zkus stránku načíst znovu, a kdyby to nepomohlo, dej vědět správci.')];
+    content = [pageHeader({ title: 'Jejda' }), emptyState('Tohle se nepodařilo zobrazit. Zkus stránku načíst znovu, a kdyby to nepomohlo, dej vědět správci.')];
   }
   main.replaceChildren(...nodes(content));
   window.scrollTo(0, toTop ? 0 : position);
 }
 
+// Scroll position per history entry: a new page starts at the top, Back returns to where you were.
+// The position is kept in history.state of the entry (saved while scrolling), so it survives reloads.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+let scrollTimer = 0;
+window.addEventListener('scroll', () => {
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => {
+    try { history.replaceState({ ...(history.state || {}), scroll: window.scrollY }, ''); } catch { /* too many calls – the next one will do */ }
+  }, 200);
+}, { passive: true });
+
 window.addEventListener('hashchange', () => {
+  clearTimeout(scrollTimer);   // the timer would write the old page's position into the new entry
   setSheet(false, { focus: false });
+  const saved = history.state?.scroll;
   renderApp({ toTop: true });
+  if (Number.isFinite(saved)) window.scrollTo(0, saved);
   document.getElementById('content').focus({ preventScroll: true });
 });
 
@@ -315,7 +331,7 @@ async function startLive(result) {
     data = await load(store);
   } catch (error) {
     S.me = null;
-    S.signInMessage = `Nepovedlo se načíst data. Zkus to za chvíli znovu. (${error.message})`;
+    S.signInMessage = `Nepodařilo se načíst data. Zkus to za chvíli znovu. (${error.message})`;
     navigateTo('prihlaseni');
     return;
   }
@@ -374,7 +390,7 @@ async function boot() {
       const result = await restore(S.logins, remembered);
       if (result && result.record.access !== 'invite') { await startLive(result); return; }
       if (S.logins.some((l) => l.id === remembered.id)) forgetRemembered();   // the record is here but does not fit – drop it
-      else S.signInMessage = 'Tvoje přihlášení tu ještě není, nebo ho někdo zrušil. Jestli jsi ho dostal(a) teď, zkus to za pár minut.';
+      else S.signInMessage = 'Tvoje přihlášení zatím nefunguje, nebo ho někdo zrušil. Jestli je úplně nové, zkus to za pár minut.';
     }
     renderApp();
     // the public part (published events and formats) – it may come a moment later

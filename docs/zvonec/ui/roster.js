@@ -3,18 +3,25 @@
 
 import { h, btn, link, emptyState, filterButtons, pageHeader, printHeader, shortName, personName, statusIcon, statusLabel } from './dom.js';
 import { S, can, myId, render, EVENT_KIND_LABELS, SEVERITY_LABELS } from './state.js';
-import { monthBar, monthTitle, openIcon, roleComparator } from './calendar.js';
+import { monthBar, monthTitle, openIcon, roleComparator, validMonth } from './calendar.js';
 import { needsOf } from '../lib/events.js';
 import { personById } from '../lib/people.js';
-import { monthOf, prettyDay, prettyTime, today } from '../lib/time.js';
+import { monthOf, prettyDay, prettyTime } from '../lib/time.js';
 
 const KIND_FILTERS = [['service', EVENT_KIND_LABELS.service], ['rehearsal', 'Zkoušky'], ['smallGroup', 'Skupinky'], ['event', 'Akce'], ['', 'Všechno']];
 const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
+/** The empty table per kind filter: these events have no duties at all. */
+const NO_DUTIES = {
+  service: 'Setkání na pastvě tenhle měsíc nepotřebují lidi do služby.',
+  rehearsal: 'Zkoušky nemají rozpis služeb.',
+  smallGroup: 'Skupinky nemají rozpis služeb.',
+  event: 'Akce tenhle měsíc nepotřebují lidi do služby.',
+};
 const STATUS_ORDER = { confirmed: 0, proposed: 1, declined: 2 };
 
 /** `month` = 'YYYY-MM' from the hash, or '' for the current month. */
 export function renderRoster(month) {
-  const shown = /^\d{4}-\d{2}$/.test(month || '') ? month : monthOf(today());
+  const shown = validMonth(month);
   const kind = S.filters.rosterKind;
   const teamFilter = S.filters.rosterGroup;
   const leader = can('leader');
@@ -97,6 +104,11 @@ export function renderRoster(month) {
 
   const kindName = KIND_FILTERS.find(([v]) => v === kind)?.[1] || 'Všechno';
   const filled = events.length && columns.length;
+  // why the table is empty: the team filter hides the roles, or these events need nobody at all
+  const team = teamFilter ? groups.get(teamFilter) : null;
+  const emptyText = !events.length ? null
+    : team && used.size ? `Tahle setkání nepotřebují nikoho z týmu ${team.name}.`
+      : NO_DUTIES[kind] || 'Tenhle měsíc žádné setkání nepotřebuje lidi do služby.';
   return h('div', { class: 'roster-page' },
     printHeader(`rozpis služeb${kind ? ` · ${kindName.toLowerCase()}` : ''}`),
     h('p', { class: 'roster-print-title print-only' }, monthTitle(shown)),
@@ -112,8 +124,8 @@ export function renderRoster(month) {
     filled
       ? h('div', { class: 'roster-wrap', tabindex: 0, role: 'region', 'aria-label': `Rozpis ${monthTitle(shown)}` }, table)
       : events.length
-        ? emptyState('Tahle setkání nepotřebují nikoho z vybraného týmu.', btn('Všechny týmy', () => { S.filters.rosterGroup = ''; render(); }, 'small'))
-        : emptyState('Tenhle měsíc tu nic takového není.', link('Do kalendáře', `#kalendar/${shown}`, 'btn small')),
+        ? emptyState(emptyText, team && used.size ? btn('Ukázat všechny týmy', () => { S.filters.rosterGroup = ''; render(); }, 'small') : null)
+        : emptyState('Tenhle měsíc tu nic takového není.', link('Otevřít kalendář', `#kalendar/${shown}`, 'btn small')),
     filled ? h('ul', { class: 'roster-legend', 'aria-label': 'Co znamenají značky' },
       ['confirmed', 'proposed', 'declined'].map((s) => h('li', {}, statusIcon(s), statusLabel(s))),
       h('li', {}, openIcon(), 'chybí'),

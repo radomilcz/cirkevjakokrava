@@ -5,9 +5,10 @@ import {
   h, btn, link, pageHeader, section, list, row, emptyState, toast, statusBadge,
   menuButton, groupMark, personName, metaJoin, confirmDialog,
 } from './dom.js';
-import { S, can, myId, change, render, actAs, logout, ACCESS_LABELS, SKILL_LABELS } from './state.js';
+import { S, can, myId, change, render, actAs, logout, ACCESS_VIEW, SKILL_LABELS } from './state.js';
 import { availabilitySection, contactDialog, downloadDuties, dutyRow } from './people.js';
 import { coverOf } from './calendar.js';
+import { kindWords } from './groups.js';
 import { personById, fullName, sortPeople, statusOf } from '../lib/people.js';
 import { groupsOf, leadersOf, skillsOf, roleById, memberRecord } from '../lib/groups.js';
 import { upcomingDuties, eventById } from '../lib/events.js';
@@ -44,7 +45,7 @@ export function renderHome() {
 function answer(person, eventId, assignmentId, status, { quiet = false } = {}) {
   const event = eventById(S.data, eventId);
   const assignment = event?.assignments?.find((a) => a.id === assignmentId && a.personId === person.id);
-  if (!assignment) { toast('Tahle služba už tu není.', 'Možná ji vedoucí mezitím změnil.'); render(); return; }
+  if (!assignment) { toast('Tahle služba už tu není.', 'Mezitím se v rozpisu něco změnilo.'); render(); return; }
   const before = assignment.status;
   assignment.status = status;
   const role = roleById(S.data, assignment.roleId)?.name || 'službu';
@@ -83,7 +84,7 @@ function dutiesSection(person, duties) {
     () => answer(person, event.id, assignment.id, 'declined'), { buttonLabel: 'Nemůžu' });
   return section('Moje služby', {
     count: duties.length || null,
-    actions: duties.length ? btn('Do kalendáře (.ics)', () => downloadDuties(person), 'small plain') : null,
+    actions: duties.length ? btn('Stáhnout do kalendáře (.ics)', () => downloadDuties(person), 'small plain') : null,
   },
   list(duties, (duty) => {
     const { event, assignment } = duty;
@@ -110,14 +111,15 @@ function teamsSection(person) {
       const own = skills.filter((s) => s.groupId === g.id)
         .map((s) => `${roleById(S.data, s.roleId)?.name || '?'}${s.level === 'learning' ? ` (${SKILL_LABELS.learning})` : ''}`);
       const leaders = leadersOf(S.data, g.id).map((m) => personById(S.data, m.personId)).filter((p) => p && p.id !== person.id);
+      const words = kindWords(g);
       return row({
         lead: groupMark(g),
         title: g.name,
-        meta: metaJoin([own.join(', '), leaders.length ? `${leaders.length > 1 ? 'vedou' : 'vede'} ${leaders.map(personName).join(', ')}` : null]) || null,
-        trail: record?.leader ? h('span', { class: 'tag filled' }, 'vedeš') : null,
+        meta: metaJoin([own.join(', '), leaders.length ? `${leaders.length > 1 ? words.leadN : words.lead1} ${leaders.map(personName).join(', ')}` : null]) || null,
+        trail: record?.leader ? h('span', { class: 'tag filled' }, words.you) : null,
         href: leader ? `#tym/${g.id}` : undefined,
       });
-    }, { empty: 'Zatím nejsi v žádném týmu. Řekni vedoucímu, s čím rád(a) pomůžeš.' }));
+    }, { empty: 'Nejsi v žádném týmu. Řekni vedoucímu, s čím chceš pomáhat.' }));
 }
 
 function contactSection(person) {
@@ -127,14 +129,14 @@ function contactSection(person) {
     h('dl', { class: 'facts' },
       fact('Telefon', person.phone),
       fact('E-mail', person.email),
-      fact('Kdo je vidí', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí')));
+      fact('Vidí je', person.showInDirectory ? 'všichni ve sboru' : 'jen vedoucí')));
 }
 
 /** Members have no Nastavení in the menu – the account (password) is reached from here. */
 function signOut() {
   if (S.mode !== 'live') return null;
   return h('div', { class: 'home-account' },
-    link('Heslo a účet', '#nastaveni/ucet', 'btn small'),
+    link('Můj účet', '#nastaveni/ucet', 'btn small'),
     btn('Odhlásit se', () => logout(), 'small plain'));
 }
 
@@ -144,8 +146,11 @@ function signOut() {
 function demoBar(person) {
   if (S.mode !== 'demo') return null;
   return h('div', { class: 'notice demo-bar' },
-    h('p', {}, 'Ukázka: díváš se jako ', h('strong', {}, personName(person)), ` (${ACCESS_LABELS[S.me.access] || S.me.access}).`),
-    btn('Zpátky jako správce', () => actAs(null, 'admin'), 'small'));
+    h('p', {}, `Ukázka · ${ACCESS_VIEW[S.me.access] || ACCESS_VIEW.member}: `, h('strong', {}, personName(person))),
+    btn('Přepnout na správce', () => {
+      history.replaceState(null, '', '#kalendar');   // the admin's menu has no Moje without a person
+      actAs(null, 'admin');
+    }, 'small'));
 }
 
 /** Demo: pick someone to look as. */
@@ -165,7 +170,7 @@ function noPerson() {
       emptyState('V ukázce nejsi nikdo z Lidí. Vyber si někoho a podívej se jeho očima.'),
       (S.data.people || []).length ? actAsForm() : null];
   }
-  return [header, emptyState('Tvoje přihlášení nepatří k nikomu z Lidí. Řekni správci, ať to propojí.',
-    can('leader') ? link('Na Lidi', '#lide', 'btn') : null)];
+  return [header, emptyState('Zvonec neví, kdo z Lidí jsi. Řekni správci, ať tvoje přihlášení propojí s tvou kartou.',
+    can('leader') ? link('Otevřít Lidi', '#lide', 'btn') : null)];
 }
 

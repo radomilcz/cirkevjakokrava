@@ -103,7 +103,7 @@ test('K2: two roles at once – combinableWith pair and a role outside its windo
   d.events[0].assignments.push(asg('p4', 'zvuk', 'petr'));
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K2:error', 'K2:error']);
-  assert.ok(k.some((x) => /Petr má naráz dvě služby: Zpěv a Zvuk\. Jednu mu vezmi\./.test(x.text)));
+  assert.ok(k.some((x) => /Petr má naráz dvě služby: Zpěv a Zvuk\. Jednu z nich dej někomu jinému\./.test(x.text)));
 });
 
 test('K2: combinableWith works from either side', () => {
@@ -194,7 +194,7 @@ test('K7 too many in a month, K8 Sundays in a row, rehearsals do not count', () 
   d.events.push(event('zk', '2026-10-08T18:00', '2026-10-08T20:00', { kind: 'rehearsal', assignments: [asg('pz', 'zvuk', 'petr')] }));
   const k = findConflicts(d, { today: '2026-09-01' });
   assert.deepEqual(codes(k), ['K7:warning', 'K8:warning']);
-  assert.match(k.find((x) => x.code === 'K7').text, /3 služby, chce nejvýš 2/);
+  assert.match(k.find((x) => x.code === 'K7').text, /3 služby, může mít nejvýš 2/);
   assert.deepEqual(k.find((x) => x.code === 'K7').eventIds, ['n0', 'n1', 'n2']);
   assert.equal(k.find((x) => x.code === 'K8').eventId, 'n2');
   assert.match(k.find((x) => x.code === 'K8').text, /slouží už 3\. neděli po sobě/);
@@ -221,7 +221,7 @@ test('K9 place: not shared = error, shared = info', () => {
   ];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K9:error', 'K9:info']);
-  assert.match(k[0].text, /^Sál je naráz pro a .* i b /);
+  assert.match(k[0].text, /^Sál chtějí naráz a .* i b /);
   assert.deepEqual(k[0].eventIds, ['a', 'b']);
 });
 
@@ -382,7 +382,7 @@ test('CODES keeps the Czech labels for every rule', () => {
     'K11', 'K12', 'K13', 'K14', 'K15', 'K16', 'K17']);
   assert.equal(CODES.K8, 'Neděle po sobě');
   assert.equal(CODES.K15, 'Osnova přetéká');
-  assert.equal(CODES.K16, 'Bod osnovy');
+  assert.equal(CODES.K16, 'Problém v osnově');
 });
 
 // ---------- candidates and proposal ----------

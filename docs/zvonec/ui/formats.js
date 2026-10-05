@@ -4,7 +4,7 @@
 // app.js hands over the id of #formaty/<id> (renderFormats(id)).
 
 import {
-  h, btn, link, plus, plural, pageHeader, backLink, section, emptyState, note, meta, actions, list, row, toast, removeButton,
+  h, btn, link, plus, plural, pageHeader, backLink, backButton, section, emptyState, note, meta, actions, list, row, toast, removeButton,
   openDialog, closeDialog, confirmDialog, simpleDialog, textField, textArea, checkboxField,
 } from './dom.js';
 import { S, can, change, newId, navigate } from './state.js';
@@ -33,7 +33,7 @@ export function rolesByTeam(keep = []) {
  * „Kolik lidí je potřeba“: the roles that are asked for (a stepper each, × removes) and one drop-down to
  * add another role, grouped by team. `needs` is a working copy, edited in place.
  */
-export function needsEditor(needs, { label = 'Kolik lidí je potřeba', empty = 'Zatím nikdo.' } = {}) {
+export function needsEditor(needs, { label = 'Kolik lidí je potřeba', empty = 'Nikdo.' } = {}) {
   const wrap = h('div', { class: 'field full needs-field' });
   const teams = rolesByTeam(needs.map((n) => n.roleId));
   const teamOf = (roleId) => teams.find((t) => t.roles.some((r) => r.id === roleId))?.group.name || '';
@@ -108,13 +108,13 @@ function usageText(formatId) {
     events ? plural(events, 'nadcházející setkání', 'nadcházející setkání', 'nadcházejících setkání') : '',
     types.length ? `${types.length === 1 ? 'šablona' : 'šablony'} ${types.join(', ')}` : '',
   ].filter(Boolean);
-  return parts.length ? parts.join(' a ') : 'zatím nikde';
+  return parts.length ? parts.join(' a ') : 'nikde';
 }
 
-/** „vede role Kazatel · veřejné“ – the one meta line of a format (the minutes are the row's lead). */
+/** „vede: Kazatel · veřejné“ – the one meta line of a format (the minutes are the row's lead). */
 function metaLine(format) {
   const role = roleById(S.data, format.leadRoleId);
-  return [role ? `vede role ${role.name}` : 'vede podle osnovy', format.public && can('leader') ? 'veřejné' : null].filter(Boolean).join(' · ');
+  return [role ? `vede: ${role.name}` : 'vedoucí se vybere v osnově', format.public && can('leader') ? 'veřejné' : null].filter(Boolean).join(' · ');
 }
 
 // ---------- the module: list and detail ----------
@@ -154,18 +154,18 @@ function renderList() {
 function renderFormat(id) {
   const format = formatById(S.data, id);
   if (!format) {
-    return [backLink('Formáty', '#formaty'), emptyState('Tenhle formát tu není. Možná ho někdo smazal.', link('Na Formáty', '#formaty', 'btn'))];
+    return emptyState('Tenhle formát tu není. Možná ho někdo smazal.', backButton('Formáty', '#formaty'));
   }
   const leader = can('leader');
   const role = roleById(S.data, format.leadRoleId);
   const needs = needsText(format);
   const facts = [
     ['Trvá', `${format.minutes ?? 0} min`],
-    ['Vede', role ? `role ${role.name}` : 'vybere se až v osnově'],
+    ['Vede', role ? role.name : 'vybere se až v osnově'],
     needs ? ['Potřebuje', needs] : null,
-    leader ? ['Na webu', format.public ? 'ano, Proč a Jak uvidí každý' : 'ne, jen pro přihlášené'] : null,
+    leader ? ['Na webu', format.public ? 'ano, vysvětlení uvidí každý' : 'ne, jen ve Zvonci'] : null,
     leader ? ['Je v osnově', usageText(format.id)] : null,
-    format.link ? ['Odkaz', linkOf(format.link)] : null,
+    format.link ? ['Další čtení', linkOf(format.link)] : null,
   ].filter(Boolean);
   const text = (title, body) => (body ? section(title, h('p', { class: 'text-block' }, body)) : null);
   return h('div', { class: 'format-page' },
@@ -177,7 +177,7 @@ function renderFormat(id) {
     h('dl', { class: 'facts' }, facts.map(([label, value]) => [h('dt', {}, label), h('dd', {}, value)])),
     text('Proč to děláme', format.why),
     text('Jak to probíhá', format.how),
-    format.why || format.how ? null : emptyState(leader ? 'Zatím tu chybí, proč to děláme a jak to probíhá.' : 'Popis zatím chybí.',
+    format.why || format.how ? null : emptyState(leader ? 'Chybí tu vysvětlení, proč to děláme a jak to probíhá.' : 'Vysvětlení tu chybí.',
       leader ? btn('Doplnit', () => formatDialog(format), 'small') : null));
 }
 
@@ -188,8 +188,8 @@ export function openFormatInfo(formatId) {
   const role = roleById(S.data, format.leadRoleId);
   openDialog(h('div', { class: 'inner' },
     h('h2', {}, format.name),
-    meta([`${format.minutes ?? 0} min`, role ? ['vede', `role ${role.name}`] : null, needsText(format) ? ['potřebuje', needsText(format)] : null]),
-    formatWhyHow(format) || note('Popis zatím chybí.'),
+    meta([`${format.minutes ?? 0} min`, role ? ['vede', role.name] : null, needsText(format) ? ['potřebuje', needsText(format)] : null]),
+    formatWhyHow(format) || note('Vysvětlení tu chybí.'),
     actions([
       can('leader') ? btn('Upravit', () => formatDialog(format), 'left plain') : null,
       btn('Zavřít', closeDialog, 'primary'),
@@ -214,9 +214,9 @@ export function formatDialog(format) {
             roles.map((r) => h('option', { value: r.id, selected: r.id === format?.leadRoleId }, r.name)))))),
       textArea('why', 'Proč to děláme', format?.why, { attr: { rows: 3, placeholder: 'Proč to na setkání máme? Co si z toho lidé odnesou?' } }),
       textArea('how', 'Jak to probíhá', format?.how, { attr: { rows: 4, placeholder: 'Co přesně se děje, kdo co dělá, na co nezapomenout.' } }),
-      textField('link', 'Odkaz', format?.link, { full: true, type: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
-      needsEditor(needs, { empty: 'Nikdo navíc. Kdo vede, se počítá sám.' }),
-      publishField('public', 'Zveřejnit na webu', 'Proč a Jak uvidí každý na webu.', format?.public),
+      textField('link', 'Další čtení', format?.link, { full: true, type: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
+      needsEditor(needs, { empty: 'Nikdo navíc. Ten, kdo vede, se započítá sám.' }),
+      publishField('public', 'Zveřejnit na webu', 'Proč to děláme a jak to probíhá uvidí každý na webu.', format?.public),
     ],
     save: (f, form) => {
       const name = f.name.value.trim();

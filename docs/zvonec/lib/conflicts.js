@@ -27,13 +27,13 @@ export const CODES = {
   K7: 'Moc služeb v měsíci',
   K8: 'Neděle po sobě',
   K9: 'Místo je obsazené',
-  K10: 'Kdo pohlídá děti',
+  K10: 'Nikdo nehlídá děti',
   K11: 'Dítě ve službě pro dospělé',
   K12: 'Málo dospělých u dětí',
   K13: 'Nechodí nebo má pauzu',
   K14: 'Zrušené setkání',
   K15: 'Osnova přetéká',
-  K16: 'Bod osnovy',
+  K16: 'Problém v osnově',
   K17: 'Nikdo nevede',
 };
 
@@ -113,7 +113,7 @@ export function findConflicts(data, { today } = {}) {
           add({
             key: `K2:${personId}:${a.assignment.id}:${b.assignment.id}`, code: 'K2', severity: 'error',
             eventId: a.event.id, personId, assignments: [a.assignment, b.assignment],
-            text: `${who} má naráz dvě služby: ${a.role?.name || '?'} a ${b.role?.name || '?'}. Jednu mu vezmi.`,
+            text: `${who} má naráz dvě služby: ${a.role?.name || '?'} a ${b.role?.name || '?'}. Jednu z nich dej někomu jinému.`,
           });
         }
       }
@@ -178,7 +178,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K7:${personId}:${m}`, code: 'K7', severity: 'warning',
           eventId: ids[ids.length - 1], eventIds: ids, personId,
-          text: `${who} má v měsíci ${events.size} ${events.size === 1 ? 'službu' : events.size <= 4 ? 'služby' : 'služeb'}, chce nejvýš ${limits.maxPerMonth}.`,
+          text: `${who} má v měsíci ${events.size} ${events.size === 1 ? 'službu' : events.size <= 4 ? 'služby' : 'služeb'}, může mít nejvýš ${limits.maxPerMonth}.`,
         });
       }
     }
@@ -372,7 +372,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K9:${a.id}:${b.id}:${placeId}`, code: 'K9', severity: place?.shared ? 'info' : 'error',
           eventId: a.id, eventIds: [a.id, b.id],
-          text: `${place?.name || 'Místo'} je naráz pro ${describeEvent(a)} i ${describeEvent(b)}.`,
+          text: `${place?.name || 'Místo'} chtějí naráz ${describeEvent(a)} i ${describeEvent(b)}.`,
         });
       }
     }

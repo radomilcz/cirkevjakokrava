@@ -1,6 +1,6 @@
 // #setkani/<id>/osnova – the osnova on paper (A4 portrait, for the lectern) and large enough for the screen.
 
-import { h, btn, backLink, emptyState, link, note, pageHeader, printHeader, personName } from './dom.js';
+import { h, btn, backLink, backButton, emptyState, note, pageHeader, printHeader, personName } from './dom.js';
 import { S, render } from './state.js';
 import { eventById } from '../lib/events.js';
 import { formatById, itemLeaders, itemName, programDuration, programTimes } from '../lib/program.js';
@@ -11,7 +11,7 @@ import { placesOf, timeText } from './calendar.js';
 export function renderProgram(id) {
   const event = eventById(S.data, id);
   if (!event) {
-    return [backLink('Kalendář', '#kalendar'), emptyState('Tohle setkání tu není. Možná ho někdo smazal.', link('Do kalendáře', '#kalendar', 'btn'))];
+    return emptyState('Tohle setkání tu není. Možná ho někdo smazal.', backButton('Kalendář', '#kalendar'));
   }
   const times = programTimes(event);
   const showHow = !!S.filters.programShowHow;
@@ -46,7 +46,7 @@ export function renderProgram(id) {
               showHow && format?.how ? h('span', { class: 'osnova-how-text' }, format.how) : null),
             h('span', { class: 'osnova-minutes' }, `${item.minutes} min`));
         }))
-        : emptyState('Osnova je prázdná. Slož ji v detailu setkání.', link('Zpátky na setkání', `#setkani/${id}`, 'btn')),
+        : emptyState('Osnova je prázdná. Slož ji na stránce setkání.', backButton(event.title, `#setkani/${id}`)),
       times.length ? note(`Konec podle osnovy v ${prettyTime(addMinutes(event.start, programDuration(event)))}.`) : null),
   ];
 }

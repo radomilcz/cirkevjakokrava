@@ -58,6 +58,9 @@ export const removeButton = (label, onclick) => h('button', { type: 'button', cl
 /** Back link above a page header: backLink('Kalendář', '#kalendar'). */
 export const backLink = (text, href) => link(text, href, 'back');
 
+/** The same way back as a button (an empty state of a page that is gone): „← Lidé“. */
+export const backButton = (text, href) => link(text, href, 'btn back-arrow');
+
 // ---------- page structure ----------
 
 /**
@@ -353,7 +356,7 @@ export function assignee({ assignment, person, mine = false, canEdit = false, on
   const menuItems = canEdit ? [
     onEdit ? ['Vyměnit', onEdit] : null,
     ...(onStatus ? ['confirmed', 'proposed', 'declined'].filter((s) => s !== status)
-      .map((s) => [s === 'confirmed' ? 'Potvrdit' : s === 'declined' ? 'Nemůže' : 'Zatím nepotvrzeno', () => onStatus(s)]) : []),
+      .map((s) => [s === 'confirmed' ? 'Potvrdit' : s === 'declined' ? 'Označit, že nemůže' : 'Označit jako nepotvrzené', () => onStatus(s)]) : []),
     onOverride ? [overrideLabel || 'Vím o tom', onOverride] : null,
     onRemove ? ['Odebrat', onRemove, { danger: true }] : null,
   ].filter(Boolean) : [];
@@ -418,7 +421,11 @@ export const coverKey = (event) => String(event?.title || event?.id || '');
 const hasCoords = (place) => place && place.lat !== '' && place.lon !== '' && place.lat != null && place.lon != null
   && Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lon));
 
-/** mapy.cz link for a place: the coordinates when known, otherwise a search for the address (or name). */
+/** mapy.cz link for a place: the coordinates when known, otherwise a search for the address (or name).
+ * Callers offer the link only when there are coordinates or an address (see canMap) – a bare name
+ * like „Kuchyňka“ would search the whole country. */
+export const canMap = (place) => hasCoords(place) || !!(place?.address || '').trim();
+
 export function mapUrl(place) {
   if (hasCoords(place)) return `https://mapy.cz/zakladni?x=${Number(place.lon)}&y=${Number(place.lat)}&z=16`;
   return `https://mapy.cz/zakladni?q=${encodeURIComponent(place?.address || place?.name || '')}`;
@@ -452,11 +459,10 @@ export function placeLine(places) {
   const groups = groupPlaces(places);
   if (!groups.length) return null;
   const line = ({ names, address, place }) => {
-    const canMap = hasCoords(place) || address || place.name;
     return h('span', { class: 'place-line' }, metaJoin([
       h('span', { class: 'place-name' }, andJoin(names)),
       address ? h('span', { class: 'place-address' }, address) : null,
-      canMap ? h('a', { class: 'place-map-link', href: mapUrl({ ...place, address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě') : null,
+      canMap({ ...place, address }) ? h('a', { class: 'place-map-link', href: mapUrl({ ...place, address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě') : null,
     ]));
   };
   return groups.length === 1 ? line(groups[0]) : h('span', { class: 'place-lines' }, groups.map(line));
