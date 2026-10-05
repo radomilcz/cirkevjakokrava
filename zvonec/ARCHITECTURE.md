@@ -195,7 +195,7 @@ Member navigation: **Moje · Kalendář · Rozpis · Lidé** (Lidé = directory)
 | `#setkani/<id>` | event detail | all, edit leader |
 | `#setkani/<id>/osnova` | printable program („osnova“) | all |
 | `#rozpis`, `#rozpis/2026-10` | month table | all |
-| `#lide`, `#lide/clenove` · `neclenove` · `deti` · `nechodi` · `vsichni` · `doplnit` | registry + filter | leader; member = directory |
+| `#lide`, `#lide/clenove` · `pratele` · `hoste` · `deti` · `nechodi` · `doplnit` (old `vsichni`, `neclenove` still open) | registry + filter | leader; member = directory |
 | `#osoba/<id>` | person card | leader; member = reduced card |
 | `#domacnosti`, `#domacnost/<id>` | households | leader |
 | `#skupiny`, `#skupina/<id>` | groups, group card with members × roles | leader |

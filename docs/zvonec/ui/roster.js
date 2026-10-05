@@ -79,7 +79,6 @@ export function renderRoster(month) {
   const kindName = KIND_FILTERS.find(([v]) => v === kind)?.[1] || 'Všechno';
   return [
     printHeader(`rozpis služeb${kind ? ` · ${kindName.toLowerCase()}` : ''}`),
-    h('p', { class: 'eyebrow no-print' }, 'na nástěnku'),
     h('div', { class: 'month-nav' },
       link('', `#rozpis/${monthOf(addMonths(`${shown}-01`, -1))}`, 'btn small arrow-back', { 'aria-label': 'Předchozí měsíc', title: 'Předchozí měsíc' }),
       h('h1', { class: 'month-title' }, monthName(shown)),

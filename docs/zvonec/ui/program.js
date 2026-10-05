@@ -22,7 +22,6 @@ export function renderProgram(id) {
       printHeader('osnova'),
       h('p', { class: 'eyebrow no-print' }, 'osnova'),
       h('h1', { class: 'title smaller' }, event.title),
-      h('p', { class: 'lead no-print' }, 'Program setkání bod po bodu: kdy co začíná a kdo to vede. Vytištěný se hodí na pult.'),
       meta([prettyDayLong(event.start), `${prettyTime(event.start)}–${prettyTime(event.end)}`, places.join(', ') || null]),
       event.cancelled ? h('p', { class: 'lead' }, 'Tohle setkání je zrušené.') : null,
       actions([

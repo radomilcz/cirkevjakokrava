@@ -2,8 +2,17 @@
    Církev jako kráva — Zvonec
    Sibling of Otázky na tělo: the same two colours, the same Agrandir type, the same imprint.
    Everything else – lines, fills, states – comes from the ink's transparency (--ink-rgb).
-   States differ by shape, not colour: error = solid fill (inverted colours),
-   warning = dashed outline, fine = a quiet row. Always with a word as well.
+   States differ by shape, not colour: error = solid fill / filled dot, warning = dashed outline /
+   hollow ring, info = a faint dot. In lists a dot in front of the text is enough.
+
+   TYPE SCALE – four levels, nothing else:
+   1. page title   – h1.title: Narrow Black, uppercase, big (--t1). One per page.
+   2. section      – .section>h2, dialog h2, empty state, card titles: Narrow Black, mixed case (--t2).
+   3. item text    – rows, card text, form values: Regular, the body size (--t3).
+   4. meta / hint  – muted Regular, smaller (--t4): eyebrows, labels, counts, hints, dates under a row.
+      Its one variant is the group label (.label): tiny Narrow Black uppercase, muted.
+   The wide Agrandir Grand only on the brand mark. Never on titles, list items, labels or dates.
+   Clickable = a pill with an outline, a filled pill, or underlined text. Nothing else looks like that.
    ============================================================ */
 @font-face{font-family:"Agrandir Grand Heavy";src:url(../assets/fonts/Agrandir-GrandHeavy.woff) format("woff");font-weight:800;font-display:swap}
 @font-face{font-family:"Agrandir";src:url(../assets/fonts/Agrandir-Regular.woff) format("woff");font-weight:400;font-display:swap}
@@ -25,6 +34,11 @@
   --fill:rgba(var(--ink-rgb),.07);
   --hover:rgba(var(--ink-rgb),.12);
   --gutter:clamp(16px,4vw,56px);
+  --t1:clamp(2.2rem,6.4vw,4.6rem);
+  --t1-small:clamp(1.9rem,4.6vw,3.2rem);
+  --t2:clamp(1.2rem,1.7vw,1.4rem);
+  --t3:1rem;
+  --t4:.86rem;
   color-scheme:dark;
 }
 /* ---------- brand palettes (as in Otázky na tělo) ----------
@@ -55,7 +69,7 @@
 /* palettes with less luminance contrast need a stronger muted text */
 :root[data-palette="pink-clay"],:root[data-palette="cream-blue"]{--muted:rgba(var(--ink-rgb),.84)}
 /* on a solid "error" fill the colours are inverted – muted text flips with them */
-.error-fill,.chip.error,.conflict.error,.slot.error,td.error,.toast{--muted:rgba(var(--ground-rgb),.82)}
+.error-fill,.chip.error,.slot.error,td.error,.toast{--muted:rgba(var(--ground-rgb),.82)}
 
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -158,38 +172,40 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 .site-footer p{margin:0}
 
-.eyebrow{
-  font-family:var(--display);font-weight:800;font-size:clamp(.92rem,1.6vw,1.2rem);
-  line-height:1.035;letter-spacing:-.01em;margin:0;
-}
+/* level 4: a small muted line above a title – only where it says something the title does not */
+.eyebrow{font-size:var(--t4);line-height:1.3;color:var(--muted);margin:0}
+.eyebrow+.title{margin-top:.35em}
+/* level 1 */
 .title{
   font-family:var(--narrow);font-weight:900;text-transform:uppercase;
-  font-size:clamp(2.4rem,7.5vw,5.6rem);line-height:.95;letter-spacing:0;
-  margin:clamp(14px,2vw,26px) 0 0;overflow-wrap:anywhere;
+  font-size:var(--t1);line-height:.95;letter-spacing:0;
+  margin:0;overflow-wrap:anywhere;
 }
-.title.smaller{font-size:clamp(2rem,5.5vw,4rem)}
-.lead{
-  font-size:clamp(1.05rem,1.5vw,1.25rem);line-height:1.45;   /* informational text = Regular; the wide Grand only for short things */
-  margin:clamp(12px,1.8vw,20px) 0 0;max-width:34em;
-}
+.title.smaller{font-size:var(--t1-small)}
+/* one sentence under the title: level 3, muted */
+.lead{font-size:var(--t3);line-height:1.5;color:var(--muted);margin:clamp(10px,1.4vw,16px) 0 0;max-width:40em}
+/* group label inside a list (team names in a duty list, Proč / Jak…): level 4 variant */
+.label{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted)}
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .back{display:inline-flex;align-items:center;gap:.5em;text-decoration:none;color:var(--muted);margin:0 0 1em;min-height:44px}
 .back:hover{opacity:1}
 .back::before,.arrow-back::before{content:"→";display:inline-block;transform:scaleX(-1)}   /* ← is not in the font subset */
 .rule{height:1px;background:var(--ink);opacity:.35;border:0;margin:clamp(26px,4vw,46px) 0 clamp(22px,3.2vw,38px)}
 
 .section{margin:clamp(30px,4.5vw,52px) 0 0}
-/* section headings label a block – they must not compete with the page title */
+/* level 2: section headings and dialog titles – a label for a block, never a second page title */
 .section>h2,.dialog h2{
-  font-family:var(--narrow);font-weight:900;text-transform:uppercase;
-  font-size:clamp(1.1rem,1.7vw,1.35rem);line-height:1.1;letter-spacing:.02em;margin:0 0 .8em;
-  display:flex;align-items:baseline;flex-wrap:wrap;gap:.2em .6em;
+  font-family:var(--narrow);font-weight:900;text-transform:none;
+  font-size:var(--t2);line-height:1.15;letter-spacing:.01em;margin:0 0 .7em;
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:.2em .7em;overflow-wrap:anywhere;
 }
-.dialog h2{font-size:clamp(1.4rem,2.6vw,1.9rem);letter-spacing:0}
-.section>h2 .n,.dialog h2 .n{font-family:var(--body);font-weight:400;font-size:.8em;color:var(--muted);text-transform:none;letter-spacing:0}
-.section>h2 .btn{font-weight:400;font-family:var(--body);font-size:clamp(.78rem,1vw,.88rem);text-transform:none;align-self:center}
+.section>h2 .n,.dialog h2 .n{font-family:var(--body);font-weight:400;font-size:var(--t4);color:var(--muted);letter-spacing:0}
+.section>h2 .btn{font-weight:400;font-family:var(--body);font-size:var(--t4);align-self:center}
+.dialog h2+.sub{margin:-.35em 0 1em}
 .spaced{margin-top:clamp(22px,3vw,34px)}
-.section>h3{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.03em;font-size:.82rem;color:var(--muted);margin:1.6em 0 .6em}
-.note{font-size:.92em;line-height:1.45;color:var(--muted);max-width:65ch}
+.section>h3,.section h3.label,.form-grid h3{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted);margin:1.6em 0 .6em}
+.form-grid h3{margin:1em 0 0}
+.note{font-size:var(--t4);line-height:1.45;color:var(--muted);max-width:65ch}
 .faint{color:var(--muted)}
 
 /* ---------- buttons ---------- */
@@ -208,10 +224,19 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn.primary:hover{background:rgba(var(--ink-rgb),.85)}
 .btn.small{font-size:.88em;padding:.6em .95em .44em}
 .btn.mini{font-size:.82em;padding:.42em .75em .3em}
-.btn.plain{border-color:transparent}
-.btn.plain:hover{border-color:var(--outline)}
+.btn.plain{
+  border-color:transparent;padding-inline:.35em;
+  text-decoration:underline;text-decoration-color:rgba(var(--ink-rgb),.45);text-underline-offset:.22em;text-decoration-thickness:1px;
+}
+.btn.plain:hover{background:none;border-color:transparent;text-decoration-color:currentColor}
+/* a quiet action inside text (Vím o tom, Proč a jak): underlined text, no pill */
+.text-btn{
+  display:inline;padding:0;border:0;background:none;cursor:pointer;font:inherit;color:inherit;
+  text-decoration:underline;text-decoration-color:rgba(var(--ink-rgb),.45);text-underline-offset:.22em;text-decoration-thickness:1px;
+}
+.text-btn:hover{text-decoration-color:currentColor}
 .btn:disabled{opacity:.35;cursor:default;background:none}
-.btn .plus::before{content:"+";font-size:1.15em;line-height:0}
+.plus::before{content:"+";font-size:1.15em;line-height:0}
 .btn-x{
   display:inline-grid;place-items:center;width:1.9em;height:1.9em;padding:0;flex:none;
   border:1px solid transparent;border-radius:50%;background:none;cursor:pointer;opacity:.6;line-height:1;
@@ -229,27 +254,38 @@ button,input,select,textarea{font:inherit;color:inherit}
 .bullseye::before{content:"";width:39%;height:39%;border-radius:50%;background:var(--dot,var(--ink))}
 
 /* ---------- tags ---------- */
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{
-  display:inline-flex;align-items:center;gap:.4em;font-size:.88em;line-height:1.1;white-space:nowrap;
+/* A tag that is only information is text (level 4) – separated by a dot, no outline:
+   outlines are for things you can click (button.tag, a.tag). */
+.tags{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .45em}
+.tag{display:inline-flex;align-items:center;gap:.4em;font-size:var(--t4);line-height:1.3;white-space:nowrap;color:var(--muted)}
+span.tag:has(+ span.tag)::after{content:"·";margin-left:.05em;color:var(--muted);font-style:normal}
+.tag.filled{color:var(--ink)}
+.tag.learning{font-style:italic}
+.tag.quiet{color:var(--muted)}
+/* severity in front of a word: filled dot = error, ring = warning */
+.tag.error::before,.tag.warning::before{content:"";width:.5em;height:.5em;border-radius:50%;flex:none}
+.tag.error::before{background:currentColor}
+.tag.warning::before{box-shadow:inset 0 0 0 1.5px currentColor}
+.tag.error,.tag.warning{color:var(--ink)}
+button.tag,a.tag{
+  font-size:.88em;line-height:1.1;color:inherit;
   padding:.45em .85em .33em;border:1px solid var(--outline);border-radius:999px;
 }
-.tag.filled{background:var(--ink);color:var(--ground);border-color:var(--ink)}
-.tag.learning{font-style:italic}   /* the dashed outline belongs only to the "warning" state */
-.tag.quiet{color:var(--muted)}
 button.tag{background:none;cursor:pointer}
+a.tag.filled{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+a.tag.quiet{color:var(--muted)}
 button.tag:hover{background:var(--hover)}
 button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 
 /* ---------- states ---------- */
-.error-fill,.chip.error,.conflict.error,.slot.error,td.error{background:var(--ink);color:var(--ground);border-color:var(--ink)}
-.chip.warning,.conflict.warning,.slot.warning,td.warning{border:1.5px dashed var(--ink)}
+.error-fill,.chip.error,.slot.error,td.error{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.chip.warning,.slot.warning,td.warning{border:1.5px dashed var(--ink)}
 
 /* ---------- calendar ---------- */
 .month-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:clamp(18px,2.6vw,28px) 0 clamp(16px,2.4vw,26px)}
 .month-nav .month-title{
-  font-family:var(--narrow);font-weight:900;text-transform:uppercase;font-size:clamp(1.4rem,3vw,2rem);
-  line-height:1;margin:0 .4em;min-width:7.5em;text-align:center;padding-top:.12em;
+  font-family:var(--narrow);font-weight:900;text-transform:uppercase;font-size:clamp(1.7rem,3.6vw,2.6rem);
+  line-height:1;margin:0 .3em;min-width:7.5em;text-align:center;padding-top:.12em;
 }
 .month-nav .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
 .legend{display:flex;flex-wrap:wrap;gap:.6em 1.4em;font-size:.85em;color:var(--muted);margin:0 0 1em;padding:0;list-style:none}
@@ -292,8 +328,9 @@ button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 .agenda{display:none;list-style:none;margin:0;padding:0}
 .agenda>li{border-top:1px solid var(--line);padding:.8em 0}
 .agenda>li:last-child{border-bottom:1px solid var(--line)}
-.agenda .day-name{font-family:var(--display);font-weight:800;font-size:1rem;margin:0 0 .5em}
-.agenda .day-name.today::after{content:"dnes";font-family:var(--body);font-weight:400;font-size:.8em;margin-left:.6em;padding:.2em .6em .1em;border-radius:999px;background:var(--ink);color:var(--ground)}
+.agenda .day-name{font-size:var(--t4);color:var(--muted);margin:0 0 .5em}
+.agenda .day-name.today{color:var(--ink)}
+.agenda .day-name.today::after{content:" · dnes"}
 .agenda .chip{font-size:.95em;white-space:normal;padding:.6em .8em .5em;border-radius:14px}
 .agenda .chip+.chip{margin-top:6px}
 @media (max-width:760px){
@@ -305,7 +342,7 @@ button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 /* ---------- card / panel ---------- */
 .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(26px,4vw,48px)}
 @media (min-width:980px){.grid{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}}
-.meta{display:flex;flex-wrap:wrap;gap:.4em 1.4em;margin:clamp(12px,1.6vw,18px) 0 0;font-size:1.05em}
+.meta{display:flex;flex-wrap:wrap;gap:.3em 1.4em;margin:clamp(10px,1.4vw,16px) 0 0;font-size:var(--t3)}
 .meta>span{display:inline-flex;gap:.5em;align-items:baseline}
 .meta .what{color:var(--muted)}
 
@@ -317,8 +354,8 @@ button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 }
 .plan>li:last-child{border-bottom:1px solid var(--line)}
 .plan .duty-name{padding-top:.5em}
-.plan .duty-name small{display:block;color:var(--muted);font-size:.85em;margin-top:.15em}
-.plan .team-heading{grid-column:1/-1;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem;color:var(--muted);padding:1.1em 0 0;border:0}
+.plan .duty-name small{display:block;color:var(--muted);font-size:var(--t4);margin-top:.15em}
+.plan .team-heading{grid-column:1/-1;font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted);padding:1.1em 0 0;border:0}
 .slots{display:flex;flex-wrap:wrap;gap:6px}
 .slot{
   display:inline-flex;align-items:center;gap:.35em;max-width:100%;
@@ -328,15 +365,19 @@ button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 .slot .who:hover{text-decoration:underline;text-underline-offset:.2em}
 .slot.empty{border-style:dashed;padding:.2em .9em;cursor:pointer;opacity:.85;background:none}
 .slot.empty:hover{opacity:1;background:var(--hover)}
+.slot.empty.add-more{padding:.25em .8em;font-size:var(--t4);color:var(--muted);opacity:1}
+.slot.empty.add-more:hover{color:var(--ink)}
+.dialog .sub{font-size:var(--t4);color:var(--muted)}
 .slot.proposed .who{font-style:italic}
 .slot.declined{opacity:.5}
 .slot.declined .who{text-decoration:line-through}
 .status-choice{display:inline-flex;gap:6px;flex-wrap:wrap}
 .slot .status{
-  font-size:.75em;line-height:1;padding:.5em .65em .38em;border-radius:999px;border:1px solid currentColor;
-  background:none;cursor:pointer;opacity:.85;white-space:nowrap;
+  font-size:var(--t4);line-height:1;padding:.5em .15em .38em;border:0;color:var(--muted);
+  background:none;cursor:pointer;white-space:nowrap;
 }
-.slot .status:hover{opacity:1}
+.slot button.status{text-decoration:underline dotted;text-underline-offset:.25em}
+.slot button.status:hover{color:var(--ink);text-decoration-style:solid}
 .slot.error .btn-x,.slot.error .status{color:var(--ground)}
 .plan .btn-x{margin-top:.15em}
 @media (max-width:620px){
@@ -346,21 +387,31 @@ button.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 }
 
 /* ---------- conflicts ---------- */
-.conflict-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.conflict{
-  display:block;width:100%;text-align:left;text-decoration:none;cursor:pointer;
-  padding:.85em 1.1em .75em;border:1px solid var(--line);border-radius:18px;background:none;
-  transition:border-color .2s,background .2s;
-}
-a.conflict:hover,button.conflict:hover{border-color:rgba(var(--ink-rgb),.8)}
-.conflict.error:hover{background:rgba(var(--ink-rgb),.88)}
-.conflict .conflict-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2em .8em;font-family:var(--display);font-weight:800;font-size:1rem;margin:0 0 .25em}
-.conflict .conflict-head .when{font-family:var(--body);font-weight:400;color:var(--muted)}
-.conflict .word{font-family:var(--body);font-weight:400;font-size:.82em;padding:.22em .6em .12em;border-radius:999px;border:1px solid currentColor}
+/* a list of problems: a dot (filled = chyba, ring = pozor, faint = info), one sentence, muted meta */
+.conflict-list{list-style:none;margin:0;padding:0}
+.conflict{display:grid;grid-template-columns:.6em minmax(0,1fr) auto;gap:.15em .8em;align-items:baseline;padding:.7em 0;border-top:1px solid var(--line)}
+.conflict:last-child{border-bottom:1px solid var(--line)}
+.conflict .marker{width:.6em;height:.6em;border-radius:50%;align-self:start;margin-top:.5em}
+.conflict.error .marker{background:var(--ink)}
+.conflict.warning .marker{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.conflict.info .marker{background:var(--outline)}
 .conflict p{margin:0}
-.conflict .override{font-size:.86em;color:var(--muted);margin-top:.3em}
-.conflict.info{opacity:.75}
+.conflict .conflict-meta{grid-column:2;font-size:var(--t4);color:var(--muted)}
+.conflict .conflict-meta a{color:inherit;text-underline-offset:.2em}
+.conflict .conflict-meta a:hover{color:var(--ink)}
+.conflict .text-btn{grid-column:3;grid-row:1;font-size:var(--t4);color:var(--muted);white-space:nowrap}
+.conflict .text-btn:hover{color:var(--ink)}
+.conflict.info .conflict-text{color:var(--muted)}
+.dot{display:inline-block;width:.55em;height:.55em;border-radius:50%;margin-right:.45em;vertical-align:.05em}
+.dot.error{background:currentColor}
+.dot.warning{box-shadow:inset 0 0 0 1.5px currentColor}
+.dot.info{background:currentColor;opacity:.4}
 .all-ok{display:flex;align-items:center;gap:.8em;padding:.9em 0;color:var(--muted)}
+@media (max-width:520px){
+  .conflict{grid-template-columns:.6em minmax(0,1fr)}
+  .conflict .conflict-meta{grid-row:2}
+  .conflict .text-btn{grid-column:2;grid-row:3;justify-self:start;margin-top:.15em}
+}
 
 .filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 clamp(18px,2.6vw,26px)}
 .filter .group{display:flex;flex-wrap:wrap;gap:6px;margin-right:1.2em}
@@ -388,9 +439,9 @@ a.conflict:hover,button.conflict:hover{border-color:rgba(var(--ink-rgb),.8)}
 }
 .list a.row:hover,.list button.row:hover{background:var(--fill)}
 .list button.row{width:100%;text-align:left;background:none;border:0;cursor:pointer}
-.list .name{font-size:1.12em}
-.list .name small{display:block;font-size:.8em;color:var(--muted);margin-top:.15em}
-.list .right{text-align:right;color:var(--muted);font-size:.9em;white-space:nowrap}
+.list .name{font-size:var(--t3)}
+.list .name small{display:block;font-size:var(--t4);color:var(--muted);margin-top:.15em}
+.list .right{text-align:right;color:var(--muted);font-size:var(--t4);white-space:nowrap}
 @media (max-width:700px){
   .list .row{grid-template-columns:minmax(0,1fr) auto}
   .list .row .tags{grid-column:1/-1;order:3}
@@ -417,8 +468,8 @@ input[type=search]::-webkit-search-cancel-button:hover{opacity:1}
 .form-grid .full{grid-column:1/-1}
 @media (max-width:560px){.form-grid{grid-template-columns:minmax(0,1fr)}}
 .field{display:flex;flex-direction:column;gap:.4em;min-width:0}
-.field>span{font-size:.9em;opacity:.8}
-.field small{color:var(--muted);font-size:.85em}
+.field>span{font-size:var(--t4);color:var(--muted)}
+.field small{color:var(--muted);font-size:var(--t4)}
 input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea{
   width:100%;min-width:0;padding:.72em 1.05em .58em;border:1px solid var(--outline);border-radius:999px;
   background-color:rgba(var(--ink-rgb),.06);color:var(--ink);outline:none;transition:border-color .2s,background-color .2s;
@@ -494,7 +545,7 @@ input.count-input{width:5.2em;text-align:center}   /* number of people per role 
 .dialog.wide{width:min(900px,calc(100vw - 24px))}
 .dialog::backdrop{background:rgba(20,16,16,.55)}
 .dialog form,.dialog .inner{padding:clamp(20px,3.5vw,32px)}
-.dialog .eyebrow{margin:0 0 .6em}
+.dialog .eyebrow{margin:0 0 .3em}
 .dialog .actions{position:sticky;bottom:0;z-index:2;margin:clamp(20px,3vw,28px) 0 0;padding:.8em 0 .2em;justify-content:flex-end;
   background:var(--ground) linear-gradient(rgba(var(--ink-rgb),.08),rgba(var(--ink-rgb),.08));border-top:1px solid var(--line)}
 .dialog .actions .left{margin-right:auto}
@@ -507,10 +558,9 @@ input.count-input{width:5.2em;text-align:center}   /* number of people per role 
   text-align:left;padding:.75em .7em .65em;background:none;border:0;cursor:pointer;transition:background .2s;
 }
 .candidates button:hover{background:var(--hover)}
-.candidates .name{font-size:1.05em}
-.candidates .right{font-size:.85em;color:var(--muted);white-space:nowrap}
-.candidates .reasons{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
-.candidates .reasons .tag{font-size:.78em;padding:.3em .65em .22em}
+.candidates .name{font-size:var(--t3)}
+.candidates .right{font-size:var(--t4);color:var(--muted);white-space:nowrap}
+.candidates .reasons{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .45em}
 .candidates li.hard button{opacity:.55}
 .candidates li.hard button:hover{opacity:1}
 
@@ -537,9 +587,9 @@ body.logged-out .menu>a,body.logged-out .save-status{display:none}   /* colours 
 .program .what{display:flex;flex-direction:column;align-items:flex-start;gap:.1em;min-width:0;text-align:left;background:none;border:0;padding:.2em 0;cursor:pointer}
 .program span.what{cursor:default}
 .program button.what:hover .item-name{text-decoration:underline;text-underline-offset:.2em}
-.program .item-name{font-size:1.05em}
-.program .what small{color:var(--muted);font-size:.85em}
-.program .minutes{color:var(--muted);font-size:.88em;white-space:nowrap}
+.program .item-name{font-size:var(--t3)}
+.program .what small{color:var(--muted);font-size:var(--t4)}
+.program .minutes{color:var(--muted);font-size:var(--t4);white-space:nowrap}
 .program .move{display:flex;align-items:center;gap:2px}
 .program select{width:auto;min-width:0;max-width:100%}
 .btn-arrow{
@@ -552,6 +602,7 @@ body.logged-out .menu>a,body.logged-out .save-status{display:none}   /* colours 
 .btn-arrow:hover:not(:disabled){opacity:1;border-color:var(--outline)}
 .btn-arrow:disabled{opacity:.15;cursor:default}
 .add-format{margin:.9em 0 0}
+.add-format{gap:6px}
 .add-format .tag{font-size:.82em}
 .program-sheet{max-width:900px}
 .program.large>li{grid-template-columns:max-content minmax(0,1fr) auto;column-gap:clamp(.8rem,2vw,1.4rem);padding:.9em 0}
@@ -573,16 +624,16 @@ body.logged-out .menu>a,body.logged-out .save-status{display:none}   /* colours 
 }
 .format-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1em}
 .format-card h2{
-  font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:0;
-  font-size:clamp(1.4rem,2.6vw,1.9rem);line-height:1;margin:0;padding-top:.1em;overflow-wrap:anywhere;
+  font-family:var(--narrow);font-weight:900;letter-spacing:.01em;
+  font-size:var(--t2);line-height:1.15;margin:0;padding-top:.1em;overflow-wrap:anywhere;
 }
-.format-meta{margin:0;font-size:.88em;color:var(--muted)}
+.format-meta{margin:0;font-size:var(--t4);color:var(--muted)}
 .why-how{display:flex;flex-direction:column;gap:.85em}
 .why-how p{margin:0}
-.why-how .subhead{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem;margin:0 0 .35em}
+.why-how .subhead{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem;color:var(--muted);margin:0 0 .35em}
 .why-how .text{white-space:pre-line;line-height:1.5;max-width:65ch}
 .why-how a{opacity:.8}
-.dialog .why-how{padding:1em 1.1em;border-radius:18px;background:rgba(var(--ink-rgb),.06);margin:.4em 0 .2em}
+.dialog .why-how{margin:1.2em 0 .2em}
 .program .program-how{display:block;white-space:pre-line;font-size:.88em;color:var(--muted);margin-top:.35em;max-width:65ch}
 
 /* ---------- roster (table) ---------- */
@@ -612,9 +663,9 @@ body.logged-out .menu>a,body.logged-out .save-status{display:none}   /* colours 
 
 /* ---------- empty state ---------- */
 .empty-state{display:flex;flex-direction:column;align-items:flex-start;gap:.8em;padding:clamp(26px,4vw,48px) 0}
-.empty-state .bullseye{width:clamp(54px,7vw,84px);height:clamp(54px,7vw,84px)}
-.empty-state h2{font-family:var(--narrow);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,3.6vw,2.4rem);line-height:1;margin:.3em 0 0}
-.empty-state p{margin:0;max-width:30em;opacity:.8;line-height:1.45}
+.empty-state .bullseye{width:clamp(44px,5vw,60px);height:clamp(44px,5vw,60px)}
+.empty-state h2{font-family:var(--narrow);font-weight:900;font-size:var(--t2);line-height:1.15;margin:.3em 0 0}
+.empty-state p{margin:0;max-width:30em;color:var(--muted);line-height:1.45}
 
 /* ---------- toasts ---------- */
 .toasts{position:fixed;z-index:30;left:50%;bottom:clamp(14px,3vw,28px);transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;width:min(520px,calc(100vw - 24px));pointer-events:none}
@@ -623,7 +674,7 @@ body.logged-out .menu>a,body.logged-out .save-status{display:none}   /* colours 
   padding:.85em 1.1em .7em;border-radius:18px;background:var(--ink);color:var(--ground);
   box-shadow:0 14px 34px rgba(0,0,0,.35);animation:slide-in .35s cubic-bezier(.16,1,.3,1);
 }
-.toast strong{font-family:var(--display);font-weight:800}
+.toast strong{font-weight:400}
 .toast .btn{color:var(--ground);border-color:rgba(var(--ground-rgb),.5)}
 @keyframes slide-in{from{opacity:0;transform:translateY(12px)}}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
@@ -689,6 +740,10 @@ button.more:hover{text-decoration:underline;text-underline-offset:.2em;color:var
 .series-nav{display:flex;flex-wrap:wrap;gap:8px}
 .leader-pick{display:flex;flex-wrap:wrap;align-items:center;gap:.5em .7em}
 .leader-pick .leader-name{margin-right:auto}
+.leader-pick .text-btn{font-size:var(--t4)}
+/* two fields on one row: a wide one and a short one (name + minutes) */
+.field-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 16px;align-items:end}
+@media (max-width:360px){.field-row{grid-template-columns:minmax(0,1fr)}}
 .conflict-actions{display:flex;justify-content:flex-end;margin:.3em 0 0}
 .status-choice .tag{font-size:.75em;padding:.42em .65em .3em}
 .schedule-table .mine{text-decoration:underline;text-underline-offset:.2em}
@@ -712,13 +767,13 @@ button.more:hover{text-decoration:underline;text-underline-offset:.2em;color:var
 .member{display:grid;grid-template-columns:minmax(16em,20em) minmax(0,1fr);gap:.5em 1.4em;align-items:start;padding:.75em 0;border-top:1px solid var(--line)}
 .member:last-child{border-bottom:1px solid var(--line)}
 .member-head{display:flex;align-items:center;justify-content:space-between;gap:.4em .8em;min-width:0}
-.member-name{flex:1;min-width:0;font-size:1.08em;text-decoration:none;overflow-wrap:anywhere;padding:.3em 0}
+.member-name{flex:1;min-width:0;font-size:var(--t3);text-decoration:none;overflow-wrap:anywhere;padding:.3em 0}
 a.member-name:hover{text-decoration:underline;text-underline-offset:.2em}
 .member-tools{display:flex;align-items:center;gap:.4em}
 .member-tools .choice span{font-size:.82em;padding:.38em .8em .3em .45em}
 .member-roles{display:flex;flex-wrap:wrap;gap:.5em 1.2em}
 .member-role{display:flex;align-items:center;gap:.55em}
-.member-role .role-name{font-size:.88em;color:var(--muted);min-width:4.5em}
+.member-role .role-name{font-size:var(--t4);color:var(--muted);min-width:4.5em}
 .member-role .segment span{min-height:32px;padding:.3em .75em .22em;font-size:.82em}
 .member-role .segment label:first-child input:checked+span{background:var(--hover);color:var(--ink)}   /* „ne“ stays quiet, skills stand out */
 .member-tools{flex:none}
@@ -738,22 +793,21 @@ a.member-name:hover{text-decoration:underline;text-underline-offset:.2em}
   .program-editor>li{grid-template-columns:2.2em minmax(0,1fr) auto}
   .program-editor .move{grid-column:2/-1}
 }
-.form-grid h3.eyebrow{margin:1em 0 0;font-size:1rem}
 .settings-nav{margin-top:clamp(18px,2.6vw,28px)}
+.settings-nav .filter{margin-bottom:0}
 
 /* people screens */
 /* facts on the person card: label left, value right */
 .facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.45em 1.2em;margin:0}
-.facts dt{color:var(--muted);font-size:.92em;padding-top:.08em}
+.facts dt{color:var(--muted);font-size:var(--t4);padding-top:.12em}
 .facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
 .facts a{text-underline-offset:.2em}
 @media (max-width:420px){.facts{grid-template-columns:minmax(0,1fr);gap:.1em 0}.facts dd{margin-bottom:.5em}}
 /* dashed box: something to finish (card created quickly, demo "looking as") */
-.notice{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6em 1.2em;padding:.9em 1.1em .8em;border:1.5px dashed var(--ink);border-radius:18px}
+.notice{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6em 1.2em;padding:.8em 1.1em .7em;background:var(--fill);border-radius:14px}
 .notice p{margin:0;max-width:60ch}
 .demo-bar{margin:0 0 clamp(18px,2.6vw,26px)}
 .quick-add-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.tag.warning{border:1.5px dashed var(--ink)}
 a.tag{text-decoration:none}
 a.tag:hover{background:var(--hover)}
 a.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
@@ -771,23 +825,22 @@ a.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 .candidates li.create button{color:var(--muted)}
 .candidates li.create button:hover{color:var(--ink)}
 .candidates li.create .name{display:inline-flex;align-items:center;gap:.4em}
-.candidates li.create .plus::before{content:"+";font-size:1.2em;line-height:0}
 .dialog form.quick-add{margin-top:.4em;padding:0}
 .similar .note{margin:0 0 .5em}
 /* #moje: what waits for an answer */
 .answer-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,16em),1fr));gap:10px}
 .answer{padding:clamp(14px,2.2vw,20px);border:1px solid var(--outline);border-radius:22px;background:rgba(var(--ink-rgb),.035)}
 .answer p{margin:0}
-.answer-when{color:var(--muted);font-size:.92em}
-.answer-role{font-family:var(--narrow);font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,3.2vw,2.1rem);line-height:1;margin:.3em 0 .15em !important}
+.answer-when{color:var(--muted);font-size:var(--t4)}
+.answer-role{font-family:var(--narrow);font-weight:900;font-size:var(--t2);line-height:1.15;margin:.25em 0 .1em !important}
 .answer-event a{text-underline-offset:.2em}
 .answer-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:.9em}
-.answer-buttons .btn{min-width:8.5em;min-height:48px;font-size:1.05em}
+.answer-buttons .btn{flex:1 1 0;min-width:6em;min-height:46px}
 .my-groups{list-style:none;margin:0;padding:0}
 .my-groups>li{padding:.8em 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:.45em}
 .my-groups>li:last-child{border-bottom:1px solid var(--line)}
 .my-groups p{margin:0}
-.my-groups .group-name{font-family:var(--display);font-weight:800;font-size:1.05em}
+.my-groups .group-name{font-size:var(--t3)}
 .my-groups .group-leaders{line-height:1.7}
 .my-groups .group-leaders a{text-underline-offset:.2em}
 

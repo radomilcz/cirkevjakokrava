@@ -59,7 +59,7 @@ export function renderLogin(message) {
     await signedIn(result);
   });
   return [
-    pageHeader('pastva', 'Zvonec', 'Kdo kdy slouží a co se ve sboru chystá. Přihlas se svým jménem a heslem.'),
+    pageHeader(null, 'Zvonec', 'Kdo kdy slouží a co se ve sboru chystá. Přihlas se svým jménem a heslem.'),
     rule(),
     h('div', { class: 'narrow' }, form),
   ];
@@ -134,7 +134,7 @@ export function renderSetup() {
     }
   });
   return [
-    pageHeader('první krok', 'Založit Zvonec', 'Zvonec tu zatím nikoho nemá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.'),
+    pageHeader(null, 'Založit Zvonec', 'Zvonec tu zatím nikoho nemá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.'),
     rule(),
     h('div', { class: 'grid' },
       form,
@@ -262,7 +262,6 @@ function renderRegistration(invite, store, data) {
 /** Shows a new password or invite link once, with copy buttons. rows = [[label, value], …]. */
 export function passwordDialog({ title, text, rows }) {
   openDialog(h('div', { class: 'inner' },
-    h('p', { class: 'eyebrow' }, 'jen jednou'),
     h('h2', {}, title),
     note(text),
     h('ul', { class: 'overview' }, rows.map(([label, value]) => h('li', { class: 'plain' },
@@ -395,7 +394,7 @@ export function accountSection() {
       person ? link('Moje služby', '#moje', 'btn small') : null,
       btn('Odhlásit se', logout, 'small'),
     ]),
-    h('h3', { class: 'eyebrow spaced' }, 'Změnit heslo'),
+    h('h3', {}, 'Změnit heslo'),
     h('div', { class: 'section' }, form));
 }
 

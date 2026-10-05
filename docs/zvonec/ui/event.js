@@ -2,7 +2,7 @@
 // conflicts of this event (leaders), cancel / delete.
 
 import {
-  h, btn, link, backLink, pageHeader, section, count, actions, note, meta, emptyState, toast, download,
+  h, btn, textButton, link, backLink, pageHeader, section, count, actions, note, meta, emptyState, toast, download,
   removeButton, confirmDialog, choices, closeDialog, simpleDialog, textField,
   fieldGroup, checkedValues, plural, plus,
 } from './dom.js';
@@ -54,13 +54,11 @@ export function renderEvent(id) {
 
   return [
     backLink('Kalendář', `#kalendar/${monthOf(event.start)}`),
-    pageHeader([prettyDayLong(event.start), kindLabel && kindLabel !== event.title ? kindLabel : null, event.cancelled ? 'zrušeno' : null].filter(Boolean).join(' · '),
-      event.title, event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.'
-        : leader ? 'Kdo tu slouží a jak půjde program. Doplň, kdo chybí, a slož osnovu.' : 'Kdo tu slouží a jak půjde program.', { smaller: true }),
+    pageHeader(kindLabel && kindLabel !== event.title ? kindLabel : null,
+      event.title, event.cancelled ? 'Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.' : null, { smaller: true }),
     meta([
-      ['kdy', sameDay ? `${prettyTime(event.start)}–${prettyTime(event.end)}` : prettyRange(event)],
-      places.length ? ['kde', places.join(', ')] : null,
-      series.length > 1 ? ['opakuje se', `${position + 1}. z ${series.length}`] : null,
+      sameDay ? `${prettyDayLong(event.start)}, ${prettyTime(event.start)}–${prettyTime(event.end)}` : prettyRange(event),
+      places.length ? places.join(', ') : null,
     ]),
     event.note ? h('p', { class: 'lead' }, event.note) : null,
     actions([
@@ -74,7 +72,7 @@ export function renderEvent(id) {
       section('Kdo co dělá', planList(event, conflicts, leader)),
       leader || (event.program || []).length ? programSection(event, previous, leader) : null,
     ], [
-      leader ? section(['Upozornění', count(conflicts.length ? String(conflicts.length) : '')],
+      leader ? section(['Upozornění', conflicts.length ? count(String(conflicts.length)) : null],
         conflicts.length
           ? h('ul', { class: 'conflict-list' }, conflicts.map((c) => {
             const other = (c.eventIds || []).find((x) => x !== id);
@@ -129,7 +127,7 @@ function planList(event, conflicts, leader) {
     const role = roleById(S.data, need.roleId);
     if (role?.groupId !== team) {
       team = role?.groupId;
-      list.append(h('li', { class: 'team-heading' }, groupById(S.data, team)?.name || 'Ostatní'));
+      list.append(h('li', { class: 'team-heading' }, groupById(S.data, team)?.name || 'Ostatní'));   // a group label (.label look)
     }
     const people = (event.assignments || []).filter((a) => a.roleId === need.roleId);
     const active = people.filter((a) => a.status !== 'declined').length;
@@ -143,7 +141,7 @@ function planList(event, conflicts, leader) {
           ? h('button', { type: 'button', class: 'slot empty', onclick: () => pickFor(event.id, need.roleId), 'aria-label': `Vybrat člověka: ${roleName}` }, plus('Vybrat člověka'))
           : h('span', { class: 'slot empty' }, 'zatím nikdo'))),
         leader && !empty && !event.cancelled
-          ? btn(plus('Přidat dalšího'), () => pickFor(event.id, need.roleId), 'mini plain', { 'aria-label': `Přidat dalšího: ${roleName}` }) : null),
+          ? h('button', { type: 'button', class: 'slot empty add-more', onclick: () => pickFor(event.id, need.roleId), 'aria-label': `Přidat dalšího: ${roleName}`, title: 'Přidat dalšího' }, plus('další')) : null),
       h('span', {})));
   }
   return [list, note(leader
@@ -413,21 +411,26 @@ function itemDialog(eventId, itemId, draft) {
     });
   };
 
-  const whoText = d.personId
-    ? fullName(personById(S.data, d.personId))
-    : roleName ? `ten, kdo má roli ${roleName}${byRole.length ? ` (${byRole.join(', ')})` : ''}` : 'nikdo';
+  const keep = (personId) => { const kept = readForm(form.elements); kept.personId = personId; itemDialog(eventId, itemId, kept); };
+  // who leads: the picked person, or the default from the format's role
+  const who = d.personId
+    ? [fullName(personById(S.data, d.personId)), h('span', { class: 'faint' }, ' · '),
+      textButton('zrušit výběr', () => keep(''), { class: 'text-btn faint', title: roleName ? `Povede ten, kdo má roli ${roleName}` : 'Nepovede nikdo' })]
+    : roleName
+      ? [byRole.length ? `${byRole.join(', ')} ` : 'zatím nikdo ', h('span', { class: 'faint' }, `(podle role ${roleName})`)]
+      : h('span', { class: 'faint' }, 'nikdo');
   form = simpleDialog({
-    eyebrow: `${prettyDay(event.start)} · ${event.title}`,
     title: itemName(S.data, item),
+    sub: format && (format.why || format.how) ? textButton('Proč a jak', () => openFormatInfo(format.id)) : null,
+    wide: false,
     fields: [
-      textField('title', 'Název v osnově', d.title, { full: true, hint: format ? `Nech prázdné a bude tu „${format.name}“.` : '', attr: { placeholder: format?.name || '' } }),
-      textField('minutes', 'Kolik minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } }),
+      h('div', { class: 'field-row full' },
+        textField('title', 'Název', d.title, { attr: { placeholder: format?.name || '' } }),
+        textField('minutes', 'Minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } })),
       fieldGroup('Kdo vede', h('div', { class: 'leader-pick' },
-        h('span', { class: 'leader-name' }, whoText),
-        btn(d.personId ? 'Vybrat jiného' : 'Vybrat člověka', choosePerson, 'mini'),
-        d.personId ? btn(roleName ? 'podle služby' : 'nikdo', () => { const kept = readForm(form.elements); kept.personId = ''; itemDialog(eventId, itemId, kept); }, 'mini plain') : null)),
+        h('span', { class: 'leader-name' }, who),
+        btn('Vybrat', choosePerson, 'small'))),
       textField('note', 'Poznámka', d.note, { full: true, attr: { placeholder: 'tónina, text, kdo podá mikrofon…' } }),
-      format && (format.why || format.how) ? h('div', { class: 'full' }, btn('Proč a jak', () => openFormatInfo(format.id), 'mini')) : null,
     ],
     save: (f) => {
       const e = fresh(eventId);

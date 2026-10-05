@@ -10,7 +10,7 @@ export const CHILD_AGE = 15;
 export const MEMBERSHIP_STATUSES = ['member', 'regular', 'guest', 'former'];
 
 /** Registry filters in the order of the UI pills. Keys are stable, slugs are in the UI. */
-export const PEOPLE_FILTERS = ['members', 'nonMembers', 'children', 'former', 'all', 'needsReview'];
+export const PEOPLE_FILTERS = ['attending', 'members', 'friends', 'guests', 'children', 'former', 'all', 'needsReview', 'nonMembers'];
 
 const collator = new Intl.Collator('cs', { sensitivity: 'base' });
 
@@ -107,7 +107,10 @@ export function statusOf(person) {
 export function matchesFilter(person, filter, { today, childAge = CHILD_AGE } = {}) {
   const status = statusOf(person);
   switch (filter) {
+    case 'attending': return status !== 'former';
     case 'members': return status === 'member';
+    case 'friends': return status === 'regular';
+    case 'guests': return status === 'guest';
     case 'nonMembers': return status === 'regular' || status === 'guest';
     case 'children': return status !== 'former' && isChild(person, today, childAge);
     case 'former': return status === 'former';

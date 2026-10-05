@@ -148,8 +148,12 @@ test('people: membership filters and counts', () => {
   assert.deepEqual(ids('former'), ['ota']);
   assert.deepEqual(ids('needsReview'), ['iva']);
   assert.equal(ids('all').length, d.people.length);
-  assert.deepEqual(people.filterCounts(d, { today: TODAY }),
-    { members: 4, nonMembers: 2, children: 2, former: 1, all: 7, needsReview: 1 });
+  assert.deepEqual(ids('attending'), ['adam', 'ema', 'iva', 'jana', 'petr', 'zuzana'], 'everybody who still comes');
+  assert.deepEqual([...ids('friends'), ...ids('guests')].sort(), ['adam', 'iva'], 'regulars (přátelé) and guests split the non-members');
+  const counts = people.filterCounts(d, { today: TODAY });
+  assert.deepEqual({ ...counts, friends: undefined, guests: undefined },
+    { attending: 6, members: 4, friends: undefined, guests: undefined, nonMembers: 2, children: 2, former: 1, all: 7, needsReview: 1 });
+  assert.equal(counts.friends + counts.guests, 2);
   assert.equal(people.statusOf({ id: 'x' }), 'guest', 'missing membership = guest');
 });
 

@@ -2,17 +2,18 @@
 // detail uses.
 
 import {
-  h, btn, pageHeader, rule, section, count, emptyState, filterButtons, openDialog, closeDialog, note,
+  h, btn, textButton, pageHeader, rule, emptyState, filterButtons, openDialog, closeDialog, note,
   textField, formErrorLine, formError,
 } from './dom.js';
 import { S, change, render, isUpcoming, myId, SEVERITY_LABELS } from './state.js';
-import { CODES, SEVERITIES } from '../lib/conflicts.js';
+import { SEVERITIES } from '../lib/conflicts.js';
 import { eventById } from '../lib/events.js';
 import { displayName, personById } from '../lib/people.js';
 import { roleById } from '../lib/groups.js';
 import { prettyDay, today } from '../lib/time.js';
 
 const SEVERITY_HEADINGS = { error: 'Chyby', warning: 'Pozor', info: 'Info' };
+const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
 
 /** { event, assignment } for an assignment id, or null. */
 export function findAssignment(data, assignmentId) {
@@ -38,29 +39,28 @@ function overrideTarget(conflict) {
 }
 
 /**
- * Conflict card. `href` – where the card leads (default the conflict's event; null = no link).
- * `withEvent` – show the day and title. `overrideButton` – „Vím o tom“ under the card.
+ * One problem as a list row: a dot for the severity (filled = chyba, ring = pozor, faint = info), the
+ * sentence that says what is wrong, and a muted line with the event (a link) and the override reason.
+ * `href` – where the event link leads (default the conflict's event; null = no link).
+ * `withEvent` – show the day and title. `overrideButton` – „Vím o tom“ on the right.
  */
 export function conflictCard(conflict, { href, withEvent = true, overrideButton = true } = {}) {
   const event = eventById(S.data, conflict.eventId);
   const target = href === undefined ? `#setkani/${conflict.eventId}` : href;
-  const body = [
-    h('p', { class: 'conflict-head' },
-      h('span', {}, CODES[conflict.code] || conflict.code),
-      h('span', { class: 'word' }, SEVERITY_LABELS[conflict.severity]),
-      withEvent && event ? h('span', { class: 'when' }, `${prettyDay(event.start)} · ${event.title}`) : null),
-    h('p', {}, conflict.text),
-    conflict.overrideNote ? h('p', { class: 'override' }, `V pořádku: ${conflict.overrideNote}`) : null,
-  ];
-  const card = target
-    ? h('a', { class: ['conflict', conflict.severity], href: target }, body)
-    : h('div', { class: ['conflict', conflict.severity] }, body);
+  const when = withEvent && event ? `${prettyDay(event.start)} · ${event.title}` : null;
+  const metaLine = [
+    when ? (target ? h('a', { href: target }, when) : when) : null,
+    conflict.overrideNote ? `${when ? ' · ' : ''}v pořádku: ${conflict.overrideNote}` : null,
+  ].filter(Boolean);
   const overridable = overrideButton && canOverride(conflict);
-  return h('li', {}, card, overridable ? h('div', { class: 'conflict-actions' },
-    btn(conflict.overrideNote ? 'Upravit, proč to půjde' : 'Vím o tom', () => {
+  return h('li', { class: ['conflict', conflict.severity] },
+    h('span', { class: 'marker', 'aria-hidden': 'true' }),
+    h('p', { class: 'conflict-text' }, h('span', { class: 'visually-hidden' }, `${SEVERITY_LABELS[conflict.severity]}: `), conflict.text),
+    overridable ? textButton(conflict.overrideNote ? 'Upravit důvod' : 'Vím o tom', () => {
       const t = overrideTarget(conflict);
       if (t) overrideDialog(t.assignment.id);
-    }, 'mini plain', { title: 'Vím o tom, platí to i tak' })) : null);
+    }, { title: conflict.overrideNote ? 'Proč to půjde' : 'Vím o tom, půjde to i tak' }) : null,
+    metaLine.length ? h('p', { class: 'conflict-meta' }, metaLine) : null);
 }
 
 /**
@@ -75,7 +75,6 @@ export function overrideDialog(assignmentId) {
   const existing = assignment.override;
   const by = existing?.by ? displayName(personById(S.data, existing.by)) : '';
   const form = h('form', { method: 'dialog', novalidate: true },
-    h('p', { class: 'eyebrow' }, 'vím o tom'),
     h('h2', {}, 'Je to v pořádku?'),
     note(`Když víš, že ${displayName(person)} to zvládne, napiš proč. Zvonec to pak přestane hlásit.`),
     existing?.at ? note(`Potvrdil(a) ${by || 'někdo'} ${prettyDay(existing.at, false)}.`) : null,
@@ -115,20 +114,22 @@ export function renderConflicts() {
   const start = (c) => eventById(S.data, c.eventId)?.start || '';
   const pick = (key) => (value) => { f[key] = value; render(); };
 
+  const dot = (severity) => h('span', { class: ['dot', severity], 'aria-hidden': 'true' });
+  // a severity pill only when there is something in it (or it is the one picked)
+  const severityPills = SEVERITIES.filter((s) => countOf(s) || f.conflictSeverity === s)
+    .map((s) => [s, [dot(s), `${SEVERITY_HEADINGS[s]} ${countOf(s)}`]]);
+  const list = shown.slice().sort((a, b) => start(a).localeCompare(start(b))
+    || SEVERITY_WEIGHT[b.severity] - SEVERITY_WEIGHT[a.severity]);
+
   return [
-    pageHeader('bučíme', 'Upozornění', 'Co v rozpisu nesedí: někdo je na dvou místech naráz, na službě nikdo není, místnost je obsazená. Vyřeš to, dokud je čas.'),
+    pageHeader(null, 'Upozornění', 'Co v rozpisu nesedí. Vyřeš to, dokud je čas.'),
     rule(),
     h('div', { class: 'filter-row' },
-      filterButtons([['all', `Všechno ${countOf('all')}`], ...SEVERITIES.map((s) => [s, `${SEVERITY_HEADINGS[s]} ${countOf(s)}`])],
+      filterButtons([['all', `Všechno ${countOf('all')}`], ...severityPills],
         f.conflictSeverity, pick('conflictSeverity'), { label: 'Jak vážné' }),
       filterButtons([['upcoming', 'Budoucí'], ['all', 'I minulé']], f.conflictScope, pick('conflictScope'), { label: 'Kdy' })),
-    shown.length ? note('Plná karta je chyba, takhle to nepůjde. Čárkovaná znamená, že něco chybí.') : null,
-    shown.length
-      ? SEVERITIES.filter((s) => shown.some((c) => c.severity === s)).map((s) => {
-        const list = shown.filter((c) => c.severity === s).sort((a, b) => start(a).localeCompare(start(b)));
-        return section([SEVERITY_HEADINGS[s], count(String(list.length))],
-          h('ul', { class: 'conflict-list' }, list.map((c) => conflictCard(c))));
-      })
+    list.length
+      ? h('ul', { class: 'conflict-list' }, list.map((c) => conflictCard(c)))
       : emptyState('Nikdo nebučí.', f.conflictSeverity === 'all'
         ? (f.conflictScope === 'all' ? 'Rozpis sedí.' : `Rozpis od ${prettyDay(today())} sedí.`)
         : 'Tady nic. Zkus jiný filtr.', null),

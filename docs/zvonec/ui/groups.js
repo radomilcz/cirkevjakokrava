@@ -112,7 +112,7 @@ export function renderGroups() {
   const archived = groups.filter((g) => g.archived).sort(byName);
   const other = active.filter((g) => !GROUP_KINDS.includes(g.kind)).sort(byName);
   return [
-    pageHeader('kdo co dělá', 'Skupiny', 'Týmy slouží na setkáních a z jejich rolí se skládá rozpis. Ve skupinkách a ve vedení jsou lidé, kteří se pravidelně scházejí.'),
+    pageHeader(null, 'Skupiny', 'Týmy slouží na setkáních a z jejich rolí se skládá rozpis. Ve skupinkách a ve vedení jsou lidé, kteří se pravidelně scházejí.'),
     actions(btn(plus('Přidat skupinu'), () => groupDialog(), 'primary small')),
     rule(),
     groups.length ? null : emptyState('Zatím žádná skupina.', 'Začni třeba týmem Technika nebo středeční skupinkou.', btn('Přidat skupinu', () => groupDialog(), 'primary')),
@@ -143,7 +143,6 @@ function groupList(groups) {
 function groupDialog(group) {
   const roleCount = group ? rolesOf(S.data, group.id).length : 0;
   simpleDialog({
-    eyebrow: group ? 'upravit skupinu' : 'nová skupina',
     title: group ? group.name : 'Nová skupina',
     fields: [
       textField('name', 'Název', group?.name, { attr: { autofocus: true, placeholder: 'Technika' } }),
@@ -179,7 +178,7 @@ function groupDialog(group) {
 export function renderGroup(id) {
   const group = groupById(S.data, id);
   if (!group) {
-    return [backLink('Skupiny', '#skupiny'), pageHeader('skupina', 'Nenašlo se'),
+    return [backLink('Skupiny', '#skupiny'), pageHeader(null, 'Nenašlo se'),
       emptyState('Tahle skupina tu není.', 'Možná ji mezitím někdo smazal.', link('Všechny skupiny', '#skupiny', 'btn'))];
   }
   const team = group.kind === 'team';
@@ -188,8 +187,8 @@ export function renderGroup(id) {
   const leaders = leadersOf(S.data, group.id);
   return [
     backLink('Skupiny', '#skupiny'),
-    pageHeader([GROUP_KIND_LABELS[group.kind] || 'skupina', group.archived ? ' · v archivu' : ''], group.name, group.description
-      || (team ? 'Role týmu a kdo co umí. Podle toho Zvonec nabízí lidi do rozpisu.' : 'Kdo do skupiny patří a kdo ji vede.'), { smaller: group.name.length > 16 }),
+    pageHeader([GROUP_KIND_LABELS[group.kind] || 'skupina', group.archived ? ' · v archivu' : ''], group.name, group.description || null,
+      { smaller: group.name.length > 16 }),
     meta([
       ['vede', leaders.length ? leaders.map((m, i) => [i ? ', ' : '', link(fullName(personById(S.data, m.personId)), `#osoba/${m.personId}`)]) : 'zatím nikdo'],
       people(members.length),
@@ -253,7 +252,7 @@ function deleteGroup(group) {
 // ---------- roles ----------
 
 function rolesSection(group, roles) {
-  return section(['Role v týmu', count(roles.length ? 'z nich se skládá rozpis' : '')],
+  return section('Role v týmu',
     roles.length
       ? h('ul', { class: 'list' }, roles.map((r) => roleRow(r)))
       : note('Tým zatím nemá žádnou roli. Přidej třeba Zvuk, Projekci nebo Kafe.'),
@@ -274,10 +273,10 @@ function roleRow(role) {
     h('span', { class: 'name' }, role.name,
       h('small', {}, trained || learning ? [`umí ${trained}`, learning ? ` · učí se ${learning}` : ''] : 'zatím to nikdo neumí')),
     h('span', { class: 'tags' },
-      role.essential ? tag('bez toho to nejde') : null,
+      role.essential ? tag('bez toho to nejde', 'filled') : null,
       role.adultsOnly ? tag('jen dospělí') : null,
       role.childcare ? tag('u dětí') : null,
-      role.window ? tag(windowText(role.window), 'learning') : null,
+      role.window ? tag(windowText(role.window)) : null,
       partners.length ? tag(`naráz s: ${partners.join(', ')}`, 'quiet') : null),
     h('span', { class: 'right' }, times(role.count || 1))));
 }
@@ -317,7 +316,7 @@ function roleDialog(group, role) {
     type: 'number', name, value: value ?? '', placeholder, 'aria-label': label, class: 'count-input', step: 5,
   });
   simpleDialog({
-    eyebrow: role ? `role · ${group.name}` : `nová role · ${group.name}`,
+    eyebrow: group.name,
     title: role ? role.name : 'Přidat roli',
     fields: [
       textField('name', 'Název', role?.name, { attr: { autofocus: true, placeholder: 'Zvuk' } }),

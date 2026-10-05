@@ -60,7 +60,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
 
   // ---------- rows ----------
 
-  const reasonTag = (r) => tag(r.text, r.severity === 'error' ? 'filled' : r.severity === 'warning' ? 'warning' : r.code === 'K4b' ? 'learning' : 'quiet');
+  const reasonTag = (r) => tag(r.text, r.severity === 'error' ? 'error' : r.severity === 'warning' ? 'warning' : r.code === 'K4b' ? 'learning' : 'quiet');
 
   function candidateRows() {
     const q = state.query.trim();
@@ -194,15 +194,15 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       multiple && !state.creating ? btn(selected.size ? `Vybrat (${selected.size})` : 'Vybrat', () => finish([...selected]), 'primary', { disabled: !selected.size }) : null]));
   }
 
-  const eyebrow = event ? `${prettyDay(event.start)} · ${event.title}` : group ? group.name : 'lidé';
+  const eyebrow = event ? `${prettyDay(event.start)} · ${event.title}` : group ? group.name : null;
   const heading = title || (role ? `Kdo na ${role.name}?` : multiple ? 'Vyber lidi' : 'Vyber člověka');
   paint();
   openDialog(h('div', { class: 'inner picker' },
-    h('p', { class: 'eyebrow' }, eyebrow),
+    eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null,
     h('h2', {}, heading),
     pillsHolder,
     h('div', { class: 'search' }, search),
-    ranked ? note('Nahoře jsou ti, kdo můžou a mají v měsíci nejmíň služeb. Plný štítek znamená, že takhle to nepůjde.') : null,
+    ranked ? note('Nahoře jsou ti, kdo můžou a mají v měsíci nejmíň služeb. ', h('span', { class: 'dot error', 'aria-hidden': 'true' }), 'takhle to nepůjde, ', h('span', { class: 'dot warning', 'aria-hidden': 'true' }), 'jde to, ale pozor.') : null,
     listHolder,
     footer), { wide: true });
   search.focus();

@@ -34,7 +34,7 @@ něco jiného než role v týmu a nikdy se nejmenují stejně.
 | **Setkání** | kdo co dělá po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout lidi“, „Obsadit jako minule“, stavy navrženo → potvrzeno → nemůže, výjimka u upozornění, zrušení a úpravy celé řady |
 | **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…) – časy se dopočítají, kdo vede, se doplní podle rolí, body jdou posouvat, „Převzít minulou osnovu“. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
 | **Rozpis** | tabulka měsíce (řádky setkání, sloupce role po týmech), výběr druhu setkání a týmu, tisk na A4 na šířku – bez telefonů |
-| **Lidé** | hledání podle jména, telefonu i e-mailu, pilulky Kdo chodí · Členové · Nečlenové · Děti · Už nechodí · Všichni · Chybí údaje, domácnosti, karta člověka (vlevo údaje z registru, vpravo týmy a skupiny, služby, kdy nemůže sloužit, kolik služeb zvládne a upozornění) |
+| **Lidé** | hledání podle jména, telefonu i e-mailu, pilulky Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí (a Chybí údaje, když nějaké chybí), domácnosti, karta člověka (vlevo údaje z registru, vpravo týmy a skupiny, služby, kdy nemůže sloužit, kolik služeb zvládne a upozornění) |
 | **Skupiny** | týmy, skupinky a vedení, role týmu (kolik lidí, bez čeho to nejde, jen pro dospělé, u dětí, časové okno, které role zvládne jeden člověk naráz), členové a co umí, vedoucí, archiv |
 | **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně, filtr chyby / pozor / info |
 | **Nastavení** | Sbor (název, adresa, kolik služeb je moc, kdy Zvonec bučí), Šablony setkání, Místa, Formáty, Přihlášení, Záloha, Můj účet |
@@ -62,8 +62,9 @@ svůj kontakt.
 
 ### Upozornění
 
-Chyba = takhle to nepůjde (v aplikaci plná plocha). Pozor = ať o tom víš (čárkovaný obrys). U konkrétní
-služby jde chybu **povolit jako výjimku** a napsat proč – Zvonec ji pak hlásí jen jako info.
+Chyba = takhle to nepůjde: v seznamu upozornění plná tečka, v kalendáři a u služby plná plocha.
+Pozor = ať o tom víš: prázdné kolečko, v kalendáři čárkovaný obrys. U konkrétní služby jde chybu
+**povolit jako výjimku** („Vím o tom“) a napsat proč – Zvonec ji pak hlásí jen jako info.
 
 | kód | co hlídá | závažnost |
 | --- | --- | --- |
@@ -197,7 +198,7 @@ umí poslat e-mail nebo SMS – to už je mimo GitHub).
 
 ## Osobní údaje (GDPR)
 
-- **Členové, bývalí členové a ti, kdo chodí pravidelně:** údaje zpracováváme jako oprávněnou činnost
+- **Členové, bývalí členové a přátelé sboru:** údaje zpracováváme jako oprávněnou činnost
   církve (čl. 9 odst. 2 písm. d GDPR) a nikam mimo sbor nejdou. **Hosté:** bez souhlasu jen křestní jméno,
   víc až po souhlasu (na kartě je jeho datum). Kdo se registruje přes pozvánku, dává souhlas sám.
 - **Děti do 15 let:** kontakt jde přes rodiče, dítě nemá vlastní telefon ani e-mail.

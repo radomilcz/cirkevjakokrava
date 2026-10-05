@@ -11,8 +11,9 @@ import {
 } from './dom.js';
 import {
   S, can, myId, newId, change, navigate, isUpcoming, loginList, updateLogins,
-  MEMBERSHIP_LABELS, ASSIGNMENT_STATUS_LABELS, SEVERITY_LABELS, GROUP_KIND_LABELS, SKILL_LABELS,
+  MEMBERSHIP_LABELS, ASSIGNMENT_STATUS_LABELS, GROUP_KIND_LABELS, SKILL_LABELS,
 } from './state.js';
+import { conflictCard } from './conflicts.js';
 import { personLoginSection } from './login.js';
 import { openPicker } from './picker.js';
 import {
@@ -20,24 +21,25 @@ import {
   childAgeOf, age, isChild, statusOf, householdMembers, sortHouseholds, birthdaysBetween, MEMBERSHIP_STATUSES,
 } from '../lib/people.js';
 import { groupsOf, skillsOf, roleById, memberRecord } from '../lib/groups.js';
-import { upcomingDuties, eventById } from '../lib/events.js';
+import { upcomingDuties } from '../lib/events.js';
 import { limitsOf, monthCount, DEFAULT_LIMITS } from '../lib/scheduling.js';
-import { CODES } from '../lib/conflicts.js';
 import { ics, icsForPerson } from '../lib/ics.js';
-import { today, addDays, prettyDay, prettyTime, prettyRange, inBlockout, monthOf } from '../lib/time.js';
+import { today, addDays, prettyDay, prettyTime, inBlockout, monthOf } from '../lib/time.js';
 
 // ---------- small helpers ----------
 
 /** Registry filters: URL slug → lib filter key → pill label. '' = everybody who still comes. */
 const FILTERS = [
-  ['', 'active', 'Kdo chodí'],
+  ['', 'attending', 'Všichni'],
   ['clenove', 'members', 'Členové'],
-  ['neclenove', 'nonMembers', 'Nečlenové'],
+  ['pratele', 'friends', 'Přátelé'],
+  ['hoste', 'guests', 'Hosté'],
   ['deti', 'children', 'Děti'],
   ['nechodi', 'former', 'Už nechodí'],
-  ['vsichni', 'all', 'Všichni'],
   ['doplnit', 'needsReview', 'Chybí údaje'],
 ];
+/** Old slugs (bookmarks) → current ones. */
+const FILTER_ALIASES = { vsichni: '', neclenove: 'pratele' };
 
 const MONTHS_LOCATIVE = ['lednu', 'únoru', 'březnu', 'dubnu', 'květnu', 'červnu', 'červenci', 'srpnu', 'září', 'říjnu', 'listopadu', 'prosinci'];
 
@@ -119,11 +121,10 @@ function searchBox(placeholder, onInput) {
 
 function renderRegistry(filter) {
   const day = today();
-  const [slug, key] = FILTERS.find(([s]) => s === filter) || FILTERS[0];
+  const wanted = filter in FILTER_ALIASES ? FILTER_ALIASES[filter] : filter;
+  const [slug, key] = FILTERS.find(([s]) => s === wanted) || FILTERS[0];
   const counts = filterCounts(S.data, { today: day });
-  counts.active = S.data.people.length - counts.former;
-  const inFilter = sortPeople(S.data.people.filter((p) => (key === 'active'
-    ? !isFormer(p) : matchesFilter(p, key, { today: day, childAge: childAge() }))));
+  const inFilter = sortPeople(S.data.people.filter((p) => matchesFilter(p, key, { today: day, childAge: childAge() })));
   const visible = () => inFilter.filter((p) => matchesText(p, S.filters.peopleSearch));
 
   const holder = h('div');
@@ -139,7 +140,7 @@ function renderRegistry(filter) {
     .map(([s, k, label]) => [s ? `#lide/${s}` : '#lide', `${label} ${counts[k]}`]);
 
   return [
-    pageHeader('stádo', 'Lidé', 'Všichni, kdo k nám patří nebo chodí. Tady najdeš kontakt, rodinu a kdo kde slouží.'),
+    pageHeader(null, 'Lidé'),
     birthdaysLine(),
     h('div', { class: 'search' },
       searchBox('Jméno, telefon, e-mail…', fill),
@@ -164,7 +165,7 @@ function renderDirectory() {
   };
   fill();
   return [
-    pageHeader('stádo', 'Lidé', 'Všichni, kdo k nám patří nebo chodí. Telefon a e-mail uvidíš u těch, kdo je ukazují ostatním.'),
+    pageHeader(null, 'Lidé', 'Telefon a e-mail uvidíš u těch, kdo je ukazují ostatním.'),
     h('div', { class: 'search' }, searchBox('Hledat jméno', fill)),
     holder,
   ];
@@ -214,12 +215,10 @@ export function renderPerson(id) {
   const self = person.id === myId();
   if (!leader && !self) return reducedCard(person);
 
-  const eyebrow = leader ? MEMBERSHIP_LABELS[statusOf(person)] : 'to jsem já';
   return [
     backLink('Lidé', '#lide'),
-    pageHeader(eyebrow, fullName(person), self
-      ? 'Tohle o tobě Zvonec ví. Když se něco změní, uprav si kontakt sám.'
-      : 'Kontakt, rodina, služby a kdy nemůže. Všechno na jedné kartě.', { smaller: true }),
+    pageHeader(leader ? MEMBERSHIP_LABELS[statusOf(person)] : null, fullName(person), self && !leader
+      ? 'Tohle o tobě Zvonec ví. Když se něco změní, uprav si kontakt sám.' : null, { smaller: true }),
     person.nickname ? h('p', { class: 'meta' }, h('span', {}, h('span', { class: 'what' }, 'říkáme'), person.nickname)) : null,
     actions([
       leader ? btn('Upravit', () => personDialog(person), 'primary small') : btn('Upravit kontakt', () => contactDialog(person), 'primary small'),
@@ -249,7 +248,7 @@ function reducedCard(person) {
   const links = contactLinks(person);
   return [
     backLink('Lidé', '#lide'),
-    pageHeader('ze stáda', fullName(person), 'Kontakt, domácnost a skupiny, ve kterých je.', { smaller: true }),
+    pageHeader(null, fullName(person), null, { smaller: true }),
     h('div', { class: 'grid spaced' },
       h('div', {},
         section('Kontakt', links.length
@@ -409,7 +408,7 @@ export function availabilitySection(person, { heading } = {}) {
   const form = h('form', { class: 'form-grid availability-form', novalidate: true },
     textField('from', 'Od', day, { type: 'date', attr: { required: true } }),
     textField('to', 'Do', day, { type: 'date', attr: { required: true } }),
-    textField('reason', 'Důvod (vidí jen vedoucí)', '', { full: true, attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80 } }),
+    textField('reason', 'Důvod', '', { full: true, hint: 'Vidí ho jen vedoucí.', attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80 } }),
     formErrorLine('', { full: true }),
     h('div', { class: 'full' }, h('button', { type: 'submit', class: 'btn small' }, plus('Přidat'))));
   form.addEventListener('submit', (e) => {
@@ -463,12 +462,12 @@ function limitsDialog(person) {
   const defaults = { ...DEFAULT_LIMITS, ...(S.data.settings?.defaults || {}) };
   const limits = limitsOf(S.data, person.id);
   simpleDialog({
-    eyebrow: 'kolik služeb zvládne',
-    title: fullName(person),
+    eyebrow: fullName(person),
+    title: 'Kolik služeb zvládne',
     fields: [
       textField('maxPerMonth', 'Kolik služeb za měsíc nejvýš', limits.maxPerMonth, { type: 'number', attr: { min: 0, max: 31 }, hint: `Obvykle ${defaults.maxPerMonth}.` }),
       textField('maxConsecutiveWeeks', 'Kolik nedělí po sobě nejvýš', limits.maxConsecutiveWeeks, { type: 'number', attr: { min: 1, max: 52 }, hint: `Obvykle ${defaults.maxConsecutiveWeeks}.` }),
-      checkboxField('paused', 'Pauza – teď nikam neplánovat (je pryč, potřebuje si odpočinout…)', limits.paused),
+      checkboxField('paused', 'Pauza – teď nikam neplánovat. Třeba je pryč nebo si potřebuje odpočinout.', limits.paused),
     ],
     save: (f) => {
       const number = (input) => (input.value === '' ? null : Number(input.value));
@@ -493,14 +492,7 @@ function conflictsSection(person) {
   const list = S.conflicts.filter((c) => c.personId === person.id && isUpcoming(c));
   if (!list.length) return null;
   return section(['Upozornění', count(String(list.length)), link('Všechna upozornění', '#upozorneni', 'btn mini plain')],
-    h('ul', { class: 'conflict-list' }, list.map((c) => {
-      const event = eventById(S.data, c.eventId);
-      return h('li', {}, h('a', { class: ['conflict', c.severity], href: `#setkani/${c.eventId}` },
-        h('p', { class: 'conflict-head' }, CODES[c.code] || c.code,
-          event ? h('span', { class: 'when' }, prettyRange(event)) : null,
-          h('span', { class: 'word' }, SEVERITY_LABELS[c.severity])),
-        h('p', {}, c.text)));
-    })));
+    h('ul', { class: 'conflict-list' }, list.map((c) => conflictCard(c))));
 }
 
 // ---------- dialogs ----------
@@ -541,13 +533,12 @@ export function personDialog(original) {
     selectField('household', 'Domácnost', [['', '– žádná –'], ...households.map((x) => [x.id, x.name]), ['+', '+ nová domácnost…']], p.householdId || ''),
     textField('newHousehold', 'Název nové domácnosti', '', { attr: { placeholder: 'Novákovi', autocomplete: 'off' } }),
     textField('birthDate', 'Datum narození', fullDate(p.birthDate), { hint: 'Třeba 8. 6. 1984, stačí i rok.', attr: { autocomplete: 'off', inputmode: 'numeric' } }),
-    textField('consentDate', 'Souhlas se zpracováním údajů', p.consentDate, { type: 'date', hint: 'Kdy souhlas dal(a). U hostů a těch, kdo chodí pravidelně, je nutný.' }),
+    textField('consentDate', 'Souhlas se zpracováním údajů', p.consentDate, { type: 'date', hint: 'Kdy souhlas dal(a). U hostů a přátel sboru je nutný.' }),
     textArea('note', 'Poznámka', p.note, { hint: 'Krátce. Nic o zdraví, penězích ani pastoračních věcech – to sem nepatří.', attr: { rows: 2, maxlength: 300 } }),
     original?.needsReview ? checkboxField('complete', 'Karta je hotová, už nic nechybí', false) : null,
   ];
 
   const form = simpleDialog({
-    eyebrow: original ? 'upravit' : 'nový člověk',
     title: original ? fullName(original) : 'Přidat člověka',
     saveLabel: original ? 'Uložit' : 'Přidat',
     fields,
@@ -622,8 +613,7 @@ export function personDialog(original) {
 /** The person edits their own contact (members may change only this). */
 export function contactDialog(person) {
   simpleDialog({
-    eyebrow: 'můj kontakt',
-    title: fullName(person),
+    title: 'Můj kontakt',
     fields: [
       textField('nickname', 'Říkají mi', person.nickname, { full: true, hint: 'Tak tě uvidí ostatní v rozpisu.', attr: { placeholder: 'Péťa' } }),
       textField('phone', 'Telefon', person.phone, { type: 'tel' }),
@@ -684,7 +674,7 @@ export function renderHouseholds() {
   const alone = S.data.people.filter((p) => !p.householdId && !isFormer(p)).length;
   return [
     backLink('Lidé', '#lide'),
-    pageHeader('kdo spolu bydlí', 'Domácnosti', 'Rodiny pohromadě. Hodí se, když potřebuješ zavolat rodičům kvůli dětem nebo poslat něco domů.'),
+    pageHeader(null, 'Domácnosti', 'Kdo spolu bydlí. Hodí se, když potřebuješ zavolat rodičům kvůli dětem nebo poslat něco domů.'),
     actions([btn(plus('Přidat domácnost'), () => householdDialog(null), 'primary small')]),
     rule(),
     households.length ? h('ul', { class: 'list' }, households.map((household) => {
@@ -746,7 +736,6 @@ export function renderHousehold(id) {
 
 function householdDialog(original) {
   simpleDialog({
-    eyebrow: original ? 'upravit' : 'nová domácnost',
     title: original ? original.name : 'Nová domácnost',
     saveLabel: original ? 'Uložit' : 'Přidat',
     fields: [

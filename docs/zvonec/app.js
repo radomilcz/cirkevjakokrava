@@ -133,7 +133,7 @@ function renderApp({ toTop = false } = {}) {
     content = route.render(parts);
   } catch (error) {
     console.error(error);
-    content = [pageHeader('chyba', 'Jejda'), emptyState('Tohle se nepovedlo zobrazit.', 'Zkus stránku načíst znovu. Kdyby to nepomohlo, dej vědět správci.')];
+    content = [pageHeader(null, 'Jejda'), emptyState('Tohle se nepovedlo zobrazit.', 'Zkus stránku načíst znovu. Kdyby to nepomohlo, dej vědět správci.')];
   }
   main.replaceChildren(...nodes(content));
   window.scrollTo(0, toTop ? 0 : position);

@@ -100,7 +100,6 @@ export function renderCalendar(month) {
   const nothingAhead = !nothingInMonth && !listDays.length;
 
   return [
-    h('p', { class: 'eyebrow' }, 'kalendář'),
     h('div', { class: 'month-nav' },
       link('', `#kalendar/${monthOf(addMonths(`${shown}-01`, -1))}`, 'btn small arrow-back', { 'aria-label': 'Předchozí měsíc', title: 'Předchozí měsíc' }),
       h('h1', { class: 'month-title' }, monthName(shown)),
@@ -109,8 +108,8 @@ export function renderCalendar(month) {
       h('span', { class: 'right' },
         leader ? btn(plus('Přidat setkání'), () => eventDialog({ day: firstDay }), 'primary small') : null)),
     h('p', { class: 'lead' }, leader
-      ? 'Všechna setkání v měsíci. Barva hned ukáže, kde v rozpisu něco chybí. Klikni na den a přidáš setkání.'
-      : 'Co se ve sboru chystá, měsíc po měsíci. Klikni na setkání a uvidíš, kdo tam slouží a jak půjde program.'),
+      ? 'Klikni na setkání a uvidíš, kdo slouží. Klikni na prázdné místo ve dni a přidáš nové.'
+      : 'Klikni na setkání a uvidíš, kdo tam slouží a jak půjde program.'),
     h('ul', { class: 'legend', 'aria-label': 'Co znamenají barvy' },
       leader ? h('li', {}, h('span', { class: 'swatch error-fill' }), 'chyba v rozpisu') : null,
       h('li', {}, h('span', { class: 'swatch' }), 'v pořádku'),
@@ -127,7 +126,6 @@ export function renderCalendar(month) {
 /** All events of one day (when the grid cell is full). */
 function dayDialog(day) {
   openDialog(h('div', { class: 'inner' },
-    h('p', { class: 'eyebrow' }, 'den'),
     h('h2', {}, prettyDayLong(day)),
     h('div', { class: 'day-list' }, eventsOn(S.data, day).map((e) => eventChip(e))),
     actions([
@@ -211,7 +209,6 @@ export function eventDialog({ day, event } = {}) {
 
   const places = S.data.places || [];
   form.append(
-    h('p', { class: 'eyebrow' }, editing ? 'upravit' : 'nové setkání'),
     h('h2', {}, editing ? event.title : 'Přidat setkání'),
     h('div', { class: 'form-grid' },
       !editing && types.length ? selectField('type', 'Podle šablony', [['', '— bez šablony —'], ...types.map((t) => [t.id, t.name])], '', {

@@ -37,8 +37,11 @@ export function append(el, ...children) {
 /** Flatten whatever a screen returned into a node list for replaceChildren(). */
 export const nodes = (content) => [content].flat(Infinity).filter((x) => x != null && x !== false);
 
-/** A pill button. `cls`: 'primary', 'small', 'mini', 'plain', 'left' (combine with spaces). */
+/** A pill button. `cls`: 'primary', 'small', 'mini', 'plain' (underlined text), 'left' (combine with spaces). */
 export const btn = (text, onclick, cls = '', extra = {}) => h('button', { type: 'button', class: ['btn', cls], onclick, ...extra }, text);
+
+/** A quiet action inside text: underlined words, no pill (Vím o tom, Proč a jak). */
+export const textButton = (text, onclick, extra = {}) => h('button', { type: 'button', class: 'text-btn', onclick, ...extra }, text);
 
 /** A link. Pass cls 'btn …' to make it look like a button, 'back' for the back link. */
 export const link = (text, href, cls = '', extra = {}) => h('a', { href, class: cls || null, ...extra }, text);
@@ -59,10 +62,13 @@ export const backLink = (text, href) => link(text, href, 'back');
 
 // ---------- page structure ----------
 
-/** Eyebrow + big title (+ lead). `smaller` for long titles. Returns an array of nodes. */
+/**
+ * (Eyebrow +) big title (+ lead). The eyebrow is a small muted line – pass null unless it says
+ * something the title does not. `smaller` for long titles. Returns an array of nodes.
+ */
 export function pageHeader(eyebrow, title, lead, { smaller = false } = {}) {
   return [
-    h('p', { class: 'eyebrow' }, eyebrow),
+    eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null,
     h('h1', { class: ['title', smaller && 'smaller'] }, title),
     lead ? h('p', { class: 'lead' }, lead) : null,
   ];
@@ -106,7 +112,7 @@ export function meta(items) {
 export const printHeader = (eyebrow) => h('div', { class: 'print-header' },
   h('p', { class: 'eyebrow' }, eyebrow), h('p', { class: 'brand' }, 'církev jako kráva'));
 
-/** Big empty state with the bullseye: emptyState('Prázdná pastva.', 'Tenhle měsíc tu ještě nic není.', action). */
+/** Empty state with the bullseye: emptyState('Prázdná pastva.', 'Tenhle měsíc tu ještě nic není.', action). */
 export function emptyState(title, text, action) {
   return h('div', { class: 'empty-state' },
     h('span', { class: 'bullseye', 'aria-hidden': 'true' }), h('h2', {}, title), text ? h('p', {}, text) : null, action || null);
@@ -217,14 +223,15 @@ export function formError(form, text) {
 export const formErrorLine = (text = '', { full = false } = {}) => h('p', { class: ['form-error', 'error-fill', full && 'full'], hidden: !text }, text);
 
 /**
- * A form in a dialog: eyebrow, title, a two-column grid of fields, Smazat / Zrušit / Uložit.
+ * A form in a dialog: (eyebrow,) title (+ `sub` under it), a two-column grid of fields, Smazat / Zrušit / Uložit.
  * `save(elements, form)` returns an error text (shown, dialog stays open) or nothing (dialog closes);
  * it may be async – the Uložit button is disabled meanwhile. `remove` adds a Smazat button on the left.
  */
-export function simpleDialog({ eyebrow, title, fields, save, remove, wide = true, saveLabel = 'Uložit' }) {
+export function simpleDialog({ eyebrow, title, sub, fields, save, remove, wide = true, saveLabel = 'Uložit' }) {
   const submit = h('button', { type: 'submit', class: 'btn primary' }, saveLabel);
   const form = h('form', { method: 'dialog', novalidate: true },
     eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null, h('h2', {}, title),
+    sub ? h('p', { class: 'sub' }, sub) : null,
     h('div', { class: 'form-grid' }, fields),
     formErrorLine(),
     h('div', { class: 'actions' },

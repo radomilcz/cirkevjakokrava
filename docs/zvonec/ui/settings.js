@@ -3,7 +3,7 @@
 // Members see only the formats (read-only) and their account.
 
 import {
-  h, btn, plus, plural, pageHeader, rule, section, count, actions, note, tag, meta, emptyState,
+  h, btn, plus, plural, pageHeader, rule, section, actions, note, tag, meta, emptyState,
   toast, download, openDialog, closeDialog, confirmDialog, simpleDialog, formError, formErrorLine,
   textField, textArea, selectField, choices, checkboxField, checkedValues, fieldGroup, filterLinks,
   removeButton,
@@ -63,8 +63,9 @@ export function renderSettings(section) {
     ucet: myAccountSection,
   }[slug];
   return [
-    pageHeader('za plotem', 'Nastavení', LEADS[slug](), { smaller: true }),
+    pageHeader(null, 'Nastavení', null, { smaller: true }),
     h('div', { class: 'settings-nav' }, filterLinks(pills.map(([s, text]) => [hrefOf(s), text]), hrefOf(slug), { label: 'Části nastavení' })),
+    h('p', { class: 'lead' }, LEADS[slug]()),
     rule(),
     body(),
   ];
@@ -78,10 +79,10 @@ function churchSection() {
   const form = h('form', { class: 'form-grid', novalidate: true },
     textField('churchName', 'Název sboru', s.churchName),
     textField('address', 'Adresa', s.address, { hint: 'Ukáže se u setkání v kalendáři v telefonu.' }),
-    h('h3', { class: 'eyebrow spaced full' }, 'Kolik služeb je moc'),
+    h('h3', { class: 'full' }, 'Kolik služeb je moc'),
     number('maxPerMonth', 'Nejvíc služeb za měsíc', s.defaults.maxPerMonth, 'Platí pro každého, kdo nemá na své kartě jiné číslo.', 1),
     number('maxConsecutiveWeeks', 'Nejvíc nedělí po sobě', s.defaults.maxConsecutiveWeeks, 'I kráva potřebuje volnou neděli na pastvě.', 1),
-    h('h3', { class: 'eyebrow spaced full' }, 'Kdy Zvonec bučí'),
+    h('h3', { class: 'full' }, 'Kdy Zvonec bučí'),
     number('essentialDaysBefore', 'Kolik dní předem hlásit prázdnou nezbytnou roli jako chybu', s.rules.essentialDaysBefore, 'Nezbytná je role, u které je zaškrtnuto „Bez toho to nejde“. Dřív je to jen upozornění.'),
     number('unconfirmedDaysBefore', 'Kolik dní předem hlídat nepotvrzené služby', s.rules.unconfirmedDaysBefore, 'Dřív si Zvonec nepotvrzených služeb nevšímá.'),
     number('childAge', 'Od kolika let je člověk dospělý', s.rules.childAge, 'Děti nemůžou do služeb jen pro dospělé a nepočítají se mezi dospělé u dětí.', 1, 25),
@@ -111,7 +112,7 @@ function churchSection() {
     change('nastavení sboru');
     toast('Uloženo.');
   });
-  return section('Sbor a pravidla', form);
+  return section(null, form);
 }
 
 // ---------- shared editors (event types, formats) ----------
@@ -198,14 +199,14 @@ function programEditor(program, minutesInput) {
 
 function eventTypesSection() {
   const types = S.data.eventTypes.slice().sort(byName);
-  return section(['Šablony', count('předvyplní nové setkání')],
+  return section(null,
     types.length ? h('ul', { class: 'list' }, types.map((t) => h('li', {}, h('button', { type: 'button', class: 'row', onclick: () => eventTypeDialog(t) },
       h('span', { class: 'name' }, t.name, h('small', {}, [
         EVENT_KIND_LABELS[t.kind] || t.kind, prettyClock(t.startTime), `${t.minutes} min`,
         (t.program || []).length ? `osnova ${plural(t.program.length, 'bod', 'body', 'bodů')}` : null,
       ].filter(Boolean).join(' · '))),
       h('span', { class: 'tags' }, (t.needs || []).map((n) => tag(`${roleById(S.data, n.roleId)?.name || '?'}${n.count > 1 ? ` ${n.count}×` : ''}`, 'quiet'))),
-      h('span', { class: 'right' }, groupById(S.data, t.groupId)?.name || ''))))) : note('Zatím žádná šablona. Šablona předvyplní nové setkání: čas, místo, koho je potřeba a osnovu.'),
+      h('span', { class: 'right' }, groupById(S.data, t.groupId)?.name || ''))))) : note('Zatím žádná šablona.'),
     actions(btn(plus('Přidat šablonu'), () => eventTypeDialog(), 'primary small')));
 }
 
@@ -215,7 +216,6 @@ function eventTypeDialog(type) {
   const groups = S.data.groups.filter((g) => !g.archived || g.id === type?.groupId).sort(byName);
   const minutesField = textField('minutes', 'Kolik minut trvá', type?.minutes || 120, { type: 'number', attr: { min: 5, max: 1440 } });
   simpleDialog({
-    eyebrow: type ? 'upravit šablonu' : 'nová šablona',
     title: type ? type.name : 'Přidat šablonu',
     fields: [
       textField('name', 'Název setkání', type?.name, { full: true, attr: { autofocus: true, placeholder: 'Setkání na pastvě' } }),
@@ -263,7 +263,7 @@ function eventTypeDialog(type) {
 
 function placesSection() {
   const places = S.data.places.slice().sort(byName);
-  return section('Místa',
+  return section(null,
     note('Kde se vejde víc věcí naráz (kuchyňka, venku), tam Zvonec nebučí. Zaškrtneš to u místa.'),
     places.length ? h('ul', { class: 'list' }, places.map((p) => h('li', {}, h('button', { type: 'button', class: 'row', onclick: () => placeDialog(p) },
       h('span', { class: 'name' }, p.name),
@@ -274,12 +274,11 @@ function placesSection() {
 
 function placeDialog(place) {
   simpleDialog({
-    eyebrow: place ? 'upravit místo' : 'nové místo',
     title: place ? place.name : 'Přidat místo',
     wide: false,
     fields: [
       textField('name', 'Název', place?.name, { full: true, attr: { autofocus: true, placeholder: 'Sál' } }),
-      checkboxField('shared', 'Tady se vejde víc věcí naráz (kuchyňka, venku). Dvě setkání ve stejnou dobu nebudou chyba.', !!place?.shared),
+      checkboxField('shared', 'Tady se vejde víc věcí naráz, třeba kuchyňka nebo venku. Dvě setkání ve stejnou dobu nebudou chyba.', !!place?.shared),
     ],
     save: (f, form) => {
       const name = f.name.value.trim();
@@ -334,7 +333,6 @@ export function openFormatInfo(formatId) {
   if (!format) { toast('Tenhle formát už neexistuje.'); return; }
   const role = roleById(S.data, format.leadRoleId);
   openDialog(h('div', { class: 'inner' },
-    h('p', { class: 'eyebrow' }, 'formát'),
     h('h2', {}, format.name),
     meta([`${format.minutes ?? 0} min`, role ? ['vede', `ten, kdo má roli ${role.name}`] : null, needsText(format) ? ['potřebuje', needsText(format)] : null]),
     formatWhyHow(format) || note('Popis zatím chybí.'),
@@ -349,7 +347,7 @@ function formatsSection() {
   const now = today();
   const planned = (id) => S.data.events.filter((e) => !e.cancelled && dayOf(e.start) >= now && (e.program || []).some((i) => i.formatId === id)).length;
   const formats = S.data.formats;
-  return section(['Formáty', count('kostky osnovy')],
+  return section(null,
     leader ? actions(btn(plus('Přidat formát'), () => formatDialog(), 'primary small')) : null,
     formats.length
       ? h('div', { class: 'formats spaced' }, formats.map((f) => {
@@ -368,7 +366,6 @@ function formatDialog(format) {
   const needs = clone(format?.needs || []);
   const teams = rolesByTeam(format?.leadRoleId ? [format.leadRoleId] : []);
   simpleDialog({
-    eyebrow: format ? 'upravit formát' : 'nový formát',
     title: format ? format.name : 'Přidat formát',
     fields: [
       textField('name', 'Název', format?.name, { attr: { autofocus: true, placeholder: 'Otázky na tělo' } }),
