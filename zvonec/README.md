@@ -1,12 +1,12 @@
-# Rozpis – kdo co kdy dělá
+# Zvonec – kdo co kdy dělá
 
 Plánovač setkání pro Církev jako kráva: **kalendář, lidi, služby, pořad a kolize**. Běží jen na GitHubu –
 aplikace na GitHub Pages, data v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další služba.
 
-**Živě (ukázka s vymyšlenými lidmi):** https://manifest.cirkevjakokrava.cz/rozpis/
+**Živě (ukázka s vymyšlenými lidmi):** https://manifest.cirkevjakokrava.cz/zvonec/
 
 Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, otisk z Figmy,
-pilulky, šipky, tykání a stejná paleta. Bez volby se Rozpis řídí zařízením: ve světlém režimu
+pilulky, šipky, tykání a stejná paleta. Bez volby se Zvonec řídí zařízením: ve světlém režimu
 krém a hlína (`#f9e7dd` / `#3b2f2f`), v tmavém hlína a růžová (`#3b2f2f` / `#e6acac`). Terč v liště otevře
 pět dvojic z palety, které mají dost kontrastu i na drobný text (zelená a dvojice růžová–modrá na to nestačí);
 volba se pamatuje v prohlížeči. Tisk jde vždy na bílý papír.
@@ -28,7 +28,7 @@ volba se pamatuje v prohlížeči. Tisk jde vždy na bílý papír.
 ### Kolize
 
 Chyba = takhle to nepůjde (v rozhraní plná plocha). Pozor = ať o tom víš (čárkovaný obrys).
-U konkrétního přiřazení jde chybu **povolit jako výjimku** a napsat proč. Rozpis ji pak nehlásí.
+U konkrétního přiřazení jde chybu **povolit jako výjimku** a napsat proč. Zvonec ji pak nehlásí.
 
 | kód | co hlídá | závažnost |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ U konkrétního přiřazení jde chybu **povolit jako výjimku** a napsat proč.
 | K16 | bod pořadu vede člověk, který v tu dobu nemůže (nebo je neaktivní) | chyba / pozor |
 | K17 | bod pořadu nikdo nevede – služba formátu na setkání není | pozor |
 
-Pravidla jsou v `docs/rozpis/kolize.js` a stejný kód běží v aplikaci, v testech i v GitHub Action.
+Pravidla jsou v `docs/zvonec/kolize.js` a stejný kód běží v aplikaci, v testech i v GitHub Action.
 
 ## Jak je to postavené
 
@@ -59,13 +59,13 @@ Jako [Mobilise Playbook](https://playbook.cirkevjakokrava.cz): **GitHub klíč j
 ```
 veřejné repo radomilcz/cirkevjakokrava           soukromé repo radomilcz/sbor-data
 
-docs/rozpis/  aplikace (kód)  ── bere si ho ──▶  .github/workflows/web.yml
+docs/zvonec/  aplikace (kód)  ── bere si ho ──▶  .github/workflows/web.yml
                                                     aplikace + pristup.json → Pages
                                                     https://zvonec.cirkevjakokrava.cz
                                                  pristup.json  zapečetěná přihlášení (bez jmen)
-                                                 rozpis.json   lidi, služby, setkání – na web NIKDY
-prohlížeč: jméno + heslo → otevře GitHub klíč ──▶  čte a zapisuje rozpis.json přes API
-rozpis/kontrola.mjs  ◀── bere si kód ───────────  .github/workflows/kontrola.yml
+                                                 zvonec.json   lidi, služby, setkání – na web NIKDY
+prohlížeč: jméno + heslo → otevře GitHub klíč ──▶  čte a zapisuje zvonec.json přes API
+zvonec/kontrola.mjs  ◀── bere si kód ───────────  .github/workflows/kontrola.yml
 ```
 
 - **Jeden GitHub klíč.** Správce ho jednou vyrobí (fine-grained token jen k `sbor-data`, Contents: read and write)
@@ -84,48 +84,48 @@ rozpis/kontrola.mjs  ◀── bere si kód ───────────  .
   u konkrétního člověka). Odkaz platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno, kontakt,
   s čím pomůže, a vlastní heslo, zaškrtne **souhlas** a je v rozpisu. Zapíše se jako host a služby
   dostane jako „učí se“. Vedoucí to pak upraví.
-- **Data** jsou jeden JSON v soukromém repu. Pages jsou vždycky veřejné, proto `rozpis.json` na web nikdy
+- **Data** jsou jeden JSON v soukromém repu. Pages jsou vždycky veřejné, proto `zvonec.json` na web nikdy
   nejde (workflow to i hlídá).
-- **Ukládání**: změny se sbírají a po vteřině a půl odejdou jedním commitem („Rozpis: Petr na Zvuk, …“).
+- **Ukládání**: změny se sbírají a po vteřině a půl odejdou jedním commitem („Zvonec: Petr na Zvuk, …“).
   Když mezitím uložil někdo jiný, GitHub vrátí 409 – aplikace načte čerstvou verzi, **sloučí po záznamech**
   a uloží znovu. Co uložil někdo jiný, aplikace stáhne, když se vrátíš do okna, a pak každou minutu.
 - **Nové a zrušené přihlášení** se projeví za pár minut – až workflow přestaví web s novým `pristup.json`.
-- **Ukázka:** když vedle aplikace `pristup.json` neleží (manifest.cirkevjakokrava.cz/rozpis/), běží
+- **Ukázka:** když vedle aplikace `pristup.json` neleží (manifest.cirkevjakokrava.cz/zvonec/), běží
   aplikace jako ukázka v `localStorage` s vymyšlenými lidmi. Hodí se na vyzkoušení a na školení vedoucích.
-- **Kontrola v Actions**: `rozpis/kontrola.mjs` pustí stejná pravidla nad `rozpis.json`. Když najde chybu
+- **Kontrola v Actions**: `zvonec/kontrola.mjs` pustí stejná pravidla nad `zvonec.json`. Když najde chybu
   u setkání, které ještě nebylo, běh zčervená a GitHub pošle e-mail.
 
 ```
-docs/rozpis/index.html   kostra stránky, CSP (ven jen api.github.com)
-docs/rozpis/styl.css     design (tokeny z Otázek na tělo), tisk A4
-docs/rozpis/app.js       obrazovky, dialogy, přihlášení, pozvánky
-docs/rozpis/pristup.js   přihlášení jako v Playbooku: klíče, pečetění, hesla
-docs/rozpis/kolize.js    pravidla kolizí, výběr lidí, „Navrhnout zbytek“
-docs/rozpis/porad.js     pořad z formátů: časy, kdo vede, přidání formátu i s jeho službami
-docs/rozpis/cas.js       datumy (místní čas jako text „2026-10-11T10:00“), opakování, česky
-docs/rozpis/data.js      úložiště (prohlížeč / GitHub), slučování, fronta ukládání
-docs/rozpis/ics.js       export do kalendáře v telefonu
-docs/rozpis/ukazka.js    vymyšlená ukázková data počítaná od dneška
-docs/rozpis/otisk.svg    otisk z Figmy (55 cest)
-rozpis/kontrola.mjs      kontrola z příkazové řádky / Actions
-rozpis/test/             testy (node --test rozpis/test/*.test.mjs)
-rozpis/sbor-data/        vzory workflow pro datové repo (web.yml, kontrola.yml)
+docs/zvonec/index.html   kostra stránky, CSP (ven jen api.github.com)
+docs/zvonec/styl.css     design (tokeny z Otázek na tělo), tisk A4
+docs/zvonec/app.js       obrazovky, dialogy, přihlášení, pozvánky
+docs/zvonec/pristup.js   přihlášení jako v Playbooku: klíče, pečetění, hesla
+docs/zvonec/kolize.js    pravidla kolizí, výběr lidí, „Navrhnout zbytek“
+docs/zvonec/porad.js     pořad z formátů: časy, kdo vede, přidání formátu i s jeho službami
+docs/zvonec/cas.js       datumy (místní čas jako text „2026-10-11T10:00“), opakování, česky
+docs/zvonec/data.js      úložiště (prohlížeč / GitHub), slučování, fronta ukládání
+docs/zvonec/ics.js       export do kalendáře v telefonu
+docs/zvonec/ukazka.js    vymyšlená ukázková data počítaná od dneška
+docs/zvonec/otisk.svg    otisk z Figmy (55 cest)
+zvonec/kontrola.mjs      kontrola z příkazové řádky / Actions
+zvonec/test/             testy (node --test zvonec/test/*.test.mjs)
+zvonec/sbor-data/        vzory workflow pro datové repo (web.yml, kontrola.yml)
 ```
 
 Fonty, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`build.py`) do
-`docs/rozpis/` nesahá.
+`docs/zvonec/` nesahá.
 
 ## Spuštění naostro (jednou, ~15 minut)
 
 1. **Soukromé repo** `radomilcz/sbor-data` (prázdné).
-2. Zkopírovat `rozpis/sbor-data/web.yml` a `rozpis/sbor-data/kontrola.yml` do jeho `.github/workflows/`.
+2. Zkopírovat `zvonec/sbor-data/web.yml` a `zvonec/sbor-data/kontrola.yml` do jeho `.github/workflows/`.
 3. **Pages**: v `sbor-data` Settings → Pages → Source: **GitHub Actions**, Custom domain
    `zvonec.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `zvonec` typu **CNAME** →
    `radomilcz.github.io.` (stejně jako u Playbooku; Pages ze soukromého repa = GitHub Pro).
    Actions → Web → *Run workflow*.
 4. **GitHub klíč**: Settings → Developer settings → Fine-grained tokens → Generate new token,
    *Only select repositories* → `sbor-data`, Permissions → Repository → **Contents: Read and write**. Nic víc.
-5. Otevřít https://zvonec.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Rozpis**:
+5. Otevřít https://zvonec.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Zvonec**:
    vložit klíč, svoje jméno a heslo. Jako základ jde vzít ukázku (služby, týmy, formáty, šablony – bez lidí).
 6. Přidat lidi (nebo poslat pozvánky) a v kalendáři ze šablony „Setkání na pastvě“ založit setkání,
    které se opakuje každý týden. Vedoucím dát roli vedoucí (u člověka → Přihlášení → Nové heslo / role).
@@ -160,13 +160,13 @@ která umí poslat e-mail nebo SMS – to už je mimo GitHub).
 ## Vývoj
 
 ```
-node --test rozpis/test/*.test.mjs        # testy jádra (kolize, pořad, přihlášení, slučování, .ics, GitHub s podvrženým API)
-cd docs && python3 -m http.server 8000    # pak http://localhost:8000/rozpis/ (ukázka)
+node --test zvonec/test/*.test.mjs        # testy jádra (kolize, pořad, přihlášení, slučování, .ics, GitHub s podvrženým API)
+cd docs && python3 -m http.server 8000    # pak http://localhost:8000/zvonec/ (ukázka)
 ```
 
 Ostrý režim lokálně: polož vedle aplikace `pristup.json` s obsahem `{"v":1,"pristupy":[]}` – ukáže se založení.
 
-Testy pouští i GitHub Action `.github/workflows/rozpis.yml` při každé změně Rozpisu.
+Testy pouští i GitHub Action `.github/workflows/zvonec.yml` při každé změně Zvonce.
 
 ## Jak to vzniklo
 

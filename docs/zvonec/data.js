@@ -1,6 +1,6 @@
 // Data a kam se ukládají.
 //
-// Celý rozpis je jeden JSON. Bydlí buď jen v tomhle prohlížeči (ukázka, zkoušení), nebo
+// Všechna data jsou jeden JSON. Bydlí buď jen v tomhle prohlížeči (ukázka, zkoušení), nebo
 // v souboru v SOUKROMÉM repu na GitHubu – aplikace ho čte a zapisuje přes REST API jedním
 // klíčem, který si přihlášený otevře jménem a heslem (pristup.js). Na web jména ani telefony nejdou.
 //
@@ -92,7 +92,7 @@ export function sluc(zaklad, moje, jejich) {
 
 // ---------- úložiště ----------
 
-const KLIC_DATA = 'rozpis-data';
+const KLIC_DATA = 'zvonec-data';
 
 function zkus(fn, nahradni) {
   try { return fn(); } catch { return nahradni; }
@@ -132,7 +132,7 @@ function zBase64(b64) {
 }
 
 export class Github {
-  constructor({ vlastnik, repo, cesta = 'rozpis.json', vetev = 'main', token }) {
+  constructor({ vlastnik, repo, cesta = 'zvonec.json', vetev = 'main', token }) {
     Object.assign(this, { vlastnik, repo, cesta, vetev, token });
     this.druh = 'github';
     this.popis = `GitHub · ${vlastnik}/${repo}`;
@@ -177,7 +177,7 @@ export class Github {
     return json ? normalizuj(json) : null;
   }
 
-  /** Libovolný JSON z repa (rozpis.json, pristup.json…), null když soubor neexistuje. */
+  /** Libovolný JSON z repa (zvonec.json, pristup.json…), null když soubor neexistuje. */
   async nactiJson() {
     let odpoved;
     try {
@@ -224,7 +224,7 @@ export class Github {
     throw new Konflikt('Pořád to někdo mezitím ukládá. Zkus to za chvíli.');
   }
 
-  async uloz(data, zprava = 'Rozpis: úprava') {
+  async uloz(data, zprava = 'Zvonec: úprava') {
     const telo = {
       message: zprava,
       content: naBase64(`${JSON.stringify(data, null, 1)}\n`),
@@ -276,7 +276,7 @@ export class Synchronizace {
 
   async provedUlozeni() {
     const popisy = this.popisy.splice(0);
-    const zprava = `Rozpis: ${popisy.slice(0, 3).join(', ') || 'úprava'}${popisy.length > 3 ? ` a ${popisy.length - 3} dalších` : ''}`;
+    const zprava = `Zvonec: ${popisy.slice(0, 3).join(', ') || 'úprava'}${popisy.length > 3 ? ` a ${popisy.length - 3} dalších` : ''}`;
     const snimek = kopie(this.data);
     this.nastavStav('uklada');
     try {

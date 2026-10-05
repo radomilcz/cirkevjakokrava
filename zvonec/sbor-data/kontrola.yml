@@ -1,15 +1,15 @@
 # Vzor pro SOUKROMÉ datové repo (např. cirkevjakokrava/sbor-data).
 # Zkopíruj do .github/workflows/kontrola.yml v datovém repu.
 #
-# Po každém uložení z Rozpisu (každé uložení je commit) a každé pondělí ráno
+# Po každém uložení ze Zvonce (každé uložení je commit) a každé pondělí ráno
 # zkontroluje kolize stejnými pravidly jako aplikace. Když je v budoucnu chyba,
 # běh zčervená – GitHub pošle vedoucím e-mail a souhrn je vidět v záložce Actions.
 # Kód kontroly se bere z veřejného repa s webem, data nikam neodcházejí.
-name: Kontrola rozpisu
+name: Kontrola kolizí
 
 on:
   push:
-    paths: [rozpis.json]
+    paths: [zvonec.json]
   schedule:
     - cron: "17 5 * * 1"        # pondělí 6.17 / 7.17 našeho času
   workflow_dispatch:
@@ -28,12 +28,12 @@ jobs:
           repository: radomilcz/cirkevjakokrava
           path: web
           sparse-checkout: |
-            docs/rozpis
-            rozpis
+            docs/zvonec
+            zvonec
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Kolize
-        run: node web/rozpis/kontrola.mjs rozpis.json
+        run: node web/zvonec/kontrola.mjs zvonec.json

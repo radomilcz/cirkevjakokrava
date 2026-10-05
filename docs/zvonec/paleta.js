@@ -3,7 +3,7 @@
 // v localStorage. Běží v hlavičce (ne jako modul), aby se uložená paleta nasadila ještě
 // před vykreslením a stránka neproblikla. Bez volby rozhoduje zařízení (světlý/tmavý režim).
 (function () {
-  var KLIC = 'rozpis-paleta';
+  var KLIC = 'zvonec-paleta';
   var koren = document.documentElement;
 
   function uloz(jmeno) {

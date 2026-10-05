@@ -35,7 +35,7 @@ export function slozJmeno(jmeno) {
 
 /** Jedno pomalé odvození dá klíč k soukromé půlce i `lookup`, kterým se záznam najde. */
 async function odvod(jmeno, heslo, iterace = ITERACE) {
-  const sul = (await sub().digest('SHA-256', enc.encode('cirkevjakokrava-rozpis:prihlaseni'))).slice(0, 16);
+  const sul = (await sub().digest('SHA-256', enc.encode('cirkevjakokrava-zvonec:prihlaseni'))).slice(0, 16);
   const zaklad = await sub().importKey('raw', enc.encode(`${slozJmeno(jmeno)}\u0000${String(heslo).normalize('NFC')}`), 'PBKDF2', false, ['deriveBits']);
   const bity = await sub().deriveBits({ name: 'PBKDF2', salt: sul, iterations: iterace, hash: 'SHA-256' }, zaklad, 512);
   const klic = await sub().importKey('raw', bity.slice(0, 32), 'AES-GCM', false, ['encrypt', 'decrypt']);
@@ -59,7 +59,7 @@ async function otevri(priv, obalka) {
 }
 
 // GitHub klíč a kam s ním – krátké klíče, ať se to vejde do jedné obálky RSA (190 bajtů)
-const zabal = (g) => JSON.stringify({ t: g.token, o: g.vlastnik, r: g.repo, c: g.cesta || 'rozpis.json', v: g.vetev || 'main' });
+const zabal = (g) => JSON.stringify({ t: g.token, o: g.vlastnik, r: g.repo, c: g.cesta || 'zvonec.json', v: g.vetev || 'main' });
 const rozbal = (t) => { const g = JSON.parse(t); return { token: g.t, vlastnik: g.o, repo: g.r, cesta: g.c, vetev: g.v }; };
 
 async function zamkni(jmeno, heslo, priv, iterace) {

@@ -1,5 +1,5 @@
 /* ============================================================
-   Církev jako kráva — Rozpis
+   Církev jako kráva — Zvonec
    Sourozenec Otázek na tělo: stejné dvě barvy, stejné písmo Agrandir, stejný otisk.
    Všechno ostatní – linky, plochy, stavy – vzniká z průhlednosti inkoustu (--ink-rgb).
    Stavy se neliší barvou, ale tvarem: chyba = plná plocha (obrácené barvy),
@@ -28,7 +28,7 @@
   color-scheme:dark;
 }
 /* ---------- palety značky (jako Otázky na tělo) ----------
-   Bez volby se Rozpis řídí zařízením: světlé = krém a hlína, tmavé = hlína a růžová.
+   Bez volby se Zvonec řídí zařízením: světlé = krém a hlína, tmavé = hlína a růžová.
    Volbu v rohu lišty drží :root[data-paleta] (nastaví ji paleta.js ještě před vykreslením). */
 @media (prefers-color-scheme:light){
   :root:not([data-paleta]){--ground:#f9e7dd;--ground-rgb:249,231,221;--ink:#3b2f2f;--ink-rgb:59,47,47;color-scheme:light}

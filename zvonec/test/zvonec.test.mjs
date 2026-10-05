@@ -1,15 +1,15 @@
-// Testy jádra Rozpisu: čas, kolize, kandidáti, slučování a export do kalendáře.
-// Spuštění:  node --test rozpis/test/
+// Testy jádra Zvonce: čas, kolize, kandidáti, slučování a export do kalendáře.
+// Spuštění:  node --test zvonec/test/
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import * as cas from '../../docs/rozpis/cas.js';
-import { najdiKolize, kandidati, navrhnoutZbytek } from '../../docs/rozpis/kolize.js';
-import { sluc, prazdna, normalizuj, Github, Synchronizace, Konflikt } from '../../docs/rozpis/data.js';
-import { ics, icsOsoby } from '../../docs/rozpis/ics.js';
-import { vytvorPristup, prihlas, obnov, zmenHeslo, prebal, noveHeslo, slozJmeno } from '../../docs/rozpis/pristup.js';
-import { casyPoradu, delkaPoradu, pridejFormat, zkopirujPorad, posunBod, vedouciBodu } from '../../docs/rozpis/porad.js';
-import { vytvorUkazku } from '../../docs/rozpis/ukazka.js';
+import * as cas from '../../docs/zvonec/cas.js';
+import { najdiKolize, kandidati, navrhnoutZbytek } from '../../docs/zvonec/kolize.js';
+import { sluc, prazdna, normalizuj, Github, Synchronizace, Konflikt } from '../../docs/zvonec/data.js';
+import { ics, icsOsoby } from '../../docs/zvonec/ics.js';
+import { vytvorPristup, prihlas, obnov, zmenHeslo, prebal, noveHeslo, slozJmeno } from '../../docs/zvonec/pristup.js';
+import { casyPoradu, delkaPoradu, pridejFormat, zkopirujPorad, posunBod, vedouciBodu } from '../../docs/zvonec/porad.js';
+import { vytvorUkazku } from '../../docs/zvonec/ukazka.js';
 
 const DNES = '2026-10-04';   // neděle
 
@@ -363,7 +363,7 @@ test('GitHub: načtení s diakritikou, uložení s sha, konflikt', async () => {
   const nactena = await gh.nacti();
   assert.equal(nactena.lide[0].jmeno, 'Řehoř Šťastný');
   assert.equal(gh.sha, 'sha0');
-  await gh.uloz(nactena, 'Rozpis: test');
+  await gh.uloz(nactena, 'Zvonec: test');
   assert.equal(gh.sha, 'sha1');
   stav.sha = 'cizi';                       // mezitím uložil někdo jiný
   await assert.rejects(gh.uloz(nactena), Konflikt);
@@ -392,12 +392,12 @@ test('Synchronizace: při konfliktu sloučí moje i cizí změny a uloží', asy
   assert.ok(vysledek.lide.some((o) => o.id === 'cizi'), 'cizí změna přežila');
   assert.equal(vysledek.lide.find((o) => o.id === 'petr').telefon, '777 000 000', 'moje změna přežila');
   assert.ok(data.lide.some((o) => o.id === 'cizi'), 'aplikace vidí sloučená data');
-  assert.deepEqual(stav.zapisy, ['Rozpis: telefon Petr']);
+  assert.deepEqual(stav.zapisy, ['Zvonec: telefon Petr']);
 });
 
 // ---------- přihlášení (jako Playbook) ----------
 
-const GH = { token: `github_pat_${'x'.repeat(82)}`, vlastnik: 'radomilcz', repo: 'sbor-data', cesta: 'rozpis.json', vetev: 'main' };
+const GH = { token: `github_pat_${'x'.repeat(82)}`, vlastnik: 'radomilcz', repo: 'sbor-data', cesta: 'zvonec.json', vetev: 'main' };
 const RYCHLE = 1000;   // v testech stačí málo iterací – princip je stejný
 
 test('přihlášení: jméno bez diakritiky, špatné heslo neprojde, nic tajného v záznamu', async () => {

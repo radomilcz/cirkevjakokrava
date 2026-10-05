@@ -6,11 +6,11 @@ Vertikální webová prezentace manifestu komunity **Církev jako kráva**.
 
 Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5auaz60q3F1kL5eAmKwG/C%C3%ADrkev-jako-kr%C3%A1va) (stránka `Manifest`, sekce `Manifest` s framy `00`–`07` a `Předmluva`, sekce `Kultura` s framy `Kultura 00`–`Kultura 10` a `Zrcadlo 00`).
 
-## Rozpis (plánovač služeb)
+## Zvonec (plánovač služeb)
 
-V `docs/rozpis/` je samostatná aplikace na plánování setkání – kalendář, lidi, služby a kolize –
-na https://manifest.cirkevjakokrava.cz/rozpis/. Data má v soukromém repu, ne tady. Popis, spuštění
-naostro a plán dalších kroků: [rozpis/README.md](rozpis/README.md).
+V `docs/zvonec/` je samostatná aplikace na plánování setkání – kalendář, lidi, služby a kolize –
+na https://manifest.cirkevjakokrava.cz/zvonec/. Data má v soukromém repu, ne tady. Popis, spuštění
+naostro a plán dalších kroků: [zvonec/README.md](zvonec/README.md).
 
 ## Struktura
 

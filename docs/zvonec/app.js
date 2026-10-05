@@ -1,4 +1,4 @@
-// Rozpis – aplikace.
+// Zvonec – aplikace.
 // Bez frameworku a bez buildu: soubory leží na GitHub Pages tak, jak jsou.
 // Obsah se skládá přes h() – text jde vždycky jako text, nikdy jako HTML, takže
 // jméno „<script>“ v datech nic nespustí (v prohlížeči leží token, na tom záleží).
@@ -885,7 +885,7 @@ function dialogPrepis(pr, osoba) {
   const form = h('form', { method: 'dialog' },
     h('p', { class: 'eyebrow' }, 'výjimka'),
     h('h2', {}, `${jmeno(osoba)} i tak`),
-    h('p', { class: 'poznamka' }, 'Když víš, že to půjde (třeba odejde ze zkoušky dřív), napiš proč. Rozpis to pak nebude hlásit jako chybu.'),
+    h('p', { class: 'poznamka' }, 'Když víš, že to půjde (třeba odejde ze zkoušky dřív), napiš proč. Zvonec to pak nebude hlásit jako chybu.'),
     h('label', { class: 'pole' }, h('span', {}, 'Proč to platí'), h('input', { type: 'text', name: 'duvod', value: pr.prepis || '', autofocus: true })),
     h('div', { class: 'akce' },
       pr.prepis ? tl('Zrušit výjimku', () => { delete pr.prepis; zavriDialog(); zmena('zrušená výjimka'); }, 'vlevo') : null,
@@ -1358,9 +1358,9 @@ function dialogSluzba(s) {
           h('input', { type: 'number', name: 'oknoDo', value: s?.okno?.do ?? '', placeholder: 'do', 'aria-label': 'Do minuty' })),
         h('small', {}, 'Prázdné = celou dobu. Kafe po skončení třeba 90–130, uvítání −15–15.')),
       h('div', { class: 'pole cela' }, h('span', {}, 'Vlastnosti'),
-        zaskrtnuti('vlastnosti', 'Bez toho to nejde. Když týden předem nikdo není, Rozpis hlásí chybu.', !!s?.klicova, 'klicova'),
+        zaskrtnuti('vlastnosti', 'Bez toho to nejde. Když týden předem nikdo není, Zvonec hlásí chybu.', !!s?.klicova, 'klicova'),
         zaskrtnuti('vlastnosti', 'Jen pro dospělé.', !!s?.jenDospely, 'jenDospely'),
-        zaskrtnuti('vlastnosti', 'Je to služba u dětí. Rozpis pohlídá, aby tam byli aspoň dva dospělí a aby rodiče malých dětí nesloužili oba naráz jinde.', !!s?.detska, 'detska')),
+        zaskrtnuti('vlastnosti', 'Je to služba u dětí. Zvonec pohlídá, aby tam byli aspoň dva dospělí a aby rodiče malých dětí nesloužili oba naráz jinde.', !!s?.detska, 'detska')),
     ],
     ulozit: (f, form) => {
       const nazev = f.nazev.value.trim();
@@ -1550,7 +1550,7 @@ function sekceUkazka() {
   return h('section', { class: 'sekce' },
     h('h2', {}, 'Kde jsou data'),
     h('p', { class: 'lead' }, 'Tohle je ukázka. Lidi v ní jsou vymyšlení a všechno zůstává jen v tvém prohlížeči.'),
-    h('p', { class: 'poznamka' }, 'Ostrý Rozpis běží na zvonec.cirkevjakokrava.cz a data má v ', h('strong', {}, 'soukromém'), ' repu na GitHubu. Lidi se tam přihlašují jménem a heslem. GitHub účet potřebuje jen správce, který jednou vyrobí klíč. Návod je v repu v souboru rozpis/README.md.'));
+    h('p', { class: 'poznamka' }, 'Ostrý Zvonec běží na zvonec.cirkevjakokrava.cz a data má v ', h('strong', {}, 'soukromém'), ' repu na GitHubu. Lidi se tam přihlašují jménem a heslem. GitHub účet potřebuje jen správce, který jednou vyrobí klíč. Návod je v repu v souboru zvonec/README.md.'));
 }
 
 function sekceUcet() {
@@ -1594,7 +1594,7 @@ function sekcePristupy() {
     .sort((a, b) => (a.role === 'pozvanka') - (b.role === 'pozvanka') || celeJmeno(lide.get(a.osoba)).localeCompare(celeJmeno(lide.get(b.osoba)), 'cs'));
   return h('section', { class: 'sekce' },
     h('h2', {}, 'Přihlášení', h('span', { class: 'n' }, `${seznam.filter((p) => p.role !== 'pozvanka').length} lidí`)),
-    h('p', { class: 'poznamka' }, 'Kdo má přihlášení, dostane se do Rozpisu jménem a heslem. Přihlášení založíš u člověka (Lidé → jméno → Přihlášení), nebo pošleš pozvánku a nový člověk si údaje a heslo vyplní sám. Nové i zrušené přihlášení začne platit za pár minut.'),
+    h('p', { class: 'poznamka' }, 'Kdo má přihlášení, dostane se do Zvonce jménem a heslem. Přihlášení založíš u člověka (Lidé → jméno → Přihlášení), nebo pošleš pozvánku a nový člověk si údaje a heslo vyplní sám. Nové i zrušené přihlášení začne platit za pár minut.'),
     h('ul', { class: 'prehled' }, seznam.map((p) => h('li', { class: p.plati && p.plati < cas.dnes() ? 'slabe' : '' },
       h('span', { class: 'roztah' },
         p.role === 'pozvanka'
@@ -1622,7 +1622,7 @@ function sekceKlic() {
       await novy.soubor('pristup.json').uprav(async (j) => {   // …a zapisovat – přebalení jde už s novým
         j.v = 1;
         await prebal(j.pristupy || [], github);
-      }, 'Rozpis – přístupy: nový GitHub klíč');
+      }, 'Zvonec – přístupy: nový GitHub klíč');
       S.ja.github = github;
       S.uloziste.token = token;
       hlaska('Klíč vyměněný.', 'Starý klíč na GitHubu zruš až za pár minut.', { trvani: 9000 });
@@ -1631,7 +1631,7 @@ function sekceKlic() {
   });
   return h('section', { class: 'sekce' },
     h('h2', {}, 'GitHub klíč'),
-    h('p', { class: 'poznamka' }, `Rozpis ukládá do ${S.ja.github.vlastnik}/${S.ja.github.repo} jedním GitHub klíčem. Každý přihlášený ho má schovaný pod svým heslem. Když klíč vyprší nebo ho chceš vyměnit, vlož sem nový. Rozpis ho předá všem a jejich hesla k tomu nepotřebuje.`),
+    h('p', { class: 'poznamka' }, `Zvonec ukládá do ${S.ja.github.vlastnik}/${S.ja.github.repo} jedním GitHub klíčem. Každý přihlášený ho má schovaný pod svým heslem. Když klíč vyprší nebo ho chceš vyměnit, vlož sem nový. Rozpis ho předá všem a jejich hesla k tomu nepotřebuje.`),
     form);
 }
 
@@ -1658,22 +1658,22 @@ function sekceZaloha() {
     if (!f) return;
     try {
       const data = normalizuj(JSON.parse(await f.text()));
-      potvrd('Nahradit rozpis souborem?', `Všechno, co je teď ${ostry ? 'na GitHubu' : 'v prohlížeči'}, se přepíše obsahem ${f.name}. (Na GitHubu zůstane stará verze v historii.)`, () => {
+      potvrd('Nahradit všechna data souborem?', `Všechno, co je teď ${ostry ? 'na GitHubu' : 'v prohlížeči'}, se přepíše obsahem ${f.name}. (Na GitHubu zůstane stará verze v historii.)`, () => {
         nahradVsechno(data, `import z ${f.name}`);
         hlaska('Nahráno.');
       }, { tlacitko: 'Nahradit' });
     } catch {
-      hlaska('Tohle není rozpis.', 'Soubor se nedá přečíst jako JSON.');
+      hlaska('Tohle není záloha Zvonce.', 'Soubor se nedá přečíst jako JSON.');
     }
   });
   return h('section', { class: 'sekce' },
     h('h2', {}, 'Záloha a přenos'),
-    h('p', { class: 'poznamka' }, 'Celý rozpis jako jeden soubor. Hodí se na zálohu nebo na přenesení do ostrého provozu.'),
+    h('p', { class: 'poznamka' }, 'Všechna data jako jeden soubor. Hodí se na zálohu nebo na přenesení do ostrého provozu.'),
     h('div', { class: 'akce' },
-      tl('Stáhnout zálohu (.json)', () => stahni(`rozpis-${cas.dnes()}.json`, `${JSON.stringify(S.data, null, 1)}\n`, 'application/json')),
+      tl('Stáhnout zálohu (.json)', () => stahni(`zvonec-${cas.dnes()}.json`, `${JSON.stringify(S.data, null, 1)}\n`, 'application/json')),
       tl('Nahrát ze souboru', () => soubor.click()),
       soubor,
-      tl('Celý kalendář (.ics)', () => stahni('rozpis.ics', ics(S.data, S.data.udalosti.filter((u) => !u.zruseno).map((u) => ({ udalost: u })), S.data.nastaveni.nazev || 'Rozpis'), 'text/calendar')),
+      tl('Celý kalendář (.ics)', () => stahni('zvonec.ics', ics(S.data, S.data.udalosti.filter((u) => !u.zruseno).map((u) => ({ udalost: u })), S.data.nastaveni.nazev || 'Zvonec'), 'text/calendar')),
       !ostry ? tl('Začít ukázku znovu', () => potvrd('Začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
         nahradVsechno(vytvorUkazku(cas.dnes()), 'nová ukázka');
         hlaska('Ukázka je zpátky.');
@@ -1692,7 +1692,7 @@ function nahradVsechno(data, popis) {
 // Jako Mobilise Playbook: jeden GitHub klíč, zapečetěný ke každému přihlášení. Lidi jsou data.
 
 const ROLE = { spravce: 'správce', vedouci: 'vedoucí', clen: 'člen', pozvanka: 'pozvánka' };
-const KLIC_JA = 'rozpis-ja';
+const KLIC_JA = 'zvonec-ja';
 const PLATNOST_POZVANKY = 14;   // dní
 
 function muze(co) {
@@ -1743,7 +1743,7 @@ async function upravPristupy(zmenaSeznamu, zprava) {
     j.v = 1;
     j.pristupy = j.pristupy || [];
     return zmenaSeznamu(j.pristupy, j);
-  }, `Rozpis – přístupy: ${zprava}`, { v: 1, pristupy: [] });
+  }, `Zvonec – přístupy: ${zprava}`, { v: 1, pristupy: [] });
   S.pristupyRepo = json.pristupy;
   return vysledek;
 }
@@ -1793,7 +1793,7 @@ function vykresliPrihlaseni(zprava) {
     await prihlasen(vysledek);
   });
   return [
-    hlavaStranky('pastva', 'Rozpis', 'Kdo co kdy dělá. Přihlas se jménem a heslem, které ti dal vedoucí.'),
+    hlavaStranky('pastva', 'Zvonec', 'Kdo co kdy dělá. Přihlas se jménem a heslem, které ti dal vedoucí.'),
     h('div', { class: 'rule' }),
     h('div', { class: 'uzky' }, form),
   ];
@@ -1824,7 +1824,7 @@ function vykresliZalozeni() {
     if (!jmenoText) return ukaz('Doplň svoje jméno.');
     const problem = kontrolaHesla(f.heslo.value, f.heslo2.value);
     if (problem) return ukaz(problem);
-    const github = { token: f.token.value.trim(), vlastnik: f.vlastnik.value.trim(), repo: f.repo.value.trim(), cesta: 'rozpis.json', vetev: 'main' };
+    const github = { token: f.token.value.trim(), vlastnik: f.vlastnik.value.trim(), repo: f.repo.value.trim(), cesta: 'zvonec.json', vetev: 'main' };
     try {
       const gh = new Github(github);
       const { vysledek: osobaId } = await gh.uprav((json) => {
@@ -1838,17 +1838,17 @@ function vykresliZalozeni() {
         Object.keys(json).forEach((k) => delete json[k]);
         Object.assign(json, data);
         return osoba.id;
-      }, 'Rozpis: založení');
+      }, 'Zvonec: založení');
       const zaznam = await vytvorPristup({ jmeno: prihlaseni, heslo: f.heslo.value, osoba: osobaId, role: 'spravce', github, id: noveId('k'), dnes: cas.dnes() });
-      await gh.soubor('pristup.json').uprav((j) => { j.v = 1; j.pristupy = [...(j.pristupy || []), zaznam]; }, 'Rozpis – přístupy: založení', { v: 1, pristupy: [] });
+      await gh.soubor('pristup.json').uprav((j) => { j.v = 1; j.pristupy = [...(j.pristupy || []), zaznam]; }, 'Zvonec – přístupy: založení', { v: 1, pristupy: [] });
       const vysledek = await prihlas([zaznam], prihlaseni, f.heslo.value);
       zapamatuj(vysledek, true);
       await prihlasen(vysledek);
-      hlaska('Rozpis je založený.', 'Ostatní se můžou přihlásit za pár minut.', { trvani: 9000 });
+      hlaska('Zvonec je založený.', 'Ostatní se můžou přihlásit za pár minut.', { trvani: 9000 });
     } catch (chybaGh) { ukaz(chybaGh.message || String(chybaGh)); }
   });
   return [
-    hlavaStranky('první krok', 'Založit Rozpis', 'Tady ještě nikdo není. Vlož GitHub klíč k datovému repu a zapiš se jako správce. Klíč pak Rozpis schová pod hesla a nikdo další ho znát nemusí.'),
+    hlavaStranky('první krok', 'Založit Zvonec', 'Tady ještě nikdo není. Vlož GitHub klíč k datovému repu a zapiš se jako správce. Klíč pak Zvonec schová pod hesla a nikdo další ho znát nemusí.'),
     h('div', { class: 'rule' }),
     h('div', { class: 'mrizka' },
       form,
@@ -1893,7 +1893,7 @@ function dialogVytvorPrihlaseni(o) {
     pole: [
       poleText('jmeno', 'Přihlašovací jméno', o.prihlaseni || celeJmeno(o), { cela: true, napoveda: 'Diakritika a velká písmena nevadí.' }),
       poleVyber('role', 'Co smí', role, ma?.role || 'clen', { cela: true }),
-      h('p', { class: 'poznamka cela' }, ma ? 'Staré heslo přestane platit. ' : '', 'Heslo vymyslí Rozpis a ukáže ti ho jen jednou. Lepší je poslat pozvánku – heslo si pak každý zvolí sám.'),
+      h('p', { class: 'poznamka cela' }, ma ? 'Staré heslo přestane platit. ' : '', 'Heslo vymyslí Zvonec a ukáže ti ho jen jednou. Lepší je poslat pozvánku – heslo si pak každý zvolí sám.'),
     ],
     ulozit: (f) => {
       const jmenoText = f.jmeno.value.trim();
@@ -1971,7 +1971,7 @@ async function otevriPozvanku(kod) {
   if (vysledek.zaznam.plati && vysledek.zaznam.plati < cas.dnes()) return neplati('Tahle pozvánka už je stará. Požádej o novou.');
   const gh = new Github(vysledek.github);
   let data;
-  try { data = (await gh.nacti()) || prazdna(); } catch (chyba) { return neplati(`Rozpis se nepovedlo načíst: ${chyba.message}`); }
+  try { data = (await gh.nacti()) || prazdna(); } catch (chyba) { return neplati(`Data se nepovedlo načíst: ${chyba.message}`); }
   S.obrazovka = () => vykresliRegistraci(vysledek, gh, data);
   vykresli();
 }
@@ -1988,7 +1988,7 @@ function vykresliRegistraci(pozvanka, gh, data) {
       volby('sluzby', data.sluzby.map((x) => [x.id, x.nazev]), Object.keys(o.dovednosti || {}))) : null,
     poleText('heslo', 'Heslo (aspoň 8 znaků)', '', { typ: 'password', attr: { autocomplete: 'new-password' } }),
     poleText('heslo2', 'Ještě jednou', '', { typ: 'password', attr: { autocomplete: 'new-password' } }),
-    zaskrtnuti('souhlas', `Souhlasím, že ${nazev} si tyhle údaje zapíše, aby mohla plánovat služby. Uvidí je jen lidi, kteří mají přihlášení do Rozpisu, a nikam dál je nedá. Souhlas můžu kdykoli vzít zpět.`, !!o.souhlas),
+    zaskrtnuti('souhlas', `Souhlasím, že ${nazev} si tyhle údaje zapíše, aby mohla plánovat služby. Uvidí je jen lidi, kteří mají přihlášení do Zvonce, a nikam dál je nedá. Souhlas můžu kdykoli vzít zpět.`, !!o.souhlas),
     zaskrtnuti('natrvalo', 'Pamatovat si mě na tomhle zařízení. Na cizím počítači nech prázdné.', true),
     h('p', { class: 'chyba-formulare chyba-plocha cela', hidden: true }),
     h('div', { class: 'cela' }, h('button', { type: 'submit', class: 'tl hlavni' }, 'Přidat se')));
@@ -2021,13 +2021,13 @@ function vykresliRegistraci(pozvanka, gh, data) {
           dovednosti, souhlas: osoba.souhlas || cas.dnes(), prihlaseni,
         });
         return osoba.id;
-      }, `Rozpis: registrace ${jmenoText}`);
+      }, `Zvonec: registrace ${jmenoText}`);
       const zaznam = await vytvorPristup({ jmeno: prihlaseni, heslo: f.heslo.value, osoba: osobaId, role: 'clen', github: pozvanka.github, id: noveId('k'), dnes: cas.dnes() });
       await gh.soubor('pristup.json').uprav((j) => {
         j.v = 1;
         j.pristupy = (j.pristupy || []).filter((p) => p.id !== pozvanka.zaznam.id && !(p.osoba === osobaId && p.role !== 'pozvanka'));
         j.pristupy.push(zaznam);
-      }, 'Rozpis – přístupy: registrace z pozvánky', { v: 1, pristupy: [] });
+      }, 'Zvonec – přístupy: registrace z pozvánky', { v: 1, pristupy: [] });
       const vysledek = await prihlas([zaznam], prihlaseni, f.heslo.value);
       zapamatuj(vysledek, !!form.querySelector('input[name=natrvalo]:checked'));
       history.replaceState(null, '', `#osoba/${osobaId}`);

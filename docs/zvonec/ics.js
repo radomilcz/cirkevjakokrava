@@ -38,7 +38,7 @@ function zalom(radek) {
 export function ics(data, polozky, nazevKalendare) {
   const mista = index(data.mista);
   const razitko = `${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`;
-  const radky = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Cirkev jako krava//Rozpis//CS',
+  const radky = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Cirkev jako krava//Zvonec//CS',
     'CALSCALE:GREGORIAN', `X-WR-CALNAME:${escape(nazevKalendare)}`, 'X-WR-TIMEZONE:Europe/Prague', ...PASMO];
   for (const { udalost, nazev, popis, uid } of polozky) {
     const kde = (udalost.mista || []).map((id) => mista.get(id)?.nazev).filter(Boolean).join(', ');

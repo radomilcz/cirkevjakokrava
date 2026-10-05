@@ -1,12 +1,12 @@
-# Testy Rozpisu (kolize, slučování, kalendář). Běží jen když se Rozpis změní.
-name: Rozpis
+# Testy Zvonce (kolize, slučování, kalendář). Běží jen když se Zvonec změní.
+name: Zvonec
 
 on:
   push:
     branches: [main]
-    paths: [docs/rozpis/**, rozpis/**]
+    paths: [docs/zvonec/**, zvonec/**]
   pull_request:
-    paths: [docs/rozpis/**, rozpis/**]
+    paths: [docs/zvonec/**, zvonec/**]
   workflow_dispatch:
 
 permissions:
@@ -21,6 +21,6 @@ jobs:
         with:
           node-version: 22
       - name: Testy
-        run: node --test rozpis/test/*.test.mjs
+        run: node --test zvonec/test/*.test.mjs
       - name: Syntaxe všech modulů
-        run: for f in docs/rozpis/*.js rozpis/*.mjs; do node --check "$f"; done
+        run: for f in docs/zvonec/*.js zvonec/*.mjs; do node --check "$f"; done
