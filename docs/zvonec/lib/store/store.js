@@ -12,6 +12,16 @@ import { Conflict, GithubError } from './github.js';
 
 export const SCHEMA = 2;
 export const DATA_DIR = 'data';
+export const IMAGES_DIR = 'data/images';
+
+/** A safe image file name: no folders, no leading dot, a picture extension. */
+export const isImageName = (name) => typeof name === 'string' && /^[A-Za-z0-9][A-Za-z0-9._-]{0,80}\.(webp|jpe?g|png)$/.test(name);
+
+/** Repo path of an image by its file name (`event.image`, `eventType.image`). */
+export function imagePath(name) {
+  if (!isImageName(name)) throw new Error(`Neplatný název obrázku: ${name}`);
+  return `${IMAGES_DIR}/${name}`;
+}
 
 /** Collection → data file. */
 export const FILES = {
@@ -79,8 +89,16 @@ const RECORD_DEFAULTS = {
   roles: (r) => (Number.isInteger(r.count) ? r : { ...r, count: 1 }),
   eventTypes: (t) => (Array.isArray(t.placeIds) && Array.isArray(t.needs) ? t
     : { ...t, placeIds: list(t.placeIds), needs: list(t.needs) }),
-  events: (e) => (Array.isArray(e.placeIds) && Array.isArray(e.needs) && Array.isArray(e.assignments) ? e
-    : { ...e, placeIds: list(e.placeIds), needs: list(e.needs), assignments: list(e.assignments) }),
+  events: (e) => {
+    const old = 'publicNote' in e;      // before 2026-10 the text for visitors was `publicNote`
+    if (!old && Array.isArray(e.placeIds) && Array.isArray(e.needs) && Array.isArray(e.assignments)) return e;
+    const { publicNote, ...rest } = e;
+    return {
+      ...rest,
+      ...(old && publicNote && !rest.description ? { description: publicNote } : {}),
+      placeIds: list(e.placeIds), needs: list(e.needs), assignments: list(e.assignments),
+    };
+  },
 };
 
 /**
@@ -149,6 +167,78 @@ export async function saveAll(store, data, message = 'Zvonec: úprava') {
       Object.assign(json, files[path]);
     }, message, {});
   }
+}
+
+// ---------- images (binary files under data/images/) ----------
+
+const MIME = { webp: 'image/webp', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' };
+const mimeOf = (name) => MIME[name.slice(name.lastIndexOf('.') + 1).toLowerCase()] || 'application/octet-stream';
+const urlCache = new WeakMap();      // store → Map(name → Promise<url>)
+const cacheOf = (store) => {
+  if (!urlCache.has(store)) urlCache.set(store, new Map());
+  return urlCache.get(store);
+};
+
+function urlFromBase64(store, name, base64) {
+  if (store.kind !== 'local' && typeof Blob === 'function' && typeof URL?.createObjectURL === 'function') {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    return URL.createObjectURL(new Blob([bytes], { type: mimeOf(name) }));
+  }
+  return `data:${mimeOf(name)};base64,${base64}`;
+}
+
+/**
+ * Save an image (base64, with or without the `data:…;base64,` prefix) under a new random name
+ * `i-xxxxxxxx.webp|jpg` and return the name. ext: 'webp' | 'jpg' (| 'jpeg').
+ */
+export async function saveImage(store, base64, ext = 'webp', message = 'Zvonec: obrázek k setkání') {
+  const extension = String(ext).toLowerCase().replace(/^\./, '').replace('jpeg', 'jpg');
+  if (extension !== 'webp' && extension !== 'jpg') throw new Error('Obrázek musí být WebP nebo JPEG.');
+  const plain = String(base64).replace(/^data:[^,]*,/, '').replace(/\s/g, '');
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const bytes = new Uint8Array(8);
+    if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(bytes);
+    else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    const name = `i-${Array.from(bytes, (b) => (b % 36).toString(36)).join('')}.${extension}`;
+    try {
+      await store.writeBinary(imagePath(name), plain, message, null);   // null = create, never overwrite
+    } catch (error) {
+      if (error instanceof Conflict) continue;                          // the name is taken – draw another
+      throw error;
+    }
+    cacheOf(store).set(name, Promise.resolve(urlFromBase64(store, name, plain)));
+    return name;
+  }
+  throw new Conflict('Nepovedlo se vybrat název obrázku.');
+}
+
+/**
+ * A URL the page can show: an object URL (GitHub) or a data URL (demo), cached in memory per store.
+ * Resolves to null when the image does not exist (not cached – it may be uploaded later).
+ */
+export function loadImageUrl(store, name) {
+  const cache = cacheOf(store);
+  if (cache.has(name)) return cache.get(name);
+  const promise = (async () => {
+    const file = await store.readBinary(imagePath(name));
+    if (!file) {
+      cache.delete(name);
+      return null;
+    }
+    return urlFromBase64(store, name, file.base64);
+  })();
+  cache.set(name, promise);
+  promise.catch(() => cache.delete(name));
+  return promise;
+}
+
+/** Delete an image from the repo and forget its URL. Missing file is fine. */
+export async function deleteImage(store, name, message = 'Zvonec: obrázek smazán') {
+  const cache = cacheOf(store);
+  const cached = cache.get(name);
+  cache.delete(name);
+  if (cached) cached.then((url) => { if (url?.startsWith('blob:')) URL.revokeObjectURL(url); }, () => {});
+  return store.remove(imagePath(name), message);
 }
 
 /** Czech commit message from change notes: "Zvonec: Petr na Zvuk, … a 2 dalších". */

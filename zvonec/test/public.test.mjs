@@ -4,11 +4,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildPublic, PUBLIC_FILE } from '../../docs/zvonec/lib/public.js';
+import { buildPublic, publicImages, PUBLIC_FILE } from '../../docs/zvonec/lib/public.js';
 import { createDemo } from '../../docs/zvonec/lib/demo.js';
 import { createFromType } from '../../docs/zvonec/lib/events.js';
 import { normalize, toFiles, fromFiles } from '../../docs/zvonec/lib/store/store.js';
@@ -37,7 +37,7 @@ test('PUBLIC_FILE is public.json', () => {
 
 test('buildPublic: only public === true events, shape of the result', () => {
   const data = base([
-    event('e1', '2026-10-11', { public: true, publicNote: 'Vítáni jsou všichni.', placeIds: ['l1', 'l2'], kind: 'service' }),
+    event('e1', '2026-10-11', { public: true, description: 'Vítáni jsou všichni.', placeIds: ['l1', 'l2'], kind: 'service' }),
     event('e2', '2026-10-12'),
     event('e3', '2026-10-13', { public: false }),
     event('e4', '2026-10-14', { public: 'true' }),
@@ -49,7 +49,7 @@ test('buildPublic: only public === true events, shape of the result', () => {
   assert.equal(result.generated, TODAY);
   assert.deepEqual(result.events, [{
     id: 'e1', title: 'Setkání e1', kind: 'service', start: '2026-10-11T10:00', end: '2026-10-11T12:00',
-    places: ['Sál', 'Zahrada'], note: 'Vítáni jsou všichni.',
+    places: [{ name: 'Sál' }, { name: 'Zahrada' }], description: 'Vítáni jsou všichni.', image: null,
   }]);
   assert.deepEqual(result.formats, []);
 });
@@ -80,11 +80,74 @@ test('buildPublic: cancelled events stay with cancelled: true, others have no su
   assert.ok(!('cancelled' in b));
 });
 
-test('buildPublic: unknown places are dropped, missing note is an empty string', () => {
+test('buildPublic: unknown places are dropped, missing description is an empty string', () => {
   const data = base([event('e1', '2026-10-11', { public: true, placeIds: ['gone', 'l2'] })]);
   const [e] = buildPublic(data, { today: TODAY }).events;
-  assert.deepEqual(e.places, ['Zahrada']);
-  assert.equal(e.note, '');
+  assert.deepEqual(e.places, [{ name: 'Zahrada' }]);
+  assert.equal(e.description, '');
+  assert.ok(!('note' in e));
+});
+
+test('buildPublic: places carry address and coordinates only when set', () => {
+  const data = base([event('e1', '2026-10-11', { public: true, placeIds: ['l1', 'l2', 'l3', 'l4'] })], {
+    places: [
+      { id: 'l1', name: 'Sál', shared: false, address: 'Sokolovská 12, Nový Jičín', lat: 49.594, lon: 18.01 },
+      { id: 'l2', name: 'Zahrada', shared: true, address: '  ' },
+      { id: 'l3', name: 'Dvorek', shared: true, address: 'Dlouhá 1, Nový Jičín', lat: 49.5 },     // half a coordinate is none
+      { id: 'l4', name: 'Louka', shared: true, lat: '49.5', lon: '18' },                         // strings are not coordinates
+    ],
+  });
+  assert.deepEqual(buildPublic(data, { today: TODAY }).events[0].places, [
+    { name: 'Sál', address: 'Sokolovská 12, Nový Jičín', lat: 49.594, lon: 18.01 },
+    { name: 'Zahrada' },
+    { name: 'Dvorek', address: 'Dlouhá 1, Nový Jičín' },
+    { name: 'Louka' },
+  ]);
+});
+
+test('buildPublic: image is the event\'s own, else its type\'s, else null; unsafe names are ignored', () => {
+  const data = base([
+    event('own', '2026-10-11', { public: true, typeId: 't1', image: 'i-own00000.webp' }),
+    event('typed', '2026-10-12', { public: true, typeId: 't1' }),
+    event('plain', '2026-10-13', { public: true }),
+    event('evil', '2026-10-14', { public: true, image: '../people.json' }),
+    event('evil2', '2026-10-15', { public: true, typeId: 't2' }),
+  ], {
+    eventTypes: [
+      { id: 't1', name: 'Typ', kind: 'event', startTime: '10:00', minutes: 60, image: 'i-type0000.jpg' },
+      { id: 't2', name: 'Zlý typ', kind: 'event', startTime: '10:00', minutes: 60, image: 'a/b.webp' },
+    ],
+  });
+  const images = Object.fromEntries(buildPublic(data, { today: TODAY }).events.map((e) => [e.id, e.image]));
+  assert.deepEqual(images, {
+    own: 'images/i-own00000.webp', typed: 'images/i-type0000.jpg', plain: null, evil: null, evil2: null,
+  });
+});
+
+test('publicImages: only images of published events in the window, sorted, once each', () => {
+  const data = base([
+    event('a', '2026-10-11', { public: true, image: 'i-bbbbbbbb.webp' }),
+    event('b', '2026-10-12', { public: true, typeId: 't1' }),                                    // the type's picture
+    event('c', '2026-10-13', { public: true, image: 'i-bbbbbbbb.webp' }),                       // duplicate
+    event('private', '2026-10-14', { image: 'i-private0.webp' }),                              // not published
+    event('false', '2026-10-14', { public: false, image: 'i-private1.webp', typeId: 't3' }),
+    event('far', '2027-03-01', { public: true, image: 'i-faraway0.webp' }),                     // outside the window
+    event('old', '2026-09-01', { public: true, image: 'i-oldoldol.webp' }),
+    event('type-only-private', '2026-10-15', { typeId: 't3' }),                                 // type picture of a private event
+  ], {
+    eventTypes: [
+      { id: 't1', name: 'Typ', kind: 'event', startTime: '10:00', minutes: 60, image: 'i-aaaaaaaa.jpg' },
+      { id: 't3', name: 'Soukromý', kind: 'event', startTime: '10:00', minutes: 60, image: 'i-typepriv.jpg' },
+    ],
+  });
+  assert.deepEqual(publicImages(data, { today: TODAY }), ['i-aaaaaaaa.jpg', 'i-bbbbbbbb.webp']);
+  assert.deepEqual(publicImages(data, { today: TODAY, daysAhead: 1 }), []);
+  assert.throws(() => publicImages(data, {}));
+  // the same names are what public.json points to
+  const inJson = buildPublic(data, { today: TODAY }).events.map((e) => e.image).filter(Boolean).map((p) => p.replace('images/', ''));
+  assert.deepEqual([...new Set(inJson)].sort(), publicImages(data, { today: TODAY }));
+  const json = JSON.stringify(buildPublic(data, { today: TODAY }));
+  for (const secret of ['i-private0', 'i-private1', 'i-typepriv', 'i-faraway0', 'i-oldoldol']) assert.ok(!json.includes(secret));
 });
 
 test('buildPublic: only public formats, with name, minutes, why and how', () => {
@@ -110,7 +173,7 @@ test('buildPublic: a bad today is an error', () => {
 test('buildPublic: no person data, even with assignments, program leaders and notes', () => {
   const data = base([
     event('e1', '2026-10-11', {
-      public: true, publicNote: 'Přijďte.', note: 'Tajná poznámka pro vedoucí',
+      public: true, description: 'Přijďte.', note: 'Tajná poznámka pro vedoucí',
       assignments: [{ id: 'a1', roleId: 'r1', personId: 'pSecret1', status: 'confirmed', override: { reason: 'Důvod přepsání', by: 'pSecret2' } }],
       program: [{ id: 'i1', formatId: 'f1', minutes: 30, personId: 'pSecret3', title: 'Kázání', note: 'Soukromá poznámka k bodu' }],
     }),
@@ -135,7 +198,10 @@ test('demo: public.json is not empty and holds no person data at all', () => {
   assert.ok(result.events.every((e) => e.start >= '2026-10-04' && e.start <= '2027-02-03T'));
   assert.ok(result.events.some((e) => e.kind === 'service'));
   const party = result.events.find((e) => e.title === 'Zahradní slavnost');
-  assert.ok(party?.note, 'the garden party carries a public note');
+  assert.ok(party?.description, 'the garden party carries a description');
+  assert.deepEqual(party.places, [{ name: 'Zahrada za modlitebnou', address: 'Sokolovská 12, Nový Jičín', lat: 49.5942, lon: 18.0104 }]);
+  assert.ok(result.events.every((e) => e.image === null), 'the demo has no pictures');
+  assert.match(result.events.find((e) => e.kind === 'service').description, /Přijď, jak jsi/);
   assert.ok(!result.events.some((e) => /Zkouška|Skupinka|Stavění/.test(e.title)), 'rehearsals, small groups, tent build stay private');
   assert.deepEqual(result.formats.map((f) => f.name).sort(),
     ['Chvály', 'Kázání', 'Otázky na tělo', 'Přivítání', 'Večeře Páně'].sort());
@@ -149,12 +215,12 @@ test('demo: public.json is not empty and holds no person data at all', () => {
   assert.deepEqual(Object.keys(result).sort(), ['address', 'churchName', 'events', 'formats', 'generated', 'v']);
 });
 
-test('schema: public and publicNote survive normalize and a file round trip; no default', () => {
+test('schema: public and description survive normalize and a file round trip; no default', () => {
   const data = createDemo(TODAY);
   const back = fromFiles(toFiles(data));
   assert.equal(back.eventTypes.find((t) => t.id === 't-sunday').public, true);
   assert.ok(!('public' in back.eventTypes.find((t) => t.id === 't-rehearsal')));
-  assert.ok(back.events.some((e) => e.public === true && e.publicNote));
+  assert.ok(back.events.some((e) => e.public === true && e.description));
   assert.ok(back.formats.some((f) => f.public === true));
   assert.deepEqual(normalize({ events: [{ id: 'e1', start: 'x', end: 'y' }] }).events[0].public, undefined);
 });
@@ -217,4 +283,117 @@ test('build-public.mjs: empty data is fine, usage errors exit 2, a broken file e
     assert.match(r.stdout, /::error title=Rozbitý soubor::events\.json se nedá přečíst/);
     assert.ok(!existsSync(bad));
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- CLI: pictures ----------
+
+const IMG = (name) => Buffer.from(`picture ${name}`);
+
+/** A data repo with three events: published with its own picture, published via its type's picture, private with a picture. */
+function repoWithImages({ missing = [] } = {}) {
+  const data = createDemo(TODAY);
+  const sunday = data.events.find((e) => e.typeId === 't-sunday' && e.start > `${TODAY}T`);
+  const party = data.events.find((e) => e.title === 'Zahradní slavnost');
+  const rehearsal = data.events.find((e) => e.typeId === 't-rehearsal' && e.start > `${TODAY}T`);
+  sunday.image = 'i-sunday00.webp';
+  party.typeId = undefined;
+  data.eventTypes.find((t) => t.id === 't-rehearsal').image = 'i-typeonly.jpg';
+  rehearsal.image = 'i-private0.webp';
+  const { root, dir } = dataRepo(data);
+  mkdirSync(join(dir, 'images'));
+  for (const name of ['i-sunday00.webp', 'i-private0.webp', 'i-typeonly.jpg', 'i-unlisted.webp']) {
+    if (!missing.includes(name)) writeFileSync(join(dir, 'images', name), IMG(name));
+  }
+  return { root, dir, data, sunday };
+}
+
+test('build-public.mjs: copies only the images of published events next to public.json', () => {
+  const { root, dir } = repoWithImages();
+  try {
+    const out = join(root, 'site', PUBLIC_FILE);
+    const r = run(dir, out, '--today', TODAY);
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /, 1 obrázků → /);
+    assert.deepEqual(readdirSync(join(root, 'site', 'images')), ['i-sunday00.webp']);
+    assert.deepEqual(readFileSync(join(root, 'site', 'images', 'i-sunday00.webp')), IMG('i-sunday00.webp'));
+    const written = JSON.parse(readFileSync(out, 'utf8'));
+    const withImage = written.events.filter((e) => e.image);
+    assert.ok(withImage.length > 0 && withImage.every((e) => e.image === 'images/i-sunday00.webp'));
+    assert.ok(!readFileSync(out, 'utf8').includes('i-private0'));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('build-public.mjs: a missing image is a warning, not a failure; no images folder at all is fine', () => {
+  const { root, dir } = repoWithImages({ missing: ['i-sunday00.webp'] });
+  try {
+    const r = run(dir, join(root, 'site', PUBLIC_FILE), '--today', TODAY);
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /::warning title=Chybí obrázek::i-sunday00\.webp /);
+    assert.match(r.stdout, /, 0 obrázků → /);
+    assert.ok(!existsSync(join(root, 'site', 'images')));
+    rmSync(join(dir, 'images'), { recursive: true });
+    assert.equal(run(dir, join(root, 'site', PUBLIC_FILE), '--today', TODAY).status, 0);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('build-public.mjs: an unsafe image name never leaves data/ (nothing outside images/ is copied)', () => {
+  const data = createDemo(TODAY);
+  data.events.find((e) => e.title === 'Zahradní slavnost').image = '../people.json';
+  const { root, dir } = dataRepo(data);
+  try {
+    const out = join(root, 'site', PUBLIC_FILE);
+    assert.equal(run(dir, out, '--today', TODAY).status, 0);
+    assert.ok(!existsSync(join(root, 'site', 'images')));
+    assert.ok(!existsSync(join(root, 'site', 'people.json')));
+    assert.ok(JSON.parse(readFileSync(out, 'utf8')).events.every((e) => e.image === null));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------- web.yml guard ----------
+
+const WORKFLOW = readFileSync(new URL('../data-repo/web.yml', import.meta.url), 'utf8');
+/** The inline node script of the guard that checks site/images (the line starting with `node -e` that mentions it). */
+const imageGuard = WORKFLOW.split('\n').find((l) => l.includes('node -e') && l.includes('site/images'))
+  ?.match(/node -e '(.*)' \\$/)?.[1];
+
+function runGuard(site) {
+  return spawnSync(process.execPath, ['-e', imageGuard], { cwd: site, encoding: 'utf8' });
+}
+
+function siteWith(events, images, { dirs = [] } = {}) {
+  const root = mkdtempSync(join(tmpdir(), 'zvonec-site-'));
+  const site = join(root, 'site');
+  mkdirSync(join(site, 'images'), { recursive: true });
+  writeFileSync(join(site, 'public.json'), JSON.stringify({ v: 1, events, formats: [] }));
+  for (const name of images) writeFileSync(join(site, 'images', name), 'x');
+  for (const d of dirs) mkdirSync(join(site, 'images', d));
+  return { root, site };
+}
+
+test('web.yml guard: only site/images/* listed in public.json may exist', () => {
+  assert.ok(imageGuard, 'the guard script is in web.yml');
+  const listed = [{ id: 'e1', image: 'images/i-sunday00.webp' }, { id: 'e2', image: null }];
+  let { root, site } = siteWith(listed, ['i-sunday00.webp']);
+  try {
+    assert.equal(runGuard(root).status, 0);
+    writeFileSync(join(site, 'images', 'i-private0.webp'), 'x');          // not listed → fail
+    const r = runGuard(root);
+    assert.equal(r.status, 1);
+    assert.match(r.stdout, /::error::images not listed in public\.json: site\/images\/i-private0\.webp/);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+  ({ root, site } = siteWith(listed, ['i-sunday00.webp'], { dirs: ['nested'] }));
+  try { assert.equal(runGuard(root).status, 1, 'a sub folder is refused'); } finally { rmSync(root, { recursive: true, force: true }); }
+  ({ root, site } = siteWith(listed, []));
+  try { assert.equal(runGuard(root).status, 0, 'a listed but missing image is only a warning of the build'); } finally { rmSync(root, { recursive: true, force: true }); }
+  ({ root, site } = siteWith([], ['i-sunday00.webp']));
+  try { assert.equal(runGuard(root).status, 1, 'nothing is listed → nothing may exist'); } finally { rmSync(root, { recursive: true, force: true }); }
+  rmSync(join(root, 'site'), { recursive: true, force: true });
+});
+
+test('web.yml: rebuilt on image changes, data/ is still never copied, the guard still refuses data/', () => {
+  assert.match(WORKFLOW, /- data\/images\/\*\*/);
+  assert.match(WORKFLOW, /find site -path '\*\/data\/\*' -o -path '\*\/data'/);
+  assert.match(WORKFLOW, /node web\/zvonec\/build-public\.mjs private\/data site\/public\.json/);
+  assert.ok(!/cp [^\n]*private\/data/.test(WORKFLOW), 'no step copies data/ to the site');
+  assert.ok(!WORKFLOW.includes('publicNote'));
 });

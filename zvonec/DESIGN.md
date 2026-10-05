@@ -74,7 +74,7 @@ someone's roles can also be reached from the person's detail, which links to the
 | membership, notes, consent, availability reasons, warnings | – | – | ✓ |
 
 - Publishing is explicit: `event.public` (default from the event type's `public`), optional
-  `event.publicNote`; `format.public`. Nothing else is ever public.
+  `event.description` (the text people read); `format.public`. Nothing else is ever public.
 - The public site is built from data the data repo publishes: the data-repo workflow writes
   `public.json` = `{ churchName, address, events: [{id,title,kind,start,end,places:[{name,address,lat,lon}],description,image}],
   formats: [{id,name,minutes,why,how}] }` next to the app; only `public: true` items, upcoming

@@ -156,8 +156,12 @@ const LIMITS = [
   ['Filip', { paused: true }],
 ];
 
+// id, name, shared, address (one line, fictitious), coordinates (Nový Jičín centre, only for the main place)
 const PLACES = [
-  ['l-hall', 'Sál', false], ['l-small', 'Malá místnost', false], ['l-kitchen', 'Kuchyňka', true], ['l-outside', 'Venku', true],
+  ['l-hall', 'Sál', false, 'Sokolovská 12, Nový Jičín', { lat: 49.594, lon: 18.010 }],
+  ['l-small', 'Malá místnost', false, 'Sokolovská 12, Nový Jičín'],
+  ['l-kitchen', 'Kuchyňka', true],
+  ['l-outside', 'Zahrada za modlitebnou', true, 'Sokolovská 12, Nový Jičín', { lat: 49.5942, lon: 18.0104 }],
 ];
 
 // formats a program is built from: id, name, minutes, lead role, why / how / link / needs
@@ -232,7 +236,9 @@ export function createDemo(today = localToday()) {
   const monthDay = (offset) => `${today.slice(5, 8)}${pad(Math.min(28, Math.max(1, Number(today.slice(8, 10)) + offset)))}`;
 
   const settings = structuredClone(SETTINGS);
-  const places = PLACES.map(([placeId, name, shared]) => ({ id: placeId, name, shared }));
+  const places = PLACES.map(([placeId, name, shared, address, coords]) => ({
+    id: placeId, name, shared, ...(address ? { address } : {}), ...(coords || {}),
+  }));
   const households = HOUSEHOLDS.map(([householdId, name]) => ({ id: householdId, name }));
   const groups = GROUPS.map(([groupId, name, kind, description]) => ({ id: groupId, name, kind, description }));
   const roles = ROLES.map(([roleId, groupId, name, extra = {}]) => {
@@ -307,6 +313,7 @@ export function createDemo(today = localToday()) {
   const eventTypes = [
     {
       id: 't-sunday', name: 'Setkání na pastvě', kind: 'service', startTime: '10:00', minutes: 120, public: true,
+      description: 'Chvály, slovo, otázky na tělo a kafe. Přijď, jak jsi. Děti jsou vítané.',
       placeIds: ['l-hall', 'l-small'], needs: structuredClone(SUNDAY_NEEDS),
       program: SUNDAY_PROGRAM.map((formatId) => ({ formatId, minutes: formatMinutes(formatId) })),
     },
@@ -337,6 +344,7 @@ export function createDemo(today = localToday()) {
         placeIds: [...type.placeIds], seriesId,
         ...(type.groupId ? { groupId: type.groupId } : {}),
         ...(type.public !== undefined ? { public: type.public } : {}),
+        ...(type.description ? { description: type.description } : {}),
         needs: structuredClone(type.needs),
         ...(type.program ? { program: type.program.map((item) => ({ id: id('i'), ...item })) } : {}),
         assignments: [],
@@ -419,7 +427,7 @@ export function createDemo(today = localToday()) {
   events.push({
     id: id('e'), title: 'Zahradní slavnost', kind: 'event',
     start: `${addDays(nextSunday, 6)}T14:00`, end: `${addDays(nextSunday, 6)}T18:00`, placeIds: ['l-outside'],
-    public: true, publicNote: 'Přijďte s celou rodinou. Na zahradě bude gril, pití i hry pro děti. Přineste něco dobrého na společný stůl.',
+    public: true, description: 'Přijďte s celou rodinou. Na zahradě za modlitebnou bude gril, pití i hry pro děti. Přineste něco dobrého na společný stůl.',
     needs: [], assignments: [],
   });
   // the youth booked the small room at the same time as the home group (K9)

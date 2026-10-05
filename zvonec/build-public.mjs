@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 // Builds public.json – the part of Zvonec visitors may see without signing in (lib/public.js).
 // Runs in the data repo's web workflow (see zvonec/data-repo/web.yml) and writes the file next to the
-// app. Only items marked `public: true` get in, and no person data at all.
+// app. Only items marked `public: true` get in, and no person data at all. The pictures of the
+// published events are copied from <data>/images/ to images/ next to public.json (nothing else
+// from data/ is copied; a missing picture is a warning, the event then shows a generated cover).
 // Code is English, the messages are Czech.
 //
 //   node zvonec/build-public.mjs data site/public.json [--today 2026-10-04]
 //
 // `data` is the data/ directory of the data repo. Missing files count as empty.
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, copyFileSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
 import { fromFiles, FILE_PATHS } from '../docs/zvonec/lib/store/store.js';
-import { buildPublic } from '../docs/zvonec/lib/public.js';
+import { buildPublic, publicImages, PUBLIC_IMAGES_DIR } from '../docs/zvonec/lib/public.js';
 
 const USAGE = 'Použití: node zvonec/build-public.mjs data site/public.json [--today YYYY-MM-DD]';
 
@@ -49,7 +51,22 @@ for (const path of FILE_PATHS) {
   }
 }
 
-const result = buildPublic(fromFiles(files), { today });
+const data = fromFiles(files);
+const result = buildPublic(data, { today });
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, `${JSON.stringify(result, null, 2)}\n`);
-console.log(`Veřejná data k ${today}: ${result.events.length} setkání, ${result.formats.length} formátů → ${out}`);
+
+// pictures of the published events only; names come from publicImages(), which accepts plain file names
+const imagesOut = join(dirname(out), PUBLIC_IMAGES_DIR);
+let copied = 0;
+for (const name of publicImages(data, { today })) {
+  const source = join(dir, 'images', name);
+  if (!existsSync(source)) {
+    console.log(`::warning title=Chybí obrázek::${name} patří k veřejnému setkání, ale ve složce images/ není.`);
+    continue;
+  }
+  mkdirSync(imagesOut, { recursive: true });
+  copyFileSync(source, join(imagesOut, name));
+  copied++;
+}
+console.log(`Veřejná data k ${today}: ${result.events.length} setkání, ${result.formats.length} formátů, ${copied} obrázků → ${out}`);

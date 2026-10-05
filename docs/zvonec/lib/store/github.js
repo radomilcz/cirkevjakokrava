@@ -16,12 +16,13 @@ export class GithubError extends Error {
 
 const API = 'https://api.github.com';
 
-function toBase64(text) {
-  const bytes = new TextEncoder().encode(text);
+function bytesToBase64(bytes) {
   let binary = '';
   for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(binary);
 }
+
+const toBase64 = (text) => bytesToBase64(new TextEncoder().encode(text));
 
 function fromBase64(b64) {
   const binary = atob(b64.replace(/\s/g, ''));
@@ -127,6 +128,64 @@ export class GithubStore {
     const newSha = (await response.json()).content.sha;
     this.shas[path] = newSha;
     return newSha;
+  }
+
+  /**
+   * Read a binary file (an image). Returns { base64, sha } or null when it does not exist.
+   * Images are small (≤ ~400 kB); the Contents API inlines files up to 1 MB, larger ones come raw.
+   */
+  async readBinary(path) {
+    const ref = `?ref=${encodeURIComponent(this.branch)}`;
+    const response = await this.getOrNull(`${this.url(path)}${ref}`);
+    if (!response) {
+      this.shas[path] = null;
+      return null;
+    }
+    const file = await response.json();
+    let base64;
+    if (file.encoding === 'base64' && file.content) base64 = file.content.replace(/\s/g, '');
+    else {
+      const raw = await this.request(`${this.url(path)}${ref}`, {}, 'application/vnd.github.raw+json');
+      base64 = bytesToBase64(new Uint8Array(await raw.arrayBuffer()));
+    }
+    this.shas[path] = file.sha;
+    return { base64, sha: file.sha };
+  }
+
+  /**
+   * Write a binary file from base64 (a `data:…;base64,` prefix is tolerated). `sha` defaults to the
+   * last one seen for this path; null/undefined creates the file. Returns the new sha; a stale sha
+   * (or a file created meanwhile) throws `Conflict`.
+   */
+  async writeBinary(path, base64, message = 'Zvonec: obrázek', sha = this.shas[path]) {
+    const body = {
+      message,
+      content: String(base64).replace(/^data:[^,]*,/, '').replace(/\s/g, ''),
+      branch: this.branch,
+      ...(sha ? { sha } : {}),
+    };
+    let response;
+    try {
+      response = await this.request(this.url(path), { method: 'PUT', body: JSON.stringify(body) });
+    } catch (error) {
+      if (!sha && error instanceof GithubError && error.status === 422) throw new Conflict();
+      throw error;
+    }
+    const newSha = (await response.json()).content.sha;
+    this.shas[path] = newSha;
+    return newSha;
+  }
+
+  /** Delete a file (needs its sha: the last one seen, else it is looked up). Missing file → false. */
+  async remove(path, message = 'Zvonec: úprava', sha = this.shas[path]) {
+    if (!sha) {
+      const file = await this.readBinary(path);
+      if (!file) return false;
+      sha = file.sha;
+    }
+    await this.request(this.url(path), { method: 'DELETE', body: JSON.stringify({ message, sha, branch: this.branch }) });
+    this.shas[path] = null;
+    return true;
   }
 
   /** List a directory: [{ name, path, sha }] of its files, [] when the directory does not exist. */

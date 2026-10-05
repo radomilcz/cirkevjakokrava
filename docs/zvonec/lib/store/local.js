@@ -57,6 +57,38 @@ export class LocalStore {
     return newSha;
   }
 
+  /** Binary files live in the same storage as { sha, base64 } (images are small). */
+  async readBinary(path) {
+    const file = this.readAll().files[path];
+    if (!file || typeof file.base64 !== 'string') {
+      this.shas[path] = null;
+      return null;
+    }
+    this.shas[path] = file.sha;
+    return { base64: file.base64, sha: file.sha };
+  }
+
+  async writeBinary(path, base64, message, sha = this.shas[path]) {
+    const all = this.readAll();
+    const current = all.files[path];
+    if ((current ? current.sha : null) !== (sha ?? null)) throw new Conflict();
+    const newSha = String((Number(current?.sha) || 0) + 1);
+    all.files[path] = { sha: newSha, base64: String(base64).replace(/^data:[^,]*,/, '') };
+    this.writeAll(all);
+    this.shas[path] = newSha;
+    return newSha;
+  }
+
+  /** Delete a file; false when it does not exist. */
+  async remove(path) {
+    const all = this.readAll();
+    if (!all.files[path]) return false;
+    delete all.files[path];
+    this.writeAll(all);
+    this.shas[path] = null;
+    return true;
+  }
+
   async list(dir) {
     const prefix = `${String(dir).replace(/\/+$/, '')}/`;
     return Object.entries(this.readAll().files)

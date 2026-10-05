@@ -73,13 +73,13 @@ const SPEC = {
     startTime: [true, (x) => TIME.test(x)], minutes: [true, isInt], placeIds: [true, arrayOf(isStr)],
     needs: [true, arrayOf(need)],
     program: [false, arrayOf((x) => { shape(x, { formatId: [true, isStr], minutes: [true, isInt] }, 'type program'); return true; })],
-    groupId: [false, isStr], public: [false, isBool],
+    groupId: [false, isStr], public: [false, isBool], description: [false, isStr], image: [false, isStr],
   },
   event: {
     id: [true, (x) => /^e/.test(x)], title: [true, isStr], kind: [true, oneOf('service', 'rehearsal', 'smallGroup', 'event')],
     typeId: [false, isStr], start: [true, (x) => DATE_TIME.test(x)], end: [true, (x) => DATE_TIME.test(x)],
     placeIds: [true, arrayOf(isStr)], seriesId: [false, isStr], cancelled: [false, isBool], groupId: [false, isStr],
-    note: [false, isStr], public: [false, isBool], publicNote: [false, isStr], needs: [true, arrayOf(need)],
+    note: [false, isStr], public: [false, isBool], description: [false, isStr], image: [false, isStr], needs: [true, arrayOf(need)],
     program: [false, arrayOf((x) => {
       shape(x, {
         id: [true, (v) => /^i/.test(v)], formatId: [true, isStr], minutes: [true, isInt], title: [false, isStr],
@@ -100,7 +100,10 @@ const SPEC = {
     why: [false, isStr], how: [false, isStr], link: [false, isStr], needs: [false, arrayOf(need)],
     public: [false, isBool],
   },
-  place: { id: [true, (x) => /^l/.test(x)], name: [true, isStr], shared: [true, isBool] },
+  place: {
+    id: [true, (x) => /^l/.test(x)], name: [true, isStr], shared: [true, isBool], address: [false, isStr],
+    lat: [false, Number.isFinite], lon: [false, Number.isFinite],
+  },
   availability: {
     id: [true, (x) => /^v/.test(x)], personId: [true, isStr], from: [true, isDate], to: [true, isDate], reason: [false, isStr],
   },
@@ -289,6 +292,23 @@ test('demo content: formats keep why and how, communion on first Sundays', () =>
     assert.ok(e.needs.some((n) => n.roleId === communion.leadRoleId && n.count === 2));
   }
   assert.ok(d.events.some((e) => e.program?.some((x) => x.personId)), 'a program item with a hand-picked person');
+});
+
+test('demo content: places have addresses, the main place coordinates; descriptions, no images', () => {
+  const d = createDemo(TODAY);
+  const place = (name) => d.places.find((p) => p.name === name);
+  assert.equal(place('Sál').address, 'Sokolovská 12, Nový Jičín');
+  assert.equal(place('Malá místnost').address, 'Sokolovská 12, Nový Jičín');
+  assert.equal(place('Zahrada za modlitebnou').address, 'Sokolovská 12, Nový Jičín');
+  assert.ok(!('address' in place('Kuchyňka')));
+  assert.ok(Math.abs(place('Sál').lat - 49.594) < 0.01 && Math.abs(place('Sál').lon - 18.010) < 0.01);
+  assert.ok(!('lat' in place('Malá místnost')));
+  const sunday = d.eventTypes.find((t) => t.id === 't-sunday');
+  assert.match(sunday.description, /Přijď, jak jsi/);
+  assert.ok(d.events.filter((e) => e.typeId === 't-sunday').every((e) => e.description === sunday.description));
+  assert.ok(d.events.find((e) => e.title === 'Zahradní slavnost').description);
+  assert.ok(!d.events.some((e) => 'publicNote' in e || 'image' in e));
+  assert.ok(!d.eventTypes.some((t) => 'image' in t));
 });
 
 test('demo content: the deliberate conflicts are there', () => {

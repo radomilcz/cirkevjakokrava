@@ -52,7 +52,8 @@ access.json          { "v": 2, "logins": [] }            published to Pages, con
   „někdo smazaný“ and are dropped on the next save of the file that holds them.
 - **Privacy, plainly:** one token means every logged-in browser can read every file. Hiding data from
   members is a UI rule, not access control. Therefore no pastoral, health or financial notes, ever.
-- `web.yml` refuses to publish anything under `data/`.
+- `data/images/<name>` holds binary pictures (§3 Pictures); they are not part of the files above.
+- `web.yml` refuses to publish anything under `data/`, except the pictures of published events (§4b).
 
 ## 3. Schema
 
@@ -91,19 +92,24 @@ Only `team` groups have roles and feed planning.
 eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" | "event",
                 startTime: "HH:mm", minutes: int, placeIds: [], needs: [need],
                 program?: [{ formatId, minutes }], groupId?,
-                public?: bool }                 // events made from this type start as published
+                public?: bool,                  // events made from this type start as published
+                description?, image? }          // defaults copied to the events made from this type (§4b)
 event         { id: "e…", title, kind, typeId?, start, end, placeIds: [], seriesId?,
                 cancelled?: bool, groupId?, note?, needs: [need], program?: [programItem],
                 assignments: [assignment],
                 public?: bool,                  // published on the public site (§4b); only `true` counts
-                publicNote? }                   // short text for visitors; `note` is never public
+                description?: string,           // what people read about the event; public with the event
+                image? }                        // file name under data/images/ (e.g. "i-k3j9x0a2.webp")
+                                                // `note` stays internal (for the team) and is never public
 need          { roleId, count: int }
 programItem   { id: "i…", formatId, minutes: int, title?, personId?, note? }   // UI: „osnova“
 assignment    { id: "a…", roleId, personId, status: "proposed" | "confirmed" | "declined",
                 override?: { reason, by?: personId, at?: date } }
 format        { id: "f…", name, minutes: int, leadRoleId?, why?, how?, link?, needs?: [need],
                 public?: bool }                 // name, minutes, why and how are public (§4b)
-place         { id: "l…", name, shared: bool }
+place         { id: "l…", name, shared: bool,
+                address?: string,               // one line, e.g. "Sokolovská 12, Nový Jičín"
+                lat?: number, lon?: number }    // WGS84; both or none (a map is shown only with both)
 availability  { id: "v…", personId, from: date, to: date, reason? }
 servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWeeks?: int,
                 paused?: bool }             // paused = do not plan now (moved away, break)
@@ -111,7 +117,16 @@ servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWee
 
 `public` has no default: a missing value means not published. `normalize()` keeps it as stored, and
 `createFromType` copies a boolean `public` from the event type to the new event (an edit of a series
-copies `public` and `publicNote` to the following events too).
+copies `public`, `description` and `image` to the following events too). `createFromType` also copies the
+type's `description` and `image`. Data saved before 2026-10 with `event.publicNote` are read as
+`description` by `normalize()` (the old key is dropped on the next save).
+
+**Pictures.** An image is a binary file `data/images/<name>` in the private data repo (name
+`i-xxxxxxxx.webp|jpg`, resized in the browser, ≲ 400 kB); records refer to it by file name only. The
+store has `readBinary(path) → { base64, sha } | null`, `writeBinary(path, base64, message, sha?)`
+and `remove(path, message)` (GitHub Contents API; the demo keeps the same in its storage); lib/store/store.js
+wraps them as `saveImage`, `loadImageUrl` (cached object/data URL) and `deleteImage`. Images are not
+data files: `Sync` never sees them and `list('data')` does not return them.
 
 **Full needs.** What an event needs is `needsOf(data, event)` (lib/events.js): `event.needs` merged
 with the needs of the formats in its program (`programNeeds`, lib/program.js). A format brings its
@@ -147,9 +162,10 @@ app.js                 boot, mode (demo / live), session, router, save-status ba
 lib/time.js            dates, recurrence, Czech formatting
 lib/access.js          keypairs, PBKDF2, sealing, sign-in, invites
 lib/store/merge.js     three-way merge per record id (pure)
-lib/store/github.js    Contents API client (GET/PUT, directory listing, raw fallback)
-lib/store/local.js     localStorage backend for the demo
-lib/store/store.js     file map {collection → file}, load all, one save queue per file, refresh by sha
+lib/store/github.js    Contents API client (GET/PUT/DELETE, directory listing, raw fallback, binary files)
+lib/store/local.js     localStorage backend for the demo (incl. binary files)
+lib/store/store.js     file map {collection → file}, load all, one save queue per file, refresh by sha,
+                       image helpers (saveImage, loadImageUrl, deleteImage)
 lib/people.js          names, households, age, membership queries (no planning)
 lib/groups.js          members of a group, roles of a person, leaders, skill level
 lib/events.js          event types → events, series, needs
@@ -157,7 +173,7 @@ lib/program.js         program times, leader of an item
 lib/scheduling.js      candidate ranking, availability and limits, "propose the rest", "same as last time"
 lib/conflicts.js       rules K1–K17 (used by the app, tests and zvonec/check.mjs)
 lib/ics.js             calendar export
-lib/public.js          public view of the data: buildPublic() → public.json (pure, §4b)
+lib/public.js          public view of the data: buildPublic() → public.json, publicImages() (pure, §4b)
 lib/demo.js            fictitious demo data relative to today
 ui/state.js            app state S, can(), change(), render(), navigate(), actAs() (demo), shared Czech labels
 ui/dom.js              h(), buttons, dialogs, form fields, toasts, empty states
@@ -185,8 +201,10 @@ zvonec/check.mjs        conflict check for the data repo: node zvonec/check.mjs 
                         exit 1 when an upcoming event has an error
 zvonec/build-public.mjs  public.json for the data repo: node zvonec/build-public.mjs data site/public.json
                         [--today YYYY-MM-DD]; reads data/*.json via lib/store fromFiles, writes lib/public.js output
+                        and copies the pictures of published events from data/images/ to images/ next to it
 zvonec/data-repo/       workflow templates for the data repo: web.yml (publishes the app + access.json +
-                        public.json, refuses data/, names in access.json and person data in public.json),
+                        public.json + images/ of published events, refuses data/, names in access.json,
+                        person data in public.json and images public.json does not list),
                         check.yml („Collision check“)
 zvonec/test/            node --test zvonec/test/*.test.mjs
 .github/workflows/zvonec.yml   „Zvonec tests“: tests + node --check of every module
@@ -203,22 +221,29 @@ file next to `access.json`: `public.json`, built from `data/` by `lib/public.js`
 
 ```
 public.json  { v: 1, churchName, address, generated: "YYYY-MM-DD",
-               events:  [{ id, title, kind, start, end, places: [placeName], note, cancelled?: true }],
+               events:  [{ id, title, kind, start, end, description, image: "images/<name>" | null,
+                           places: [{ name, address?, lat?, lon? }], cancelled?: true }],
                formats: [{ id, name, minutes, why, how }] }
+images/<name>   the pictures of the published events (copied from data/images/)
 ```
 - Publishing is explicit. Events: `event.public === true` (a new event starts from its type's
-  `public`), text for visitors in `event.publicNote` (empty string when none). Formats:
-  `format.public === true`. Nothing else is ever published.
+  `public`), text for visitors in `event.description` (empty string when none). `image` is the event's
+  own picture, else its type's, else `null` (the UI then draws a generated cover). Places: name, plus
+  `address` and `lat`/`lon` only when the place has them. Formats: `format.public === true`. Nothing
+  else is ever published.
 - Window: events reaching into the days from yesterday to 120 days ahead (`daysAhead`), sorted by start
   then id. Cancelled events stay with `cancelled: true`, so people see the cancellation.
 - No person data: no assignments, no program (so no leaders), no person ids, no `note`, no availability.
-  Place ids are turned into place names. Titles are written by leaders – a title is public, so no
+  Place ids are turned into public places (name, address, coordinates). Titles are written by leaders – a title is public, so no
   names of private people in it.
 - `zvonec/build-public.mjs` runs in the data repo's `web.yml` (node 22, Prague date) and writes
   `site/public.json`. The workflow runs on a push to `data/events.json` or `data/settings.json` (and
   daily), so publishing an event is live within minutes. Its guard fails the run when `public.json`
   contains `"personId"`, `"assignments"`, `"firstName"`, `"lastName"`, `"email"` or `"phone"`, and
-  `data/` itself is still never published.
+  `data/` itself is still never published. The only files from `data/` on the site are
+  `site/images/<name>` of published, upcoming events (`publicImages()`; a missing file is a warning); the
+  guard fails the run when `site/images/` holds anything `public.json` does not list. The workflow also
+  runs on a push to `data/images/**`.
 - The app loads `public.json` (same origin) for signed-out visitors; demo mode builds the same object
   from the demo data with `buildPublic`. See DESIGN.md §4.
 
