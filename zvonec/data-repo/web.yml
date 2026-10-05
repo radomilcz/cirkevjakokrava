@@ -5,6 +5,10 @@
 # this repo's GitHub Pages. Nothing under data/ (people, phones, duties) is ever published – the app
 # reads it through the GitHub API after sign-in.
 #
+# The one exception is public.json: zvonec/build-public.mjs (from the public repo) cuts it out of
+# data/ – only events and formats marked `public: true`, upcoming, with no person data at all. It is
+# what visitors who are not signed in see. The guard below fails the run if a person key slips in.
+#
 # One-time setup: Settings → Pages → Source: GitHub Actions; Custom domain zvonec.cirkevjakokrava.cz;
 # DNS record CNAME zvonec → radomilcz.github.io. (Pages from a private repo needs GitHub Pro / Team.)
 name: Web
@@ -12,7 +16,11 @@ name: Web
 on:
   push:
     branches: [main]
-    paths: [access.json, .github/workflows/web.yml]   # new or revoked login → live within minutes
+    paths:                                            # new or revoked login, newly published event → live within minutes
+      - access.json
+      - data/events.json                              # events and formats (`public`, `publicNote`)
+      - data/settings.json                            # church name and address
+      - .github/workflows/web.yml
   schedule:
     - cron: "41 3 * * *"        # daily, so app updates from the public repo get published too
   workflow_dispatch:
@@ -30,11 +38,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out access.json only
+      - name: Check out access.json and data/ (data/ only feeds public.json, it is never copied to the site)
         uses: actions/checkout@v4
         with:
           path: private
-          sparse-checkout: access.json
+          sparse-checkout: |
+            access.json
+            data
           sparse-checkout-cone-mode: false
 
       - name: Check out the app from the public repo
@@ -44,6 +54,7 @@ jobs:
           path: web
           sparse-checkout: |
             docs/zvonec
+            zvonec/build-public.mjs
             docs/assets/fonts
             docs/assets/favicon.svg
             docs/assets/favicon-32.png
@@ -63,13 +74,25 @@ jobs:
           echo "{\"owner\":\"${GITHUB_REPOSITORY%%/*}\",\"repo\":\"${GITHUB_REPOSITORY#*/}\"}" > site/repo.json
           echo "zvonec.cirkevjakokrava.cz" > site/CNAME
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build public.json (published events and formats only)
+        run: node web/zvonec/build-public.mjs private/data site/public.json
+
       - name: Refuse personal data
         run: |
-          # nothing from data/ and no JSON except access.json and repo.json may be published
+          # nothing from data/ and no JSON except access.json, repo.json and public.json may be published
           if find site -path '*/data/*' -o -path '*/data' | grep -q .; then echo "::error::data/ must never be published"; exit 1; fi
-          extra=$(find site -name '*.json' ! -name access.json ! -name repo.json)
+          extra=$(find site -name '*.json' ! -name access.json ! -name repo.json ! -name public.json)
           if [ -n "$extra" ]; then echo "::error::unexpected JSON on the site: $extra"; exit 1; fi
           if grep -Eq '"(firstName|lastName)"' site/access.json; then echo "::error::access.json contains personal names"; exit 1; fi
+          # public.json is the only file cut out of data/: no person data may be in it
+          [ -f site/public.json ] || { echo "::error::public.json is missing"; exit 1; }
+          if grep -Eq '"(personId|assignments|firstName|lastName|email|phone)"' site/public.json; then echo "::error::public.json contains person data"; exit 1; fi
+          node -e 'const p = JSON.parse(require("fs").readFileSync("site/public.json", "utf8")); if (p.v !== 1 || !Array.isArray(p.events) || !Array.isArray(p.formats)) process.exit(1)' \
+            || { echo "::error::public.json is not a valid public file"; exit 1; }
           node -e 'const a = JSON.parse(require("fs").readFileSync("site/access.json", "utf8")); if (!Array.isArray(a.logins)) process.exit(1)' \
             || { echo "::error::access.json is not a valid access file"; exit 1; }
           find site -type f | sort

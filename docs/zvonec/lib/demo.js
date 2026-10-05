@@ -163,10 +163,12 @@ const PLACES = [
 // formats a program is built from: id, name, minutes, lead role, why / how / link / needs
 const FORMATS = [
   ['f-welcome', 'Přivítání', 5, 'r-lead', {
+    public: true,
     why: 'Kdo přijde poprvé, má hned vědět, že je tu vítaný a co ho čeká.',
     how: 'Vedoucí pozdraví, řekne, kdo jsme a co dnes bude. Novým lidem ukáže, kde je kafe a záchod. Pět minut, žádné kázání.',
   }],
   ['f-worship', 'Chvály', 25, 'r-vocals', {
+    public: true,
     why: 'Zpíváme Bohu, protože je dobrý. A při zpěvu se přestaneme honit.',
     how: 'Kapela zahraje čtyři až pět písní, texty běží na plátně. Mezi písněmi stačí krátká věta.',
   }],
@@ -179,15 +181,18 @@ const FORMATS = [
     how: 'Vedoucí dětí si je vyzvedne vepředu a odvede do malé místnosti. Rodičům řekne, kde je najdou.',
   }],
   ['f-sermon', 'Kázání', 35, 'r-sermon', {
+    public: true,
     why: 'Otevíráme Bibli, aby k nám mluvila v obyčejném týdnu.',
     how: 'Kazatel mluví asi půl hodiny. Jedna hlavní myšlenka, jeden příběh ze života a jedna věc, kterou si odneseme do úterý.',
   }],
   ['f-questions', 'Otázky na tělo', 20, 'r-lead', {
+    public: true,
     why: 'Přežvykujeme, co jsme slyšeli, dokud to nevstřebáme celé.',
     how: 'Rozdělíme se do dvojic nebo po třech. Každá skupinka dostane dvě až tři otázky z otazky.cirkevjakokrava.cz. Na konci pár lidí řekne, co je trklo.',
     link: 'https://otazky.cirkevjakokrava.cz',
   }],
   ['f-communion', 'Večeře Páně', 10, 'r-communion', {
+    public: true,
     why: 'Připomínáme si, že Ježíš za nás dal život, a jíme u jednoho stolu jako rodina.',
     how: 'Vedoucí přečte krátký text a pomodlí se. Chléb a víno (nebo džus) roznesou dva pomocníci. Kdo nechce, pošle to dál, nic se neděje.',
     needs: [{ roleId: 'r-communion', count: 2 }],
@@ -301,7 +306,7 @@ export function createDemo(today = localToday()) {
 
   const eventTypes = [
     {
-      id: 't-sunday', name: 'Setkání na pastvě', kind: 'service', startTime: '10:00', minutes: 120,
+      id: 't-sunday', name: 'Setkání na pastvě', kind: 'service', startTime: '10:00', minutes: 120, public: true,
       placeIds: ['l-hall', 'l-small'], needs: structuredClone(SUNDAY_NEEDS),
       program: SUNDAY_PROGRAM.map((formatId) => ({ formatId, minutes: formatMinutes(formatId) })),
     },
@@ -331,6 +336,7 @@ export function createDemo(today = localToday()) {
         start: atMinutes(day, begin), end: atMinutes(day, begin + type.minutes),
         placeIds: [...type.placeIds], seriesId,
         ...(type.groupId ? { groupId: type.groupId } : {}),
+        ...(type.public !== undefined ? { public: type.public } : {}),
         needs: structuredClone(type.needs),
         ...(type.program ? { program: type.program.map((item) => ({ id: id('i'), ...item })) } : {}),
         assignments: [],
@@ -409,6 +415,13 @@ export function createDemo(today = localToday()) {
       assignments: [{ id: id('a'), roleId: 'r-sound', personId: soundTech, status: 'proposed' }],
     });
   }
+  // the garden party itself is open to everyone: a published one-off event with a public note
+  events.push({
+    id: id('e'), title: 'Zahradní slavnost', kind: 'event',
+    start: `${addDays(nextSunday, 6)}T14:00`, end: `${addDays(nextSunday, 6)}T18:00`, placeIds: ['l-outside'],
+    public: true, publicNote: 'Přijďte s celou rodinou. Na zahradě bude gril, pití i hry pro děti. Přineste něco dobrého na společný stůl.',
+    needs: [], assignments: [],
+  });
   // the youth booked the small room at the same time as the home group (K9)
   const homegroup = events.find((e) => e.typeId === 't-homegroup' && e.start.slice(0, 10) > today);
   if (homegroup) {

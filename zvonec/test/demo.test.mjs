@@ -73,13 +73,13 @@ const SPEC = {
     startTime: [true, (x) => TIME.test(x)], minutes: [true, isInt], placeIds: [true, arrayOf(isStr)],
     needs: [true, arrayOf(need)],
     program: [false, arrayOf((x) => { shape(x, { formatId: [true, isStr], minutes: [true, isInt] }, 'type program'); return true; })],
-    groupId: [false, isStr],
+    groupId: [false, isStr], public: [false, isBool],
   },
   event: {
     id: [true, (x) => /^e/.test(x)], title: [true, isStr], kind: [true, oneOf('service', 'rehearsal', 'smallGroup', 'event')],
     typeId: [false, isStr], start: [true, (x) => DATE_TIME.test(x)], end: [true, (x) => DATE_TIME.test(x)],
     placeIds: [true, arrayOf(isStr)], seriesId: [false, isStr], cancelled: [false, isBool], groupId: [false, isStr],
-    note: [false, isStr], needs: [true, arrayOf(need)],
+    note: [false, isStr], public: [false, isBool], publicNote: [false, isStr], needs: [true, arrayOf(need)],
     program: [false, arrayOf((x) => {
       shape(x, {
         id: [true, (v) => /^i/.test(v)], formatId: [true, isStr], minutes: [true, isInt], title: [false, isStr],
@@ -98,6 +98,7 @@ const SPEC = {
   format: {
     id: [true, (x) => /^f/.test(x)], name: [true, isStr], minutes: [true, isInt], leadRoleId: [false, isStr],
     why: [false, isStr], how: [false, isStr], link: [false, isStr], needs: [false, arrayOf(need)],
+    public: [false, isBool],
   },
   place: { id: [true, (x) => /^l/.test(x)], name: [true, isStr], shared: [true, isBool] },
   availability: {

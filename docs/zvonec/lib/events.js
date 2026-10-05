@@ -11,7 +11,7 @@ export const ASSIGNMENT_STATUSES = ['proposed', 'confirmed', 'declined'];
 export const RECURRENCE_STEPS = ['weekly', 'biweekly', 'monthly'];
 
 /** Fields an edit copies to the following events of a series (besides time of day and length). */
-const SERIES_FIELDS = ['title', 'kind', 'typeId', 'placeIds', 'groupId', 'note', 'needs'];
+const SERIES_FIELDS = ['title', 'kind', 'typeId', 'placeIds', 'groupId', 'note', 'needs', 'public', 'publicNote'];
 
 /** Default id generator: prefix + random string. */
 export function randomId(prefix) {
@@ -68,6 +68,7 @@ export function createFromType(eventType, date, { newId = randomId, data = {} } 
     assignments: [],
   };
   if (eventType.groupId) event.groupId = eventType.groupId;
+  if (typeof eventType.public === 'boolean') event.public = eventType.public;   // publishing starts from the type
   if (eventType.program?.length) copyProgram(data, event, eventType.program, newId);
   return event;
 }

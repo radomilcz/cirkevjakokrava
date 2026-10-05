@@ -90,20 +90,28 @@ Only `team` groups have roles and feed planning.
 ```
 eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" | "event",
                 startTime: "HH:mm", minutes: int, placeIds: [], needs: [need],
-                program?: [{ formatId, minutes }], groupId? }
+                program?: [{ formatId, minutes }], groupId?,
+                public?: bool }                 // events made from this type start as published
 event         { id: "e…", title, kind, typeId?, start, end, placeIds: [], seriesId?,
                 cancelled?: bool, groupId?, note?, needs: [need], program?: [programItem],
-                assignments: [assignment] }
+                assignments: [assignment],
+                public?: bool,                  // published on the public site (§4b); only `true` counts
+                publicNote? }                   // short text for visitors; `note` is never public
 need          { roleId, count: int }
 programItem   { id: "i…", formatId, minutes: int, title?, personId?, note? }   // UI: „osnova“
 assignment    { id: "a…", roleId, personId, status: "proposed" | "confirmed" | "declined",
                 override?: { reason, by?: personId, at?: date } }
-format        { id: "f…", name, minutes: int, leadRoleId?, why?, how?, link?, needs?: [need] }
+format        { id: "f…", name, minutes: int, leadRoleId?, why?, how?, link?, needs?: [need],
+                public?: bool }                 // name, minutes, why and how are public (§4b)
 place         { id: "l…", name, shared: bool }
 availability  { id: "v…", personId, from: date, to: date, reason? }
 servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWeeks?: int,
                 paused?: bool }             // paused = do not plan now (moved away, break)
 ```
+
+`public` has no default: a missing value means not published. `normalize()` keeps it as stored, and
+`createFromType` copies a boolean `public` from the event type to the new event (an edit of a series
+copies `public` and `publicNote` to the following events too).
 
 **Full needs.** What an event needs is `needsOf(data, event)` (lib/events.js): `event.needs` merged
 with the needs of the formats in its program (`programNeeds`, lib/program.js). A format brings its
@@ -149,6 +157,7 @@ lib/program.js         program times, leader of an item
 lib/scheduling.js      candidate ranking, availability and limits, "propose the rest", "same as last time"
 lib/conflicts.js       rules K1–K17 (used by the app, tests and zvonec/check.mjs)
 lib/ics.js             calendar export
+lib/public.js          public view of the data: buildPublic() → public.json (pure, §4b)
 lib/demo.js            fictitious demo data relative to today
 ui/state.js            app state S, can(), change(), render(), navigate(), actAs() (demo), shared Czech labels
 ui/dom.js              h(), buttons, dialogs, form fields, toasts, empty states
@@ -174,14 +183,44 @@ Outside `docs/zvonec/`:
 zvonec/check.mjs        conflict check for the data repo: node zvonec/check.mjs data [--today YYYY-MM-DD]
                         [--markdown file]; reads data/*.json via lib/store fromFiles, Czech output,
                         exit 1 when an upcoming event has an error
-zvonec/data-repo/       workflow templates for the data repo: web.yml (publishes the app + access.json,
-                        refuses data/ and names in access.json), check.yml („Collision check“)
+zvonec/build-public.mjs  public.json for the data repo: node zvonec/build-public.mjs data site/public.json
+                        [--today YYYY-MM-DD]; reads data/*.json via lib/store fromFiles, writes lib/public.js output
+zvonec/data-repo/       workflow templates for the data repo: web.yml (publishes the app + access.json +
+                        public.json, refuses data/, names in access.json and person data in public.json),
+                        check.yml („Collision check“)
 zvonec/test/            node --test zvonec/test/*.test.mjs
 .github/workflows/zvonec.yml   „Zvonec tests“: tests + node --check of every module
 ```
 `web.yml` puts the app at the domain root and `docs/assets/{fonts,favicon*.…,icon-180.png}` into
 `assets/` (index.html and style.css refer to `../assets/…`, which resolves to `/assets/…` on the root),
 and writes `repo.json` = `{ "owner", "repo" }` (read by the first-setup screen).
+
+## 4b. Public data
+
+Visitors who are not signed in must see the upcoming program and how the church meets, without any
+login and without the app being allowed to read the private repo. So the data repo publishes one more
+file next to `access.json`: `public.json`, built from `data/` by `lib/public.js`.
+
+```
+public.json  { v: 1, churchName, address, generated: "YYYY-MM-DD",
+               events:  [{ id, title, kind, start, end, places: [placeName], note, cancelled?: true }],
+               formats: [{ id, name, minutes, why, how }] }
+```
+- Publishing is explicit. Events: `event.public === true` (a new event starts from its type's
+  `public`), text for visitors in `event.publicNote` (empty string when none). Formats:
+  `format.public === true`. Nothing else is ever published.
+- Window: events reaching into the days from yesterday to 120 days ahead (`daysAhead`), sorted by start
+  then id. Cancelled events stay with `cancelled: true`, so people see the cancellation.
+- No person data: no assignments, no program (so no leaders), no person ids, no `note`, no availability.
+  Place ids are turned into place names. Titles are written by leaders – a title is public, so no
+  names of private people in it.
+- `zvonec/build-public.mjs` runs in the data repo's `web.yml` (node 22, Prague date) and writes
+  `site/public.json`. The workflow runs on a push to `data/events.json` or `data/settings.json` (and
+  daily), so publishing an event is live within minutes. Its guard fails the run when `public.json`
+  contains `"personId"`, `"assignments"`, `"firstName"`, `"lastName"`, `"email"` or `"phone"`, and
+  `data/` itself is still never published.
+- The app loads `public.json` (same origin) for signed-out visitors; demo mode builds the same object
+  from the demo data with `buildPublic`. See DESIGN.md §4.
 
 ## 5. Screens and routes
 
