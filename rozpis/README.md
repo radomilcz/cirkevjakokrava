@@ -61,7 +61,7 @@ veřejné repo radomilcz/cirkevjakokrava           soukromé repo radomilcz/sbor
 
 docs/rozpis/  aplikace (kód)  ── bere si ho ──▶  .github/workflows/web.yml
                                                     aplikace + pristup.json → Pages
-                                                    https://kalendar.cirkevjakokrava.cz
+                                                    https://zvonec.cirkevjakokrava.cz
                                                  pristup.json  zapečetěná přihlášení (bez jmen)
                                                  rozpis.json   lidi, služby, setkání – na web NIKDY
 prohlížeč: jméno + heslo → otevře GitHub klíč ──▶  čte a zapisuje rozpis.json přes API
@@ -120,12 +120,12 @@ Fonty, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`
 1. **Soukromé repo** `radomilcz/sbor-data` (prázdné).
 2. Zkopírovat `rozpis/sbor-data/web.yml` a `rozpis/sbor-data/kontrola.yml` do jeho `.github/workflows/`.
 3. **Pages**: v `sbor-data` Settings → Pages → Source: **GitHub Actions**, Custom domain
-   `kalendar.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `kalendar` typu **CNAME** →
+   `zvonec.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `zvonec` typu **CNAME** →
    `radomilcz.github.io.` (stejně jako u Playbooku; Pages ze soukromého repa = GitHub Pro).
    Actions → Web → *Run workflow*.
 4. **GitHub klíč**: Settings → Developer settings → Fine-grained tokens → Generate new token,
    *Only select repositories* → `sbor-data`, Permissions → Repository → **Contents: Read and write**. Nic víc.
-5. Otevřít https://kalendar.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Rozpis**:
+5. Otevřít https://zvonec.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Rozpis**:
    vložit klíč, svoje jméno a heslo. Jako základ jde vzít ukázku (služby, týmy, formáty, šablony – bez lidí).
 6. Přidat lidi (nebo poslat pozvánky) a v kalendáři ze šablony „Setkání na pastvě“ založit setkání,
    které se opakuje každý týden. Vedoucím dát roli vedoucí (u člověka → Přihlášení → Nové heslo / role).

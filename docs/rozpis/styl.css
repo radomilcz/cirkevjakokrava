@@ -153,11 +153,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .page:focus{outline:none}
 .nacitam{opacity:.6}
 .pata{
-  position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:.6em 2em;
+  position:relative;z-index:1;display:flex;justify-content:flex-end;
   padding:clamp(20px,3vw,34px) var(--okraj);border-top:1px solid var(--linka);
 }
 .pata p{margin:0}
-.pata p:first-child{color:var(--tlumeny)}
 
 .eyebrow{
   font-family:var(--display);font-weight:800;font-size:clamp(.92rem,1.6vw,1.2rem);

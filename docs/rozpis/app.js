@@ -1550,7 +1550,7 @@ function sekceUkazka() {
   return h('section', { class: 'sekce' },
     h('h2', {}, 'Kde jsou data'),
     h('p', { class: 'lead' }, 'Tohle je ukázka. Lidi v ní jsou vymyšlení a všechno zůstává jen v tvém prohlížeči.'),
-    h('p', { class: 'poznamka' }, 'Ostrý Rozpis běží na kalendar.cirkevjakokrava.cz a data má v ', h('strong', {}, 'soukromém'), ' repu na GitHubu. Lidi se tam přihlašují jménem a heslem. GitHub účet potřebuje jen správce, který jednou vyrobí klíč. Návod je v repu v souboru rozpis/README.md.'));
+    h('p', { class: 'poznamka' }, 'Ostrý Rozpis běží na zvonec.cirkevjakokrava.cz a data má v ', h('strong', {}, 'soukromém'), ' repu na GitHubu. Lidi se tam přihlašují jménem a heslem. GitHub účet potřebuje jen správce, který jednou vyrobí klíč. Návod je v repu v souboru rozpis/README.md.'));
 }
 
 function sekceUcet() {

@@ -1,12 +1,12 @@
 # Vzor pro SOUKROMÉ datové repo (radomilcz/sbor-data) – zkopíruj do .github/workflows/web.yml.
 #
-# Vystaví Rozpis na https://kalendar.cirkevjakokrava.cz jako Mobilise Playbook: aplikace se vezme
+# Vystaví Rozpis na https://zvonec.cirkevjakokrava.cz jako Mobilise Playbook: aplikace se vezme
 # z veřejného repa s webem, přidá se k ní pristup.json (zapečetěná přihlášení – žádná jména,
 # žádný klíč v čitelné podobě) a jde to na GitHub Pages tohohle repa.
 # rozpis.json (lidi, telefony, služby) na web NIKDY nejde – čte se až po přihlášení přes API.
 #
-# Jednorázově: Settings → Pages → Source: GitHub Actions; Custom domain kalendar.cirkevjakokrava.cz;
-# u DNS záznam CNAME kalendar → radomilcz.github.io. (Pages ze soukromého repa = GitHub Pro.)
+# Jednorázově: Settings → Pages → Source: GitHub Actions; Custom domain zvonec.cirkevjakokrava.cz;
+# u DNS záznam CNAME zvonec → radomilcz.github.io. (Pages ze soukromého repa = GitHub Pro.)
 name: Web
 
 on:
@@ -51,7 +51,7 @@ jobs:
           cp web/docs/assets/favicon.svg web/docs/assets/favicon-32.png web/docs/assets/icon-180.png site/assets/
           if [ -f pristup.json ]; then cp pristup.json site/; else echo '{"v":1,"pristupy":[]}' > site/pristup.json; fi
           echo "{\"vlastnik\":\"${GITHUB_REPOSITORY%%/*}\",\"repo\":\"${GITHUB_REPOSITORY#*/}\"}" > site/repo.json
-          echo "kalendar.cirkevjakokrava.cz" > site/CNAME
+          echo "zvonec.cirkevjakokrava.cz" > site/CNAME
           # pojistka: na web nesmí nic čitelného z dat
           if [ -f site/rozpis.json ]; then echo "::error::rozpis.json nesmí na web"; exit 1; fi
           if grep -q '"jmeno"' site/pristup.json; then echo "::error::pristup.json obsahuje jména"; exit 1; fi

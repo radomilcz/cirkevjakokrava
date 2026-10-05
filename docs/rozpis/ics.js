@@ -44,7 +44,7 @@ export function ics(data, polozky, nazevKalendare) {
     const kde = (udalost.mista || []).map((id) => mista.get(id)?.nazev).filter(Boolean).join(', ');
     const adresa = data.nastaveni?.adresa;
     radky.push('BEGIN:VEVENT',
-      `UID:${uid || udalost.id}@kalendar.cirkevjakokrava.cz`,
+      `UID:${uid || udalost.id}@zvonec.cirkevjakokrava.cz`,
       `DTSTAMP:${razitko}`,
       `DTSTART;TZID=Europe/Prague:${cas(udalost.zacatek)}`,
       `DTEND;TZID=Europe/Prague:${cas(udalost.konec)}`,
