@@ -8,8 +8,8 @@ aplikace na GitHub Pages, data v soukromém repu, kontrola v GitHub Actions. Ž�
 Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, otisk z Figmy,
 pilulky, šipky, tykání a stejná paleta. Bez volby se Rozpis řídí zařízením: ve světlém režimu
 krém a hlína (`#f9e7dd` / `#3b2f2f`), v tmavém hlína a růžová (`#3b2f2f` / `#e6acac`). Terč v liště otevře
-všech devět dvojic z palety (hlína, růžová, krém, zelená, modrá); volba se pamatuje v prohlížeči. Tisk jde vždy
-na bílý papír.
+pět dvojic z palety, které mají dost kontrastu i na drobný text (zelená a dvojice růžová–modrá na to nestačí);
+volba se pamatuje v prohlížeči. Tisk jde vždy na bílý papír.
 
 ## Co to umí
 

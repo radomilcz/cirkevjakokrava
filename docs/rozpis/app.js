@@ -107,7 +107,9 @@ function otevriDialog(obsah, { siroky = false } = {}) {
   d.replaceChildren(obsah);
   d.classList.toggle('siroky', siroky);
   if (!d.open) d.showModal();
-  const prvni = d.querySelector('[autofocus], input, select, textarea, button');
+  // na dotykovém displeji by focus do pole hned vytáhl klávesnici a zakryl půl dialogu
+  const jemny = !window.matchMedia || window.matchMedia('(pointer: fine)').matches;
+  const prvni = jemny ? d.querySelector('[autofocus], input, select, textarea, button') : d.querySelector('button');
   if (prvni) prvni.focus();
 }
 
@@ -225,7 +227,7 @@ function upravMenu() {
   document.body.classList.toggle('neprihlaseny', ostry && !S.ja);
   const planuje = muze('planovat');
   const lide = document.querySelector('.menu [data-sekce=lide]');
-  lide.textContent = planuje ? 'Lidé' : 'Já';
+  lide.textContent = planuje ? 'Lidé' : 'Moje služby';
   lide.setAttribute('href', planuje ? '#lide' : `#osoba/${ja()}`);
   document.querySelectorAll('.menu [data-sekce=sluzby], .menu [data-sekce=kolize]').forEach((a) => { a.hidden = !planuje; });
 }
@@ -275,7 +277,8 @@ function vykresliKalendar(parametr) {
     const zav = S.kolizeUdalosti.get(u.id);
     return h('a', {
       href: `#udalost/${u.id}`,
-      class: ['cip', `typ-${u.typ}`, zav === 'chyba' && 'chyba', zav === 'varovani' && 'varovani', u.zruseno && 'zruseno'],
+      class: ['cip', `typ-${u.typ}`, zav === 'chyba' && 'chyba', zav === 'varovani' && 'varovani', u.zruseno && 'zruseno',
+        ja() && (u.prirazeni || []).some((p) => p.osoba === ja() && p.stav !== 'odmitnuto') && 'muj'],
       title: `${u.nazev} · ${cas.hezkyRozsah(u)}${zav ? ` · ${ZAVAZNOST[zav]}` : ''}`,
       onclick: (e) => e.stopPropagation(),
     }, sCasem ? h('span', { class: 'cas' }, cas.hezkyCas(u.zacatek)) : null, u.nazev);
@@ -295,18 +298,20 @@ function vykresliKalendar(parametr) {
       jejich.map((u) => cip(u)));
     }));
 
-  const dnyMesice = dny.filter((d) => cas.mesicZ(d) === mesic && vDen(d).length);
+  // na mobilu seznam dnů: v tomhle měsíci od dneška, co už bylo, nikoho nezajímá
+  const dnyMesice = dny.filter((d) => cas.mesicZ(d) === mesic && vDen(d).length && (mesic !== cas.mesicZ(dnes) || d >= dnes));
+  const denBezRoku = (den) => cas.hezkyDenDlouze(den).replace(/ \d{4}$/, '');
   const agenda = h('ul', { class: 'agenda' }, dnyMesice.map((den) => h('li', {},
-    h('p', { class: ['den-nazev', den === dnes && 'dnes'] }, cas.hezkyDenDlouze(den)),
+    h('p', { class: ['den-nazev', den === dnes && 'dnes'] }, denBezRoku(den)),
     vDen(den).map((u) => cip(u)))));
 
   const nic = !udalosti.some((u) => cas.mesicZ(u.zacatek) === mesic);
 
   return [
-    hlavaStranky('neděle po neděli', 'Kalendář'),
+    h('p', { class: 'eyebrow' }, 'kalendář'),
+    h('h1', { class: 'title mensi' }, cas.nazevMesice(mesic)),
     h('div', { class: 'mesic-nav' },
       odkaz('', `#kalendar/${cas.mesicZ(cas.posunMesice(`${mesic}-01`, -1))}`, 'tl male sipka-zpet', { 'aria-label': 'Předchozí měsíc' }),
-      h('h2', { class: 'nazev' }, cas.nazevMesice(mesic)),
       odkaz('→', `#kalendar/${cas.mesicZ(cas.posunMesice(`${mesic}-01`, 1))}`, 'tl male', { 'aria-label': 'Další měsíc' }),
       mesic !== cas.mesicZ(dnes) ? odkaz('Dnes', '#kalendar', 'tl male bez') : null,
       h('span', { class: 'vpravo' },
@@ -314,7 +319,8 @@ function vykresliKalendar(parametr) {
     h('ul', { class: 'legenda', 'aria-label': 'Co znamenají barvy' },
       h('li', {}, h('span', { class: 'vzor chyba-plocha' }), 'chyba v rozpisu'),
       h('li', {}, h('span', { class: 'vzor' }), 'v pořádku'),
-      h('li', {}, h('span', { class: 'vzor cip varovani' }), 'něco chybí')),
+      h('li', {}, h('span', { class: 'vzor cip varovani' }), 'pozor, něco chybí'),
+      ja() ? h('li', {}, h('span', { class: 'vzor cip muj' }), 'tady sloužíš') : null),
     nic ? prazdno('Prázdná pastva.', 'Tenhle měsíc tu ještě nic není.', muze('planovat') ? tl('Přidat setkání', () => dialogNovaUdalost(`${mesic}-01`), 'hlavni') : null) : null,
     mrizka,
     agenda,
@@ -322,6 +328,21 @@ function vykresliKalendar(parametr) {
 }
 
 // ---------- nová / upravená událost ----------
+
+/**
+ * Stav vlastní služby: dvě jasná tlačítka místo cyklu. Když už je rozhodnuto, jen slovo a „změnit“.
+ */
+function volbaStavu(p, kdo) {
+  const nastav = (stav) => { p.stav = stav; zmena(`${kdo}: ${STAVY_PRIRAZENI[stav]}`); };
+  if (p.stav === 'navrzeno') {
+    return h('span', { class: 'volba-stavu' },
+      tl('Potvrdit', () => nastav('potvrzeno'), 'mini hlavni'),
+      tl('Nemůžu', () => nastav('odmitnuto'), 'mini'));
+  }
+  return h('span', { class: 'volba-stavu' },
+    h('span', { class: ['stitek', p.stav === 'potvrzeno' && 'plny'] }, STAVY_PRIRAZENI[p.stav] || p.stav),
+    tl('změnit', () => nastav('navrzeno'), 'mini bez'));
+}
 
 function poleText(nazev, popisek, hodnota = '', extra = {}) {
   return h('label', { class: ['pole', extra.cela && 'cela'] }, h('span', {}, popisek),
@@ -539,11 +560,15 @@ function vykresliUdalost(id) {
           const osoba = najdiOsobu(pr.osoba);
           const zav = chybaPrirazeni.get(pr.id);
           const muj = pr.osoba === ja();
-          return h('span', { class: ['slot', pr.stav, zav === 'chyba' && smi && 'chyba', zav === 'varovani' && smi && 'varovani', muj && 'muj'] },
+          const proc = smi ? kolize.filter((k) => (k.prirazeni || []).includes(pr.id)).map((k) => k.text).join(' ') : '';
+          if (muj && !smi) {
+            return h('span', { class: ['slot', pr.stav, 'muj'] }, h('span', { class: 'kdo' }, jmeno(osoba)), volbaStavu(pr, jmeno(osoba)));
+          }
+          return h('span', { class: ['slot', pr.stav, zav === 'chyba' && smi && 'chyba', zav === 'varovani' && smi && 'varovani', muj && 'muj'], title: proc || null },
             smi ? h('button', { type: 'button', class: 'kdo', title: 'Vyměnit', onclick: () => dialogKandidati(u, p.sluzba, pr) }, jmeno(osoba))
               : h('span', { class: 'kdo' }, jmeno(osoba)),
-            smi || muj ? h('button', {
-              type: 'button', class: 'stav', title: 'Přepnout stav',
+            smi ? h('button', {
+              type: 'button', class: 'stav', title: 'Přepnout stav: navrženo → potvrzeno → nemůže',
               onclick: () => { pr.stav = DALSI_STAV[pr.stav] || 'navrzeno'; zmena(`${jmeno(osoba)}: ${STAVY_PRIRAZENI[pr.stav]}`); },
             }, STAVY_PRIRAZENI[pr.stav] || pr.stav) : h('span', { class: 'stav' }, STAVY_PRIRAZENI[pr.stav] || pr.stav),
             smi && (zav === 'chyba' || pr.prepis) ? h('button', {
@@ -558,7 +583,7 @@ function vykresliUdalost(id) {
         Array.from({ length: prazdnych }, () => (smi
           ? h('button', { type: 'button', class: 'slot prazdny', onclick: () => dialogKandidati(u, p.sluzba) }, 'kdo?')
           : h('span', { class: 'slot prazdny' }, 'kdo?'))),
-        smi && !prazdnych ? h('button', { type: 'button', class: 'tl mini bez', onclick: () => dialogKandidati(u, p.sluzba), title: 'Přidat dalšího' }, '+') : null),
+        smi && !prazdnych ? h('button', { type: 'button', class: 'tl mini bez', onclick: () => dialogKandidati(u, p.sluzba), 'aria-label': `Přidat dalšího: ${sluzba?.nazev || ''}` }, '+ další') : null),
       h('span', {})));
   }
 
@@ -570,9 +595,9 @@ function vykresliUdalost(id) {
 
   return [
     odkaz('Kalendář', `#kalendar/${cas.mesicZ(u.zacatek)}`, 'zpet'),
-    hlavaStranky(`${TYPY[u.typ] || u.typ}${u.zruseno ? ' · zrušeno' : ''}`, u.nazev, null, { mensi: true }),
+    hlavaStranky([cas.hezkyDenDlouze(u.zacatek), TYPY[u.typ] && TYPY[u.typ] !== u.nazev ? TYPY[u.typ] : null, u.zruseno ? 'zrušeno' : null].filter(Boolean).join(' · '), u.nazev, null, { mensi: true }),
     h('p', { class: 'meta' },
-      h('span', {}, h('span', { class: 'co' }, 'kdy'), cas.hezkyRozsah(u)),
+      h('span', {}, h('span', { class: 'co' }, 'kdy'), cas.denZ(u.zacatek) === cas.denZ(cas.posunMinuty(u.konec, -1)) ? `${cas.hezkyCas(u.zacatek)}–${cas.hezkyCas(u.konec)}` : cas.hezkyRozsah(u)),   // den je v nadtitulku
       kdeTo ? h('span', {}, h('span', { class: 'co' }, 'kde'), kdeTo) : null,
       rada.length > 1 ? h('span', {}, h('span', { class: 'co' }, 'řada'), `${poradi + 1}. z ${rada.length}`) : null),
     u.poznamka ? h('p', { class: 'lead' }, u.poznamka) : null,
@@ -590,11 +615,6 @@ function vykresliUdalost(id) {
         hlaska(`Zkopírováno ${nove.length} lidí.`);
       }) : null,
       smi ? tl('Upravit', () => dialogNovaUdalost(null, u)) : null,
-      smi ? tl(u.zruseno ? 'Obnovit' : 'Zrušit setkání', () => {
-        u.zruseno = !u.zruseno || undefined;
-        zmena(`${u.zruseno ? 'zrušeno' : 'obnoveno'} ${u.nazev}`);
-      }) : null,
-      smi ? tl('Smazat', () => dialogSmazatUdalost(u)) : null,
       tl('Do kalendáře (.ics)', () => stahni(`${u.nazev}-${cas.denZ(u.zacatek)}.ics`, ics(S.data, [{ udalost: u }], u.nazev), 'text/calendar'), 'bez')),
     h('div', { class: 'mrizka' },
       h('section', { class: 'sekce' },
@@ -610,6 +630,12 @@ function vykresliUdalost(id) {
         rada.length > 1 ? h('div', { class: 'akce' },
           predchozi ? odkaz(`${cas.hezkyDen(predchozi.zacatek)}`, `#udalost/${predchozi.id}`, 'tl male sipka-zpet') : null,
           dalsi ? odkaz(`${cas.hezkyDen(dalsi.zacatek)} →`, `#udalost/${dalsi.id}`, 'tl male') : null) : null) : null),
+    smi ? h('div', { class: 'akce odsazeni' },
+      tl(u.zruseno ? 'Obnovit setkání' : 'Zrušit setkání', () => {
+        u.zruseno = !u.zruseno || undefined;
+        zmena(`${u.zruseno ? 'zrušeno' : 'obnoveno'} ${u.nazev}`);
+      }, 'male bez'),
+      tl('Smazat', () => dialogSmazatUdalost(u), 'male bez')) : null,
   ];
 }
 
@@ -808,7 +834,7 @@ function dialogFormat(f) {
       h('label', { class: 'pole cela' }, h('span', {}, 'Proč to děláme'), h('textarea', { name: 'proc', rows: 3, placeholder: 'Proč to na setkání máme? Co si z toho lidi odnesou?' }, f?.proc || '')),
       h('label', { class: 'pole cela' }, h('span', {}, 'Jak to probíhá'), h('textarea', { name: 'jak', rows: 4, placeholder: 'Co přesně se děje, kdo co dělá, na co nezapomenout.' }, jakFormatu(f))),
       poleText('odkaz', 'Odkaz (nepovinný)', f?.odkaz, { cela: true, typ: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
-      h('div', { class: 'cela' }, h('p', { class: 'poznamka' }, 'Služby, které formát přidá do setkání (Večeře Páně třeba 2 lidi):'), editor),
+      editor,
     ],
     ulozit: (fe) => {
       const nazev = fe.nazev.value.trim();
@@ -881,7 +907,7 @@ function dialogKandidati(u, sluzbaId, menim) {
   const seznam = kandidati(S.data, u.id, sluzbaId, { dnes: cas.dnes() })
     .filter((k) => k.osoba.stav !== 'neaktivni');
   const hledat = h('input', { type: 'search', placeholder: 'Hledat jméno', 'aria-label': 'Hledat jméno', autofocus: true });
-  const vsichni = h('label', { class: 'volba' }, h('input', { type: 'checkbox' }), h('span', {}, 'i ti, co to neumí'));
+  const vsichni = h('label', { class: 'zaskrtnuti' }, h('input', { type: 'checkbox' }), h('span', { class: 'ctverec', 'aria-hidden': 'true' }), h('span', { class: 'veta' }, 'Ukázat i ty, kdo to neumí'));
   const ul = h('ul', { class: 'kandidati' });
 
   const vyber = (osoba) => {
@@ -915,8 +941,8 @@ function dialogKandidati(u, sluzbaId, menim) {
     h('p', { class: 'eyebrow' }, `${cas.hezkyDen(u.zacatek)} · ${u.nazev}`),
     h('h2', {}, menim ? `Místo: ${jmeno(najdiOsobu(menim.osoba))}` : `Kdo na ${sluzba?.nazev || 'službu'}?`),
     h('div', { class: 'hledani' }, hledat, vsichni),
+    h('p', { class: 'poznamka' }, 'Nahoře jsou ti, kdo můžou a mají v měsíci nejmíň služeb. Plná pilulka = takhle to nepůjde.'),
     ul,
-    h('p', { class: 'poznamka' }, 'Nahoře ti, kdo můžou a mají v měsíci nejmíň služeb. Plná pilulka = takhle to nepůjde.'),
     h('div', { class: 'akce' }, tl('Zavřít', zavriDialog))));
 }
 
@@ -975,18 +1001,20 @@ function vykresliRozpis(parametr) {
     h('div', { class: 'mesic-nav' },
       odkaz('', `#rozpis/${cas.mesicZ(cas.posunMesice(`${mesic}-01`, -1))}`, 'tl male sipka-zpet', { 'aria-label': 'Předchozí měsíc' }),
       odkaz('→', `#rozpis/${cas.mesicZ(cas.posunMesice(`${mesic}-01`, 1))}`, 'tl male', { 'aria-label': 'Další měsíc' }),
-      h('span', { class: 'vpravo' }, tl('Vytisknout rozpis', () => window.print(), 'hlavni male'))),
-    h('div', { class: 'filtr', role: 'group', 'aria-label': 'Druh' },
-      [['bohosluzba', 'Neděle'], ['zkouska', 'Zkoušky'], ['', 'Všechno']].map(([v, t]) => h('button', {
-        type: 'button', 'aria-pressed': String(typ === v), onclick: () => { S.filtr.rozpisTyp = v; vykresli(); },
-      }, t)),
-      [['', 'Všechny týmy'], ...S.data.tymy.map((t) => [t.id, t.nazev])].map(([v, t]) => h('button', {
-        type: 'button', 'aria-pressed': String(tymF === v), onclick: () => { S.filtr.rozpisTym = v; vykresli(); },
-      }, t))),
+      h('span', { class: 'vpravo' }, tl('Vytisknout rozpis', () => window.print(), 'hlavni male', { title: 'Na bílý papír, bez telefonů' }))),
+    h('div', { class: 'filtr' },
+      h('div', { class: 'skupina', role: 'group', 'aria-label': 'Druh' },
+        [['bohosluzba', 'Neděle'], ['zkouska', 'Zkoušky'], ['', 'Všechno']].map(([v, t]) => h('button', {
+          type: 'button', 'aria-pressed': String(typ === v), onclick: () => { S.filtr.rozpisTyp = v; vykresli(); },
+        }, t))),
+      h('div', { class: 'skupina', role: 'group', 'aria-label': 'Tým' },
+        [['', 'Všechny týmy'], ...S.data.tymy.map((t) => [t.id, t.nazev])].map(([v, t]) => h('button', {
+          type: 'button', 'aria-pressed': String(tymF === v), onclick: () => { S.filtr.rozpisTym = v; vykresli(); },
+        }, t)))),
     udalosti.length
       ? h('div', { class: 'tabulka-obal' }, tabulka)
       : prazdno('Prázdná pastva.', 'Tenhle měsíc tu nic takového není.', odkaz('Do kalendáře', `#kalendar/${mesic}`, 'tl')),
-    h('p', { class: 'poznamka' }, 'Kurzívou = navrženo, ještě nepotvrdil(a). Plná buňka = chyba, čárkovaná = něco chybí. Telefony se netisknou.'),
+    h('p', { class: 'poznamka' }, 'Kurzívou = navrženo, ještě nepotvrdil(a). Plná buňka = chyba, čárkovaná = pozor, něco chybí.'),
   ];
 }
 
@@ -1110,11 +1138,7 @@ function vykresliOsobu(id) {
           moje.length ? h('ul', { class: 'prehled' }, moje.map(({ u, p }) => h('li', {},
             h('span', { class: 'roztah' }, h('a', { href: `#udalost/${u.id}` }, `${cas.hezkyDen(u.zacatek)} ${cas.hezkyCas(u.zacatek)}`),
               ` · ${sluzby.get(p.sluzba)?.nazev || '?'} · `, h('span', { class: 'slabe' }, u.nazev)),
-            h('button', {
-              type: 'button', class: ['stitek', p.stav === 'potvrzeno' && 'plny', p.stav === 'navrzeno' && 'uci'],
-              onclick: () => { p.stav = DALSI_STAV[p.stav] || 'navrzeno'; zmena(`${jmeno(o)}: ${STAVY_PRIRAZENI[p.stav]}`); },
-              title: 'Přepnout stav',
-            }, STAVY_PRIRAZENI[p.stav])))) : h('p', { class: 'poznamka' }, 'Zatím nikde. Volná neděle na pastvě.')),
+            volbaStavu(p, jmeno(o))))) : h('p', { class: 'poznamka' }, 'Zatím nikde. Volná neděle na pastvě.')),
         h('section', { class: 'sekce' },
           h('h2', {}, 'Nemůže'),
           (o.blokace || []).length ? h('ul', { class: 'prehled' }, o.blokace.map((b) => h('li', { class: b.do < dnes ? 'slabe' : '' },
@@ -1167,7 +1191,7 @@ function dialogOsoba(puvodni) {
   const dovednosti = { ...(o.dovednosti || {}) };
   const seznamDovednosti = h('ul', { class: 'dovednosti' }, S.data.sluzby.map((s) => h('li', {},
     h('span', {}, s.nazev, h('small', {}, S.data.tymy.find((t) => t.id === s.tym)?.nazev || '')),
-    h('span', { class: 'volby' }, [['', '—'], ['zauci', 'učí se'], ['umi', 'umí']].map(([v, t]) => h('label', { class: 'volba' },
+    h('span', { class: 'segment', role: 'radiogroup', 'aria-label': s.nazev }, [['', 'ne'], ['zauci', 'učí se'], ['umi', 'umí']].map(([v, t]) => h('label', {},
       h('input', { type: 'radio', name: `d-${s.id}`, value: v, checked: (dovednosti[s.id] || '') === v, onchange: () => { if (v) dovednosti[s.id] = v; else delete dovednosti[s.id]; } }),
       h('span', {}, t)))))));
 
@@ -1488,7 +1512,7 @@ function vykresliKolize() {
   const mesice = [...skupiny.keys()].sort();
 
   return [
-    hlavaStranky('bučíme', 'Kolize', 'Kdo je naráz na dvou místech, kdo má dovolenou a kde ještě nikdo není. Plná karta = takhle to nepůjde, čárkovaná = ať o tom víš.'),
+    hlavaStranky('bučíme', 'Kolize', 'Kdo je naráz na dvou místech, kdo má dovolenou a kde ještě nikdo není. Plná karta = chyba, takhle to nepůjde. Čárkovaná = pozor, něco chybí.'),
     h('div', { class: 'rule' }),
     h('div', { class: 'filtr', role: 'group', 'aria-label': 'Které' },
       [['vse', 'Všechno'], ['chyba', 'Chyby'], ['varovani', 'Pozor'], ['info', 'Info']].map(([v, t]) => h('button', {
@@ -1738,6 +1762,7 @@ async function prihlasen(vysledek) {
     return;
   }
   pouzij(gh, data || prazdna());
+  if (!muze('planovat') && (!location.hash || location.hash === '#kalendar')) location.hash = `#osoba/${ja()}`;
   if (!muze('planovat') && !PRO_CLENY.includes(trasa().sekce)) location.hash = '#kalendar';
   pristupyGh().nactiJson().then((j) => { S.pristupyRepo = j?.pristupy || []; }).catch(() => {});
 }
