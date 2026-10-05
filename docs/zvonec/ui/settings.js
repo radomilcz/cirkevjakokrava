@@ -148,13 +148,13 @@ function programEditor(program, minutesInput) {
     const sum = program.reduce((s, item) => s + (Number(item.minutes) || 0), 0);
     const length = Number(minutesInput.value) || 0;
     totalLine.textContent = program.length
-      ? `Pořad má ${sum} min${length ? ` z ${length}` : ''}.${length && sum > length ? ' Přetéká – zkrať ho, nebo prodluž setkání.' : ''}`
+      ? `Osnova má ${sum} min${length ? ` z ${length}` : ''}.${length && sum > length ? ' Přetéká – zkrať ji, nebo prodluž setkání.' : ''}`
       : '';
   };
   minutesInput.addEventListener('input', updateTotal);
   const redraw = () => {
     wrap.replaceChildren(
-      h('span', {}, 'Pořad (každé nové setkání podle šablony ho dostane)'),
+      h('span', {}, 'Osnova (každé nové setkání podle šablony ji dostane)'),
       program.length ? h('ol', { class: 'program program-editor' }, program.map((item, i) => h('li', {},
         h('span', { class: 'when' }, `${i + 1}.`),
         h('select', {
@@ -190,10 +190,10 @@ function eventTypesSection() {
     types.length ? h('ul', { class: 'list' }, types.map((t) => h('li', {}, h('button', { type: 'button', class: 'row', onclick: () => eventTypeDialog(t) },
       h('span', { class: 'name' }, t.name, h('small', {}, [
         EVENT_KIND_LABELS[t.kind] || t.kind, prettyClock(t.startTime), `${t.minutes} min`,
-        (t.program || []).length ? `pořad ${plural(t.program.length, 'bod', 'body', 'bodů')}` : null,
+        (t.program || []).length ? `osnova ${plural(t.program.length, 'bod', 'body', 'bodů')}` : null,
       ].filter(Boolean).join(' · '))),
       h('span', { class: 'tags' }, (t.needs || []).map((n) => tag(`${roleById(S.data, n.roleId)?.name || '?'}${n.count > 1 ? ` ${n.count}×` : ''}`, 'quiet'))),
-      h('span', { class: 'right' }, groupById(S.data, t.groupId)?.name || ''))))) : note('Zatím žádná šablona. Šablona předvyplní nové setkání: čas, místo, koho je potřeba a pořad.'),
+      h('span', { class: 'right' }, groupById(S.data, t.groupId)?.name || ''))))) : note('Zatím žádná šablona. Šablona předvyplní nové setkání: čas, místo, koho je potřeba a osnovu.'),
     actions(btn(plus('Přidat šablonu'), () => eventTypeDialog(), 'primary small')));
 }
 
@@ -308,7 +308,7 @@ export function formatWhyHow(format, { withLink = true } = {}) {
 
 function leadText(format) {
   const role = roleById(S.data, format.leadRoleId);
-  return role ? `vede ten, kdo má na setkání roli ${role.name}` : 'kdo vede, vybereš v pořadu u bodu';
+  return role ? `vede ten, kdo má na setkání roli ${role.name}` : 'kdo vede, vybereš v osnově u bodu';
 }
 
 function needsText(format) {
@@ -337,8 +337,8 @@ function formatsSection() {
   const now = today();
   const planned = (id) => S.data.events.filter((e) => !e.cancelled && dayOf(e.start) >= now && (e.program || []).some((i) => i.formatId === id)).length;
   const formats = S.data.formats;
-  return section(['Formáty', count('kostky pořadu')],
-    note('Z formátů se skládá pořad setkání. U každého je napsané, proč ho děláme a jak probíhá.'),
+  return section(['Formáty', count('kostky osnovy')],
+    note('Z formátů se skládá osnova setkání. U každého je napsané, proč ho děláme a jak probíhá.'),
     leader ? actions(btn(plus('Přidat formát'), () => formatDialog(), 'primary small')) : null,
     formats.length
       ? h('div', { class: 'formats spaced' }, formats.map((f) => {
@@ -364,7 +364,7 @@ function formatDialog(format) {
       textField('minutes', 'Kolik minut obvykle', format?.minutes ?? 10, { type: 'number', attr: { min: 0, max: 600 } }),
       h('label', { class: 'field full' }, h('span', {}, 'Kdo to vede'),
         h('select', { name: 'leadRoleId' },
-          h('option', { value: '', selected: !format?.leadRoleId }, '— nikdo, vyberu v pořadu u bodu —'),
+          h('option', { value: '', selected: !format?.leadRoleId }, '— nikdo, vyberu v osnově u bodu —'),
           teams.map(({ group, roles }) => h('optgroup', { label: group.name },
             roles.map((r) => h('option', { value: r.id, selected: r.id === format?.leadRoleId }, `ten, kdo má na setkání roli ${r.name}`)))))),
       textArea('why', 'Proč to děláme', format?.why, { attr: { rows: 3, placeholder: 'Proč to na setkání máme? Co si z toho lidi odnesou?' } }),
@@ -398,7 +398,7 @@ function formatDialog(format) {
       const used = S.data.events.filter((e) => (e.program || []).some((i) => i.formatId === format.id)).length;
       const inTypes = S.data.eventTypes.filter((t) => (t.program || []).some((i) => i.formatId === format.id)).length;
       const where = [used ? plural(used, 'setkání', 'setkání', 'setkání') : '', inTypes ? plural(inTypes, 'šablona', 'šablony', 'šablon') : ''].filter(Boolean).join(' a ');
-      confirmDialog(`Smazat formát ${format.name}?`, where ? `Je v pořadu (${where}) – zmizí i odtamtud.` : '', () => {
+      confirmDialog(`Smazat formát ${format.name}?`, where ? `Je v osnově (${where}) – zmizí i odtamtud.` : '', () => {
         S.data.formats = S.data.formats.filter((x) => x.id !== format.id);
         for (const e of S.data.events) if (e.program) e.program = e.program.filter((i) => i.formatId !== format.id);
         for (const t of S.data.eventTypes) {
@@ -441,9 +441,9 @@ function demoViewAs() {
     toast(access === 'admin' && !personId ? 'Zase vidíš všechno.' : `Díváš se jako ${fullName(S.data.people.find((p) => p.id === personId))} (${ACCESS_LABELS[access]}).`);
   });
   return section('Dívat se jako',
-    note('Vyzkoušej, co vidí člen nebo vedoucí. Člen nemá Nastavení v menu – zpátky se dostaneš přes adresu #nastaveni/ucet.'),
+    note('Vyzkoušej, co vidí člen nebo vedoucí. Člen nemá Nastavení v menu – zpátky se dostaneš tlačítkem „Zpátky jako správce“ na stránce Moje.'),
     form,
-    S.me.personId || S.me.access !== 'admin' ? actions(btn('Zpátky na správce', () => actAs(null, 'admin'), 'small plain')) : null);
+    S.me.personId || S.me.access !== 'admin' ? actions(btn('Zpátky jako správce', () => actAs(null, 'admin'), 'small plain')) : null);
 }
 
 // ---------- Můj účet ----------
@@ -494,7 +494,7 @@ function backupSection() {
   };
   return [
     section('Záloha a přenos',
-      note(`Všechna data jako jeden soubor. Hodí se na zálohu nebo na přenesení do ostrého provozu.${live ? ' Přihlášení v záloze nejsou.' : ''}`),
+      note(`Všechna data jako jeden soubor. Hodí se na zálohu, nebo když chceš data přenést do ostrého Zvonce.${live ? ' Přihlášení v záloze nejsou.' : ''}`),
       actions([
         btn('Stáhnout zálohu (.json)', backup, 'small'),
         btn('Nahrát ze souboru', () => file.click(), 'small'),

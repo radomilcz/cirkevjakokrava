@@ -32,8 +32,8 @@ export const CODES = {
   K12: 'Málo dospělých u dětí',
   K13: 'Nechodí nebo má pauzu',
   K14: 'Zrušené setkání',
-  K15: 'Pořad přetéká',
-  K16: 'Bod pořadu',
+  K15: 'Osnova přetéká',
+  K16: 'Bod osnovy',
   K17: 'Nikdo nevede',
 };
 
@@ -274,7 +274,7 @@ export function findConflicts(data, { today } = {}) {
       if (programMin > eventMin) {
         add({
           key: `K15:${e.id}`, code: 'K15', severity: 'warning', eventId: e.id,
-          text: `Pořad má ${programMin} min, setkání jen ${eventMin}. Něco zkrať, nebo prodluž setkání.`,
+          text: `Osnova má ${programMin} min, setkání jen ${eventMin}. Něco zkrať, nebo prodluž setkání.`,
         });
       }
       for (const { item, start, end } of programTimes(e)) {

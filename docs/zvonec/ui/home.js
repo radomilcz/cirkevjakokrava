@@ -127,9 +127,14 @@ function contactSection(person) {
     actions([btn('Upravit kontakt', () => contactDialog(person), 'small')]));
 }
 
+/** Members have no Nastavení in the menu – the account (password) and the formats are reached from here. */
 function signOut() {
-  if (S.mode === 'live') return section(null, actions([btn('Odhlásit se', () => logout(), 'small plain')]));
-  return null;
+  if (S.mode !== 'live') return null;
+  return section(null, actions([
+    link('Heslo a účet', '#nastaveni/ucet', 'btn small'),
+    link('Formáty', '#nastaveni/formaty', 'btn small plain'),
+    btn('Odhlásit se', () => logout(), 'small plain'),
+  ]));
 }
 
 // ---------- demo and people without a card ----------

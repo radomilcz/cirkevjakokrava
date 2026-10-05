@@ -17,7 +17,8 @@ people     people, households, membership                 imports: nothing
 groups     groups, roles (duties a team covers), members  imports: people (ids only)
 events     event types, events, program, assignments,     imports: people, groups
            formats, places, availability, serving limits
-conflicts  rules K1–K17, candidate ranking                imports: all, read-only, pure
+scheduling candidate ranking, propose, same as last time   imports: people, events (needsOf)
+conflicts  rules K1–K17                                   imports: all, read-only, pure
 access     logins, sealing the GitHub token               imports: nothing (links by personId)
 ```
 
@@ -94,7 +95,7 @@ event         { id: "e…", title, kind, typeId?, start, end, placeIds: [], seri
                 cancelled?: bool, groupId?, note?, needs: [need], program?: [programItem],
                 assignments: [assignment] }
 need          { roleId, count: int }
-programItem   { id: "i…", formatId, minutes: int, title?, personId?, note? }
+programItem   { id: "i…", formatId, minutes: int, title?, personId?, note? }   // UI: „osnova“
 assignment    { id: "a…", roleId, personId, status: "proposed" | "confirmed" | "declined",
                 override?: { reason, by?: personId, at?: date } }
 format        { id: "f…", name, minutes: int, leadRoleId?, why?, how?, link?, needs?: [need] }
@@ -103,6 +104,14 @@ availability  { id: "v…", personId, from: date, to: date, reason? }
 servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWeeks?: int,
                 paused?: bool }             // paused = do not plan now (moved away, break)
 ```
+
+**Full needs.** What an event needs is `needsOf(data, event)` (lib/events.js): `event.needs` merged
+with the needs of the formats in its program (`programNeeds`, lib/program.js). A format brings its
+`needs` plus one person for its `leadRoleId`; an item with a hand-picked `personId` does not ask for
+the lead role. The same role is not added up – the larger count wins. Event types store only their own
+needs; the program's needs are never copied into `event.needs`. Everything that reads needs uses the
+full list: the slots on the event screen, the roster columns, `proposeRemaining`, `sameAsLastTime`,
+K5 (unfilled) and K12 (childcare). K17 is left for a format whose lead role no longer exists.
 
 ### settings.json
 ```
@@ -138,25 +147,41 @@ lib/groups.js          members of a group, roles of a person, leaders, skill lev
 lib/events.js          event types → events, series, needs
 lib/program.js         program times, leader of an item
 lib/scheduling.js      candidate ranking, availability and limits, "propose the rest", "same as last time"
-lib/conflicts.js       rules K1–K17 (used by the app, tests and check.mjs)
+lib/conflicts.js       rules K1–K17 (used by the app, tests and zvonec/check.mjs)
 lib/ics.js             calendar export
 lib/demo.js            fictitious demo data relative to today
+ui/state.js            app state S, can(), change(), render(), navigate(), actAs() (demo), shared Czech labels
 ui/dom.js              h(), buttons, dialogs, form fields, toasts, empty states
 ui/palette.js          colour picker (classic script, loaded in <head>)
 ui/home.js             #moje – member home
 ui/calendar.js         month grid / day list, new event
 ui/event.js            event detail: needs, assignments, program editor
-ui/program.js          printable program (A4)
+ui/program.js          printable program „osnova“ (A4)
 ui/roster.js           month table (rozpis), print
 ui/people.js           registry list, person card, person dialog, households, directory
 ui/groups.js           groups, roles, members and skill levels
 ui/picker.js           shared people picker (event slots, group members, households), quick-add
-ui/settings.js         church, event types, places, formats, logins, backup
+ui/settings.js         church, event types, places, formats, logins, backup, my account („Dívat se jako“ in the demo)
 ui/conflicts.js        conflict list and override
 ui/login.js            sign-in, first setup, invite registration
 ```
-Rules: `lib/*` never touches the DOM. `lib/people.js` imports nothing from groups or events.
-`lib/groups.js` never imports from events or scheduling. A test checks the import lines.
+Rules: `lib/*` never touches the DOM. `lib/people.js` imports nothing. `lib/groups.js` never imports
+from events, program, scheduling or conflicts. `lib/events.js` and `lib/program.js` never import
+scheduling or conflicts (those read `needsOf` from events.js – no cycle). A test checks the import lines.
+
+Outside `docs/zvonec/`:
+```
+zvonec/check.mjs        conflict check for the data repo: node zvonec/check.mjs data [--today YYYY-MM-DD]
+                        [--markdown file]; reads data/*.json via lib/store fromFiles, Czech output,
+                        exit 1 when an upcoming event has an error
+zvonec/data-repo/       workflow templates for the data repo: web.yml (publishes the app + access.json,
+                        refuses data/ and names in access.json), check.yml („Collision check“)
+zvonec/test/            node --test zvonec/test/*.test.mjs
+.github/workflows/zvonec.yml   „Zvonec tests“: tests + node --check of every module
+```
+`web.yml` puts the app at the domain root and `docs/assets/{fonts,favicon*.…,icon-180.png}` into
+`assets/` (index.html and style.css refer to `../assets/…`, which resolves to `/assets/…` on the root),
+and writes `repo.json` = `{ "owner", "repo" }` (read by the first-setup screen).
 
 ## 5. Screens and routes
 
@@ -168,26 +193,33 @@ Member navigation: **Moje · Kalendář · Rozpis · Lidé** (Lidé = directory)
 | `#moje` | member home: waiting for answer, my duties (.ics), when I can't, my groups, my contact | logged in |
 | `#kalendar`, `#kalendar/2026-10` | month | all |
 | `#setkani/<id>` | event detail | all, edit leader |
-| `#setkani/<id>/porad` | printable program | all |
+| `#setkani/<id>/osnova` | printable program („osnova“) | all |
 | `#rozpis`, `#rozpis/2026-10` | month table | all |
 | `#lide`, `#lide/clenove` · `neclenove` · `deti` · `nechodi` · `vsichni` · `doplnit` | registry + filter | leader; member = directory |
 | `#osoba/<id>` | person card | leader; member = reduced card |
 | `#domacnosti`, `#domacnost/<id>` | households | leader |
 | `#skupiny`, `#skupina/<id>` | groups, group card with members × roles | leader |
 | `#kolize` | conflicts | leader |
-| `#nastaveni`, `#nastaveni/sablony` · `mista` · `formaty` · `prihlaseni` · `zaloha` | settings | leader (formats readable by all) |
+| `#nastaveni`, `#nastaveni/sablony` · `mista` · `formaty` · `prihlaseni` · `zaloha` · `ucet` | settings | leader; member only `formaty` (read-only) and `ucet` (`#nastaveni` shows a member the account) |
 | `#formaty` | alias of `#nastaveni/formaty` | all |
 | `#pozvanka/<code>` | registration | logged out |
 
-Old slugs `#udalost/<id>` and `#porad/<id>` redirect to `#setkani/…`.
+Old slugs redirect: `#udalost/<id>` → `#setkani/<id>`; `#porad/<id>`, `#setkani/<id>/porad` and
+`#setkani/<id>/prubeh` → `#setkani/<id>/osnova`; `#sluzby` → `#skupiny`. An empty or unknown hash opens
+`#kalendar` for leaders and `#moje` for members; a member opening a leader route lands on `#moje`.
+Inside a screen the UI still hides what members must not see (§6).
 
 Person card: left column is owned by the registry (contact, household, membership, consent, note,
 login); right column shows read-only blocks from other modules with a link to where they are edited
 (groups and roles, upcoming duties, availability and limits, conflicts).
 
-Picking people: one picker for event slots, group members and households. Pills **Umí to · Celý tým ·
-Všichni lidé**; search covers the whole registry; when nothing matches, „+ Nový člověk“ creates a
-minimal card (`guest`, `needsReview`) and picks it in one step.
+Picking people (`ui/picker.js`): one picker for event slots, program leaders, group members and
+households. With an event and a role it ranks `candidates()` and shows the reasons as pills (solid =
+error); pills **Umí to · Celý tým · Všichni lidé** switch the pool. The search always covers the whole
+registry (former and paused people included). For a leader, a search adds „+ Nový člověk „…““: a small
+form (first name, last name, phone, e-mail – split from the query) that warns about similar names,
+creates a minimal card (`guest`, `needsReview`), optionally adds the person to the team (the role as
+`learning`) or group, and picks it in one step. Enter picks the first row.
 
 ## 6. Who sees what
 

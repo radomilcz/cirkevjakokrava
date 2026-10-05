@@ -198,7 +198,7 @@ const FORMATS = [
   }],
   ['f-story', 'Příběh ze života', 10, null, {
     why: 'Bůh je lepší, než jsme se báli. Nejlíp je to vidět na obyčejných lidech.',
-    how: 'Někdo ze sboru vypráví pět až deset minut, co s Bohem zažil. Kdo to bude, vybereš v pořadu: klikni na tenhle bod a vyplň Kdo vede.',
+    how: 'Někdo ze sboru vypráví pět až deset minut, co s Bohem zažil. Kdo to bude, vybereš v osnově: klikni na tenhle bod a vyplň Kdo vede.',
   }],
   ['f-video', '(B)učení – video', 5, 'r-projection', {
     why: 'Krátké video někdy řekne víc než dlouhý výklad.',

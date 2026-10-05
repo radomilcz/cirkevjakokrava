@@ -314,7 +314,7 @@ test('K15 program overflows, K16 leader unavailable, K5 for lead roles the progr
   ];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K15:warning', 'K16:error', 'K5:warning', 'K5:warning']);
-  assert.match(k.find((x) => x.code === 'K15').text, /65 min, setkání jen 60/);
+  assert.equal(k.find((x) => x.code === 'K15').text, 'Osnova má 65 min, setkání jen 60. Něco zkrať, nebo prodluž setkání.');
   assert.match(k.find((x) => x.code === 'K16').text, /Příběh: Jana v tu dobu nemůže \(nemoc\)/);
   assert.deepEqual(k.filter((x) => x.code === 'K5').map((x) => x.roleId).sort(), ['kazani', 'zpev'],
     'the lead roles of the formats are needs of the event');
@@ -375,6 +375,8 @@ test('CODES keeps the Czech labels for every rule', () => {
   assert.deepEqual(Object.keys(CODES), ['K1', 'K2', 'K3', 'K4', 'K4b', 'K5', 'K6', 'K7', 'K8', 'K9', 'K10',
     'K11', 'K12', 'K13', 'K14', 'K15', 'K16', 'K17']);
   assert.equal(CODES.K8, 'Neděle po sobě');
+  assert.equal(CODES.K15, 'Osnova přetéká');
+  assert.equal(CODES.K16, 'Bod osnovy');
 });
 
 // ---------- candidates and proposal ----------

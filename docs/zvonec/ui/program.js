@@ -1,4 +1,4 @@
-// #setkani/<id>/porad – printable program: A4 portrait for the lectern, large enough for the screen.
+// #setkani/<id>/osnova – printable program: A4 portrait for the lectern, large enough for the screen.
 
 import { h, btn, backLink, emptyState, link, meta, note, printHeader, rule, actions } from './dom.js';
 import { S, render } from './state.js';
@@ -19,8 +19,8 @@ export function renderProgram(id) {
   return [
     backLink(event.title, `#setkani/${id}`),
     h('div', { class: 'program-sheet' },
-      printHeader('pořad'),
-      h('p', { class: 'eyebrow no-print' }, 'pořad'),
+      printHeader('osnova'),
+      h('p', { class: 'eyebrow no-print' }, 'osnova'),
       h('h1', { class: 'title smaller' }, event.title),
       meta([prettyDayLong(event.start), `${prettyTime(event.start)}–${prettyTime(event.end)}`, places.join(', ') || null]),
       event.cancelled ? h('p', { class: 'lead' }, 'Tohle setkání je zrušené.') : null,
@@ -45,7 +45,7 @@ export function renderProgram(id) {
               showHow && format?.how ? h('span', { class: 'program-how' }, format.how) : null),
             h('span', { class: 'minutes' }, `${item.minutes} min`));
         }))
-        : emptyState('Pořad je prázdný.', 'Slož ho v detailu setkání.', link('Zpátky', `#setkani/${id}`, 'btn')),
-      times.length ? note(`Konec podle pořadu ${prettyTime(addMinutes(event.start, programDuration(event)))}.`) : null),
+        : emptyState('Osnova je prázdná.', 'Slož ji v detailu setkání.', link('Zpátky', `#setkani/${id}`, 'btn')),
+      times.length ? note(`Konec podle osnovy ${prettyTime(addMinutes(event.start, programDuration(event)))}.`) : null),
   ];
 }

@@ -312,7 +312,7 @@ function programSection(event, previous, leader) {
   const length = eventDuration(event);
   const formats = S.data.formats || [];
   const id = event.id;
-  const edit = () => change(`pořad ${prettyDay(event.start, false)}`);
+  const edit = () => change(`osnova ${prettyDay(event.start, false)}`);
 
   const list = h('ol', { class: 'program' }, times.map(({ item, start }, i) => {
     const format = formatById(S.data, item.formatId);
@@ -343,25 +343,25 @@ function programSection(event, previous, leader) {
       const e = fresh(id);
       if (!e) return;
       addFormat(S.data, e, f.id, newId);
-      change(`${f.name} do pořadu ${prettyDay(e.start, false)}`);
+      change(`${f.name} do osnovy ${prettyDay(e.start, false)}`);
     },
   }, `+ ${f.name}`)));
 
-  return section(['Pořad', count(times.length ? `${total} z ${length} min` : '')],
-    times.length ? list : note(leader ? 'Pořad je zatím prázdný. Slož ho z formátů níž – časy se dopočítají samy.' : 'Pořad ještě není.'),
-    leader && times.length && total > length ? h('p', { class: 'form-error error-fill' }, `Pořad přetéká o ${total - length} min.`) : null,
-    !leader ? null : formats.length ? add : note('Formáty (Kázání, Otázky na tělo, Večeře Páně…) si nadefinuj v Nastavení.'),
+  return section(['Osnova', count(times.length ? `${total} z ${length} min` : '')],
+    times.length ? list : note(leader ? 'Osnova je zatím prázdná. Slož ji z formátů níž – časy se dopočítají samy.' : 'Osnova ještě není.'),
+    leader && times.length && total > length ? h('p', { class: 'form-error error-fill' }, `Osnova přetéká o ${total - length} min.`) : null,
+    !leader ? null : formats.length ? add : note('Formáty (Kázání, Otázky na tělo, Večeře Páně…) si založ v Nastavení.'),
     actions([
-      times.length ? link('Pořad na papír a plátno', `#setkani/${id}/porad`, 'btn small') : null,
-      leader && previous && (previous.program || []).length ? btn('Stejný pořad jako minule', () => {
+      times.length ? link('Osnova na papír a plátno', `#setkani/${id}/osnova`, 'btn small') : null,
+      leader && previous && (previous.program || []).length ? btn('Stejná osnova jako minule', () => {
         const run = () => {
           const e = fresh(id);
           const p = previousEvent(S.data, id);
           if (!e || !p) return;
           copyProgram(S.data, e, p.program, newId);
-          change(`pořad z minula ${prettyDay(e.start, false)}`);
+          change(`osnova z minula ${prettyDay(e.start, false)}`);
         };
-        if ((event.program || []).length) confirmDialog('Nahradit pořad?', 'Pořad z minula nahradí ten, který tu je teď.', run, { buttonLabel: 'Nahradit' });
+        if ((event.program || []).length) confirmDialog('Nahradit osnovu?', 'Osnova z minula nahradí tu, která tu je teď.', run, { buttonLabel: 'Nahradit' });
         else run();
       }, 'small') : null,
     ]));
@@ -407,7 +407,7 @@ function itemDialog(eventId, itemId, draft) {
     eyebrow: `${prettyDay(event.start)} · ${event.title}`,
     title: itemName(S.data, item),
     fields: [
-      textField('title', 'Název v pořadu', d.title, { full: true, hint: format ? `Prázdné = ${format.name}.` : '', attr: { placeholder: format?.name || '' } }),
+      textField('title', 'Název v osnově', d.title, { full: true, hint: format ? `Prázdné = ${format.name}.` : '', attr: { placeholder: format?.name || '' } }),
       textField('minutes', 'Minut', d.minutes, { type: 'number', attr: { min: 0, max: 600 } }),
       fieldGroup('Kdo vede', h('div', { class: 'leader-pick' },
         h('span', { class: 'leader-name' }, whoText),
@@ -425,14 +425,14 @@ function itemDialog(eventId, itemId, draft) {
       if (values.title) target.title = values.title; else delete target.title;
       if (values.personId) target.personId = values.personId; else delete target.personId;
       if (values.note) target.note = values.note; else delete target.note;
-      change(`pořad ${prettyDay(e.start, false)}`);
+      change(`osnova ${prettyDay(e.start, false)}`);
       return null;
     },
     remove: () => {
       const e = fresh(eventId);
       if (!e) return;
       e.program = (e.program || []).filter((x) => x.id !== itemId);
-      change(`pořad ${prettyDay(e.start, false)}`);
+      change(`osnova ${prettyDay(e.start, false)}`);
     },
   });
 }

@@ -455,7 +455,7 @@ function limitsDialog(person) {
     title: fullName(person),
     fields: [
       textField('maxPerMonth', 'Kolik služeb za měsíc nejvýš', limits.maxPerMonth, { type: 'number', attr: { min: 0, max: 31 }, hint: `Obvykle ${defaults.maxPerMonth}.` }),
-      textField('maxConsecutiveWeeks', 'Kolik neděl po sobě nejvýš', limits.maxConsecutiveWeeks, { type: 'number', attr: { min: 1, max: 52 }, hint: `Obvykle ${defaults.maxConsecutiveWeeks}.` }),
+      textField('maxConsecutiveWeeks', 'Kolik nedělí po sobě nejvýš', limits.maxConsecutiveWeeks, { type: 'number', attr: { min: 1, max: 52 }, hint: `Obvykle ${defaults.maxConsecutiveWeeks}.` }),
       checkboxField('paused', 'Pauza – teď nikam neplánovat (je pryč, potřebuje si odpočinout…)', limits.paused),
     ],
     save: (f) => {

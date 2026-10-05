@@ -30,7 +30,7 @@ import { renderLogin, renderSetup, renderInvite } from './ui/login.js';
 const ROUTES = {
   moje: { render: () => renderHome(), member: true },
   kalendar: { render: ([month]) => renderCalendar(month || ''), member: true },
-  setkani: { render: ([id, sub]) => (sub === 'porad' ? renderProgram(id) : renderEvent(id)), member: true, menu: 'kalendar' },
+  setkani: { render: ([id, sub]) => (sub === 'osnova' ? renderProgram(id) : renderEvent(id)), member: true, menu: 'kalendar' },
   rozpis: { render: ([month]) => renderRoster(month || ''), member: true },
   lide: { render: ([filter]) => renderPeople(filter || ''), member: true },
   osoba: { render: ([id]) => renderPerson(id), member: true, menu: 'lide' },
@@ -45,7 +45,8 @@ const ROUTES = {
 /** Old slugs keep working (printed links, bookmarks). */
 const REDIRECTS = [
   [/^udalost\/(.+)$/, (m) => `setkani/${m[1]}`],
-  [/^porad\/(.+)$/, (m) => `setkani/${m[1]}/porad`],
+  [/^porad\/(.+)$/, (m) => `setkani/${m[1]}/osnova`],
+  [/^setkani\/([^/]+)\/(porad|prubeh)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^formaty$/, () => 'nastaveni/formaty'],
   [/^sluzby$/, () => 'skupiny'],
 ];
