@@ -1,1 +1,183 @@
-/* people module – owned by the people team. Uses tokens and components from ../style.css. */
+/* people module – owned by the people team. Uses tokens and components from ../style.css.
+   Screens: #lide, #osoba/<id>, #domacnosti, #domacnost/<id>, #tymy, #tym/<id>, the picker dialog. */
+
+/* ---------- #lide: one calm toolbar (search + quiet filter pills), list, a quiet foot line ---------- */
+.people-toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s3);
+  max-width:var(--w-list);margin:0 0 var(--s4);
+}
+.people-search{flex:1 1 12em;max-width:18em;min-width:0}
+.people-search input{width:100%}
+.people-toolbar .filter{flex:0 1 auto;margin:0;gap:0}
+.people-toolbar .filter a{border-color:transparent;padding:.5em .62em .38em;font-size:.9em;color:var(--ink)}
+.people-toolbar .filter a:hover{background:var(--hover)}
+.people-toolbar .filter a[aria-current="page"]{background:var(--ink);color:var(--ground)}
+.people-toolbar .filter .n{font-size:.86em;color:var(--muted)}
+.people-toolbar .filter a[aria-current="page"] .n{color:rgba(var(--ground-rgb),.8)}
+@media (max-width:620px){
+  .people-search{max-width:none;flex-basis:100%}
+}
+
+/* birthdays: a small quiet line, names are links */
+.birthdays{display:block;max-width:var(--w-list);margin:0 0 var(--s4);font-size:var(--t4);line-height:1.6;color:var(--muted)}
+.birthdays-label{color:var(--ink)}
+.birthdays a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+.birthdays a:hover{border-bottom-color:currentColor}
+.birthdays a.past{color:var(--muted)}
+.birthdays a.today::before{content:"";display:inline-block;width:.5em;height:.5em;margin-right:.35em;border-radius:50%;background:currentColor;vertical-align:.08em}
+
+/* a quiet line under a list: count, „Zkopírovat e-maily“, „A ještě 3 další.“ */
+.list-foot{display:flex;flex-wrap:wrap;align-items:baseline;max-width:var(--w-list);margin:var(--s3) 0 0;padding:0 var(--s3);font-size:var(--t4);color:var(--muted)}
+.list-foot .text-btn{color:var(--ink)}
+.list-empty{max-width:var(--w-list);margin:0;padding:var(--s4) var(--s3);border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted)}
+.sep{color:var(--muted);white-space:pre}
+
+/* teams in the trail of a person row: two names and +N (one name and +N on a phone) */
+.team-trail{display:inline-flex;align-items:baseline;flex-wrap:nowrap;gap:0;max-width:24em;overflow:hidden}
+.team-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team-second{display:inline-flex;min-width:0}
+.team-more{flex:none;margin-left:.5em;padding:.12em .5em 0;border-radius:999px;background:var(--fill);color:var(--ink);font-size:.92em}
+.team-more.narrow-only{display:none}
+@media (max-width:520px){
+  .team-trail{max-width:9.5em}
+  .team-second,.team-more.wide-only{display:none}
+  .team-more.narrow-only{display:inline}
+}
+
+/* ---------- person card ---------- */
+.person-header,.group-header{align-items:center;flex-wrap:wrap}
+.person-header .page-header-text,.group-header .page-header-text{flex:1 1 14em}
+.person-header>.avatar,.group-header>.group-mark{align-self:center}
+@media (max-width:620px){
+  .person-header .avatar-l,.group-header .group-mark-l{width:52px;height:52px;font-size:1.15rem}
+  .person-header .page-header-actions,.group-header .page-header-actions{flex-basis:100%}
+}
+.person-notice{max-width:var(--w-list);margin:calc(-1*var(--s3)) 0 var(--s6)}
+
+/* two columns from 980px: teams, duties and warnings in the wide one; contact, household,
+   availability, limits, personal data and login in the narrow one. On a phone the reading order is
+   contact → household → teams → duties → warnings → availability → limits → the rest. */
+.person-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(32px,4vw,48px)}
+.person-grid>div>.section:first-child{margin-top:0}
+.person-grid>div:empty{display:none}
+@media (min-width:980px){
+  .person-grid{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:clamp(40px,5vw,64px);row-gap:clamp(32px,4vw,48px);align-items:start}
+  .person-main{grid-column:1;grid-row:1/span 2}
+  .person-a{grid-column:2;grid-row:1}
+  .person-b{grid-column:2;grid-row:2}
+  .person-grid.reduced{grid-template-rows:auto}
+  .person-grid.reduced .person-main{grid-row:1}
+}
+.person-grid .facts{row-gap:var(--s2);grid-template-columns:minmax(0,9.5em) minmax(0,1fr)}
+@media (max-width:420px){.person-grid .facts{grid-template-columns:minmax(0,1fr)}}
+/* sections that hold one list stay as wide as the list */
+.section.list-section{max-width:var(--w-list)}
+.person-grid .section .note{margin:0}
+.household-line{margin:0 0 var(--s3)}
+.household-name{color:var(--ink)}
+.paused-line{margin:0 0 var(--s3)}
+
+/* ---------- reasons with markers (picker, limits): filled dot = won't work, ring = careful ---------- */
+.reason{display:inline}
+.reason-error::before,.reason-warning::before{content:"";display:inline-block;width:.5em;height:.5em;margin-right:.4em;border-radius:50%;vertical-align:.04em}
+.reason-error::before{background:var(--ink)}
+.reason-warning::before{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.reason-error,.reason-warning{color:var(--ink)}
+
+/* ---------- groups: a mark instead of an avatar (square = a group, round = a person) ---------- */
+.group-mark{
+  display:inline-grid;place-items:center;flex:none;padding-top:.14em;
+  font-family:var(--narrow);font-weight:900;line-height:1;letter-spacing:.02em;user-select:none;
+}
+.group-mark-m{width:36px;height:36px;border-radius:10px;font-size:.88rem}
+.group-mark-l{width:64px;height:64px;border-radius:18px;font-size:1.45rem}
+.group-mark-v0{background:rgba(var(--ink-rgb),.1)}
+.group-mark-v1{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.group-mark-v2{background:var(--ink);color:var(--ground)}
+.group-mark-v3{background:rgba(var(--ink-rgb),.18)}
+.group-mark-v4{background:var(--ink);color:var(--ground);box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 3.5px var(--ground)}
+.item.tone-quiet .group-mark{opacity:.55}
+
+/* team header: description, then kind and who leads in a smaller line */
+.lead .lead-text{display:block}
+.lead .lead-meta{display:block;font-size:var(--t4)}
+.lead .lead-text+.lead-meta{margin-top:var(--s1)}
+
+/* skill marks of a member: text chips, not buttons (no outline) */
+.skills-trail{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--s1);white-space:normal;max-width:24em}
+.skill{display:inline-block;padding:.22em .6em .1em;border-radius:6px;font-size:var(--t4);line-height:1.35;white-space:nowrap;background:var(--fill);color:var(--ink)}
+.skill-learning{background:none;box-shadow:inset 0 0 0 1px var(--line);color:var(--muted);font-style:italic}
+.role-count{color:var(--muted)}
+.role-count.none{color:var(--ink)}
+/* on a phone the trail goes under the text: skill marks of members, the status of a duty */
+@media (max-width:520px){
+  :is(.member-rows,.duty-rows) .item{flex-wrap:wrap;row-gap:var(--s1)}
+  :is(.member-rows,.duty-rows) .item-body{flex:1 1 0}
+  :is(.member-rows,.duty-rows) .item-chevron{order:2}
+  :is(.member-rows,.duty-rows) .item-trail{order:3;flex:1 0 100%;max-width:none;justify-content:flex-start;padding-left:calc(36px + var(--s3))}
+  .duty-rows .item-trail{padding-left:calc(3rem + var(--s3))}
+  .member-rows .skills-trail{justify-content:flex-start;max-width:none}
+}
+
+/* member dialog: one row per role with a segment, then „Vede tým“ */
+.member-form{display:flex;flex-direction:column;gap:var(--s4)}
+.member-form .note{margin:0}
+.skill-rows{display:flex;flex-direction:column}
+.skill-rows[hidden]{display:none}
+.skill-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4);padding:var(--s2) 0;border-top:1px solid var(--line)}
+.skill-row:last-child{border-bottom:1px solid var(--line)}
+.skill-role{min-width:0;overflow-wrap:anywhere}
+.skill-row .segment label:first-child input:checked+span{background:var(--hover);color:var(--ink)}   /* „ne“ stays quiet */
+.member-card-link{margin:0;font-size:var(--t4)}
+.member-card-link a{text-underline-offset:.2em}
+.kind-hint{margin-top:var(--s1)}
+.partner-team{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s2)}
+.partner-team .label{margin-top:var(--s2)}
+
+/* ---------- households ---------- */
+.avatar-stack{display:inline-flex;align-items:center;width:72px;flex:none}
+.stack-slot{display:inline-flex;border-radius:50%;background:var(--ground);box-shadow:0 0 0 2px var(--ground)}
+.stack-slot+.stack-slot{margin-left:-6px}
+.avatar-stack.empty .avatar{border:1.5px dashed var(--outline);box-shadow:none}
+@media (max-width:520px){.household-list .item-trail{display:none}}
+
+/* ---------- picker ---------- */
+.picker .picker-scope .filter{margin:0 0 var(--s3)}
+.picker-search{margin:0 0 var(--s3)}
+.picker-search input{width:100%}
+.pick-list{
+  list-style:none;margin:0;padding:0;max-height:min(52vh,460px);overflow:auto;overscroll-behavior:contain;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.pick-list>li+li{border-top:1px solid var(--line)}
+.pick{
+  display:flex;align-items:center;gap:var(--s3);width:100%;min-height:56px;padding:var(--s2) var(--s2);
+  text-align:left;background:none;border:0;border-radius:10px;color:inherit;font:inherit;cursor:pointer;transition:background .12s;
+}
+.pick.active{background:var(--fill)}
+.pick:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.pick-body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pick-name{font-size:var(--t3);line-height:1.3;overflow-wrap:anywhere}
+.pick-meta{font-size:var(--t4);line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+.pick-trail{flex:none;font-size:var(--t4);color:var(--muted);white-space:nowrap}
+.pick.hard .pick-name{color:var(--muted)}
+.pick.hard>.avatar{opacity:.55}
+/* multiple choice: a round check on the right */
+.pick-check{flex:none;position:relative;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--outline)}
+.pick.on{background:var(--fill)}
+.pick.on .pick-check{background:var(--ink);box-shadow:none}
+.pick.on .pick-check::after{
+  content:"";position:absolute;left:8px;top:4px;width:5px;height:10px;
+  border:solid var(--ground);border-width:0 2px 2px 0;transform:rotate(45deg);
+}
+/* „Nový člověk“: a dashed circle with a plus */
+.pick-plus{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1.5px dashed var(--outline)}
+.pick-plus::before,.pick-plus::after{content:"";grid-area:1/1;width:12px;height:1.5px;background:currentColor;border-radius:1px}
+.pick-plus::after{transform:rotate(90deg)}
+.picker-legend{margin:var(--s3) 0 0}
+.picker-legend .reason{color:var(--muted)}
+.picker-empty{margin:0;padding:var(--s4) var(--s2);color:var(--muted);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.picker .quick-add{margin:0;padding:0}
+.picker .similar .note{margin:0 0 var(--s2)}
+.picker .similar-list{max-height:none}
+.picker .similar-list .pick{min-height:44px}
