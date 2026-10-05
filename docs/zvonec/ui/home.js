@@ -52,9 +52,14 @@ function answer(person, eventId, assignmentId, status, { quiet = false } = {}) {
   else toast('Dobře, vedoucí uvidí, že nemůžeš.', '', { action: undo, actionLabel: 'Vrátit' });
 }
 
+const WAITING_SHOWN = 4;
+let showAllWaiting = false;   // view state: the whole list of proposed duties is open
+
 function waitingSection(person, waiting) {
+  const shown = showAllWaiting ? waiting : waiting.slice(0, WAITING_SHOWN);
+  const hidden = waiting.length - shown.length;
   return section(['Čeká na tebe', waiting.length ? count(String(waiting.length)) : null],
-    waiting.length ? h('ul', { class: 'answer-list' }, waiting.map(({ event, assignment }) => {
+    waiting.length ? h('ul', { class: 'answer-list' }, shown.map(({ event, assignment }) => {
       const role = roleById(S.data, assignment.roleId);
       return h('li', { class: 'answer' },
         h('p', { class: 'answer-when' }, `${prettyDayLong(dayOf(event.start))} · ${prettyTime(event.start)}`),
@@ -63,7 +68,8 @@ function waitingSection(person, waiting) {
         h('div', { class: 'answer-buttons' },
           btn('Jdu', () => answer(person, event.id, assignment.id, 'confirmed'), 'primary'),
           btn('Nemůžu', () => answer(person, event.id, assignment.id, 'declined'))));
-    })) : note('Nic nečeká. Všechno máš potvrzené.'));
+    })) : note('Nic nečeká. Všechno máš potvrzené.'),
+    hidden ? actions([btn(`Ukázat další (${hidden})`, () => { showAllWaiting = true; render(); }, 'small')]) : null);
 }
 
 function dutiesSection(person, duties) {

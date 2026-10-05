@@ -16,12 +16,12 @@ const SCOPE_OPTIONS = [['skilled', 'Umí to'], ['team', 'Celý tým'], ['all', '
 const fold = (text) => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 
 /** People whose first or last name starts like a word of the query (a likely duplicate). */
-function similarPeople(query, exclude) {
+function similarPeople(query) {
   const words = fold(query).split(/\s+/).filter((w) => w.length >= 3).map((w) => w.slice(0, 4));
   if (!words.length) return [];
-  return sortPeople(S.data.people.filter((p) => !exclude.has(p.id)
-    && [p.firstName, p.lastName, p.nickname].some((n) => fold(n).split(/\s+/).some((part) => words.some((w) => part.startsWith(w))))))
-    .slice(0, 5);
+  return sortPeople(S.data.people.filter((p) => [p.firstName, p.lastName, p.nickname]
+    .some((n) => fold(n).split(/\s+/).some((part) => words.some((w) => part.startsWith(w))))))
+    .slice(0, 6);
 }
 
 /** "Petr Novák" → first word as the first name, the rest as the last name. */
@@ -112,14 +112,16 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
   function quickAddForm() {
     const q = state.query.trim();
     const { firstName, lastName } = splitName(q);
-    const similar = similarPeople(q, excluded);
+    const similar = similarPeople(q);
     const joinText = role
       ? `Přidat do týmu ${group?.name || ''} (${role.name}: ${SKILL_LABELS.learning})`
       : group ? `Přidat do ${group.kind === 'team' ? 'týmu' : 'skupiny'} ${group.name}` : null;
     const form = h('form', { class: 'form-grid quick-add', novalidate: true },
       similar.length ? h('div', { class: 'similar full' },
         h('p', { class: 'note' }, 'Podobně se jmenuje – není to někdo z nich?'),
-        h('div', { class: 'tags' }, similar.map((p) => h('button', { type: 'button', class: 'tag', onclick: () => finish([...selected, p.id]) }, fullName(p))))) : null,
+        h('div', { class: 'tags' }, similar.map((p) => (excluded.has(p.id)
+          ? tag(`${fullName(p)} – už tu je`, 'quiet')
+          : h('button', { type: 'button', class: 'tag', onclick: () => finish([...selected, p.id]) }, fullName(p)))))) : null,
       textField('firstName', 'Jméno', firstName, { attr: { required: true, autocomplete: 'off' } }),
       textField('lastName', 'Příjmení', lastName, { attr: { autocomplete: 'off' } }),
       textField('phone', 'Telefon', '', { type: 'tel', attr: { autocomplete: 'off' } }),
@@ -187,9 +189,9 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
         items.length ? h('ul', { class: 'candidates' }, items)
           : note(q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle službu u sebe nemá nikdo. Zkus Celý tým nebo Všichni lidé.' : 'Nikdo tu není.'));
     }
-    footer.replaceChildren(
+    footer.replaceChildren(...nodes([
       btn(multiple ? 'Zrušit' : 'Zavřít', closeDialog),
-      multiple && !state.creating ? btn(selected.size ? `Vybrat (${selected.size})` : 'Vybrat', () => finish([...selected]), 'primary', { disabled: !selected.size }) : null);
+      multiple && !state.creating ? btn(selected.size ? `Vybrat (${selected.size})` : 'Vybrat', () => finish([...selected]), 'primary', { disabled: !selected.size }) : null]));
   }
 
   const eyebrow = event ? `${prettyDay(event.start)} · ${event.title}` : group ? group.name : 'lidé';

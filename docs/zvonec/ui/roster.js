@@ -1,7 +1,7 @@
 // #rozpis, #rozpis/2026-10 – month table of duties for the notice board, print (A4 landscape).
 // Rows = events of the chosen kind, columns = roles grouped by team. No phone numbers anywhere.
 
-import { h, btn, link, emptyState, filterButtons, note, printHeader } from './dom.js';
+import { h, btn, link, emptyState, filterButtons, printHeader } from './dom.js';
 import { S, can, myId, render, EVENT_KIND_LABELS } from './state.js';
 import { roleComparator } from './calendar.js';
 import { needsOf } from '../lib/events.js';
@@ -95,10 +95,11 @@ export function renderRoster(month) {
     events.length && columns.length
       ? h('div', { class: 'schedule-table-wrap' }, table)
       : events.length
-        ? emptyState('Nikdo nikde.', 'Tahle setkání nepotřebují žádnou službu z vybraného týmu.', null)
+        ? emptyState('Tady nic.', 'Tahle setkání nepotřebují nikoho z vybraného týmu.', null)
         : emptyState('Prázdná pastva.', 'Tenhle měsíc tu nic takového není.', link('Do kalendáře', `#kalendar/${shown}`, 'btn')),
-    events.length && columns.length ? note(leader
+    events.length && columns.length ? h('p', { class: 'note no-print' }, leader
       ? 'Kurzívou = navrženo, ještě nepotvrdil(a). Plná buňka = chyba, čárkovaná = pozor, něco chybí.'
       : 'Kurzívou = navrženo, ještě nepotvrdil(a). Čárkovaná buňka = tady ještě někdo chybí.') : null,
+    events.length && columns.length ? h('p', { class: 'note print-only' }, 'Kurzívou = ještě nepotvrdil(a). Kdo nemůže, ať dá vědět vedoucímu.') : null,
   ];
 }

@@ -9,7 +9,7 @@ import {
 import { S, can, change, myId, navigate, newId, ASSIGNMENT_STATUS_LABELS, EVENT_KIND_LABELS } from './state.js';
 import { openPicker } from './picker.js';
 import { openFormatInfo } from './settings.js';
-import { eventDialog, roleComparator } from './calendar.js';
+import { andFollowing, eventDialog, roleComparator } from './calendar.js';
 import { conflictCard, overrideDialog } from './conflicts.js';
 import {
   cancelEvent, deleteEvent, eventById, followingInSeries, needsOf, seriesOf,
@@ -68,27 +68,33 @@ export function renderEvent(id) {
       leader ? btn('Upravit', () => eventDialog({ event })) : null,
       btn('Do kalendáře (.ics)', () => download(`${event.title}-${dayOf(event.start)}.ics`, ics(S.data, [{ event }], event.title), 'text/calendar'), 'plain'),
     ]),
-    h('div', { class: 'grid spaced' },
-      h('div', {},
-        section('Kdo co dělá', planList(event, conflicts, leader)),
-        programSection(event, previous, leader)),
-      h('div', {},
-        leader ? section(['Kolize', count(conflicts.length ? String(conflicts.length) : '')],
-          conflicts.length
-            ? h('ul', { class: 'conflict-list' }, conflicts.map((c) => {
-              const other = (c.eventIds || []).find((x) => x !== id);
-              return conflictCard(c, { href: other ? `#setkani/${other}` : null, withEvent: !!other });
-            }))
-            : h('p', { class: 'all-ok' }, h('span', { class: 'bullseye', 'aria-hidden': 'true' }), 'Nikdo nebučí. Rozpis sedí.')) : null,
-        series.length > 1 ? section(['Řada', count(`${position + 1}. z ${series.length}`)],
-          h('div', { class: 'series-nav' },
-            series[position - 1] ? link(prettyDay(series[position - 1].start), `#setkani/${series[position - 1].id}`, 'btn small arrow-back') : null,
-            series[position + 1] ? link(`${prettyDay(series[position + 1].start)} →`, `#setkani/${series[position + 1].id}`, 'btn small') : null)) : null)),
+    layout([
+      section('Kdo co dělá', planList(event, conflicts, leader)),
+      leader || (event.program || []).length ? programSection(event, previous, leader) : null,
+    ], [
+      leader ? section(['Kolize', count(conflicts.length ? String(conflicts.length) : '')],
+        conflicts.length
+          ? h('ul', { class: 'conflict-list' }, conflicts.map((c) => {
+            const other = (c.eventIds || []).find((x) => x !== id);
+            return conflictCard(c, { href: other ? `#setkani/${other}` : null, withEvent: !!other });
+          }))
+          : h('p', { class: 'all-ok' }, h('span', { class: 'bullseye', 'aria-hidden': 'true' }), 'Nikdo nebučí. Rozpis sedí.')) : null,
+      series.length > 1 ? section(['Řada', count(`${position + 1}. z ${series.length}`)],
+        h('div', { class: 'series-nav' },
+          series[position - 1] ? link(prettyDay(series[position - 1].start), `#setkani/${series[position - 1].id}`, 'btn small arrow-back') : null,
+          series[position + 1] ? link(`${prettyDay(series[position + 1].start)} →`, `#setkani/${series[position + 1].id}`, 'btn small') : null)) : null,
+    ]),
     leader ? actions([
       btn(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', () => cancelDialog(id), 'small plain'),
       btn('Smazat', () => deleteDialog(id), 'small plain'),
     ], { cls: 'spaced' }) : null,
   ];
+}
+
+/** Two columns when the right one has something, otherwise one. */
+function layout(left, right) {
+  const side = right.filter(Boolean);
+  return side.length ? h('div', { class: 'grid spaced' }, h('div', {}, left), h('div', {}, side)) : h('div', { class: 'spaced' }, left);
 }
 
 // ---------- duties ----------
@@ -248,7 +254,7 @@ function copyPeople(eventId) {
   if (!event) return;
   const added = sameAsLastTime(S.data, eventId, () => newId('a'));
   if (!added.length) {
-    toast('Nikoho jsem nepřidal.', 'Lidi z minula už tu jsou, nemůžou, nebo nejsou potřeba.');
+    toast('Nikdo nepřibyl.', 'Lidi z minula už tu jsou, nemůžou, nebo nejsou potřeba.');
     return;
   }
   change(`lidi z minula na ${event.title} ${prettyDay(event.start, false)}`);
@@ -260,7 +266,7 @@ function copyPeople(eventId) {
 /** Radio „jen tohle / i N dalších v řadě“ when the event has following ones. */
 function seriesChoice(event) {
   const following = followingInSeries(S.data, event).length;
-  return following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle'], ['following', `i ${following} dalších v řadě`]], 'one', 'radio')) : null;
+  return following ? fieldGroup('Kterých se to týká', choices('scope', [['one', 'jen tohle'], ['following', andFollowing(following)]], 'one', 'radio')) : null;
 }
 
 function cancelDialog(eventId) {
@@ -272,13 +278,13 @@ function cancelDialog(eventId) {
     if (!e) return;
     const following = !!form && checkedValues(form, 'scope')[0] === 'following';
     const changed = cancelEvent(S.data, e, { following, cancelled: !restoring });
-    change(`${restoring ? 'obnoveno' : 'zrušeno'} ${e.title} ${prettyDay(e.start, false)}${changed.length > 1 ? ` a ${changed.length - 1} dalších` : ''}`);
+    change(`${restoring ? 'obnoveno' : 'zrušeno'} ${e.title} ${prettyDay(e.start, false)}${changed.length > 1 ? ` (+${changed.length - 1})` : ''}`);
     if (!restoring) toast('Zrušeno.', 'Lidi z rozpisu to uvidí v kalendáři. Dej jim vědět i jinak.');
   };
   const extra = seriesChoice(event);
   if (!extra) { run(null); return; }
   confirmDialog(restoring ? `Obnovit ${event.title} ${prettyDay(event.start, false)}?` : `Zrušit ${event.title} ${prettyDay(event.start, false)}?`,
-    restoring ? 'Setkání se vrátí do kalendáře i s lidmi, kteří na něm byli.' : 'Setkání zůstane v kalendáři přeškrtnuté a lidi v rozpisu.',
+    restoring ? 'Setkání se vrátí do kalendáře i s lidmi, kteří na něm byli.' : 'Setkání zůstane v kalendáři přeškrtnuté a lidi v něm zůstanou zapsaní.',
     run, { buttonLabel: restoring ? 'Obnovit' : 'Zrušit setkání', extra });
 }
 
@@ -293,7 +299,7 @@ function deleteDialog(eventId) {
       const following = checkedValues(form, 'scope')[0] === 'following';
       const removed = deleteEvent(S.data, e, { following });
       navigate(`#kalendar/${monthOf(e.start)}`);
-      change(`smazáno ${e.title} ${prettyDay(e.start, false)}${removed.length > 1 ? ` a ${removed.length - 1} dalších` : ''}`);
+      change(`smazáno ${e.title} ${prettyDay(e.start, false)}${removed.length > 1 ? ` (+${removed.length - 1})` : ''}`);
       toast('Smazáno.');
     }, { extra: seriesChoice(event) });
 }

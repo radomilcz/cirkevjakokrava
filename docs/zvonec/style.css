@@ -677,9 +677,12 @@ button.more:hover{text-decoration:underline;text-underline-offset:.2em;color:var
 .status-choice .tag{font-size:.75em;padding:.42em .65em .3em}
 .schedule-table .mine{text-decoration:underline;text-underline-offset:.2em}
 .print-only{display:none}
+.legend .swatch.warning{border:1.5px dashed var(--ink)}
 @media print{
   .print-only{display:block}
   .program-sheet .meta{font-size:11pt}
+  .schedule-table tbody th,.schedule-table thead th:first-child{position:static;background:none;box-shadow:none}
+  .schedule-table td.error,.schedule-table td.warning{background:none;color:inherit;border:0;border-bottom:1px solid var(--line);border-radius:0}   /* the notice board shows people, not the leaders' alarms */
 }
 
 /* groups and settings screens */
@@ -720,7 +723,6 @@ a.member-name:hover{text-decoration:underline;text-underline-offset:.2em}
 }
 .form-grid h3.eyebrow{margin:1em 0 0;font-size:1rem}
 .settings-nav{margin-top:clamp(18px,2.6vw,28px)}
-.legend .swatch.warning{border:1.5px dashed var(--ink)}
 
 /* people screens */
 /* facts on the person card: label left, value right */
@@ -753,10 +755,10 @@ a.tag.filled:hover{background:rgba(var(--ink-rgb),.85)}
 .candidates li.create button:hover{color:var(--ink)}
 .candidates li.create .name{display:inline-flex;align-items:center;gap:.4em}
 .candidates li.create .plus::before{content:"+";font-size:1.2em;line-height:0}
-.quick-add{margin-top:.4em}
+.dialog form.quick-add{margin-top:.4em;padding:0}
 .similar .note{margin:0 0 .5em}
 /* #moje: what waits for an answer */
-.answer-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.answer-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,16em),1fr));gap:10px}
 .answer{padding:clamp(14px,2.2vw,20px);border:1px solid var(--outline);border-radius:22px;background:rgba(var(--ink-rgb),.035)}
 .answer p{margin:0}
 .answer-when{color:var(--muted);font-size:.92em}

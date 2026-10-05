@@ -38,6 +38,12 @@ export function roleComparator(data) {
   return (a, b) => (order.get(a) ?? 9999) - (order.get(b) ?? 9999);
 }
 
+/** „i 3 další v řadě“ – the series choice in Czech. */
+export function andFollowing(n) {
+  if (n === 1) return 'i to další v řadě';
+  return `i ${n} ${n <= 4 ? 'další' : 'dalších'} v řadě`;
+}
+
 const validMonth = (month) => (/^\d{4}-\d{2}$/.test(month || '') ? month : monthOf(today()));
 const isMine = (event) => !!myId() && (event.assignments || []).some((a) => a.personId === myId() && a.status !== 'declined');
 
@@ -82,7 +88,7 @@ export function renderCalendar(month) {
       (hidden > 0 ? list.slice(0, CHIPS_PER_DAY - 1) : list).map((e) => eventChip(e)),
       hidden > 0 ? h('button', {
         type: 'button', class: 'more', onclick: (e) => { e.stopPropagation(); dayDialog(day); },
-      }, `a ${hidden + 1} další`) : null);
+      }, `a ${hidden + 1} ${hidden + 1 <= 4 ? 'další' : 'dalších'}`) : null);
     }));
 
   // on a phone a list of days; in the current month from today on – what is over interests nobody
@@ -219,7 +225,7 @@ export function eventDialog({ day, event } = {}) {
       fieldGroup('Koho to potřebuje (počet lidí na službu)', editor.element,
         h('small', {}, 'Služby z pořadu (třeba Večeře Páně) se přidají samy.')),
       textArea('note', 'Poznámka', base.note || '', { attr: { rows: 2 } }),
-      following ? fieldGroup('Změnit', choices('scope', [['one', 'jen tohle'], ['following', `i ${following} dalších v řadě`]], 'one', 'radio')) : null),
+      following ? fieldGroup('Změnit', choices('scope', [['one', 'jen tohle'], ['following', andFollowing(following)]], 'one', 'radio')) : null),
     formErrorLine(),
     h('div', { class: 'actions' },
       btn('Zrušit', closeDialog),
@@ -249,7 +255,7 @@ export function eventDialog({ day, event } = {}) {
       const changed = checkedValues(form, 'scope')[0] === 'following' ? updateSeries(S.data, target, previousStart) : [];
       sortEvents(S.data);
       closeDialog();
-      change(`úprava ${title} ${prettyDay(start, false)}${changed.length ? ` a ${changed.length} dalších` : ''}`);
+      change(`úprava ${title} ${prettyDay(start, false)}${changed.length ? ` (+${changed.length})` : ''}`);
       toast('Máme to v rozpisu.');
       return;
     }

@@ -101,11 +101,11 @@ function personRow(person, { leader }) {
     h('span', { class: 'name' }, fullName(person),
       person.nickname ? faint(` „${person.nickname}“`) : null,
       sub.some(Boolean) ? h('small', {}, sub.filter(Boolean).join(' · ')) : null),
-    h('span', { class: 'tags' }, groups.slice(0, 3).map((g) => tag(g.name)),
+    h('span', { class: 'tags' },
+      leader && person.needsReview ? tag('chybí údaje', 'warning') : null,
+      groups.slice(0, 3).map((g) => tag(g.name)),
       groups.length > 3 ? tag(`+${groups.length - 3}`, 'quiet') : null),
-    h('span', { class: 'right' }, leader
-      ? (person.needsReview ? 'chybí údaje' : '')
-      : (seesContact(person) ? person.phone || person.email || '' : ''))));
+    h('span', { class: 'right' }, !leader && seesContact(person) ? person.phone || person.email || '' : '')));
 }
 
 function searchBox(placeholder, onInput) {
