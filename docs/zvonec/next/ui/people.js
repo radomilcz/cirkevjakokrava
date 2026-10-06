@@ -51,15 +51,18 @@ const MONTH_NAMES = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
 // ---------- the head of the tab: „Lidé“, its ⋯, and the switch Lidé | Skupiny under it ----------
 
 /**
- * The tab head of both screens of Lidé (the one head pattern of the four tabs, see screen({ tab })) and
- * the segmented Lidé · Skupiny that goes first in the body.
+ * The tab head of both screens of Lidé (see screen({ tab })) and the segmented Lidé · Skupiny.
+ * Phone (the approved mockup): the segmented control and ⋯ are the top bar, the h1 „Lidé“ is visually
+ * hidden; desktop: the title row „Lidé“ and the segmented control first in the body (`switcher`).
  *   const t = sectionTab('lide', listMenu(…));  screen({ tab: t.tab, body: [t.switcher, …] })
  */
 export function sectionTab(current, actions) {
+  const seg = segmented([{ value: 'lide', label: 'Lidé' }, { value: 'skupiny', label: 'Skupiny' }], current,
+    (v) => navigate(v === 'lide' ? listHref() : '#lide/skupiny'), { label: 'Lidé nebo skupiny', cls: 'seg--section' });
+  const desk = isDesktop();
   return {
-    tab: { title: 'Lidé', actions },
-    switcher: h('div', { class: 'people-switch' }, segmented([{ value: 'lide', label: 'Lidé' }, { value: 'skupiny', label: 'Skupiny' }], current,
-      (v) => navigate(v === 'lide' ? listHref() : '#lide/skupiny'), { label: 'Lidé nebo skupiny', cls: 'seg--section' })),
+    tab: { title: 'Lidé', actions, bar: desk ? null : { center: seg, actions: actions || null } },
+    switcher: desk ? h('div', { class: 'people-switch' }, seg) : null,
   };
 }
 

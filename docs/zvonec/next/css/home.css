@@ -29,7 +29,7 @@
 .home-answer .feature__item + .feature__item { padding-top: var(--space-4); border-top: 1px solid var(--hairline); }
 
 /* ---------- Co je potřeba ---------- */
-.home-need__scope { margin-bottom: var(--space-2); }
+.home-need__scope { flex: none; }
 .home-need .row-link, .home-mine .row-link, .home-week .row-link { margin-top: var(--space-1); }
 .home-need__list > .need:first-child { padding-top: var(--space-2); }
 

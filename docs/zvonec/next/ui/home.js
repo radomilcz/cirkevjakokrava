@@ -13,7 +13,7 @@
 
 import {
   h, screen, feature, answerItem, section, list, row, eventRow, needRow, statusNote, pill, rowLink,
-  chips, callout, link, count, icon, shortDate, agree, plural, isSplit, quiet, personName, SEP,
+  chip, callout, link, count, icon, shortDate, agree, plural, isSplit, quiet, personName, openSheet, SEP,
 } from './kit.js';
 import { S, can, myId, ACCESS_LABELS } from '../../ui/state.js';
 import { DEMO_VIEWERS } from '../../lib/demo.js';
@@ -30,7 +30,8 @@ import { blockoutSection } from './blockouts.js';
 import { viewAsSheet } from './account.js';
 import { waitingInvites } from './access.js';
 
-const ANSWERS_SHOWN = 3;      // Odpověz: the first three as cards, then „Ukaž další 2“ (short rows)
+const ANSWERS_SHOWN = 1;      // Odpověz: one card, under it the next one and „Další 2 ›“ (the approved mockup)
+const ANSWER_CARDS = 3;       // opened: the first three as cards, the rest as short rows
 const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four events, then „Celý rozpis“
 const MINE_SHOWN = 5;         // Tvoje služby: five rows, then „Ukaž další 3“
 const WEEK_SHOWN = 3;         // Tento týden
@@ -103,7 +104,7 @@ function answerBlock(me) {
       meta: whenWhere(event),
       note: off && !done ? blockoutNote(off) : null,
       prefer: off ? 'no' : 'yes',
-      compact: i >= ANSWERS_SHOWN,
+      compact: i >= ANSWER_CARDS,
       done,
       dataset: { assignment: assignment.id },
       label: `${role}, ${event.title} ${shortDate(event.start)}`,
@@ -111,13 +112,15 @@ function answerBlock(me) {
       onNo: () => answerNow(me, event, assignment, 'declined'),
     });
   });
+  // the foot: what comes next („Projekce · ne 1. 11.“) and „Další 2 ›“, which opens the rest in place
+  const next = all[shown.length];
   const el = feature({
     title: 'Odpověz',
     count: waitingCount || null,
     items,
     more: rest ? {
-      link: showMore(rest),
-      icon: 'chevron-down',
+      text: `${roleName(next.assignment.roleId)}${SEP}${shortDate(next.event.start)}`,
+      link: `Další ${rest}`,
       onclick: () => { open.answers = true; rerender(el, () => answerBlock(me), `.feature__item:nth-of-type(${ANSWERS_SHOWN + 1}) .btn`); },
     } : null,
   });
@@ -228,7 +231,7 @@ function needBlock() {
   const choose = (v) => {
     S.filters.homeTeams = v;
     const el = document.querySelector('.home-need');
-    if (el) rerender(el, needBlock, '.home-need .chip[aria-pressed="true"]');
+    if (el) rerender(el, needBlock, '.home-need .home-need__scope');
   };
   // narrowed to my teams: one quiet line when the other teams miss people
   const missingIn = (xs) => xs.reduce((n, x) => n + x.slots.reduce((m, sl) => m + sl.missing, 0), 0);
@@ -236,20 +239,39 @@ function needBlock() {
   const otherLine = elsewhere > 0
     ? rowLink(`V ostatních týmech ${agree(elsewhere, 'chybí', 'chybějí', 'chybí')} ${plural(elsewhere, 'člověk', 'lidé', 'lidí')}`, { onclick: () => choose('all') })
     : null;
-  const scopeChips = teams ? chips([
-    { value: 'mine', label: teams.length === 1 ? `Můj tým: ${teams[0].name}` : 'Moje týmy' },
+  // „Moje týmy ▾“ in the section head (the approved mockup): a tap offers Moje týmy · Všechny týmy
+  const scopes = [
+    { value: 'mine', label: teams?.length === 1 ? `Můj tým: ${teams[0].name}` : 'Moje týmy' },
     { value: 'all', label: 'Všechny týmy' },
-  ], scope, choose, { label: 'Čí služby' }) : null;
+  ];
+  const current = scopes.find((o) => o.value === (scoped ? 'mine' : 'all'));
+  const scopeChip = teams ? chip(current.label, {
+    iconEnd: 'chevron-down',
+    cls: 'home-need__scope',
+    onclick: () => {
+      let sheet;
+      sheet = openSheet({
+        title: 'Týmy',
+        body: list(scopes.map((o) => row({
+          title: o.label, single: true,
+          trail: o === current ? icon('check', { size: 's' }) : null,
+          selected: o === current,
+          onclick: () => { sheet.close({ restore: false }); choose(o.value); },
+        })), { label: 'Týmy' }),
+      });
+    },
+  }) : null;
+  scopeChip?.setAttribute('aria-haspopup', 'dialog');
+  scopeChip?.setAttribute('aria-label', `${current.label} (změň výběr)`);
   const body = items.length
     ? [list(items.slice(0, NEEDS_SHOWN).map(needItem), { inset: false, cls: 'home-need__list' })]
     : [quiet(scoped ? 'V tvých týmech je na příští tři týdny všechno obsazené a potvrzené.' : 'Na příští tři týdny je všechno obsazené.', { icon: 'check' })];
   const hidden = items.length - NEEDS_SHOWN;
   return section({
     title: 'Co je potřeba',
-    count: items.length || null,
+    action: scopeChip,
     cls: 'home-need',
     body: [
-      scopeChips ? h('div', { class: 'home-need__scope' }, scopeChips) : null,
       ...body,
       otherLine,
       rowLink(hidden > 0 ? `Celý rozpis (ještě ${plural(hidden, 'setkání', 'setkání', 'setkání')})` : 'Celý rozpis', { href: '#kalendar/rozpis' }),
