@@ -68,7 +68,7 @@ s pohledy.
 | **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: u každého proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
 | **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
 | **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, barvy, změna hesla, odhlášení. V ukázce i „Dívat se jako“ |
-| **Program**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: nejbližší setkání s obrázkem, časem, místem a mapou, pak další týdny a „Kde nás najdete“; u každého setkání je tlačítko „Stáhnout do kalendáře“ (.ics). Dál zveřejněné formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
+| **Program**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: nejbližší setkání s obrázkem, časem, místem a mapou, pak další týdny a „Kde nás najdeš“; u každého setkání je tlačítko „Stáhnout do kalendáře“ (.ics). Dál zveřejněné formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
 Celý tým · Všichni lidé**, hledání vždycky prochází všechny lidi. Když nikdo takový není,
