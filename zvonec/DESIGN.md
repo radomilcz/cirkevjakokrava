@@ -143,7 +143,7 @@ Sidebar in order of frequency; slugs are what people see and share.
 | **Týmy a skupinky** | `#tymy/<tymy\|skupinky\|vedeni\|umi>` | **Týmy · Skupinky · Vedení · Kdo co umí** (matrix) | yes | – |
 | Tým | `#tym/<id>/<lide\|role\|umi\|setkani>` | skupinka and vedení: Lidé · Setkání only | edit | – |
 | **Jak se scházíme** | `#sablony`, `#formaty[/<id>]`, `#mista` | **Šablony · Formáty · Místa**; full-page editors `#sablona/<id>`, `#misto/<id>` | edit | Formáty · Místa read |
-| **Nastavení** | `#nastaveni/<sbor\|pravidla\|prihlaseni\|zaloha>` | **Sbor · Pravidla · Přihlášení · Záloha** (GitHub klíč and „Nahrát zálohu“: admin) | yes | – |
+| **Nastavení** | `#nastaveni/<sbor\|pravidla\|pristupy\|zaloha>` | **Sbor · Pravidla · Přístupy · Záloha** (GitHub klíč and „Nahrát zálohu“: admin) | yes | – |
 | **Můj účet** | `#ucet` | contact, kdy nemůžu, .ics, Vzhled, heslo, odhlásit; demo „Dívat se jako“ | yes | yes |
 | **Veřejná část** | `#program[/<id>]`, `#jak-se-schazime` | Program (hero, weeks, „Kde nás najdete“), one event, published formats | everyone | everyone |
 

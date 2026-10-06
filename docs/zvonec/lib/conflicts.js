@@ -150,7 +150,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K11:${s.assignment.id}`, code: 'K11', severity: 'error',
           eventId: s.event.id, personId, assignments: [s.assignment],
-          text: `${who} je dítě a ${s.role.name} je služba pro dospělé.`,
+          text: `${who} je dítě, ale role ${s.role.name} je jen pro dospělé.`,
         });
       }
 
@@ -266,7 +266,7 @@ export function findConflicts(data, { today } = {}) {
         if (a.status !== 'proposed' || !a.personId) continue;
         add({
           key: `K6:${a.id}`, code: 'K6', severity: 'warning', eventId: e.id, personId: a.personId, assignments: [a],
-          text: `${roleName(a.roleId) || 'Služba'}: ${displayName(people.get(a.personId))} zatím nepotvrdil(a).`,
+          text: `${roleName(a.roleId) || 'Služba'}: ${displayName(people.get(a.personId))} – zatím nepotvrzeno.`,
         });
       }
     }
@@ -372,7 +372,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K9:${a.id}:${b.id}:${placeId}`, code: 'K9', severity: place?.shared ? 'info' : 'error',
           eventId: a.id, eventIds: [a.id, b.id],
-          text: `${place?.name || 'Místo'} chtějí naráz ${describeEvent(a)} i ${describeEvent(b)}.`,
+          text: `${place?.name || 'Místo'}: dvě setkání ve stejnou dobu – ${describeEvent(a)} a ${describeEvent(b)}.`,
         });
       }
     }

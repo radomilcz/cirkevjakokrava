@@ -6,7 +6,7 @@
 
 import {
   h, page, card, list, row, button, iconButton, avatar, personName, dateBlock, kindMark, groupMark,
-  fillRing, statusBadge, badge, callout, toast, plural, eventCover, coverKey, metaJoin, avatarStack, severityCounts, rowIcon, SEP,
+  fillRing, statusBadge, badge, callout, toast, plural, eventCover, coverKey, metaJoin, avatarStack, severityCounts, rowIcon, SEP, agree,
 } from './dom.js';
 import { S, can, myId, change, render, newId, ACCESS_LABELS } from './state.js';
 import { topConflicts, conflictRow, pickPerson } from './conflicts.js';
@@ -72,8 +72,8 @@ function answer(person, eventId, assignmentId, status, { quiet = false } = {}) {
   change(`${personName(person)} ${what} ${role} ${prettyDay(event.start, false)}`);
   if (quiet) return;
   const undo = () => answer(person, eventId, assignmentId, before, { quiet: true });
-  if (status === 'confirmed') toast('Díky, počítáme s tebou.', `${role} · ${prettyDay(event.start)}`, { action: undo, actionLabel: 'Vrátit' });
-  else toast('Dobře, vedoucí uvidí, že nemůžeš.', `${role} · ${prettyDay(event.start)}`, { action: undo, actionLabel: 'Vrátit' });
+  if (status === 'confirmed') toast('Díky, počítáme s tebou.', metaJoin([role, prettyDay(event.start)]), { action: undo, actionLabel: 'Vrátit' });
+  else toast('Dobře, vedoucí uvidí, že nemůžeš.', metaJoin([role, prettyDay(event.start)]), { action: undo, actionLabel: 'Vrátit' });
 }
 
 // Čeká na tvou odpověď
@@ -126,14 +126,14 @@ function dutiesBlock(person) {
   });
 }
 
-/** The osnova in a few words: „Osnova je hotová“, „2 body osnovy nemají, kdo je vede“, „Osnova je prázdná“. */
+/** The osnova in a few words: „Osnova je hotová“, „2 body osnovy nikdo nevede“, „Osnova je zatím prázdná“. */
 function outlineState(event) {
   const items = event.program || [];
   if (!items.length) return { text: 'Osnova je zatím prázdná', ok: false };
   const leaderless = items.filter((item) => (item.personId || formatById(S.data, item.formatId)?.leadRoleId) && !itemLeaders(S.data, event, item).length).length;
   if (programDuration(event) > eventDuration(event)) return { text: 'Osnova přetéká', ok: false };
-  if (leaderless === 1) return { text: 'Jeden bod osnovy nemá, kdo ho vede', ok: false };
-  if (leaderless) return { text: `${leaderless} ${leaderless < 5 ? 'body osnovy nemají' : 'bodů osnovy nemá'}, kdo je vede`, ok: false };
+  if (leaderless === 1) return { text: 'Jeden bod osnovy nikdo nevede', ok: false };
+  if (leaderless) return { text: `${leaderless} ${agree(leaderless, 'bod', 'body', 'bodů')} osnovy nikdo nevede`, ok: false };
   return { text: 'Osnova je hotová', ok: true };
 }
 
@@ -168,7 +168,7 @@ function nextSundayBlock() {
   const waiting = (next.assignments || []).filter((a) => a.status === 'proposed' && a.personId).length;
   const propose = () => {
     const added = proposeRemaining(S.data, next.id, () => newId('a'), { today: today() });
-    if (!added.length) { toast('Nikoho dalšího nemám.', 'Na volná místa nikdo, kdo to umí a má čas, nezbyl. Vyber ručně.', { tone: 'info' }); return; }
+    if (!added.length) { toast('Nikoho dalšího nemám.', 'Na volná místa nezbyl nikdo, kdo to umí a má čas. Vyber ručně.', { tone: 'info' }); return; }
     change(`návrh lidí na ${next.title} ${prettyDay(next.start, false)}`);
     toast(`Navrženo: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, added.length === 1 ? 'Teď musí potvrdit, že může.' : 'Teď musí potvrdit, že můžou.');
   };
@@ -179,7 +179,7 @@ function nextSundayBlock() {
       h('p', { class: 'next-when' }, metaJoin([prettyDay(next.start), timeLine(next), places.join(', ') || null])),
       next.cancelled ? h('p', { class: 'next-facts' }, badge('zrušeno', { tone: 'danger' }))
         : h('ul', { class: 'next-facts' },
-          h('li', {}, fillRing(fill.filled, fill.needed, { text: false, label: `Obsazeno ${fill.text}` }), h('span', { class: 'next-fill' }, fill.complete ? `Obsazeno všech ${fill.needed}` : `Obsazeno ${fill.text}`)),
+          h('li', {}, fillRing(fill.filled, fill.needed, { text: false, label: `Obsazeno ${fill.text}` }), h('span', { class: 'next-fill' }, fill.complete ? 'Všechno obsazeno' : `Obsazeno ${fill.text}`)),
           waiting ? h('li', {}, statusBadge('proposed', { word: `${waiting} ${waiting === 1 ? 'čeká' : 'čekají'} na potvrzení`, variant: 'plain' })) : null,
           h('li', {}, statusBadge(outline.ok ? 'confirmed' : 'proposed', { word: outline.text, variant: 'plain' })))),
     slots.length ? h('div', { class: 'next-slots' },
@@ -189,7 +189,7 @@ function nextSundayBlock() {
           : badge(missing > 1 ? `${role.name} × ${missing}` : role.name, { tone: 'warning' }))))) : null);
   return block({
     key: 'sunday',
-    title: `${title} · ${prettyDay(next.start, false)}`,
+    title: `${title}${SEP}${prettyDay(next.start, false)}`,
     body,
     flush: false,
     footer: [
@@ -217,7 +217,7 @@ function openSlotsBlock() {
   const total = slots.reduce((n, s) => n + s.missing, 0);
   if (!slots.length) return block({ key: 'open', title: 'Volná místa', empty: 'Na příští tři týdny je všechno obsazené.' });
   return block({
-    key: 'open', title: 'Volná místa · 3 týdny', count: total,
+    key: 'open', title: `Volná místa${SEP}3 týdny`, count: total,
     all: slots.length > ROWS ? ['Všechno', '#kalendar/rozpis'] : null,
     body: list(slots.slice(0, ROWS), (s) => row({
       lead: dateBlock(dayOf(s.event.start), { today: isToday(s.event) }),
@@ -237,7 +237,7 @@ function unconfirmedBlock() {
   const duties = unconfirmedDuties(S.data, { today: today(), groupIds }).filter((d) => d.person && d.person.id !== mine);
   const days = S.data.settings?.rules?.unconfirmedDaysBefore ?? 5;
   const scope = groupIds ? 'v tvých týmech' : 've sboru';
-  if (!duties.length) return block({ key: 'unconfirmed', title: 'Čeká na potvrzení', empty: `Na příštích ${plural(days, 'den', 'dny', 'dní')} má ${scope} všechno potvrzené.` });
+  if (!duties.length) return block({ key: 'unconfirmed', title: 'Čeká na potvrzení', empty: `${scope.charAt(0).toUpperCase()}${scope.slice(1)} je všechno potvrzené na ${plural(days, 'den', 'dny', 'dní')} dopředu.` });
   const tel = (phone) => `tel:${String(phone).replace(/[^\d+]/g, '')}`;
   return block({
     key: 'unconfirmed', title: 'Čeká na potvrzení', count: duties.length,
@@ -245,7 +245,7 @@ function unconfirmedBlock() {
     body: list(duties.slice(0, ROWS), (d) => row({
       lead: avatar(d.person, { size: 's' }),
       title: personName(d.person),
-      meta: `${d.role?.name || 'Služba'} · ${prettyDay(d.event.start)} ${prettyTime(d.event.start)} · ${d.event.title}`,
+      meta: metaJoin([d.role?.name || 'Služba', `${prettyDay(d.event.start)} ${prettyTime(d.event.start)}`, d.event.title]),
       trail: d.person.phone
         ? button(null, { variant: 'surface', size: 's', icon: 'phone', href: tel(d.person.phone), label: `Zavolat: ${personName(d.person)}, ${d.person.phone}`, title: d.person.phone })
         : null,
@@ -274,7 +274,7 @@ function weekBlock() {
       href: `#setkani/${e.id}`,
       tone: e.cancelled ? 'cancelled' : null,
     }), { label: 'Tento týden ve sboru' }),
-    footer: past && ahead.length ? h('p', { class: 'card-note' }, `A ${plural(past, 'setkání', 'setkání', 'setkání')} už tenhle týden bylo.`) : null,
+    footer: past && ahead.length ? h('p', { class: 'card-note' }, `A ${past === 1 ? 'jedno' : past} setkání už tenhle týden ${agree(past, 'proběhlo', 'proběhla', 'proběhlo')}.`) : null,
   });
 }
 
@@ -331,7 +331,7 @@ function peopleBlock() {
     {
       lead: rowIcon(birthdays.length),
       title: 'Narozeniny tento týden',
-      meta: birthdays.length ? birthdays.map((b) => `${personName(b.person)} (${prettyDay(b.date)}${b.age ? `, ${b.age}` : ''})`).join(', ') : 'Tenhle týden nikdo.',
+      meta: birthdays.length ? birthdays.map((b) => `${personName(b.person)} (${prettyDay(b.date)}${b.age ? `, ${plural(b.age, 'rok', 'roky', 'let')}` : ''})`).join(', ') : 'Tenhle týden nikdo.',
       trail: birthdays.length ? avatarStack(birthdays.map((b) => b.person), { max: 3, size: 'xs' }) : null,
       href: '#lide/narozeniny',
     },
@@ -346,15 +346,15 @@ function avatarNames(people) {
   return rest > 0 ? `${names.join(', ')} a ${plural(rest, 'další', 'další', 'dalších')}` : names.join(' a ');
 }
 
-// Přihlášení (admin)
+// Přístupy (admin)
 function loginsBlock() {
   const { invites, orphans } = loginIssues();
   const items = [...invites, ...orphans];
-  if (!items.length) return block({ key: 'logins', title: 'Přihlášení', empty: 'Žádná pozvánka nečeká a každé přihlášení má svou kartu.' });
+  if (!items.length) return block({ key: 'logins', title: 'Přístupy', empty: 'Žádná pozvánka nečeká a každý, kdo se může přihlásit, má svou kartu.' });
   return block({
-    key: 'logins', title: 'Přihlášení', count: items.length,
-    all: ['Všechno', '#nastaveni/prihlaseni'],
-    body: list(items.slice(0, ROWS), (l) => (l.access === 'invite' ? inviteRow(l) : orphanRow(l)), { label: 'Přihlášení' }),
+    key: 'logins', title: 'Přístupy', count: items.length,
+    all: ['Všechno', '#nastaveni/pristupy'],
+    body: list(items.slice(0, ROWS), (l) => (l.access === 'invite' ? inviteRow(l) : orphanRow(l)), { label: 'Přístupy' }),
   });
 }
 
@@ -412,7 +412,7 @@ export function renderHome() {
     at(4, weekBlock()), at(5, blockoutsBlock(person)), at(6, groupsBlock(person)),
   ] : [];
   const noCard = !person && !leader
-    ? callout('Zvonec neví, kdo z Lidí jsi. Řekni správci, ať tvoje přihlášení propojí s tvou kartou.', { tone: 'info' }) : null;
+    ? callout('Zvonec neví, která karta v Lidech je tvoje. Řekni správci, ať ji propojí s tvým účtem.', { tone: 'info' }) : null;
   const add = calendarUi.eventDialog;
   return page({
     title: 'Přehled',

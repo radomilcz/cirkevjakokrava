@@ -4,7 +4,7 @@
 
 import {
   h, page, card, list, row, button, facts, avatar, personName, toast, download, plural, segment,
-  textField, dateField, formDialog, personPicker, segmentedField, switchField, callout, emptyState, dateBlock,
+  textField, dateField, formDialog, personPicker, segmentedField, switchField, callout, emptyState, dateBlock, SEP,
 } from './dom.js';
 import { S, can, myId, newId, change, actAs, logout, ACCESS_LABELS, ACCESS_VIEW } from './state.js';
 import { passwordForm } from './login.js';
@@ -12,7 +12,7 @@ import { personById, fullName, displayName, sortPeople, statusOf } from '../lib/
 import { upcomingDuties } from '../lib/events.js';
 import { icsForPerson, ics } from '../lib/ics.js';
 import { DEMO_VIEWERS } from '../lib/demo.js';
-import { today, addDays, prettyDay, prettyDayLong, inBlockout } from '../lib/time.js';
+import { today, addDays, prettyDay, prettyDayLong, daySpan, inBlockout } from '../lib/time.js';
 
 /** „petr-novak“ for file names. */
 const asciiName = (text) => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'clovek';
@@ -44,7 +44,7 @@ export function contactDialog(person) {
         textField('nickname', 'Přezdívka', person.nickname, { full: true, hint: 'Ukáže se v závorce za jménem.', attr: { placeholder: 'Péťa', autocomplete: 'off' } }),
       ] },
       { title: 'Kdo kontakt uvidí', fields: [
-        switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, { hint: 'Jinak je uvidí jen vedoucí.' }),
+        switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, { hint: 'Jinak je vidí jen vedoucí.' }),
       ] },
     ],
     save: (f) => {
@@ -98,7 +98,7 @@ export function availabilityDialog(person, record = null) {
     ] }],
     remove: record ? () => {
       S.data.availability = S.data.availability.filter((x) => x.id !== record.id);
-      change(`${name} zase může ${prettyDay(record.from, false)}`);
+      change(`${name} zase může ${daySpan(record.from, record.to)}`);
       toast('Smazáno.');
     } : null,
     save: (f) => {
@@ -116,7 +116,7 @@ export function availabilityDialog(person, record = null) {
       if (reason) target.reason = reason; else delete target.reason;
       const clash = upcomingDuties(S.data, person.id, { from, to, includeDeclined: false, includeCancelled: false })
         .filter(({ event }) => inBlockout(event, target));
-      change(`${name} nemůže ${prettyDay(from, false)}`);
+      change(`${name} nemůže ${daySpan(from, to)}`);
       if (clash.length) toast(`V tu dobu ${self ? 'máš' : 'má'} ${plural(clash.length, 'službu', 'služby', 'služeb')}.`, can('leader') ? 'Najdeš to v Upozorněních.' : 'Vedoucí to uvidí v Upozorněních.');
       else toast(record ? 'Uloženo.' : 'Zapsáno.');
       return null;
@@ -181,7 +181,7 @@ function dutiesCard(person) {
     body: [
       h('p', { class: 'card-text' }, count
         ? `Stáhni si ${plural(count, 'službu', 'služby', 'služeb')} do kalendáře v telefonu. Když se rozpis změní, stáhni je znovu.`
-        : 'Teď žádnou službu nemáš. Až nějakou dostaneš, stáhneš si ji sem do kalendáře.'),
+        : 'Teď žádnou službu nemáš. Až nějakou dostaneš, stáhneš si ji odsud do kalendáře.'),
       h('div', { class: 'card-buttons' }, button('Stáhnout do kalendáře', { variant: 'surface', icon: 'download', onclick: () => downloadDuties(person), disabled: !count })),
     ],
   });
@@ -210,7 +210,7 @@ function viewAsCard() {
 
   const people = sortPeople((S.data.people || []).filter((p) => statusOf(p) !== 'former'));
   const form = h('form', { class: 'form-grid view-as-form', novalidate: true },
-    personPicker({ name: 'personId', label: 'Kdo', people, value: '', placeholder: 'Napiš jméno…' }),
+    personPicker({ name: 'personId', label: 'Za koho se chceš dívat', people, value: '', placeholder: 'Napiš jméno…' }),
     h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Oprávnění'), segment('access', [['member', 'člen'], ['leader', 'vedoucí'], ['admin', 'správce']], 'member', { label: 'Oprávnění' })),
     h('div', { class: 'full' }, button('Podívat se', { variant: 'surface', type: 'submit' })));
   form.addEventListener('submit', (e) => {
@@ -237,7 +237,7 @@ function signOutCard() {
   return card({
     title: 'Odhlásit se',
     body: [
-      h('p', { class: 'card-text' }, 'Na cizím počítači se odhlas vždycky. Na svém telefonu můžeš zůstat přihlášený(á).'),
+      h('p', { class: 'card-text' }, 'Na cizím počítači se odhlas vždycky. Na svém telefonu se odhlašovat nemusíš.'),
       h('div', { class: 'card-buttons' }, button('Odhlásit se', { variant: 'surface', icon: 'log-out', onclick: () => logout() })),
     ],
   });
@@ -247,12 +247,12 @@ export function renderAccount() {
   const person = personById(S.data, myId());
   const role = ACCESS_LABELS[S.me?.access] || '';
   const noCard = !person
-    ? callout(S.mode === 'demo' ? 'Teď se díváš jako správce bez karty v Lidech. Níž si vyber, čí očima se chceš dívat.' : 'Zvonec neví, kdo z Lidí jsi. Řekni správci, ať tvoje přihlášení propojí s tvou kartou.', { tone: 'info' })
+    ? callout(S.mode === 'demo' ? 'Teď se díváš jako správce bez karty v Lidech. Níž si vyber, čí očima se chceš dívat.' : 'Zvonec neví, která karta v Lidech je tvoje. Řekni správci, ať ji propojí s tvým účtem.', { tone: 'info' })
     : null;
   return page({
     title: 'Můj účet',
     media: person ? avatar(person, { size: 'l' }) : null,
-    meta: [person ? personName(person) : null, role].filter(Boolean).join(' · ') || null,
+    meta: [person ? personName(person) : null, role].filter(Boolean).join(SEP) || null,
     width: 'list',
     cls: 'account-page',
     body: [

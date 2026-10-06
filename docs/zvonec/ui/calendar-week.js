@@ -3,7 +3,7 @@
 // clash K9 shows its mark); events over midnight or several days sit in the band on top. A line
 // shows the time now. Phone: three days, paged by three.
 
-import { h, icon, severityIcon, fillRing, button, emptyState } from './dom.js';
+import { h, icon, severityIcon, fillRing, button, emptyState, SEP } from './dom.js';
 import { S, SEVERITY_LABELS } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, dayOf, prettyDay, prettyDayLong, prettyTime, today, weekday, DAYS } from '../lib/time.js';
@@ -115,7 +115,7 @@ export function weekView(ctx) {
         const el = h('a', {
           href: `#setkani/${b.event.id}`,
           class: ['cal-bar', `c-${kindHue(b.event.kind)}`, b.cutStart && 'cut-start', b.cutEnd && 'cut-end', myRoles(b.event).length && 'mine', b.event.cancelled && 'cancelled'],
-          title: `${b.event.title} · ${timeText(b.event)}`,
+          title: `${b.event.title}${SEP}${timeText(b.event)}`,
           'aria-label': [b.event.title, timeText(b.event), kindLabel(b.event.kind)].join(', '),
         }, h('span', { class: 'cal-chip-text' }, h('span', { class: 'cal-chip-time' }, `${prettyDay(b.event.start)} ${prettyTime(b.event.start)}`), ' ', h('span', { class: 'cal-chip-title' }, b.event.title)),
         blockMarks(b.event, leader));
@@ -144,7 +144,7 @@ export function weekView(ctx) {
           href: `#setkani/${e.id}`,
           class: ['week-event', `c-${kindHue(e.kind)}`, e.kind === 'service' && 'solid', short && 'short', myRoles(e).length && !e.cancelled && 'mine', e.cancelled && 'cancelled',
             dayOf(e.end) < now && 'past', p.cols > 1 && 'side'],
-          title: [e.title, timeText(e), places, e.cancelled ? 'zrušeno' : null].filter(Boolean).join(' · '),
+          title: [e.title, timeText(e), places, e.cancelled ? 'zrušeno' : null].filter(Boolean).join(SEP),
           'aria-label': [e.title, timeText(e), places, kindLabel(e.kind), e.cancelled ? 'zrušeno' : null].filter(Boolean).join(', '),
         },
         h('span', { class: 'week-event-time' }, prettyTime(e.start), h('span', { class: 'week-event-end' }, `–${prettyTime(e.end)}`)),

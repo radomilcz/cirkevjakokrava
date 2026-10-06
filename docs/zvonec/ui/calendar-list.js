@@ -1,7 +1,7 @@
 // Kalendář – Seznam: the month as an agenda, grouped by week, every event with its cover.
 // In the current month what is over hides behind „Ukázat, co už bylo (4)“.
 
-import { h, groupedList, button, emptyState, plural } from './dom.js';
+import { h, groupedList, button, emptyState, agree, SEP } from './dom.js';
 import { S, render } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, addMonths, dayOf, monthOf, today } from '../lib/time.js';
@@ -25,8 +25,8 @@ export function listView(ctx) {
   }
   const thisMonday = mondayOf(now);
   const groups = [...weeks].map(([monday, items]) => ({
-    label: monday === thisMonday ? `Tento týden · ${rangeLabel(monday, addDays(monday, 6))}`
-      : monday === addDays(thisMonday, 7) ? `Příští týden · ${rangeLabel(monday, addDays(monday, 6))}` : rangeLabel(monday, addDays(monday, 6)),
+    label: monday === thisMonday ? `Tento týden${SEP}${rangeLabel(monday, addDays(monday, 6))}`
+      : monday === addDays(thisMonday, 7) ? `Příští týden${SEP}${rangeLabel(monday, addDays(monday, 6))}` : rangeLabel(monday, addDays(monday, 6)),
     items,
   }));
 
@@ -46,5 +46,5 @@ export function listView(ctx) {
     pastToggle,
     shown.length
       ? groupedList(groups, (e) => eventRow(e, { past: dayOf(e.end) < now }), { cls: 'agenda-list', label: 'Setkání' })
-      : emptyState({ compact: true, text: `Do konce měsíce už nic není. Bylo ${plural(past.length, 'setkání', 'setkání', 'setkání')}.` }));
+      : emptyState({ compact: true, text: `Do konce měsíce už nic není. ${agree(past.length, 'Proběhlo', 'Proběhla')} ${past.length === 1 ? 'jedno' : past.length} setkání.` }));
 }

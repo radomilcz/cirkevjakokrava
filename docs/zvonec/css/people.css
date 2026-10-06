@@ -146,7 +146,7 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .load-track{flex:1 1 auto;display:flex;min-width:0}
 .load-track .progress{height:8px;min-width:0}
 .load-neutral .progress-fill{background:var(--text-2)}
-.load-text{display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;min-width:4.6em;font-size:var(--font-size-3);font-variant-numeric:tabular-nums;color:var(--text-1);padding-top:2px}
+.load-text{display:inline-flex;white-space:nowrap;align-items:center;justify-content:flex-end;gap:4px;min-width:4.6em;font-size:var(--font-size-3);font-variant-numeric:tabular-nums;color:var(--text-1);padding-top:2px}
 .load-text .severity-icon{width:14px;height:14px;margin-top:-2px}
 .load-danger .load-text{color:var(--declined-fg)}
 .load-sundays{display:inline-flex;align-items:center;gap:4px}

@@ -7,7 +7,7 @@
 import {
   h, icon, nodes, plural, page, tabs, toolbar, spacer, searchField, chipLinks, chips, list, row, groupedList,
   avatar, personName, personLine, groupMark, avatarStack, badge, button, table, emptyState, toast, progressBar,
-  dateNav, metaJoin, severityIcon,
+  dateNav, metaJoin, severityIcon, SEP,
 } from './dom.js';
 import { S, can, myId, render, MEMBERSHIP_LABELS } from './state.js';
 import { createInvite } from './login.js';
@@ -254,7 +254,7 @@ function tabulka(ctx) {
       },
       sortValue: (p) => `${p.lastName || p.firstName || ''} ${p.firstName || ''}` },
     { key: 'status', label: 'Členství', nowrap: true, cls: 'col-status',
-      render: (p) => h('span', { class: ['cell-status-text', isFormer(p) && 'quiet'] }, MEMBERSHIP_LABELS[statusOf(p)], isKid(p) ? h('span', { class: 'cell-sub' }, ' · dítě') : null),
+      render: (p) => h('span', { class: ['cell-status-text', isFormer(p) && 'quiet'] }, MEMBERSHIP_LABELS[statusOf(p)], isKid(p) ? h('span', { class: 'cell-sub' }, `${SEP}dítě`) : null),
       sortValue: (p) => STATUS_ORDER.indexOf(statusOf(p)) + (isKid(p) ? 0.5 : 0) },
     { key: 'household', label: 'Domácnost', cls: 'col-household',
       render: (p) => householdById(S.data, p.householdId)?.name || '', sortValue: (p) => householdById(S.data, p.householdId)?.name || '' },
@@ -418,7 +418,7 @@ function narozeniny() {
       avatar(b.person, { size: 'm' }),
       h('span', { class: 'birthday-tile-text' },
         h('span', { class: 'birthday-tile-name' }, personName(b.person)),
-        h('span', { class: 'birthday-tile-meta' }, b.isToday ? [icon('cake'), `dnes · ${plural(b.age, 'rok', 'roky', 'let')}`] : `${wd(b.date)} ${shortDate(b.date)} · ${plural(b.age, 'rok', 'roky', 'let')}`)))))) : null;
+        h('span', { class: 'birthday-tile-meta' }, b.isToday ? [icon('cake'), metaJoin(['dnes', plural(b.age, 'rok', 'roky', 'let')])] : metaJoin([`${wd(b.date)} ${shortDate(b.date)}`, plural(b.age, 'rok', 'roky', 'let')]))))))) : null;
   const year = day.slice(0, 4);
   const missing = S.data.people.filter((p) => !isFormer(p) && String(p.birthDate || '').length < 10).length;
   return [
@@ -477,11 +477,11 @@ function bremeno(ctx) {
   const max = Math.max(...rows.map((r) => Math.max(r.count, r.limit)), 1);
   const items = rows.map((r) => {
     const tone = r.over ? 'danger' : r.count && r.count >= r.limit ? 'waiting' : 'neutral';
-    const bar = progressBar(r.count, r.limit || 1, { tone, label: `${r.count} ${outOf(r.limit)} služeb ${monthIn}` });
+    const bar = progressBar(r.count, r.limit || 1, { tone, label: r.over ? `${dutiesText(r.count)} ${monthIn}, limit ${r.limit}` : `${r.count} ${outOf(r.limit)} služeb ${monthIn}` });
     bar.style.width = `${Math.max(30, Math.round(((r.limit || 1) / max) * 100))}%`;   // the track is as long as the limit
     const meter = h('span', { class: ['load-meter', `load-${tone}`] },
       h('span', { class: 'load-track' }, bar),
-      h('span', { class: 'load-text' }, r.over ? severityIcon('error') : null, `${r.count} ${outOf(r.limit)}`));
+      h('span', { class: 'load-text' }, r.over ? [severityIcon('error'), `${dutiesText(r.count)}, limit ${r.limit}`] : `${r.count} ${outOf(r.limit)}`));
     const sundays = r.sundaysInRow > 1 ? h('span', { class: ['load-sundays', r.overSundays && 'over'] },
       r.overSundays ? severityIcon('warning') : null, `${plural(r.sundaysInRow, 'neděle', 'neděle', 'nedělí')} po sobě`) : null;
     return row({
@@ -499,7 +499,7 @@ function bremeno(ctx) {
   });
   return [
     list(items, (x) => x, { cls: 'load-list', label: `Břemeno ${monthIn}` }),
-    h('p', { class: 'people-foot' }, `Počítám setkání, kde ${monthIn} slouží, zkoušky ne. Vlastní limit nastavíš na kartě člověka.`),
+    h('p', { class: 'people-foot' }, `Počítám setkání, na kterých lidé ${monthIn} slouží, kromě zkoušek. Vlastní limit nastavíš na kartě člověka.`),
   ];
 }
 

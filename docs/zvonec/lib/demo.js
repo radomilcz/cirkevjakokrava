@@ -137,7 +137,7 @@ const GROUPS = [
   ['g-hospitality', 'Pohostinnost', 'team', 'Kafe po setkání, vlídné slovo u dveří a úklid, když všichni odejdou.'],
   ['g-prayer', 'Modlitby', 'team', 'Po setkání se modlí s každým, kdo o to stojí. Jednou za měsíc zvou na modlitební večer.'],
   ['g-homegroup', 'Středeční skupinka', 'community',
-    'Každou druhou středu večer. Čteme spolu Bibli, modlíme se jeden za druhého a u čaje si povídáme, co kdo prožívá.'],
+    'Každou druhou středu večer. Čteme spolu Bibli, modlíme se jeden za druhého a u čaje si povídáme o tom, co kdo prožívá.'],
   ['g-youth', 'Mládež', 'community', 'Pro všechny od třinácti do dvaceti. Scházíme se v pátek večer v Montě.'],
   ['g-moms', 'Maminky s dětmi', 'community', 'Maminky na rodičovské a jejich nejmenší. V úterý dopoledne kafe, rozhovor a modlitba, děti si mezitím hrají.'],
   ['g-elders', 'Rada starších', 'leadership', 'Starší sboru. Rozhodují, kudy půjdeme dál, a pečují o lidi.'],
@@ -390,11 +390,11 @@ const FORMATS = [
   ['f-story', 'Příběh ze života', 10, null, {
     public: true,
     why: 'Bůh je lepší, než jsme se báli. Nejlíp je to vidět na obyčejných lidech.',
-    how: 'Někdo ze sboru vypráví pět až deset minut, co s Bohem zažil. Kdo to bude, vybereš v osnově: klikni na tenhle bod a vyplň Kdo vede.',
+    how: 'Někdo ze sboru vypráví pět až deset minut, co s Bohem zažil. Kdo to bude, vybereš v osnově: klikni na tenhle bod a vyplň „Kdo vede“.',
   }],
   ['f-video', '(B)učení – video', 5, 'r-projection', {
     why: 'Krátké video někdy řekne víc než dlouhý výklad.',
-    how: 'Projekce pustí video, nejlíp kratší než pět minut. Zvuk vyzkoušet ještě před začátkem.',
+    how: 'Projekce pustí video, nejlíp kratší než pět minut. Zvuk vyzkoušej ještě před začátkem.',
   }],
   ['f-closing', 'Píseň na konec', 5, 'r-wlead', {
     why: 'Ať odcházíme s něčím, co si budeme broukat celý týden.',

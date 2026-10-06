@@ -4,7 +4,7 @@
 
 import {
   h, button, list, row, emptyState, toast, closeDialog, openDialog, confirmDialog, textField, numberField,
-  field, textButton, progressBar, switchField, printHeader, personLine, dialogForm,
+  field, textButton, progressBar, switchField, printHeader, personLine, dialogForm, SEP,
 } from './dom.js';
 import { S, change, newId, render } from './state.js';
 import { openPicker } from './picker.js';
@@ -77,7 +77,7 @@ export function programTab(event, { leader }) {
   const summary = times.length ? h('div', { class: ['program-summary', over > 0 && 'over'] },
     h('div', { class: 'program-summary-text' },
       h('span', { class: 'program-total' }, `${total} z ${length} min`),
-      h('span', { class: 'program-end' }, over > 0 ? `O ${over} min delší než setkání` : over < 0 ? `Konec podle osnovy v ${prettyTime(addMinutes(event.start, total))} · zbývá ${durationText(-over)}` : 'Přesně na čas')),
+      h('span', { class: 'program-end' }, over > 0 ? `O ${over} min delší než setkání` : over < 0 ? `Konec podle osnovy v ${prettyTime(addMinutes(event.start, total))}${SEP}zbývá ${durationText(-over)}` : 'Přesně na čas')),
     progressBar(Math.min(total, length), length, { tone: over > 0 ? 'danger' : total === length ? 'confirmed' : 'neutral', label: `Osnova ${total} z ${length} minut` })) : null;
 
   const tools = h('div', { class: 'tab-tools' },
@@ -87,12 +87,12 @@ export function programTab(event, { leader }) {
   );
 
   return h('div', { class: 'program-tab osnova-sheet' },
-    printHeader(`osnova · ${prettyDay(event.start)}`),
+    printHeader(`osnova${SEP}${prettyDay(event.start)}`),
     tools,
     summary,
     items || (leader
-      ? emptyState({ icon: 'list', title: 'Osnova je prázdná.', text: 'Slož ji z formátů, časy se dopočítají samy.', action: button('Přidat bod', { variant: 'solid', icon: 'plus', onclick: () => addItemDialog(id) }) })
-      : emptyState({ icon: 'list', text: 'Osnova ještě není.' })),
+      ? emptyState({ icon: 'list', title: 'Osnova je zatím prázdná.', text: 'Slož ji z formátů, časy se dopočítají samy.', action: button('Přidat bod', { variant: 'solid', icon: 'plus', onclick: () => addItemDialog(id) }) })
+      : emptyState({ icon: 'list', text: 'Osnova ještě není hotová.' })),
     leader && items ? button('Přidat bod', { variant: 'add', onclick: () => addItemDialog(id), cls: 'no-print' }) : null,
   );
 }
@@ -117,7 +117,7 @@ function addItemDialog(eventId) {
     h('div', { class: 'dialog-body' }, list(formats, (f) => row({
       lead: h('span', { class: 'format-minutes' }, `${f.minutes || 10}′`),
       title: f.name,
-      meta: [f.leadRoleId ? `vede: ${roleById(S.data, f.leadRoleId)?.name || '?'}` : null, f.why ? f.why.split(/(?<=[.!?])\s/)[0] : null].filter(Boolean).join(' · ') || null,
+      meta: [f.leadRoleId ? `vede: ${roleById(S.data, f.leadRoleId)?.name || '?'}` : null, f.why ? f.why.split(/(?<=[.!?])\s/)[0] : null].filter(Boolean).join(SEP) || null,
       onclick: () => add(f),
       label: `Přidat: ${f.name}`,
     }), { cls: 'in-dialog', empty: emptyState({ compact: true, text: 'Nejsou tu žádné formáty.', action: button('Otevřít Formáty', { href: '#formaty', variant: 'surface', size: 's' }) }) })),
@@ -163,7 +163,7 @@ function itemDialog(eventId, itemId, draft) {
       : h('span', { class: 'faint' }, roleName ? `Zatím nikdo (podle role ${roleName})` : 'Nikdo');
   form = dialogForm({
     title: itemName(S.data, item),
-    sub: [`Osnova · ${event.title} ${prettyDay(event.start)}`, format && (format.why || format.how) ? [' · ', textButton('Proč a jak', () => openFormatInfo(format.id))] : null],
+    sub: [`Osnova${SEP}${event.title} ${prettyDay(event.start)}`, format && (format.why || format.how) ? [SEP, textButton('Proč a jak', () => openFormatInfo(format.id))] : null],
     body: h('div', { class: 'form-grid' }, [
       textField('title', 'Název', d.title, { attr: { placeholder: format?.name || '' } }),
       numberField('minutes', 'Délka', d.minutes, { min: 0, max: 600, step: 5, unit: 'min' }),

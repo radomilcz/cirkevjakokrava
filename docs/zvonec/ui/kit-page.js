@@ -99,7 +99,7 @@ function formsBlock(theme) {
     chipsField(n('kit-places'), 'Místo', [['l1', 'Sál'], ['l2', 'Malá místnost'], ['l3', 'Kuchyňka'], ['l4', 'Zahrada']], ['l1', 'l2']),
     switchField(n('kit-public'), 'Zveřejnit na webu', true, { hint: 'Název, čas, místo a popis uvidí každý. Jména ne.' }),
     switchField(n('kit-repeat'), 'Opakovat každý týden', false),
-    checkboxField(n('kit-phone'), 'Ukázat telefon ostatním ve sboru', true),
+    checkboxField(n('kit-phone'), 'Telefon a e-mail smí vidět i ostatní ve sboru', true),
     h('div', { class: 'full kit-row' }, h('label', { class: 'check-row' }, h('input', { type: 'radio', name: n('kit-r'), checked: true }), h('span', { class: 'caption' }, 'Člen')),
       h('label', { class: 'check-row' }, h('input', { type: 'radio', name: n('kit-r') }), h('span', { class: 'caption' }, 'Přítel sboru'))),
     h('div', { class: 'full' }, choices(n('kit-roles'), [['r1', 'Zvuk'], ['r2', 'Projekce'], ['r3', 'Kytara']], ['r2'])));
@@ -109,10 +109,10 @@ function listBlock() {
   const ps = people();
   return list([
     { lead: dateBlock('2026-10-11', { today: true }), title: 'Setkání na pastvě', meta: metaJoin(['10.00', 'Sál', '7 služeb']), trail: [fillRing(12, 14), badge('2 čekají', { tone: 'warning', symbol: 'proposed' })], href: '#kit' },
-    { lead: dateBlock('2026-10-14'), title: 'Skupinka u Fialových', meta: metaJoin(['19.00', 'Fialovi']), trail: statusBadge('confirmed', { word: 'vše potvrzeno' }), href: '#kit' },
+    { lead: dateBlock('2026-10-14'), title: 'Skupinka u Fialových', meta: metaJoin(['19.00', 'Fialovi']), trail: statusBadge('confirmed', { word: 'všichni potvrdili' }), href: '#kit' },
     'group',
-    { lead: groupMark({ id: 'g-worship', name: 'Chvály' }), title: 'Chvály', meta: '8 lidí · 4 role', trail: avatarStack(ps.slice(0, 4), { size: 'xs' }), href: '#kit', tone: 'selected' },
-    { lead: avatar(ps[0], { size: 'm' }), title: 'Veronika Fialová (tady jsi ty)', meta: 'členka · Chvály', trail: menuButton([['Upravit', noop, { icon: 'pencil' }], ['Odebrat', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti' }), href: '#kit', tone: 'mine' },
+    { lead: groupMark({ id: 'g-worship', name: 'Chvály' }), title: 'Chvály', meta: '8 lidí\u00a0· 4 role', trail: avatarStack(ps.slice(0, 4), { size: 'xs' }), href: '#kit', tone: 'selected' },
+    { lead: avatar(ps[0], { size: 'm' }), title: 'Veronika Fialová (tady jsi ty)', meta: 'členka\u00a0· Chvály', trail: menuButton([['Upravit', noop, { icon: 'pencil' }], ['Odebrat', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti' }), href: '#kit', tone: 'mine' },
     { lead: avatar(ps[3], { size: 'm' }), title: 'Ondřej Černý', meta: 'už nechodí', tone: 'quiet' },
     { lead: kindMark('event', { size: 'l' }), title: 'Stavění stanu', meta: 'zrušeno', tone: 'cancelled', href: '#kit' },
     { lead: kindMark('service', { size: 'l' }), title: 'Prázdná nezbytná role', meta: 'chyba (červená značka)', tone: 'error', href: '#kit' },
@@ -150,9 +150,9 @@ function marksBlock() {
 function surfacesBlock() {
   return h('div', { class: 'kit-cards' },
     card({ title: 'Lidé', count: 4, body: h('p', { class: 'note' }, 'Karta s počtem u nadpisu: card({ title, count }).') }),
-    card({ title: 'Kdy a kde', actions: button('Upravit', { variant: 'ghost', size: 's', icon: 'pencil' }), body: facts([['Začátek', '10.00'], ['Konec', '11.30'], ['Místo', ['Sál · ', h('a', { href: '#kit' }, 'Otevřít v mapě')]], ['Šablona', 'Nedělní setkání']]) }),
+    card({ title: 'Kdy a kde', actions: button('Upravit', { variant: 'ghost', size: 's', icon: 'pencil' }), body: facts([['Začátek', '10.00'], ['Konec', '11.30'], ['Místo', ['Sál\u00a0· ', h('a', { href: '#kit' }, 'Otevřít v mapě')]], ['Šablona', 'Nedělní setkání']]) }),
     card({ title: 'Obsazení', body: stack(progressBar(12, 14), progressBar(14, 14), rowWrap(fillRing(12, 14), fillRing(14, 14), fillRing(0, 3), fillRing(2, 5, { text: false }))), footer: button('Celý rozpis', { variant: 'ghost', size: 's', iconEnd: 'chevron-right' }) }),
-    card({ href: '#kit', label: 'Ukázková karta jako odkaz', body: stack(h('span', { class: 'label' }, 'Ne 11. 10. · 10.00'), h('span', {}, 'Karta jako odkaz – najetí myší ji zvedne'), rowWrap(badge('Veřejné', { tone: 'info', icon: 'globe' }))) }),
+    card({ href: '#kit', label: 'Ukázková karta jako odkaz', body: stack(h('span', { class: 'label' }, 'Ne 11. 10.\u00a0· 10.00'), h('span', {}, 'Karta jako odkaz – najetí myší ji zvedne'), rowWrap(badge('Veřejné', { tone: 'info', icon: 'globe' }))) }),
     panel(stack(label('Panel'), h('p', { class: 'note' }, 'Panel je karta bez hlavičky. Seznamy, tabulky a prázdné stavy v něm leží samy.'))));
 }
 
@@ -187,7 +187,7 @@ function dialogBlock() {
     h('div', { class: 'kit-dialog-frame' },
       h('div', { class: 'dialog-preview' },
         h('div', { class: 'dialog-form' },
-          h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, 'Upravit službu'), h('p', { class: 'dialog-sub' }, 'Setkání na pastvě · Ne 11. 10.')),
+          h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, 'Upravit službu'), h('p', { class: 'dialog-sub' }, 'Setkání na pastvě\u00a0· Ne 11. 10.')),
           h('div', { class: 'dialog-body' },
             formSection('Kdo a co', [personPicker({ name: 'kit-who', label: 'Kdo', people: people(), value: people()[3]?.id, full: true }), selectField('kit-role', 'Role', [['r', 'Zvuk'], ['p', 'Projekce']], 'r', { full: true })], { cols: 1 }),
             disclosure('Další možnosti', [formSection(null, [switchField('kit-notify', 'Poslat upozornění', true)], { cols: 1 })])),
@@ -200,7 +200,7 @@ function navBlock() {
     toolbar(dateNav({ label: 'Říjen 2026', onPrev: noop, onNext: noop, onToday: noop, isCurrent: true }), spacer(),
       viewSwitch([['mesic', 'Měsíc'], ['tyden', 'Týden'], ['seznam', 'Seznam'], ['rozpis', 'Rozpis']], 'mesic', { onPick: noop })),
     toolbar(searchField({ placeholder: 'Hledat jméno, telefon, e-mail' }), filterButtons([['all', 'Všechno'], ['error', 'Chyby'], ['warning', 'Pozor']], 'all', noop, { label: 'Závažnost' })),
-    rowWrap(menuButton([['Upravit', noop, { icon: 'pencil' }], ['Stáhnout .ics', noop, { icon: 'download' }], ['Smazat', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti setkání' }), h('span', { class: 'note' }, '← menu ⋯ (Esc zavře, šipky posouvají)')));
+    rowWrap(menuButton([['Upravit', noop, { icon: 'pencil' }], ['Stáhnout do kalendáře', noop, { icon: 'download' }], ['Smazat', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti setkání' }), h('span', { class: 'note' }, '← menu ⋯ (Esc zavře, šipky posouvají)')));
 }
 
 function typeBlock() {
@@ -209,8 +209,8 @@ function typeBlock() {
     h('h2', { class: 'kit-h2' }, 'Moje služby'),
     h('p', { class: 'page-lead' }, 'Kdo kdy slouží a kdo ještě neodpověděl.'),
     h('p', {}, 'Veronika Fialová – Zpěv, Chvály. Agrandir Regular, výchozí velikost 15 px.'),
-    h('p', { class: 'note' }, 'člen · Chvály · Technika · 3 služby v říjnu'),
-    label('Chvály · Technika'),
+    h('p', { class: 'note' }, 'člen\u00a0· Chvály\u00a0· Technika\u00a0· 3 služby v říjnu'),
+    label('Chvály\u00a0· Technika'),
     h('p', {}, h('a', { class: 'link', href: '#kit' }, 'Odkaz v textu'), ' a ', h('button', { type: 'button', class: 'text-btn' }, 'tlačítko v textu'), '.'));
 }
 
@@ -237,7 +237,7 @@ export function renderKit(tab = '') {
     tabs: tabs([['kit', 'Součástky'], ['ikony', 'Ikony', ICON_NAMES.length]], iconsOnly ? 'ikony' : 'kit', (v) => (v === 'kit' ? '#kit' : `#kit/${v}`)),
     body: iconsOnly ? spec('Ikony', 'Čárové ikony 24 × 24, tah 1,75, barva z textu.', iconsBlock) : [
       spec('Typografie', 'Titulek 32 Narrow, sekce 20 Narrow, úvodní věta 17, text 15, popisky 14, štítky 12 Narrow.', typeBlock),
-      spec('Tlačítka – varianta × velikost', 'solid jen jedno na pohled · soft výchozí vedlejší · surface „Upravit“, „Tisk“ · ghost v nástrojích a řádcích · danger jen v úpravách. Velikosti 28 / 36 / 44.', buttonsBlock),
+      spec('Tlačítka – varianta × velikost', 'solid jen jedno na pohled\u00a0· soft výchozí vedlejší\u00a0· surface „Upravit“, „Tisk“\u00a0· ghost v nástrojích a řádcích\u00a0· danger jen v úpravách. Velikosti 28 / 36 / 44.', buttonsBlock),
       spec('Stav a odznaky', 'Stav = symbol + barva + slovo. Čeká na potvrzení je pilulka (chce pozornost), potvrzeno a nemůže jsou klidné.', statusBlock),
       spec('Výběr – přepínač pohledů, záložky, filtry, menu', 'Vybrané = růžová výplň + značka (pruh, podtržení, palec, ✓) + růžový text.', choosingBlock),
       spec('Formulář', null, formsBlock),

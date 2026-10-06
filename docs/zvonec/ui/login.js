@@ -4,7 +4,7 @@
 import {
   h, page, card, button, list, row, groupedList, toast, avatar, personName, menuButton, badge, infoDialog,
   confirmDialog, formDialog, formError, formErrorLine, textField, selectField, checkboxField, switchField,
-  chipsField, segmentedField, checkedValues, copyButton, callout, emptyState,
+  chipsField, segmentedField, checkedValues, copyButton, callout, emptyState, metaJoin, SEP,
 } from './dom.js';
 import {
   S, can, myId, newId, render, signedIn, rememberLogin, loginList, updateLogins, ACCESS_LABELS,
@@ -22,7 +22,7 @@ import { today, addDays } from '../lib/time.js';
 
 export const INVITE_VALID_DAYS = 14;
 const DATA_PATH = 'data';
-const REMEMBER_TEXT = 'Zůstat na tomhle zařízení přihlášený(á)';
+const REMEMBER_TEXT = 'Pamatovat si mě na tomhle zařízení';
 const REMEMBER_HINT = 'Na cizím počítači to vypni.';
 
 /** Czech problem with a new password, or null. */
@@ -61,7 +61,7 @@ export function renderLogin(message) {
     submit.disabled = false;
     submit.textContent = 'Přihlásit se';
     if (!result || result.record.access === 'invite') {
-      formError(form, 'Jméno nebo heslo nesedí. Jestli ti vedoucí vytvořil přihlášení právě teď, počkej pár minut.');
+      formError(form, 'Jméno nebo heslo nesedí. Jestli ti vedoucí přístup vytvořil právě teď, počkej pár minut.');
       return;
     }
     rememberLogin(result, f.remember.checked);
@@ -202,13 +202,13 @@ function renderRegistration(invite, store, data) {
     textField('phone', 'Telefon', person.phone, { type: 'tel', attr: { autocomplete: 'tel' } }),
     textField('email', 'E-mail', person.email, { type: 'email', attr: { autocomplete: 'email' } }),
     switchField('directory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, { hint: 'Jinak je uvidí jen vedoucí.' }),
-    roles.length ? chipsField('roles', 'S čím chceš pomáhat', roles.map((r) => [r.id, r.name]), mySkills, { hint: 'Nemusíš nic. Vedoucí se ti ozve.' }) : null,
+    roles.length ? chipsField('roles', 'S čím chceš pomáhat', roles.map((r) => [r.id, r.name]), mySkills, { hint: 'Nemusíš nic vybírat. Vedoucí se ti ozve.' }) : null,
     h('h3', { class: 'form-section-title full' }, 'Heslo'),
     textField('password', 'Heslo', '', { type: 'password', hint: 'Aspoň 8 znaků.', attr: { autocomplete: 'new-password' } }),
     textField('password2', 'Ještě jednou', '', { type: 'password', attr: { autocomplete: 'new-password' } }),
     switchField('remember', REMEMBER_TEXT, true, { hint: REMEMBER_HINT }),
     h('h3', { class: 'form-section-title full' }, 'Souhlas'),
-    checkboxField('consent', `Souhlasím, že ${churchName} si tyhle údaje zapíše, aby mohla plánovat služby. Uvidí je jen lidé, kteří se můžou do Zvonce přihlásit. Nikomu dalšímu je nepředáme. Souhlas můžu kdykoli vzít zpět.`, !!person.consentDate),
+    checkboxField('consent', `Souhlasím, že ${churchName} si tyhle údaje zapíše, aby mohla plánovat služby. Uvidí je jen lidé, kteří se můžou do Zvonce přihlásit. Nikomu dalšímu je nepředá. Souhlas můžu kdykoli vzít zpět.`, !!person.consentDate),
     formErrorLine('', { full: true }),
     h('div', { class: 'full form-submit' }, submitButton('Přidat se')));
   form.addEventListener('submit', async (e) => {
@@ -292,7 +292,7 @@ export function passwordDialog({ title, text, rows }) {
       h('ul', { class: 'secret-rows' }, rows.map(([label, value]) => h('li', {},
         h('span', { class: 'secret-text' }, h('span', { class: 'secret-label' }, label), h('strong', { class: 'secret' }, value)),
         copyButton(value)))),
-      callout('Zvonec si to nepamatuje, po zavření to už neuvidíš. Přihlášení začne fungovat za pár minut.', { tone: 'info' }),
+      callout('Zvonec si to nepamatuje, po zavření to už neuvidíš. Přihlásit se půjde za pár minut.', { tone: 'info' }),
     ],
     actions: button('Hotovo', { variant: 'solid', onclick: () => document.getElementById('dialog')?.close() }),
   });
@@ -304,7 +304,7 @@ export const loginOf = (personId) => loginList().find((l) => l.personId === pers
 /** Leader sets a password for the person (a generated one) and what they may do. */
 export function createLoginDialog(person) {
   const levels = can('admin')
-    ? [['member', 'člen – vidí rozpis a svoje služby'], ['leader', 'vedoucí – plánuje rozpis'], ['admin', 'správce – navíc přihlášení lidí a GitHub klíč']]
+    ? [['member', 'člen – vidí rozpis a svoje služby'], ['leader', 'vedoucí – plánuje rozpis'], ['admin', 'správce – navíc spravuje přístupy a GitHub klíč']]
     : [['member', 'člen – vidí rozpis a svoje služby']];
   const existing = loginOf(person.id);
   formDialog({
@@ -325,10 +325,10 @@ export function createLoginDialog(person) {
         await updateLogins((logins) => {
           for (let i = logins.length - 1; i >= 0; i--) if (logins[i].personId === person.id && logins[i].access !== 'invite') logins.splice(i, 1);
           logins.push(record);
-        }, `přihlášení pro ${displayName(person)}`);
+        }, `přístup pro ${displayName(person)}`);
         render();
         setTimeout(() => passwordDialog({
-          title: `Přihlášení: ${fullName(person)}`,
+          title: `Přihlašovací údaje: ${fullName(person)}`,
           text: 'Předej to osobně nebo soukromou zprávou, ne do skupinového chatu.',
           rows: [['jméno', name], ['heslo', password], ['adresa', location.origin + location.pathname]],
         }));
@@ -365,7 +365,7 @@ export function revokeLogin(login) {
   if (S.mode !== 'live') { demoOnly(); return; }
   const invite = login.access === 'invite';
   const who = fullName(personById(S.data, login.personId));
-  confirmDialog(invite ? 'Zrušit pozvánku?' : 'Zrušit přihlášení?',
+  confirmDialog(invite ? 'Zrušit pozvánku?' : 'Zrušit přístup?',
     invite ? 'Odkaz přestane fungovat za pár minut.' : `${who} se po změně už nepřihlásí. Změna začne platit za pár minut.`,
     async () => {
       try {
@@ -373,7 +373,7 @@ export function revokeLogin(login) {
         render();
         toast('Zrušeno.');
       } catch (error) { toast('Nepodařilo se.', error.message, { tone: 'error' }); }
-    }, { buttonLabel: invite ? 'Zrušit pozvánku' : 'Zrušit přihlášení' });
+    }, { buttonLabel: invite ? 'Zrušit pozvánku' : 'Zrušit přístup' });
 }
 
 /** May the current user manage this person's login? Leaders manage members, admins everyone. */
@@ -409,7 +409,7 @@ export function passwordForm() {
   return form;
 }
 
-// ---------- Nastavení › Přihlášení ----------
+// ---------- Nastavení › Přístupy ----------
 
 let demoAccess = null;
 /** Every login we know of: live – access.json; demo – the prepared logins of lib/demo.js (no keys). */
@@ -445,7 +445,7 @@ export function orphanRow(l, { trail } = {}) {
   return row({
     lead: h('span', { class: 'avatar avatar-m avatar-gone', 'aria-hidden': 'true' }, '?'),
     title: 'Někdo smazaný',
-    meta: `${ACCESS_LABELS[l.access] || l.access} · může se přihlásit od ${dayWithYear(l.created)}`,
+    meta: metaJoin([ACCESS_LABELS[l.access] || l.access, `může se přihlásit od ${dayWithYear(l.created)}`]),
     trail: [badge('bez karty', { tone: 'danger' }), trail],
   });
 }
@@ -460,13 +460,13 @@ export function loginsView() {
   const isMe = (l) => live && l.id === S.me.login?.id;
   const menuFor = (l) => (!isMe(l) && mayManage(l) ? menuButton([
     l.access !== 'invite' && personById(S.data, l.personId) ? ['Změnit heslo nebo oprávnění', () => (live ? createLoginDialog(personById(S.data, l.personId)) : demoOnly()), { icon: 'pencil' }] : null,
-    [l.access === 'invite' ? 'Zrušit pozvánku' : 'Zrušit přihlášení', () => revokeLogin(l), { danger: true, icon: 'x' }],
+    [l.access === 'invite' ? 'Zrušit pozvánku' : 'Zrušit přístup', () => revokeLogin(l), { danger: true, icon: 'x' }],
   ].filter(Boolean), { label: `Možnosti: ${l.access === 'invite' ? 'pozvánka' : nameOf(l)}`, size: 's' }) : null);
 
   const { invites, orphans } = loginIssues();
   const people = all.filter((l) => l.access !== 'invite' && personById(S.data, l.personId));
   const groups = ACCESS_GROUPS.map(([access, label]) => ({
-    label: `${label} · ${people.filter((l) => l.access === access).length}`,
+    label: `${label}${SEP}${people.filter((l) => l.access === access).length}`,
     items: people.filter((l) => l.access === access).sort((a, b) => nameOf(a).localeCompare(nameOf(b), 'cs')),
   }));
   const loginRow = (l) => {
@@ -483,14 +483,14 @@ export function loginsView() {
   return [
     live ? null : callout('V ukázce se nikdo nepřihlašuje. Takhle by vypadal seznam v ostrém Zvonci – zkus si menu u lidí.', { tone: 'info' }),
     invites.length || orphans.length ? card({
-      title: 'Pozvánky a nedořešené', count: invites.length + orphans.length,
+      title: 'Pozvánky a přístupy bez karty', count: invites.length + orphans.length,
       body: list([...invites, ...orphans], (l) => (l.access === 'invite' ? inviteRow(l, { trail: menuFor(l) }) : orphanRow(l, { trail: menuFor(l) })), { label: 'Pozvánky' }),
       flush: true,
     }) : null,
     card({
       title: 'Kdo se může přihlásit', count: people.length,
-      body: groupedList(groups, loginRow, { label: 'Přihlášení', empty: 'Zatím se nikdo nemůže přihlásit.' }),
-      footer: h('p', { class: 'card-note' }, 'Přihlášení vytvoříš na kartě člověka. Nebo pošleš pozvánku a nový člověk si údaje i heslo vyplní sám. Každá změna začne platit za pár minut.'),
+      body: groupedList(groups, loginRow, { label: 'Kdo se může přihlásit', empty: 'Zatím se nikdo nemůže přihlásit.' }),
+      footer: h('p', { class: 'card-note' }, 'Přístup vytvoříš na kartě člověka. Nebo pošleš pozvánku a nový člověk si údaje i heslo vyplní sám. Každá změna začne platit za pár minut.'),
       flush: true,
     }),
   ];

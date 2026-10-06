@@ -3,7 +3,7 @@
 // Privacy (README „Kdo co vidí“): members never see membership, birth dates, notes, consent or logins;
 // phone and e-mail only when the person set showInDirectory; groups by name only.
 
-import { h, plural, toast, download, infoDialog, button } from './dom.js';
+import { h, plural, toast, download, infoDialog, button, SEP } from './dom.js';
 import { S, can, myId, MEMBERSHIP_LABELS } from './state.js';
 import {
   childAgeOf, age, isChild, statusOf, matchesFilter, missingData, fullName, MISSING_LABELS,
@@ -101,7 +101,7 @@ export function membershipText(person) {
   const label = MEMBERSHIP_LABELS[statusOf(person)];
   if (isFormer(person)) {
     const span = [m.since && `od ${fullDate(m.since)}`, m.until && `do ${fullDate(m.until)}`].filter(Boolean).join(' ');
-    return span ? `${label} · ve sboru ${span}` : label;
+    return span ? `${label}${SEP}ve sboru ${span}` : label;
   }
   return m.since ? `${label} od ${fullDate(m.since)}` : label;
 }
@@ -180,7 +180,7 @@ export function activeGroups() {
 export const GROUP_WORDS = {
   team: { kind: 'tým', kinds: 'Týmy', in: 'v týmu', leads: 'vede tým', leadsSwitch: 'Vede tým' },
   community: { kind: 'skupinka', kinds: 'Skupinky', in: 've skupince', leads: 'vede skupinku', leadsSwitch: 'Vede skupinku' },
-  leadership: { kind: 'vedení', kinds: 'Vedení', in: 'v', leads: 'vede', leadsSwitch: 'Vede ho' },
+  leadership: { kind: 'vedení', kinds: 'Vedení', in: 'v', leads: 'vede', leadsSwitch: 'Předsedá vedení' },
 };
 export const groupWords = (group) => GROUP_WORDS[group?.kind] || GROUP_WORDS.community;
 

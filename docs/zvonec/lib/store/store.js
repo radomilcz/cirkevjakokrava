@@ -242,10 +242,10 @@ export async function deleteImage(store, name, message = 'Zvonec: obrázek smaz�
   return store.remove(imagePath(name), message);
 }
 
-/** Czech commit message from change notes: "Zvonec: Petr na Zvuk, … a 2 dalších". */
+/** Czech commit message from change notes: "Zvonec: Petr na Zvuk, … a 2 další" / "a 5 dalších". */
 export function commitMessage(notes) {
   const shown = notes.slice(0, 3).join(', ') || 'úprava';
-  return `Zvonec: ${shown}${notes.length > 3 ? ` a ${notes.length - 3} dalších` : ''}`;
+  return `Zvonec: ${shown}${notes.length > 3 ? ` a ${notes.length - 3} ${notes.length - 3 <= 4 ? 'další' : 'dalších'}` : ''}`;
 }
 
 /**

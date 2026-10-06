@@ -9,7 +9,7 @@
 
 import {
   h, nodes, avatar, personName, openDialog, closeDialog, chips, button, searchField, icon, textField,
-  checkboxField, formErrorLine, formError, toast, severityIcon, anchoredPopover,
+  checkboxField, formErrorLine, formError, toast, severityIcon, anchoredPopover, SEP,
 } from './dom.js';
 import { S, can, newId, change, navigate, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
 import { householdById, fullName, displayName, sortPeople, matchesText, statusOf } from '../lib/people.js';
@@ -265,7 +265,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
   }
 
   search.addEventListener('keydown', onKeys);
-  const eyebrow = eyebrowText !== undefined ? eyebrowText : event ? `${prettyDay(event.start)} · ${event.title}` : group ? group.name : null;
+  const eyebrow = eyebrowText !== undefined ? eyebrowText : event ? `${prettyDay(event.start)}${SEP}${event.title}` : group ? group.name : null;
   const heading = title || (role ? `Kdo na ${role.name}?` : multiple ? 'Vyber lidi' : 'Vyber člověka');
   paint();
   const head = h('div', { class: 'pp-head' },

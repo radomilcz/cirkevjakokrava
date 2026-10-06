@@ -101,11 +101,24 @@ export const count = (text) => h('span', { class: 'n' }, text);
 /** Row of buttons. `right` aligns them to the right. */
 export const actions = (children, { right = false, cls = '' } = {}) => h('div', { class: ['actions', right && 'right', cls] }, children);
 
+/**
+ * The Czech form that agrees with a count, without the number: 1 / 2–4 / 0 and 5+. For nouns and
+ * for the verbs and participles that go with a count (the pattern of „Přibude / Přibudou“):
+ *   `${agree(n, 'Přibylo', 'Přibyla', 'Přibylo')} ${n} setkání` → „Přibyla 2 setkání“, „Přibylo 5 setkání“
+ *   agree(5, 'čeká', 'čekají') → 'čeká'   („5 čeká“, „2 čekají“)
+ * `many` defaults to `one` (verbs: „1 čeká / 5 čeká“).
+ */
+export function agree(n, one, few, many = one) {
+  return n === 1 ? one : n >= 2 && n <= 4 ? few : many;
+}
+
 /** Czech plural with the number: plural(3, 'člověk', 'lidé', 'lidí') → '3 lidé'. */
 export function plural(n, one, few, many) {
-  const form = n === 1 ? one : n >= 2 && n <= 4 ? few : many;
-  return `${n} ${form}`;
+  return `${n} ${agree(n, one, few, many)}`;
 }
+
+/** „v“ or „ve“ before a written number: „ve 2 rolích“, „v 5 rolích“ (ve before 2, 3, 4). */
+export const inNumber = (n) => (n >= 2 && n <= 4 ? 've' : 'v');
 
 /** The separator of a meta line: a no-break space before „·“, so a wrapped line never starts with the dot. */
 export const SEP = '\u00a0· ';

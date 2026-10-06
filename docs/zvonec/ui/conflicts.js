@@ -5,7 +5,7 @@
 
 import {
   h, page, tabs, toolbar, spacer, chips, viewSwitch, card, list, row, emptyState, button, personName, avatar,
-  dateBlock, severityIcon, severityMark, severityWord, severityCounts, textField, dialogForm, closeDialog, SEP,
+  dateBlock, severityIcon, severityMark, severityWord, severityCounts, textField, dialogForm, closeDialog, SEP, metaJoin, andJoin,
 } from './dom.js';
 import { S, change, render, isUpcoming, myId } from './state.js';
 import { SEVERITIES, CODES } from '../lib/conflicts.js';
@@ -114,10 +114,10 @@ export function overrideDialog(assignmentId) {
   const name = personName(person);
   dialogForm({
     title: 'Je to v pořádku?',
-    sub: `${role?.name || 'Služba'} · ${event.title} ${prettyDay(event.start)}`,
+    sub: metaJoin([role?.name || 'Služba', `${event.title} ${prettyDay(event.start)}`]),
     body: [
       h('p', { class: 'dialog-text' }, `Když víš, že ${name} to zvládne, napiš proč. Zvonec to pak přestane hlásit jako chybu.`),
-      existing?.at ? h('p', { class: 'dialog-text quiet' }, `Napsal(a) ${by || 'někdo'}, ${prettyDay(existing.at, false)}`) : null,
+      existing?.at ? h('p', { class: 'dialog-text quiet' }, metaJoin([`Zapsáno ${prettyDay(existing.at, false)}`, by])) : null,
       h('div', { class: 'form-grid one' },
         textField('reason', 'Proč to půjde', existing?.reason || '', { full: true, attr: { autofocus: true, placeholder: 'odejde ze zkoušky dřív', maxlength: 120 } })),
     ],
@@ -182,7 +182,7 @@ function eventCard(group) {
     dateBlock(dayOf(event.start), { today: dayOf(event.start) === today() }),
     h('div', { class: 'conflict-card-text' },
       h('h2', { class: 'conflict-card-title' }, h('a', { href: `#setkani/${event.id}` }, event.title)),
-      h('p', { class: 'conflict-card-meta' }, `${prettyDay(event.start)} · ${prettyTime(event.start)}`, event.cancelled ? `${SEP}zrušeno` : '')),
+      h('p', { class: 'conflict-card-meta' }, metaJoin([prettyDay(event.start), prettyTime(event.start), event.cancelled ? 'zrušeno' : null]))),
     severityCounts(items),
     button('Otevřít setkání', { variant: 'surface', size: 's', href: `#setkani/${event.id}`, iconEnd: 'chevron-right', cls: 'conflict-open' }));
   return h('section', { class: 'card conflict-card', 'aria-label': `${event.title} ${prettyDay(event.start)}` },
@@ -221,9 +221,10 @@ export function renderConflicts(parts = []) {
     { onPick: (v) => { f.conflictScope = v; render(); }, label: 'Kdy', size: 's' });
 
   const groups = groupsFor(view, shown);
+  const hidden = SEVERITIES.filter((s) => !f.conflictSeverities.includes(s) && countOf(s)).map((s) => SEVERITY_CHIPS[s].toLowerCase());
   const nothing = !inScope.length
     ? emptyState({ icon: 'check', title: 'Všechno sedí.', text: f.conflictScope === 'all' ? 'Nikdo nebučí.' : `Od ${prettyDay(today())} nikdo nebučí.` })
-    : emptyState({ icon: 'filter', title: 'Tady nic není.', text: 'Zkus zapnout i ostatní závažnosti.', action: button('Ukázat všechno', { variant: 'surface', onclick: () => { f.conflictSeverities = [...SEVERITIES]; render(); } }) });
+    : emptyState({ icon: 'filter', title: 'Tady nic není.', text: `Zkus zapnout i upozornění typu ${andJoin(hidden)}.`, action: button('Ukázat všechno', { variant: 'surface', onclick: () => { f.conflictSeverities = [...SEVERITIES]; render(); } }) });
 
   return page({
     title: 'Upozornění',

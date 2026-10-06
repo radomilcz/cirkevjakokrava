@@ -4,7 +4,7 @@
 // Every person carries the status symbol in its colour (the word is in the legend and for screen
 // readers). Prints on A4 landscape (white paper, no marks of warnings).
 
-import { h, icon, severityIcon, statusIcon, statusLabel, personName, groupMark, emptyState, printHeader, popMenu } from './dom.js';
+import { h, icon, severityIcon, statusIcon, statusLabel, personName, groupMark, emptyState, printHeader, popMenu, metaJoin, agree, SEP } from './dom.js';
 import { S, can, myId, SEVERITY_LABELS } from './state.js';
 import { eventsInRange, needsOf } from '../lib/events.js';
 import { personById } from '../lib/people.js';
@@ -82,7 +82,7 @@ export function rosterView(ctx) {
     const td = h('td', {
       class: ['roster-cell', teamStart(colIndex) && 'team-start', !need && !here.length && 'none', mineHere && 'mine-cell', severity && `sev-${severity}`],
     });
-    if (!need && !here.length) { td.append(h('span', { class: 'roster-none', 'aria-label': 'nepotřeba' }, '–')); return td; }
+    if (!need && !here.length) { td.append(h('span', { class: 'roster-none', 'aria-label': 'není potřeba' }, '–')); return td; }
     const people = here.map((a) => {
       const person = personById(S.data, a.personId);
       const name = personName(person);
@@ -113,7 +113,7 @@ export function rosterView(ctx) {
 
   const showTitle = (e) => e.title !== kindLabel(e.kind);
   const table = h('table', { class: 'table roster-table' },
-    h('caption', { class: 'visually-hidden' }, `Rozpis služeb ${monthTitle(month)}`),
+    h('caption', { class: 'visually-hidden' }, `Rozpis služeb na ${monthTitle(month).toLowerCase()}`),
     h('thead', {},
       h('tr', { class: 'roster-teams' },
         h('th', { class: 'roster-corner', rowspan: 2, scope: 'col' }, 'Setkání'),
@@ -133,7 +133,7 @@ export function rosterView(ctx) {
             h('span', { class: ['roster-kind', `c-${kindHue(e.kind)}`], 'aria-hidden': 'true' }),
             h('span', { class: 'roster-event-text' },
               h('span', { class: 'roster-when' }, h('span', { class: 'roster-day' }, prettyDay(e.start)), h('span', { class: 'roster-time' }, prettyTime(e.start))),
-              showTitle(e) || e.cancelled ? h('span', { class: 'roster-title' }, [showTitle(e) ? e.title : null, e.cancelled ? 'zrušeno' : null].filter(Boolean).join(' · ')) : null))),
+              showTitle(e) || e.cancelled ? h('span', { class: 'roster-title' }, metaJoin([showTitle(e) ? e.title : null, e.cancelled ? 'zrušeno' : null])) : null))),
         columns.map((rid, i) => cell(e, rid, i, conflicts, problems)));
     })));
 
@@ -145,12 +145,12 @@ export function rosterView(ctx) {
     leader ? h('li', { class: 'no-print legend-hint' }, 'Klikni na jméno nebo na „chybí“.') : null);
 
   return h('div', { class: 'roster' },
-    printHeader(`rozpis služeb · ${monthTitle(month)}`),
+    printHeader(`rozpis služeb${SEP}${monthTitle(month)}`),
     h('div', { class: 'table-wrap card roster-wrap' },
       h('div', { class: 'table-scroll', tabindex: 0, role: 'region', 'aria-label': `Rozpis ${monthTitle(month)}` }, table)),
     h('div', { class: 'roster-foot' }, legendItems,
       skipped ? h('p', { class: 'roster-skipped no-print' }, skipped === 1 ? 'Skryto 1 setkání, které nikoho do služby nepotřebuje.'
-        : `Skryto ${skipped} setkání, která nikoho do služby nepotřebují.`) : null),
+        : `${agree(skipped, 'Skryto', 'Skryta')} ${skipped} setkání, která nikoho do služby nepotřebují.`) : null),
     h('p', { class: 'note print-only' }, 'Kdo nemůže, ať dá vědět vedoucímu týmu.'));
 }
 

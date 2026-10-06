@@ -1,7 +1,7 @@
 // The public part: what a visitor who is not signed in sees (DESIGN §4, §4b). Only published data
 // from publicData() (lib/public.js shape) – never S.data directly, so nothing private can slip in.
 // #program – the next event as a hero, then the weeks, „Kde nás najdete“ at the end ·
-// #program/<id> – one public event (shareable, „Přidat do kalendáře“) · #jak-se-schazime – published formats.
+// #program/<id> – one public event (shareable, „Stáhnout do kalendáře“) · #jak-se-schazime – published formats.
 
 import {
   h, page, card, button, badge, andJoin, emptyState, eventCover, coverKey, placeLine, placeMap, mapUrl, callout, icon, plural, download, SEP,
@@ -116,7 +116,7 @@ function downloadEvent(event, data) {
   download(`${slug || 'setkani'}-${dayOf(event.start)}.ics`, ics(calendarData, [item], data?.churchName || FALLBACK_NAME), 'text/calendar');
 }
 
-const calendarButton = (event, data, variant = 'surface') => button('Přidat do kalendáře', { variant, icon: 'calendar-plus', onclick: () => downloadEvent(event, data) });
+const calendarButton = (event, data, variant = 'surface') => button('Stáhnout do kalendáře', { variant, icon: 'calendar-plus', onclick: () => downloadEvent(event, data) });
 
 // ---------- #program ----------
 
@@ -235,7 +235,7 @@ export function renderPublicEvent(id) {
       event.cancelled ? callout('Tohle setkání je zrušené.', { tone: 'danger' }) : null,
       h('div', { class: 'pub-detail-cover' }, coverOf(event, 'hero', { title: false })),
       h('div', { class: 'pub-detail-grid' },
-        event.description ? h('div', { class: 'pub-detail-text' }, h('p', {}, event.description)) : h('p', { class: 'pub-detail-text quiet' }, 'Víc o tomhle setkání zatím nenapsali.'),
+        event.description ? h('div', { class: 'pub-detail-text' }, h('p', {}, event.description)) : h('p', { class: 'pub-detail-text quiet' }, 'Víc jsme o tomhle setkání zatím nenapsali.'),
         card({
           title: 'Kdy a kde',
           cls: 'pub-detail-facts',

@@ -147,6 +147,11 @@ export function prettyDay(text, withWeekday = true) {
   return withWeekday ? `${DAYS[weekday(text)]} ${base}` : base;
 }
 
+/** A span of days for a sentence: „6. 10.“ for one day, „od 6. 10. do 9. 10.“ for more. */
+export function daySpan(from, to = from) {
+  return from === to ? prettyDay(from, false) : `od ${prettyDay(from, false)} do ${prettyDay(to, false)}`;
+}
+
 export function prettyDayLong(text) {
   const d = parseDate(text);
   return `${DAYS_FULL[weekday(text)]} ${d.getDate()}. ${MONTHS_GENITIVE[d.getMonth()]} ${d.getFullYear()}`;

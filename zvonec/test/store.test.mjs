@@ -111,7 +111,7 @@ test('file map covers every collection and four files', () => {
   assert.deepEqual(Object.keys(f['data/groups.json']), ['schema', 'groups', 'roles', 'groupMembers']);
   assert.deepEqual(Object.keys(f['data/settings.json']), ['schema', 'settings']);
   assert.equal(commitMessage([]), 'Zvonec: úprava');
-  assert.equal(commitMessage(['a', 'b', 'c', 'd', 'e']), 'Zvonec: a, b, c a 2 dalších');
+  assert.equal(commitMessage(['a', 'b', 'c', 'd', 'e']), 'Zvonec: a, b, c a 2 další');
 });
 
 // ---------- GitHub (mocked API) ----------

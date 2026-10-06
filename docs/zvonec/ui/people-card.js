@@ -7,7 +7,7 @@
 
 import {
   h, icon, plural, page, card, facts, list, row, avatar, personName, groupMark, badge, button, menuButton, callout,
-  emptyState, dateBlock, statusBadge, severityIcon, severityMark, progressBar, metaJoin, mapUrl, canMap, download, section, note, btn, plus,
+  emptyState, dateBlock, statusBadge, severityIcon, severityMark, progressBar, metaJoin, SEP, agree, mapUrl, canMap, download, section, note, btn, plus,
 } from './dom.js';
 import { S, can, myId, change, isUpcoming, ACCESS_LABELS, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
 import { createInvite, createLoginDialog, revokeLogin, allLogins } from './login.js';
@@ -66,11 +66,11 @@ export function renderPersonCard(id) {
     contact && person.email && !self ? button('Napsat', { variant: 'surface', icon: 'mail', href: `mailto:${person.email}` }) : null,
     !leader && self ? button('Upravit kontakt', { variant: 'surface', icon: 'pencil', onclick: () => contactEditDialog(person) }) : null,
     menuButton([
-      ['Stáhnout služby do kalendáře', () => downloadDuties(person), { icon: 'download' }],
+      ['Stáhnout do kalendáře', () => downloadDuties(person), { icon: 'download' }],
       leader ? ['Přidat do skupiny', () => groupDialog(person), { icon: 'users' }] : null,
       leader ? ['Upravit jméno a další údaje', () => detailsDialog(person), { icon: 'pencil' }] : null,
       ['Zapsat, kdy nemůže', () => availabilityDialog(person), { icon: 'calendar' }],
-    ].filter(Boolean), { label: 'Další akce' }),
+    ].filter(Boolean), { label: 'Další možnosti' }),
   ];
 
   const registry = [
@@ -144,7 +144,7 @@ function contactCard(person) {
   if (kid && !lines.length) {
     const parents = householdMembers(S.data, person.householdId, { today: today() }).filter((p) => !isKid(p) && p.phone);
     body = [quiet('Je to dítě, kontakt jde přes rodiče.'),
-      parents.length ? h('ul', { class: 'contact-lines' }, parents.map((p) => contactLine('phone', [h('a', { href: telHref(p.phone) }, p.phone), h('span', { class: 'contact-who' }, ` · ${personName(p)}`)]))) : null];
+      parents.length ? h('ul', { class: 'contact-lines' }, parents.map((p) => contactLine('phone', [h('a', { href: telHref(p.phone) }, p.phone), h('span', { class: 'contact-who' }, `${SEP}${personName(p)}`)]))) : null];
   } else {
     body = [
       lines.length ? h('ul', { class: 'contact-lines' }, lines) : quiet(self ? 'Telefon ani e-mail tu zatím nemáš.' : 'Telefon ani e-mail zatím nemáme.'),
@@ -214,7 +214,7 @@ function detailsCard(person) {
   const years = age(person, today());
   const exact = (person.birthDate || '').length >= 10;
   const pairs = [
-    ['Narození', person.birthDate ? `${exact ? fullDate(person.birthDate) : `rok ${person.birthDate.slice(0, 4)}`}${years != null ? ` · ${exact ? '' : 'asi '}${yearsText(years)}` : ''}` : null],
+    ['Narození', person.birthDate ? `${exact ? fullDate(person.birthDate) : `rok ${person.birthDate.slice(0, 4)}`}${years != null ? `${SEP}${exact ? '' : 'asi '}${yearsText(years)}` : ''}` : null],
     ['Přezdívka', person.nickname || null],
     ['Poznámka', person.note ? h('span', { class: 'fact-note' }, person.note) : null],
   ];
@@ -241,11 +241,11 @@ function loginCard(person) {
   const items = mayManage && !isFormer(person) ? [
     [existing || invite ? 'Poslat pozvánku znovu' : 'Poslat pozvánku', () => createInvite(person), { icon: 'send' }],
     S.mode === 'live' ? [existing ? 'Změnit heslo nebo oprávnění' : 'Vytvořit heslo', () => createLoginDialog(person), { icon: 'pencil' }] : null,
-    existing && !self ? ['Zrušit přihlášení', () => revokeLogin(existing), { danger: true, icon: 'x' }] : null,
+    existing && !self ? ['Zrušit přístup', () => revokeLogin(existing), { danger: true, icon: 'x' }] : null,
   ].filter(Boolean) : [];
   return card({
-    title: 'Přihlášení',
-    actions: items.length ? menuButton(items, { label: 'Možnosti přihlášení', size: 's' }) : null,
+    title: 'Přístup',
+    actions: items.length ? menuButton(items, { label: 'Možnosti přístupu', size: 's' }) : null,
     body: h('p', { class: ['login-line', existing && 'can'] }, icon(existing ? 'log-in' : invite ? 'send' : 'user'), text),
     cls: 'person-card',
   });
@@ -266,7 +266,7 @@ function warningsCard(person) {
       return row({
         lead: severityMark(c.severity),
         title: c.text,
-        meta: event ? `${prettyDay(event.start)} ${prettyTime(event.start)} · ${event.title}` : null,
+        meta: event ? metaJoin([`${prettyDay(event.start)} ${prettyTime(event.start)}`, event.title]) : null,
         href: `#setkani/${c.eventId}`,
         cls: 'warning-row',
       });
@@ -290,7 +290,7 @@ function groupsCard(person) {
   const self = person.id === myId();
   const groups = groupsInOrder(person.id);
   return card({
-    title: self ? 'Moje týmy a skupinky' : 'Týmy a skupinky',
+    title: self ? 'Moje skupiny' : 'Skupiny',
     actions: leader ? addButton(() => groupDialog(person), 'Přidat do skupiny') : null,
     body: groups.length ? list(groups, (g) => {
       const member = memberRecord(S.data, g.id, person.id);
@@ -341,7 +341,7 @@ function dutiesCard(person) {
   const shown = all.slice(0, DUTIES_SHOWN);
   return card({
     title: self ? 'Moje nejbližší služby' : 'Nejbližší služby',
-    actions: all.length ? button(null, { variant: 'ghost', size: 's', icon: 'download', label: 'Stáhnout do kalendáře (.ics)', onclick: () => downloadDuties(person) }) : null,
+    actions: all.length ? button(null, { variant: 'ghost', size: 's', icon: 'download', label: 'Stáhnout do kalendáře', onclick: () => downloadDuties(person) }) : null,
     body: all.length ? list(shown, (duty) => dutyRow(duty), { cls: 'duty-rows' })
       : h('div', { class: 'card-pad' }, quiet(self ? 'Teď žádnou službu nemáš.' : 'Teď nemá žádnou službu.')),
     footer: all.length > shown.length ? h('span', { class: 'card-foot-text' }, `A ještě ${plural(all.length - shown.length, 'další', 'další', 'dalších')} – v Kalendáři v Rozpisu.`) : null,
@@ -367,7 +367,7 @@ const recordsOf = (person) => S.data.availability.filter((v) => v.personId === p
 const availabilityRow = (person) => (v) => row({
   lead: h('span', { class: 'range-mark' }, icon('calendar')),
   title: rangeText(v),
-  meta: [v.reason || null, v.from <= today() ? 'právě teď' : null].filter(Boolean).join(' · ') || null,
+  meta: metaJoin([v.reason || null, v.from <= today() ? 'právě teď' : null]) || null,
   onclick: () => availabilityDialog(person, v),
   label: `Upravit: ${rangeLong(v)}`,
 });
@@ -388,7 +388,7 @@ function availabilityCard(person) {
 }
 
 /**
- * „Kdy nemůže sloužit“ as a page section (#prehled, #ucet): current and future records, „Přidat“.
+ * „Kdy nemůže“ as a page section (#prehled, #ucet): current and future records, „Přidat“.
  * Editable by leaders and by the person; null for anyone else.
  */
 export function availabilitySection(person, { heading } = {}) {
@@ -396,7 +396,7 @@ export function availabilitySection(person, { heading } = {}) {
   const self = person.id === myId();
   if (!leader && !self) return null;
   const records = recordsOf(person);
-  return section(heading || (self ? 'Kdy nemůžu sloužit' : 'Kdy nemůže sloužit'), {
+  return section(heading || (self ? 'Kdy nemůžu' : 'Kdy nemůže'), {
     actions: btn(plus('Přidat'), () => availabilityDialog(person), 'small'),
   },
   list(records, availabilityRow(person), {
@@ -419,10 +419,13 @@ function loadCard(person) {
     body: [
       limits.paused ? callout('Má pauzu, do rozpisu se teď nenabízí.', { tone: 'info', icon: 'clock' }) : null,
       h('div', { class: ['load-big', `load-${tone}`] },
-        h('p', { class: 'load-figure' }, h('strong', {}, String(count)), ` ${outOf(limits.maxPerMonth)} `,
-          h('span', { class: 'load-unit' }, `služeb v ${MONTHS_LOCATIVE[Number(month.slice(5, 7)) - 1]}`),
-          over ? badge('přes limit', { tone: 'danger', symbol: 'declined' }) : null),
-        progressBar(count, limits.maxPerMonth || 1, { tone, label: `${count} ${outOf(limits.maxPerMonth)} služeb tento měsíc` })),
+        over
+          ? h('p', { class: 'load-figure' }, h('strong', {}, String(count)),
+            h('span', { class: 'load-unit' }, `${agree(count, 'služba', 'služby', 'služeb')} v ${MONTHS_LOCATIVE[Number(month.slice(5, 7)) - 1]}, limit ${limits.maxPerMonth}`),
+            badge('přes limit', { tone: 'danger', symbol: 'declined' }))
+          : h('p', { class: 'load-figure' }, h('strong', {}, String(count)), ` ${outOf(limits.maxPerMonth)} `,
+            h('span', { class: 'load-unit' }, `služeb v ${MONTHS_LOCATIVE[Number(month.slice(5, 7)) - 1]}`)),
+        progressBar(count, limits.maxPerMonth || 1, { tone, label: over ? `${dutiesText(count)} tento měsíc, limit ${limits.maxPerMonth}` : `${count} ${outOf(limits.maxPerMonth)} služeb tento měsíc` })),
       facts([
         ['Neděle po sobě', streak > limits.maxConsecutiveWeeks
           ? h('span', { class: 'fact-missing' }, severityIcon('warning'), `${streak}, nejvíc má mít ${limits.maxConsecutiveWeeks}`)
@@ -462,7 +465,7 @@ function reducedCard(person) {
         others.length ? card({ title: 'Domácnost', body: [h('p', { class: 'household-line' }, h('span', { class: 'household-link' }, household.name)), h('ul', { class: 'mini-rows' }, others.map((p) => h('li', { class: 'mini-row' },
           avatar(p, { size: 's', mine: p.id === myId() }), h('span', { class: 'mini-text' }, h('a', { class: 'mini-name', href: `#osoba/${p.id}` }, personName(p))))))], cls: 'person-card' }) : null),
       h('div', { class: 'person-col' },
-        card({ title: 'Týmy a skupinky', body: groups.length ? list(groups, (g) => row({ lead: groupMark(g, { size: 's' }), title: g.name, meta: groupWords(g).kind }), { cls: 'group-rows' })
+        card({ title: 'Skupiny', body: groups.length ? list(groups, (g) => row({ lead: groupMark(g, { size: 's' }), title: g.name, meta: groupWords(g).kind }), { cls: 'group-rows' })
           : h('div', { class: 'card-pad' }, quiet('Není v žádném týmu ani skupince.')), flush: true, cls: 'person-card' }))),
   });
 }

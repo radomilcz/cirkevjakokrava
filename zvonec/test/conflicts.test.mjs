@@ -179,7 +179,7 @@ test('K5 and K6 read their day limits from settings.rules', () => {
   })];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K5:error', 'K6:warning']);
-  assert.equal(k.find((x) => x.code === 'K6').text, 'Zpěv: Jana zatím nepotvrdil(a).');
+  assert.equal(k.find((x) => x.code === 'K6').text, 'Zpěv: Jana – zatím nepotvrzeno.');
   d.settings.rules = {};   // defaults: essential 7 (warning from 14), unconfirmed 5 days – three weeks ahead is fine
   assert.deepEqual(codes(findConflicts(d, { today: TODAY })), []);
 });
@@ -221,7 +221,7 @@ test('K9 place: not shared = error, shared = info', () => {
   ];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K9:error', 'K9:info']);
-  assert.match(k[0].text, /^Sál chtějí naráz a .* i b /);
+  assert.match(k[0].text, /^Sál: dvě setkání ve stejnou dobu – a .* a b /);
   assert.deepEqual(k[0].eventIds, ['a', 'b']);
 });
 
@@ -239,7 +239,7 @@ test('K10 parents at once, K11 child, K12 two adults with the children', () => {
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K10:warning', 'K11:error', 'K12:warning', 'K5:warning']);
   assert.equal(k.find((x) => x.code === 'K10').text, 'Novákovi: oba rodiče slouží naráz. Kdo pohlídá děti?');
-  assert.equal(k.find((x) => x.code === 'K11').text, 'Ema je dítě a U dětí je služba pro dospělé.');
+  assert.equal(k.find((x) => x.code === 'K11').text, 'Ema je dítě, ale role U dětí je jen pro dospělé.');
   assert.match(k.find((x) => x.code === 'K12').text, /není žádný dospělý/);
   // with mum at the children, the parents are fine
   d.events[0].assignments[1].roleId = 'deti';
@@ -401,7 +401,7 @@ test('candidates: free people first, reasons on the others; propose fills the ga
   assert.equal(k[0].person.id, 'petr');
   assert.equal(k[0].level, 'trained');
   assert.ok(k.find((x) => x.person.id === 'ota').reasons.some((x) => x.code === 'K3'));
-  assert.deepEqual(k.find((x) => x.person.id === 'jana').reasons.map((x) => `${x.code}:${x.text}`), ['K4:tuhle roli ještě nedělal(a)']);
+  assert.deepEqual(k.find((x) => x.person.id === 'jana').reasons.map((x) => `${x.code}:${x.text}`), ['K4:v téhle roli zatím bez zkušenosti']);
 
   let n = 0;
   const added = proposeRemaining(d, 'a', () => `n${++n}`, { today: TODAY });
@@ -429,7 +429,7 @@ test('candidates: scope pills – skilled, whole team, everybody', () => {
 
   const all = candidates(d, 'a', 'zvuk', { today: TODAY, scope: 'all' });
   assert.deepEqual(all.find((c) => c.person.id === 'ota').reasons.map((r) => `${r.code}:${r.severity}`), ['K4b:info']);
-  assert.equal(all.find((c) => c.person.id === 'iva').reasons[0].text, 'tuhle roli ještě nedělal(a)');
+  assert.equal(all.find((c) => c.person.id === 'iva').reasons[0].text, 'v téhle roli zatím bez zkušenosti');
   assert.equal(all.find((c) => c.person.id === 'jana').reasons[0].severity, 'info', 'not in the team is not a problem');
   assert.equal(all.find((c) => c.person.id === 'jana').reasons[0].text, 'není v týmu');
   assert.equal(all.find((c) => c.person.id === 'jana').inTeam, false);

@@ -6,7 +6,7 @@
 // edits only its own block (and its own import block „// IMPORTS:<module>“); the shell owns the rest.
 
 import { S, setHooks, can, myId, recompute, isUpcoming, loadRemembered, forgetRemembered, ACCESS_LABELS } from './ui/state.js';
-import { h, nodes, emptyState, page, isDialogOpen, avatar, personName, icon, countBadge, button } from './ui/dom.js';
+import { h, nodes, emptyState, page, isDialogOpen, avatar, personName, icon, countBadge, button, SEP } from './ui/dom.js';
 import './ui/stepper.js';   // − and + buttons on every number field
 import './ui/select.js';    // drop-downs in the Zvonec style
 import './ui/datepicker.js'; // date fields with our own calendar
@@ -88,7 +88,7 @@ const GROUPS_LIBRARY_ROUTES = {
 // ROUTES:groups-library end
 
 // ROUTES:home-admin – Přehled, Upozornění (#upozorneni[/lide]), Nastavení (#nastaveni/<sbor|pravidla|
-// prihlaseni|zaloha>), Můj účet and the public part (#program[/<id>], #jak-se-schazime).
+// pristupy|zaloha>), Můj účet and the public part (#program[/<id>], #jak-se-schazime).
 const HOME_ADMIN_ROUTES = {
   prehled: { render: () => renderHome(), access: 'member' },
   upozorneni: { render: (parts) => renderConflicts(parts), access: 'leader' },
@@ -265,7 +265,7 @@ function updateShell(route, section, parts) {
     const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
     const role = ACCESS_LABELS[S.me.access] || '';
     account.replaceChildren(h('a', {
-      class: 'me', href: '#ucet', 'aria-current': section === 'ucet' ? 'page' : null, title: role ? `Můj účet · ${role}` : 'Můj účet',
+      class: 'me', href: '#ucet', 'aria-current': section === 'ucet' ? 'page' : null, title: role ? `Můj účet${SEP}${role}` : 'Můj účet',
     },
     person ? avatar(person, { size: 'xs' }) : h('span', { class: 'avatar avatar-xs avatar-gone', 'aria-hidden': 'true' }, icon('user')),
     h('span', { class: 'me-text' }, h('span', { class: 'me-name' }, name), role ? h('span', { class: 'me-role' }, role) : null)));
@@ -490,7 +490,7 @@ async function boot() {
       const result = await restore(S.logins, remembered);
       if (result && result.record.access !== 'invite') { await startLive(result); return; }
       if (S.logins.some((l) => l.id === remembered.id)) forgetRemembered();   // the record is here but does not fit – drop it
-      else S.signInMessage = 'Tvoje přihlášení zatím nefunguje, nebo ho někdo zrušil. Jestli je úplně nové, zkus to za pár minut.';
+      else S.signInMessage = 'Zatím se nemůžeš přihlásit: přístup ještě nezačal platit, nebo ho někdo zrušil. Jestli je úplně nový, zkus to za pár minut.';
     }
     renderApp();
     // the public part (published events and formats) – it may come a moment later

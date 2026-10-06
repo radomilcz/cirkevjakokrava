@@ -237,7 +237,7 @@ ui/formats.js          #formaty – Formáty; also the helpers of Jak se scház�
 ui/templates.js        #sablony, #sablona/<id> – the full-page template editor
 ui/places.js           #mista, #misto/<id> – buildings, rooms, address and map; placeChipsField, coordsField
 ui/conflicts.js        #upozorneni: Podle setkání / Podle lidí, inline fix, override; warning rows for other screens
-ui/settings.js         #nastaveni: Sbor · Pravidla · Přihlášení · Záloha
+ui/settings.js         #nastaveni: Sbor · Pravidla · Přístupy · Záloha
 ui/account.js          #ucet – Můj účet (contact, Kdy nemůžu, .ics, Vzhled, password, „Dívat se jako“)
 ui/public.js           the public part: #program[/<id>], #jak-se-schazime (from publicData(), never S.data)
 ui/login.js            sign-in (#prihlaseni), first setup, invite registration, the logins view
@@ -337,7 +337,7 @@ section; `null` = none). `render` returns a kit `page()` (older screens may retu
 | `#sablony`, `#sablona/<id>` (`nova`) | templates (cards, full-page editor) | leader |
 | `#formaty[/<id>]` | formats | member (leader edits) |
 | `#mista`, `#misto/<id>` | places | member (leader edits) |
-| `#nastaveni[/<sbor\|pravidla\|prihlaseni\|zaloha>]` | settings | leader |
+| `#nastaveni[/<sbor\|pravidla\|pristupy\|zaloha>]` | settings | leader |
 | `#ucet` | Můj účet | member |
 | `#program[/<id>]`, `#jak-se-schazime` | public: events, one event, published formats | public |
 | `#prihlaseni`, `#pozvanka/<code>` | sign-in (first setup while there are no logins), registration | signedOut |
@@ -381,7 +381,7 @@ it. A piece that only one module needs lives in that module first (`placeChipsFi
 
 - **Přehled** – cards in two columns, ≤ 5 rows each: my answers, my duties, next Sunday (fill ring), this
   week, Kdy nemůžu, my groups; leaders: Co nesedí, Volná místa (`openSlots`), Čeká na potvrzení
-  (`unconfirmedDuties`), Lidé (cards to complete, guests, birthdays); admins: Přihlášení.
+  (`unconfirmedDuties`), Lidé (cards to complete, guests, birthdays); admins: Přístupy.
 - **Kalendář** – one toolbar for four views (period navigator, Účel, Tým, „Jen moje služby“). Rozpis is
   the planning surface: a leader's click on a cell opens the picker in place (`ui/event-duties.js`).
 - **Lidé** – Tabulka is the default on a desktop, Seznam on a phone; the view is remembered.

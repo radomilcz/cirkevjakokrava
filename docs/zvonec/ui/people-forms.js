@@ -7,7 +7,7 @@
 
 import {
   h, icon, plural, toast, formDialog, textField, textArea, dateField, numberField, switchField, segmentedField,
-  selectField, field, callout, button, personPicker, avatarStack, personName, confirmDialog, segment, fitComboList,
+  selectField, field, callout, button, personPicker, avatarStack, personName, confirmDialog, segment, fitComboList, agree, metaJoin,
 } from './dom.js';
 import { S, can, myId, newId, change, navigate, loginList, updateLogins } from './state.js';
 import {
@@ -16,7 +16,7 @@ import {
 import { groupById, rolesOf, memberRecord, addMember, removeMember, setLeader, setSkill } from '../lib/groups.js';
 import { upcomingDuties } from '../lib/events.js';
 import { limitsOf, DEFAULT_LIMITS } from '../lib/scheduling.js';
-import { today, prettyDay, inBlockout } from '../lib/time.js';
+import { today, prettyDay, daySpan, inBlockout } from '../lib/time.js';
 import {
   childAge, fold, fullDate, householdNameFor, activeGroups, groupWords, peopleCount, isFormer,
 } from './people-common.js';
@@ -189,7 +189,7 @@ export function addPersonDialog({ householdId = '' } = {}) {
       { title: 'Kontakt', cls: 'contact-section', fields: [
         textField('phone', 'Telefon', '', { type: 'tel', attr: { autocomplete: 'off', placeholder: '777 123 456' } }),
         textField('email', 'E-mail', '', { type: 'email', attr: { autocomplete: 'off', placeholder: 'jana@example.cz' } }),
-        switchField('showInDirectory', 'Telefon a e-mail uvidí i ostatní ve sboru', false),
+        switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', false, { hint: 'Jinak je vidí jen vedoucí.' }),
         kidContact,
       ] },
       { fields: [
@@ -306,7 +306,7 @@ export function contactEditDialog(person) {
     fields: [
       textField('phone', 'Telefon', person.phone, { type: 'tel', attr: { autocomplete: self ? 'tel' : 'off', placeholder: '777 123 456', disabled: restricted || null } }),
       textField('email', 'E-mail', person.email, { type: 'email', attr: { autocomplete: self ? 'email' : 'off', placeholder: 'jana@example.cz', disabled: restricted || null } }),
-      switchField('showInDirectory', self ? 'Můj telefon a e-mail uvidí i ostatní ve sboru' : 'Telefon a e-mail uvidí i ostatní ve sboru', !!person.showInDirectory, {
+      switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, {
         hint: 'Jinak je vidí jen vedoucí.', disabled: restricted || kid,
       }),
     ],
@@ -380,7 +380,7 @@ export function householdEditDialog(person) {
     title: 'Domácnost',
     sub: sub(person),
     fields: [
-      householdPicker({ value: person.householdId || '', suggest: () => householdNameFor(person.lastName, person.firstName), hint: 'Lidé, kteří spolu bydlí. Křížkem ho z domácnosti odebereš.' }),
+      householdPicker({ value: person.householdId || '', suggest: () => householdNameFor(person.lastName, person.firstName), hint: 'Lidé, kteří spolu bydlí. Křížkem člověka z domácnosti odebereš.' }),
     ],
     save: (f) => {
       const target = personById(S.data, person.id);
@@ -461,7 +461,7 @@ export function groupDialog(person, group = null) {
     rolesHolder.hidden = !roles.length;
     leaderHolder.replaceChildren(switchField('leader', groupWords(g).leadsSwitch, !!member?.leader));
   };
-  const choose = group ? null : selectField('group', 'Kam', offered.map((g) => [g.id, `${g.name} · ${groupWords(g).kind}`]), offered[0].id, { full: true });
+  const choose = group ? null : selectField('group', 'Skupina', offered.map((g) => [g.id, metaJoin([g.name, groupWords(g).kind])]), offered[0].id, { full: true });
   choose?.querySelector('select').addEventListener('change', (e) => paint(e.target.value));
   paint(offered[0].id);
   return formDialog({
@@ -482,7 +482,7 @@ export function groupDialog(person, group = null) {
         }
       }
       setLeader(S.data, g.id, person.id, !!form.elements.leader?.checked);
-      change(`${displayName(person)} ${existing ? 'v' : 'do'} ${g.name}`);
+      change(`${existing ? 'úprava' : 'přidáno'}: ${displayName(person)} (${g.name})`);
       toast(existing ? 'Uloženo.' : `${personName(person)} je ${groupWords(g).in} ${g.name}.`);
       return null;
     },
@@ -493,10 +493,10 @@ export function groupDialog(person, group = null) {
 export function removeFromGroup(person, group) {
   const removed = removeMember(S.data, group.id, person.id);
   if (!removed) return;
-  change(`${displayName(person)} pryč z ${group.name}`);
+  change(`odebráno: ${displayName(person)} (${group.name})`);
   toast(`Odebráno ze skupiny ${group.name}.`, personName(person), {
     actionLabel: 'Vrátit',
-    action: () => { S.data.groupMembers.push(removed); change(`${displayName(person)} zpátky v ${group.name}`); },
+    action: () => { S.data.groupMembers.push(removed); change(`vráceno: ${displayName(person)} (${group.name})`); },
   });
 }
 
@@ -505,11 +505,11 @@ export function bulkGroupDialog(people, done) {
   const groups = activeGroups();
   if (!groups.length) { toast('Zatím tu není žádná skupina.', 'Založ ji v Týmech a skupinkách.', { tone: 'info' }); return; }
   const count = h('p', { class: 'field-note full' });
-  const select = selectField('group', 'Skupina', groups.map((g) => [g.id, `${g.name} · ${groupWords(g).kind}`]), groups[0].id, { full: true });
+  const select = selectField('group', 'Skupina', groups.map((g) => [g.id, metaJoin([g.name, groupWords(g).kind])]), groups[0].id, { full: true });
   const recount = () => {
     const id = select.querySelector('select').value;
     const already = people.filter((p) => memberRecord(S.data, id, p.id)).length;
-    count.textContent = !already ? `${people.length >= 2 && people.length <= 4 ? 'Přibudou' : 'Přibude'} ${peopleCount(people.length)}.` : already === people.length ? 'Všichni vybraní už tam jsou.' : `Z vybraných už tam ${already === 1 ? 'je jeden' : `jsou ${already}`}, přidám jen ostatní (${people.length - already}).`;
+    count.textContent = !already ? `${agree(people.length, 'Přibude', 'Přibudou')} ${peopleCount(people.length)}.` : already === people.length ? 'Všichni vybraní už tam jsou.' : `Z vybraných už tam ${agree(already, 'je jeden', `jsou ${already}`, `je ${already}`)}, přidám jen ostatní (${people.length - already}).`;
   };
   select.querySelector('select').addEventListener('change', recount);
   recount();
@@ -525,7 +525,7 @@ export function bulkGroupDialog(people, done) {
       if (!fresh.length) return 'Všichni vybraní už tam jsou.';
       for (const p of fresh) addMember(S.data, g.id, p.id, { since: today() });
       done?.();
-      change(`${fresh.length} do ${g.name}`);
+      change(`přidáno: ${peopleCount(fresh.length)} (${g.name})`);
       toast(`${g.name}: ${plural(fresh.length, 'nový člověk', 'noví lidé', 'nových lidí')}.`);
       return null;
     },
@@ -545,7 +545,7 @@ export function availabilityDialog(person, record = null) {
   const day = today();
   const name = displayName(person);
   return formDialog({
-    title: self ? 'Kdy nemůžu sloužit' : 'Kdy nemůže sloužit',
+    title: self ? 'Kdy nemůžu' : 'Kdy nemůže',
     sub: self ? null : sub(person),
     saveLabel: record ? 'Uložit' : 'Přidat',
     fields: [
@@ -555,7 +555,7 @@ export function availabilityDialog(person, record = null) {
     ],
     remove: record ? () => {
       S.data.availability = S.data.availability.filter((x) => x.id !== record.id);
-      change(`${name} zase může ${prettyDay(record.from, false)}`);
+      change(`${name} zase může ${daySpan(record.from, record.to)}`);
       toast('Smazáno.', rangeText(record));
     } : null,
     save: (f) => {
@@ -572,7 +572,7 @@ export function availabilityDialog(person, record = null) {
       if (reason) target.reason = reason; else delete target.reason;
       const clash = upcomingDuties(S.data, person.id, { from, to, includeDeclined: false, includeCancelled: false })
         .filter(({ event }) => inBlockout(event, target));
-      change(`${name} nemůže ${prettyDay(from, false)}`);
+      change(`${name} nemůže ${daySpan(from, to)}`);
       if (clash.length) toast(`V tu dobu ${self ? 'máš' : 'má'} ${plural(clash.length, 'službu', 'služby', 'služeb')}.`, leader ? 'Najdeš to v Upozorněních.' : 'Vedoucí to uvidí v Upozorněních.', { tone: 'info' });
       else toast(record ? 'Uloženo.' : 'Zapsáno.');
       return null;
@@ -621,7 +621,7 @@ export function deletePerson(person) {
   const text = [
     'Zmizí z Lidí, z týmů i z rozpisu.',
     future ? `Uvolní se ${plural(future, 'služba', 'služby', 'služeb')}.` : '',
-    S.mode === 'live' ? 'Údaje ale zůstanou v historii na GitHubu. Jak je smazat úplně, popisuje README.' : '',
+    S.mode === 'live' ? 'Údaje ale zůstanou v historii na GitHubu. Jak je smazat úplně, najdeš v návodu ke Zvonci.' : '',
   ].filter(Boolean).join(' ');
   confirmDialog(`Smazat ${name}?`, text, () => {
     S.data.people = S.data.people.filter((p) => p.id !== id);
@@ -635,10 +635,10 @@ export function deletePerson(person) {
     if (S.mode === 'live' && loginList().some((l) => l.personId === id)) {
       updateLogins((logins) => {
         for (let i = logins.length - 1; i >= 0; i--) if (logins[i].personId === id) logins.splice(i, 1);
-      }, `smazán(a) ${displayName(person)}`).catch((error) => toast('Přihlášení se nepodařilo zrušit.', error.message, { tone: 'error' }));
+      }, `smazaná karta ${displayName(person)}`).catch((error) => toast('Přístup se nepodařilo zrušit.', error.message, { tone: 'error' }));
     }
     navigate('#lide');
-    change(`smazán(a) ${displayName(person)}`);
+    change(`smazaná karta ${displayName(person)}`);
     toast('Smazáno.', name);
   }, { buttonLabel: 'Smazat z Lidí' });
 }
@@ -701,7 +701,7 @@ export function addToHouseholdDialog(household) {
       personPicker({
         name: 'personId', label: 'Kdo', people, full: true,
         meta: (p) => householdById(S.data, p.householdId)?.name || 'bez domácnosti',
-        hint: 'Kdo bydlí jinde, se sem přestěhuje.',
+        hint: 'Kdo teď bydlí jinde, přestěhuje se sem.',
       }),
     ],
     save: (f) => {

@@ -71,9 +71,9 @@ export class GithubStore {
     if (response.ok) return response;
     if (response.status === 409) throw new Conflict();
     const messages = {
-      401: 'GitHub token nepoznal. Neprošlá platnost, nebo překlep?',
-      403: 'Token na tohle repo nemá právo (Contents: Read and write).',
-      404: 'Repo nebo soubor nenalezen. Sedí vlastník, název a větev? A má token přístup k tomuhle repu?',
+      401: 'GitHub klíč nepoznal. Vypršela mu platnost, nebo je v něm překlep?',
+      403: 'GitHub klíč nemá k tomuhle repu oprávnění (Contents: Read and write).',
+      404: 'Zvonec nenašel repo ani soubor. Sedí vlastník, název a větev? A má klíč přístup k tomuhle repu?',
       422: 'GitHub uložení odmítl. Zkus stránku načíst znovu.',
     };
     throw new GithubError(messages[response.status] || `GitHub odpověděl ${response.status}.`, response.status);

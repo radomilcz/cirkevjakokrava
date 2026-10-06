@@ -107,7 +107,7 @@ export function renderPlaces() {
     body: tree.length
       ? h('div', { class: 'place-cards' }, tree.map(({ place, rooms }) => placeCard(place, rooms, leader)))
       : emptyState({
-        icon: 'map-pin', title: 'Zatím tu nejsou žádná místa.', text: 'Místa se pak nabízejí u každého setkání a hlídá se, aby se dvě setkání nepotkala v jedné místnosti.',
+        icon: 'map-pin', title: 'Zatím tu nejsou žádná místa.', text: 'Místa se pak nabízejí u každého setkání a Zvonec hlídá, aby se dvě setkání nepotkala v jedné místnosti.',
         action: leader ? button('Přidat místo', { variant: 'solid', icon: 'plus', onclick: add }) : null,
       }),
   });
@@ -134,7 +134,7 @@ function placeCard(place, rooms, leader) {
     const n = upcomingAt(r.id).length;
     return h('li', {}, row({
       title: r.name,
-      meta: [r.shared ? 'víc věcí naráz' : null, n ? eventsWord(n) : 'nic v plánu'].filter(Boolean).join(' · '),
+      meta: metaJoin([r.shared ? 'víc věcí naráz' : null, n ? eventsWord(n) : 'nic v plánu']),
       href: `#misto/${r.id}`,
       cls: 'room-row',
     }));
@@ -189,9 +189,9 @@ export function renderPlace(id) {
             leader ? h('div', { class: 'section-actions' }, button('Přidat místnost', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => placeDialog(null, { partOf: raw.id }) })) : null),
           list(rooms, (r) => row({
             title: r.name,
-            meta: [r.shared ? 'víc věcí naráz' : null, upcomingAt(r.id).length ? eventsWord(upcomingAt(r.id).length) : 'nic v plánu'].filter(Boolean).join(' · '),
+            meta: metaJoin([r.shared ? 'víc věcí naráz' : null, upcomingAt(r.id).length ? eventsWord(upcomingAt(r.id).length) : 'nic v plánu']),
             href: `#misto/${r.id}`,
-          }), { empty: emptyState({ icon: 'building', compact: true, text: 'Žádné místnosti. Když budova má sál a menší místnosti, přidej je – Zvonec pak pohlídá, aby se setkání nepotkala.' }) })) : null,
+          }), { empty: emptyState({ icon: 'building', compact: true, text: 'Žádné místnosti. Když má budova sál a menší místnosti, přidej je – Zvonec pak pohlídá, aby se setkání nepotkala.' }) })) : null,
         h('section', { class: 'section' },
           h('div', { class: 'section-head' }, h('h2', {}, 'Kdy se tu scházíme', events.length ? [' ', h('span', { class: 'n' }, String(events.length))] : null)),
           list(events.slice(0, 6), (e) => row({

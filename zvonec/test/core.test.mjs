@@ -409,7 +409,7 @@ test('ics: valid structure, time zone, personal duties, folding', () => {
   const items = icsForPerson(d, 'petr', TODAY);
   assert.equal(items.length, 2);
   assert.match(items[0].name, /^Zvuk \+ Kafe · /);
-  assert.equal(items[0].description, 'Navrženo – potvrď to vedoucímu.');
+  assert.equal(items[0].description, 'Čeká na potvrzení – dej vedoucímu vědět, jestli můžeš.');
   assert.equal(items[0].uid, 'a-petr');
   const text = ics(d, items, 'Služby – Petr');
   assert.match(text, /^BEGIN:VCALENDAR\r\n/);

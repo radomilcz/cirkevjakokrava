@@ -13,7 +13,7 @@
 import {
   h, plural, page, button, badge, icon, emptyState, toast, confirmDialog, formDialog, field, textField, textArea,
   selectField, segmentedField, numberField, dateField, eventCover, coverKey, kindMark, progressBar, list, row,
-  groupMark, metaJoin, removeButton, placeChipsField,
+  groupMark, metaJoin, removeButton, placeChipsField, agree, inNumber, SEP,
 } from './dom.js';
 import { S, change, newId, navigate, render } from './state.js';
 import { sortable, dragHandle, moveInArray } from './sortable.js';
@@ -262,7 +262,7 @@ function editorPage(d) {
     sectionCard('web', 'Na webu', 'Co uvidí návštěvníci u veřejného setkání na stránce Program.', web.node),
     sectionCard('lide', 'Kdo je potřeba', 'Kolik lidí z kterého týmu potřebuje každé nové setkání.', people),
     sectionCard('osnova', 'Osnova', 'Z čeho se setkání skládá. Každé nové setkání dostane kopii, kterou pak můžeš upravit.', outline),
-    sectionCard('rady', 'Řady', 'Opakovaná setkání z téhle šablony. Řadu založíš v kalendáři přes Přidat setkání.', seriesSection(d)),
+    sectionCard('rady', 'Řady', 'Opakovaná setkání z téhle šablony. Řadu založíš v kalendáři přes „Přidat setkání“.', seriesSection(d)),
     errorLine,
     type ? h('div', { class: 'template-danger' },
       button('Smazat šablonu', { variant: 'danger', icon: 'trash', onclick: () => deleteTemplate(type) }),
@@ -360,14 +360,14 @@ function basicsSection(d, { onName }) {
   if (!unit.isConnected) length.querySelector('.number-field').append(unit);
   const drawUnit = () => {
     const end = clockPlus(v.startTime, v.minutes);
-    unit.textContent = end ? `${durationText(v.minutes)} · ${prettyClock(v.startTime)}–${prettyClock(end)}` : durationText(v.minutes);
+    unit.textContent = end ? `${durationText(v.minutes)}${SEP}${prettyClock(v.startTime)}–${prettyClock(end)}` : durationText(v.minutes);
   };
   const node = h('div', { class: 'form-grid' },
     textField('name', 'Název setkání', v.name, { full: true, attr: { placeholder: 'Setkání na pastvě', autocomplete: 'off', required: true }, hint: 'Takhle se bude jmenovat každé nové setkání.' }),
     segmentedField('kind', 'Účel', KIND_OPTIONS, v.kind || 'service', { full: true, hint: 'Podle účelu má setkání barvu a značku v kalendáři.' }),
     selectField('groupId', 'Tým', [['', 'Celý sbor'], ...groups.map((g) => [g.id, g.name])], v.groupId || '', { hint: 'Čí je to setkání.' }),
     h('span', { class: 'form-grid-gap', 'aria-hidden': 'true' }),
-    segmentedField('weekday', 'Den v týdnu', DAY_OPTIONS, Number.isInteger(v.weekday) ? String(v.weekday) : '', { full: true, hint: 'Kdy se obvykle schází. Předvyplní se v kalendáři.' }),
+    segmentedField('weekday', 'Den v týdnu', DAY_OPTIONS, Number.isInteger(v.weekday) ? String(v.weekday) : '', { full: true, hint: 'Kdy setkání obvykle bývá. Předvyplní se v kalendáři.' }),
     textField('startTime', 'Začátek', v.startTime || '10:00', { type: 'time', attr: { step: 300, required: true } }),
     length,
     placeChipsField('placeIds', placeTree(S.data), v.placeIds, { hint: 'Místnost v budově zdědí adresu i mapu po budově.' }));
@@ -415,7 +415,7 @@ function webSection(d) {
   const drawCard = () => {
     cardTitle.textContent = v.name || 'Nové setkání';
     const day = Number.isInteger(v.weekday) ? DAYS_FULL[v.weekday] : '';
-    cardMeta.textContent = [[day, prettyClock(v.startTime)].filter(Boolean).join(' '), placesText(v.placeIds)].filter(Boolean).join(' · ');
+    cardMeta.textContent = [[day, prettyClock(v.startTime)].filter(Boolean).join(' '), placesText(v.placeIds)].filter(Boolean).join(SEP);
     cardText.textContent = v.description || 'Bez popisu.';
     cardText.classList.toggle('quiet', !v.description);
   };
@@ -447,9 +447,9 @@ function webSection(d) {
     h('div', { class: 'web-fields form-grid one' },
       field('Obrázek', h('div', { class: 'tpl-image-tools' }, buttons, message, file), { full: true, group: true }),
       textArea('description', 'Popis', v.description, { attr: { rows: 5, placeholder: 'Chvály, slovo, otázky na tělo a kafe. Přijď, jak jsi.' }, hint: 'Předvyplní se u nových setkání. Čtou ho lidé u setkání i na webu.' }),
-      publishField('public', 'Nová setkání z téhle šablony zveřejnit', 'Název, čas, místo, obrázek a popis uvidí každý na webu. Jména lidí nikdy.', v.public)),
+      publishField('public', 'Zveřejňovat nová setkání z téhle šablony', 'Název, čas, místo, obrázek a popis uvidí každý na webu. Jména lidí nikdy.', v.public)),
     h('figure', { class: 'web-preview', 'aria-label': 'Náhled na webu' },
-      h('figcaption', { class: 'label' }, 'Takhle to uvidí na webu'),
+      h('figcaption', { class: 'label' }, 'Takhle to uvidí návštěvníci webu'),
       h('div', { class: 'web-preview-card card' }, preview,
         h('span', { class: 'web-preview-body' }, cardTitle, cardMeta, cardText))));
   const read = () => {
@@ -490,7 +490,7 @@ function needsSection(d) {
     const people = merged.reduce((s, n) => s + n.count, 0);
     total.replaceChildren(
       h('strong', {}, people ? plural(people, 'člověk', 'lidé', 'lidí') : 'Nikdo'),
-      people ? ` v ${plural(merged.length, 'roli', 'rolích', 'rolích')} na každé setkání` : ' zatím není potřeba');
+      people ? ` ${inNumber(merged.length)} ${plural(merged.length, 'roli', 'rolích', 'rolích')} na každé setkání` : ' zatím není potřeba');
   };
   const setCount = (roleId, count) => {
     const i = v.needs.findIndex((n) => n.roleId === roleId);
@@ -602,7 +602,7 @@ function outlineSection(d, { onProgram }) {
       draw();
       onProgram();
     },
-  }, h('option', { value: '' }, 'Přidat bod…'), formats.map((f) => h('option', { value: f.id }, `${f.name} · ${f.minutes ?? 0} min`))) : null;
+  }, h('option', { value: '' }, 'Přidat bod…'), formats.map((f) => h('option', { value: f.id }, metaJoin([f.name, `${f.minutes ?? 0} min`])))) : null;
   wrap.append(summary, listEl, h('div', { class: 'outline-foot' },
     add ? h('span', { class: 'outline-add-field' }, add) : h('p', { class: 'note' }, 'Nejdřív přidej formáty.'),
     h('a', { class: 'text-link outline-formats', href: '#formaty' }, 'Co je který formát')));
@@ -628,7 +628,7 @@ function seriesSection(d) {
       lead: h('span', { class: 'series-mark', 'aria-hidden': 'true' }, icon('refresh')),
       title: seriesSummary(s, { today: now }),
       meta: [`${prettyDay(s.from, false)}${s.from.slice(0, 4) !== (s.until || '').slice(0, 4) ? ` ${s.from.slice(0, 4)}` : ''} – ${s.until ? `${prettyDay(s.until, false)} ${s.until.slice(0, 4)}` : '…'}`,
-        ended ? 'skončila' : ahead ? `ještě ${plural(ahead, 'setkání', 'setkání', 'setkání')}` : 'nic dalšího v plánu'].join(' · '),
+        ended ? 'skončila' : ahead ? `ještě ${plural(ahead, 'setkání', 'setkání', 'setkání')}` : 'nic dalšího v plánu'].join(SEP),
       trail: s.step ? button('Prodloužit', { variant: 'surface', size: 's', icon: 'calendar-plus', onclick: () => extendDialog(s) }) : null,
       cls: 'series-row',
     });
@@ -647,7 +647,7 @@ function extendDialog(series) {
   };
   const drawCount = (until) => {
     const n = countFor(until);
-    line.textContent = n > 0 ? `Přibude ${plural(n, 'setkání', 'setkání', 'setkání')}. Zkopírují se z posledního, bez lidí.` : 'Vyber den po konci řady.';
+    line.textContent = n > 0 ? `${agree(n, 'Přibude', 'Přibudou')} ${n === 1 ? 'jedno' : n} setkání. ${agree(n, 'Zkopíruje', 'Zkopírují', 'Zkopírují')} se z posledního, bez lidí.` : 'Vyber den po konci řady.';
   };
   const form = formDialog({
     title: 'Prodloužit řadu',
@@ -661,7 +661,7 @@ function extendDialog(series) {
       const created = extendSeries(S.data, series.id, until, { newId });
       if (!created.length) return 'Do toho dne nepřibude žádné setkání.';
       change(`řada prodloužená do ${until}`);
-      toast('Řada prodloužená.', `Přibylo ${plural(created.length, 'setkání', 'setkání', 'setkání')}.`);
+      toast('Řada prodloužená.', `${agree(created.length, 'Přibylo', 'Přibyla')} ${created.length === 1 ? 'jedno' : created.length} setkání.`);
       return null;
     },
   });

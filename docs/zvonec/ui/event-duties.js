@@ -60,11 +60,11 @@ export function removeAssignment(eventId, assignmentId) {
   const a = e?.assignments?.find((x) => x.id === assignmentId);
   if (!a) return;
   e.assignments = e.assignments.filter((x) => x.id !== assignmentId);
-  const role = roleById(S.data, a.roleId)?.name || 'služby';
-  change(`${nameOf(a.personId)} pryč z ${role}`);
+  const role = roleById(S.data, a.roleId)?.name || 'služba';
+  change(`odebráno: ${nameOf(a.personId)} (${role})`);
   toast(`Odebráno: ${nameOf(a.personId)}.`, '', {
     actionLabel: 'Vrátit',
-    action: () => { const again = fresh(eventId); if (again) { again.assignments.push(a); change(`${nameOf(a.personId)} zpátky na ${role}`); } },
+    action: () => { const again = fresh(eventId); if (again) { again.assignments.push(a); change(`vráceno: ${nameOf(a.personId)} (${role})`); } },
   });
 }
 
@@ -77,7 +77,7 @@ export function pickFor(eventId, roleId, assignmentId, { anchor } = {}) {
   // not offered: who is on the role already, and the person being replaced (even when they said no)
   const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && (a.status !== 'declined' || a.id === assignmentId)).map((a) => a.personId);
   openPicker({
-    title: replacing ? `Místo ${nameOf(replacing.personId)}` : `Kdo na ${role?.name || 'službu'}?`,
+    title: replacing ? `Vyměnit: ${nameOf(replacing.personId)}` : `Kdo na ${role?.name || 'službu'}?`,
     eventId,
     roleId,
     scope: 'skilled',

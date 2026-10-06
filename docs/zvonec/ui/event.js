@@ -7,7 +7,7 @@
 
 import {
   h, page, tabs, button, icon, badge, callout, card, emptyState, fillRing, progressBar, statusIcon, severityMark,
-  placeLine, placeMap, kindMark, groupMark, assignee, download, plural, menuButton, textButton,
+  placeLine, placeMap, kindMark, groupMark, assignee, download, plural, agree, menuButton, textButton, SEP,
   dialogForm, numberField, toast, avatarStack,
 } from './dom.js';
 import { S, can, change, myId, newId } from './state.js';
@@ -55,7 +55,7 @@ export function renderEvent(id, tab = '') {
       { id: '', label: 'Přehled', icon: 'info' },
       { id: 'sluzby', label: 'Kdo slouží', icon: 'users', count: fill.needed && !event.cancelled ? `${fill.filled} z ${fill.needed}` : null },
       { id: 'osnova', label: 'Osnova', icon: 'list', count: programCount(event) },
-    ], current, (t) => `#setkani/${id}${t ? `/${t}` : ''}`, { label: 'Části setkání' }),
+    ], current, (t) => `#setkani/${id}${t ? `/${t}` : ''}`, { label: 'Záložky setkání' }),
     body: [myAnswer(event), event.cancelled ? callout('Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.', { tone: 'danger', title: 'Zrušeno' }) : null, body],
     width: 'wide',
     cls: ['event-page', `event-tab-${current || 'prehled'}`],
@@ -71,8 +71,8 @@ function eventMeta(event) {
   const places = placesOf(event);
   const team = event.groupId ? groupById(S.data, event.groupId) : null;
   return [
-    h('span', { class: 'meta-when' }, icon('calendar'), `${capital(prettyDayLong(event.start))} · ${timeText(event)}`),
-    h('span', { class: 'meta-kind' }, kindMark(event.kind, { size: 's' }), kindLabel(event.kind), team ? ` · ${team.name}` : ''),
+    h('span', { class: 'meta-when' }, icon('calendar'), `${capital(prettyDayLong(event.start))}${SEP}${timeText(event)}`),
+    h('span', { class: 'meta-kind' }, kindMark(event.kind, { size: 's' }), kindLabel(event.kind), team ? `${SEP}${team.name}` : ''),
     places.length ? h('span', { class: 'meta-place' }, icon('map-pin'), placeLine(places)) : null,
     event.public ? badge('Veřejné na webu', { tone: 'info', icon: 'globe' }) : badge('Jen ve Zvonci', { tone: 'neutral', icon: 'eye-off' }),
   ];
@@ -80,8 +80,8 @@ function eventMeta(event) {
 
 function headActions(event, leader) {
   const series = seriesFor(S.data, event);
-  const icsButton = button('Do kalendáře', {
-    variant: 'surface', icon: 'download', title: 'Stáhnout jako .ics do kalendáře v telefonu',
+  const icsButton = button('Stáhnout do kalendáře', {
+    variant: 'surface', icon: 'download', title: 'Soubor .ics pro kalendář v telefonu',
     onclick: () => download(`${event.title}-${dayOf(event.start)}.ics`, ics(S.data, [{ event }], event.title), 'text/calendar'),
   });
   if (!leader) return [icsButton];
@@ -91,8 +91,8 @@ function headActions(event, leader) {
       series?.step ? ['Prodloužit řadu', () => extendSeriesDialog(event.id), { icon: 'calendar-plus' }] : null,
       [event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', () => cancelDialog(event.id), { icon: event.cancelled ? 'undo' : 'x' }],
       ['Smazat', () => deleteDialog(event.id), { danger: true, icon: 'trash' }],
-    ], { label: 'Další akce' }),
-    button('Upravit údaje', { variant: 'solid', icon: 'pencil', onclick: () => editEventDialog(event.id) }),
+    ], { label: 'Další možnosti' }),
+    button('Upravit setkání', { variant: 'solid', icon: 'pencil', onclick: () => editEventDialog(event.id) }),
   ];
 }
 
@@ -198,7 +198,7 @@ function programCard(event, leader) {
     actions: all ? button(all > items.length ? `Celá osnova (${all})` : 'Otevřít', { variant: 'ghost', size: 's', iconEnd: 'chevron-right', href }) : null,
     body: all
       ? h('ol', { class: 'program-preview' }, items.map((i) => h('li', {}, h('span', { class: 'program-time' }, i.time), h('span', { class: 'program-name' }, i.name), h('span', { class: 'program-minutes' }, `${i.minutes} min`))))
-      : emptyState({ compact: true, text: leader ? 'Osnova je zatím prázdná.' : 'Osnova ještě není.', action: leader ? button('Složit osnovu', { variant: 'surface', size: 's', href }) : null }),
+      : emptyState({ compact: true, text: leader ? 'Osnova je zatím prázdná.' : 'Osnova ještě není hotová.', action: leader ? button('Složit osnovu', { variant: 'surface', size: 's', href }) : null }),
   });
 }
 
@@ -218,7 +218,7 @@ function warningsCard(event, conflicts) {
           c.overrideNote ? h('span', { class: 'warn-note' }, `V pořádku: ${c.overrideNote}`) : null,
           other || (overridable && aid) ? h('span', { class: 'warn-actions' },
             overridable && aid ? textButton(c.overrideNote ? 'Upravit důvod' : 'Vím o tom', () => overrideDialog(aid)) : null,
-            other ? h('a', { class: 'text-btn', href: `#setkani/${other}` }, 'Otevřít to druhé') : null) : null));
+            other ? h('a', { class: 'text-btn', href: `#setkani/${other}` }, 'Otevřít druhé setkání') : null) : null));
     })),
     cls: 'warnings-card',
   });
@@ -259,7 +259,7 @@ function attendanceCard(event, leader) {
   if (!a && !leader) return null;
   const edit = () => dialogForm({
     title: 'Kolik lidí přišlo',
-    sub: `${event.title} · ${prettyDay(event.start)}`,
+    sub: `${event.title}${SEP}${prettyDay(event.start)}`,
     body: h('div', { class: 'form-grid' },
       numberField('adults', 'Dospělí', a?.adults ?? '', { min: 0, max: 2000 }),
       numberField('children', 'Děti', a?.children ?? '', { min: 0, max: 2000 })),
@@ -281,7 +281,7 @@ function attendanceCard(event, leader) {
     actions: leader ? button(a ? 'Upravit' : 'Zapsat', { variant: 'ghost', size: 's', icon: 'pencil', onclick: edit }) : null,
     body: a ? h('div', { class: 'attendance' },
       h('span', { class: 'attendance-total' }, String(total)),
-      h('span', { class: 'attendance-split' }, [a.adults != null ? `${plural(a.adults, 'dospělý', 'dospělí', 'dospělých')}` : null, a.children != null ? `${plural(a.children, 'dítě', 'děti', 'dětí')}` : null].filter(Boolean).join(' · ')))
+      h('span', { class: 'attendance-split' }, [a.adults != null ? `${plural(a.adults, 'dospělý', 'dospělí', 'dospělých')}` : null, a.children != null ? `${plural(a.children, 'dítě', 'děti', 'dětí')}` : null].filter(Boolean).join(SEP)))
       : h('p', { class: 'note' }, 'Zapiš, kolik přišlo dospělých a dětí. Jen čísla, žádná jména.'),
     cls: 'attendance-card',
   });
@@ -326,8 +326,8 @@ function dutiesTab(event, conflicts, leader) {
   const problems = assignmentProblems(conflicts);
   const summary = !event.cancelled ? h('div', { class: 'duties-summary' },
     fillRing(fill.filled, fill.needed, { tone: fill.state === 'confirmed' ? 'confirmed' : 'waiting', size: 22 }),
-    h('span', {}, `${fill.confirmed} ${fill.confirmed === 1 ? 'potvrdil' : fill.confirmed >= 2 && fill.confirmed <= 4 ? 'potvrdili' : 'potvrdilo'}`),
-    fill.filled - fill.confirmed ? h('span', {}, `${fill.filled - fill.confirmed} čeká na potvrzení`) : null,
+    h('span', {}, `${fill.confirmed} ${agree(fill.confirmed, 'potvrdil', 'potvrdili', 'potvrdilo')}`),
+    fill.filled - fill.confirmed ? h('span', {}, `${fill.filled - fill.confirmed} ${agree(fill.filled - fill.confirmed, 'čeká', 'čekají')} na potvrzení`) : null,
     fill.needed - fill.filled ? h('span', { class: 'missing' }, `${fill.needed - fill.filled} chybí`) : null,
     h('span', { class: 'duties-progress' }, progressBar(fill.filled, fill.needed, { tone: fill.state === 'confirmed' ? 'confirmed' : 'waiting' }))) : null;
   return [
@@ -392,7 +392,7 @@ function proposeRest(eventId) {
   const added = proposeRemaining(S.data, eventId, () => newId('a'), { today: today() });
   if (!added.length) { toast('Není koho navrhnout.', 'Kdo umí a má čas, už je zapsaný.'); return; }
   change(`návrh lidí na ${event.title} ${prettyDay(event.start, false)}`);
-  toast(`Navrženo: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Čekají na potvrzení.');
+  toast(`Navrženo: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, agree(added.length, 'Čeká na potvrzení.', 'Čekají na potvrzení.', 'Čekají na potvrzení.'));
 }
 
 function copyPeople(eventId) {
@@ -401,6 +401,6 @@ function copyPeople(eventId) {
   const added = sameAsLastTime(S.data, eventId, () => newId('a'));
   if (!added.length) { toast('Nikdo nepřibyl.', 'Lidi z minula už tu jsou, nemůžou, nebo nejsou potřeba.'); return; }
   change(`lidi z minula na ${event.title} ${prettyDay(event.start, false)}`);
-  toast(`Z minula: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, 'Čekají na potvrzení.');
+  toast(`Z minula: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, agree(added.length, 'Čeká na potvrzení.', 'Čekají na potvrzení.', 'Čekají na potvrzení.'));
 }
 

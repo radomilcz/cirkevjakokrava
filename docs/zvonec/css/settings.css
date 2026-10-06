@@ -11,7 +11,7 @@
 
 /* ---------- Nastavení ---------- */
 .settings-body{display:flex;flex-direction:column;gap:16px;max-width:var(--w-form)}
-.settings-prihlaseni,.settings-zaloha{max-width:var(--w-list)}
+.settings-pristupy,.settings-zaloha{max-width:var(--w-list)}
 .settings-body .card-head+.card-body{padding-top:2px}
 .settings-body .card-body.flush{border-top:1px solid var(--line-1)}
 .preview-place{font-size:var(--font-size-4);line-height:22px}

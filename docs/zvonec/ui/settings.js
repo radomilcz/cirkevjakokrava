@@ -1,11 +1,11 @@
-// #nastaveni/<sbor|pravidla|prihlaseni|zaloha> – the church (name, address, main place), the rules
+// #nastaveni/<sbor|pravidla|pristupy|zaloha> – the church (name, address, main place), the rules
 // (Břemeno defaults, when Zvonec rings, who is an adult), logins and invites (GitHub klíč: admin) and
 // backup. Leaders; the admin-only parts are marked. Šablony and Místa live in Jak se scházíme
 // (ui/templates.js, ui/places.js), Můj účet in ui/account.js.
 // openFormatInfo and formatWhyHow are re-exported for the event screens (older imports).
 
 import {
-  h, page, tabs, card, button, list, row, toast, download, plural, confirmDialog, callout, placeMap, placeLine,
+  h, page, tabs, card, button, list, row, toast, download, plural, agree, confirmDialog, callout, placeMap, placeLine,
   formError, formErrorLine, textField, selectField, rowIcon,
 } from './dom.js';
 import { S, can, change, replaceAll } from './state.js';
@@ -19,15 +19,14 @@ import { today } from '../lib/time.js';
 
 export { openFormatInfo, formatWhyHow } from './formats.js';
 
-const PARTS = [['sbor', 'Sbor', 'building'], ['pravidla', 'Pravidla', 'scale'], ['prihlaseni', 'Přihlášení', 'log-in'], ['zaloha', 'Záloha', 'download']];
+const PARTS = [['sbor', 'Sbor', 'building'], ['pravidla', 'Pravidla', 'scale'], ['pristupy', 'Přístupy', 'log-in'], ['zaloha', 'Záloha', 'download']];
 const hrefOf = (part) => `#nastaveni/${part}`;
-/** Czech word after a number: unitWord(3, ['den', 'dny', 'dní']) → „dny“. */
-const unitWord = (n, forms) => (n === 1 ? forms[0] : n >= 2 && n <= 4 ? forms[1] : forms[2]);
 
 /** `part` = the slug after #nastaveni/ ('' = sbor). Old slugs of moved sections fall back to Sbor. */
 export function renderSettings(part = '') {
-  const slug = PARTS.some(([p]) => p === part) ? part : 'sbor';
-  const { body, actions, lead } = { sbor: churchPart, pravidla: rulesPart, prihlaseni: loginsPart, zaloha: backupPart }[slug]();
+  const known = part === 'prihlaseni' ? 'pristupy' : part;   // the tab's old slug
+  const slug = PARTS.some(([p]) => p === known) ? known : 'sbor';
+  const { body, actions, lead } = { sbor: churchPart, pravidla: rulesPart, pristupy: loginsPart, zaloha: backupPart }[slug]();
   return page({
     title: 'Nastavení',
     lead,
@@ -92,10 +91,10 @@ function churchPart() {
 /** One rule: the sentence and its hint on the left, a number with − / + and its unit on the right. */
 function ruleRow({ key, label, hint, value, min, max, units }) {
   const id = `rule-${key}`;
-  const unit = h('span', { class: 'rule-unit' }, unitWord(Number(value), units));
+  const unit = h('span', { class: 'rule-unit' }, agree(Number(value), ...units));
   const input = h('input', {
     type: 'number', id, name: key, value, min, max, inputmode: 'numeric', 'aria-describedby': `${id}-hint`,
-    oninput: (e) => { unit.textContent = unitWord(Math.round(Number(e.target.value)), units); },
+    oninput: (e) => { unit.textContent = agree(Math.round(Number(e.target.value)), ...units); },
   });
   return h('div', { class: 'rule-row' },
     h('div', { class: 'rule-text' }, h('label', { for: id, class: 'rule-label' }, label), h('small', { class: 'rule-hint', id: `${id}-hint` }, hint)),
@@ -119,7 +118,7 @@ function rulesPart() {
     {
       title: 'Kdy Zvonec bučí', hint: 'Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.',
       rules: [
-        { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role je chyba', hint: 'Dvakrát dřív je to zatím upozornění. Nezbytná je role, bez které to nepůjde.', value: r.essentialDaysBefore, min: 0, max: 60, units: DAYS },
+        { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role je chyba', hint: 'Ve dvojnásobném předstihu ji Zvonec hlásí zatím jen jako upozornění. Nezbytná je role, bez které to nepůjde.', value: r.essentialDaysBefore, min: 0, max: 60, units: DAYS },
         { key: 'openDaysBefore', where: 'rules', label: 'Ostatní prázdná místa', hint: 'Upozornění, že ještě někdo chybí.', value: r.openDaysBefore, min: 0, max: 60, units: DAYS },
         { key: 'unconfirmedDaysBefore', where: 'rules', label: 'Nepotvrzená služba', hint: 'Upozornění, že někdo ještě neřekl, jestli může. Ukáže se i v Přehledu.', value: r.unconfirmedDaysBefore, min: 0, max: 60, units: DAYS },
       ],
@@ -162,7 +161,7 @@ function rulesPart() {
   return { body: form };
 }
 
-// ---------- Přihlášení ----------
+// ---------- Přístupy ----------
 
 function loginsPart() {
   return {
@@ -214,7 +213,7 @@ function backupPart() {
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   const action = (text, onclick, iconName) => button(text, { variant: 'surface', size: 's', icon: iconName, onclick });
   const rows = [
-    { lead: rowIcon('download'), title: 'Stáhnout zálohu', meta: `Teď ${counts} v jednom souboru, bez obrázků${live ? ' a přihlášení' : ''}.`, trail: action('Stáhnout', backup) },
+    { lead: rowIcon('download'), title: 'Stáhnout zálohu', meta: `Všechno v jednom souboru: ${counts}, bez obrázků${live ? ' a přístupů' : ''}.`, trail: action('Stáhnout', backup) },
     admin ? { lead: rowIcon('upload'), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [action('Nahrát', () => file.click()), file] } : null,
     { lead: rowIcon('calendar'), title: 'Celý kalendář do telefonu', meta: 'Všechna setkání v jednom souboru .ics. Svoje služby si každý stáhne v Mém účtu.', trail: action('Stáhnout', calendar) },
   ].filter(Boolean);

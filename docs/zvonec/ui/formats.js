@@ -6,7 +6,7 @@
 
 import {
   h, plural, page, tabs, button, badge, list, row, icon, emptyState, toast, confirmDialog, formDialog, infoDialog,
-  field, textField, textArea, numberField, switchField, card, link, removeButton, andJoin,
+  field, textField, textArea, numberField, switchField, card, link, removeButton, andJoin, metaJoin,
 } from './dom.js';
 import { S, can, change, newId, navigate } from './state.js';
 import { formatById, formatNeeds } from '../lib/program.js';
@@ -175,7 +175,7 @@ function renderList() {
       return row({
         lead: minutesBlock(f.minutes),
         title: f.name,
-        meta: [role ? `vede ${role.name}` : 'kdo vede, se vybere v osnově', leader ? (types ? `${plural(types, 'šablona', 'šablony', 'šablon')}` : 'v žádné šabloně') : null].filter(Boolean).join(' · '),
+        meta: metaJoin([role ? `vede: ${role.name}` : 'kdo vede, vybereš v osnově', leader ? (types ? `${plural(types, 'šablona', 'šablony', 'šablon')}` : 'v žádné šabloně') : null]),
         trail: leader && f.public ? badge('na webu', { tone: 'info', icon: 'globe' }) : null,
         href: `#formaty/${f.id}`,
         cls: 'format-row',
@@ -212,8 +212,8 @@ function renderFormat(id) {
       body: roles.length
         ? h('ul', { class: 'format-roles' }, roles.map(({ role: r, count, lead }) => h('li', {},
           h('span', { class: 'format-role-name' }, r?.name || 'Smazaná role', r ? h('small', {}, groupById(S.data, r.groupId)?.name || '') : null),
-          h('span', { class: 'format-role-what' }, lead ? (count > 1 ? `vede · ${count} lidé` : 'vede') : plural(count, 'člověk', 'lidé', 'lidí')))))
-        : h('p', { class: 'card-note' }, 'Nikdo konkrétní. Kdo vede, se vybere až v osnově.'),
+          h('span', { class: 'format-role-what' }, lead ? (count > 1 ? metaJoin(['vede', plural(count, 'člověk', 'lidé', 'lidí')]) : 'vede') : plural(count, 'člověk', 'lidé', 'lidí')))))
+        : h('p', { class: 'card-note' }, 'Nikdo konkrétní. Kdo vede, vybereš až v osnově.'),
     }),
     leader ? card({
       title: 'Kde se používá',
@@ -231,7 +231,7 @@ function renderFormat(id) {
     back: ['Formáty', '#formaty'],
     meta: [
       metaItem('clock', `${format.minutes ?? 0} min`),
-      metaItem('user', role ? `vede ${role.name}` : 'kdo vede, se vybere v osnově'),
+      metaItem('user', role ? `vede: ${role.name}` : 'kdo vede, vybereš v osnově'),
       leader ? (format.public ? metaItem('globe', 'na webu') : metaItem('eye-off', 'jen ve Zvonci')) : null,
     ].filter(Boolean),
     actions: leader ? button('Upravit', { variant: 'surface', icon: 'pencil', onclick: () => formatDialog(format) }) : null,
@@ -257,7 +257,7 @@ export function openFormatInfo(formatId) {
   const needs = needsText(format);
   infoDialog({
     title: format.name,
-    sub: [`${format.minutes ?? 0} min`, role ? `vede ${role.name}` : null, needs ? `potřebuje ${needs}` : null].filter(Boolean).join(' · '),
+    sub: metaJoin([`${format.minutes ?? 0} min`, role ? `vede: ${role.name}` : null, needs ? `potřebuje ${needs}` : null]),
     body: formatWhyHow(format) || h('p', { class: 'note' }, 'Vysvětlení tu zatím chybí.'),
     actions: [
       button('Otevřít formát', { variant: 'ghost', href: `#formaty/${format.id}`, onclick: () => document.getElementById('dialog')?.close() }),
@@ -282,7 +282,7 @@ export function formatDialog(format) {
         fields: [
           textField('name', 'Název', format?.name, { full: true, attr: { autofocus: true, placeholder: 'Otázky na tělo', autocomplete: 'off' } }),
           numberField('minutes', 'Kolik minut', format?.minutes ?? 10, { min: 1, max: 600, step: 5, unit: 'min' }),
-          field('Kdo vede', roleSelect('leadRoleId', format?.leadRoleId || '', 'Nikdo konkrétní – vybere se v osnově'),
+          field('Kdo vede', roleSelect('leadRoleId', format?.leadRoleId || '', 'Nikdo konkrétní – vybereš v osnově'),
             { hint: 'Kdo má na setkání tuhle roli, ten bod vede.' }),
         ],
       },
@@ -301,7 +301,7 @@ export function formatDialog(format) {
         { cols: 1, fields: [needsEditor(needs, { label: 'Kolik dalších lidí je potřeba', empty: 'Nikdo navíc. Ten, kdo vede, se započítá sám.' })] },
         { cols: 1, fields: [
           textField('link', 'Další čtení', format?.link, { full: true, type: 'url', attr: { placeholder: 'https://…' }, hint: 'Odkaz na článek nebo video, kde se dozvíš víc.' }),
-          publishField('public', 'Zveřejnit na webu', 'Proč to děláme a jak to probíhá uvidí každý na stránce Jak se scházíme.', format?.public),
+          publishField('public', 'Zveřejnit na webu', 'Části „Proč to děláme“ a „Jak to probíhá“ uvidí každý na stránce „Jak se scházíme“.', format?.public),
         ] },
       ],
     },
@@ -340,7 +340,7 @@ function deleteFormat(format) {
   const { types } = usage(format.id);
   const all = S.data.events.filter((e) => (e.program || []).some((i) => i.formatId === format.id)).length;
   const where = [all ? plural(all, 'setkání', 'setkání', 'setkání') : '', types.length ? `${types.length === 1 ? 'šabloně' : 'šablonách'} ${andJoin(types.map((t) => t.name))}` : ''].filter(Boolean);
-  confirmDialog(`Smazat formát ${format.name}?`, where.length ? `Je v osnově (${where.join(' a v ')}). Zmizí odtamtud.` : 'Není v žádné osnově.', () => {
+  confirmDialog(`Smazat formát ${format.name}?`, where.length ? `Je v osnově (${where.join(' a v ')}). Odtamtud zmizí.` : 'Není v žádné osnově.', () => {
     S.data.formats = S.data.formats.filter((x) => x.id !== format.id);
     for (const e of S.data.events) if (e.program) e.program = e.program.filter((i) => i.formatId !== format.id);
     for (const t of S.data.eventTypes) {

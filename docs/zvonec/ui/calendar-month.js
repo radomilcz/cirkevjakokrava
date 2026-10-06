@@ -3,7 +3,7 @@
 // chips a day (then „a 2 další“ → the day in a popover). Leaders get a quiet „+“ on a day on hover.
 // Phone: a compact grid with dots, the chosen day's events in a list under it.
 
-import { h, icon, severityIcon, fillRing, list, button, emptyState, kindMark, plural, anchoredPopover } from './dom.js';
+import { h, icon, severityIcon, fillRing, list, button, emptyState, kindMark, plural, anchoredPopover, SEP } from './dom.js';
 import { S, myId, SEVERITY_LABELS } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, dayOf, monthGrid, monthOf, prettyDay, prettyDayLong, prettyTime, today, DAYS } from '../lib/time.js';
@@ -46,7 +46,7 @@ function chip(event, ctx) {
     href: `#setkani/${event.id}`,
     class: ['cal-chip', `c-${kindHue(event.kind)}`, `kind-${event.kind}`, event.kind === 'service' && 'solid', mine && 'mine', event.cancelled && 'cancelled',
       dayOf(event.end) < today() && 'past'],
-    title: [event.title, timeText(event), event.cancelled ? 'zrušeno' : null].filter(Boolean).join(' · '),
+    title: [event.title, timeText(event), event.cancelled ? 'zrušeno' : null].filter(Boolean).join(SEP),
     'aria-label': chipLabel(event),
   },
   h('span', { class: 'cal-chip-text' }, h('span', { class: 'cal-chip-time' }, prettyTime(event.start)), ' ', h('span', { class: 'cal-chip-title' }, event.title)),
@@ -153,7 +153,7 @@ export function monthView(ctx) {
         const el = h('a', {
           href: `#setkani/${b.event.id}`,
           class: ['cal-bar', `c-${kindHue(b.event.kind)}`, b.cutStart && 'cut-start', b.cutEnd && 'cut-end', myRoles(b.event).length && 'mine', b.event.cancelled && 'cancelled'],
-          title: [b.event.title, timeText(b.event)].join(' · '), 'aria-label': chipLabel(b.event),
+          title: [b.event.title, timeText(b.event)].join(SEP), 'aria-label': chipLabel(b.event),
         }, h('span', { class: 'cal-chip-text' }, b.cutStart ? null : h('span', { class: 'cal-chip-time' }, prettyTime(b.event.start)), ' ', h('span', { class: 'cal-chip-title' }, b.event.title)),
         marks(b.event, ctx));
         el.style.gridColumn = `${b.from + 1} / ${b.to + 2}`;
@@ -188,7 +188,7 @@ function legend(events, ctx) {
     kinds.map((k) => h('li', {}, kindMark(k, { size: 's' }), kindLabel(k))),
     myId() ? h('li', { class: 'legend-mine' }, h('span', { class: 'cal-mark cal-mark-mine' }, icon('user')), 'tady sloužíš') : null,
     ctx.leader ? [
-      h('li', {}, h('span', { class: 'cal-mark cal-mark-fill' }, fillRing(1, 3, { tone: 'waiting', text: false, size: 13 })), 'chybí lidi'),
+      h('li', {}, h('span', { class: 'cal-mark cal-mark-fill' }, fillRing(1, 3, { tone: 'waiting', text: false, size: 13 })), 'někdo chybí'),
       h('li', {}, h('span', { class: 'cal-mark cal-mark-error' }, severityIcon('error')), h('span', { class: 'cal-mark cal-mark-warning' }, severityIcon('warning')), 'něco nesedí'),
     ] : null);
 }

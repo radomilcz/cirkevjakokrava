@@ -1,14 +1,14 @@
 // Adding and editing an event (structure §4.2, W7):
 // – „Přidat setkání“ in two steps: 1. Podle čeho? (template tiles with covers + „Bez šablony“),
-//   2. the form: Co · Kdy (with a repeat rule and its live summary) · Kde · Pro koho · Další možnosti.
-// – „Upravit údaje“: the same form, sections Co · Kdy · Kde · Pro koho · Na webu · Pro tým;
+//   2. the form: Název · Kdy (with a repeat rule and its live summary) · Kde · Pro koho · Další možnosti.
+// – „Upravit setkání“: the same form, sections Název · Kdy · Kde · Pro koho · Na webu · Pro tým;
 //   „Zrušit setkání“ / „Smazat“ bottom left; a series asks „jen tohle / i další“ when saving.
 // – „Kolik lidí je potřeba“ (needs per role) – its own dialog, opened from the Kdo slouží tab.
 // – Cancel / restore and delete, with the series question as two buttons.
 
 import {
   h, button, icon, openDialog, closeDialog, toast, formError, formErrorLine, textField, textArea, selectField,
-  dateField, timeRange, switchField, formSection, disclosure, kindMark, eventCover, plural, field, numberField,
+  dateField, timeRange, switchField, formSection, disclosure, kindMark, eventCover, plural, agree, inNumber, metaJoin, SEP, field, numberField,
   segmentedField, textButton, groupMark, andJoin, placeChipsField,
 } from './dom.js';
 import { S, change, navigate, newId } from './state.js';
@@ -131,7 +131,7 @@ const KIND_OPTIONS = EVENT_KINDS.map((k) => [k, kindLabel(k), (KIND_ICONS || {})
 const teamOptions = () => [['', 'Celý sbor'], ...(S.data.groups || []).filter((g) => !g.archived).map((g) => [g.id, g.name])];
 const teamName = (groupId) => (S.data.groups || []).find((g) => g.id === groupId)?.name || 'celý sbor';
 
-// ---------- the form (step 2 and „Upravit údaje“) ----------
+// ---------- the form (step 2 and „Upravit setkání“) ----------
 
 /**
  * Builds the event form into a dialog. mode 'new' (from `type` or blank, on `day`) or 'edit' (`event`).
@@ -167,7 +167,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
     const from = f.from.value;
     const to = f.to.value;
     overnightHint.hidden = !(from && to && to < from);
-    overnightHint.textContent = from && to && to < from ? `Končí další den ${atTime(`2000-01-01T${to}`)}.` : '';
+    overnightHint.textContent = from && to && to < from ? `Končí až druhý den ${atTime(`2000-01-01T${to}`)}.` : '';
     if (editing) return;
     const select = f.repeat;
     const options = repeatOptions(f.day.value || dayOf(base.start));
@@ -179,7 +179,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
       const until = f.until.value;
       const count = until && until >= f.day.value ? seriesCount(`${f.day.value}T${from || '10:00'}`, step, until) : 0;
       summary.replaceChildren(icon('refresh'), h('span', {}, count
-        ? `${seriesSummary({ step, from: f.day.value, until: count ? lastDayOf(f.day.value, step, until) : until }, { today: today() })} · ${plural(count, 'setkání', 'setkání', 'setkání')}`
+        ? `${seriesSummary({ step, from: f.day.value, until: count ? lastDayOf(f.day.value, step, until) : until }, { today: today() })}${SEP}${plural(count, 'setkání', 'setkání', 'setkání')}`
         : 'Vyber den po prvním setkání.'));
     }
   };
@@ -191,13 +191,13 @@ function openEventForm({ mode, event, type, day, onBack }) {
 
   // ----- Pro koho: summary line with a template, the controls otherwise -----
   const kindField = segmentedField('kind', 'Účel', KIND_OPTIONS, base.kind || 'event', { full: true });
-  const teamField = selectField('groupId', 'Tým', teamOptions(), base.groupId || '', { full: true, hint: 'Čí je to setkání – třeba zkouška chval nebo skupinka. Kdo slouží, se nastaví zvlášť.' });
+  const teamField = selectField('groupId', 'Tým', teamOptions(), base.groupId || '', { full: true, hint: 'Čí je to setkání – třeba zkouška chval nebo skupinka. Kdo slouží, vybereš zvlášť.' });
   const forWhomControls = h('div', { class: 'for-whom-controls' }, kindField, teamField);
   let forWhom;
   if (!editing && type) {
     forWhomControls.hidden = true;
     const line = h('p', { class: 'for-whom-line' },
-      kindMark(base.kind, { size: 'm' }), h('span', {}, `${kindLabel(base.kind)} · ${teamName(base.groupId)}`),
+      kindMark(base.kind, { size: 'm' }), h('span', {}, metaJoin([kindLabel(base.kind), teamName(base.groupId)])),
       textButton('Změnit', () => { line.hidden = true; forWhomControls.hidden = false; forWhomControls.querySelector('input:checked')?.focus(); }));
     forWhom = [line, forWhomControls];
   } else forWhom = [forWhomControls];
@@ -207,7 +207,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
   const note = textArea('note', 'Poznámka pro tým', base.note || '', { attr: { rows: 2, placeholder: 'Sraz v 9.30, klíče má Petr…' }, hint: 'Na webu ji nikdo neuvidí.' });
 
   const sections = [
-    formSection('Co', [textField('title', 'Název setkání', base.title, { full: true, attr: { required: true, placeholder: 'Setkání na pastvě', autofocus: true, oninput: () => picture.redraw() } })], { cols: 1 }),
+    formSection('Název', [textField('title', 'Název setkání', base.title, { full: true, attr: { required: true, placeholder: 'Setkání na pastvě', autofocus: true, oninput: () => picture.redraw() } })], { cols: 1 }),
     formSection('Kdy', [
       dateField('day', 'Den', dayOf(base.start), { required: true }),
       h('div', { class: 'field-stack' }, timeRange('Čas', ['from', timeOf(base.start)], ['to', timeOf(base.end)]), overnightHint),
@@ -230,9 +230,9 @@ function openEventForm({ mode, event, type, day, onBack }) {
   const submitLabel = editing ? 'Uložit' : 'Přidat';
   const submit = button(submitLabel, { variant: 'solid', type: 'submit' });
   const head = h('div', { class: 'dialog-head' },
-    onBack ? button('Jiná šablona', { variant: 'ghost', size: 's', icon: 'chevron-left', onclick: onBack, cls: 'dialog-back' }) : null,
-    h('h2', { class: 'dialog-title' }, editing ? 'Upravit údaje' : 'Přidat setkání'),
-    h('p', { class: 'dialog-sub' }, editing ? `${event.title} · ${prettyDay(event.start)}` : type ? `Podle šablony ${type.name}` : 'Bez šablony'));
+    onBack ? button('Vybrat jinou šablonu', { variant: 'ghost', size: 's', icon: 'chevron-left', onclick: onBack, cls: 'dialog-back' }) : null,
+    h('h2', { class: 'dialog-title' }, editing ? 'Upravit setkání' : 'Přidat setkání'),
+    h('p', { class: 'dialog-sub' }, editing ? metaJoin([event.title, prettyDay(event.start)]) : type ? `Podle šablony ${type.name}` : 'Bez šablony'));
   const body = h('div', { class: 'dialog-body' }, sections, formErrorLine());
   const leftActions = editing ? [
     button(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', { variant: event.cancelled ? 'soft' : 'danger', onclick: () => { closeDialog(); cancelDialog(event.id); } }),
@@ -321,7 +321,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
     const rule = series?.step ? seriesSummary(series, { today: today() }) : null;
     const question = h('div', { class: 'dialog-form series-question' },
       h('div', { class: 'dialog-head' },
-        h('h2', { class: 'dialog-title' }, 'Uložit i do dalších setkání?'),
+        h('h2', { class: 'dialog-title' }, 'Uložit změny i u dalších setkání?'),
         h('p', { class: 'dialog-sub' }, `${event.title} je v řadě${rule ? ` (${rule.charAt(0).toLowerCase()}${rule.slice(1)})` : ''}. Po tomhle setkání jich přijde ještě ${following.length}. Lidé ve službě a osnova zůstanou, jak jsou.`)),
       h('div', { class: 'dialog-foot actions' },
         button('Zpět k úpravám', { variant: 'ghost', icon: 'chevron-left', onclick: () => { question.remove(); form.hidden = false; submit.focus(); } }),
@@ -351,7 +351,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
     if (events.length > 1) {
       change(`${events.length}× ${values.title} od ${prettyDay(values.start, false)}`);
       navigate(calendarHref(rememberedView(), dayOf(values.start)));
-      toast(`Přidáno ${plural(events.length, 'setkání', 'setkání', 'setkání')}.`, series ? seriesSummary(series, { today: today() }) : '');
+      toast(`${agree(events.length, 'Přidáno', 'Přidána')} ${plural(events.length, 'setkání', 'setkání', 'setkání')}.`, series ? seriesSummary(series, { today: today() }) : '');
     } else {
       change(`nové setkání ${prettyDay(values.start, false)}`);
       navigate(`#setkani/${events[0].id}`);
@@ -377,10 +377,10 @@ function usualDay(type, from) {
   return addDays(from, (wd - weekday(from) + 7) % 7);
 }
 
-/** „10.00 · 2 h · Sál a Malá místnost“ */
+/** „10.00 · 2 h · Sál a Malá místnost“ (joined with SEP) */
 function templateMeta(type) {
   const places = andJoin(resolvedPlaces(S.data, type).map((p) => p.name));
-  return [type.startTime ? prettyTime(`2000-01-01T${type.startTime}`) : null, type.minutes ? durationText(type.minutes) : null, places].filter(Boolean).join(' · ');
+  return [type.startTime ? prettyTime(`2000-01-01T${type.startTime}`) : null, type.minutes ? durationText(type.minutes) : null, places].filter(Boolean).join(SEP);
 }
 
 /**
@@ -402,7 +402,7 @@ export function addEventDialog({ day, exact = false } = {}) {
     h('span', { class: 'template-cover' }, h('span', { class: 'template-plus' }, icon('plus'))),
     h('span', { class: 'template-text' },
       h('span', { class: 'template-name' }, 'Bez šablony'),
-      h('span', { class: 'template-meta' }, 'Všechno vyplníš sám'))));
+      h('span', { class: 'template-meta' }, 'Všechno vyplníš ručně'))));
   const content = h('div', { class: 'dialog-form template-step' },
     h('div', { class: 'dialog-head' },
       h('h2', { class: 'dialog-title' }, 'Přidat setkání'),
@@ -413,7 +413,7 @@ export function addEventDialog({ day, exact = false } = {}) {
   content.querySelector('.template-tile')?.focus();
 }
 
-/** „Upravit údaje“ of an event. */
+/** „Upravit setkání“: the form of an event. */
 export function editEventDialog(eventOrId) {
   const event = typeof eventOrId === 'string' ? eventById(S.data, eventOrId) : eventOrId;
   if (!event) return null;
@@ -446,7 +446,7 @@ export function needsDialog(eventId) {
   const form = h('form', { method: 'dialog', novalidate: true, class: 'dialog-form needs-form' },
     h('div', { class: 'dialog-head' },
       h('h2', { class: 'dialog-title' }, 'Kolik lidí je potřeba'),
-      h('p', { class: 'dialog-sub' }, `${event.title} · ${prettyDay(event.start)}. Role, které chce osnova (třeba Večeře Páně), přidá Zvonec sám.`)),
+      h('p', { class: 'dialog-sub' }, `${metaJoin([event.title, prettyDay(event.start)])}. Role, které chce osnova (třeba Večeře Páně), přidá Zvonec sám.`)),
     h('div', { class: 'dialog-body' }, body, sum,
       following ? h('div', { class: 'form-grid needs-scope' },
         segmentedField('scope', 'Platí pro', [['one', 'Jen tohle setkání'], ['following', capitalFirst(andFollowing(following))]], 'one', { full: true })) : null,
@@ -456,7 +456,7 @@ export function needsDialog(eventId) {
   const total = () => {
     let people = 0; let roles = 0;
     form.querySelectorAll('input[type=number]').forEach((i) => { const n = Math.max(0, Number(i.value) || 0); people += n; roles += n ? 1 : 0; });
-    sum.textContent = people ? `Celkem ${plural(people, 'člověk', 'lidé', 'lidí')} v ${plural(roles, 'roli', 'rolích', 'rolích')}.` : 'Nikdo – jen ti, koho chce osnova.';
+    sum.textContent = people ? `Celkem ${plural(people, 'člověk', 'lidé', 'lidí')} ${inNumber(roles)} ${plural(roles, 'roli', 'rolích', 'rolích')}.` : 'Nikdo – jen ti, koho chce osnova.';
   };
   form.addEventListener('input', total);
   form.addEventListener('change', total);
@@ -508,7 +508,7 @@ export function extendSeriesDialog(eventId) {
     closeDialog();
     if (!created.length) { toast('Nic nepřibylo.', 'Do toho dne žádné další setkání nevychází.'); return; }
     change(`řada ${event.title} do ${prettyDay(until, false)} (+${created.length})`);
-    toast(`Přidáno ${plural(created.length, 'setkání', 'setkání', 'setkání')}.`, `Poslední: ${prettyDay(created[created.length - 1].start)}`);
+    toast(`${agree(created.length, 'Přidáno', 'Přidána')} ${plural(created.length, 'setkání', 'setkání', 'setkání')}.`, `Poslední: ${prettyDay(created[created.length - 1].start)}`);
   });
   openDialog(form);
 }
@@ -552,7 +552,7 @@ export function cancelDialog(eventId) {
       if (!e) return;
       const changed = cancelEvent(S.data, e, { following, cancelled: !restoring });
       change(`${restoring ? 'obnoveno' : 'zrušeno'} ${e.title} ${prettyDay(e.start, false)}${changed.length > 1 ? ` (+${changed.length - 1})` : ''}`);
-      toast(restoring ? 'Obnoveno.' : changed.length > 1 ? `Zrušeno ${plural(changed.length, 'setkání', 'setkání', 'setkání')}.` : 'Zrušeno.');
+      toast(restoring ? 'Obnoveno.' : changed.length > 1 ? `${agree(changed.length, 'Zrušeno', 'Zrušena')} ${plural(changed.length, 'setkání', 'setkání', 'setkání')}.` : 'Zrušeno.');
     },
   });
 }
@@ -574,7 +574,7 @@ export function deleteDialog(eventId) {
       navigate(calendarHref(rememberedView(), dayOf(e.start)));
       change(`smazáno ${e.title} ${prettyDay(e.start, false)}${removed.length > 1 ? ` (+${removed.length - 1})` : ''}`);
       for (const name of new Set(removed.map((x) => x.image).filter(Boolean))) dropImageIfUnused(name);
-      toast(removed.length > 1 ? `Smazáno ${plural(removed.length, 'setkání', 'setkání', 'setkání')}.` : 'Smazáno.');
+      toast(removed.length > 1 ? `${agree(removed.length, 'Smazáno', 'Smazána')} ${plural(removed.length, 'setkání', 'setkání', 'setkání')}.` : 'Smazáno.');
     },
   });
 }

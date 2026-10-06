@@ -12,7 +12,7 @@ import {
   h, plural, andJoin, page, tabs, button, badge, list, row, groupedList, avatar, avatarStack, personName,
   personLine, groupMark, emptyState, toast, confirmDialog, closeDialog, formDialog, textField, textArea,
   segmentedField, switchField, numberField, personPicker, chipLinks, chipsField, menuButton, icon, dateBlock,
-  fillRing, checkedValues, link, selectField, statusIcon, metaJoin, kindMark, peopleField,
+  fillRing, checkedValues, link, selectField, statusIcon, metaJoin, kindMark, peopleField, agree, SEP,
 } from './dom.js';
 import { S, can, change, navigate, newId, SKILL_LABELS, GROUP_KIND_LABELS, MEMBERSHIP_LABELS } from './state.js';
 import {
@@ -50,9 +50,9 @@ const KIND_EMPTY = {
  * (before the names: „vede Jana“, „vedou Jana a Petr“), `leaders` (the list group label).
  */
 const KIND_WORDS = {
-  team: { people: 'Lidé v týmu', add: 'Přidat do týmu', leads: 'Vede tým', leadsMine: 'Vedu tým', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat z týmu', in: 'v týmu', leaders: 'Vedou tým', makeLeader: 'Svěřit vedení', unLeader: 'Zrušit vedení' },
-  community: { people: 'Lidé ve skupince', add: 'Přidat do skupinky', leads: 'Vede skupinku', leadsMine: 'Vedu skupinku', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat ze skupinky', in: 've skupince', leaders: 'Vedou skupinku', makeLeader: 'Svěřit vedení', unLeader: 'Zrušit vedení' },
-  leadership: { people: 'Lidé ve vedení', add: 'Přidat do vedení', leads: 'Předsedá vedení', leadsMine: 'Předsedám vedení', you: 'předsedáš', lead1: 'předsedá', leadN: 'předsedají', remove: 'Odebrat z vedení', in: 've vedení', leaders: 'Předsedá', makeLeader: 'Svěřit předsednictví', unLeader: 'Zrušit předsednictví' },
+  team: { people: 'Lidé v týmu', add: 'Přidat do týmu', leads: 'Vede tým', leadsMine: 'Vedu tým', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat z týmu', in: 'v týmu', leaders: 'Vedou tým', makeLeader: 'Svěřit vedení', unLeader: 'Odebrat roli vedoucího' },
+  community: { people: 'Lidé ve skupince', add: 'Přidat do skupinky', leads: 'Vede skupinku', leadsMine: 'Vedu skupinku', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat ze skupinky', in: 've skupince', leaders: 'Vedou skupinku', makeLeader: 'Svěřit vedení', unLeader: 'Odebrat roli vedoucího' },
+  leadership: { people: 'Lidé ve vedení', add: 'Přidat do vedení', leads: 'Předsedá vedení', leadsMine: 'Předsedám vedení', you: 'předsedáš', lead1: 'předsedá', leadN: 'předsedají', remove: 'Odebrat z vedení', in: 've vedení', leaders: 'Předsedá', makeLeader: 'Svěřit předsednictví', unLeader: 'Odebrat předsednictví' },
 };
 export const kindWords = (group) => KIND_WORDS[group?.kind] || KIND_WORDS.community;
 
@@ -79,7 +79,7 @@ function skillsLine(member, roles) {
   const of = (level) => roles.filter((r) => member?.roles?.[r.id] === level).map((r) => r.name);
   const trained = of('trained');
   const learning = of('learning');
-  return [trained.length ? `umí: ${trained.join(', ')}` : '', learning.length ? `učí se: ${learning.join(', ')}` : ''].filter(Boolean).join(' · ');
+  return [trained.length ? `umí: ${trained.join(', ')}` : '', learning.length ? `učí se: ${learning.join(', ')}` : ''].filter(Boolean).join(SEP);
 }
 
 /** Members sorted: leaders first, then by name; people deleted from the registry last. */
@@ -159,7 +159,7 @@ const activePeople = () => S.data.people.filter((p) => !isFormer(p)).slice().sor
 /** „člen · Chvály, Technika“ – who someone is, for the people combobox. */
 function personMeta(person) {
   const groups = groupsOf(S.data, person.id).map((g) => g.name);
-  return [MEMBERSHIP_LABELS[statusOf(person)] || '', groups.slice(0, 3).join(', ') + (groups.length > 3 ? '…' : '')].filter(Boolean).join(' · ');
+  return [MEMBERSHIP_LABELS[statusOf(person)] || '', groups.slice(0, 3).join(', ') + (groups.length > 3 ? '…' : '')].filter(Boolean).join(SEP);
 }
 
 // ---------- kit candidate: „Jen část setkání“ on a mini timeline ----------
@@ -227,7 +227,7 @@ export function minuteWindowField(window_) {
     h('div', { class: 'window-track' }, h('span', { class: 'window-rail' }), meeting, range, fromInput, toInput),
     h('div', { class: 'window-scale', 'aria-hidden': 'true' }, ticks),
     sentence,
-    h('small', { class: 'field-hint' }, 'Minuty se počítají od začátku setkání. Pravý konec znamená až do konce, ať setkání trvá jakkoli dlouho.'));
+    h('small', { class: 'field-hint' }, 'Minuty se počítají od začátku setkání. Když dáš pravý jezdec úplně doprava, znamená to až do konce setkání, ať trvá jakkoli dlouho.'));
   const toggle = switchField('windowOn', 'Jen část setkání', on, {
     hint: 'Třeba kafe po skončení nebo vítání u dveří. Zvonec pak ví, že to jde skloubit s jinou službou.',
     onchange: (e) => { editor.hidden = !e.target.checked; },
@@ -249,7 +249,7 @@ function skillSymbol(level) {
 /** „3 umí · 1 se učí“, „nikdo neumí“. */
 function skillCountText({ trained, learning }) {
   const base = trained ? `${trained} umí` : 'nikdo neumí';
-  return learning ? `${base} · ${learning} se učí` : base;
+  return learning ? `${base}${SEP}${learning} se učí` : base;
 }
 
 /**
@@ -262,7 +262,7 @@ export function skillMatrixTable({ groupId, editable = can('leader'), withLoad =
   if (!matrix.roles.length) {
     return emptyState({
       icon: 'users', title: groupId ? 'Tým zatím nemá žádnou roli.' : 'Žádný tým zatím nemá role.',
-      text: 'Matice se ukáže, až budou role a lidé v týmu.',
+      text: groupId ? 'Tabulka se ukáže, až bude mít tým role i lidi.' : 'Tabulka se ukáže, až budou mít týmy role i lidi.',
       action: groupId && editable ? button('Přidat roli', { variant: 'solid', icon: 'plus', onclick: () => roleDialog(groupById(S.data, groupId)) }) : null,
     });
   }
@@ -293,7 +293,7 @@ export function skillMatrixTable({ groupId, editable = can('leader'), withLoad =
     multi ? null : h('th', { class: 'skill-corner', scope: 'col' }, h('span', { class: 'label' }, 'Člověk')),
     matrix.roles.map((r) => h('th', {
       scope: 'col', class: ['skill-col', r.scarce && 'scarce', teamStart.has(r.role.id) && 'team-start'],
-      title: r.scarce ? 'Málo lidí, kteří tuhle roli umí.' : null,
+      title: r.scarce ? 'Tuhle roli umí málo lidí.' : null,
     },
     h('span', { class: 'skill-role-name' }, r.role.name),
     h('span', { class: 'skill-role-count' }, r.scarce ? icon('alert', { cls: 'skill-scarce-icon' }) : null, skillCountText(r)))),
@@ -333,7 +333,7 @@ export function skillMatrixTable({ groupId, editable = can('leader'), withLoad =
     h('p', { class: 'skill-legend' },
       h('span', {}, skillSymbol('trained'), 'umí'),
       h('span', {}, skillSymbol('learning'), 'učí se – může sloužit s někým zkušeným'),
-      h('span', { class: 'skill-legend-scarce' }, icon('alert'), 'roli umí nanejvýš dva lidé'),
+      h('span', { class: 'skill-legend-scarce' }, icon('alert'), 'roli umí nejvýš dva lidé'),
       editable ? h('span', { class: 'skill-legend-hint' }, 'Klikni na políčko a změníš ho.') : null));
 }
 
@@ -407,7 +407,7 @@ function groupList(groups, { quiet = false } = {}) {
       title: g.name,
       meta: h('span', { class: 'group-row-meta' },
         h('span', { class: 'group-row-leaders' }, leaders.length ? leadersText(g.id) : 'zatím bez vedoucího'),
-        roleNames.length ? h('span', { class: 'group-row-roles' }, roleNames.join(' · ')) : null),
+        roleNames.length ? h('span', { class: 'group-row-roles' }, roleNames.join(SEP)) : null),
       trail: h('span', { class: 'group-row-trail' },
         people.length ? avatarStack(people, { max: 3, size: 's', label: `${peopleCount(people.length)}: ${people.map(personName).join(', ')}` }) : null,
         h('span', { class: 'group-row-count' }, peopleCount(members.length))),
@@ -495,7 +495,7 @@ function deleteGroup(group) {
   const use = assignmentUse(roleIds);
   const memberCount = membersOf(S.data, group.id).length;
   const parts = [
-    memberCount ? `${capital(peopleCount(memberCount))} zůstane v Lidech, jen už tu nebudou.` : '',
+    memberCount ? `V Lidech ${agree(memberCount, 'zůstane', 'zůstanou')} ${peopleCount(memberCount)}, jen už ${kindWords(group).in} ${agree(memberCount, 'nebude', 'nebudou', 'nebudou')}.` : '',
     roleIds.length ? `Zmizí i ${roleCount(roleIds.length)} – ze šablon, formátů i z rozpisu.` : '',
     use.all ? `${useText('Tým', use)} Všechny zmizí. Když chceš historii nechat, dej ho radši do archivu.` : '',
   ];
@@ -591,12 +591,12 @@ function addMemberBar(group) {
       const person = personById(S.data, personId);
       addMember(S.data, group.id, personId, { since: today() });
       refocusAdd = true;
-      change(`${displayName(person)} do skupiny ${group.name}`);
+      change(`přidáno: ${displayName(person)} (${group.name})`);
       toast(`${personName(person)} je ${words.in}.`, '', {
         action: () => {
           if (!groupById(S.data, group.id)) return;
           removeMember(S.data, group.id, personId);
-          change(`${displayName(person)} pryč ze skupiny ${group.name}`);
+          change(`odebráno: ${displayName(person)} (${group.name})`);
         },
         actionLabel: 'Vrátit',
       });
@@ -613,7 +613,7 @@ function addMemberBar(group) {
 function membersBody(group, members, roles) {
   const words = kindWords(group);
   if (!members.length) {
-    return emptyState({ icon: 'user-plus', title: group.kind === 'team' ? 'V týmu zatím nikdo není.' : 'Zatím tu nikdo není.', text: `Vyhledej člověka v poli ${words.add} nahoře.` });
+    return emptyState({ icon: 'user-plus', title: group.kind === 'team' ? 'V týmu zatím nikdo není.' : 'Zatím tu nikdo není.', text: `Vyhledej člověka v poli „${words.add}“ nahoře.` });
   }
   const leading = members.filter((m) => m.leader);
   const rest = members.filter((m) => !m.leader);
@@ -632,7 +632,7 @@ function memberRow(group, member, roles) {
     team && roles.length ? skills || 'zatím nic neumí' : null,
     !person ? 'smazaný z Lidí' : null,
     !team && member.since ? `od ${member.since.split('-').reverse().map(Number).join('. ')}` : null,
-  ].filter(Boolean).join(' · ');
+  ].filter(Boolean).join(SEP);
   return row({
     lead: avatar(person, { size: 'm' }),
     title: personName(person),
@@ -720,11 +720,11 @@ export function addToGroupDialog(person) {
     rolesHolder.hidden = !roles.length;
     leaderHolder.replaceChildren(switchField('leader', kindWords(group).leads, false));
   };
-  const select = selectField('group', 'Kam', offered.map((g) => [g.id, `${g.name} · ${GROUP_KIND_LABELS[g.kind] || ''}`]), offered[0].id, { full: true });
+  const select = selectField('group', 'Skupina', offered.map((g) => [g.id, metaJoin([g.name, GROUP_KIND_LABELS[g.kind]])]), offered[0].id, { full: true });
   select.querySelector('select').addEventListener('change', (e) => paintRoles(e.target.value));
   paintRoles(offered[0].id);
   formDialog({
-    title: 'Přidat do týmu',
+    title: 'Přidat do skupiny',
     sub: personName(person),
     sections: [{ cols: 1, fields: [select, rolesHolder, leaderHolder] }],
     saveLabel: 'Přidat',
@@ -768,12 +768,12 @@ export function removeFromGroup(group, personId) {
       }
     }
     const removed = removeMember(S.data, group.id, personId);
-    change(`${name} pryč ze skupiny ${group.name}`);
+    change(`odebráno: ${name} (${group.name})`);
     toast('Odebráno.', freed ? `${personName(person)} a ${plural(freed, 'služba', 'služby', 'služeb')} v rozpisu.` : personName(person), {
       action: removed && !freed ? () => {
         if (!groupById(S.data, group.id) || S.data.groupMembers.some((m) => m.id === removed.id)) return;
         S.data.groupMembers.push(removed);
-        change(`${name} zpátky ve skupině ${group.name}`);
+        change(`vráceno: ${name} (${group.name})`);
       } : null,
       actionLabel: 'Vrátit',
     });
@@ -796,7 +796,7 @@ export function personGroupRows(person, { leader, self }) {
     const metaLine = [
       member?.leader ? (self ? words.leadsMine : words.leads).toLocaleLowerCase('cs') : null,
       ...levels,
-    ].filter(Boolean).join(' · ') || GROUP_KIND_LABELS[g.kind] || '';
+    ].filter(Boolean).join(SEP) || GROUP_KIND_LABELS[g.kind] || '';
     return row({
       lead: groupMark(g),
       title: g.name,
@@ -816,7 +816,7 @@ function windowText(w) {
   if (!w) return '';
   const start = w.startMin ?? 0;
   if (w.endMin == null) return start < 0 ? `od ${-start} min před začátkem` : `od ${start}. minuty do konce`;
-  return start < 0 ? `${-start} min před začátkem až ${w.endMin}. minuta` : `${start}.–${w.endMin}. minuta`;
+  return start < 0 ? `od ${-start} min před začátkem do ${w.endMin}. minuty` : `${start}.–${w.endMin}. minuta`;
 }
 
 function rolesBody(group, roles) {
@@ -841,7 +841,7 @@ function roleRow(role, stat) {
     role.childcare ? 's dětmi' : null,
     role.window ? windowText(role.window) : null,
     partners.length ? `jde skloubit s: ${partners.join(', ')}` : null,
-  ].filter(Boolean).join(' · ');
+  ].filter(Boolean).join(SEP);
   const trained = stat?.trained || 0;
   const learning = stat?.learning || 0;
   const scarce = trained <= 2;
@@ -849,7 +849,7 @@ function roleRow(role, stat) {
     title: role.name,
     meta: metaLine,
     trail: scarce
-      ? badge(trained ? `jen ${trained} umí` : 'nikdo neumí', { tone: 'warning', icon: 'alert', title: 'Málo lidí, kteří roli umí.' })
+      ? badge(trained ? `jen ${trained} umí` : 'nikdo neumí', { tone: 'warning', icon: 'alert', title: 'Tuhle roli umí málo lidí.' })
       : h('span', { class: 'role-skills' }, skillCountText({ trained, learning })),
     onclick: () => roleDialog(groupById(S.data, role.groupId), role),
     label: `Upravit roli ${role.name}`,
@@ -894,7 +894,7 @@ export function roleDialog(group, role) {
   const anyMore = !!(role && (role.adultsOnly || role.childcare || role.window || partners.length));
   formDialog({
     title: role ? `Upravit roli` : 'Nová role',
-    sub: role ? `${role.name} · ${group.name}` : group.name,
+    sub: role ? metaJoin([role.name, group.name]) : group.name,
     sections: [{
       fields: [
         textField('name', 'Název', role?.name, { full: true, attr: { autofocus: true, placeholder: 'Zvuk', autocomplete: 'off' } }),
@@ -940,7 +940,7 @@ export function roleDialog(group, role) {
       else delete target.window;
       setCombinations(target.id, checkedValues(form, 'partners'));
       change(role ? `role ${name}` : `nová role ${name}`);
-      if (!role) toast('Role přidána.', `${name} · ${group.name}`);
+      if (!role) toast('Role přidána.', metaJoin([name, group.name]));
       return null;
     },
   });
