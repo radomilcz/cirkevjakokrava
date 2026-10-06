@@ -1,7 +1,10 @@
 // Groups: who belongs where, roles a team covers, leaders and skill levels.
 // Links to people by personId only. Never imports from events, scheduling or conflicts.
-// Functions take the flat app data and read only `groups`, `roles` and `groupMembers`.
+// Functions take the flat app data and read `groups`, `roles` and `groupMembers` (skillMatrix also
+// reads `people`, through lib/people.js – the foundation layer).
 // Mutating helpers change `data` in place and return the changed record.
+
+import { comparePeople, statusOf } from './people.js';
 
 export const SKILL_LEVELS = ['trained', 'learning'];
 export const GROUP_KINDS = ['team', 'community', 'leadership'];
@@ -94,6 +97,42 @@ export function peopleForRole(data, roleId, { level } = {}) {
     result.push({ personId: m.personId, level: l });
   }
   return result.sort((a, b) => SKILL_LEVELS.indexOf(a.level) - SKILL_LEVELS.indexOf(b.level));
+}
+
+/**
+ * „Kdo co umí“: people × roles of one team (groupId) or of every non-archived team (no groupId).
+ * {
+ *   roles:  [{ role, group, trained, learning, scarce }]   – scarce: at most `scarceAt` people trained
+ *   people: [{ person, levels: { [roleId]: 'trained' | 'learning' } }]  – members of the team(s), by name
+ * }
+ * Former members are left out unless includeFormer. Members without any skill stay in (a row of
+ * empty cells – someone to train).
+ */
+export function skillMatrix(data, { groupId, includeFormer = false, scarceAt = 2 } = {}) {
+  const teams = (data.groups || []).filter((g) => (groupId ? g.id === groupId : g.kind === 'team' && !g.archived));
+  const teamIds = new Set(teams.map((g) => g.id));
+  const roles = (data.roles || []).filter((r) => teamIds.has(r.groupId))
+    .sort((a, b) => teams.findIndex((g) => g.id === a.groupId) - teams.findIndex((g) => g.id === b.groupId));
+  const people = new Map((data.people || []).map((p) => [p.id, p]));
+  const rows = new Map();
+  for (const m of data.groupMembers || []) {
+    if (!teamIds.has(m.groupId)) continue;
+    const person = people.get(m.personId);
+    if (!person || (!includeFormer && statusOf(person) === 'former')) continue;
+    if (!rows.has(person.id)) rows.set(person.id, { person, levels: {} });
+    for (const [roleId, level] of Object.entries(m.roles || {})) {
+      if (SKILL_LEVELS.includes(level)) rows.get(person.id).levels[roleId] = level;
+    }
+  }
+  const list = [...rows.values()].sort((a, b) => comparePeople(a.person, b.person));
+  return {
+    roles: roles.map((role) => {
+      const trained = list.filter((r) => r.levels[role.id] === 'trained').length;
+      const learning = list.filter((r) => r.levels[role.id] === 'learning').length;
+      return { role, group: teams.find((g) => g.id === role.groupId), trained, learning, scarce: trained <= scarceAt };
+    }),
+    people: list,
+  };
 }
 
 // ---------- mutations ----------

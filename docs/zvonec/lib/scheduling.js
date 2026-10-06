@@ -304,3 +304,112 @@ export function sameAsLastTime(data, eventId, newId, { from } = {}) {
   }
   return added;
 }
+
+// ---------- overviews (Přehled, Lidé › Břemeno) ----------
+
+const daysFrom = (today, day) => Math.round((Date.parse(day) - Date.parse(today)) / 86400000);
+
+/**
+ * Břemeno: how much each person serves in a month ("YYYY-MM") against their limits.
+ * Rows for adults who serve (a skill in a non-archived team) plus anyone with a duty in the month:
+ * [{ person, count, limit, sundaysInRow, maxSundays, paused, custom, over, overSundays }]
+ *   count        – distinct events with a duty (rehearsals do not count, as in K7)
+ *   sundaysInRow – longest run of Sunday services in a row that reaches into the month (as in K8)
+ *   custom       – the person has their own servingLimits record
+ * Sorted by load (count / limit) from the highest, then by name. `today` decides who is a child.
+ */
+export function servingLoad(data, month, { today } = {}) {
+  today = today || todayLocal();
+  const { childAge } = rules(data);
+  const all = activeAssignments(data);
+  const archived = new Set((data.groups || []).filter((g) => g.archived).map((g) => g.id));
+  const skilled = new Set((data.groupMembers || [])
+    .filter((m) => !archived.has(m.groupId) && Object.keys(m.roles || {}).length).map((m) => m.personId));
+  const own = new Set((data.servingLimits || []).map((x) => x.personId || x.id));
+  const sundaysOf = new Map();
+  for (const s of all) {
+    if (s.event.kind !== 'service' || weekday(s.event.start) !== 6) continue;
+    if (!sundaysOf.has(s.assignment.personId)) sundaysOf.set(s.assignment.personId, new Set());
+    sundaysOf.get(s.assignment.personId).add(dayOf(s.event.start));
+  }
+  const rows = [];
+  for (const person of data.people || []) {
+    const count = monthCount(data, person.id, month, { all });
+    const serves = skilled.has(person.id) && !isFormer(person) && !isChild(person, today, childAge);
+    if (!serves && !count) continue;
+    const limits = limitsOf(data, person.id);
+    const days = [...(sundaysOf.get(person.id) || [])].sort();
+    let best = 0;
+    let run = 0;
+    let runInMonth = false;
+    for (let i = 0; i < days.length; i++) {
+      const continues = i > 0 && addDays(days[i - 1], 7) === days[i];
+      run = continues ? run + 1 : 1;
+      runInMonth = (continues && runInMonth) || monthOf(days[i]) === month;   // the run reaches into the month
+      if (runInMonth && run > best) best = run;
+    }
+    rows.push({
+      person, count, limit: limits.maxPerMonth, sundaysInRow: best, maxSundays: limits.maxConsecutiveWeeks,
+      paused: limits.paused, custom: own.has(person.id),
+      over: count > limits.maxPerMonth, overSundays: best > limits.maxConsecutiveWeeks,
+    });
+  }
+  const load = (r) => (r.limit > 0 ? r.count / r.limit : r.count ? Infinity : 0);
+  return rows.sort((a, b) => load(b) - load(a) || b.count - a.count
+    || fullName(a.person).localeCompare(fullName(b.person), 'cs'));
+}
+
+/**
+ * Volná místa: needed people nobody fills yet, in events from today to today + days (default 21),
+ * cancelled events left out: [{ event, roleId, role, missing, essential, daysUntil }] sorted by event
+ * start, essential roles first. A need of a deleted role is skipped (K17 says it).
+ */
+export function openSlots(data, { today, days = 21 } = {}) {
+  today = today || todayLocal();
+  const roles = index(data.roles);
+  const to = addDays(today, days);
+  const result = [];
+  const events = (data.events || []).filter((e) => !e.cancelled && dayOf(e.start) >= today && dayOf(e.start) <= to)
+    .sort((a, b) => a.start.localeCompare(b.start));
+  for (const event of events) {
+    const slots = [];
+    for (const need of needsOf(data, event)) {
+      const role = roles.get(need.roleId) || null;
+      if (!role && !(event.needs || []).some((n) => n.roleId === need.roleId)) continue;
+      const have = (event.assignments || []).filter((a) => a.roleId === need.roleId && isActive(a) && a.personId).length;
+      const missing = (Number(need.count) || 0) - have;
+      if (missing > 0) {
+        slots.push({ event, roleId: need.roleId, role, missing, essential: !!role?.essential, daysUntil: daysFrom(today, dayOf(event.start)) });
+      }
+    }
+    result.push(...slots.sort((a, b) => Number(b.essential) - Number(a.essential)));
+  }
+  return result;
+}
+
+/**
+ * Čeká na potvrzení: proposed duties of others in events from today to today + days (default
+ * settings.rules.unconfirmedDaysBefore, as K6), cancelled events left out:
+ * [{ event, assignment, person, role, daysUntil }] sorted by event start.
+ * groupIds limits the list to roles of those groups (a leader sees the teams they lead).
+ */
+export function unconfirmedDuties(data, { today, days, groupIds } = {}) {
+  today = today || todayLocal();
+  days = days ?? rules(data).unconfirmedDaysBefore;
+  const roles = index(data.roles);
+  const people = index(data.people);
+  const only = groupIds ? new Set(groupIds) : null;
+  const to = addDays(today, days);
+  const result = [];
+  for (const event of data.events || []) {
+    const day = dayOf(event.start);
+    if (event.cancelled || day < today || day > to) continue;
+    for (const assignment of event.assignments || []) {
+      if (assignment.status !== 'proposed' || !assignment.personId) continue;
+      const role = roles.get(assignment.roleId) || null;
+      if (only && !only.has(role?.groupId)) continue;
+      result.push({ event, assignment, person: people.get(assignment.personId) || null, role, daysUntil: daysFrom(today, day) });
+    }
+  }
+  return result.sort((a, b) => a.event.start.localeCompare(b.event.start));
+}

@@ -9,6 +9,7 @@
 
 import { addDays, dayOf } from './time.js';
 import { isImageName } from './store/store.js';
+import { resolvePlace } from './places.js';
 
 export const PUBLIC_FILE = 'public.json';
 export const PUBLIC_VERSION = 1;
@@ -36,9 +37,14 @@ function imageOf(data, event) {
   return isImageName(type?.image) ? type.image : null;
 }
 
-/** A place as visitors see it: name, plus address and coordinates only when the place has them. */
-function publicPlace(place) {
+/**
+ * A place as visitors see it: name, plus address and coordinates only when the place (or the
+ * building a room is in) has them; a room also carries its building's name.
+ */
+function publicPlace(data, room) {
+  const place = resolvePlace(data, room);
   const item = { name: text(place.name) };
+  if (place.building) item.building = text(place.building);
   const address = text(place.address).trim();
   if (address) item.address = address;
   if (Number.isFinite(place.lat) && Number.isFinite(place.lon)) {
@@ -56,7 +62,7 @@ function publicPlace(place) {
  *
  * { v: 1, churchName, address, generated: today,
  *   events:  [{ id, title, kind, start, end, description, image: "images/<name>" | null,
- *               places: [{ name, address?, lat?, lon? }], cancelled? }],
+ *               places: [{ name, building?, address?, lat?, lon? }], cancelled? }],
  *   formats: [{ id, name, minutes, why, how }] }
  */
 export function buildPublic(data, { today, daysAhead = 120 } = {}) {
@@ -71,7 +77,7 @@ export function buildPublic(data, { today, daysAhead = 120 } = {}) {
       kind: e.kind,
       start: e.start,
       end: e.end,
-      places: (e.placeIds || []).map((id) => placesById.get(id)).filter(Boolean).map(publicPlace),
+      places: (e.placeIds || []).map((id) => placesById.get(id)).filter(Boolean).map((p) => publicPlace(data, p)),
       description: text(e.description),
       image: image ? `${PUBLIC_IMAGES_DIR}/${image}` : null,
     };

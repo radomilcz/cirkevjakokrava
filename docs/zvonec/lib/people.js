@@ -181,3 +181,93 @@ export function birthdaysBetween(data, from, to, { includeFormer = false } = {})
   }
   return result.sort((a, b) => a.date.localeCompare(b.date) || comparePeople(a.person, b.person));
 }
+
+/**
+ * Birthdays month by month from the first day of today's month, `months` months long (default 12):
+ * [{ month: "YYYY-MM", items: [{ person, date, age, isToday, thisWeek, past }] }]. Months without
+ * a birthday are left out. thisWeek = in today's Monday–Sunday week; past = before today.
+ * Former members are left out.
+ */
+export function upcomingBirthdays(data, { today, months = 12 } = {}) {
+  const from = `${today.slice(0, 7)}-01`;
+  const to = shiftDay(shiftMonth(from, months), -1);
+  const monday = shiftDay(today, -weekdayOf(today));
+  const sunday = shiftDay(monday, 6);
+  const result = [];
+  for (const b of birthdaysBetween(data, from, to)) {
+    const month = b.date.slice(0, 7);
+    let bucket = result[result.length - 1];
+    if (!bucket || bucket.month !== month) result.push(bucket = { month, items: [] });
+    bucket.items.push({
+      ...b, isToday: b.date === today, thisWeek: b.date >= monday && b.date <= sunday, past: b.date < today,
+    });
+  }
+  return result;
+}
+
+// small date helpers – this module imports nothing (see the module boundary test)
+const pad2 = (n) => String(n).padStart(2, '0');
+const utc = (day) => { const [y, m, d] = day.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const fmt = (date) => `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
+function shiftDay(day, count) { const d = utc(day); d.setUTCDate(d.getUTCDate() + count); return fmt(d); }
+function shiftMonth(firstOfMonth, count) { const d = utc(firstOfMonth); return fmt(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + count, 1))); }
+const weekdayOf = (day) => (utc(day).getUTCDay() + 6) % 7;
+
+// ---------- card completeness ----------
+
+/** What can be missing on a card. Keys are stable; the Czech words are for the UI („Chybí: …“). */
+export const MISSING_LABELS = {
+  review: 'karta založená narychlo',
+  lastName: 'příjmení',
+  contact: 'telefon nebo e-mail',
+  consent: 'souhlas se zpracováním údajů',
+  household: 'domácnost',
+};
+
+/**
+ * What is missing on a person's card (former members are never asked for anything):
+ *   review    – quickly created while planning (`needsReview`)
+ *   lastName  – no surname
+ *   contact   – an adult without phone and e-mail
+ *   consent   – a friend or guest whose card holds more than a name, without a consent date
+ *   household – a child without a household (contact goes through the parents)
+ * Returns the keys in that order; [] when the card is complete.
+ */
+export function missingData(person, { today, childAge = CHILD_AGE } = {}) {
+  if (!person || statusOf(person) === 'former') return [];
+  const result = [];
+  const child = today ? isChild(person, today, childAge) : false;
+  if (person.needsReview) result.push('review');
+  if (!person.lastName) result.push('lastName');
+  if (!child && !person.phone && !person.email) result.push('contact');
+  const status = statusOf(person);
+  const moreThanName = person.lastName || person.phone || person.email || person.birthDate;
+  if (!child && (status === 'regular' || status === 'guest') && moreThanName && !person.consentDate) result.push('consent');
+  if (child && !person.householdId) result.push('household');
+  return result;
+}
+
+/** People whose card misses something: [{ person, missing: [key] }], sorted by name. */
+export function peopleWithMissingData(data, { today } = {}) {
+  const childAge = childAgeOf(data.settings);
+  return sortPeople(data.people)
+    .map((person) => ({ person, missing: missingData(person, { today, childAge }) }))
+    .filter((x) => x.missing.length);
+}
+
+/**
+ * People grouped by household for the Domácnosti view:
+ * [{ household, members: [person] }] sorted by household name, members adults first (with `today`);
+ * then { household: null, members } with people who live on their own, when there are any.
+ * Former members are left out unless includeFormer.
+ */
+export function peopleByHousehold(data, { today, includeFormer = false } = {}) {
+  const keep = (p) => includeFormer || statusOf(p) !== 'former';
+  const result = sortHouseholds(data.households)
+    .map((household) => ({ household, members: householdMembers(data, household.id, { today }).filter(keep) }))
+    .filter((x) => x.members.length);
+  const known = new Set((data.households || []).map((h) => h.id));
+  const alone = sortPeople((data.people || []).filter((p) => keep(p) && (!p.householdId || !known.has(p.householdId))));
+  if (alone.length) result.push({ household: null, members: alone });
+  return result;
+}

@@ -1,7 +1,7 @@
 // Where Zvonec data lives and how it gets saved.
 //
 // In memory the whole app works with one object:
-//   { people, households, groups, roles, groupMembers, eventTypes, events, formats, places,
+//   { people, households, groups, roles, groupMembers, eventTypes, events, series, formats, places,
 //     availability, servingLimits, settings }
 // In the data repo it is split into four files (see zvonec/ARCHITECTURE.md §2), each with its own
 // sha. A save writes only the files whose collections changed; a 409 on one file merges that file
@@ -32,6 +32,7 @@ export const FILES = {
   groupMembers: 'data/groups.json',
   eventTypes: 'data/events.json',
   events: 'data/events.json',
+  series: 'data/events.json',
   formats: 'data/events.json',
   places: 'data/events.json',
   availability: 'data/events.json',

@@ -1,14 +1,25 @@
 // Planning: event types → events, series, needs, duties of a person.
-// Pure functions, no DOM. Functions take the flat app data and read `events`, `eventTypes`
-// and `formats`. Factories return new records; the other helpers change `data` in place and
-// return what changed.
+// Pure functions, no DOM. Functions take the flat app data and read `events`, `eventTypes`,
+// `series` and `formats` (and `roles` for the fill ratio). Factories return new records; the other
+// helpers change `data` in place and return what changed.
+//
+// series: { id, typeId?, step: 'weekly'|'biweekly'|'monthly', from: "YYYY-MM-DD", until: "YYYY-MM-DD" }
+//   The rule a series was created with. Events stay materialised (each one is a record of its own,
+//   linked by `event.seriesId`); the record only remembers the rule, so the app can say „Každou
+//   neděli do 28. 6.“ and extend the series later. Older data have seriesIds without a record –
+//   seriesFor() infers the rule from the events then.
 
-import { addMinutes, dayOf, timeOf, minutesBetween, recurrences } from './time.js';
+import { addDays, addMinutes, addMonths, dayOf, timeOf, minutesBetween, recurrences, weekday, prettyDay } from './time.js';
 import { copyProgram, mergeNeeds, programNeeds } from './program.js';
 
 export const EVENT_KINDS = ['service', 'rehearsal', 'smallGroup', 'event'];
 export const ASSIGNMENT_STATUSES = ['proposed', 'confirmed', 'declined'];
 export const RECURRENCE_STEPS = ['weekly', 'biweekly', 'monthly'];
+
+/** Czech names of the kinds (UI: „Účel“). The stored values never change. */
+export const KIND_LABELS = { service: 'Nedělní setkání', rehearsal: 'Zkouška', smallGroup: 'Skupinka', event: 'Akce' };
+/** Icon key per kind – the UI draws the icon. */
+export const KIND_ICONS = { service: 'sun', rehearsal: 'music', smallGroup: 'home', event: 'star' };
 
 /** Fields an edit copies to the following events of a series (besides time of day and length). */
 const SERIES_FIELDS = ['title', 'kind', 'typeId', 'placeIds', 'groupId', 'note', 'needs', 'public', 'description', 'image'];
@@ -31,6 +42,10 @@ export function eventById(data, id) {
 
 export function eventTypeById(data, id) {
   return (data.eventTypes || []).find((t) => t.id === id) || null;
+}
+
+export function seriesById(data, id) {
+  return (data.series || []).find((s) => s.id === id) || null;
 }
 
 /** Sorts data.events by start in place. */
@@ -137,6 +152,133 @@ export function updateSeries(data, edited, previousStart = edited.start) {
   return changed;
 }
 
+/** Events of a series by its id, sorted by start. */
+export function seriesEvents(data, seriesId) {
+  if (!seriesId) return [];
+  return (data.events || []).filter((e) => e.seriesId === seriesId)
+    .sort((a, b) => a.start.localeCompare(b.start) || String(a.id).localeCompare(String(b.id)));
+}
+
+/** Series records made from an event type (UI: „Řady“ on the template page), sorted by `from`. */
+export function seriesOfType(data, typeId) {
+  return (data.series || []).filter((s) => s.typeId === typeId).sort((a, b) => String(a.from).localeCompare(String(b.from)));
+}
+
+/**
+ * The series record of an event (or of a series id). Without a stored record (older data) the rule
+ * is inferred from the events: { id, typeId?, step, from, until, inferred: true }; step is null
+ * when the gaps between the events fit no rule. Null when the event is not in a series.
+ */
+export function seriesFor(data, eventOrId) {
+  const id = typeof eventOrId === 'string' ? eventOrId : eventOrId?.seriesId;
+  if (!id) return null;
+  const stored = seriesById(data, id);
+  if (stored) return stored;
+  const list = seriesEvents(data, id);
+  if (!list.length) return null;
+  const days = list.map((e) => dayOf(e.start));
+  const fits = (step) => days.every((d, i) => i === 0 || d === nextDay(days[0], step, i));
+  const step = RECURRENCE_STEPS.find(fits) || null;
+  const result = { id, step, from: days[0], until: days[days.length - 1], inferred: true };
+  if (list[0].typeId) result.typeId = list[0].typeId;
+  return result;
+}
+
+/** The i-th day of a rule counted from its first day. */
+function nextDay(first, step, i) {
+  if (step === 'monthly') return addMonths(first, i);
+  return addDays(first, i * (step === 'biweekly' ? 14 : 7));
+}
+
+/** „Každou neděli“, „Každé úterý“, „Každý čtvrtek“ – the weekday in the accusative with its pronoun. */
+const EVERY_WEEKDAY = ['Každé pondělí', 'Každé úterý', 'Každou středu', 'Každý čtvrtek', 'Každý pátek', 'Každou sobotu', 'Každou neděli'];
+const EVERY_OTHER_WEEKDAY = ['Každé druhé pondělí', 'Každé druhé úterý', 'Každou druhou středu', 'Každý druhý čtvrtek',
+  'Každý druhý pátek', 'Každou druhou sobotu', 'Každou druhou neděli'];
+
+/**
+ * The rule of a series in Czech: „Každou neděli do 28. 6.“, „Každou druhou středu do 16. 12.“,
+ * „Každého 7. v měsíci do 7. 3.“. Without `until` the „do …“ part is left out. With `today`
+ * ("YYYY-MM-DD") the year is added to `until` when it is not this year („do 28. 6. 2027“).
+ */
+export function seriesSummary(series, { today } = {}) {
+  if (!series?.from) return '';
+  const day = weekday(series.from);
+  let rule;
+  if (series.step === 'biweekly') rule = EVERY_OTHER_WEEKDAY[day];
+  else if (series.step === 'monthly') rule = `Každého ${Number(series.from.slice(8, 10))}. v měsíci`;
+  else if (series.step === 'weekly') rule = EVERY_WEEKDAY[day];
+  else rule = 'Opakuje se';
+  if (!series.until) return rule;
+  const year = today && series.until.slice(0, 4) !== today.slice(0, 4) ? ` ${series.until.slice(0, 4)}` : '';
+  return `${rule} do ${prettyDay(series.until, false)}${year}`;
+}
+
+/** How many events a rule makes from `start` ("YYYY-MM-DDTHH:mm") to `until` – for the live „· 38 setkání“. */
+export function seriesCount(start, step, until, limit = 120) {
+  if (!step || !until) return 1;
+  return recurrences(start, start, step, until, limit).length || 1;
+}
+
+/**
+ * Creates events repeating `draft` (see createSeries) and, when there is more than one, their series
+ * record. Adds both to data. Returns { series: record | null, events }.
+ */
+export function addSeries(data, draft, step, until, { newId = randomId, limit = 120 } = {}) {
+  const events = createSeries(draft, step, until, { newId, limit });
+  let series = null;
+  if (events.length > 1) {
+    series = { id: events[0].seriesId, step, from: dayOf(events[0].start), until: dayOf(events[events.length - 1].start) };
+    if (draft.typeId) series.typeId = draft.typeId;
+    data.series = data.series || [];
+    data.series.push(series);
+  }
+  addEvents(data, events);
+  return { series, events };
+}
+
+/**
+ * „Prodloužit řadu“: adds events to a series up to `until` ("YYYY-MM-DD") following its rule.
+ * The new events copy the last event of the series (title, places, needs, osnova, time – whatever
+ * the series looks like now), without people; when the series has no events left they are made from
+ * its event type. Stores the series record (creating it for older data) with the new `until`.
+ * Returns the new events (already added to data and sorted).
+ */
+export function extendSeries(data, seriesId, until, { newId = randomId, limit = 120 } = {}) {
+  const series = seriesFor(data, seriesId);
+  if (!series || !series.step || !until) return [];
+  const list = seriesEvents(data, seriesId);
+  const last = list[list.length - 1];
+  const type = series.typeId ? eventTypeById(data, series.typeId) : null;
+  if (!last && !type) return [];
+  const lastDay = last ? dayOf(last.start) : null;
+  const created = [];
+  for (let i = 0; i < limit; i++) {
+    const day = nextDay(series.from, series.step, i);
+    if (day > until) break;
+    if (lastDay && day <= lastDay) continue;
+    if (!last && day < series.from) continue;
+    let event;
+    if (last) {
+      const start = `${day}T${timeOf(last.start)}`;
+      event = copyEvent(last, { start, end: addMinutes(start, minutesBetween(last.start, last.end)) }, newId);
+      delete event.attendance;
+    } else {
+      event = createFromType(type, day, { newId, data });
+    }
+    event.seriesId = seriesId;
+    created.push(event);
+  }
+  if (!created.length) return [];
+  const record = { ...series };
+  delete record.inferred;
+  const lastNew = dayOf(created[created.length - 1].start);
+  if (!record.until || lastNew > record.until) record.until = lastNew;
+  data.series = (data.series || []).filter((s) => s.id !== seriesId);
+  data.series.push(record);
+  addEvents(data, created);
+  return created;
+}
+
 /** Cancels (or restores with cancelled=false) the event, and with `following` the rest of the series. */
 export function cancelEvent(data, event, { following = false, cancelled = true } = {}) {
   const changed = [event, ...(following ? followingInSeries(data, event) : [])];
@@ -176,6 +318,25 @@ export function missingCount(data, event, roleId) {
   const need = needsOf(data, event).find((n) => n.roleId === roleId)?.count || 0;
   const filled = (event.assignments || []).filter((a) => a.roleId === roleId && a.status !== 'declined').length;
   return Math.max(0, need - filled);
+}
+
+/**
+ * How full the event is: { filled, needed, text: "12 z 14", complete }. Every needed slot counts
+ * once; declined assignments and people over the needed count do not count. A format whose lead
+ * role was deleted asks for nobody (K17 reports it instead).
+ */
+export function fillRatio(data, event) {
+  let needed = 0;
+  let filled = 0;
+  const roles = Array.isArray(data.roles) ? new Set(data.roles.map((r) => r.id)) : null;
+  for (const need of needsOf(data, event)) {
+    if (roles && !roles.has(need.roleId) && !(event.needs || []).some((n) => n.roleId === need.roleId)) continue;
+    const count = Math.max(0, Number(need.count) || 0);
+    const have = (event.assignments || []).filter((a) => a.roleId === need.roleId && a.personId && a.status !== 'declined').length;
+    needed += count;
+    filled += Math.min(count, have);
+  }
+  return { filled, needed, text: `${filled} z ${needed}`, complete: filled >= needed };
 }
 
 // ---------- queries ----------
@@ -218,3 +379,32 @@ export function upcomingDuties(data, personId, {
   return result.slice(0, limit);
 }
 
+
+/**
+ * The last duty a person had before `today` ("YYYY-MM-DD", exclusive): { event, assignment } or null.
+ * Declined assignments and cancelled events do not count.
+ */
+export function lastDuty(data, personId, { today } = {}) {
+  let best = null;
+  for (const event of data.events || []) {
+    if (event.cancelled || (today && dayOf(event.start) >= today)) continue;
+    if (best && event.start <= best.event.start) continue;
+    const assignment = (event.assignments || []).find((a) => a.personId === personId && a.status !== 'declined');
+    if (assignment) best = { event, assignment };
+  }
+  return best;
+}
+
+/** Map personId → day ("YYYY-MM-DD") of their last duty before `today` – for the Tabulka column. */
+export function lastDutyDays(data, { today } = {}) {
+  const result = new Map();
+  for (const event of data.events || []) {
+    if (event.cancelled || (today && dayOf(event.start) >= today)) continue;
+    const day = dayOf(event.start);
+    for (const a of event.assignments || []) {
+      if (!a.personId || a.status === 'declined') continue;
+      if (!result.has(a.personId) || result.get(a.personId) < day) result.set(a.personId, day);
+    }
+  }
+  return result;
+}

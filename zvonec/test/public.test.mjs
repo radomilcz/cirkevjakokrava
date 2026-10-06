@@ -199,12 +199,17 @@ test('demo: public.json is not empty and holds no person data at all', () => {
   assert.ok(result.events.some((e) => e.kind === 'service'));
   const party = result.events.find((e) => e.title === 'Zahradní slavnost');
   assert.ok(party?.description, 'the garden party carries a description');
-  assert.deepEqual(party.places, [{ name: 'Zahrada za modlitebnou', address: 'Sokolovská 12, Nový Jičín', lat: 49.5942, lon: 18.0104 }]);
+  assert.deepEqual(party.places, [{ name: 'Zahrada u Kučerů', address: 'Lesní 14, Nový Jičín', lat: 49.5987, lon: 18.0172 }]);
+  // a room inside Monta shows the building's name, address and map
+  const sunday = result.events.find((e) => e.kind === 'service' && !e.cancelled);
+  assert.deepEqual(sunday.places[0], { name: 'Sál', building: 'Monta', address: 'B. Martinů 1885/2, Nový Jičín', lat: 49.5935, lon: 18.0035 });
+  assert.equal(result.address, sunday.places[0].address, 'the church address agrees with the place');
+  assert.ok(result.events.some((e) => e.cancelled), 'a cancelled public event shows as cancelled');
   assert.ok(result.events.every((e) => e.image === null), 'the demo has no pictures');
-  assert.match(result.events.find((e) => e.kind === 'service').description, /Přijď, jak jsi/);
-  assert.ok(!result.events.some((e) => /Zkouška|Skupinka|Stavění/.test(e.title)), 'rehearsals, small groups, tent build stay private');
+  assert.match(sunday.description, /Přijď, jak jsi/);
+  assert.ok(!result.events.some((e) => /Zkouška|Skupinka|Stavění|Víkend|Porada|Rada|Maminky|Noc/.test(e.title)), 'internal events stay private');
   assert.deepEqual(result.formats.map((f) => f.name).sort(),
-    ['Chvály', 'Kázání', 'Otázky na tělo', 'Přivítání', 'Večeře Páně'].sort());
+    ['Chvály', 'Kázání', 'Otázky na tělo', 'Přivítání', 'Večeře Páně', 'Příběh ze života', 'Křest', 'Požehnání dětí'].sort());
   assert.ok(result.formats.every((f) => f.why && f.how));
   const json = JSON.stringify(result);
   for (const key of FORBIDDEN_KEYS) assert.ok(!json.includes(`"${key}"`), `demo public data contain key ${key}`);
@@ -234,7 +239,10 @@ test('createFromType copies public from the event type, and only when the type s
   // generated demo Sundays are public, the rehearsals are not
   const demo = createDemo(TODAY);
   assert.ok(demo.events.filter((e) => e.typeId === 't-sunday').every((e) => e.public === true));
-  assert.ok(demo.events.filter((e) => e.typeId !== 't-sunday' && e.title !== 'Zahradní slavnost').every((e) => e.public !== true));
+  const published = new Set(demo.events.filter((e) => e.public).map((e) => e.title));
+  assert.deepEqual([...published].sort(), ['Divadlo: Marnotratný syn', 'Křest u řeky', 'Mládež', 'Setkání na pastvě',
+    'Večer chval na zahradě', 'Zahradní slavnost'].sort());
+  assert.ok(demo.events.filter((e) => e.typeId === 't-rehearsal').every((e) => e.public !== true));
 });
 
 // ---------- CLI ----------
@@ -255,7 +263,7 @@ test('build-public.mjs: writes public.json (creating the folder) from the data d
     const out = join(root, 'site', PUBLIC_FILE);
     const r = run(dir, out, '--today', TODAY);
     assert.equal(r.status, 0, r.stderr);
-    assert.match(r.stdout, /^Veřejná data k 2026-10-05: \d+ setkání, 5 formátů/);
+    assert.match(r.stdout, /^Veřejná data k 2026-10-05: \d+ setkání, 8 formátů/);
     const written = JSON.parse(readFileSync(out, 'utf8'));
     assert.deepEqual(written, buildPublic(data, { today: TODAY }));
     assert.ok(written.events.length > 0);
