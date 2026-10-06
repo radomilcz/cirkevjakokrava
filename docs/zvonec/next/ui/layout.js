@@ -73,7 +73,7 @@ export function screenHead({ overline, title, actions, lead, tab = false } = {})
  *     body: [...],
  *     primary: { label: 'Přidat setkání', icon: 'calendar-plus', onclick: … },   the main action (FAB)
  *     foot: formFoot({...}),                                       a form page: the sticky save foot instead of a FAB
- *     wide: true,                                                  up to 1280 px (split views, tables)
+ *     wide: true,                                                  the whole width of the window (split views, tables)
  *   })
  *
  * The head of a tab root (`tab`):
@@ -106,6 +106,13 @@ export function screen({ tab, topbar, head, body, primary, foot, wide = false, c
     }
   } else {
     bar = topbar instanceof Node ? topbar : topBar(topbar || { brand: true });
+    // desktop: the main action sits at the right end of the title row, in line with the content – a
+    // floating button would stick to the window's corner, far from the screen on a wide monitor
+    if (isDesktop() && primary && !foot && head) {
+      const own = nodes(head.actions).flatMap((n) => (n.classList?.contains('head-actions') ? [...n.childNodes] : [n]));
+      headProps = { ...head, actions: h('div', { class: 'head-actions' }, headButton(primary), own) };
+      primary = null;
+    }
   }
   const main = h('main', { class: ['screen', wide && 'screen--wide', tab && 'screen--tab', foot && 'screen--form', cls], id: 'main', tabIndex: -1, 'aria-label': label },
     hiddenTitle, headProps ? screenHead(headProps) : null, body, foot || null);

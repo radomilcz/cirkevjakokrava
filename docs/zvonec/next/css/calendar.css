@@ -94,6 +94,9 @@
   .cal-split .cal-cell { min-height: 104px; }
   .cal--seznam .split { gap: var(--space-6); }
 }
+@media (min-width: 960px) {      /* desktop Měsíc: the weeks share the window's height, no empty band under the grid */
+  .cal-month__body { grid-auto-rows: minmax(104px, 1fr); min-height: calc(100dvh - 232px); }
+}
 @media (min-width: 960px) {      /* desktop: one row – the period left, the view switch and Filtr right */
   .cal-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-3); }
   .cal-toolbar > .cal-period { flex: 1 1 auto; }

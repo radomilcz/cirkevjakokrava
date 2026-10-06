@@ -225,6 +225,7 @@ export function openMyAnswer(eventId, assignmentId) {
   sheet = openSheet({
     title: `${roleName(a.roleId)}${SEP}${e.title}`,
     subtitle: joinMeta([whenText(e), placeText(e)]),
+    cls: 'sheet--compact',
     body: [now, blocked ? h('p', { class: 'answer-clash' }, blockoutNote(blocked)) : null, here ? null : link('Otevři setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
     foot: e.cancelled || past ? null : buttonRow(
       button('Můžu', { variant: blocked ? 'tint' : 'primary', size: 'l', onclick: () => pick('confirmed') }),

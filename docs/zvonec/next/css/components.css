@@ -435,17 +435,18 @@ a.event:hover { background: var(--wash); }
 .scrim { position: fixed; inset: 0; z-index: 40; background: var(--dim); animation: nx-fade var(--dur-sheet) var(--ease); }
 .sheet {
   position: fixed; inset: auto 0 0 0; z-index: 41; display: flex; flex-direction: column;
-  max-height: 92dvh; padding: 0 var(--gutter) env(safe-area-inset-bottom);
+  --sheet-pad: var(--gutter);   /* the side padding lives on the parts, so the body's own padding holds full-bleed rows */
+  max-height: 92dvh; padding: 0 0 env(safe-area-inset-bottom);
   border-radius: var(--shape-sheet) var(--shape-sheet) 0 0; background: var(--overlay); box-shadow: var(--lift-3);
   animation: nx-rise var(--dur-sheet) var(--ease);
 }
 .sheet--inline { position: relative; inset: auto; z-index: auto; animation: none; }
 .sheet__grabber { width: 40px; height: 5px; margin: 10px auto 2px; border-radius: 3px; background: var(--line-strong); opacity: .5; }
-.sheet__head { display: flex; align-items: center; gap: var(--space-3); min-height: 56px; }
+.sheet__head { display: flex; align-items: center; gap: var(--space-3); min-height: 56px; padding: 0 var(--sheet-pad); }
 .sheet__head > h2 { flex: 1; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
 .sheet__head > .icon-btn { margin-right: -10px; }
-.sheet__body { overflow-y: auto; display: grid; gap: var(--space-5); padding-bottom: var(--space-5); }
-.sheet__foot { position: sticky; bottom: 0; display: grid; gap: var(--space-2); padding: var(--space-3) 0 var(--space-4); background: var(--overlay); box-shadow: 0 -1px 0 var(--hairline); margin: 0 calc(-1 * var(--gutter)); padding-left: var(--gutter); padding-right: var(--gutter); }
+.sheet__body { overflow: hidden auto; display: grid; gap: var(--space-5); padding: 0 var(--sheet-pad) var(--space-5); }
+.sheet__foot { position: sticky; bottom: 0; display: grid; gap: var(--space-2); padding: var(--space-3) 0 var(--space-4); background: var(--overlay); box-shadow: 0 -1px 0 var(--hairline); padding-left: var(--sheet-pad); padding-right: var(--sheet-pad); }
 @media (min-width: 960px) {      /* on a wide screen the sheet becomes a centred dialog */
   .sheet:not(.sheet--inline) { inset: 50% auto auto 50%; width: 520px; transform: translate(-50%, -50%); border-radius: 24px; box-shadow: var(--lift-4); animation: nx-fade var(--dur-sheet) var(--ease); }
   .sheet:not(.sheet--inline) .sheet__grabber { display: none; }
@@ -572,7 +573,7 @@ a.event:hover { background: var(--wash); }
   .screen > .screen-head:first-child { padding-top: var(--space-7); }
   .chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 2px 0; }
   .topbar > .seg { max-width: 360px; margin-left: 0; }
-  .screen--wide { max-width: 1280px; }
+  .screen--wide { max-width: none; }   /* split views and tables use the whole monitor */
   .fab { position: fixed; top: 6px; bottom: auto; right: var(--gutter); min-height: var(--control-m); box-shadow: none; }
   body:has(.fab) .topbar { padding-right: calc(var(--gutter) + 220px); }
   .dock { position: static; padding: 0; background: none; }
@@ -581,7 +582,7 @@ a.event:hover { background: var(--wash); }
   :is(.row, .event)[data-open] { background: var(--pick); }
   :is(.row, .event)[data-open] :is(.row__meta, .event__meta, .event__end) { color: var(--ink); }
   .row[data-open]::after { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
-  .split { display: grid; grid-template-columns: 400px 1fr; gap: var(--space-7); align-items: start; }
+  .split { display: grid; grid-template-columns: minmax(360px, 1fr) minmax(0, 2fr); gap: var(--space-7); align-items: start; }
   .split > .split__aside { position: sticky; top: calc(var(--topbar-h) + var(--space-4)); }
 }
 @media (max-width: 959.98px) { .rail { display: none; } }
