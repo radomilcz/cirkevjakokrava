@@ -13,7 +13,7 @@
 import {
   h, icon, button, buttonRow, segmented, statusNote, warningRow, dutyRow, teamHead, statusSymbol, openSheet, formSheet,
   toast, sev, field, textInput, stepper, disclosure, peoplePicker, avatar, personName, agree, shortDate, plural, dateArch,
-  link, joinMeta, note, SEP, STATUS_WORDS,
+  link, joinMeta, note, SEP, STATUS_WORDS, SEVERITY_WORDS,
 } from './kit.js';
 import { S, can, myId, change, newId, render } from '../../ui/state.js';
 import { eventById, needsOf, missingCount, followingInSeries, updateSeries } from '../../lib/events.js';
@@ -315,6 +315,18 @@ export function warningFor(conflict, { eventId, assignment, onDone, text, extra 
 
 // ---------- one slot as a row ----------
 
+/** The short name of a duty's upozornění – what the row says; the whole sentence and its buttons are in Služba. */
+const WARNING_TAGS = {
+  K1: 'na dvou místech naráz', K2: 'dvě služby naráz', K3: 'v tu dobu nemůže', K4b: 'zaučuje se bez zkušeného',
+  K6: 'nepotvrzeno', K7: 'moc služeb za měsíc', K8: 'žádná volná neděle', K10: 'oba rodiče slouží naráz',
+  K11: 'role jen pro dospělé',
+};
+export function warningTag(conflict) {
+  if (conflict.overrideNote) return sev('info', 'výjimka');
+  const word = conflict.code === 'K13' ? (/archivu/.test(conflict.text) ? 'v archivu' : 'má pauzu') : WARNING_TAGS[conflict.code];
+  return sev(conflict.severity, word || SEVERITY_WORDS[conflict.severity]);
+}
+
 /**
  * A slot of „Kdo slouží“ for the viewer: a leader fills an empty slot and opens a filled one; a member
  * answers their own and opens the card of others. `conflicts` = eventConflicts(event.id).
@@ -331,7 +343,9 @@ export function slotRow(event, slot, conflicts, { short = false, warnings: showW
   const warnings = leader && showWarnings ? assignmentWarnings(conflicts, a) : [];
   const opts = {
     role: slot.role.name, person: personOf(a), name: short ? shortName(a) : undefined, status: a.status, me, short,
-    warn: warnings.length ? warnings.map((c) => warningFor(c, { eventId: event.id, assignment: a })) : null,
+    // a quiet tag per upozornění („● dvě služby naráz“, „◆ výjimka“); a tap on the row opens Služba with the
+    // whole sentence and what to do about it – the slot list stays a list
+    warn: warnings.length ? h('span', { class: 'duty__tags' }, warnings.map(warningTag)) : null,
   };
   if (leader) opts.onclick = () => openDutySheet(event.id, a.id);
   else if (me) opts.onclick = () => openMyAnswer(event.id, a.id);

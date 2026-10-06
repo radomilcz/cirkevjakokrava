@@ -279,6 +279,11 @@ span.roster-entry { cursor: default; }
 .ev-cover__arch--3 { --arch-w: 60px; height: 74px; background: var(--hue-mark, var(--edge-control)); box-shadow: none; opacity: .22; }
 .ev-cover[data-variant="1"] .ev-cover__arch { left: 24%; }
 .ev-cover[data-variant="2"] .ev-cover__arch { left: 84%; }
+/* the drawn cover (no photo yet) is a quiet strip, not a third of the phone: lower, its arches scaled with it */
+.ev-cover:not(.ev-cover--photo) { max-height: 104px; }
+.ev-cover:not(.ev-cover--photo) .ev-cover__arch { --arch-w: 92px; height: 104px; }
+.ev-cover:not(.ev-cover--photo) .ev-cover__arch--2 { --arch-w: 66px; height: 78px; }
+.ev-cover:not(.ev-cover--photo) .ev-cover__arch--3 { --arch-w: 42px; height: 52px; }
 .ev-head { display: grid; gap: var(--space-3); }
 .ev-head__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding-right: var(--space-7); min-height: var(--hit); }
 .ev-head .title { overflow-wrap: anywhere; }

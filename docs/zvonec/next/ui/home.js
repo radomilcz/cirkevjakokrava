@@ -3,12 +3,13 @@
 //   Odpověz (all)          my duties waiting for my answer – Můžu / Nemůžu right on the card
 //   Co je potřeba (leader) next 21 days, only events with something to do: fill ring, „chybí 2 · 3 čekají
 //                          · 1 chyba“, a chip per missing role (→ the picker); „Moje týmy“ for a team leader
-//   Tvoje služby (all)     next 8 weeks, status per duty, a tap → Moje odpověď; .ics into the phone (always shown)
+//   Tvoje služby (all)     next 8 weeks, answered duties, a tap → Moje odpověď; .ics into the phone
 //   Tento týden (all)      ≤ 3 events of this week → Celý kalendář
 //   Kdy nemůžu (all)       my ranges, Přidat (always shown)
-//   Lidé k doplnění (leader) · Pozvánky (leader, when some wait)
+//   Lidé (leader)          one line each: Chybí údaje · Hosté bez souhlasu · Narozeniny · Dlouho v archivu ·
+//                          Nevyřízené pozvánky – the names are on the page behind each line
 // Desktop ≥ 1200: two columns – left „pro tebe“ (Odpověz, Tvoje služby, Kdy nemůžu), right „pro tým“
-// (Co je potřeba, Tento týden, Lidé k doplnění, Pozvánky). Demo: „Díváš se jako … · Změnit“ under
+// (Co je potřeba, Tento týden, Lidé). Demo: „Díváš se jako … · Změnit“ under
 // the title while looking through someone else's eyes.
 
 import {
@@ -20,7 +21,6 @@ import { DEMO_VIEWERS } from '../../lib/demo.js';
 import { upcomingDuties, eventsInRange, eventById, fillRatio, needsOf } from '../../lib/events.js';
 import { openSlots, unconfirmedDuties } from '../../lib/scheduling.js';
 import { personById, peopleWithMissingData, upcomingBirthdays, overdueArchive } from '../../lib/people.js';
-import { overdueQuestion } from './people-common.js';
 import { roleById, ledBy } from '../../lib/groups.js';
 import { today, addDays, dayOf, weekday, prettyDayLong } from '../../lib/time.js';
 import { answer, waitingSheet, roleName, whenWhere } from './home-actions.js';
@@ -287,8 +287,6 @@ function needBlock() {
 function mineBlock(me) {
   const duties = upcomingDuties(S.data, me.id, { from: today(), to: addDays(today(), MINE_WEEKS * 7) })
     .filter(({ assignment, event }) => assignment.status !== 'proposed' || event.cancelled);
-  const waitingCount = upcomingDuties(S.data, me.id, { from: today(), includeDeclined: false, includeCancelled: false })
-    .filter(({ assignment }) => assignment.status === 'proposed').length;
   const shown = open.mine ? duties : duties.slice(0, MINE_SHOWN);
   const rest = duties.length - shown.length;
   const rows = shown.map(({ event, assignment }) => eventRow({
@@ -302,12 +300,13 @@ function mineBlock(me) {
     chevron: true,
     label: `${roleName(assignment.roleId)}, ${event.title} ${shortDate(event.start)} – změň odpověď`,
   }));
+  // nothing answered yet: no section – Odpověz above already says it all (Stáhni do kalendáře lives in Kalendář ⋯ too)
+  if (!rows.length) return null;
   const el = section({
     title: 'Tvoje služby',
     cls: 'home-mine',
     body: [
-      rows.length ? list(rows, { label: 'Tvoje služby' }) : quiet(waitingCount
-        ? 'Všechny tvoje služby čekají nahoře na odpověď.' : 'Teď žádnou službu nemáš.'),
+      list(rows, { label: 'Tvoje služby' }),
       rest > 0 ? rowLink(showMore(rest), { onclick: () => { open.mine = true; rerender(el, () => mineBlock(me), `.home-mine .row:nth-child(${MINE_SHOWN + 1})`); } }) : null,
       rowLink('Stáhni do kalendáře', { icon: 'download', onclick: () => downloadDuties(me) }),
     ],
@@ -343,51 +342,30 @@ function weekBlock() {
   });
 }
 
-// ---------- Lidé k doplnění (leaders) ----------
+// ---------- Lidé (leaders) ----------
 
-/** „Petr Novák, Jana Nováková a 3 další“ */
-function names(people) {
-  const first = people.slice(0, 2).map(personName);
-  const rest = people.length - first.length;
-  return rest > 0 ? `${first.join(', ')} a ${plural(rest, 'další', 'další', 'dalších')}` : first.join(' a ');
-}
-
+/**
+ * What waits on a leader about people, one line each with its count – Chybí údaje · Hosté bez souhlasu ·
+ * Narozeniny tento týden · Dlouho v archivu · Nevyřízené pozvánky. The names are one tap further (the page
+ * behind each line), so Domů stays short.
+ */
 function peopleBlock() {
   const day = today();
   const missing = peopleWithMissingData(S.data, { today: day });
-  const noConsent = missing.filter((x) => x.missing.includes('consent')).map((x) => x.person);
-  const birthdays = upcomingBirthdays(S.data, { today: day, months: 1 }).flatMap((m) => m.items).filter((b) => b.thisWeek && !b.past);
+  const noConsent = missing.filter((x) => x.missing.includes('consent')).length;
+  const birthdays = upcomingBirthdays(S.data, { today: day, months: 1 }).flatMap((m) => m.items).filter((b) => b.thisWeek && !b.past).length;
   const overdue = overdueArchive(S.data, { today: day }).length;   // GDPR: a year in the archive is enough
+  const invites = waitingInvites();
+  const line = (title, n, href) => (n ? row({ title, single: true, trail: count(n), chevron: true, href }) : null);
   const rows = [
-    missing.length ? row({ title: 'Chybí údaje', meta: names(missing.map((x) => x.person)), trail: count(missing.length), chevron: true, href: '#lide/doplnit' }) : null,
-    noConsent.length ? row({ title: 'Hosté bez souhlasu', meta: names(noConsent), trail: count(noConsent.length), chevron: true, href: '#lide/hoste' }) : null,
-    birthdays.length ? row({
-      title: 'Narozeniny tento týden',
-      meta: birthdays.slice(0, 2).map((b) => `${personName(b.person)} (${b.isToday ? 'dnes' : shortDate(b.date)})`).join(', ') + (birthdays.length > 2 ? ` a ${plural(birthdays.length - 2, 'další', 'další', 'dalších')}` : ''),
-      trail: count(birthdays.length), chevron: true, href: '#lide/narozeniny',
-    }) : null,
-    overdue ? row({ title: 'Archiv', meta: overdueQuestion(overdue), trail: count(overdue), chevron: true, href: '#lide/archiv' }) : null,
+    line('Chybí údaje', missing.length, '#lide/doplnit'),
+    line('Hosté bez souhlasu', noConsent, '#lide/hoste'),
+    line('Narozeniny tento týden', birthdays, '#lide/narozeniny'),
+    line('Dlouho v archivu', overdue, '#lide/archiv'),
+    line('Nevyřízené pozvánky', invites, '#pristupy'),
   ].filter(Boolean);
   if (!rows.length) return null;
-  return section({ title: 'Lidé k doplnění', cls: 'home-people', body: list(rows, { label: 'Lidé k doplnění' }) });
-}
-
-// ---------- Pozvánky (leaders) ----------
-
-function invitesBlock() {
-  const n = waitingInvites();
-  if (!n) return null;
-  return section({
-    title: 'Pozvánky',
-    cls: 'home-invites',
-    body: list([row({
-      lead: h('span', { class: 'home-icon', 'aria-hidden': 'true' }, icon('mail')),
-      title: `${agree(n, 'Čeká', 'Čekají', 'Čeká')} ${plural(n, 'pozvánka', 'pozvánky', 'pozvánek')}`,
-      meta: 'Kdo se ještě nezapsal',
-      chevron: true,
-      href: '#pristupy',
-    })]),
-  });
+  return section({ title: 'Lidé', cls: 'home-people', body: list(rows, { label: 'Lidé' }) });
 }
 
 // ---------- demo banner ----------
@@ -423,14 +401,13 @@ export function renderHome() {
   const week = weekBlock();
   const off = me ? blockoutSection(me, { cls: 'home-off' }) : null;
   const people = leader ? peopleBlock() : null;
-  const invites = leader ? invitesBlock() : null;
 
   const two = isSplit();
   const content = two
     ? h('div', { class: 'cols home-cols' },
       h('div', { class: 'home-col' }, noCard, answers, mine, off),
-      h('div', { class: 'col-b home-col' }, need, week, people, invites))
-    : h('div', { class: 'home-col' }, noCard, answers, need, mine, week, off, people, invites);
+      h('div', { class: 'col-b home-col' }, need, week, people))
+    : h('div', { class: 'home-col' }, noCard, answers, need, mine, week, off, people);
 
   return screen({
     tab: { title: 'Domů', overline: todayLine() },
