@@ -1,0 +1,357 @@
+// Zvonec Next – Kalendář and Setkání: what every calendar and event screen shares. Places and times of
+// an event in words, its slots grouped by team, its fill and warnings, the cover picture, the
+// remembered view and filters (per viewer, this browser), links, .ics export, downloads.
+// No screen here: calendar.js (Seznam · Měsíc), roster.js (Rozpis), event.js (Setkání), program.js
+// (Osnova), event-form.js and event-duties.js build on it.
+
+import { h, icon, openSheet, rowLink, row, list, toast, KIND_HUES, agree, shortDate, clockRange, isoDay } from './kit.js';
+import { S, can, myId } from '../../ui/state.js';
+import { eventTypeById, needsOf, fillRatio, KIND_LABELS } from '../../lib/events.js';
+import { placesOf as resolvedPlaces } from '../../lib/places.js';
+import { roleById, groupById, ledBy } from '../../lib/groups.js';
+import { fullName, displayName } from '../../lib/people.js';
+import { loadImageUrl } from '../../lib/store/store.js';
+import { ics, icsForPerson } from '../../lib/ics.js';
+import { addDays, addMinutes, dayOf, today, weekday } from '../../lib/time.js';
+
+// ---------- words ----------
+
+export const capital = (text) => String(text || '').charAt(0).toLocaleUpperCase('cs') + String(text || '').slice(1);
+/** „Sál a Malá místnost“, „Zvuk, Projekce a Fotky“ */
+export function andJoin(words) {
+  const w = words.filter(Boolean);
+  return w.length < 2 ? (w[0] || '') : `${w.slice(0, -1).join(', ')} a ${w[w.length - 1]}`;
+}
+export const kindLabel = (kind) => KIND_LABELS[kind] || KIND_LABELS.event;
+export const kindHue = (kind) => KIND_HUES[kind] || 'plum';
+
+/** Does the event run over midnight or for several days? */
+export const isMultiDay = (event) => dayOf(event.start) !== dayOf(addMinutes(event.end, -1));
+
+/** „10.00–12.00“, or „so 7. 11. 20.00 – ne 8. 11. 6.00“ over midnight. */
+export function timeText(event) {
+  if (!isMultiDay(event)) return clockRange(event.start, event.end);
+  return `${shortDate(event.start)} ${clockRange(event.start)} – ${shortDate(event.end)} ${clockRange(event.end)}`;
+}
+
+/** „ne 18. 10. · 10.00–12.00“ */
+export const whenText = (event) => (isMultiDay(event) ? timeText(event) : `${shortDate(event.start)} · ${timeText(event)}`);
+
+/** The places of an event, resolved (a room carries its building's name, address and map). */
+export const placesOf = (event) => resolvedPlaces(S.data, event);
+
+/** „Monta, Sál a Malá místnost“ – rooms grouped under their building; several places with „;“. */
+export function placeText(event) {
+  const groups = [];
+  for (const p of placesOf(event)) {
+    const key = p.building || p.name;
+    const same = groups.find((g) => g.key === key && p.building);
+    if (same) same.rooms.push(p.name);
+    else groups.push({ key, building: p.building || '', rooms: p.building ? [p.name] : [], name: p.name });
+  }
+  return groups.map((g) => (g.building ? `${g.building}, ${andJoin(g.rooms)}` : g.name)).join('; ');
+}
+
+const hasCoords = (p) => Number.isFinite(Number(p?.lat)) && Number.isFinite(Number(p?.lon)) && p?.lat !== '' && p?.lon !== '' && p?.lat != null;
+export const canMap = (p) => hasCoords(p) || !!String(p?.address || '').trim();
+export function mapUrl(p) {
+  if (hasCoords(p)) return `https://mapy.cz/zakladni?x=${Number(p.lon)}&y=${Number(p.lat)}&z=16`;
+  return `https://mapy.cz/zakladni?q=${encodeURIComponent(p?.address || p?.name || '')}`;
+}
+
+/** A small OpenStreetMap of a place (the CSP allows frames from www.openstreetmap.org only). */
+export function placeMap(p) {
+  if (!hasCoords(p)) return null;
+  const lat = Number(p.lat);
+  const lon = Number(p.lon);
+  const bbox = [lon - 0.006, lat - 0.0035, lon + 0.006, lat + 0.0035].map((n) => n.toFixed(5)).join(',');
+  return h('div', { class: 'ev-map' }, h('iframe', {
+    src: `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`,
+    title: `Mapa: ${p.name || 'místo'}`, loading: 'lazy', referrerpolicy: 'no-referrer',
+  }));
+}
+
+/** The place sheet: name, address, the map, „Otevřít v mapě“. */
+export function openPlaceSheet(event) {
+  const places = placesOf(event);
+  if (!places.length) return;
+  const main = places.find(hasCoords) || places.find(canMap) || places[0];
+  openSheet({
+    title: placeText(event),
+    subtitle: main.address || null,
+    body: [
+      placeMap(main),
+      canMap(main) ? h('a', { class: 'btn btn--quiet btn--block', href: mapUrl(main), target: '_blank', rel: 'noopener noreferrer' }, icon('external', { size: 's' }), 'Otevřít v mapě') : null,
+    ],
+  });
+}
+
+// ---------- people and roles ----------
+
+export const personOf = (id) => (S.data.people || []).find((p) => p.id === id) || null;
+export const nameOf = (id) => { const p = personOf(id); return p ? fullName(p) : 'Někdo smazaný'; };
+/** „Veronika F.“ – only where a column is narrow (Rozpis table). */
+export function shortName(id) {
+  const p = personOf(id);
+  if (!p) return 'Někdo smazaný';
+  const first = p.nickname && p.nickname !== p.firstName ? p.nickname : p.firstName || displayName(p);
+  return p.lastName ? `${first} ${[...p.lastName][0]}.` : first;
+}
+
+/** Team groups in data order (not archived), with their roles in data order. */
+export function teamsWithRoles() {
+  return (S.data.groups || []).filter((g) => g.kind === 'team' && !g.archived)
+    .map((group) => ({ group, roles: (S.data.roles || []).filter((r) => r.groupId === group.id) }))
+    .filter((t) => t.roles.length);
+}
+
+/** Teams the viewer leads (team leaders: Rozpis opens on „Moje týmy“). */
+export const myTeams = () => (myId() ? ledBy(S.data, myId()).filter((g) => g.kind === 'team' && !g.archived).map((g) => g.id) : []);
+
+const STATUS_ORDER = { confirmed: 0, proposed: 1, declined: 2 };
+
+/**
+ * The slots of an event grouped by team, in team / role order:
+ * [{ group, slots: [{ role, assignment | null, key }] }]. A role needed twice gives two slots; people over
+ * the count and declined people get their own rows, an empty slot is { assignment: null }.
+ */
+export function slotsOf(event) {
+  const needs = needsOf(S.data, event, { withAssigned: true });
+  const byRole = new Map(needs.map((n) => [n.roleId, Math.max(0, Number(n.count) || 0)]));
+  const result = [];
+  const order = teamsWithRoles();
+  const seen = new Set();
+  const take = (group, roles) => {
+    const slots = [];
+    for (const role of roles) {
+      if (!byRole.has(role.id)) continue;
+      seen.add(role.id);
+      const count = byRole.get(role.id);
+      const mine = (event.assignments || []).filter((a) => a.roleId === role.id)
+        .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+      const active = mine.filter((a) => a.status !== 'declined').length;
+      for (const a of mine) slots.push({ role, assignment: a, key: a.id });
+      for (let i = active; i < count; i++) slots.push({ role, assignment: null, key: `${role.id}#${i}` });
+    }
+    if (slots.length) result.push({ group, slots });
+  };
+  for (const { group, roles } of order) take(group, roles);
+  // roles of archived or other groups that still have people here
+  const rest = needs.map((n) => roleById(S.data, n.roleId)).filter((r) => r && !seen.has(r.id));
+  if (rest.length) {
+    const groups = [...new Set(rest.map((r) => r.groupId))];
+    for (const gid of groups) take(groupById(S.data, gid) || { id: gid, name: 'Další' }, rest.filter((r) => r.groupId === gid));
+  }
+  return result;
+}
+
+/** How full: { filled, needed, missing, waiting, declined, confirmed, complete }. */
+export function fillOf(event) {
+  const { filled, needed } = fillRatio(S.data, event);
+  const assignments = event.assignments || [];
+  const waiting = assignments.filter((a) => a.status === 'proposed' && a.personId).length;
+  const confirmed = assignments.filter((a) => a.status === 'confirmed').length;
+  return { filled, needed, missing: Math.max(0, needed - filled), waiting, confirmed, complete: filled >= needed };
+}
+
+/** „3 čekají“, „chybí 2“ – the words after a fill ring. */
+export const waitingWords = (n) => `${n} ${agree(n, 'čeká', 'čekají', 'čeká')}`;
+export const missingWords = (n) => `chybí ${n}`;
+
+/** My duties at an event: [{ assignment, role }] (declined too). */
+export function myDuties(event) {
+  const me = myId();
+  if (!me) return [];
+  return (event.assignments || []).filter((a) => a.personId === me).map((a) => ({ assignment: a, role: roleById(S.data, a.roleId) }));
+}
+
+// ---------- warnings (leaders) ----------
+
+export const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
+
+/** Conflicts of one event the viewer should see (leaders only), worst first. „Moc služeb v měsíci“ (K7)
+ *  sits only at the event that went over the limit, not at every event of the month. */
+export function eventConflicts(eventId) {
+  if (!can('leader')) return [];
+  return S.conflicts.filter((c) => c.eventId === eventId || (c.code !== 'K7' && (c.eventIds || []).includes(eventId)))
+    .sort((a, b) => SEVERITY_WEIGHT[b.severity] - SEVERITY_WEIGHT[a.severity]);
+}
+
+/**
+ * The warnings a duty carries: [conflict] – those naming the assignment, and those about its person with
+ * no assignment of their own (K7 too many this month, K8 Sundays in a row). K6 (not confirmed yet) is left
+ * out – the status word says it. An overridden error (info with overrideNote) stays, so „Vím o tom: …“
+ * can be changed or taken back.
+ */
+export function assignmentWarnings(conflicts, assignment) {
+  if (!assignment) return [];
+  return conflicts.filter((c) => c.code !== 'K6' && (c.severity !== 'info' || c.overrideNote)
+    && ((c.assignmentIds || []).includes(assignment.id)
+      || (!(c.assignmentIds || []).length && c.personId && c.personId === assignment.personId && assignment.status !== 'declined')));
+}
+
+/** Warnings about the event itself (not about a slot): osnova too long, a cancelled event with people… */
+export const eventLevelWarnings = (conflicts) => conflicts.filter((c) => c.code === 'K14'
+  || (!(c.assignmentIds || []).length && !c.personId && c.code !== 'K5' && c.severity !== 'info'));
+
+/** Worst severity of an event for a list mark (leaders, not cancelled): 'error' | 'warning' | null. */
+export function eventSeverity(event) {
+  if (!can('leader') || event.cancelled) return null;
+  const list = eventConflicts(event.id).filter((c) => c.severity !== 'info');
+  return list.some((c) => c.severity === 'error') ? 'error' : list.length ? 'warning' : null;
+}
+
+/** How many errors (not overridden) an event has – „1 chyba“. */
+export const errorCount = (eventId) => eventConflicts(eventId).filter((c) => c.severity === 'error').length;
+
+// ---------- the cover ----------
+
+const imageUrls = new Map();
+export const forgetImageUrl = (name) => imageUrls.delete(name);
+export const imageNameOf = (event) => event.image || eventTypeById(S.data, event.typeId)?.image || null;
+
+function hashOf(text) {
+  let n = 0;
+  for (const ch of String(text || '')) n = (n * 31 + ch.codePointAt(0)) >>> 0;
+  return n;
+}
+
+/**
+ * The cover of an event (16 : 9): its picture (or its template's) once loaded, else a generated one –
+ * the arch window in the hue of its Účel. Events with the same title share the generated variant.
+ * `url` shows a picture that is not saved yet (the form preview).
+ */
+export function cover(event, { url, cls } = {}) {
+  const hue = kindHue(event.kind);
+  const generated = h('div', { class: ['ev-cover', cls], dataset: { hue, variant: String(hashOf(event.title) % 3) }, 'aria-hidden': 'true' },
+    h('span', { class: 'ev-cover__arch' }), h('span', { class: 'ev-cover__arch ev-cover__arch--2' }), h('span', { class: 'ev-cover__arch ev-cover__arch--3' }));
+  const photo = (src) => h('figure', { class: ['ev-cover', 'ev-cover--photo', cls], 'aria-hidden': 'true' }, h('img', { src, alt: '', decoding: 'async' }));
+  if (url) return photo(url);
+  const name = imageNameOf(event);
+  if (!name || !S.store) return generated;
+  if (imageUrls.has(name)) return imageUrls.get(name) ? photo(imageUrls.get(name)) : generated;
+  loadImageUrl(S.store, name).then((src) => {
+    imageUrls.set(name, src || null);
+    if (src && generated.isConnected) generated.replaceWith(photo(src));
+  }, () => imageUrls.set(name, null));
+  return generated;
+}
+
+// ---------- remembered view and filters (this browser, per viewer) ----------
+
+const PREFS_KEY = 'zvonec-next-calendar';
+export const VIEWS = [['seznam', 'Seznam'], ['mesic', 'Měsíc'], ['rozpis', 'Rozpis']];
+const viewerKey = () => `${myId() || 'x'}-${S.me?.access || ''}`;
+
+/** { view, kinds: [], teams: [], mine: false, rosterTeams: null | [] } */
+export function prefs() {
+  let all = {};
+  try { all = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') || {}; } catch { all = {}; }
+  const p = all[viewerKey()] || {};
+  return {
+    view: VIEWS.some(([v]) => v === p.view) ? p.view : null,
+    kinds: Array.isArray(p.kinds) ? p.kinds : [],
+    teams: Array.isArray(p.teams) ? p.teams : [],
+    mine: !!p.mine && !!myId(),
+    rosterTeams: Array.isArray(p.rosterTeams) ? p.rosterTeams : null,
+  };
+}
+
+export function savePrefs(patch) {
+  try {
+    const all = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') || {};
+    all[viewerKey()] = { ...prefs(), ...patch };
+    localStorage.setItem(PREFS_KEY, JSON.stringify(all));
+  } catch { /* not remembered, that's all */ }
+}
+
+/** The view to open: remembered, else Měsíc on a desktop and Seznam on a phone. */
+export const defaultView = () => prefs().view || (window.matchMedia('(min-width: 960px)').matches ? 'mesic' : 'seznam');
+
+/** Teams shown in Rozpis: remembered, else the teams I lead (team leaders), else all. */
+export function rosterTeams() {
+  const p = prefs();
+  if (p.rosterTeams) return p.rosterTeams;
+  return myTeams();
+}
+
+/** Is a team part of an event: its own, or one of its roles is needed or filled there? */
+export function eventHasTeam(event, teamId) {
+  if (event.groupId === teamId) return true;
+  const inTeam = (roleId) => roleById(S.data, roleId)?.groupId === teamId;
+  return needsOf(S.data, event).some((n) => inTeam(n.roleId)) || (event.assignments || []).some((a) => inTeam(a.roleId));
+}
+
+export const iServe = (event) => myDuties(event).some((d) => d.assignment.status !== 'declined');
+
+/** Does an event pass the filters { kinds, teams, mine }? */
+export function passes(event, f) {
+  if (f.kinds?.length && !f.kinds.includes(event.kind)) return false;
+  if (f.teams?.length && !f.teams.some((t) => eventHasTeam(event, t))) return false;
+  if (f.mine && !iServe(event)) return false;
+  return true;
+}
+
+// ---------- links ----------
+
+const monthOfDay = (day) => String(day).slice(0, 7);
+export const calendarHref = (view, day) => `#kalendar/${view || defaultView()}/${monthOfDay(day || today())}`;
+/** Where „back to the calendar“ goes from an event: the remembered view at the event's month. */
+export const backHref = (event) => (event ? `#kalendar/${defaultView()}/${defaultView() === 'mesic' ? dayOf(event.start) : monthOfDay(event.start)}` : '#kalendar');
+
+/** Monday of the week of a day. */
+export const mondayOf = (day) => addDays(day, -weekday(day));
+
+/** „19.–25. 10.“, „28. 9. – 4. 10.“ */
+export function weekRange(monday) {
+  const sunday = addDays(monday, 6);
+  const [d1, m1] = [Number(monday.slice(8)), Number(monday.slice(5, 7))];
+  const [d2, m2] = [Number(sunday.slice(8)), Number(sunday.slice(5, 7))];
+  return m1 === m2 ? `${d1}.–${d2}. ${m2}.` : `${d1}. ${m1}. – ${d2}. ${m2}.`;
+}
+
+export { isoDay };
+
+// ---------- downloads, .ics ----------
+
+/** A file download (Blob URL; the file name is Czech without diacritics). */
+export function download(name, content, type) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const a = h('a', { href: url, download: name, hidden: true });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+export const asciiName = (text) => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'zvonec';
+
+/** „Přidat do kalendáře v telefonu“: Moje služby (when the viewer has a card) / Celý kalendář. */
+export function openCalendarExport() {
+  const me = personOf(myId());
+  let sheet;
+  const mine = () => {
+    sheet.close();
+    const items = icsForPerson(S.data, me.id, addDays(today(), -30));
+    download(`sluzby-${asciiName(fullName(me))}.ics`, ics(S.data, items, `Služby – ${displayName(me)}`), 'text/calendar');
+    toast('Soubor je stažený. Otevři ho v telefonu.');
+  };
+  const all = () => {
+    sheet.close();
+    const items = (S.data.events || []).filter((e) => dayOf(e.start) >= addDays(today(), -30)).map((event) => ({ event }));
+    download('kalendar-sboru.ics', ics(S.data, items, S.data.settings?.churchName || 'Zvonec'), 'text/calendar');
+    toast('Soubor je stažený. Otevři ho v telefonu.');
+  };
+  sheet = openSheet({
+    title: 'Přidat do kalendáře v telefonu',
+    body: [
+      h('p', { class: 'meta' }, 'Stáhne se soubor. Když ho otevřeš, telefon nabídne přidat setkání do kalendáře.'),
+      list([
+        me ? row({ lead: icon('user'), title: 'Moje služby', meta: 'Jen setkání, kde sloužíš', onclick: mine, chevron: true }) : null,
+        row({ lead: icon('calendar'), title: 'Celý kalendář', meta: 'Všechna setkání sboru', onclick: all, chevron: true }),
+      ]),
+    ],
+  });
+}
+
+export { rowLink };

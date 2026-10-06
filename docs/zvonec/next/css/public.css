@@ -1,0 +1,60 @@
+/* ============================================================
+   Zvonec Next – the public Program (#program, #program/<id>). Visitors see no rail and no tab bar;
+   the page is centred. Tokens only, no raw colours.
+   ============================================================ */
+
+.pub-page { max-width: calc(var(--measure) + 2 * var(--gutter)); }
+.pub-page .screen-head .screen-head__lead { max-width: 46ch; }
+.pub-grid { display: grid; gap: 0 var(--space-8); }
+.pub-main, .pub-side { display: grid; align-content: start; min-width: 0; }
+.pub-main > .section, .pub-side > .section { margin-top: var(--section-gap); }
+.pub-side > .section:first-child { margin-top: var(--section-gap); }
+
+/* Nejbližší setkání: the one lifted block */
+.pub-next { display: grid; overflow: hidden; border-radius: var(--shape-block); background: var(--feature); }
+.pub-next__body { display: grid; gap: var(--space-3); padding: var(--space-5); justify-items: start; }
+.pub-kicker { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); }
+.pub-next__head { display: flex; align-items: center; gap: var(--space-4); }
+.pub-next__title { font-family: var(--font-title); font-weight: 900; font-size: 26px; line-height: 30px; letter-spacing: var(--tracking-title); }
+.pub-next__title > a { color: inherit; }
+.pub-next__title > a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.pub-next__head .meta { margin-top: 2px; color: var(--ink); }
+.pub-next__desc { max-width: 60ch; }
+.pub-where { margin: 0; }
+.pub-actions { margin-top: var(--space-2); gap: var(--space-3); }
+.pub-photo { overflow: hidden; background: var(--tint); }
+.pub-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pub-photo--wide { aspect-ratio: 16 / 9; }
+.pub-event__main > .pub-photo { border-radius: var(--shape-block); }
+
+.pub-week + .pub-week { margin-top: var(--space-4); }
+.pub-weeks .disclosure { margin-top: var(--space-3); }
+.pub-updated { margin-top: var(--space-2); }
+.pub-find .section-head + .text { margin-bottom: var(--space-2); }
+.pub-find .map { margin-top: var(--space-3); }
+
+/* one public event */
+.pub-event__head { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-2) 0 var(--space-5); }
+.pub-event__head .arch { --arch-w: 56px; --arch-h: 72px; }
+.pub-event__head .arch__num { font-size: 28px; line-height: 30px; }
+.pub-event > .callout { margin-bottom: var(--space-5); }
+.pub-event__grid { display: grid; gap: var(--space-6); }
+.pub-event__main { display: grid; gap: var(--space-4); align-content: start; }
+.pub-event__desc { max-width: 62ch; }
+.pub-event__facts { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
+.pub-facts__head { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.pub-event__facts .fact { align-items: flex-start; }
+.pub-event__facts .fact > .icon { margin-top: 2px; }
+.pub-event__facts .pill { margin-left: var(--space-1); }
+
+@media (min-width: 960px) {
+  .pub-page { max-width: calc(1120px + 2 * var(--gutter)); }
+  body.is-public .topbar--public { max-width: calc(1120px + 2 * var(--gutter)); }
+  body.is-public:has(.screen--narrow) .topbar--public { max-width: calc(480px + 2 * var(--gutter)); }
+  .pub-grid:not(.pub-grid--one) { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  .pub-side > .section:first-child { margin-top: 0; }
+  .pub-next { grid-template-columns: minmax(0, 1fr); }
+  .pub-next__title { font-size: 32px; line-height: 36px; }
+  .pub-event__grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  .pub-event__facts { position: sticky; top: calc(var(--topbar-h) + var(--space-4)); }
+}

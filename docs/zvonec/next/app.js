@@ -25,15 +25,29 @@ import { renderSignIn, renderSetupPlaceholder, renderInvitePlaceholder } from '.
 import { renderKit } from './ui/kit-page.js';
 
 // IMPORTS:home
+import { renderHome } from './ui/home.js';
 // IMPORTS:home end
 
 // IMPORTS:calendar
+import { CALENDAR_ROUTES as CALENDAR_SCREENS } from './ui/calendar.js';
 // IMPORTS:calendar end
 
 // IMPORTS:people
+import { renderPeople, renderPerson, renderHousehold } from './ui/people.js';
+import { renderGroups, renderGroup } from './ui/groups.js';
 // IMPORTS:people end
 
 // IMPORTS:more
+import { renderMore } from './ui/more.js';
+import { renderAccount } from './ui/account.js';
+import { renderTemplates, renderTemplate } from './ui/templates.js';
+import { renderFormats } from './ui/formats.js';
+import { renderPlaces, renderPlace } from './ui/places.js';
+import { renderAccess } from './ui/access.js';
+import { renderSettings } from './ui/settings.js';
+import { renderProgram } from './ui/public.js';
+import { renderLogin, renderInvite } from './ui/login.js';
+import { isSplit } from './ui/kit.js';
 // IMPORTS:more end
 
 // ---------- routes ----------
@@ -54,7 +68,7 @@ const todayLine = () => {
 // ROUTES:home – Domů (#domu): Odpověz, Co je potřeba, Tvoje služby, Tento týden, Kdy nemůžu,
 // Lidé k doplnění, Pozvánky; the demo banner „Díváš se jako …“.
 const HOME_ROUTES = {
-  domu: { render: () => placeholder({ title: 'Domů', overline: todayLine(), legacy: 'prehled' }), access: 'member' },
+  domu: { render: () => renderHome(), access: 'member' },
 };
 // ROUTES:home end
 
@@ -62,13 +76,9 @@ const HOME_ROUTES = {
 // #kalendar[/<seznam|mesic|rozpis>[/<YYYY-MM | YYYY-MM-DD>][/upozorneni | /bremeno]] (#kalendar alone:
 // the remembered view; Rozpis takes the chip „upozorneni“ and the „bremeno“ sheet as a last part),
 // #setkani/<id> (anchor „kdo-slouzi“ from the old /sluzby), #setkani/<id>/osnova.
-const CALENDAR_ROUTES = {
-  kalendar: { render: (parts) => placeholder({ title: 'Kalendář', legacy: ['kalendar', ...parts].join('/') }), access: 'member' },
-  setkani: {
-    render: ([id, part]) => placeholder({ title: part === 'osnova' ? 'Osnova' : 'Setkání', legacy: `setkani/${id}${part ? `/${part}` : ''}`, back: { href: '#kalendar', label: 'Kalendář' } }),
-    access: 'member', nav: 'kalendar',
-  },
-};
+// The screens live in ui/calendar.js (Seznam · Měsíc), ui/roster.js (Rozpis), ui/event.js (Setkání),
+// ui/program.js (Osnova); at ≥ 1200 px #setkani/<id> draws the calendar with the event in the pane.
+const CALENDAR_ROUTES = CALENDAR_SCREENS;
 // ROUTES:calendar end
 
 // ROUTES:people – Lidé (#lide[/<filtr>]: vsichni · clenove · pratele · hoste · deti · nechodi · doplnit ·
@@ -76,36 +86,36 @@ const CALENDAR_ROUTES = {
 // Skupina (#tym/<id>).
 const PEOPLE_ROUTES = {
   lide: {
-    render: ([part]) => placeholder({ title: part === 'skupiny' ? 'Skupiny' : 'Lidé', legacy: part === 'skupiny' ? 'tymy' : `lide${part ? `/${part}` : ''}` }),
-    access: 'member',
+    render: (parts) => (parts[0] === 'skupiny' ? renderGroups(parts.slice(1)) : renderPeople(parts)),
+    access: (parts) => (parts[0] === 'narozeniny' ? 'leader' : 'member'),
   },
-  osoba: { render: ([id]) => placeholder({ title: 'Karta člověka', legacy: `osoba/${id}`, back: { href: '#lide', label: 'Lidé' } }), access: 'member', nav: 'lide' },
-  domacnost: { render: ([id]) => placeholder({ title: 'Domácnost', legacy: `domacnost/${id}`, back: { href: '#lide', label: 'Lidé' } }), access: 'leader', nav: 'lide' },
-  tym: { render: ([id]) => placeholder({ title: 'Skupina', legacy: `tym/${id}`, back: { href: '#lide/skupiny', label: 'Skupiny' } }), access: 'member', nav: 'lide' },
+  osoba: { render: (parts) => renderPerson(parts), access: 'member', nav: 'lide' },
+  domacnost: { render: (parts) => renderHousehold(parts), access: 'leader', nav: 'lide' },
+  tym: { render: (parts) => renderGroup(parts), access: 'member', nav: 'lide' },
 };
 // ROUTES:people end
 
 // ROUTES:more – Více (#vice) and its pages: Můj účet (#ucet), Šablony setkání (#sablony, #sablona/<id|nova>),
 // Formáty (#formaty[/<id>]), Místa (#mista, #misto/<id>), Přístupy (#pristupy), Nastavení sboru
 // (#nastaveni), and the public Program (#program[/<id>], anchor „jak-se-schazime“).
-const toMore = { href: '#vice', label: 'Více' };
 const MORE_ROUTES = {
-  vice: { render: () => placeholder({ title: 'Více', legacy: 'ucet' }), access: 'member' },
-  ucet: { render: () => placeholder({ title: 'Můj účet', legacy: 'ucet', back: toMore }), access: 'member', nav: 'vice' },
-  sablony: { render: () => placeholder({ title: 'Šablony setkání', legacy: 'sablony', back: toMore }), access: 'leader' },
-  sablona: { render: ([id]) => placeholder({ title: 'Šablona', legacy: `sablona/${id || 'nova'}`, back: { href: '#sablony', label: 'Šablony setkání' } }), access: 'leader', nav: 'sablony' },
-  formaty: { render: ([id]) => placeholder({ title: 'Formáty', legacy: `formaty${id ? `/${id}` : ''}`, back: toMore }), access: 'member' },
-  mista: { render: () => placeholder({ title: 'Místa', legacy: 'mista', back: toMore }), access: 'member' },
-  misto: { render: ([id]) => placeholder({ title: 'Místo', legacy: `misto/${id}`, back: { href: '#mista', label: 'Místa' } }), access: 'member', nav: 'mista' },
-  pristupy: { render: () => placeholder({ title: 'Přístupy', legacy: 'nastaveni/pristupy', back: toMore }), access: 'leader' },
-  nastaveni: { render: () => placeholder({ title: 'Nastavení sboru', legacy: 'nastaveni', back: toMore }), access: 'leader' },
-  program: { render: ([id]) => placeholder({ title: id ? 'Setkání' : 'Program', legacy: `program${id ? `/${id}` : ''}`, topbar: publicTopBar() }), access: 'public', nav: null },
+  vice: { render: () => renderMore(), access: 'member' },
+  // ≥ 1200 px Můj účet sits beside the Více list (#vice); below it is its own page
+  ucet: { render: () => (isSplit() ? renderMore() : renderAccount()), access: 'member' },
+  sablony: { render: () => renderTemplates(), access: 'leader' },
+  sablona: { render: ([id]) => renderTemplate(id || 'nova'), access: 'leader', nav: 'sablony' },
+  formaty: { render: ([id]) => renderFormats(id), access: 'member' },
+  mista: { render: () => renderPlaces(), access: 'member' },
+  misto: { render: ([id]) => renderPlace(id), access: 'member', nav: 'mista' },
+  pristupy: { render: () => renderAccess(), access: 'leader' },
+  nastaveni: { render: () => renderSettings(), access: 'leader' },
+  program: { render: ([id]) => renderProgram(id), access: 'public', nav: null },
 };
 // ROUTES:more end
 
 const SHELL_ROUTES = {
-  prihlaseni: { render: ([part]) => signInPage(part), access: 'signedOut', nav: null },
-  pozvanka: { render: ([code]) => renderInvitePlaceholder(code, { topbar: publicTopBar({ signIn: false }) }), access: 'signedOut', nav: null },
+  prihlaseni: { render: ([part]) => renderLogin(part), access: 'signedOut', nav: null },   // ui/login.js (more)
+  pozvanka: { render: ([code]) => renderInvite(code), access: 'signedOut', nav: null },   // ui/login.js (more)
   kit: { render: () => renderKit(), access: 'leader', nav: null },   // the living specimen, not in the nav
 };
 
