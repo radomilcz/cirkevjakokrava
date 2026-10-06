@@ -193,7 +193,7 @@ export function eventConflicts(eventId) {
 /**
  * The warnings a duty carries: [conflict] – those naming the assignment, and those about its person with
  * no assignment of their own (K7 too many this month, K8 Sundays in a row). K6 (not confirmed yet) is left
- * out – the status word says it. An overridden error (info with overrideNote) stays, so „Vím o tom: …“
+ * out – the status word says it. An overridden error (info with overrideNote) stays, so „Důvod: …“
  * can be changed or taken back.
  */
 export function assignmentWarnings(conflicts, assignment) {

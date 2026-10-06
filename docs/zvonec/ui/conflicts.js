@@ -123,12 +123,12 @@ export function overrideDialog(assignmentId) {
         textField('reason', 'Proč to půjde', existing?.reason || '', { full: true, attr: { autofocus: true, placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 } })),
     ],
     saveLabel: 'Je to v pořádku',
-    removeLabel: 'Přece jen to hlídej',
+    removeLabel: 'Zruš výjimku',
     remove: existing ? () => {
       const fresh = findAssignment(S.data, assignmentId);
       if (fresh) delete fresh.assignment.override;
       closeDialog();
-      change(`zase hlídat ${name}`);
+      change(`zrušená výjimka ${name}`);
     } : null,
     save: (f) => {
       const reason = f.reason.value.trim();

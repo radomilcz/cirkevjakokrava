@@ -77,6 +77,9 @@ export function findConflicts(data, { today } = {}) {
       c.severity = 'info';
       c.overrideNote = overridden.join('; ');
     }
+    // the advice („Jednu z nich dej někomu jinému.“) only while it is still a problem, not under a known exception
+    if (c.hint && !c.overrideNote) c.text = `${c.text} ${c.hint}`;
+    delete c.hint;
     c.assignmentIds = (c.assignments || []).filter(Boolean).map((a) => a.id);
     delete c.assignments;
     c.eventIds = c.eventIds || [c.eventId];
@@ -113,7 +116,8 @@ export function findConflicts(data, { today } = {}) {
           add({
             key: `K2:${personId}:${a.assignment.id}:${b.assignment.id}`, code: 'K2', severity: 'error',
             eventId: a.event.id, personId, assignments: [a.assignment, b.assignment],
-            text: `${who} má naráz dvě služby: ${a.role?.name || '?'} a ${b.role?.name || '?'}. Jednu z nich dej někomu jinému.`,
+            text: `${who} má naráz dvě služby: ${a.role?.name || '?'} a ${b.role?.name || '?'}.`,
+            hint: 'Jednu z nich dej někomu jinému.',
           });
         }
       }

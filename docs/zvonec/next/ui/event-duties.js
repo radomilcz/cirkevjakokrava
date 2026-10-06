@@ -259,7 +259,7 @@ export function openOverride(conflict) {
   if (!target) return;
   const existing = target.assignment.override;
   formSheet({
-    title: existing ? 'Důvod' : 'Vím o tom',
+    title: 'Výjimka',
     body: [
       h('p', { class: 'meta' }, conflict.text),
       field({ label: 'Proč to půjde', hint: 'Zvonec to pak přestane hlásit jako chybu.', control: textInput({ name: 'reason', value: existing?.reason || '', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
@@ -282,8 +282,8 @@ export function clearOverride(conflict) {
   if (!target?.assignment.override) return;
   const kept = target.assignment.override;
   delete target.assignment.override;
-  change(`zase hlídat ${nameOf(target.assignment)}`);
-  toast('Zvonec to zase hlídá.', { action: () => { const t = overrideTarget(conflict); if (t) { t.assignment.override = kept; change('vráceno: výjimka'); } } });
+  change(`zrušená výjimka ${nameOf(target.assignment)}`);
+  toast('Výjimka je zrušená. Zvonec to zase hlídá.', { action: () => { const t = overrideTarget(conflict); if (t) { t.assignment.override = kept; change('vráceno: výjimka'); } } });
 }
 
 /**
@@ -298,7 +298,7 @@ export function warningFor(conflict, { eventId, assignment, onDone, text, extra 
   const overridable = (conflict.assignmentIds || []).length && (conflict.severity === 'error' || excused);
   const actions = excused ? [
     button('Uprav důvod', { size: 's', onclick: done(() => openOverride(conflict)) }),
-    button('Přece jen to hlídej', { size: 's', variant: 'quiet', onclick: done(() => clearOverride(conflict)) }),
+    button('Zruš výjimku', { size: 's', variant: 'quiet', onclick: done(() => clearOverride(conflict)) }),
   ] : [
     canReplace ? button('Vyber jiného', { size: 's', onclick: done(() => pickFor(eventId, assignment.roleId, assignment.id)) }) : null,
     overridable ? button('Vím o tom', { size: 's', variant: 'quiet', onclick: done(() => openOverride(conflict)) }) : null,
@@ -307,7 +307,8 @@ export function warningFor(conflict, { eventId, assignment, onDone, text, extra 
   const sentence = text || conflict.text;
   return warningRow({
     severity: conflict.severity,
-    text: excused ? `${sentence} Vím o tom: ${conflict.overrideNote}` : sentence,
+    word: excused ? 'výjimka' : undefined,
+    text: excused ? `${sentence} Důvod: ${conflict.overrideNote}` : sentence,
     actions: actions.length ? actions : null,
   });
 }

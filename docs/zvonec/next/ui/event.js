@@ -90,9 +90,11 @@ function youCard(event) {
   if (!mine.length) return null;
   const past = dayOf(event.end) < today();
   const blocked = past ? null : blockoutOn(event, myId());
-  return h('section', { class: 'feature ev-you', 'aria-label': 'Tvoje služba' },
+  const head = mine.length > 1 ? 'Tvoje služby' : 'Tvoje služba';
+  return h('section', { class: 'feature ev-you', 'aria-label': head },
+    h('h2', { class: 'feature__head' }, head),
     mine.map(({ assignment, role }) => h('div', { class: 'ev-you__item' },
-      h('p', { class: 'lead' }, `Děláš ${role?.name || 'službu'}.`),
+      h('p', { class: 'lead' }, role?.name || 'Služba'),
       blocked && assignment.status !== 'declined' ? h('p', { class: 'ev-you__clash' }, blockoutNote(blocked)) : null,
       assignment.status === 'proposed' && !past
         ? buttonRow(     // the same pair as Domů › Odpověz; a clash with „Kdy nemůžu“ makes Nemůžu the solid one

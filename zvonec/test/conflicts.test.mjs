@@ -106,6 +106,21 @@ test('K2: two roles at once – combinableWith pair and a role outside its windo
   assert.ok(k.some((x) => /Petr má naráz dvě služby: Zpěv a Zvuk\. Jednu z nich dej někomu jinému\./.test(x.text)));
 });
 
+test('K2: under a known exception the advice to hand one duty over is gone', () => {
+  const d = baseData();
+  d.events = [event('a', '2026-10-11T10:00', '2026-10-11T11:30', {
+    assignments: [asg('p1', 'zpev', 'petr'), asg('p4', 'zvuk', 'petr')],
+  })];
+  d.events[0].assignments[1].override = { reason: 'zvuk jen pustí z mobilu', by: 'petr', at: TODAY };
+  const k = findConflicts(d, { today: TODAY }).filter((x) => x.code === 'K2');
+  assert.ok(k.length);
+  for (const x of k) {
+    assert.equal(x.severity, 'info');
+    assert.equal(x.text, 'Petr má naráz dvě služby: Zpěv a Zvuk.');
+    assert.equal(x.hint, undefined);
+  }
+});
+
 test('K2: combinableWith works from either side', () => {
   const d = baseData();
   d.roles.find((r) => r.id === 'zpev').combinableWith = [];
