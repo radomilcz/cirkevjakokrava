@@ -6,6 +6,9 @@ v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další 
 
 **Ukázka s vymyšlenými lidmi:** https://manifest.cirkevjakokrava.cz/zvonec/
 
+Hlavní adresa otevírá nový Zvonec (s kartami Domů · Kalendář · Lidé · Více). Původní verzi najdeš
+na stejné adrese s `/stara.html` na konci – zatím ji necháváme pro srovnání.
+
 ## Barvy
 
 Zvonec je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, tykání

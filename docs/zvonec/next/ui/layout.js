@@ -76,30 +76,39 @@ export function screenHead({ overline, title, actions, lead, tab = false } = {})
  *     wide: true,                                                  up to 1280 px (split views, tables)
  *   })
  *
- * The one head of a tab root (`tab`), the same on all four tabs:
- *   phone   – a brand row (the mark left, the tab's actions right: Dnes, ⋯) and under it the Agrandir title
- *             (h1, „Domů“ · „Kalendář“ · „Lidé“ · „Více“) with its overline; the view controls (segmented,
- *             period, search) follow in the body;
+ * The head of a tab root (`tab`):
+ *   phone   – Domů and Více: a brand row (the mark left, the tab's actions right) and under it the Agrandir
+ *             title (h1) with its overline. Kalendář and Lidé (`tab.bar`, the approved mockups): no brand and
+ *             no big title – the top bar is the view's own control (‹ Říjen 2026 › · Dnes · ⋯, or the
+ *             segmented Lidé · Skupiny · ⋯) and the h1 stays for screen readers only;
+ *               tab: { title: 'Kalendář', actions: [menu(…)], bar: { center: period(…), actions: [Dnes, menu(…)] } }
  *   desktop – the rail carries the brand, so there is no top bar; the title row holds the h1 and, on its
- *             right, the main action as a solid button followed by the tab's actions.
- * Kalendář: the h1 is „Kalendář“; its period ‹ Říjen 2026 › moves into the body as period({ heading: false }).
+ *             right, the main action as a solid button followed by the tab's actions (`tab.bar` is not used).
  */
 export function screen({ tab, topbar, head, body, primary, foot, wide = false, cls, label } = {}) {
   let bar;
   let headProps = head;
+  let hiddenTitle = null;
   if (tab) {
     const desk = isDesktop();
-    bar = topBar({ brand: true, actions: desk ? null : tab.actions, cls: 'topbar--tab' });
-    // desktop: the main action is the first button of the title row (ux.md §2.3), not a floating one
-    const main = desk && primary ? headButton(primary) : null;
-    const acts = desk ? nodes([main, tab.actions]) : [];
-    if (main) primary = null;
-    headProps = { overline: tab.overline, title: tab.title, lead: tab.lead, actions: acts.length ? h('div', { class: 'head-actions' }, acts) : null, tab: true };
+    if (!desk && tab.bar) {
+      // phone, Kalendář / Lidé: the view's own bar; the h1 is for screen readers (and the document title)
+      bar = topBar({ center: tab.bar.center, actions: tab.bar.actions === undefined ? tab.actions : tab.bar.actions, cls: 'topbar--tab topbar--view' });
+      hiddenTitle = h('h1', { class: 'visually-hidden' }, tab.title);
+      headProps = null;
+    } else {
+      bar = topBar({ brand: true, actions: desk ? null : tab.actions, cls: 'topbar--tab' });
+      // desktop: the main action is the first button of the title row (ux.md §2.3), not a floating one
+      const main = desk && primary ? headButton(primary) : null;
+      const acts = desk ? nodes([main, tab.actions]) : [];
+      if (main) primary = null;
+      headProps = { overline: tab.overline, title: tab.title, lead: tab.lead, actions: acts.length ? h('div', { class: 'head-actions' }, acts) : null, tab: true };
+    }
   } else {
     bar = topbar instanceof Node ? topbar : topBar(topbar || { brand: true });
   }
   const main = h('main', { class: ['screen', wide && 'screen--wide', tab && 'screen--tab', foot && 'screen--form', cls], id: 'main', tabIndex: -1, 'aria-label': label },
-    headProps ? screenHead(headProps) : null, body, foot || null);
+    hiddenTitle, headProps ? screenHead(headProps) : null, body, foot || null);
   return [bar, main, primary && !foot ? fab(primary) : null];
 }
 

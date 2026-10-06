@@ -93,12 +93,18 @@ export function clearFilters(view) {
  * The bar under the tab head „Kalendář“: ‹ Říjen 2026 › · Dnes (only when today is not shown) · Filtr, and
  * Seznam · Měsíc · Rozpis. Phone: two rows (period, Dnes and Filtr; the view switch under them). Desktop: one row.
  */
-function toolbar(view, periodPart, { month, onMonth, onToday }) {
+/** ‹ Říjen 2026 › (+ Dnes on a desktop): in the toolbar on a desktop, in the top bar on a phone. */
+function periodBox({ month, onMonth, onToday }) {
+  return h('div', { class: 'cal-period' },
+    period({ label: monthLabel(month), onPrev: () => onMonth(shiftMonth(month, -1)), onNext: () => onMonth(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc', heading: false }),
+    onToday ? button('Dnes', { variant: 'quiet', size: 's', onclick: onToday, cls: 'cal-today' }) : null);
+}
+
+/** Desktop: ‹ Říjen 2026 › Dnes · Seznam Měsíc Rozpis · Filtr. Phone (withPeriod false): Seznam Měsíc Rozpis · Filtr. */
+function toolbar(view, periodPart, { month, onMonth, onToday, withPeriod = true }) {
   const n = filterCount(view);
-  return h('div', { class: 'toolbar cal-toolbar' },
-    h('div', { class: 'cal-period' },
-      period({ label: monthLabel(month), onPrev: () => onMonth(shiftMonth(month, -1)), onNext: () => onMonth(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc', heading: false }),
-      onToday ? button('Dnes', { variant: 'quiet', size: 's', onclick: onToday, cls: 'cal-today' }) : null),
+  return h('div', { class: ['toolbar cal-toolbar', !withPeriod && 'cal-toolbar--views'] },
+    withPeriod ? periodBox({ month, onMonth, onToday }) : null,
     segmented(VIEWS.map(([value, label]) => ({ value, label })), view, (v) => { savePrefs({ view: v }); navigate(hrefOf(v, periodPart.slice(0, 7))); }, { label: 'Pohled', cls: 'cal-views' }),
     button(['Filtr', n ? count(n, { label: `zapnuté filtry: ${n}` }) : null], { variant: 'quiet', icon: 'sliders', onclick: () => openFilters(view), cls: 'cal-filter' }));
 }
@@ -309,8 +315,10 @@ export function renderCalendar(parts = [], { openId } = {}) {
   let primary = null;
   let menuItems = [{ label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport }];
   const toToday = showsToday ? null : () => navigate(hrefOf(view, view === 'mesic' ? todayDay : todayDay.slice(0, 7), view === 'rozpis' ? extra : null));
-  // „Dnes“: next to the period on a desktop; on a phone in the brand row (the period row has no room)
-  const bar = toolbar(view, periodPart, { month, onMonth: go, onToday: isDesktop() ? toToday : null });
+  // phone (the approved mockup): the top bar is ‹ Říjen 2026 › · Dnes · ⋯, the toolbar under it Seznam Měsíc Rozpis · Filtr;
+  // desktop: one toolbar row ‹ Říjen 2026 › Dnes · Seznam Měsíc Rozpis · Filtr under the title
+  const desk = isDesktop();
+  const bar = toolbar(view, periodPart, { month, onMonth: go, onToday: desk ? toToday : null, withPeriod: desk });
 
   if (view === 'rozpis') {
     const r = rosterView({ month, extra, openId: opened?.id || null, closeHref, toolbar: bar });
@@ -343,11 +351,17 @@ export function renderCalendar(parts = [], { openId } = {}) {
     if (leader) primary = { label: 'Přidej setkání', icon: 'calendar-plus', onclick: () => openAddEvent() };
   }
 
-  // the one head of the four tabs (layout.js screen({ tab })): „Kalendář“ is the h1, the period sits in the bar
+  // the tab head (layout.js screen({ tab })): „Kalendář“ is the h1 (visually hidden on a phone, where the period is the bar)
+  const more = menu(menuItems, { label: 'Další možnosti kalendáře' });
   const nodes = screen({
     tab: {
       title: 'Kalendář',
-      actions: [!isDesktop() && toToday ? button('Dnes', { variant: 'quiet', size: 's', onclick: toToday }) : null, menu(menuItems, { label: 'Další možnosti kalendáře' })],
+      actions: [more],
+      bar: desk ? null : {
+        center: periodBox({ month, onMonth: go }),
+        // „Dnes“ always sits in the bar (the mockup); with today already shown it brings the list back to the top
+        actions: [button('Dnes', { variant: 'quiet', size: 's', onclick: toToday || (() => window.scrollTo({ top: 0, behavior: 'smooth' })), cls: 'cal-today' }), more],
+      },
     },
     body: paneLinks(h('div', { class: ['cal', `cal--${view}`] }, content)),
     primary,
