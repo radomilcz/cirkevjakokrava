@@ -30,7 +30,9 @@ import { blockoutSection } from './blockouts.js';
 import { viewAsSheet } from './account.js';
 import { waitingInvites } from './access.js';
 
-const ANSWERS_SHOWN = 1;      // Odpověz: one card, under it the next one and „Další 2 ›“ (the approved mockup)
+// Odpověz: on a phone one card, under it the next one and „Další 2 ›“ (the approved mockup); on a desktop
+// three cards – the column has the room
+const answersShown = () => (isSplit() ? 3 : 1);
 const ANSWER_CARDS = 3;       // opened: the first three as cards, the rest as short rows
 const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four events, then „Celý rozpis“
 const MINE_SHOWN = 5;         // Tvoje služby: five rows, then „Ukaž další 3“
@@ -90,7 +92,7 @@ function answerBlock(me) {
     .filter(({ assignment }) => assignment.status === 'proposed' || (answered.has(assignment.id) && Date.now() - answered.get(assignment.id) < DONE_MS + FOLD_MS + 200));
   const waitingCount = all.filter(({ assignment }) => assignment.status === 'proposed').length;
   if (!all.length) return null;
-  const shown = open.answers ? all : all.slice(0, ANSWERS_SHOWN);
+  const shown = open.answers ? all : all.slice(0, answersShown());
   const rest = all.length - shown.length;
   const items = shown.map(({ event, assignment }, i) => {
     const role = roleName(assignment.roleId);
@@ -121,7 +123,7 @@ function answerBlock(me) {
     more: rest ? {
       text: `${roleName(next.assignment.roleId)}${SEP}${shortDate(next.event.start)}`,
       link: `Další ${rest}`,
-      onclick: () => { open.answers = true; rerender(el, () => answerBlock(me), `.feature__item:nth-of-type(${ANSWERS_SHOWN + 1}) .btn`); },
+      onclick: () => { open.answers = true; rerender(el, () => answerBlock(me), `.feature__item:nth-of-type(${answersShown() + 1}) .btn`); },
     } : null,
   });
   el.classList.add('home-answer');
@@ -269,6 +271,7 @@ function needBlock() {
   const hidden = items.length - NEEDS_SHOWN;
   return section({
     title: 'Co je potřeba',
+    count: items.length || null,
     action: scopeChip,
     cls: 'home-need',
     body: [

@@ -55,6 +55,7 @@
   --gutter: 20px;                              /* phone side margin */
   --section-gap: 36px;                         /* between sections of a screen */
   --measure: 680px;                            /* the widest a list or text column gets */
+  --page-max: 1600px;                          /* desktop: the widest a wide screen gets (data views excepted) */
 
   /* ---- shape grammar: what a thing IS decides its corners ----
      act (buttons, fields, segmented)  → soft rectangle

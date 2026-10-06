@@ -103,7 +103,11 @@
   .cal-toolbar > .cal-views { flex: 0 1 340px; min-width: 260px; }
   /* inside a split (the 400 px list, the main column next to a pane) the phone's two rows */
   :is(.split__list, .cal-split__main) > .cal-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
-  :is(.split__list, .cal-split__main) > .cal-toolbar > .cal-views { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+  :is(.split__list, .cal-split__main) > .cal-toolbar > .cal-views { grid-column: 1 / -1; grid-row: 2; min-width: 0; width: 100%; max-width: 360px; }   /* never a 1000 px switch */
+}
+@media (min-width: 1600px) {     /* a wide main column next to the event: one row again (period · switch · Filtr) */
+  .cal-split__main > .cal-toolbar { display: flex; }
+  .cal-split__main > .cal-toolbar > .cal-views { flex: 0 1 340px; min-width: 260px; }
 }
 
 /* ---------- Rozpis ---------- */
@@ -168,6 +172,10 @@
 .roster-wrap { position: relative; max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 0; padding: 0; scrollbar-width: thin; overscroll-behavior-x: contain; }
 .roster-wrap:focus-visible { outline-offset: -2px; }
 .roster { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: var(--type-meta); line-height: var(--lh-meta); }
+@media (min-width: 960px) {      /* the table is as wide as its columns, not the monitor: a role column fits a name and its status */
+  .roster { min-width: 0; }
+  .roster__role { min-width: 200px; }
+}
 .roster th, .roster td { padding: 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--hairline); }
 .roster tbody tr + tr > * { border-top: 0; }
 .roster thead th { position: relative; z-index: 2; transform: translateY(var(--head-y, 0px)); background: var(--ground); }

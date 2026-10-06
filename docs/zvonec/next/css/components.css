@@ -573,7 +573,10 @@ a.event:hover { background: var(--wash); }
   .screen > .screen-head:first-child { padding-top: var(--space-7); }
   .chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 2px 0; }
   .topbar > .seg { max-width: 360px; margin-left: 0; }
-  .screen--wide { max-width: none; }   /* split views and tables use the whole monitor */
+  /* one page width for every wide screen, so titles and their buttons sit in the same place everywhere;
+     the data views (Kalendář, the people table) take the whole monitor */
+  .screen--wide { max-width: calc(var(--page-max) + var(--space-8) + var(--space-7)); }
+  .screen--wide:is(.cal-screen, .people-screen--table) { max-width: none; }
   .fab { position: fixed; top: 6px; bottom: auto; right: var(--gutter); min-height: var(--control-m); box-shadow: none; }
   body:has(.fab) .topbar { padding-right: calc(var(--gutter) + 220px); }
   .dock { position: static; padding: 0; background: none; }

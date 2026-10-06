@@ -72,9 +72,10 @@ body:has(.fab) .screen { padding-bottom: calc(var(--tabbar-h) + env(safe-area-in
 .rail__label { flex: 1; min-width: 0; }
 .rail__item .tab__badge { margin-left: auto; display: inline-flex; }
 .rail__item .badge { box-shadow: none; }
-.rail__sub { display: grid; gap: 2px; margin: 2px 0 0 calc(var(--icon-m) + var(--space-3)); }   /* sub-items align with the labels above */
-.rail__item--sub { min-height: 40px; font-size: var(--type-meta); }
-.rail__item--sub[aria-current="page"]::before { left: calc(-12px - var(--icon-m) - var(--space-3)); }
+/* ≥ 1200: the Více pages are the rail's own groups under a quiet title; there is no Více item */
+.rail__group { display: grid; gap: 2px; margin-top: var(--space-5); }
+.rail__group-title { margin: 0; padding: 0 var(--space-3) var(--space-1); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
+@media (min-width: 1200px) { .rail__item[data-nav="vice"] { display: none; } }
 .rail__bottom { margin-top: auto; padding-top: var(--space-5); display: flex; align-items: center; gap: var(--space-1); }
 .rail__bottom > .rail__foot { flex: 1; min-width: 0; margin-top: 0; padding: var(--space-2) var(--space-3); }
 .rail__foot[aria-current="page"] { background: var(--ground); }
@@ -83,8 +84,6 @@ body:has(.fab) .screen { padding-bottom: calc(var(--tabbar-h) + env(safe-area-in
   font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink);
   overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere;
 }
-/* the waiting invites are counted once: on Přístupy when the Více pages are listed, else on Více */
-@media (min-width: 1200px) { .rail:has(.rail__sub) .rail__item:not(.rail__item--sub) > [data-badge="vice"] { display: none; } }
 
 /* 960–1199: a narrow rail – icons with their label under them (the tab bar's look), the Více pages live in Více */
 @media (min-width: 960px) and (max-width: 1199.98px) {
@@ -96,7 +95,7 @@ body:has(.fab) .screen { padding-bottom: calc(var(--tabbar-h) + env(safe-area-in
   .rail__item > .rail__label { flex: none; font-size: var(--type-caption); line-height: var(--lh-caption); }
   .rail__item[aria-current="page"]::before { left: -8px; }
   .rail__item .tab__badge { position: absolute; top: 4px; left: calc(50% + 6px); margin: 0; }
-  .rail__sub { display: none; }
+  .rail__group { display: none; }
   .rail__bottom { flex-direction: column; gap: var(--space-2); }
   .rail__bottom > .rail__foot { flex: none; justify-content: center; padding: var(--space-2) 0; }
   .rail__person { display: none; }
@@ -389,6 +388,7 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .detail { position: relative; display: grid; gap: var(--space-5); }
 .detail__close { position: absolute; top: var(--space-3); right: var(--space-3); }
 .detail__head { display: flex; align-items: center; gap: var(--space-4); padding-right: var(--space-7); }
+.detail:not(:has(> .detail__close)) > .detail__head { padding-right: 0; }   /* no ✕ to make room for: Uprav ends at the edge */
 .detail__head .meta { margin-top: 2px; }
 .detail .section { margin-top: 0; }
 @media (min-width: 1200px) {
