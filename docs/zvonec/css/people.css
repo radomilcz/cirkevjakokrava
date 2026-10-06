@@ -1,157 +1,298 @@
-/* people module – owned by the people team. Uses tokens and components from ../style.css.
-   Screens: #lide, #osoba/<id>, #domacnosti, #domacnost/<id>, #tymy, #tym/<id>, the picker dialog. */
+/* ============================================================
+   Lidé – #lide/<pohled>/<filtr>, #osoba/<id>, #domacnost/<id> and the people dialogs
+   (ui/people*.js). Semantic tokens only (css/tokens.css), so it works in every look and theme;
+   categorical colour only through the kit's .c-<hue> variables.
+   The last block hosts older rules of other modules that used to live here (groups, picker).
+   ============================================================ */
 
-/* ---------- #lide: one calm toolbar (search + quiet filter pills), list, a quiet foot line ---------- */
-.people-toolbar{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s3);
-  max-width:var(--w-list);margin:0 0 var(--s4);
-}
-.people-search{flex:1 1 12em;max-width:18em;min-width:0}
-.people-search input{width:100%}
-.people-toolbar .filter{flex:0 1 auto;margin:0}
-@media (max-width:620px){
-  .people-search{max-width:none;flex-basis:100%}
-  .people-toolbar .filter{gap:5px}
-  .people-toolbar .filter a{height:var(--pill-s);padding-inline:.8em;font-size:13px}
-}
-
-/* birthdays: a small quiet line, names are links */
-.birthdays{display:block;max-width:var(--w-list);margin:0 0 var(--s4);font-size:var(--t4);line-height:1.6;color:var(--muted)}
-.birthdays-label{color:var(--ink)}
-.birthdays a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
-.birthdays a:hover{border-bottom-color:currentColor}
-.birthdays a.past{color:var(--muted)}
-.birthdays a.today::before{content:"";display:inline-block;width:.5em;height:.5em;margin-right:.35em;border-radius:50%;background:currentColor;vertical-align:.08em}
-
-/* a quiet line under a list: count, „Zkopírovat e-maily“, „A ještě 3 další.“ */
-.list-foot{display:flex;flex-wrap:wrap;align-items:baseline;max-width:var(--w-list);margin:var(--s3) 0 0;padding:0 var(--s3);font-size:var(--t4);color:var(--muted)}
-.list-foot .text-btn{color:var(--ink)}
-.list-empty{max-width:var(--w-list);margin:0;padding:var(--s4) var(--s3);border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted)}
-
-/* teams in the trail of a person row: two names and +N (one name and +N on a phone) */
-.team-trail{display:inline-flex;align-items:baseline;flex-wrap:nowrap;gap:0;max-width:24em;overflow:hidden}
-.team-trail .sep{white-space:pre}
-.team-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.team-second{display:inline-flex;min-width:0}
-.team-more{flex:none;align-self:center;display:inline-flex;align-items:center;height:22px;margin-left:.5em;padding:var(--optical) .55em 0;border-radius:999px;background:rgba(var(--ink-rgb),.1);color:var(--ink);font-size:12px;line-height:1}
-.team-more.narrow-only{display:none}
-@media (max-width:520px){
-  .team-trail{max-width:9.5em}
-  .team-second,.team-more.wide-only{display:none}
-  .team-more.narrow-only{display:inline-flex}
+/* ---------- the registry page: toolbar ---------- */
+.people-page .page-toolbar .toolbar{align-items:center;gap:var(--space-3) var(--space-4)}
+.people-search{flex:0 1 300px;min-width:220px}
+.people-filters{min-width:0;flex:1 1 auto}
+.people-page .datenav{margin-left:calc(-1*var(--space-2))}
+@media (max-width:719.98px){
+  .people-page .page-toolbar .toolbar{flex-direction:column;flex-wrap:nowrap;align-items:stretch}
+  .people-search{flex:none;min-width:0;width:100%}
+  .people-page .page-toolbar .toolbar-spacer{display:none}
+  /* one row of chips that scrolls sideways, bleeding to the edges of the page */
+  .people-filters{margin-inline:calc(-1*var(--page-pad-x));padding:2px var(--page-pad-x);overflow-x:auto;scrollbar-width:none}
+  .people-filters::-webkit-scrollbar{display:none}
+  .people-filters .chips,.people-page .page-toolbar>.toolbar>.chips{flex-wrap:nowrap}
+  .people-page .page-toolbar>.toolbar>.chips{overflow-x:auto;scrollbar-width:none;margin-inline:calc(-1*var(--page-pad-x));padding:2px var(--page-pad-x)}
 }
 
-/* ---------- person card ---------- */
-.person-notice{max-width:var(--w-list);margin:calc(-1*var(--s3)) 0 var(--s6)}
+/* a quiet line under a list: count + quiet actions */
+.people-foot{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) var(--space-2);margin:var(--space-3) 0 0;padding:0 var(--space-2);font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
+.people-foot>span:first-child{padding-top:2px;margin-right:var(--space-2)}
+.people-body>.people-foot{margin-top:var(--space-3)}
 
-/* two columns from 980px: teams, duties and warnings in the wide one; contact, household,
-   availability, limits, personal data and login in the narrow one. On a phone the reading order is
-   contact → household → teams → duties → warnings → availability → limits → the rest. */
-.person-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(32px,4vw,48px)}
-.person-grid>div>.section:first-child{margin-top:0}
-.person-grid>div:empty{display:none}
-@media (min-width:980px){
-  .person-grid{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:clamp(40px,5vw,64px);row-gap:clamp(32px,4vw,48px);align-items:start}
-  .person-main{grid-column:1;grid-row:1/span 2}
-  .person-a{grid-column:2;grid-row:1}
-  .person-b{grid-column:2;grid-row:2}
-  .person-grid.reduced{grid-template-rows:auto}
-  .person-grid.reduced .person-main{grid-row:1}
-}
-.person-grid .facts{row-gap:var(--s2);grid-template-columns:minmax(0,9.5em) minmax(0,1fr)}
-@media (max-width:420px){.person-grid .facts{grid-template-columns:minmax(0,1fr)}}
-.person-grid .section .note{margin:0}
-.household-line{margin:0 0 var(--s3)}
-.household-name{color:var(--ink)}
-.paused-line{margin:0 0 var(--s3)}
-
-/* ---------- reasons with markers (picker, limits): filled dot = won't work, ring = careful ---------- */
-.reason{display:inline}
-.reason-error::before,.reason-warning::before{content:"";display:inline-block;width:.5em;height:.5em;margin-right:.4em;border-radius:50%;vertical-align:.04em}
-.reason-error::before{background:var(--ink)}
-.reason-warning::before{box-shadow:inset 0 0 0 1.5px var(--ink)}
-.reason-error,.reason-warning{color:var(--ink)}
-
-/* team header: description, then kind and who leads in a smaller line */
-.lead .lead-text{display:block}
-.lead .lead-meta{display:block;font-size:var(--t4)}
-.lead .lead-text+.lead-meta{margin-top:var(--s1)}
-
-/* skill marks of a member: text chips, not buttons (no outline) */
-.skills-trail{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--s1);white-space:normal;max-width:24em}
-.skill{display:inline-flex;align-items:center;height:26px;padding:var(--optical) .7em 0;border-radius:999px;font-size:.8125rem;line-height:1;white-space:nowrap;background:rgba(var(--ink-rgb),.1);color:var(--ink)}
-.skill-learning{background:none;box-shadow:inset 0 0 0 1px var(--outline);color:var(--ink)}
-.role-count{color:var(--muted)}
-.role-count.none{color:var(--ink)}
-/* on a phone the trail goes under the text: skill marks of members, the status of a duty */
-@media (max-width:520px){
-  :is(.member-rows,.duty-rows) .item{flex-wrap:wrap;row-gap:var(--s1)}
-  :is(.member-rows,.duty-rows) .item-body{flex:1 1 0}
-  :is(.member-rows,.duty-rows) .item-chevron{order:2}
-  :is(.member-rows,.duty-rows) .item-trail{order:3;flex:1 0 100%;max-width:none;justify-content:flex-start;padding-left:calc(36px + var(--s3))}
-  .duty-rows .item-trail{padding-left:calc(3rem + var(--s3))}
-  .member-rows .skills-trail{justify-content:flex-start;max-width:none}
+/* ---------- Seznam ---------- */
+.people-list{max-width:none}
+.people-list .list-group{min-height:34px;padding-top:var(--space-3);padding-bottom:var(--space-1)}
+.people-list>li.list-group:not(:first-child){border-top:1px solid var(--line-1)}
+.meta-missing{color:var(--warning-text)}
+/* contact and teams in the trail: two aligned columns on a wide screen */
+.people-list .item-body{flex:1 1 16em}
+.row-contact{display:flex;flex-direction:column;gap:2px;width:clamp(12em,22vw,17em);font-size:var(--font-size-3);line-height:18px;color:var(--text-2)}
+.row-contact-item{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.row-contact-item .icon{flex:none;width:13px;height:13px;margin-top:-2px;opacity:.8}
+.row-contact-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-teams{display:flex;justify-content:flex-start;width:clamp(10em,20vw,17em)}
+@media (max-width:1199.98px){.row-contact{display:none}}
+@media (min-width:1200px){.people-list .meta-phone{display:none}}
+@media (max-width:899.98px){.row-teams{width:auto;justify-content:flex-end}}
+/* teams in the trail of a row: mark + name for two, +N; marks only on a phone */
+.team-tags{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0}
+.team-tag{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:14em;font-size:var(--font-size-3);line-height:1;color:var(--text-2)}
+.team-tag .group-mark{width:20px;height:20px;font-size:9px;border-radius:var(--radius-1);padding-top:var(--optical-n)}
+.team-tag-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-top:var(--optical)}
+.team-more{display:inline-flex;align-items:center;height:20px;padding:var(--optical) 7px 0;border-radius:var(--radius-full);background:var(--count-bg);color:var(--text-1);font-size:var(--font-size-1);line-height:1;font-variant-numeric:tabular-nums}
+@media (max-width:899.98px){
+  .team-tag-name{display:none}
+  .team-tags{gap:4px}
 }
 
-/* member dialog: one row per role with a segment, then „Vede tým“ */
-.member-form{display:flex;flex-direction:column;gap:var(--s4)}
-.member-form .note{margin:0}
+/* ---------- Tabulka ---------- */
+.people-tabulka{container-type:inline-size}
+.people-table .table tbody :is(td,th){height:48px;padding-inline:10px}
+.people-table .table thead th:not([aria-sort]){padding-inline:10px}
+.people-table .table thead th[aria-sort]{padding-inline:2px}
+.people-table .th-sort{padding-inline:8px}
+.name-cell{display:inline-flex;align-items:center;gap:8px;max-width:100%}
+.name-missing{display:inline-flex;color:var(--waiting-fg)}
+.name-missing .severity-icon{width:14px;height:14px}
+@container (max-width:1180px){.people-table .col-household{display:none}}
+@container (max-width:1000px){.people-table .col-last{display:none}}
+@container (max-width:860px){.people-table .col-groups{display:none}}
+@container (max-width:760px){.people-table .col-birthday{display:none}}
+.people-table .col-name{min-width:10em}
+.people-table .col-name .person-line-name{max-width:11em}
+.people-table .person-line.quiet .person-line-name{color:var(--text-2)}
+.people-table td.col-email{max-width:10.5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.people-table td.col-household,.people-table td.col-groups{max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cell-link{color:var(--text-1);text-decoration:none}
+.cell-link:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+.cell-sub{color:var(--text-2)}
+.cell-groups{display:inline-flex;align-items:center;gap:6px;max-width:100%}
+.cell-more{display:inline-flex;align-items:center;height:18px;padding:var(--optical) 6px 0;border-radius:var(--radius-full);background:var(--count-bg);font-size:var(--font-size-1);line-height:1;color:var(--text-1)}
+.cell-birthday.soon{color:var(--text-accent)}
+.people-table tr.row-quiet :is(td,th){color:var(--text-2)}
+.people-table .bulk-bar .btn-surface{background:var(--surface-panel)}
+
+/* ---------- Domácnosti, Podle skupin, Narozeniny: cards in balanced columns ---------- */
+.masonry{columns:3 300px;column-gap:var(--space-4)}
+.masonry>*{break-inside:avoid;margin:0 0 var(--space-4)}
+.masonry.months{columns:3 280px}
+.household-card,.group-card{padding:var(--space-4) 18px var(--space-3)}
+.household-head{display:flex;align-items:center;gap:var(--space-3);min-width:0}
+.household-head .avatar-stack{flex:none}
+.household-icon{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:var(--radius-full);background:var(--hover);color:var(--text-2)}
+.household-icon .icon{width:18px;height:18px}
+.group-section+.group-section{margin-top:var(--space-5)}
+.group-section-label{display:block;margin:0 0 var(--space-3) 2px}
+.group-card .household-icon{border-radius:var(--radius-4)}
+.household-title{min-width:0;flex:1 1 auto}
+.household-name{margin:0;font-family:var(--font-body);font-weight:400;font-size:var(--font-size-5);line-height:24px;color:var(--text-1);overflow-wrap:anywhere}
+.household-name a{color:inherit;text-decoration:none}
+.household-name a:hover{text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1px}
+.household-meta{margin:2px 0 0;font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
+.household-address{display:flex;align-items:flex-start;gap:6px;margin:var(--space-3) 0 0;font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
+.household-address .icon{flex:none;width:16px;height:16px;margin-top:2px}
+.household-card .household-address{padding:6px 10px;border-radius:var(--radius-3);background:var(--surface-sunken)}
+.mini-rows{list-style:none;margin:var(--space-3) 0 0;padding:var(--space-2) 0 0;border-top:1px solid var(--line-1);display:flex;flex-direction:column}
+.mini-row{display:flex;align-items:center;gap:10px;min-height:40px;padding:3px 0}
+.mini-text{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
+.mini-name{font-size:var(--font-size-4);line-height:20px;color:var(--text-1);text-decoration:none;overflow-wrap:anywhere}
+a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1px}
+.mini-meta{font-size:var(--font-size-3);line-height:18px;color:var(--text-2)}
+.mini-row>.badge{flex:none}
+.mini-empty{margin:var(--space-3) 0 0;font-size:var(--font-size-3);color:var(--text-2)}
+.household-alone .mini-rows,.group-none .mini-rows{column-gap:var(--space-4)}
+
+/* ---------- Narozeniny ---------- */
+.birthday-soon{margin:0 0 var(--space-5)}
+.birthday-soon>.label{display:block;margin:0 0 var(--space-2)}
+.birthday-soon-list{display:flex;flex-wrap:wrap;gap:var(--space-3)}
+.birthday-tile{display:flex;align-items:center;gap:var(--space-3);flex:0 1 260px;min-width:220px;padding:var(--space-3) var(--space-5) var(--space-3) var(--space-3);color:var(--text-1)}
+@media (max-width:719.98px){.birthday-tile{flex:1 1 100%}}
+.birthday-tile.is-today{background:var(--selected-bg);box-shadow:inset 0 0 0 1px var(--selected-line),var(--shadow-card)}
+.birthday-tile-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.birthday-tile-name{font-size:var(--font-size-4);line-height:20px}
+.birthday-tile-meta{display:inline-flex;align-items:center;gap:6px;font-size:var(--font-size-3);line-height:18px;color:var(--text-2)}
+.birthday-tile.is-today .birthday-tile-meta{color:var(--selected-fg)}
+.birthday-tile-meta .icon{width:14px;height:14px;margin-top:-2px}
+.month-card{padding:var(--space-3) var(--space-3) var(--space-2)}
+.bday-month-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:2px 6px var(--space-2)}
+.bday-month-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;letter-spacing:var(--tracking-mark);font-size:var(--font-size-5);line-height:22px;padding-top:2px}
+.birthday-rows{list-style:none;margin:0;padding:0}
+.birthday-row{display:grid;grid-template-columns:34px 24px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:40px;padding:4px 6px;border-radius:var(--radius-3)}
+.birthday-row+.birthday-row{box-shadow:0 -1px 0 var(--line-1)}
+.birthday-date{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--font-mark);font-weight:900;line-height:1;padding-top:var(--optical-n)}
+.birthday-day{font-size:var(--font-size-5)}
+.birthday-dow{font-size:10px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-2)}
+.birthday-name{font-size:var(--font-size-4);line-height:20px;color:var(--text-1);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.birthday-name:hover{text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1px}
+.birthday-age{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--font-size-3);color:var(--text-2);font-variant-numeric:tabular-nums}
+.birthday-row.is-week .birthday-name,.birthday-row.is-week .birthday-day{color:var(--text-accent)}
+.birthday-row.is-today{background:var(--selected-bg);box-shadow:none}
+.birthday-row.is-today+.birthday-row{box-shadow:none}
+.birthday-row.is-today :is(.birthday-name,.birthday-day,.birthday-age){color:var(--selected-fg)}
+.birthday-row.is-past :is(.birthday-name,.birthday-day){color:var(--text-2)}
+.birthday-row.is-past .avatar{opacity:.6}
+
+/* ---------- Břemeno ---------- */
+.load-list{max-width:none}
+.load-meter{display:inline-flex;align-items:center;gap:var(--space-3);width:clamp(200px,28vw,380px)}
+.load-track{flex:1 1 auto;display:flex;min-width:0}
+.load-track .progress{height:8px;min-width:0}
+.load-neutral .progress-fill{background:var(--text-2)}
+.load-text{display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;min-width:4.6em;font-size:var(--font-size-3);font-variant-numeric:tabular-nums;color:var(--text-1);padding-top:2px}
+.load-text .severity-icon{width:14px;height:14px;margin-top:-2px}
+.load-danger .load-text{color:var(--declined-fg)}
+.load-sundays{display:inline-flex;align-items:center;gap:4px}
+.load-sundays.over{color:var(--warning-text)}
+.load-sundays .severity-icon{width:14px;height:14px;color:var(--waiting-fg);margin-top:-2px}
+.load-custom{display:inline-flex;align-items:center;gap:4px}
+.load-custom .icon{width:14px;height:14px;margin-top:-2px}
+@media (max-width:719.98px){
+  .load-list .item{flex-wrap:wrap;row-gap:var(--space-2)}
+  .load-list .item-body{flex:1 1 0}
+  .load-list .item-chevron{order:2}
+  .load-list .item-trail{order:3;flex:1 0 100%;max-width:none;justify-content:flex-start;padding-left:calc(40px + var(--space-3))}
+  .load-meter{width:auto;flex:1 1 auto}
+}
+
+/* ============================================================
+   Karta člověka
+   ============================================================ */
+.person-page .page-body{container-type:inline-size}
+.person-page .page-head-media .avatar-l{font-size:24px}
+.person-page .page-meta a{color:inherit;text-underline-offset:.2em;text-decoration-thickness:1px}
+.membership-mark{display:inline-flex;align-items:center;gap:6px;color:var(--text-1)}
+.membership-mark::before{content:"";width:8px;height:8px;border-radius:var(--radius-full);background:var(--text-2)}
+.membership-member::before{background:var(--confirmed-solid)}
+.membership-regular::before{background:var(--info-solid)}
+.membership-guest::before{background:var(--waiting-solid)}
+.membership-former::before{background:none;box-shadow:inset 0 0 0 1.5px var(--text-2)}
+.self-mark{color:var(--text-accent)}
+.callout-buttons{display:inline-flex;flex-wrap:wrap;gap:var(--space-2)}
+
+.person-columns{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-5)}
+.person-col{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.person-col-label{margin:0 0 calc(-1*var(--space-1)) 2px}
+.service-first .col-service{order:-1}
+@container (min-width:780px){
+  .person-columns{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:var(--space-5)}
+  .service-first .col-service{order:0}
+  .person-page.reduced .person-columns{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+.person-card{min-width:0}
+.person-card .card-head{min-height:48px}
+.card-quiet{margin:0;font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
+.card-pad{padding:0 18px 16px}
+.card-foot-text{font-size:var(--font-size-3);color:var(--text-2)}
+
+/* Kontakt */
+.contact-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.contact-line{display:flex;align-items:center;gap:10px;min-height:28px;font-size:var(--font-size-4)}
+.contact-line>.icon{flex:none;width:16px;height:16px;color:var(--text-2);margin-top:calc(-1*var(--optical))}
+.contact-value{min-width:0;overflow-wrap:anywhere}
+.contact-value a{color:var(--text-1);text-decoration:none}
+.contact-value a:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+.contact-who{color:var(--text-2);font-size:var(--font-size-3)}
+.contact-visibility{display:flex;align-items:center;gap:8px;margin:var(--space-3) 0 0;padding-top:var(--space-3);border-top:1px solid var(--line-1);font-size:var(--font-size-3);color:var(--text-2)}
+.contact-visibility .icon{width:16px;height:16px;margin-top:-2px}
+
+/* Domácnost */
+.household-line{margin:0;font-size:var(--font-size-4)}
+.household-link{color:var(--text-1);text-decoration:none}
+a.household-link:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+.household-card-mini .household-address{margin-top:4px}
+.map-link{color:var(--text-accent);text-underline-offset:.2em;text-decoration-thickness:1px;white-space:nowrap}
+.household-card-mini .mini-rows{margin-top:var(--space-3)}
+.household-card-mini .card-quiet{margin-top:var(--space-2)}
+
+/* facts in a card */
+.person-facts{grid-template-columns:minmax(7.5em,max-content) minmax(0,1fr);gap:10px 14px}
+.person-facts dd{margin-bottom:0}
+.fact-missing{display:inline-flex;align-items:flex-start;gap:6px;color:var(--warning-text)}
+.fact-missing .severity-icon{flex:none;width:14px;height:14px;color:var(--waiting-fg);margin-top:3px}
+.fact-note{white-space:pre-line}
+.fact-custom{display:inline-flex;align-items:center;gap:6px}
+.fact-custom .icon{width:14px;height:14px;color:var(--text-accent);margin-top:-2px}
+.login-line{display:flex;align-items:center;gap:10px;margin:0;font-size:var(--font-size-3);color:var(--text-2)}
+.login-line .icon{flex:none;width:16px;height:16px;margin-top:-2px}
+.login-line.can{color:var(--text-1)}
+.login-line.can .icon{color:var(--confirmed-solid)}
+
+/* Týmy a skupinky */
+.group-rows .item{min-height:56px}
+.group-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:2px}
+.group-meta .badge{height:22px}
+.group-kind{font-size:var(--font-size-3);color:var(--text-2);margin-right:2px}
+.skill-pills{display:contents}
+.skill-pill{display:inline-flex;align-items:center;gap:5px;height:22px;padding:var(--optical) 9px 0 7px;border-radius:var(--radius-full);font-size:var(--font-size-2);line-height:1;white-space:nowrap;background:var(--hover);color:var(--text-1)}
+.skill-pill .icon{width:12px;height:12px;stroke-width:2.5;margin-top:calc(-1*var(--optical))}
+.skill-trained{background:var(--confirmed-bg);color:var(--confirmed-fg)}
+.skill-learning{color:var(--text-2)}
+.skill-learning-mark{width:9px;height:9px;flex:none;border-radius:var(--radius-full);box-shadow:inset 0 0 0 1.5px currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%);margin-top:calc(-1*var(--optical))}
+
+/* Nejbližší služby */
+.duty-row .item-meta{display:flex;flex-direction:column;gap:2px}
+.duty-warning{display:inline-flex;align-items:center;gap:5px}
+.duty-warning .severity-icon{width:13px;height:13px;flex:none;align-self:center;margin-top:-2px}
+.duty-warning.sev-error{color:var(--declined-fg)}
+.duty-warning.sev-warning{color:var(--warning-text)}
+.duty-warning.sev-warning .severity-icon{color:var(--waiting-fg)}
+
+/* Kdy nemůže */
+.range-mark{display:grid;place-items:center;width:32px;height:32px;border-radius:var(--radius-3);background:var(--hover);color:var(--text-2)}
+.range-mark .icon{width:16px;height:16px}
+
+/* Upozornění */
+.warnings-card .card-title{display:inline-flex;align-items:center;gap:8px}
+.warnings-card .card-title .count{font-family:var(--font-body);font-weight:400;letter-spacing:0}
+.sev-lead{display:grid;place-items:center;width:24px;height:24px}
+.sev-lead .severity-icon{width:16px;height:16px}
+.sev-lead.sev-error{color:var(--declined-fg)}
+.sev-lead.sev-warning{color:var(--waiting-fg)}
+.sev-lead.sev-info{color:var(--info-fg)}
+.warning-rows .item-title{font-size:var(--font-size-3);line-height:20px}
+
+/* Břemeno */
+.load-big{display:flex;flex-direction:column;gap:10px;margin:0 0 var(--space-4)}
+.load-figure{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 6px;margin:0;font-size:var(--font-size-4);color:var(--text-2)}
+.load-figure strong{font-family:var(--font-mark);font-weight:900;font-size:var(--font-size-7);line-height:1;color:var(--text-1);letter-spacing:var(--tracking-mark)}
+.load-figure .badge{align-self:center;margin-left:4px}
+.load-big .progress{height:8px}
+.load-big.load-danger .load-figure strong{color:var(--declined-fg)}
+.load-card .callout{margin:0 0 var(--space-3)}
+
+/* ---------- #domacnost/<id> ---------- */
+.household-media{display:grid;place-items:center;width:64px;height:64px;border-radius:var(--radius-card);background:var(--hover);color:var(--text-2)}
+.household-media .icon{width:28px;height:28px}
+.household-page .page-meta a{color:var(--text-accent);text-underline-offset:.2em;text-decoration-thickness:1px}
+
+/* ---------- dialogs ---------- */
+.people-dupe .callout a{color:inherit}
+.field-note{margin:0;font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
+.contact-section.is-kid .form-grid{grid-template-columns:minmax(0,1fr)}
+.combo-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:var(--radius-full);background:var(--hover);color:var(--text-2)}
+.combo-icon .icon{width:16px;height:16px}
+.combo-icon-new{background:var(--selected-bg);color:var(--selected-fg)}
+.combo-create .combo-option-name{color:var(--selected-fg)}
+.household-combo .avatar-stack{flex:none;min-width:32px}
+.people-copy-area{width:100%}
+/* the skills of a member: one row per role with a segmented ne · učí se · umí */
 .skill-rows{display:flex;flex-direction:column}
-.skill-rows[hidden]{display:none}
-.skill-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4);padding:var(--s2) 0;border-top:1px solid var(--line)}
-.skill-row:last-child{border-bottom:1px solid var(--line)}
-.skill-role{min-width:0;overflow-wrap:anywhere}
-.skill-row .segment label:first-child input:checked+span{background:var(--hover);color:var(--ink)}   /* „ne“ stays quiet */
-.member-card-link{margin:0;font-size:var(--t4)}
-.member-card-link a{text-underline-offset:.2em}
-.kind-hint{margin-top:var(--s1)}
-.partner-team{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s2)}
-.partner-team .label{margin-top:var(--s2)}
+.skill-rows>.field-label{margin-bottom:6px}
+.skill-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2) var(--space-4);padding:var(--space-2) 0;border-top:1px solid var(--line-1)}
+.skill-row:last-child{border-bottom:1px solid var(--line-1)}
+.skill-role{min-width:0;overflow-wrap:anywhere;font-size:var(--font-size-4)}
 
-/* ---------- households ---------- */
-.avatar-stack{display:inline-flex;align-items:center;width:72px;flex:none}
-.stack-slot{display:inline-flex;border-radius:50%;background:var(--ground);box-shadow:0 0 0 2px var(--ground)}
-.stack-slot+.stack-slot{margin-left:-6px}
-.avatar-stack.empty .avatar{border:1.5px dashed var(--outline);box-shadow:none}
-@media (max-width:520px){.household-list .item-trail{display:none}}
-
-/* ---------- picker ---------- */
-.picker .picker-scope .filter{margin:0 0 var(--s3)}
-.picker-search{margin:0 0 var(--s3)}
-.picker-search input{width:100%}
-.pick-list{
-  list-style:none;margin:0;padding:0;max-height:min(52vh,460px);overflow:auto;overscroll-behavior:contain;
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-}
-.pick-list>li+li{border-top:1px solid var(--line)}
-.pick{
-  display:flex;align-items:center;gap:var(--s3);width:100%;min-height:56px;padding:var(--s2) var(--s2);
-  text-align:left;background:none;border:0;border-radius:10px;color:inherit;font:inherit;cursor:pointer;transition:background .12s;
-}
-.pick.active{background:var(--fill)}
-.pick:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
-.pick-body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
-.pick-name{font-size:var(--t3);line-height:1.3;overflow-wrap:anywhere}
-.pick-meta{font-size:var(--t4);line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
-.pick-trail{flex:none;font-size:var(--t4);color:var(--muted);white-space:nowrap}
-.pick.hard .pick-name{color:var(--muted)}
-.pick.hard>.avatar{opacity:.55}
-/* multiple choice: a round check on the right */
-.pick-check{flex:none;position:relative;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--outline)}
-.pick.on{background:var(--fill)}
-.pick.on .pick-check{background:var(--ink);box-shadow:none}
-.pick.on .pick-check::after{
-  content:"";position:absolute;left:8px;top:4px;width:5px;height:10px;
-  border:solid var(--ground);border-width:0 2px 2px 0;transform:rotate(45deg);
-}
-/* „Nový člověk“: a dashed circle with a plus */
-.pick-plus{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1.5px dashed var(--outline)}
-.pick-plus::before,.pick-plus::after{content:"";grid-area:1/1;width:12px;height:1.5px;background:currentColor;border-radius:1px}
-.pick-plus::after{transform:rotate(90deg)}
-.picker-legend{margin:var(--s3) 0 0}
-.picker-legend .reason{color:var(--muted)}
-.picker-empty{margin:0;padding:var(--s4) var(--s2);color:var(--muted);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.picker .quick-add{margin:0;padding:0}
-.picker .similar .note{margin:0 0 var(--s2)}
-.picker .similar-list{max-height:none}
-.picker .similar-list .pick{min-height:44px}
+/* ============================================================
+   Hosted for another module: the skill chips of a team member (ui/groups.js renders .skill.skill-<level>).
+   Move to css/groups.css when the groups module takes it over.
+   ============================================================ */
+.skill{display:inline-flex;align-items:center;height:24px;padding:var(--optical) .7em 0;border-radius:var(--radius-full);font-size:var(--font-size-2);line-height:1;white-space:nowrap;background:var(--confirmed-bg);color:var(--confirmed-fg)}
+.skill-learning.skill{background:var(--hover);color:var(--text-2)}

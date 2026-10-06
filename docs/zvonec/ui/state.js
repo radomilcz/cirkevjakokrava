@@ -37,7 +37,7 @@ export const S = {
 
 // ---------- Czech labels of stored values (shared so every screen says the same) ----------
 
-export const EVENT_KIND_LABELS = { service: 'Setkání na pastvě', rehearsal: 'Zkouška', smallGroup: 'Skupinka', event: 'Akce' };
+export { KIND_LABELS as EVENT_KIND_LABELS } from '../lib/events.js';   // Účel: Nedělní setkání · Zkouška · Skupinka · Akce
 export const ASSIGNMENT_STATUS_LABELS = { proposed: 'čeká na potvrzení', confirmed: 'potvrzeno', declined: 'nemůže' };
 export const SEVERITY_LABELS = { error: 'chyba', warning: 'pozor', info: 'info' };
 export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel sboru', guest: 'host', former: 'už nechodí' };

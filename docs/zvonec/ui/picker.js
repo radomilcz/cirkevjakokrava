@@ -2,11 +2,15 @@
 // With an event and a role it ranks candidates (lib/scheduling) and says why someone would not fit;
 // otherwise it lists the registry. The search always covers the whole registry, and when nobody
 // fits, „Nový člověk“ creates a minimal card (guest, needsReview) and picks it in one step.
-// Every row: avatar, FULL name, one quiet meta line. Keyboard: arrows move, Enter picks.
+// Every row: avatar, FULL name, one quiet meta line. Keyboard: arrows move, Enter picks, Esc closes.
+//
+// It opens in the dialog, or – with `anchor` on a wide screen – as a popover right at the element
+// that asked (the Rozpis cell: planning in place). Also here: anchoredPopover() and popMenu(), the
+// small popovers the calendar uses (kit candidates, see reports/calendar.md).
 
 import {
-  h, btn, nodes, note, avatar, personName, openDialog, closeDialog, dialogElement, filterButtons,
-  textField, checkboxField, formErrorLine, formError, toast,
+  h, nodes, avatar, personName, openDialog, closeDialog, dialogElement, chips, button, searchField, icon,
+  textField, checkboxField, formErrorLine, formError, toast, severityIcon,
 } from './dom.js';
 import { S, can, newId, change, navigate, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
 import { householdById, fullName, displayName, sortPeople, matchesText, statusOf } from '../lib/people.js';
@@ -14,6 +18,95 @@ import { groupById, roleById, memberRecord, addMember, setSkill } from '../lib/g
 import { eventById } from '../lib/events.js';
 import { candidates } from '../lib/scheduling.js';
 import { today, prettyDay } from '../lib/time.js';
+
+// ---------- anchored popover (kit candidate) ----------
+
+let currentPop = null;   // { el, anchor, close }
+
+/** Close the open popover (if any). */
+export function closePopover({ focus = false } = {}) {
+  currentPop?.close({ focus });
+}
+
+/**
+ * A popover next to an element (fixed position; below, or above when there is no room). Closes on
+ * Esc (focus goes back to the anchor), on a click outside, when the window resizes or the page under
+ * it scrolls. One at a time. Returns { el, close, place }.
+ *   anchoredPopover(cell, content, { label: 'Kdo na Zvuk?', cls: 'picker-pop' })
+ */
+export function anchoredPopover(anchor, content, { label, cls, onClose, role = 'dialog', align = 'start' } = {}) {
+  closePopover();
+  const el = h('div', { class: ['popover', 'anchored-pop', cls], role, 'aria-label': label || null, tabindex: -1 }, content);
+  document.body.append(el);
+  const place = () => {
+    const r = anchor.getBoundingClientRect();
+    const width = el.offsetWidth;
+    const margin = 8;
+    const spaceBelow = window.innerHeight - r.bottom - margin * 2;
+    const spaceAbove = r.top - margin * 2;
+    const below = spaceBelow >= Math.min(el.scrollHeight, 320) || spaceBelow >= spaceAbove;
+    el.style.maxHeight = `${Math.max(180, below ? spaceBelow : spaceAbove)}px`;
+    const height = el.offsetHeight;
+    const left = align === 'end' ? r.right - width : r.left;
+    el.style.left = `${Math.max(margin, Math.min(left, window.innerWidth - width - margin))}px`;
+    el.style.top = `${below ? r.bottom + 6 : Math.max(margin, r.top - 6 - height)}px`;
+  };
+  const anchorTop = anchor.getBoundingClientRect().top;
+  const onDown = (e) => { if (!el.contains(e.target) && !anchor.contains(e.target)) close(); };
+  const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close({ focus: true }); } };
+  const onScroll = (e) => {
+    if (el.contains(e.target)) return;
+    if (Math.abs(anchor.getBoundingClientRect().top - anchorTop) > 40) close(); else place();
+  };
+  const onResize = () => close();
+  function close({ focus = false } = {}) {
+    if (currentPop?.el !== el) return;
+    currentPop = null;
+    document.removeEventListener('pointerdown', onDown, true);
+    document.removeEventListener('keydown', onKey, true);
+    window.removeEventListener('scroll', onScroll, true);
+    window.removeEventListener('resize', onResize);
+    el.remove();
+    anchor.classList.remove('pop-open');
+    if (focus && anchor.isConnected) anchor.focus({ preventScroll: true });
+    onClose?.();
+  }
+  document.addEventListener('pointerdown', onDown, true);
+  document.addEventListener('keydown', onKey, true);
+  window.addEventListener('scroll', onScroll, true);
+  window.addEventListener('resize', onResize);
+  anchor.classList.add('pop-open');
+  place();
+  currentPop = { el, anchor, close };
+  return { el, close, place };
+}
+
+/**
+ * A small menu next to an element: popMenu(button, [[label, onclick, { danger, icon }?], …], { label }).
+ * Arrow keys move, Esc closes and returns focus.
+ */
+export function popMenu(anchor, items, { label = 'Možnosti', align = 'start' } = {}) {
+  const list = h('div', { class: 'pop-menu', role: 'menu', 'aria-label': label },
+    items.filter(Boolean).map(([text, onclick, opts = {}]) => h('button', {
+      type: 'button', role: 'menuitem', class: ['pop-menu-item', opts.danger && 'danger'],
+      onclick: () => { pop.close({ focus: true }); onclick(); },
+    }, opts.icon ? icon(opts.icon) : null, h('span', {}, text))));
+  list.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    const all = [...list.querySelectorAll('[role=menuitem]')];
+    const i = all.indexOf(document.activeElement);
+    all[(i + (e.key === 'ArrowDown' ? 1 : -1) + all.length) % all.length]?.focus();
+  });
+  const pop = anchoredPopover(anchor, list, { cls: 'menu-pop', role: 'presentation', align });
+  list.querySelector('[role=menuitem]')?.focus({ preventScroll: true });
+  return pop;
+}
+
+/** Wide screen with a mouse: popovers; otherwise the dialog (a sheet on a phone). */
+const popoverFits = () => window.matchMedia?.('(min-width: 720px) and (pointer: fine)').matches;
+
+// ---------- the picker ----------
 
 const SCOPE_OPTIONS = [['skilled', 'Umí to'], ['team', 'Celý tým'], ['all', 'Všichni lidé']];
 
@@ -35,20 +128,23 @@ function splitName(query) {
   return { firstName: cap(first), lastName: rest.map(cap).join(' ') };
 }
 
-/** A reason as quiet text with its marker: filled dot = it won't work, ring = careful, none = a fact. */
-const reasonText = (r) => h('span', { class: ['reason', r.severity === 'error' ? 'reason-error' : r.severity === 'warning' ? 'reason-warning' : 'reason-info'] }, r.text);
+/** A reason as quiet text with its mark: ■ it won't work, △ careful, none = a fact. */
+const reasonText = (r) => h('span', { class: ['pp-reason', `pp-reason-${r.severity || 'info'}`] },
+  r.severity === 'error' || r.severity === 'warning' ? severityIcon(r.severity) : null, r.text);
 
 /** Meta parts joined by quiet dots. */
-const joinParts = (parts) => parts.filter(Boolean).flatMap((p, i) => (i ? ['\u00a0· ', p] : [p]));   // the dot sticks to the end of a line, never starts one
+const joinParts = (parts) => parts.filter(Boolean).flatMap((p, i) => (i ? [h('span', { class: 'pp-sep', 'aria-hidden': 'true' }, ' · '), p] : [p]));
 
 /**
- * Open the picker. onPick(personIds) is called after the dialog closed.
- * - eventId + roleId: candidates ranked by lib/scheduling with reasons; pills switch the scope.
+ * Open the picker. onPick(personIds) is called after it closed.
+ * - eventId + roleId: candidates ranked by lib/scheduling with reasons; chips switch the scope.
  * - otherwise the registry alphabetically (members of groupId first).
  * - exclude: ids not to offer (already there). multiple: tick several, then „Vybrat“.
  * - allowCreate: „Nový člověk“ for a name nobody has; with roleId/groupId it can join the team.
+ * - anchor: an element – on a wide screen the picker opens as a popover right there.
+ * - eyebrow: the line above the title (default: the event's day and title, or the group).
  */
-export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled', multiple = false, exclude = [], allowCreate = true, onPick = () => {} } = {}) {
+export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled', multiple = false, exclude = [], allowCreate = true, onPick = () => {}, anchor, eyebrow: eyebrowText } = {}) {
   const leader = can('leader');
   const excluded = new Set(exclude);
   const event = eventId ? eventById(S.data, eventId) : null;
@@ -57,17 +153,20 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
   const ranked = !!(event && roleId);
   const state = { scope, query: '', creating: false, active: 0 };
   const selected = new Set();
+  const asPopover = !!anchor && popoverFits();
+  let pop = null;
 
+  const close = () => { if (pop) pop.close({ focus: true }); else closeDialog(); };
   const finish = (ids) => {
-    closeDialog();
+    close();
     onPick(ids);
   };
-  const pick = (personId, button) => {
+  const pick = (personId, rowButton) => {
     if (!multiple) { finish([personId]); return; }
     if (selected.has(personId)) selected.delete(personId); else selected.add(personId);
     const on = selected.has(personId);
-    button?.classList.toggle('on', on);
-    button?.setAttribute('aria-pressed', String(on));
+    rowButton?.classList.toggle('on', on);
+    rowButton?.setAttribute('aria-pressed', String(on));
     paintFooter();
   };
 
@@ -118,18 +217,18 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     return h('li', {},
       h('button', {
         type: 'button',
-        class: ['pick', r.hard && 'hard', i === state.active && 'active', on && 'on'],
+        class: ['pp-row', r.hard && 'hard', i === state.active && 'active', on && 'on'],
         'aria-pressed': multiple ? String(on) : null,
         dataset: { index: String(i) },
         onclick: (e) => pick(r.person.id, e.currentTarget),
         onmousemove: () => setActive(i, { scroll: false }),
       },
-      avatar(r.person),
-      h('span', { class: 'pick-body' },
-        h('span', { class: 'pick-name' }, personName(r.person)),
-        r.meta.length ? h('span', { class: 'pick-meta' }, joinParts(r.meta)) : null),
-      r.trail ? h('span', { class: 'pick-trail' }, r.trail) : null,
-      multiple ? h('span', { class: 'pick-check', 'aria-hidden': 'true' }) : null));
+      avatar(r.person, { size: 's' }),
+      h('span', { class: 'pp-body' },
+        h('span', { class: 'pp-name' }, personName(r.person)),
+        r.meta.length ? h('span', { class: 'pp-meta' }, joinParts(r.meta)) : null),
+      r.trail ? h('span', { class: 'pp-trail' }, r.trail) : null,
+      multiple ? h('span', { class: 'pp-check', 'aria-hidden': 'true' }, icon('check')) : null));
   };
 
   // ---------- quick add ----------
@@ -141,22 +240,22 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     const joinText = role
       ? `Přidat do týmu ${group?.name || ''} (${role.name}: ${SKILL_LABELS.learning})`
       : group ? `Přidat i do: ${group.name}` : null;
-    const form = h('form', { class: 'form-grid quick-add', novalidate: true },
-      similar.length ? h('div', { class: 'similar full' },
+    const form = h('form', { class: 'form-grid pp-quick', novalidate: true },
+      similar.length ? h('div', { class: 'pp-similar full' },
         h('p', { class: 'note' }, 'Není to někdo z nich?'),
-        h('ul', { class: 'pick-list similar-list' }, similar.map((p, i) => h('li', {},
-          h('button', { type: 'button', class: 'pick', onclick: () => finish([...selected, p.id]), dataset: { index: String(i) } },
-            avatar(p, { size: 's' }), h('span', { class: 'pick-body' }, h('span', { class: 'pick-name' }, personName(p)))))))) : null,
+        h('ul', { class: 'pp-list' }, similar.map((p, i) => h('li', {},
+          h('button', { type: 'button', class: 'pp-row', onclick: () => finish([...selected, p.id]), dataset: { index: String(i) } },
+            avatar(p, { size: 's' }), h('span', { class: 'pp-body' }, h('span', { class: 'pp-name' }, personName(p)))))))) : null,
       textField('firstName', 'Jméno', firstName, { attr: { required: true, autocomplete: 'off' } }),
       textField('lastName', 'Příjmení', lastName, { attr: { autocomplete: 'off' } }),
-      textField('phone', 'Telefon', '', { full: true, type: 'tel', attr: { autocomplete: 'off' } }),
-      textField('email', 'E-mail', '', { full: true, type: 'email', attr: { autocomplete: 'off' } }),
+      textField('phone', 'Telefon', '', { type: 'tel', attr: { autocomplete: 'off' } }),
+      textField('email', 'E-mail', '', { type: 'email', attr: { autocomplete: 'off' } }),
       joinText && group ? checkboxField('join', joinText, true) : null,
       h('p', { class: 'note full' }, 'Stačí jméno, zbytek doplníš na kartě.'),
       formErrorLine('', { full: true }),
-      h('div', { class: 'full quick-add-actions' },
-        btn('Zpět na seznam', () => { state.creating = false; paint(); search.focus(); }, 'small plain'),
-        h('button', { type: 'submit', class: 'btn primary small' }, 'Přidat a vybrat')));
+      h('div', { class: 'full pp-quick-actions' },
+        button('Zpět na seznam', { variant: 'ghost', size: 's', icon: 'chevron-left', onclick: () => { state.creating = false; paint(); search.focus(); } }),
+        button('Přidat a vybrat', { variant: 'solid', size: 's', type: 'submit' })));
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const f = form.elements;
@@ -171,7 +270,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
         if (role) setSkill(S.data, person.id, role.id, 'learning');
         else addMember(S.data, group.id, person.id, { since: today() });
       }
-      closeDialog();
+      close();
       change(`nový člověk ${displayName(person)}`);
       toast(`${fullName(person)} je v Lidech.`, 'Doplň údaje.', { action: () => navigate(`#osoba/${person.id}`), actionLabel: 'Otevřít kartu', duration: 6000 });
       onPick([...selected, person.id]);
@@ -181,18 +280,16 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
 
   // ---------- painting ----------
 
-  const pillsHolder = h('div', { class: 'picker-scope' });
-  const listHolder = h('div', { class: 'picker-body' });
-  const footer = h('div', { class: 'actions' });
-  const search = h('input', {
-    type: 'search', placeholder: 'Hledat ve všech lidech', 'aria-label': 'Hledat ve všech lidech', autocomplete: 'off', autofocus: true,
-  });
-  const searchBox = h('div', { class: 'picker-search' }, search);
+  const scopeHolder = h('div', { class: 'pp-scope' });
+  const listHolder = h('div', { class: 'pp-results' });
+  const footer = h('div', { class: ['pp-foot', !(anchor && popoverFits()) && ['dialog-foot', 'actions']] });
+  const searchBox = searchField({ placeholder: 'Hledat ve všech lidech', label: 'Hledat ve všech lidech', cls: 'pp-search' });
+  const search = searchBox.querySelector('input');
   search.addEventListener('input', () => { state.query = search.value; state.creating = false; state.active = 0; paint(); });
 
-  const buttons = () => [...listHolder.querySelectorAll('.pick-list:not(.similar-list) > li > button')];
+  const rowButtons = () => [...listHolder.querySelectorAll('.pp-list:not(.pp-similar .pp-list) > li > button')];
   function setActive(i, { scroll = true } = {}) {
-    const all = buttons();
+    const all = rowButtons();
     if (!all.length) return;
     state.active = Math.max(0, Math.min(all.length - 1, i));
     all.forEach((b, k) => b.classList.toggle('active', k === state.active));
@@ -203,26 +300,28 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
       setActive(state.active + (e.key === 'ArrowDown' ? 1 : -1));
-      if (e.target !== search) buttons()[state.active]?.focus();
+      if (e.target !== search) rowButtons()[state.active]?.focus();
     } else if (e.key === 'Enter' && e.target === search) {
       e.preventDefault();
-      buttons()[state.active]?.click();
+      rowButtons()[state.active]?.click();
     }
   };
 
   function paintFooter() {
     footer.replaceChildren(...nodes([
-      btn(multiple ? 'Zrušit' : 'Zavřít', closeDialog),
-      multiple && !state.creating ? btn(selected.size ? `Vybrat (${selected.size})` : 'Vybrat', () => finish([...selected]), 'primary', { disabled: !selected.size }) : null]));
+      h('span', { class: 'pp-foot-space' }),
+      button(multiple ? 'Zrušit' : 'Zavřít', { variant: 'ghost', onclick: close }),
+      multiple && !state.creating ? button(selected.size ? `Vybrat (${selected.size})` : 'Vybrat', { variant: 'solid', disabled: !selected.size, onclick: () => finish([...selected]) }) : null]));
+    footer.hidden = asPopover && !multiple;
   }
 
-  function paint({ keepActive = false } = {}) {
+  function paint() {
     const q = state.query.trim();
-    pillsHolder.replaceChildren(...nodes(ranked && !state.creating
-      ? [filterButtons(SCOPE_OPTIONS, q ? null : state.scope, (v) => { state.scope = v; search.value = ''; state.query = ''; state.active = 0; paint(); search.focus(); }, { label: 'Koho ukázat' })]
+    scopeHolder.replaceChildren(...nodes(ranked && !state.creating
+      ? [chips(SCOPE_OPTIONS, q ? null : state.scope, (v) => { state.scope = v; search.value = ''; state.query = ''; state.active = 0; paint(); search.focus(); }, { label: 'Koho ukázat', multi: false })]
       : null));
     searchBox.hidden = state.creating;
-    if (!keepActive) state.active = 0;
+    state.active = Math.max(0, state.active);
     if (state.creating) {
       listHolder.replaceChildren(quickAddForm());
       listHolder.querySelector('input[name=firstName]')?.focus();
@@ -231,34 +330,42 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       const items = rows.map(rowItem);
       if (q && allowCreate && leader) {
         items.push(h('li', {}, h('button', {
-          type: 'button', class: ['pick', 'create', rows.length === 0 && 'active'], dataset: { index: String(rows.length) },
+          type: 'button', class: ['pp-row', 'pp-create', rows.length === 0 && 'active'], dataset: { index: String(rows.length) },
           onclick: () => { state.creating = true; paint(); },
         },
-        h('span', { class: 'pick-plus', 'aria-hidden': 'true' }),
-        h('span', { class: 'pick-body' },
-          h('span', { class: 'pick-name' }, `Nový člověk „${q}“`),
-          h('span', { class: 'pick-meta' }, rows.length ? 'Když to není nikdo z nich.' : 'Nikdo takový tu není.')))));
+        h('span', { class: 'pp-plus', 'aria-hidden': 'true' }, icon('user-plus')),
+        h('span', { class: 'pp-body' },
+          h('span', { class: 'pp-name' }, `Nový člověk „${q}“`),
+          h('span', { class: 'pp-meta' }, rows.length ? 'Když to není nikdo z nich.' : 'Nikdo takový tu není.')))));
       }
       listHolder.replaceChildren(
-        items.length ? h('ul', { class: 'pick-list', role: 'list', onkeydown: onKeys }, items)
-          : h('p', { class: 'picker-empty' }, q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle roli nikdo neumí. Zkus Celý tým nebo Všichni lidé.' : 'Nikdo tu není.'),
-        ranked && !q && items.length ? h('p', { class: 'picker-legend note' },
-          h('span', { class: 'reason reason-error' }, 'nepůjde'), '\u00a0· ',
-          h('span', { class: 'reason reason-warning' }, 'jde to, ale pozor')) : null);
+        items.length ? h('ul', { class: 'pp-list', onkeydown: onKeys }, items)
+          : h('p', { class: 'pp-empty' }, q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle roli nikdo neumí. Zkus „Celý tým“ nebo „Všichni lidé“.' : 'Nikdo tu není.'),
+        ranked && !q && items.length ? h('p', { class: 'pp-legend' },
+          reasonText({ severity: 'error', text: 'nepůjde' }), h('span', { class: 'pp-sep' }, ' · '),
+          reasonText({ severity: 'warning', text: 'jde to, ale pozor' })) : null);
     }
     paintFooter();
+    pop?.place();
   }
 
   search.addEventListener('keydown', onKeys);
-  const eyebrow = event ? `${prettyDay(event.start)} · ${event.title}` : group ? group.name : null;
+  const eyebrow = eyebrowText !== undefined ? eyebrowText : event ? `${prettyDay(event.start)} · ${event.title}` : group ? group.name : null;
   const heading = title || (role ? `Kdo na ${role.name}?` : multiple ? 'Vyber lidi' : 'Vyber člověka');
   paint();
-  openDialog(h('div', { class: 'inner picker' },
-    eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null,
-    h('h2', {}, heading),
-    pillsHolder,
-    searchBox,
-    listHolder,
+  const head = h('div', { class: 'pp-head' },
+    h('div', { class: 'pp-head-text' },
+      h('h2', { class: asPopover ? 'pp-title' : 'dialog-title' }, heading),
+      eyebrow ? h('p', { class: asPopover ? 'pp-sub' : 'dialog-sub' }, eyebrow) : null),
+    asPopover ? button(null, { variant: 'ghost', size: 's', icon: 'x', label: 'Zavřít', onclick: close }) : null);
+  if (asPopover) {
+    pop = anchoredPopover(anchor, [head, h('div', { class: 'pp-tools' }, scopeHolder, searchBox), listHolder, footer], { label: heading, cls: 'people-picker picker-pop' });
+    search.focus({ preventScroll: true });
+    return;
+  }
+  openDialog(h('div', { class: 'dialog-form people-picker' },
+    h('div', { class: 'dialog-head' }, head),
+    h('div', { class: 'dialog-body' }, h('div', { class: 'pp-tools' }, scopeHolder, searchBox), listHolder),
     footer));
   search.focus();
 }
@@ -267,7 +374,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
 export function pickOne(options = {}) {
   return new Promise((resolve) => {
     let done = false;
-    openPicker({ ...options, multiple: false, onPick: (ids) => { done = true; resolve(ids[0] || null); } });
+    openPicker({ ...options, anchor: null, multiple: false, onPick: (ids) => { done = true; resolve(ids[0] || null); } });
     dialogElement().addEventListener('close', () => { setTimeout(() => { if (!done) resolve(null); }); }, { once: true });
   });
 }

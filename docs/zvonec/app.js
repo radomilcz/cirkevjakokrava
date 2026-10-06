@@ -25,24 +25,25 @@ import { renderKit } from './ui/kit-page.js';
 // IMPORTS:calendar
 import { renderCalendar } from './ui/calendar.js';
 import { renderEvent } from './ui/event.js';
-import { renderProgram } from './ui/program.js';
-import { renderRoster } from './ui/roster.js';
 // IMPORTS:calendar end
 
 // IMPORTS:people
-import { renderPeople, renderPerson, renderHouseholds, renderHousehold } from './ui/people.js';
+import { renderPeople, renderPerson, renderHousehold } from './ui/people.js';
 // IMPORTS:people end
 
 // IMPORTS:groups-library
 import { renderGroups, renderGroup } from './ui/groups.js';
 import { renderFormats } from './ui/formats.js';
+import { renderTemplates, renderTemplate } from './ui/templates.js';
+import { renderPlaces, renderPlace } from './ui/places.js';
 // IMPORTS:groups-library end
 
 // IMPORTS:home-admin
 import { renderHome } from './ui/home.js';
 import { renderConflicts } from './ui/conflicts.js';
 import { renderSettings } from './ui/settings.js';
-import { renderPublicProgram, renderPublicFormats } from './ui/public.js';
+import { renderAccount } from './ui/account.js';
+import { renderPublicProgram, renderPublicEvent, renderPublicFormats } from './ui/public.js';
 // IMPORTS:home-admin end
 
 // ---------- routes ----------
@@ -57,36 +58,19 @@ import { renderPublicProgram, renderPublicFormats } from './ui/public.js';
 const MONTH = /^\d{4}-\d{2}$/;
 
 // ROUTES:calendar – Kalendář (views mesic · tyden · seznam · rozpis) and the event detail.
-// #kalendar/<pohled>/<datum>, #setkani/<id>[/sluzby|/osnova]. Interim: the old screens.
+// #kalendar[/<pohled>[/<datum>]] (#kalendar alone opens the viewer's remembered view),
+// #setkani/<id>[/sluzby|/osnova] (Přehled · Kdo slouží · Osnova).
 const CALENDAR_ROUTES = {
-  kalendar: {
-    render: ([view, date]) => {
-      if (view === 'rozpis') return renderRoster(date || '');
-      if (view === 'tyden') return placeholderPage('Kalendář', { lead: 'Týden – tenhle pohled právě stavíme.' });
-      return renderCalendar(MONTH.test(date || '') ? date : '');   // mesic, seznam (the old screen has both)
-    },
-    access: 'member',
-  },
-  setkani: {
-    render: ([id, tab]) => (tab === 'osnova' ? renderProgram(id) : renderEvent(id)),
-    access: 'member', menu: 'kalendar',
-  },
+  kalendar: { render: (parts) => renderCalendar(parts), access: 'member' },
+  setkani: { render: ([id, tab]) => renderEvent(id, tab || ''), access: 'member', menu: 'kalendar' },
 };
 // ROUTES:calendar end
 
 // ROUTES:people – Lidé (views seznam · tabulka · domacnosti · skupiny · narozeniny · bremeno, then a
-// filter), the person card and the household. #lide/<pohled>/<filtr>; #lide/<filtr> keeps the view.
-const PEOPLE_VIEWS = ['seznam', 'tabulka', 'domacnosti', 'skupiny', 'narozeniny', 'bremeno'];
+// filter or – for bremeno – a month), the person card and the household. #lide/<pohled>/<filtr>;
+// #lide/<filtr> keeps the remembered view. ui/people.js parses the parts itself.
 const PEOPLE_ROUTES = {
-  lide: {
-    render: (parts) => {
-      const [view, filter] = PEOPLE_VIEWS.includes(parts[0]) ? parts : ['', parts[0]];
-      if (view === 'domacnosti') return renderHouseholds();
-      if (['skupiny', 'narozeniny', 'bremeno'].includes(view)) return placeholderPage('Lidé');
-      return renderPeople(filter || '');
-    },
-    access: 'member',
-  },
+  lide: { render: (parts) => renderPeople(parts), access: 'member' },
   osoba: { render: ([id]) => renderPerson(id), access: 'member', menu: 'lide' },
   domacnost: { render: ([id]) => renderHousehold(id), access: 'leader', menu: 'lide' },
 };
@@ -95,30 +79,24 @@ const PEOPLE_ROUTES = {
 // ROUTES:groups-library – Týmy a skupinky (#tymy/<pohled>, #tym/<id>/<záložka>) and Jak se scházíme
 // (#sablony, #sablona/<id>, #formaty[/<id>], #mista, #misto/<id>).
 const GROUPS_LIBRARY_ROUTES = {
-  tymy: {
-    render: ([view]) => (view === 'umi' ? placeholderPage('Týmy a skupinky', { lead: 'Kdo co umí – tenhle pohled právě stavíme.' }) : renderGroups()),
-    access: 'leader',
-  },
-  tym: { render: ([id]) => renderGroup(id), access: 'leader', menu: 'tymy' },
-  sablony: { render: () => renderSettings('sablony'), access: 'leader', menu: 'knihovna' },
-  sablona: { render: () => placeholderPage('Šablona', { back: ['Šablony', '#sablony'] }), access: 'leader', menu: 'knihovna' },
+  tymy: { render: ([view, filter]) => renderGroups(view || 'tymy', filter || ''), access: 'leader' },
+  tym: { render: ([id, tab]) => renderGroup(id, tab || 'lide'), access: 'leader', menu: 'tymy' },
+  sablony: { render: () => renderTemplates(), access: 'leader', menu: 'knihovna' },
+  sablona: { render: ([id]) => renderTemplate(id || 'nova'), access: 'leader', menu: 'knihovna' },
   formaty: { render: ([id]) => renderFormats(id || ''), access: 'member', menu: 'knihovna' },
-  mista: { render: () => renderSettings('mista'), access: 'leader', menu: 'knihovna' },
-  misto: { render: () => placeholderPage('Místo', { back: ['Místa', '#mista'] }), access: 'member', menu: 'knihovna' },
+  mista: { render: () => renderPlaces(), access: 'member', menu: 'knihovna' },
+  misto: { render: ([id]) => renderPlace(id), access: 'member', menu: 'knihovna' },
 };
 // ROUTES:groups-library end
 
-// ROUTES:home-admin – Přehled, Upozornění, Nastavení, Můj účet and the public part.
-const SETTINGS_SECTIONS = { sbor: '', pravidla: '', prihlaseni: 'prihlaseni', zaloha: 'zaloha' };
+// ROUTES:home-admin – Přehled, Upozornění (#upozorneni[/lide]), Nastavení (#nastaveni/<sbor|pravidla|
+// prihlaseni|zaloha>), Můj účet and the public part (#program[/<id>], #jak-se-schazime).
 const HOME_ADMIN_ROUTES = {
   prehled: { render: () => renderHome(), access: 'member' },
-  upozorneni: { render: () => renderConflicts(), access: 'leader' },
-  nastaveni: { render: ([part]) => renderSettings(SETTINGS_SECTIONS[part] ?? ''), access: 'leader' },
-  ucet: { render: () => renderSettings('ucet'), access: 'member' },
-  program: {
-    render: ([id]) => (id ? placeholderPage('Program', { back: ['Program', '#program'] }) : renderPublicProgram()),
-    access: 'public',
-  },
+  upozorneni: { render: (parts) => renderConflicts(parts), access: 'leader' },
+  nastaveni: { render: ([part]) => renderSettings(part || ''), access: 'leader' },
+  ucet: { render: () => renderAccount(), access: 'member' },
+  program: { render: ([id]) => (id ? renderPublicEvent(id) : renderPublicProgram()), access: 'public' },
   'jak-se-schazime': { render: () => renderPublicFormats(), access: 'public' },
 };
 // ROUTES:home-admin end

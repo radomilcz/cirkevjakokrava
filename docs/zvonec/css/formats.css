@@ -1,29 +1,41 @@
-/* formats module – owned by the formats team. Uses tokens and components from ../style.css. */
+/* Jak se scházíme › Formáty (ui/formats.js): list, detail, the Formát dialog, the needs editor and
+   „Zveřejnit na webu“ (shared with templates and the event form). Semantic tokens only. */
 
 /* list lead: how long the format takes, set like the date block of an event row */
-/* the same leaf as the date block of an event row: number over the unit */
 .minutes-block{
-  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:48px;height:52px;
-  padding-top:calc(var(--optical-n) + 1px);border:1px solid var(--outline);border-radius:12px;line-height:1;   /* +1px: the big number sits on top here */
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:42px;height:46px;flex:none;
+  padding-top:var(--optical-n);border-radius:var(--radius-4);background:var(--hover);color:var(--text-1);
+  font-family:var(--font-mark);font-weight:900;line-height:1;
 }
-.minutes-block-n{order:-1;font-family:var(--narrow);font-weight:900;font-size:22px;line-height:.8;font-variant-numeric:tabular-nums}
-.minutes-block-u{font-family:var(--narrow);font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-right:-.08em;font-size:11px}
+.minutes-block-n{order:-1;font-size:20px;line-height:.8;font-variant-numeric:tabular-nums}
+.minutes-block-u{font-size:10px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-2);margin-right:-.08em}
 
-/* detail page: facts, then Proč and Jak as running text */
-.format-page .facts,.format-page .section{max-width:var(--w-text)}
-.format-page .facts{margin:0}
-.format-page .facts dd{line-height:1.45}
-.format-page .section{margin-top:var(--s6)}
-.format-page .facts+.section{margin-top:var(--s7)}
-.format-page .empty-state{margin-top:var(--s6);max-width:var(--w-list)}
-.text-block{margin:0;max-width:65ch;white-space:pre-line;line-height:1.6}
+/* detail: running text on the left, facts in cards on the right */
+.format-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px 32px;align-items:start}
+.format-main{display:flex;flex-direction:column;gap:28px;min-width:0}
+.format-text-title{margin:0 0 8px;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-1);line-height:16px;letter-spacing:var(--tracking-label);color:var(--text-2)}
+.format-text-body{margin:0;max-width:62ch;white-space:pre-line;font-size:var(--font-size-5);line-height:28px;color:var(--text-1)}
+.format-aside{display:flex;flex-direction:column;gap:16px;min-width:0}
+.format-roles,.format-uses{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.format-roles li{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line-1)}
+.format-roles li:first-child{border-top:0;padding-top:0}
+.format-role-name{display:flex;flex-direction:column;font-size:var(--font-size-4);line-height:20px}
+.format-role-name small{font-size:var(--font-size-2);color:var(--text-2)}
+.format-role-what{font-size:var(--font-size-3);color:var(--text-2);white-space:nowrap}
+.format-uses{gap:6px;font-size:var(--font-size-4);line-height:22px}
+.format-uses+.card-note{margin-top:12px}
+@media (max-width:860px){.format-layout{grid-template-columns:minmax(0,1fr)}}
 
-/* edit dialog: the roles that are needed, a stepper each, and one drop-down to add another */
-.needs-list{list-style:none;margin:var(--s1) 0 var(--s2);padding:0;border-top:1px solid var(--line)}
-.needs-role{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
-.needs-name{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
-.needs-name small{color:var(--muted);font-size:var(--t4)}
-.needs-field>.select,.needs-field>select{align-self:flex-start;width:auto;min-width:12em}
+/* needs editor: the roles that are needed, a stepper each, and one drop-down to add another */
+.needs-field{gap:8px}
+.needs-list{list-style:none;margin:0;padding:0;border-radius:var(--radius-4);background:var(--surface-sunken)}
+.needs-role{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 8px 6px 14px}
+.needs-role+.needs-role{border-top:1px solid var(--line-1)}
+.needs-name{flex:1;min-width:0;display:flex;flex-direction:column;line-height:20px;font-size:var(--font-size-4)}
+.needs-name small{color:var(--text-2);font-size:var(--font-size-2);line-height:16px}
+.needs-empty{margin:0;font-size:var(--font-size-3);color:var(--text-2)}
+.needs-field>.select,.needs-field>select{align-self:flex-start;width:auto;min-width:14em}
 
-/* „Zveřejnit na webu“ (formats, templates, events): the checkbox with its hint in a quiet box */
-.publish-field{padding:var(--s3) var(--s4);background:var(--fill);border-radius:var(--radius)}
+/* „Zveřejnit na webu“: the switch with its hint in a quiet box */
+.publish-field{padding:12px 14px;border-radius:var(--radius-4);background:var(--info-bg)}
+.publish-field .caption small{color:var(--info-text)}

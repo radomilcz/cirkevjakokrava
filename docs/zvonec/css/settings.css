@@ -1,63 +1,80 @@
-/* settings module – owned by the settings team. Uses tokens and components from ../style.css. */
+/* Nastavení (#nastaveni/…), Můj účet (#ucet) and the signed-out pages (sign in, first setup, invite)
+   – ui/settings.js, ui/account.js, ui/login.js. Semantic tokens only (css/tokens.css). */
 
-/* the pills under the page title */
-.settings-nav{margin:calc(-1*var(--s2)) 0 var(--s5)}
-.settings-nav .filter{margin:0}
-.settings-nav~.note{margin:0 0 var(--s4)}
-.settings-nav+.section{margin-top:0}
+/* ---------- shared bits of cards ---------- */
+.card-text{margin:0 0 12px;font-size:var(--font-size-3);line-height:20px;color:var(--text-2);max-width:62ch}
+.card-text:last-child{margin-bottom:0}
+.card-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.quiet{color:var(--text-2)}
+.form-foot{display:flex;justify-content:flex-end;gap:8px;padding-top:4px}
+.form-grid.one{grid-template-columns:minmax(0,1fr)}
 
-/* Sbor: a short form, rules as rows – text and hint left, a stepper right */
-.church-form .form-grid{margin-bottom:var(--s2)}
-.setting-rows{display:flex;flex-direction:column;border-top:1px solid var(--line)}
-.setting-row{display:flex;align-items:center;justify-content:space-between;gap:var(--s2) var(--s5);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
-.setting-text{flex:1 1 14em;min-width:0;display:flex;flex-direction:column;gap:2px}
-.setting-text label{font-size:var(--t3);line-height:1.3}
-.setting-text small{color:var(--muted);font-size:var(--t4);line-height:1.4}
-.setting-control{flex:none;display:flex;align-items:center;gap:var(--s2)}
-.setting-unit{min-width:3.4em;color:var(--muted);font-size:var(--t4)}
-@media (max-width:520px){.setting-row{flex-direction:column;align-items:flex-start}}
-.church-form .form-error{margin:var(--s4) 0 0;padding:.7em 1em .55em;border-radius:14px}
+/* ---------- Nastavení ---------- */
+.settings-body{display:flex;flex-direction:column;gap:16px;max-width:var(--w-form)}
+.settings-prihlaseni,.settings-zaloha{max-width:var(--w-list)}
+.settings-body .card-head+.card-body{padding-top:2px}
+.settings-body .card-body.flush{border-top:1px solid var(--line-1)}
+.preview-place{font-size:var(--font-size-4);line-height:22px}
+.settings-preview .place-map{max-width:none;height:200px}
 
-/* picture of a template */
-.type-cover{display:flex}
-.image-preview{width:min(100%,360px);margin-top:var(--s1)}
-.image-buttons{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin-top:var(--s2)}
-.image-message{min-height:1.4em}
-
-/* osnova of a template: grip, number, format, minutes, remove */
-.outline-list{list-style:none;margin:var(--s1) 0 0;padding:0;border-top:1px solid var(--line)}
-.outline-list>li{display:grid;grid-template-columns:2em 1.8em minmax(0,1fr) auto auto;gap:var(--s2);align-items:center;padding:var(--s2) 0;border-bottom:1px solid var(--line)}
-.outline-n{font-family:var(--narrow);font-weight:900;color:var(--muted);padding-top:.12em}
-.outline-add{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--s3)}
-.outline-add .tag{font-size:.82em}
-@media (max-width:560px){
-  .outline-list>li{grid-template-columns:2em 1.8em minmax(0,1fr) auto}
-  .outline-list>li>.select{grid-column:3/-1}
-  .outline-list>li>.stepper{grid-column:3;justify-self:start}
-  .outline-list>li>.btn-x{grid-column:4;justify-self:end}
-}
-
-/* places */
-.item-trail .place-map-link{color:var(--muted);font-size:var(--t4)}
-.item-trail .place-map-link:hover{color:var(--ink)}
-@media (max-width:520px){
-  .place-row{flex-wrap:wrap;row-gap:var(--s1)}
-  .place-row .item-body{flex:1 1 0}
-  .place-row .item-chevron{order:2}
-  .place-row .item-trail{order:3;flex-basis:100%;max-width:none;justify-content:flex-start;text-align:left}
-}
-
-/* Můj účet */
-.account-card{display:flex;align-items:center;gap:var(--s4);margin:0 0 var(--s5)}
-.account-text{min-width:0}
-.account-name{margin:0;font-size:1.25rem;line-height:1.25;overflow-wrap:anywhere}
-.account-role{margin:2px 0 0;color:var(--muted);font-size:var(--t4)}
-.account-links{margin:var(--s3) 0 0}
-.account-card+.section{margin-top:var(--s6)}
+/* Pravidla: each rule a row – the sentence and its hint left, the number right */
+.rules-form{display:flex;flex-direction:column;gap:16px}
+.rules-form>.form-grid{margin-top:-4px}
+.rule-rows{display:flex;flex-direction:column}
+.rule-row{display:flex;align-items:center;justify-content:space-between;gap:8px 24px;padding:14px 0}
+.rule-row+.rule-row{border-top:1px solid var(--line-1)}
+.rule-row:first-child{padding-top:4px}
+.rule-row:last-child{padding-bottom:2px}
+.rule-text{flex:1 1 16em;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rule-label{font-size:var(--font-size-4);line-height:22px;color:var(--text-1)}
+.rule-hint{font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.rule-control{flex:none;display:flex;align-items:center;gap:10px}
+.rule-unit{min-width:3.6em;font-size:var(--font-size-3);line-height:1;padding-top:var(--optical);color:var(--text-2)}
+@media (max-width:560px){.rule-row{flex-direction:column;align-items:flex-start}}
 
 /* a password or invite link shown once */
-.secret-rows{list-style:none;margin:var(--s4) 0;padding:0;border-top:1px solid var(--line)}
-.secret-rows li{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
-.secret-text{display:flex;flex-direction:column;min-width:0}
-.secret-label{font-size:var(--t4);color:var(--muted)}
-@media (pointer:coarse){.item-trail .place-map-link{padding:var(--s2) 0}}
+.secret-rows{list-style:none;margin:0;padding:0;border-radius:var(--radius-4);background:var(--surface-sunken)}
+.secret-rows li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px}
+.secret-rows li+li{border-top:1px solid var(--line-1)}
+.secret-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.secret-label{font-size:var(--font-size-3);color:var(--text-2)}
+.secret{font-family:ui-monospace,Menlo,monospace;font-weight:400;font-size:var(--font-size-3);word-break:break-all;user-select:all}
+
+/* ---------- Můj účet ---------- */
+.account-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.account-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (max-width:900px){.account-grid{grid-template-columns:minmax(0,1fr)}}
+.account-page .card-body.flush{border-top:1px solid var(--line-1)}
+.account-page .card .facts{margin-bottom:12px}
+.appearance-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+
+/* Dívat se jako: the prepared people as big choices */
+.viewers{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.viewer{
+  position:relative;display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:8px 12px;border:0;border-radius:var(--radius-control-3);
+  background:var(--surface-panel);box-shadow:inset 0 0 0 1px var(--line-2);font:inherit;color:var(--text-1);text-align:left;cursor:pointer;
+}
+.viewer:hover{background:var(--surface-hover)}
+.viewer[aria-pressed="true"]{background:var(--selected-bg);box-shadow:inset 0 0 0 1.5px var(--selected-line);color:var(--selected-fg)}
+.viewer[aria-pressed="true"]::after{content:"";position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--indicator)}
+.viewer-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.viewer-name{font-size:var(--font-size-3);line-height:18px;overflow-wrap:anywhere}
+.viewer-role{font-size:var(--font-size-2);line-height:16px;color:var(--text-2)}
+.viewer[aria-pressed="true"] .viewer-role{color:var(--selected-fg)}
+.view-as .disclosure-body{padding-bottom:4px}
+.view-as-form{grid-template-columns:minmax(0,1fr)}
+@media (max-width:420px){.viewers{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- signed-out pages: sign in, first setup, invite ---------- */
+.signin-page .page-body{display:flex;flex-direction:column;gap:16px}
+.signin-card .card-body{padding:22px 22px 20px}
+.signin-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.signin-grid{grid-template-columns:minmax(0,1fr)}}
+.form-submit{display:flex;padding-top:4px}
+.signin-submit{min-width:12em}
+@media (max-width:520px){.signin-submit{width:100%}}
+.signin-note{margin:0;padding:0 4px;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.signin-note a{color:var(--text-accent);text-underline-offset:.2em;text-decoration-thickness:1px}
+.signin-steps .steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;font-size:var(--font-size-3);line-height:20px}
+.signin-card .form-grid .form-section-title{margin-top:8px}
+.signin-card .form-grid .form-section-title:first-child{margin-top:0}

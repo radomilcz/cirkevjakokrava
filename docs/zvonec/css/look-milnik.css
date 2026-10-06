@@ -1,18 +1,467 @@
 /* ============================================================
-   Look „milnik“ – an interpretation of the owner's Milníkovač prototype in our palette and fonts.
+   Look „milnik“ – the owner's Milníkovač prototype, interpreted in the cow's palette and fonts.
    Active when <html data-look="milnik"> (header menu „Vzhled“, or ?vzhled=milnik in the URL).
-   Loaded last (after css/tokens.css, style.css and the module CSS).
+   Loaded last (after css/tokens.css, style.css and the module CSS). The DOM is the same for both looks;
+   this file only overrides tokens and restyles the kit. Owner: the look-milnik agent.
 
-   How to write it:
-   - css/tokens.css is the base for every look (all its selectors are :where(), zero specificity), so
-     override only what differs: :root[data-look="milnik"] { --surface-app: …; --radius-card: …; }
-     For dark: :root[data-look="milnik"][data-theme="dark"] and
-     @media (prefers-color-scheme: dark) { :root[data-look="milnik"]:not([data-theme]) { … } }.
-     (#kit renders light and dark islands with [data-theme] on a subtree – mirror the root rules with
-     [data-look="milnik"] [data-theme="dark"] if those islands should follow.)
-   - Structural rules: prefix with [data-look="milnik"] (e.g. the appbar may become display:contents so
-     the brand sits at the top of the sidebar; .page-head[data-context]::before may show the quiet
-     section label – app.js sets data-context to the section name on every page head).
-   - The DOM is the same for both looks; never change markup for a look.
-   Owner of this file: the look-milnik agent.
+   Milníkovač → Zvonec mapping (report: scratchpad/redesign/reports/look-milnik.md)
+     gray shell ground #F3F4F6 ......... brand cream #f9e7dd (sidebar, no frame)
+     white stage / cards ............... warm white #fffaf6 / #fffdfb, rounded 16 + border + soft shadow
+     cream hero #FFFCF1 / #ECE0BC ....... pink-tinted cream band + rose hairline
+     ink #1A1A1E (primary, active) ..... clay #3b2f2f (dark: brand pink #e6acac on clay)
+     petrol #1A6DFF (in progress, link) . --milnik-accent (deep rose in light, pink in dark)
+     grass / amber / destructive ....... confirmed / waiting / declined status scales
+     ABC Normal Bold 34 (titles) ....... Agrandir Narrow Black 36, sentence case (Grand Heavy measured
+                                         26 px/char vs 18 – a poster voice; kept for the brand mark)
+     ABC Normal 14 (UI) ................ Agrandir Regular 15 (whole-pixel optical centre)
+     quiet label 11 bold caps .08em .... Agrandir Narrow Black 11 caps .08em
+   ORDER: tokens (shared, light, dark) · shell · page head (hero) · tabs · buttons · badges · choosing ·
+   surfaces · lists · tables · people · feedback · dialog · fields · menus · phone · #kit · print.
    ============================================================ */
+
+/* ---------- tokens shared by both themes (scale references resolve per theme) ---------- */
+:root[data-look="milnik"], [data-look="milnik"] [data-theme] {
+  --milnik-display: var(--font-mark);    /* Agrandir Narrow Black in sentence case: the footprint of ABC Normal Bold */
+  --title-font: var(--milnik-display); --title-transform: none;
+  --title-size: 36px; --title-line: 40px;
+  --section-size: 17px; --dialog-title-size: 21px;
+
+  --radius-control-1: var(--radius-full); --radius-control-2: var(--radius-full); --radius-control-3: var(--radius-full);
+  --radius-field: 12px;                 /* inputs: rounded-xl */
+  --radius-nav: var(--radius-full); --radius-card: 16px; --radius-dialog: 16px; --radius-tab: var(--radius-full);
+  --radius-stage: 16px; --radius-mark: 10px; --radius-menu: 12px;
+  --control-1: 32px; --control-2: 40px; --control-3: 44px; --control-icon: 36px;
+  --nav-item-height: 36px; --row-min-height: 58px;
+  --sidebar: 264px; --milnik-brand-h: 68px; --milnik-foot-h: 64px;
+  --w-list: 780px; --w-text: 780px; --w-form: 640px;
+  --tab-style: pill;
+
+  /* text, lines, interaction */
+  --text-accent: var(--milnik-accent);
+  --line-1: var(--gray-a4);
+  --line-2: var(--gray-a5);
+  --line-card-hover: var(--gray-a7);
+  --hover: var(--gray-a3);
+  --pressed: var(--gray-a4);
+  --soft: var(--gray-a3);               /* PILL soft: foreground / 7 % */
+  --soft-hover: var(--gray-a4);
+  --surface-sunken: var(--gray-a2);
+  --count-bg: var(--gray-a4);
+  --selected-bg: var(--rose-a3); --selected-bg-hover: var(--rose-a4); --selected-fg: var(--gray-12); --selected-line: var(--rose-a7);
+  --focus: var(--gray-12); --focus-halo: var(--gray-a3);
+
+  /* status: Milníkovač tones at /15 fills, text from step 11 (≥ 4.5:1) */
+  --confirmed-bg: color-mix(in srgb, var(--green-9) 15%, transparent);
+  --waiting-bg: color-mix(in srgb, var(--amber-9) 18%, transparent);
+  --declined-bg: color-mix(in srgb, var(--red-9) 12%, transparent);
+  --info-bg: color-mix(in srgb, var(--milnik-accent-solid) 12%, transparent);
+  --info-fg: var(--milnik-accent); --info-solid: var(--milnik-accent-solid); --info-text: var(--gray-12);
+  --danger-bg: var(--declined-bg);
+  --today-bg: var(--rose-a2);
+
+  /* the shadow vocabulary: card = border + shadow-sm, raised = shadow-lg, popover / dialog = xl */
+  --shadow-card: 0 0 0 1px var(--line-2), 0 1px 2px 0 var(--milnik-shadow-a);
+  --shadow-card-hover: 0 0 0 1px var(--line-card-hover), 0 10px 15px -3px var(--milnik-shadow-b), 0 4px 6px -4px var(--milnik-shadow-b);
+  --shadow-raised: 0 1px 3px 0 var(--milnik-shadow-b), 0 1px 2px -1px var(--milnik-shadow-b);
+  --shadow-popover: 0 0 0 1px var(--line-2), 0 10px 15px -3px var(--milnik-shadow-b), 0 4px 6px -4px var(--milnik-shadow-b);
+  --shadow-dialog: 0 0 0 1px var(--line-2), 0 20px 25px -5px var(--milnik-shadow-b), 0 8px 10px -6px var(--milnik-shadow-b);
+  --shadow-stage: 0 0 0 1px var(--line-1), 0 1px 2px var(--milnik-shadow-a), 0 6px 16px -10px var(--milnik-shadow-c);
+  --shadow-control: none;
+}
+
+/* ---------- light ---------- */
+:root[data-look="milnik"], [data-look="milnik"] [data-theme="light"] {
+  --surface-chrome: #f9e7dd;      /* sidebar ground = the brand cream */
+  --surface-app: #fffaf6;         /* the stage */
+  --surface-panel: #fffdfb;       /* cards: white on white, told apart by border + shadow */
+  --surface-overlay: #fffdfb;
+  --surface-hover: #fbefe8;
+  --milnik-hero: #fdf0ea;         /* HeroHead band: pink-tinted cream */
+  --milnik-hero-line: #f0d9d1;
+  --milnik-accent: var(--rose-11);        /* petrol: in progress, links, progress */
+  --milnik-accent-solid: var(--rose-11);
+  --milnik-accent-soft: var(--rose-11);   /* bars, rings: ≥ 3:1 on the stage (pink #e6acac is only 1.9:1) */
+  --milnik-ink: var(--gray-12); --milnik-ink-fg: #fffaf6;   /* avatars: ink circles */
+  --primary-bg: var(--gray-12); --primary-bg-hover: #534343; --primary-fg: #fffaf6;
+  --indicator: var(--gray-12);
+  --field-bg: #fffdfb;
+  --line-control: var(--gray-a7);
+  --thumb: var(--gray-12);
+  --scrim: rgb(59 47 47 / .3);
+  --milnik-shadow-a: rgb(59 47 47 / .05);
+  --milnik-shadow-b: rgb(59 47 47 / .09);
+  --milnik-shadow-c: rgb(59 47 47 / .12);
+}
+
+/* ---------- dark (explicit, device, islands) ---------- */
+:root[data-look="milnik"][data-theme="dark"], [data-look="milnik"] [data-theme="dark"] {
+  --surface-chrome: #2a2020;
+  --surface-app: #3b2f2f;         /* the stage: brand clay */
+  --surface-panel: #3e3232;
+  --surface-overlay: #443636;
+  --surface-hover: #453838;
+  --milnik-hero: #433434;
+  --milnik-hero-line: rgb(255 210 205 / .12);
+  --milnik-accent: var(--rose-11);
+  --milnik-accent-solid: var(--rose-9);
+  --milnik-accent-soft: var(--rose-9);
+  --milnik-ink: var(--gray-12); --milnik-ink-fg: #3b2f2f;
+  --primary-bg: var(--rose-9); --primary-bg-hover: var(--rose-10); --primary-fg: #3b2f2f;
+  --indicator: var(--rose-9);
+  --field-bg: rgb(30 22 22 / .22);
+  --line-control: var(--gray-a7);
+  --thumb: var(--rose-9);
+  --focus: var(--gray-12);
+  --scrim: rgb(16 10 10 / .6);
+  --milnik-shadow-a: rgb(0 0 0 / .18);
+  --milnik-shadow-b: rgb(0 0 0 / .3);
+  --milnik-shadow-c: rgb(0 0 0 / .4);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-look="milnik"]:not([data-theme]) {
+    --surface-chrome: #2a2020;
+    --surface-app: #3b2f2f;
+    --surface-panel: #3e3232;
+    --surface-overlay: #443636;
+    --surface-hover: #453838;
+    --milnik-hero: #433434;
+    --milnik-hero-line: rgb(255 210 205 / .12);
+    --milnik-accent: var(--rose-11);
+    --milnik-accent-solid: var(--rose-9);
+    --milnik-accent-soft: var(--rose-9);
+    --milnik-ink: var(--gray-12); --milnik-ink-fg: #3b2f2f;
+    --primary-bg: var(--rose-9); --primary-bg-hover: var(--rose-10); --primary-fg: #3b2f2f;
+    --indicator: var(--rose-9);
+    --field-bg: rgb(30 22 22 / .22);
+    --line-control: var(--gray-a7);
+    --thumb: var(--rose-9);
+    --focus: var(--gray-12);
+    --scrim: rgb(16 10 10 / .6);
+    --milnik-shadow-a: rgb(0 0 0 / .18);
+    --milnik-shadow-b: rgb(0 0 0 / .3);
+    --milnik-shadow-c: rgb(0 0 0 / .4);
+  }
+}
+
+/* ============================================================
+   SHELL – sidebar on the quiet cream ground (brand at its top, the person at its foot),
+   the stage a lighter window from top to bottom, inset 10 px, rounded 16, soft shadow
+   ============================================================ */
+[data-look="milnik"] ::selection{background:var(--primary-bg);color:var(--primary-fg)}
+@media (min-width:960px){
+  [data-look="milnik"] .appbar{
+    position:fixed;top:0;left:0;z-index:41;width:var(--sidebar);height:var(--milnik-brand-h);padding:0 20px 0 22px;gap:10px;background:var(--surface-chrome);
+  }
+  /* the mark on one line, the product under it (264 px is too narrow for both side by side) */
+  [data-look="milnik"] .brand-link{flex-direction:column;align-items:flex-start;gap:5px;padding:4px 0}
+  [data-look="milnik"] .brand{font-size:17px}
+  [data-look="milnik"] .app-name{font-size:10px;padding:0;border-left:0;letter-spacing:.16em}
+  /* the person + Vzhled at the foot of the sidebar (Milníkovač: account + bell) */
+  [data-look="milnik"] .appbar-tools{
+    position:fixed;left:0;bottom:0;z-index:41;width:var(--sidebar);height:var(--milnik-foot-h);margin:0;padding:0 12px;gap:4px;
+    background:var(--surface-chrome);box-shadow:inset 0 1px 0 var(--line-1);
+  }
+  [data-look="milnik"] .appbar-tools>.account{order:-1;flex:1 1 auto;min-width:0;display:flex}
+  [data-look="milnik"] .appbar-tools .me{flex:1 1 auto;max-width:none;height:44px;padding:0 10px 0 6px;gap:10px}
+  [data-look="milnik"] .appbar-tools .me .avatar{width:32px;height:32px;font-size:12px}
+  [data-look="milnik"] .appbar-tools .signin{width:100%}
+  [data-look="milnik"] .appbar-tools .save-status{position:absolute;left:14px;right:14px;bottom:calc(100% + 8px);justify-content:center;padding:6px 12px;border-radius:var(--radius-full);background:var(--surface-overlay);box-shadow:var(--shadow-popover)}
+  [data-look="milnik"] .look-menu{top:auto;bottom:calc(100% + 8px);right:auto;left:-180px}
+  [data-look="milnik"] .app-body{min-height:100dvh}
+  [data-look="milnik"] .sidebar{
+    top:var(--milnik-brand-h);margin-top:var(--milnik-brand-h);height:calc(100dvh - var(--milnik-brand-h) - var(--milnik-foot-h));padding:4px 12px 12px;
+  }
+  [data-look="milnik"] .stage{
+    margin:10px 10px 10px 0;min-height:calc(100dvh - 20px);border-radius:var(--radius-stage);overflow:clip;box-shadow:var(--shadow-stage);
+  }
+}
+/* the person: avatar + name (+ role) */
+[data-look="milnik"] .me{border-radius:var(--radius-full);color:var(--text-1)}
+[data-look="milnik"] .me:hover{background:var(--surface-app)}
+[data-look="milnik"] .me[aria-current="page"]{background:var(--surface-app);color:var(--text-1);box-shadow:0 0 0 1px var(--line-1)}
+[data-look="milnik"] .me-name{font-size:var(--font-size-3)}
+[data-look="milnik"] .look-toggle{width:var(--control-icon);height:var(--control-icon);color:var(--text-2)}
+[data-look="milnik"] .look-toggle:hover{background:var(--surface-app);color:var(--text-1)}
+[data-look="milnik"] .look-menu{border-radius:var(--radius-menu)}
+
+/* nav: rounded-full items, ink pill when current */
+[data-look="milnik"] .nav-list{gap:4px}
+[data-look="milnik"] .nav-item{padding:var(--optical) 12px 0 14px;gap:12px;color:var(--text-2);transition:background-color .15s,color .15s}
+[data-look="milnik"] .nav-item .icon{width:17px;height:17px;color:currentColor}
+[data-look="milnik"] .nav-item:hover{background:var(--surface-app);color:var(--text-1)}
+[data-look="milnik"] .nav-item[aria-current="page"]{background:var(--primary-bg);color:var(--primary-fg)}
+[data-look="milnik"] .nav-item[aria-current="page"] .icon{color:currentColor}
+[data-look="milnik"] .nav-item[aria-current="page"]::before{content:none}
+[data-look="milnik"] .nav-item .count{min-width:26px;height:18px;padding:var(--optical) 8px 0;font-size:11px;background:var(--count-bg);color:var(--text-2)}
+[data-look="milnik"] .nav-item .count-warn{background:var(--waiting-solid);color:var(--text-on-warning)}
+[data-look="milnik"] .nav-item[aria-current="page"] .count{background:color-mix(in srgb,var(--primary-fg) 25%,transparent);color:var(--primary-fg)}
+[data-look="milnik"] .nav-divider{height:0;margin:14px 14px 10px;background:none;box-shadow:0 -1px 0 var(--line-1)}
+[data-look="milnik"] .sidebar-foot{border-top:0;padding-top:0}
+[data-look="milnik"] .nav-foot .nav-item{color:var(--text-2)}
+
+/* ============================================================
+   PAGE – HeroHead: a tinted band across the stage (quiet label · title · actions · lead · meta),
+   pill tabs under it, content centred at ~780 px (wide pages for the calendar and tables)
+   ============================================================ */
+[data-look="milnik"]{--page-pad-x:32px;--page-pad-top:56px;--page-margin-inline:auto}
+[data-look="milnik"] .page{padding-bottom:56px}
+[data-look="milnik"] .page-head{position:relative;isolation:isolate;margin:0 0 36px}
+[data-look="milnik"] .page-head-row{position:relative;padding-bottom:40px;align-items:flex-start;gap:12px 20px}
+/* the band: from the stage top to the row's bottom, edge to edge (the stage clips it) */
+[data-look="milnik"] .page-head-row::after{
+  content:"";position:absolute;z-index:-1;top:-100vh;bottom:0;left:-100vmax;right:-100vmax;
+  background:var(--milnik-hero);box-shadow:inset 0 -1px 0 var(--milnik-hero-line);pointer-events:none;
+}
+/* a head built without .page-head-row (older markup): the whole head is the band */
+[data-look="milnik"] .page-head:not(:has(>.page-head-row)){padding-bottom:40px}
+[data-look="milnik"] .page-head:not(:has(>.page-head-row))::after{
+  content:"";position:absolute;z-index:-1;top:-100vh;bottom:0;left:-100vmax;right:-100vmax;
+  background:var(--milnik-hero);box-shadow:inset 0 -1px 0 var(--milnik-hero-line);pointer-events:none;
+}
+/* quiet section label above the title (hidden where a back pill already says where you are) */
+[data-look="milnik"] .page-head[data-context]::before{
+  content:attr(data-context) / "";order:-1;display:block;margin:0 0 10px;
+  font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:11px;line-height:16px;letter-spacing:.08em;color:var(--text-2);
+}
+[data-look="milnik"] .page-head[data-context=""]::before,[data-look="milnik"] .page-head:has(>.page-back)::before{content:none}
+[data-look="milnik"] .page-head>.page-back{order:-2}
+[data-look="milnik"] .page-head>:not(.page-back)+.page-head-row{margin-top:24px}   /* a cover / media above the title */
+[data-look="milnik"] .page-title{font-weight:900;letter-spacing:0;padding-top:2px;text-wrap:pretty}
+[data-look="milnik"] .page-lead{margin-top:12px;font-size:var(--font-size-4);line-height:24px}
+[data-look="milnik"] .page-meta{margin-top:14px;font-size:var(--font-size-3)}
+[data-look="milnik"] .page-actions{margin-top:0;gap:8px;min-height:40px}
+/* back: a bordered pill */
+[data-look="milnik"] :is(.page-back,.back){
+  height:34px;padding:var(--optical) 16px 0 10px;margin:0 0 24px;gap:6px;border-radius:var(--radius-full);
+  box-shadow:inset 0 0 0 1px var(--line-2);font-size:var(--font-size-2);color:var(--text-2);background:none;
+}
+[data-look="milnik"] :is(.page-back,.back):hover{background:var(--hover);color:var(--text-1)}
+
+/* tabs: pills under the band, ink when current, counts in a small pill (TabCount) */
+[data-look="milnik"] .page-tabs{gap:6px;box-shadow:none;padding:2px 0}
+[data-look="milnik"] .page-head .page-tabs{margin-top:36px}
+[data-look="milnik"] .page-head .page-toolbar,[data-look="milnik"] .page-head .page-tabs+.page-toolbar{margin-top:20px}
+[data-look="milnik"] .tab{
+  height:36px;padding:var(--optical) 16px 0;gap:8px;border-radius:var(--radius-full);color:var(--text-2);
+  transition:background-color .15s,color .15s;
+}
+[data-look="milnik"] .tab:hover{background:var(--hover);color:var(--text-1)}
+[data-look="milnik"] .tab:focus-visible{border-radius:var(--radius-full);outline-offset:2px}
+[data-look="milnik"] :is(.tab[aria-current="page"],.tab[aria-selected="true"]){background:var(--primary-bg);color:var(--primary-fg)}
+[data-look="milnik"] :is(.tab[aria-current="page"],.tab[aria-selected="true"])::after{content:none}
+[data-look="milnik"] .tab .count{min-width:26px;height:18px;margin-right:-6px;padding:var(--optical) 8px 0;font-size:11px;background:var(--count-bg);color:var(--text-2)}
+[data-look="milnik"] :is(.tab[aria-current="page"],.tab[aria-selected="true"]) .count{background:color-mix(in srgb,var(--primary-fg) 25%,transparent);color:var(--primary-fg)}
+
+/* section titles and date navigation: display cut, sentence case */
+[data-look="milnik"] :is(.section-head>h2,.kit-h2,.datenav-label){font-family:var(--milnik-display);font-weight:900;text-transform:none;letter-spacing:-.005em}
+[data-look="milnik"] .section-head{margin-bottom:14px;padding-inline:4px}
+/* module display titles written uppercase in their own CSS – sentence case here (request: use var(--title-transform)) */
+[data-look="milnik"] :is(.month-daylist-title,.day-pop-title,.template-card-title,.template-section-title,.place-card-title,.bday-month-title,.web-preview-title){text-transform:none;letter-spacing:.005em}
+[data-look="milnik"] .datenav-label{min-width:8.5em;font-size:18px}
+
+/* ============================================================
+   BUTTONS – rounded-full; default = ink, outline, ghost, destructive; h 40 / sm 32 / icon 36
+   ============================================================ */
+[data-look="milnik"] .btn{--px:20px;transition:background-color .15s,color .15s,box-shadow .15s,opacity .15s}
+[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid){
+  background:var(--surface-panel);box-shadow:inset 0 0 0 1px var(--line-control)}
+[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):hover{
+  background:var(--surface-hover);box-shadow:inset 0 0 0 1px var(--line-hover)}
+[data-look="milnik"] :is(.btn-solid,.btn.primary){background:var(--primary-bg);color:var(--primary-fg)}
+[data-look="milnik"] :is(.btn-solid,.btn.primary):hover{background:var(--primary-bg-hover)}
+[data-look="milnik"] .btn-soft{background:var(--soft)}
+[data-look="milnik"] .btn-soft:hover{background:var(--soft-hover)}
+[data-look="milnik"] :is(.btn-ghost,.btn.plain){color:var(--text-2)}
+[data-look="milnik"] :is(.btn-ghost,.btn.plain):hover{background:var(--hover);color:var(--text-1)}
+[data-look="milnik"] .btn-danger{background:var(--declined-bg);color:var(--declined-fg)}
+[data-look="milnik"] .btn-danger:hover{background:color-mix(in srgb,var(--red-9) 20%,transparent);box-shadow:none}
+[data-look="milnik"] :is(.btn-s,.btn.mini){--px:14px}
+[data-look="milnik"] :is(.btn-l,.btn.large){--px:24px}
+[data-look="milnik"] .btn-icon{width:var(--h);padding:0}
+[data-look="milnik"] .btn-icon:not(.btn-s):not(.btn-l):not(.mini):not(.large){--h:var(--control-icon)}
+[data-look="milnik"] .btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+[data-look="milnik"] .btn[aria-pressed="true"]{background:var(--primary-bg);color:var(--primary-fg);box-shadow:none}
+/* disabled: the variant stays, at half strength (Milníkovač: disabled:opacity-50) */
+[data-look="milnik"] .btn:is(:disabled,[aria-disabled="true"]){opacity:.45;cursor:not-allowed}
+[data-look="milnik"] :is(.btn-solid,.btn.primary):is(:disabled,[aria-disabled="true"]){background:var(--primary-bg);color:var(--primary-fg)}
+[data-look="milnik"] .btn-soft:is(:disabled,[aria-disabled="true"]){background:var(--soft);color:var(--text-1)}
+[data-look="milnik"] :is(.btn-ghost,.btn.plain):is(:disabled,[aria-disabled="true"]){background:none;color:var(--text-2)}
+[data-look="milnik"] .btn-danger:is(:disabled,[aria-disabled="true"]){background:var(--declined-bg);color:var(--declined-fg)}
+[data-look="milnik"] .btn-danger-solid:is(:disabled,[aria-disabled="true"]){background:var(--declined-solid);color:var(--text-on-danger)}
+[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):is(:disabled,[aria-disabled="true"]){background:var(--surface-panel);color:var(--text-1);box-shadow:inset 0 0 0 1px var(--line-control)}
+[data-look="milnik"] .btn-x{color:var(--text-2)}
+/* links: the accent, underline on hover (ArrowLink) */
+[data-look="milnik"] :is(a.link,.link,.text-btn){color:var(--text-accent);text-decoration:none}
+[data-look="milnik"] :is(a.link,.link,.text-btn):hover{text-decoration:underline;text-decoration-thickness:1px}
+/* the dashed add button (dashAdd) – kit hook requested: .btn-add / .dash-add */
+[data-look="milnik"] :is(.btn-add,.dash-add){
+  display:flex;width:100%;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:var(--optical) 16px 0;border:0;border-radius:var(--radius-3);
+  background:none;box-shadow:none;outline:1.5px dashed var(--line-control);outline-offset:-1.5px;color:var(--text-2);font:inherit;font-size:var(--font-size-2);cursor:pointer;
+  transition:color .15s,background-color .15s,outline-color .15s;
+}
+[data-look="milnik"] :is(.btn-add,.dash-add):hover{outline-color:var(--milnik-accent);color:var(--milnik-accent);background:color-mix(in srgb,var(--milnik-accent) 5%,transparent)}
+
+/* ============================================================
+   BADGES / PILLS – tones at /15, counts, status symbols
+   ============================================================ */
+[data-look="milnik"] .badge{height:26px;padding:var(--optical) 12px 0 10px;font-size:var(--font-size-2)}
+[data-look="milnik"] .badge.no-icon{padding-left:12px}
+[data-look="milnik"] .badge:not([class*="badge-"]),[data-look="milnik"] .badge-neutral{background:var(--soft);color:var(--text-2)}
+[data-look="milnik"] .badge-accent{background:color-mix(in srgb,var(--milnik-accent-solid) 14%,transparent);color:var(--milnik-accent)}
+[data-look="milnik"] .badge-info{background:var(--info-bg);color:var(--info-fg)}
+[data-look="milnik"] .count{min-width:24px;padding:var(--optical) 7px 0;font-size:11px}
+[data-look="milnik"] .callout{border-radius:12px;padding:12px 14px}
+[data-look="milnik"] .callout-info{background:var(--info-bg);color:var(--text-1)}
+[data-look="milnik"] .callout-info>svg{color:var(--milnik-accent)}
+
+/* ============================================================
+   CHOOSING – segmented = soft track + ink thumb (all pills); chips = outline pills, ink when chosen
+   ============================================================ */
+[data-look="milnik"] .seg{padding:3px;gap:2px;border-radius:var(--radius-full);background:var(--soft);box-shadow:none}
+[data-look="milnik"] :is(.seg>button,.seg>a,.seg>label>span){height:32px;padding:var(--optical) 16px 0;border-radius:var(--radius-full);color:var(--text-2)}
+[data-look="milnik"] :is(.seg>[aria-pressed="true"],.seg>[aria-current="page"],.seg>[aria-checked="true"],.seg>label>input:checked+span){background:var(--thumb);color:var(--primary-fg);box-shadow:none}
+[data-look="milnik"] :is(.seg-s>button,.seg-s>a,.seg-s>label>span){height:28px;padding:var(--optical) 12px 0}
+[data-look="milnik"] .seg-s{border-radius:var(--radius-full)}
+[data-look="milnik"] .chip{height:34px;padding:var(--optical) 14px 0;background:var(--surface-panel);box-shadow:inset 0 0 0 1px var(--line-2);transition:background-color .15s,box-shadow .15s}
+[data-look="milnik"] .chip:hover{background:var(--surface-hover);box-shadow:inset 0 0 0 1px var(--line-control)}
+[data-look="milnik"] :is(.chip[aria-pressed="true"],.chip[aria-current="page"],.chip:has(>input:checked)){background:var(--primary-bg);color:var(--primary-fg);box-shadow:none}
+[data-look="milnik"] :is(.chip[aria-pressed="true"],.chip[aria-current="page"],.chip:has(>input:checked)) .n{color:var(--primary-fg);opacity:.75}
+
+/* ============================================================
+   SURFACES – card: rounded-2xl + border + shadow-sm; hover: stronger border + shadow-lg
+   ============================================================ */
+[data-look="milnik"] :is(.card,.items,.notice,.place-map){transition:box-shadow .2s}
+[data-look="milnik"] :is(.card,.items,.notice):hover{box-shadow:var(--shadow-card-hover)}
+[data-look="milnik"] .card .card,[data-look="milnik"] .card .card:hover,[data-look="milnik"] .card .items,[data-look="milnik"] .card .items:hover{box-shadow:none}
+[data-look="milnik"] a.card-link:hover{box-shadow:var(--shadow-card-hover)}
+[data-look="milnik"] .card.pad,[data-look="milnik"] .panel.pad{padding:20px 22px}
+[data-look="milnik"] .card-head{padding:18px 22px 10px}
+[data-look="milnik"] .card-body{padding:4px 22px 20px}
+[data-look="milnik"] .card-body:first-child{padding-top:20px}
+[data-look="milnik"] .card-foot{padding:12px 22px;background:var(--surface-sunken);border-top-color:var(--line-1);border-radius:0 0 var(--radius-card) var(--radius-card)}
+[data-look="milnik"] :is(.card-title,.label,.section>h3,.section h3.label,.form-grid h3,.why-how .subhead,.select-heading,.look-heading,.kit-island-tag){font-size:11px;letter-spacing:.08em;color:var(--text-2)}
+
+/* ============================================================
+   LISTS – rows in a card, hover = the shell ground, grey chevron for drill-in
+   ============================================================ */
+[data-look="milnik"] .item{padding:12px 20px;gap:14px}
+[data-look="milnik"] .item.opens:hover{background:var(--surface-sunken)}
+/* row titles that NAME something (a person, team, meeting – the lead is an avatar, mark, date or cover)
+   carry the weight like Milníkovač's semibold; sentence-long titles (Co nesedí) stay regular */
+[data-look="milnik"] .item:has(>.item-lead :is(.avatar,.group-mark,.date-block,.kind-mark,.cover)) .item-title{font-family:var(--milnik-display);font-weight:900;font-size:16px;line-height:20px;letter-spacing:.01em}
+[data-look="milnik"] .item-title :is(.badge,.status,.count,small,.n){font-family:var(--font-body);font-weight:400;letter-spacing:0}
+[data-look="milnik"] .item-meta{font-size:var(--font-size-2);line-height:18px}
+[data-look="milnik"] .item-chevron{color:var(--gray-8)}
+[data-look="milnik"] .item.tone-selected::before{background:var(--primary-bg)}
+[data-look="milnik"] .list-group{padding:16px 20px 6px}
+[data-look="milnik"] .date-block{border-radius:12px;background:var(--soft)}
+[data-look="milnik"] .item.tone-mine .avatar,[data-look="milnik"] .avatar.mine{box-shadow:0 0 0 2px var(--surface-panel),0 0 0 3.5px var(--milnik-accent-soft)}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+[data-look="milnik"] .table thead th{height:40px;font-size:11px;background:none;border-bottom-color:var(--line-1)}
+[data-look="milnik"] .table tbody :is(td,th){height:48px;padding:8px 14px}
+[data-look="milnik"] .table tbody tr:hover :is(td,th){background:var(--surface-sunken)}
+[data-look="milnik"] .th-sort{border-radius:var(--radius-full)}
+[data-look="milnik"] .bulk-bar{background:var(--surface-sunken);color:var(--text-1);border-bottom:1px solid var(--line-1);padding:8px 12px 8px 20px}
+[data-look="milnik"] .bulk-bar .btn-ghost{color:var(--text-2)}
+[data-look="milnik"] .bulk-count{font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:.08em;color:var(--text-2)}
+
+/* ============================================================
+   PEOPLE – avatars as initials in ink circles (Milníkovač: no photos, no hues)
+   ============================================================ */
+[data-look="milnik"] .avatar:not(.avatar-gone){background:var(--milnik-ink);color:var(--milnik-ink-fg)}
+[data-look="milnik"] .avatar-more{background:var(--soft);color:var(--text-2)}
+[data-look="milnik"] .avatar-stack .avatar{box-shadow:0 0 0 2px var(--surface-panel)}
+[data-look="milnik"] .group-mark{border-radius:var(--radius-mark)}
+[data-look="milnik"] .person-line-name{font-size:var(--font-size-4)}
+
+/* ============================================================
+   FEEDBACK – empty state in a dashed frame, toast = pill, progress in the accent
+   ============================================================ */
+[data-look="milnik"] .empty-state{background:none;box-shadow:none;border:1px dashed var(--line-control);border-radius:var(--radius-card);padding:52px 24px}
+[data-look="milnik"] .empty-state.compact{padding:18px 20px}
+[data-look="milnik"] .empty-state.bare{border:0}
+[data-look="milnik"] .card .empty-state,[data-look="milnik"] .dialog .empty-state{border:0}
+[data-look="milnik"] .empty-icon{background:var(--soft)}
+[data-look="milnik"] .empty-text{max-width:42ch;font-size:var(--font-size-2);line-height:20px}
+[data-look="milnik"] .toast{border-radius:26px;min-height:46px;padding:8px 10px 8px 16px;box-shadow:var(--shadow-popover)}
+[data-look="milnik"] .toast-error{box-shadow:var(--shadow-popover),inset 0 0 0 1.5px var(--declined-solid)}
+[data-look="milnik"] .progress{height:6px;background:var(--hover)}
+/* untoned bars and rings in the accent (petrol's role); toned ones keep their status colour */
+[data-look="milnik"] :where(.progress-fill){background:var(--milnik-accent-soft)}
+[data-look="milnik"] :where(.fill-ring-arc){stroke:var(--milnik-accent-soft)}
+
+/* ============================================================
+   DIALOG – rounded-2xl, padding 28, title in the display cut, ink confirm right, blurred scrim
+   ============================================================ */
+[data-look="milnik"] .dialog::backdrop{background:var(--scrim);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+[data-look="milnik"] :is(.dialog-form,.dialog>form,.dialog .inner){padding:28px 28px 0;gap:20px}
+[data-look="milnik"] .dialog .inner{padding-bottom:28px}
+[data-look="milnik"] :is(.dialog-title,.dialog h2){font-family:var(--milnik-display);font-weight:900;text-transform:none;letter-spacing:-.005em;line-height:26px}
+[data-look="milnik"] :is(.dialog-sub,.dialog .sub){font-size:var(--font-size-3);line-height:21px}
+[data-look="milnik"] :is(.dialog-foot,.dialog .actions){margin:4px -28px 0;padding:16px 28px 20px;background:var(--surface-sunken);border-top-color:var(--line-1)}
+[data-look="milnik"] .form-section-title{font-family:var(--milnik-display);font-weight:900;font-size:var(--font-size-3);letter-spacing:0}
+[data-look="milnik"] .form-section+.form-section{border-top-color:var(--line-1);padding-top:20px}
+[data-look="milnik"] .disclosure>summary{border-radius:var(--radius-full);padding:var(--optical) 12px 0 8px}
+[data-look="milnik"] .form-error{border-radius:12px}
+
+/* ============================================================
+   FIELDS – h 40, rounded-xl, border input; focus = ink border
+   ============================================================ */
+[data-look="milnik"] :is(input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea,.select-btn,.date-btn,.combo-field,.stepper){border-radius:var(--radius-field)}
+[data-look="milnik"] :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=range]),select,textarea):focus,
+[data-look="milnik"] :is(.select-btn:focus-visible,.select-btn[aria-expanded="true"],.date-btn:focus-visible,.date-btn[aria-expanded="true"],.combo-field:focus-within,.stepper:focus-within){box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}
+[data-look="milnik"] .stepper input[type="number"]:focus,[data-look="milnik"] .combo-input.combo-input:focus{box-shadow:none}
+[data-look="milnik"] .stepper input[type="number"]{height:34px}
+[data-look="milnik"] .combo-input.combo-input{height:38px}
+[data-look="milnik"] .stepper-btn{border-radius:var(--radius-full);width:32px;height:32px}
+[data-look="milnik"] .field-label,[data-look="milnik"] .field>span:first-child:not(.select):not(.date):not(.stepper){font-size:var(--font-size-3)}
+[data-look="milnik"] .search-field>.icon{left:14px}
+[data-look="milnik"] .search-field>input{padding-left:38px;border-radius:var(--radius-full);background:var(--soft);box-shadow:none}
+[data-look="milnik"] .search-field>input:hover{background:var(--soft-hover);box-shadow:none}
+[data-look="milnik"] :where(input[type=checkbox]:not([role=switch])){border-radius:6px}
+[data-look="milnik"] :where(input[type=checkbox][role=switch]){background:var(--soft-hover);box-shadow:none}
+[data-look="milnik"] :where(input[type=checkbox][role=switch]):checked{background:var(--primary-bg)}
+[data-look="milnik"] :where(input[type=checkbox][role=switch])::after{background:var(--surface-panel)}
+[data-look="milnik"] :where(input[type=checkbox][role=switch]):checked::after{background:var(--primary-fg)}
+
+/* ============================================================
+   MENUS, POPOVERS – rounded-xl, p 6, items rounded-lg 32 px
+   ============================================================ */
+[data-look="milnik"] :is(.menu-list,.select-list,.combo-list,.date-panel,.popover){border-radius:var(--radius-menu)}
+[data-look="milnik"] .menu-list button{height:34px;border-radius:8px;font-size:var(--font-size-3);gap:9px}
+[data-look="milnik"] .menu-list button .icon{width:15px;height:15px}
+[data-look="milnik"] :is(.select-option,.combo-option){border-radius:8px}
+[data-look="milnik"] .select-option[aria-selected="true"]{background:var(--hover);color:var(--text-1)}
+[data-look="milnik"] .menu-btn{border-radius:var(--radius-full)}
+[data-look="milnik"] .date-day{border-radius:var(--radius-full)}
+[data-look="milnik"] .date-title{font-family:var(--milnik-display);font-weight:900;text-transform:none;letter-spacing:0}
+
+/* ============================================================
+   PHONE (< 960) – Milníkovač mobile: a top bar on the ground, the content on the stage colour
+   ============================================================ */
+@media (max-width:959.98px){
+  [data-look="milnik"]{--page-pad-x:20px;--page-pad-top:32px;--title-size:28px;--title-line:34px}
+  [data-look="milnik"] .appbar{box-shadow:inset 0 -1px 0 var(--line-1)}
+  [data-look="milnik"] .menu-toggle{border-radius:var(--radius-full)}
+  [data-look="milnik"] .stage{border-radius:0;box-shadow:none;overflow:clip}
+  [data-look="milnik"] .page-head-row{padding-bottom:28px}
+  [data-look="milnik"] .page-head .page-tabs{margin-top:24px}
+  [data-look="milnik"] .page-head{margin-bottom:28px}
+  [data-look="milnik"] .sidebar .nav-item{height:42px}
+  [data-look="milnik"] .sheet-tools .me{border-radius:var(--radius-full)}
+  [data-look="milnik"] .sheet-tools .look-toggle{border-radius:var(--radius-full);width:100%;height:42px;padding-left:14px;gap:12px}
+  [data-look="milnik"] .sheet-tools .me{padding-left:4px}
+}
+
+/* ============================================================
+   #kit islands follow the look; print keeps paper colours
+   ============================================================ */
+[data-look="milnik"] .kit-island{background:var(--surface-app);border-radius:var(--radius-card)}
+@media print{
+  [data-look="milnik"] .page-head-row::after,[data-look="milnik"] .page-head::before{content:none}
+  [data-look="milnik"] .stage{margin:0;overflow:visible}
+  [data-look="milnik"] .avatar:not(.avatar-gone){background:none;color:#000}
+}

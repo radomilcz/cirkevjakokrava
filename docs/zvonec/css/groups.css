@@ -1,0 +1,170 @@
+/* Týmy a skupinky (ui/groups.js): lists, the team page, „Kdo co umí“, the Tým and Role dialogs.
+   Semantic tokens only (css/tokens.css), so it works in every look. */
+
+/* ---------- lists ---------- */
+.group-row .item-lead .group-mark{width:40px;height:40px}
+.group-row-meta{display:flex;flex-direction:column;gap:2px}
+.group-row-roles{color:var(--text-2);font-size:var(--font-size-2);line-height:18px}
+.group-row-trail{display:flex;align-items:center;gap:12px}
+.group-row-count{min-width:5.5em;text-align:right;color:var(--text-2);font-variant-numeric:tabular-nums}
+.page-body>.groups-archive{margin-top:40px}
+.groups-archive .section-head{margin-bottom:4px}
+.group-row-trail .avatar-stack .avatar+.avatar{margin-left:-2px}
+.groups-archive .section-note{margin:0 0 12px}
+@media (max-width:640px){
+  .group-row-trail .avatar-stack{display:none}
+  .group-row-count{min-width:0}
+}
+
+/* ---------- team page head ---------- */
+.group-page .page-meta .group-kind-meta,.group-page .page-meta .group-leaders{display:inline-flex;align-items:center;gap:8px}
+.group-page .page-meta .avatar-stack{margin-top:-2px}
+.group-page .page-lead{max-width:60ch}
+.group-page .page-toolbar .add-member{max-width:420px}
+.group-page .page-toolbar .add-member .field-label{color:var(--text-2)}
+
+/* ---------- people of a group ---------- */
+.member-list .item-meta{max-width:60ch}
+
+/* ---------- roles ---------- */
+.role-skills{color:var(--text-2);font-variant-numeric:tabular-nums}
+.role-row .item-meta{max-width:62ch}
+
+/* ---------- „Kdo co umí“ ---------- */
+.skill-matrix-wrap{display:flex;flex-direction:column;gap:12px;min-width:0}
+.skill-matrix-card{overflow:hidden;padding:0}
+.skill-matrix-scroll{overflow:auto;max-height:max(360px,calc(100dvh - 300px));overscroll-behavior:contain}
+.skill-matrix-scroll:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.skill-matrix{border-collapse:separate;border-spacing:0;font-size:var(--font-size-3);line-height:20px;min-width:100%}
+.skill-matrix th,.skill-matrix td{background:var(--surface-panel);border-bottom:1px solid var(--line-1);text-align:left;font-weight:400}
+.skill-matrix thead th{position:sticky;top:0;z-index:2;background:var(--surface-sunken);vertical-align:bottom}
+.skill-matrix thead tr.skill-teams th{height:36px;padding:8px 12px 4px;border-bottom:0}
+.skill-matrix thead tr.skill-teams+tr.skill-roles th{top:36px}
+.skill-matrix thead tr.skill-roles th{padding:8px 10px 10px;border-bottom:1px solid var(--line-2)}
+.skill-matrix .skill-corner{left:0;z-index:4;min-width:220px;padding:10px 16px;vertical-align:bottom;box-shadow:inset -1px 0 0 var(--line-1)}
+.skill-matrix tr.skill-roles .skill-corner{padding-bottom:12px}
+.skill-team-link{display:inline-flex;align-items:center;gap:8px;color:var(--text-1);text-decoration:none;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-1);letter-spacing:var(--tracking-label);white-space:nowrap}
+.skill-team-link span{padding-top:2px}
+.skill-team-link:hover{color:var(--text-accent)}
+.skill-team .group-mark{font-size:9px}
+.skill-col{min-width:104px;max-width:150px}
+.skill-role-name{display:block;color:var(--text-1);font-size:var(--font-size-3);line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.skill-role-count{display:flex;align-items:center;gap:4px;margin-top:2px;color:var(--text-2);font-size:var(--font-size-1);line-height:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.skill-col.scarce{background:var(--waiting-bg)}
+.skill-col.scarce .skill-role-count{color:var(--warning-text)}
+.skill-scarce-icon,.skill-legend-scarce .icon{width:13px;height:13px;flex:none;color:var(--waiting-fg);margin-top:-2px}
+.skill-matrix .team-start{box-shadow:inset 1px 0 0 var(--line-2)}
+.skill-matrix thead tr.skill-teams th.team-start{box-shadow:inset 1px 0 0 var(--line-2)}
+.skill-person{position:sticky;left:0;z-index:1;min-width:220px;padding:6px 16px;box-shadow:inset -1px 0 0 var(--line-1)}
+.skill-person .person-line-name{max-width:16em}
+.skill-matrix tbody tr:last-child :is(th,td){border-bottom:0}
+.skill-matrix tbody tr:hover :is(th,td){background:var(--surface-sunken)}
+.skill-td{padding:4px 6px;height:48px}
+.skill-matrix .skill-load-head{min-width:96px;text-align:right}
+.skill-load-head .skill-role-name{text-align:right}
+.skill-load-head .skill-role-count{justify-content:flex-end}
+.skill-matrix .skill-load{padding:4px 16px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--text-2)}
+.skill-load-text.over{color:var(--declined-fg)}
+.skill-load-text.quiet{color:var(--text-3)}
+
+/* a cell: symbol + colour + word (umí ● green tint · učí se ◐ neutral · – quiet) */
+.skill-cell{
+  display:inline-flex;align-items:center;gap:6px;width:100%;min-width:84px;height:32px;padding:var(--optical) 10px 0;
+  border:0;border-radius:var(--radius-control-1);background:none;color:var(--text-3);font:inherit;font-size:var(--font-size-2);
+  white-space:nowrap;text-align:left;
+}
+button.skill-cell{cursor:pointer;transition:background .12s}
+button.skill-cell:hover{background:var(--hover);color:var(--text-1)}
+.skill-cell.lvl-trained{background:var(--confirmed-bg);color:var(--confirmed-fg)}
+.skill-cell.lvl-learning{background:var(--hover);color:var(--text-1)}
+button.skill-cell.lvl-trained:hover{box-shadow:inset 0 0 0 1px var(--confirmed-fg)}
+button.skill-cell.lvl-learning:hover{box-shadow:inset 0 0 0 1px var(--line-strong)}
+.skill-cell.lvl-none .skill-word{padding-left:2px}
+.skill-dot{flex:none;display:inline-block;width:10px;height:10px;margin-top:calc(-1*var(--optical));border-radius:50%}
+.skill-dot-trained{background:var(--confirmed-solid)}
+.skill-dot-learning{box-shadow:inset 0 0 0 1.5px var(--text-1);background:linear-gradient(90deg,var(--text-1) 50%,transparent 50%)}
+.skill-dot-none{display:none}
+.skill-legend{display:flex;flex-wrap:wrap;gap:6px 20px;margin:0;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.skill-legend>span{display:inline-flex;align-items:center;gap:8px}
+.skill-legend .skill-dot{margin-top:0}
+.skill-legend-hint{margin-left:auto}
+@media (max-width:640px){
+  .skill-matrix .skill-corner,.skill-person{min-width:168px;padding-inline:12px}
+  .skill-person .person-line-name{max-width:9.5em}
+  .skill-legend-hint{margin-left:0}
+}
+
+/* ---------- member dialog: a segmented row per role ---------- */
+.member-skills{display:flex;flex-direction:column;gap:2px;min-width:0}
+.member-skills[hidden]{display:none}
+.member-skill{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:4px 0;border-bottom:1px solid var(--line-1)}
+.member-skill:last-child{border-bottom:0}
+.member-skill-role{font-size:var(--font-size-4);min-width:0}
+.member-dialog-link{margin:0;font-size:var(--font-size-3)}
+
+/* ---------- several people: chips + combobox ---------- */
+.people-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.people-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.people-chip{
+  display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 2px 0 4px;border-radius:var(--radius-chip);
+  background:var(--selected-bg);color:var(--selected-fg);box-shadow:inset 0 0 0 1px var(--selected-line);font-size:var(--font-size-3);
+}
+.people-chip-name{padding-top:var(--optical);white-space:nowrap}
+.people-chip-x{width:26px;height:26px;border-radius:50%;color:inherit}
+.people-chip-x .icon{width:14px;height:14px}
+
+/* ---------- „Jen část setkání“: a range on a mini timeline ---------- */
+.minute-window{display:flex;flex-direction:column;gap:12px;min-width:0}
+.window-editor{display:flex;flex-direction:column;gap:6px;padding:14px 16px 12px;border-radius:var(--radius-4);background:var(--surface-sunken)}
+.window-editor[hidden]{display:none}
+.window-track{position:relative;height:44px;margin:0 10px}
+.window-rail{position:absolute;left:0;right:0;top:20px;height:4px;border-radius:2px;background:var(--line-1)}
+.window-meeting{position:absolute;top:12px;height:20px;border-radius:var(--radius-1);background:var(--hover);box-shadow:inset 0 0 0 1px var(--line-2)}
+.window-meeting-label{position:absolute;left:8px;top:-17px;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;letter-spacing:var(--tracking-label);font-size:10px;line-height:12px;color:var(--text-2)}
+.window-range{position:absolute;top:16px;height:12px;border-radius:6px;background:var(--indicator);opacity:.9}
+.window-thumb{position:absolute;left:-10px;right:-10px;top:12px;width:calc(100% + 20px);height:20px;margin:0;background:none;-webkit-appearance:none;appearance:none;pointer-events:none}
+.window-thumb::-webkit-slider-runnable-track{height:20px;background:none;border:0}
+.window-thumb::-moz-range-track{height:20px;background:none;border:0}
+.window-thumb::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;pointer-events:auto;cursor:grab;
+  background:var(--thumb);box-shadow:0 0 0 2px var(--indicator),var(--shadow-raised);
+}
+.window-thumb::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;pointer-events:auto;cursor:grab;background:var(--thumb);box-shadow:0 0 0 2px var(--indicator),var(--shadow-raised)}
+.window-thumb:focus{outline:none}
+.window-thumb:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 2px var(--indicator),0 0 0 5px var(--focus-halo)}
+.window-thumb:focus-visible::-moz-range-thumb{box-shadow:0 0 0 2px var(--indicator),0 0 0 5px var(--focus-halo)}
+.window-scale{position:relative;height:18px;margin:0 10px;font-size:var(--font-size-1);line-height:16px;color:var(--text-2)}
+.window-tick{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;font-variant-numeric:tabular-nums}
+.window-tick:first-child{transform:none}
+.window-tick:last-child{transform:translateX(-100%)}
+.window-tick.strong{color:var(--text-1)}
+.window-sentence{margin:4px 0 0;font-size:var(--font-size-4);line-height:22px;color:var(--text-1)}
+
+/* ---------- Setkání tab ---------- */
+.team-events>li{padding:0}
+.team-event{display:flex;flex-direction:column}
+.team-event-head{position:relative;display:flex;align-items:center;gap:12px;min-height:var(--row-min-height);padding:10px 18px;color:var(--text-1);text-decoration:none;border-radius:inherit}
+.team-event-head:hover{background:var(--hover)}
+.team-events>li:first-child .team-event-head{border-radius:var(--radius-card) var(--radius-card) 0 0}
+.team-event-text{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.team-event-title{display:flex;align-items:center;gap:6px;font-size:var(--font-size-4);line-height:20px}
+.team-event-title .kind-mark .icon{width:16px;height:16px;margin-top:calc(-1*var(--optical))}
+.team-event-meta{font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.team-event-chevron{width:16px;height:16px;color:var(--text-3);flex:none}
+.team-duties{list-style:none;margin:0;padding:2px 18px 14px 72px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px 20px}
+.team-duty{display:flex;flex-direction:column;gap:2px;min-width:0}
+.team-duty-role{font-size:var(--font-size-2);line-height:16px;color:var(--text-2)}
+.team-duty-people{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.team-duty-person{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:26px}
+.team-duty-person .person-line{min-width:0}
+.team-duty-person .person-line-name{font-size:var(--font-size-3)}
+.team-duty-person .status-icon{width:14px;height:14px;flex:none}
+.team-duty-person.status-confirmed .status-icon{color:var(--confirmed-solid)}
+.team-duty-person.status-proposed .status-icon{color:var(--waiting-fg)}
+.team-duty-person.status-declined .status-icon{color:var(--declined-fg)}
+.team-duty-missing{display:inline-flex;align-items:center;gap:6px;min-height:26px;font-size:var(--font-size-3);color:var(--warning-text)}
+.team-duty-missing::before{content:"";width:12px;height:12px;margin-left:6px;margin-right:4px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--waiting-fg)}
+@media (max-width:640px){
+  .team-event-head{padding-inline:14px}
+  .team-duties{padding:0 14px 12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 12px}
+}
