@@ -265,7 +265,7 @@ function eventsSection(group) {
       day: dayOf(event.start), today: dayOf(event.start) === today(),
       title: event.title || 'Setkání',
       meta: joinMeta([prettyTime(event.start), placesOf(S.data, event).map((p) => p.name).join(', ') || null, mine ? 'slouží tu i ty' : null]),
-      trail: needed ? fill(filled, needed) : null,
+      trail: needed ? fill(filled, needed, { trailing: true }) : null,
       href: `#setkani/${event.id}`,
     });
   });

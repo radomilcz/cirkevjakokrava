@@ -333,9 +333,14 @@ export function sev(severity, word) {
   return h('span', { class: 'sev', dataset: { sev: key } }, word || SEVERITY_WORDS[severity] || severity);
 }
 
-/** Fill ring + its words: fill(10, 15) → ◔ 10 z 15. `words` adds more („· 3 čekají“). */
-export function fill(filled, total, { words } = {}) {
-  return h('span', { class: 'cluster meta fill' }, fillRing(filled, total), h('span', { class: 'num' }, `${filled} z ${total}`, words ? [SEP, words] : null));
+/**
+ * Fill ring + its words: fill(10, 15) → ◔ 10 z 15. `words` adds more („· 3 čekají“).
+ * `trailing` puts the ring after the words (10 z 15 ◔) for right-aligned columns, so the rings line up.
+ */
+export function fill(filled, total, { words, trailing } = {}) {
+  const ring = fillRing(filled, total);
+  const text = h('span', { class: 'num' }, `${filled} z ${total}`, words ? [SEP, words] : null);
+  return h('span', { class: 'cluster meta fill' }, trailing ? [text, ring] : [ring, text]);
 }
 
 /**
@@ -586,7 +591,7 @@ export function needRow({ day, today: isToday, title: head, href, summary = [], 
     h('div', { class: 'row__body' },
       href ? h('a', { class: 'row__title need__title', href }, head) : h('span', { class: 'row__title' }, head),
       summary.length ? h('span', { class: 'need__sum' }, summary.filter(Boolean).map(sumItem)) : null),
-    total ? fill(filled, total) : h('span'),
+    total ? fill(filled, total, { trailing: true }) : h('span'),
     slots.length ? h('div', { class: 'need__slots' }, slots.map((s) => slot(s.label, s.onclick, { aria: s.aria }))) : null);
 }
 
