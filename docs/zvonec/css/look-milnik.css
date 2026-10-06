@@ -81,6 +81,7 @@
   --milnik-accent: var(--rose-11);        /* petrol: in progress, links, progress */
   --milnik-accent-solid: var(--rose-11);
   --milnik-accent-soft: var(--rose-11);   /* bars, rings: ≥ 3:1 on the stage (pink #e6acac is only 1.9:1) */
+  --milnik-badge-fg: var(--rose-11);
   --milnik-ink: var(--gray-12); --milnik-ink-fg: #fffaf6;   /* avatars: ink circles */
   --primary-bg: var(--gray-12); --primary-bg-hover: #534343; --primary-fg: #fffaf6;
   --indicator: var(--gray-12);
@@ -105,6 +106,8 @@
   --milnik-accent: var(--rose-11);
   --milnik-accent-solid: var(--rose-9);
   --milnik-accent-soft: var(--rose-9);
+  --milnik-badge-fg: var(--rose-12);
+  --text-3: color-mix(in srgb,var(--gray-10) 60%,var(--gray-11));   /* dashes, other-month days: ≥ 4.5:1 on the card */
   --milnik-ink: var(--gray-12); --milnik-ink-fg: #3b2f2f;
   --primary-bg: var(--rose-9); --primary-bg-hover: var(--rose-10); --primary-fg: #3b2f2f;
   --indicator: var(--rose-9);
@@ -129,6 +132,8 @@
     --milnik-accent: var(--rose-11);
     --milnik-accent-solid: var(--rose-9);
     --milnik-accent-soft: var(--rose-9);
+    --milnik-badge-fg: var(--rose-12);
+    --text-3: color-mix(in srgb,var(--gray-10) 60%,var(--gray-11));   /* dashes, other-month days: ≥ 4.5:1 on the card */
     --milnik-ink: var(--gray-12); --milnik-ink-fg: #3b2f2f;
     --primary-bg: var(--rose-9); --primary-bg-hover: var(--rose-10); --primary-fg: #3b2f2f;
     --indicator: var(--rose-9);
@@ -194,7 +199,7 @@
 [data-look="milnik"] .nav-item[aria-current="page"]::before{content:none}
 [data-look="milnik"] .nav-item .count{min-width:26px;height:18px;padding:var(--optical) 8px 0;font-size:11px;background:var(--count-bg);color:var(--text-2)}
 [data-look="milnik"] .nav-item .count-warn{background:var(--waiting-solid);color:var(--text-on-warning)}
-[data-look="milnik"] .nav-item[aria-current="page"] .count{background:color-mix(in srgb,var(--primary-fg) 25%,transparent);color:var(--primary-fg)}
+[data-look="milnik"] .nav-item[aria-current="page"] .count{background:color-mix(in srgb,var(--primary-fg) 16%,transparent);color:var(--primary-fg)}
 [data-look="milnik"] .nav-divider{height:0;margin:14px 14px 10px;background:none;box-shadow:0 -1px 0 var(--line-1)}
 [data-look="milnik"] .sidebar-foot{border-top:0;padding-top:0}
 [data-look="milnik"] .nav-foot .nav-item{color:var(--text-2)}
@@ -250,7 +255,7 @@
 [data-look="milnik"] :is(.tab[aria-current="page"],.tab[aria-selected="true"]){background:var(--primary-bg);color:var(--primary-fg)}
 [data-look="milnik"] :is(.tab[aria-current="page"],.tab[aria-selected="true"])::after{content:none}
 [data-look="milnik"] .tab .count{min-width:26px;height:18px;margin-right:-6px;padding:var(--optical) 8px 0;font-size:11px;background:var(--count-bg);color:var(--text-2)}
-[data-look="milnik"] :is(.tab[aria-current="page"],.tab[aria-selected="true"]) .count{background:color-mix(in srgb,var(--primary-fg) 25%,transparent);color:var(--primary-fg)}
+[data-look="milnik"] :is(.tab[aria-current="page"],.tab[aria-selected="true"]) .count{background:color-mix(in srgb,var(--primary-fg) 16%,transparent);color:var(--primary-fg)}
 
 /* section titles and date navigation: display cut, sentence case */
 [data-look="milnik"] :is(.section-head>h2,.kit-h2,.datenav-label){font-family:var(--milnik-display);font-weight:900;text-transform:none;letter-spacing:-.005em}
@@ -293,7 +298,7 @@
 [data-look="milnik"] :is(a.link,.link,.text-btn):hover{text-decoration:underline;text-decoration-thickness:1px}
 /* the dashed add button (dashAdd): kit button variant 'add' */
 [data-look="milnik"] .btn-add{
-  display:flex;width:100%;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:var(--optical) 16px 0;border:0;border-radius:var(--radius-3);
+  display:flex;width:100%;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:var(--optical) 16px 0;border:0;border-radius:12px;
   background:none;box-shadow:none;outline:1.5px dashed var(--line-control);outline-offset:-1.5px;color:var(--text-2);font:inherit;font-size:var(--font-size-2);cursor:pointer;
   transition:color .15s,background-color .15s,outline-color .15s;
 }
@@ -305,7 +310,7 @@
 [data-look="milnik"] .badge{height:26px;padding:var(--optical) 12px 0 10px;font-size:var(--font-size-2)}
 [data-look="milnik"] .badge.no-icon{padding-left:12px}
 [data-look="milnik"] .badge:not([class*="badge-"]),[data-look="milnik"] .badge-neutral{background:var(--soft);color:var(--text-2)}
-[data-look="milnik"] .badge-accent{background:color-mix(in srgb,var(--milnik-accent-solid) 14%,transparent);color:var(--milnik-accent)}
+[data-look="milnik"] .badge-accent{background:color-mix(in srgb,var(--milnik-accent-solid) 14%,transparent);color:var(--milnik-badge-fg)}
 [data-look="milnik"] .badge-info{background:var(--info-bg);color:var(--info-fg)}
 [data-look="milnik"] .count{min-width:24px;padding:var(--optical) 7px 0;font-size:11px}
 [data-look="milnik"] .callout{border-radius:12px;padding:12px 14px}
@@ -334,8 +339,9 @@
 [data-look="milnik"] a.card-link:hover{box-shadow:var(--shadow-card-hover)}
 [data-look="milnik"] .card.pad,[data-look="milnik"] .panel.pad{padding:20px 22px}
 [data-look="milnik"] .card-head{padding:18px 22px 10px}
-[data-look="milnik"] .card-body{padding:4px 22px 20px}
-[data-look="milnik"] .card-body:first-child{padding-top:20px}
+[data-look="milnik"] .card-body:not(.flush){padding:4px 22px 20px}
+[data-look="milnik"] .card-head+.card-body:not(.flush){padding-top:0}
+[data-look="milnik"] .card-body:not(.flush):first-child{padding-top:20px}
 [data-look="milnik"] .card-foot{padding:12px 22px;background:var(--surface-sunken);border-top-color:var(--line-1);border-radius:0 0 var(--radius-card) var(--radius-card)}
 [data-look="milnik"] :is(.card-title,.label,.section>h3,.section h3.label,.form-grid h3,.why-how .subhead,.select-heading,.look-heading,.kit-island-tag){font-size:11px;letter-spacing:.08em;color:var(--text-2)}
 
@@ -352,7 +358,9 @@
 [data-look="milnik"] .item-chevron{color:var(--gray-8)}
 [data-look="milnik"] .item.tone-selected::before{background:var(--primary-bg)}
 [data-look="milnik"] .list-group{padding:16px 20px 6px}
-[data-look="milnik"] .date-block{border-radius:12px;background:var(--soft)}
+[data-look="milnik"] .date-block{border-radius:12px}
+[data-look="milnik"] .date-block:not(.solid){background:var(--soft)}
+[data-look="milnik"] .item.tone-mine .date-block{background:var(--primary-bg)}
 [data-look="milnik"] .item.tone-mine .avatar,[data-look="milnik"] .avatar.mine{box-shadow:0 0 0 2px var(--surface-panel),0 0 0 3.5px var(--milnik-accent-soft)}
 
 /* ============================================================
@@ -399,7 +407,8 @@
 [data-look="milnik"] .dialog .inner{padding-bottom:28px}
 [data-look="milnik"] :is(.dialog-title,.dialog h2){font-family:var(--milnik-display);font-weight:900;text-transform:none;letter-spacing:-.005em;line-height:26px}
 [data-look="milnik"] :is(.dialog-sub,.dialog .sub){font-size:var(--font-size-3);line-height:21px}
-[data-look="milnik"] :is(.dialog-foot,.dialog .actions){margin:4px -28px 0;padding:16px 28px 20px;background:var(--surface-sunken);border-top-color:var(--line-1)}
+/* the foot is sticky: the sunken tint is laid over the dialog colour, so what scrolls under it never shows through */
+[data-look="milnik"] :is(.dialog-foot,.dialog .actions){margin:4px -28px 0;padding:16px 28px 20px;background:linear-gradient(var(--surface-sunken),var(--surface-sunken)) var(--surface-overlay);border-top-color:var(--line-1)}
 [data-look="milnik"] .form-section-title{font-family:var(--milnik-display);font-weight:900;font-size:var(--font-size-3);letter-spacing:0}
 [data-look="milnik"] .form-section+.form-section{border-top-color:var(--line-1);padding-top:20px}
 [data-look="milnik"] .disclosure>summary{border-radius:var(--radius-full);padding:var(--optical) 12px 0 8px}
@@ -438,6 +447,38 @@
 [data-look="milnik"] .date-title{font-family:var(--milnik-display);font-weight:900;text-transform:none;letter-spacing:0}
 
 /* ============================================================
+   MODULES – where a module's own markup needs the look's voice (names in the display cut,
+   section titles in sentence case, the reading width for library lists)
+   ============================================================ */
+/* cards that name something: household, group, the meeting in Upozornění */
+[data-look="milnik"] :is(.household-name,.conflict-card-title){font-family:var(--milnik-display);font-weight:900;letter-spacing:.01em}
+[data-look="milnik"] .household-name{font-size:17px;line-height:22px}
+[data-look="milnik"] .conflict-card-title{font-size:16px;line-height:20px}
+/* Šablony read at the same width as Formáty and Místa (the tabs no longer move the head); two covers a row */
+/* panels inside a card: rounded-xl, one step under the card's 16 */
+[data-look="milnik"] :is(.needs-program,.tneeds-teams,.switch-row.full,.outline-list,.household-address){border-radius:12px}
+[data-look="milnik"] .page.templates-page{--page-width:var(--w-list)}
+/* the template editor fills the page (its 1080 cap left the cards short of the head's right edge) */
+[data-look="milnik"] .template-editor{max-width:none}
+[data-look="milnik"] .section-nav{gap:4px}
+[data-look="milnik"] .section-nav-item{border-radius:var(--radius-full)}
+[data-look="milnik"] .section-nav-item[aria-current="true"]{background:var(--soft-hover);color:var(--text-1)}
+[data-look="milnik"] .section-nav-item[aria-current="true"]::before{content:none}
+/* Rozpis: the Účel bar is an inset pill; „my row“ is told by the tinted cells and the underlined name,
+   so the edge bar that collided with the Účel bar goes */
+[data-look="milnik"] .roster-kind{margin:10px 0 10px 8px;border-radius:var(--radius-full)}
+[data-look="milnik"] .roster-table tbody tr.my-row .roster-event{box-shadow:inset -1px 0 0 var(--line-2)}
+/* public Program: section titles in sentence case, meeting names in the display cut */
+[data-look="milnik"] :is(.pub-week-label,.pub-where-title,.pub-format-name,.pp-title){font-family:var(--milnik-display);text-transform:none;letter-spacing:-.005em}
+[data-look="milnik"] .pub-week-label{margin-bottom:14px;padding-inline:4px}
+[data-look="milnik"] .pub-item-title{font-family:var(--milnik-display);font-weight:900;font-size:17px;letter-spacing:.01em}
+[data-look="milnik"] .pub-item-title :is(.badge,.status){font-family:var(--font-body);font-weight:400;letter-spacing:0}
+[data-look="milnik"] .pub-item-date{border-radius:12px;background:var(--soft)}
+[data-look="milnik"] .pub-item:hover{background:var(--surface-sunken)}
+[data-look="milnik"] .pub-list{transition:box-shadow .2s}
+[data-look="milnik"] .pub-list:hover{box-shadow:var(--shadow-card-hover)}
+
+/* ============================================================
    PHONE (< 960) – Milníkovač mobile: a top bar on the ground, the content on the stage colour
    ============================================================ */
 @media (max-width:959.98px){
@@ -452,6 +493,13 @@
   [data-look="milnik"] .sheet-tools .me{border-radius:var(--radius-full)}
   [data-look="milnik"] .sheet-tools .look-toggle{border-radius:var(--radius-full);width:100%;height:42px;padding-left:14px;gap:12px}
   [data-look="milnik"] .sheet-tools .me{padding-left:4px}
+  /* the date row fits: no fixed label width next to ‹ › Dnes Filtry */
+  [data-look="milnik"] .datenav-label{min-width:0;font-size:17px}
+}
+@media (max-width:520px){
+  [data-look="milnik"] :is(.dialog-form,.dialog>form,.dialog .inner){padding:22px 18px 0;gap:18px}
+  [data-look="milnik"] .dialog .inner{padding-bottom:22px}
+  [data-look="milnik"] :is(.dialog-foot,.dialog .actions){margin-inline:-18px;padding:14px 18px 16px}
 }
 
 /* ============================================================
