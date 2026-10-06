@@ -14,9 +14,9 @@ import { personById, fullName, displayName } from '../../lib/people.js';
 import { today, addDays } from '../../lib/time.js';
 import {
   h, list, row, button, section, pill, toast, formSheet, confirmSheet, field, textInput, segmentedField, menu,
-  avatar, personName, icon, callout, joinMeta, fieldError, clearErrors, isSplit,
+  avatar, personName, icon, callout, joinMeta, fieldError, clearErrors, isSplit, quiet,
 } from './kit.js';
-import { morePage, secretSheet, demoOnly, dayWithYear, rowWithMenu } from './more-common.js';
+import { morePage, secretSheet, demoOnly, dayWithYear } from './more-common.js';
 
 export const INVITE_VALID_DAYS = 14;
 const DATA_PATH = 'data';
@@ -28,6 +28,9 @@ export function allLogins() {
   if (!demoAccess || demoAccess.day !== today()) demoAccess = { day: today(), logins: createDemoAccess(today()).logins };
   return demoAccess.logins;
 }
+
+/** Invites that still wait (leaders) – the badge on Více, the count in Přístupy and the Pozvánky row on Domů. */
+export const waitingInvites = () => (can('leader') ? allLogins().filter((l) => l.access === 'invite' && !isExpired(l, today())).length : 0);
 
 /** Leaders manage members and invites; admins everyone. */
 const mayManage = (login) => can('admin') || login.access === 'member' || login.access === 'invite';
@@ -49,7 +52,7 @@ export async function createInvite(person, { replace } = {}) {
     }, person ? `pozvánka pro ${displayName(person)}` : 'pozvánka');
     render();
     secretSheet({
-      title: person ? `Pozvánka pro ${fullName(person)}` : 'Pozvánka',
+      title: person ? `Pozvánka: ${fullName(person)}` : 'Pozvánka',
       text: 'Kdo odkaz otevře, vyplní svoje údaje, zvolí si heslo a dá souhlas. Pak uvidí rozpis a svoje služby.',
       rows: [{ label: 'Odkaz', value: `${appUrl()}#pozvanka/${code}`, share: true, copyLabel: 'Zkopírovat odkaz', shareText: 'Pozvánka do Zvonce' }],
       note: `Pošli ho jen tomu člověku, ne do skupinového chatu. Platí ${INVITE_VALID_DAYS} dní a začne fungovat za pár minut.`,
@@ -57,8 +60,33 @@ export async function createInvite(person, { replace } = {}) {
   } catch (error) { toast(`Pozvánku se nepodařilo vytvořit. ${error.message}`, { icon: 'alert' }); }
 }
 
-/** „Pozvat do Zvonce“ for a person (a card or the list). The invite makes a člen; raise it later. */
-export const inviteSheet = (person) => createInvite(person);
+/**
+ * „Pozvat do Zvonce“ – the one way in, for a person (their card, Lidé ⋯) or a newcomer (Přístupy, null):
+ * what will happen, then „Vytvořit pozvánku“ makes the link and shows it once. The invite makes a člen;
+ * raise it later in Přístupy.
+ */
+export function inviteSheet(person = null) {
+  return formSheet({
+    title: 'Pozvat do Zvonce',
+    subtitle: person ? personName(person) : null,
+    submitLabel: 'Vytvořit pozvánku',
+    body: [
+      h('p', { class: 'text' }, person
+        ? `${personName(person)} dostane odkaz. Zvolí si heslo a přihlásí se jako člen.`
+        : 'Nový člověk dostane odkaz. Vyplní svoje údaje, zvolí si heslo a přihlásí se jako člen.'),
+      h('p', { class: 'meta' }, `Odkaz platí ${INVITE_VALID_DAYS} dní a jde použít jen jednou. Oprávnění změníš později v Přístupech.`),
+    ],
+    onSubmit: () => { setTimeout(() => createInvite(person)); return undefined; },
+  });
+}
+
+/** { login, invite, expired } of a person – the person card's Přístup section. */
+export function accessOf(personId) {
+  const logins = allLogins();
+  const login = logins.find((l) => l.personId === personId && l.access !== 'invite') || null;
+  const invite = logins.find((l) => l.personId === personId && l.access === 'invite') || null;
+  return { login, invite, expired: !!invite && isExpired(invite, today()) };
+}
 
 // ---------- password and oprávnění ----------
 
@@ -194,13 +222,13 @@ function orphanRow(login) {
 function loginRow(login) {
   const person = personById(S.data, login.personId);
   const me = isMe(login);
-  return rowWithMenu({
+  return row({
     lead: avatar(person, { me }),
     title: personName(person),
     meta: `může se přihlásit od ${dayWithYear(login.created)}`,
     href: `#osoba/${person.id}`,
-    trail: me ? pill('ty') : null,
-  }, me ? null : rowMenu(login));
+    trail: me ? pill('ty') : rowMenu(login),
+  });
 }
 
 export function renderAccess() {
@@ -210,7 +238,7 @@ export function renderAccess() {
   const orphans = all.filter((l) => l.access !== 'invite' && !personById(S.data, l.personId));
   const people = all.filter((l) => l.access !== 'invite' && personById(S.data, l.personId));
   const nameOf = (l) => fullName(personById(S.data, l.personId));
-  const invite = () => createInvite(null);
+  const invite = () => inviteSheet(null);
 
   const logins = section({
     title: 'Kdo se může přihlásit',
@@ -220,7 +248,7 @@ export function renderAccess() {
       return items.length ? h('div', { class: 'acc-group' },
         h('h3', { class: 'acc-group__head' }, label, h('span', { class: 'caption' }, String(items.length))),
         list(items.map(loginRow), { label })) : null;
-    }) : h('p', { class: 'meta' }, 'Zatím se nikdo nemůže přihlásit.'),
+    }) : quiet('Zatím se nikdo nemůže přihlásit.'),
   });
   const waiting = invites.length || orphans.length ? section({
     title: 'Pozvánky',

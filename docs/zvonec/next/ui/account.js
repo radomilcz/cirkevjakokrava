@@ -1,22 +1,22 @@
-// Zvonec Next – Můj účet (#ucet): my contact and who sees it, Kdy nemůžu, my duties (and the whole
-// calendar) into the phone's calendar, Změnit heslo, Odhlásit se; in the demo „Díváš se jako“.
+// Zvonec Next – Můj účet (#ucet): my contact and who sees it, Kdy nemůžu (ui/blockouts.js), my duties
+// (and the whole calendar) into the phone's calendar (ui/calendar-shared.js), Změnit heslo, Odhlásit se;
+// in the demo „Díváš se jako“ (viewAsSheet – also Domů's „Změnit“ and Více › Dívat se jako).
 // At ≥ 1200 px the same body sits in the detail pane of Více (ui/more.js).
 
 import {
-  S, myId, newId, change, actAs, logout, render, updateLogins, ACCESS_LABELS, ACCESS_VIEW,
+  S, myId, change, actAs, logout, render, updateLogins, ACCESS_LABELS, ACCESS_VIEW,
 } from '../../ui/state.js';
 import { changePassword } from '../../lib/access.js';
 import { personById, fullName, displayName, sortPeople, statusOf } from '../../lib/people.js';
-import { upcomingDuties } from '../../lib/events.js';
-import { icsForPerson, ics } from '../../lib/ics.js';
 import { DEMO_VIEWERS } from '../../lib/demo.js';
-import { today, addDays, inBlockout } from '../../lib/time.js';
 import {
-  h, button, list, row, avatar, personName, toast, formSheet, openSheet, field, textInput, dateInput, switchRow,
-  segmented, peoplePicker, iconButton, dateArch, shortDate, plural, section, facts, title as titleEl, fieldError,
-  clearErrors, rowLink, icon, callout,
+  h, button, list, row, avatar, personName, toast, formSheet, openSheet, field, textInput, switchRow,
+  segmented, peoplePicker, section, facts, title as titleEl, fieldError, clearErrors, rowLink, icon, callout,
 } from './kit.js';
-import { morePage, download, asciiName } from './more-common.js';
+import { morePage } from './more-common.js';
+import { blockoutSection } from './blockouts.js';
+import { contactSheet } from './people-forms.js';
+import { calendarExportRows, CALENDAR_EXPORT_NOTE } from './calendar-shared.js';
 
 // ---------- my contact ----------
 
@@ -24,34 +24,6 @@ import { morePage, download, asciiName } from './more-common.js';
 export const whoSeesContact = (person) => (person.showInDirectory
   ? 'Telefon a e-mail vidí všichni, kdo se do Zvonce přihlásí.'
   : 'Telefon a e-mail vidí jen vedoucí.');
-
-/** Edit my phone, e-mail and nickname. */
-export function contactSheet(person) {
-  const phone = textInput({ name: 'phone', type: 'tel', value: person.phone || '', autocomplete: 'tel', inputmode: 'tel', placeholder: 'např. 731 204 118' });
-  const email = textInput({ name: 'email', type: 'email', value: person.email || '', autocomplete: 'email', inputmode: 'email', placeholder: 'např. jmeno@seznam.cz' });
-  const nickname = textInput({ name: 'nickname', value: person.nickname || '', autocomplete: 'off', placeholder: 'např. Bětka' });
-  formSheet({
-    title: 'Můj kontakt',
-    body: [
-      field({ label: 'Telefon', control: phone }),
-      field({ label: 'E-mail', control: email }),
-      field({ label: 'Přezdívka', control: nickname, optional: true, hint: 'Ukáže se v závorce za jménem.' }),
-    ],
-    onSubmit: (form) => {
-      clearErrors(form);
-      const mail = email.value.trim();
-      if (mail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { fieldError(email, 'Tenhle e-mail nevypadá dobře.'); return false; }
-      const target = personById(S.data, person.id);
-      if (!target) return 'Tvoje karta mezitím zmizela. Dej vědět vedoucímu.';
-      for (const [key, value] of Object.entries({ phone: phone.value.trim(), email: mail, nickname: nickname.value.trim() })) {
-        if (value) target[key] = value; else delete target[key];
-      }
-      change(`kontakt ${displayName(target)}`);
-      toast('Uloženo.');
-      return undefined;
-    },
-  });
-}
 
 /** The switch „Telefon a e-mail smí vidět i ostatní ve sboru“ – applies at once, with Vrátit. */
 function directorySwitch(person) {
@@ -72,118 +44,12 @@ function directorySwitch(person) {
   });
 }
 
-// ---------- Kdy nemůžu ----------
-
-const rangeText = (v) => (v.from === v.to ? shortDate(v.from) : `${shortDate(v.from)} – ${shortDate(v.to)}`);
-
-/** My current and future „can't“ ranges, soonest first. */
-export const myBlockouts = (personId) => (S.data.availability || [])
-  .filter((v) => v.personId === personId && v.to >= today()).sort((a, b) => a.from.localeCompare(b.from));
-
-/** Add (record null) or change a time when I can't serve. */
-export function blockoutSheet(person, record = null) {
-  const self = person.id === myId();
-  const day = today();
-  const from = dateInput({ name: 'from', value: record?.from || day, label: 'Od kdy', min: day });
-  const to = dateInput({ name: 'to', value: record?.to || record?.from || day, label: 'Do kdy', min: day });
-  const reason = textInput({ name: 'reason', value: record?.reason || '', placeholder: 'např. dovolená, směna', maxlength: 80, autocomplete: 'off' });
-  formSheet({
-    title: self ? 'Kdy nemůžu' : 'Kdy nemůže',
-    submitLabel: record ? 'Uložit' : 'Přidat',
-    body: [
-      h('div', { class: 'form__row' }, field({ label: 'Od', control: from }), field({ label: 'Do', control: to })),
-      field({ label: 'Důvod', control: reason, optional: true, hint: 'Uvidí ho jen vedoucí.' }),
-    ],
-    onSubmit: (form, values) => {
-      if (!values.from || !values.to) return 'Vyber, od kdy do kdy.';
-      const [a, b] = [values.from, values.to].sort();
-      if (b < day) return 'Tohle už bylo. Vyber dnešek nebo pozdější den.';
-      S.data.availability = S.data.availability || [];
-      let target = record ? S.data.availability.find((x) => x.id === record.id) : null;
-      if (!target) {
-        target = { id: newId('v'), personId: person.id };
-        S.data.availability.push(target);
-      }
-      Object.assign(target, { from: a, to: b });
-      const why = (values.reason || '').trim();
-      if (why) target.reason = why; else delete target.reason;
-      const clash = upcomingDuties(S.data, person.id, { from: a, to: b, includeDeclined: false, includeCancelled: false })
-        .filter(({ event }) => inBlockout(event, target));
-      change(`${displayName(person)} nemůže ${a}–${b}`);
-      if (clash.length) toast(`V té době ${self ? 'máš' : 'má'} ${plural(clash.length, 'službu', 'služby', 'služeb')}. Vedoucí to uvidí.`, { icon: 'info', duration: 8000 });
-      else toast(record ? 'Uloženo.' : 'Zapsáno.');
-      return undefined;
-    },
-  });
-}
-
-function removeBlockout(person, record) {
-  const index = S.data.availability.findIndex((x) => x.id === record.id);
-  if (index < 0) return;
-  const [removed] = S.data.availability.splice(index, 1);
-  change(`${displayName(person)} zase může`);
-  toast('Smazáno.', {
-    action: () => {
-      if (S.data.availability.some((x) => x.id === removed.id)) return;
-      S.data.availability.push(removed);
-      change(`${displayName(person)} nemůže ${removed.from}–${removed.to}`);
-    },
-  });
-}
-
-function blockoutsSection(person) {
-  const records = myBlockouts(person.id);
-  return section({
-    title: 'Kdy nemůžu',
-    count: records.length || null,
-    action: button('Přidat', { size: 's', icon: 'plus', onclick: () => blockoutSheet(person) }),
-    body: records.length
-      ? list(records.map((v) => row({
-        lead: dateArch(v.from, { today: v.from <= today() }),
-        title: rangeText(v),
-        meta: v.reason || (v.from === v.to ? 'jeden den' : null),
-        onclick: () => blockoutSheet(person, v),
-        label: `Změnit: ${rangeText(v)}`,
-        trail: iconButton('trash', `Smazat: ${rangeText(v)}`, { onclick: () => removeBlockout(person, v) }),
-      })), { label: 'Kdy nemůžu' })
-      : h('p', { class: 'meta acct-empty' }, 'Když víš, že nemůžeš, zapiš to. Zvonec tě na ty dny nebude navrhovat do služeb.'),
-  });
-}
-
 // ---------- into the phone's calendar ----------
 
-/** .ics of my duties from a month back on („sluzby-jana-novakova.ics“). */
-export function downloadDuties(person) {
-  const items = icsForPerson(S.data, person.id, addDays(today(), -30));
-  download(`sluzby-${asciiName(fullName(person), 'clovek')}.ics`, ics(S.data, items, `Služby – ${displayName(person)}`), 'text/calendar');
-  toast(items.length ? `Stahuju ${plural(items.length, 'službu', 'služby', 'služeb')}.` : 'Zatím žádnou službu nemáš.', { icon: 'download' });
-}
-
-/** .ics of every event that is not cancelled. */
-export function downloadCalendar() {
-  const items = S.data.events.filter((e) => !e.cancelled).map((event) => ({ event }));
-  download('zvonec.ics', ics(S.data, items, S.data.settings?.churchName || 'Zvonec'), 'text/calendar');
-  toast(`Stahuju ${plural(items.length, 'setkání', 'setkání', 'setkání')}.`, { icon: 'download' });
-}
-
-function calendarSection(person) {
-  const count = person ? upcomingDuties(S.data, person.id, { from: today(), includeDeclined: false, includeCancelled: false }).length : 0;
+function calendarSection() {
   return section({
-    title: 'Do kalendáře v telefonu',
-    body: [
-      list([
-        person ? row({
-          lead: icon('calendar-plus'), title: 'Moje služby',
-          meta: count ? `${plural(count, 'služba', 'služby', 'služeb')} před tebou` : 'teď žádnou nemáš',
-          onclick: () => downloadDuties(person), trail: icon('download', { size: 's' }), label: 'Přidat do kalendáře: moje služby',
-        }) : null,
-        row({
-          lead: icon('calendar'), title: 'Celý kalendář sboru', meta: 'všechna setkání',
-          onclick: downloadCalendar, trail: icon('download', { size: 's' }), label: 'Přidat do kalendáře: celý kalendář',
-        }),
-      ].filter(Boolean), { label: 'Do kalendáře v telefonu' }),
-      h('p', { class: 'meta acct-note' }, 'Stáhne soubor .ics, telefon ho přidá do kalendáře. Když se rozpis změní, stáhni ho znovu.'),
-    ],
+    title: 'Přidat do kalendáře v telefonu',
+    body: [calendarExportRows(), h('p', { class: 'meta acct-note' }, CALENDAR_EXPORT_NOTE)],
   });
 }
 
@@ -340,8 +206,8 @@ export function accountBody({ pane = false } = {}) {
     who,
     S.mode === 'demo' && !pane ? viewAsRow() : null,   // beside the Více list the list has „Dívat se jako“
     contact,
-    person ? blockoutsSection(person) : null,
-    calendarSection(person),
+    blockoutSection(person),
+    calendarSection(),
     access);
 }
 

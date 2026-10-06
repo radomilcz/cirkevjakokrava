@@ -245,7 +245,7 @@ export function formatSheet(format) {
       }
       if (created) navigate(`#formaty/${target.id}`);
       change(`formát ${n}`);
-      toast(created ? 'Formát přidán.' : 'Uloženo.');
+      toast(created ? `Přidáno: ${n}.` : 'Uloženo.');
       return undefined;
     },
   });
@@ -270,7 +270,7 @@ function deleteFormat(format) {
       }
       if (location.hash.startsWith('#formaty/')) history.replaceState(null, '', '#formaty');
       change(`smazaný formát ${format.name}`);
-      toast('Smazáno.');
+      toast(`Smazáno: ${format.name}.`);
     },
   });
 }

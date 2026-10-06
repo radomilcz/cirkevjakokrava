@@ -7,21 +7,20 @@
 // the marked blocks below („// ROUTES:<module>“ … „// ROUTES:<module> end“, imports in
 // „// IMPORTS:<module>“). A module agent edits only its own blocks; the shell owns the rest.
 
-import { S, setHooks, can, myId, recompute, loadRemembered, forgetRemembered, ACCESS_LABELS, loginList } from '../ui/state.js';
+import { S, setHooks, can, myId, recompute, loadRemembered, forgetRemembered, ACCESS_LABELS } from '../ui/state.js';
 import { GithubStore } from '../lib/store/github.js';
 import { LocalStore, DEMO_KEY } from '../lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from '../lib/store/store.js';
-import { restore, ACCESS_FILE, isExpired } from '../lib/access.js';
-import { createDemo, createDemoAccess, DEMO_VIEWERS } from '../lib/demo.js';
+import { restore, ACCESS_FILE } from '../lib/access.js';
+import { createDemo, DEMO_VIEWERS } from '../lib/demo.js';
 import { PUBLIC_FILE } from '../lib/public.js';
 import { personById } from '../lib/people.js';
 import { upcomingDuties } from '../lib/events.js';
-import { today, prettyDayLong } from '../lib/time.js';
+import { today } from '../lib/time.js';
 import {
-  h, nodes, icon, badge, avatar, brand, button, screen, topBar, placeholder, empty, closeLayers, isLayerOpen,
+  h, nodes, icon, badge, avatar, brand, screen, topBar, empty, closeLayers, isLayerOpen,
   onLayoutChange, assignGroupHues, palettePicker, personName, agree,
 } from './ui/kit.js';
-import { renderSignIn, renderSetupPlaceholder, renderInvitePlaceholder } from './ui/signin.js';
 import { renderKit } from './ui/kit-page.js';
 
 // IMPORTS:home
@@ -43,7 +42,7 @@ import { renderAccount } from './ui/account.js';
 import { renderTemplates, renderTemplate } from './ui/templates.js';
 import { renderFormats } from './ui/formats.js';
 import { renderPlaces, renderPlace } from './ui/places.js';
-import { renderAccess } from './ui/access.js';
+import { renderAccess, waitingInvites } from './ui/access.js';
 import { renderSettings } from './ui/settings.js';
 import { renderProgram } from './ui/public.js';
 import { renderLogin, renderInvite } from './ui/login.js';
@@ -57,13 +56,6 @@ import { isSplit } from './ui/kit.js';
 //   'leader' · 'admin' · or a function of the parts.
 // `nav`: which tab / rail item lights up – 'domu' · 'kalendar' · 'lide' · 'vice' or a Více page in the
 //   rail ('sablony' · 'formaty' · 'mista' · 'pristupy' · 'nastaveni'); defaults to the section; null = none.
-// Until a module fills its block, every route renders placeholder() with a link to the same place in
-// the current Zvonec (`legacy`).
-
-const todayLine = () => {
-  const words = prettyDayLong(today()).replace(/ \d{4}$/, '');
-  return words.charAt(0).toLocaleUpperCase('cs') + words.slice(1);
-};
 
 // ROUTES:home – Domů (#domu): Odpověz, Co je potřeba, Tvoje služby, Tento týden, Kdy nemůžu,
 // Lidé k doplnění, Pozvánky; the demo banner „Díváš se jako …“.
@@ -213,19 +205,6 @@ function waitingAnswers() {
     .filter(({ assignment }) => assignment.status === 'proposed').length;
 }
 
-let demoAccess = null;
-/** Více / Přístupy (leaders): invites that still wait. */
-function waitingInvites() {
-  if (!can('leader')) return 0;
-  let logins;
-  if (S.mode === 'live') logins = loginList();
-  else {
-    if (!demoAccess || demoAccess.day !== today()) demoAccess = { day: today(), logins: createDemoAccess(today()).logins };
-    logins = demoAccess.logins;
-  }
-  return logins.filter((l) => l.access === 'invite' && !isExpired(l, today())).length;
-}
-
 // ---------- shell: rail (desktop) and tab bar (phone) ----------
 
 const railEl = document.querySelector('.rail');
@@ -245,7 +224,7 @@ function buildShell() {
   const person = personById(S.data || {}, myId());
   const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
   const role = ACCESS_LABELS[S.me?.access] || '';
-  railEl.replaceChildren(
+  railEl.replaceChildren(...nodes([
     h('a', { class: 'rail__brand', href: '#domu', 'aria-label': 'Domů – církev jako kráva' }, brand()),
     ...TABS.map(([id, label, iconName, href]) => h('a', { class: 'rail__item', href, dataset: { nav: id } },
       icon(iconName), h('span', { class: 'rail__label' }, label), h('span', { class: 'tab__badge', dataset: { badge: id } }))),
@@ -256,7 +235,8 @@ function buildShell() {
       h('a', { class: 'rail__foot', href: '#ucet', dataset: { nav: 'ucet' }, title: 'Můj účet' },
         person ? avatar(person, { size: 's', me: true }) : h('span', { class: 'avatar avatar--s', 'aria-hidden': 'true' }, icon('user', { size: 's' })),
         h('span', { class: 'rail__person' }, h('span', { class: 'rail__name' }, name), role ? h('span', { class: 'caption' }, role) : null)),
-      palettePicker()));
+      palettePicker()),
+  ]));
 }
 
 function updateShell(route, section, parts) {
@@ -287,31 +267,9 @@ function updateShell(route, section, parts) {
   return nav;
 }
 
-/** The public top bar: brand left, „Přihlásit se“ right (nothing for a signed-in viewer – the strip says it). */
-export function publicTopBar({ signIn = true } = {}) {
-  return topBar({
-    cls: 'topbar--public',
-    brand: true,
-    actions: signIn && !signedIn() ? button('Přihlásit se', { variant: 'primary', size: 's', href: '#prihlaseni', icon: 'log-in' }) : null,
-  });
-}
-
 /** Signed in and looking at a public page: „Takhle to vidí návštěvníci · Zpátky do Zvonce“. */
 const publicStrip = () => h('div', { class: 'strip', role: 'note' },
   h('span', {}, 'Takhle to vidí návštěvníci'), h('a', { class: 'link', href: '#domu' }, icon('arrow-left', { size: 's' }), 'Zpátky do Zvonce'));
-
-// ---------- signed-out pages ----------
-
-function signInPage(part = '') {
-  if (part === 'zalozit' || (S.mode === 'live' && !S.logins.length)) return renderSetupPlaceholder({ topbar: publicTopBar({ signIn: false }) });
-  const viewers = S.mode === 'demo' ? Object.entries(DEMO_VIEWERS).map(([access, personId]) => ({ access, personId, person: personById(S.data, personId) })).filter((v) => v.person) : null;
-  return renderSignIn({
-    topbar: publicTopBar({ signIn: false }),
-    message: S.signInMessage || '',
-    viewers,
-    onDemo: (v) => { S.me = { login: null, priv: null, github: null, personId: v.personId, access: v.access }; navigateTo('domu'); },
-  });
-}
 
 // ---------- rendering ----------
 

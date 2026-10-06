@@ -19,10 +19,6 @@ const SKILL_CHOICES = [{ value: '', label: 'Neumí' }, { value: 'learning', labe
 export const SKILL_WORDS = { trained: 'umí', learning: 'učí se', '': 'neumí' };
 export const roleCount = (n) => plural(n, 'role', 'role', 'rolí');
 
-function subtitle(sheet, words) {
-  if (words) sheet.el.querySelector('.sheet__titles')?.append(h('p', { class: 'meta' }, words));
-  return sheet;
-}
 const ctl = (form, name) => form.elements[name];
 const on = (form, name) => !!form.querySelector(`input[type=hidden][name="${name}"]:not([disabled])`);
 
@@ -108,7 +104,7 @@ export function groupSheet(group = null, { kind = 'team' } = {}) {
       if (description) target.description = description; else delete target.description;
       if (!group) navigate(`#tym/${target.id}`);
       change(group ? `skupina ${name}` : `nová skupina ${name}`);
-      toast(group ? 'Uloženo.' : `${name} je v seznamu skupin.`);
+      toast(group ? 'Uloženo.' : `Přidáno: ${name}.`);
       return undefined;
     },
   });
@@ -150,7 +146,7 @@ export function deleteGroup(group) {
       for (const e of S.data.events || []) if (e.groupId === g.id) delete e.groupId;
       navigate('#lide/skupiny');
       change(`smazaná skupina ${g.name}`);
-      toast(`${g.name} je smazaná.`);
+      toast(`Smazáno: ${g.name}.`);
     },
   });
 }
@@ -175,6 +171,7 @@ export function memberSheet(group, personId, { fresh = false } = {}) {
       h('span', { class: 'skill-row__role' }, r.name),
       segmented(SKILL_CHOICES, levels[r.id], (v) => { levels[r.id] = v; }, { label: `${r.name}: co umí`, cls: 'seg--s' }))))) : null;
   sheet = formSheet({
+    subtitle: group.name,
     title: personName(person),
     submitLabel: 'Uložit',
     body: [
@@ -193,7 +190,7 @@ export function memberSheet(group, personId, { fresh = false } = {}) {
       return undefined;
     },
   });
-  return subtitle(sheet, group.name);
+  return sheet;
 }
 
 /** Remove someone from a group at once, with „Vrátit“ (the duties stay; the toast says so). */
@@ -264,6 +261,7 @@ export function roleSheet(group, role = null) {
   windowBox.hidden = !w;
   const anyMore = !!(role && (role.adultsOnly || role.childcare || role.window || partners.length));
   const sheet = formSheet({
+    subtitle: role ? joinMeta([role.name, group.name]) : group.name,
     title: role ? 'Upravit roli' : 'Přidat roli',
     submitLabel: role ? 'Uložit' : 'Přidat roli',
     body: [
@@ -300,11 +298,11 @@ export function roleSheet(group, role = null) {
       } else delete target.window;
       setCombinations(target.id, [...f.querySelectorAll('input[type=hidden][name="partners"]')].map((i) => i.value));
       change(role ? `role ${name}` : `nová role ${name}`);
-      toast(role ? 'Uloženo.' : `Role ${name} je přidaná.`);
+      toast(role ? 'Uloženo.' : `Přidáno: ${name}.`);
       return undefined;
     },
   });
-  return subtitle(sheet, role ? joinMeta([role.name, group.name]) : group.name);
+  return sheet;
 }
 
 /** Delete a role. Asks first (duties in it disappear). */
@@ -317,7 +315,7 @@ export function deleteRole(role) {
     onConfirm: () => {
       deleteRoles([role.id]);
       change(`smazaná role ${role.name}`);
-      toast(`Role ${role.name} je smazaná.`);
+      toast(`Smazáno: ${role.name}.`);
     },
   });
 }

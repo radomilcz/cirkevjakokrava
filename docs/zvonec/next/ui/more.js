@@ -2,36 +2,23 @@
 // scházíme (Šablony setkání · Formáty · Místa), Sbor (Přístupy · Nastavení sboru · Veřejný web) and in
 // the demo Ukázka (Dívat se jako · Začít ukázku znovu · Začít načisto). At ≥ 1200 px: the list | Můj účet.
 
-import { S, can, myId, replaceAll, ACCESS_LABELS, loginList } from '../../ui/state.js';
+import { S, can, myId, replaceAll, ACCESS_LABELS } from '../../ui/state.js';
 import { personById } from '../../lib/people.js';
-import { createDemo, createDemoAccess } from '../../lib/demo.js';
+import { createDemo } from '../../lib/demo.js';
 import { emptyData } from '../../lib/store/store.js';
-import { isExpired } from '../../lib/access.js';
 import { today } from '../../lib/time.js';
 import {
   h, list, row, avatar, personName, icon, count, toast, confirmSheet, splitView, detailPane, isSplit, paletteChoices,
   screen, topBar, agree,
 } from './kit.js';
 import { accountBody, viewAsSheet } from './account.js';
-
-let demoLogins = null;
-/** Invites that still wait (the same count as the badge on Více). */
-function waitingInvites() {
-  if (!can('leader')) return 0;
-  let logins;
-  if (S.mode === 'live') logins = loginList();
-  else {
-    if (!demoLogins || demoLogins.day !== today()) demoLogins = { day: today(), logins: createDemoAccess(today()).logins };
-    logins = demoLogins.logins;
-  }
-  return logins.filter((l) => l.access === 'invite' && !isExpired(l, today())).length;
-}
+import { waitingInvites } from './access.js';
 
 const heading = (text) => h('h2', { class: 'more-heading' }, text);
 
-const pageRow = (iconName, label, href, { open, n, external, meta } = {}) => row({
+const pageRow = (iconName, label, href, { open, n, meta } = {}) => row({
   lead: icon(iconName), title: label, meta, href, single: !meta, open,
-  trail: [n ? count(n, { label: `${n} ${agree(n, 'pozvánka čeká', 'pozvánky čekají', 'pozvánek čeká')}` }) : null, external ? icon('external', { size: 's' }) : icon('chevron-right', { size: 's' })],
+  trail: [n ? count(n, { label: `${n} ${agree(n, 'pozvánka čeká', 'pozvánky čekají', 'pozvánek čeká')}` }) : null, icon('chevron-right', { size: 's' })],
 });
 
 /** The list of Více. `open`: which page shows in the detail pane (≥ 1200 px). */
@@ -71,7 +58,7 @@ function moreList({ open } = {}) {
     list([
       leader ? pageRow('key', 'Přístupy', '#pristupy', { n: invites }) : null,
       leader ? pageRow('sliders', 'Nastavení sboru', '#nastaveni') : null,
-      pageRow('globe', 'Veřejný web', '#program', { external: true, meta: 'Program, jak ho vidí návštěvníci' }),
+      pageRow('globe', 'Veřejný web', '#program', { meta: 'Program, jak ho vidí návštěvníci' }),
     ].filter(Boolean), { label: 'Sbor' }),
     demo ? heading('Ukázka') : null,
     demo ? list([

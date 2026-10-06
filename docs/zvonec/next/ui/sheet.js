@@ -146,17 +146,17 @@ function swipeToClose(el, handles, close) {
 
 /**
  * A sheet with a form: fields in the body, the primary button across the bottom.
- *   formSheet({ title: 'Kdy nemůžu', body: [field…], submitLabel: 'Uložit', onSubmit: (form, values) => … })
+ *   formSheet({ title: 'Kdy nemůže', subtitle: 'Jana Nováková', body: [field…], submitLabel: 'Uložit', onSubmit: (form, values) => … })
  * onSubmit returns nothing to close, or a Czech sentence to keep the sheet open and show it as an error
  * (the button is never disabled – it says what is missing). Also returns a promise: awaited.
  * `values` = FormData as an object (checkboxes / switches: use form.elements or the control's own state).
  */
-export function formSheet({ title, body, submitLabel = 'Uložit', onSubmit, wide, secondary } = {}) {
+export function formSheet({ title, subtitle, body, submitLabel = 'Uložit', onSubmit, wide, secondary, cls } = {}) {
   const formId = uid('form');
   const error = h('p', { class: 'field__error form-error', role: 'alert', hidden: true }, icon('x', { size: 's' }), h('span'));
   const form = h('form', { id: formId, class: 'form', novalidate: true }, body);
   const submit = button(submitLabel, { variant: 'primary', size: 'l', block: true, type: 'submit', form: formId });
-  const sheet = openSheet({ title, body: form, foot: [error, submit, secondary || null], wide });
+  const sheet = openSheet({ title, subtitle, body: form, foot: [error, submit, secondary || null], wide, cls });
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const values = Object.fromEntries(new FormData(form).entries());
@@ -222,7 +222,7 @@ export function menu(items, { label = 'Další možnosti', icon: iconName = 'mor
     if (phone()) {
       let sheet;
       const rows = items.map((item) => (item === '-' ? h('hr', { class: 'menu__rule' }) : h('button', {
-        type: 'button', class: ['row', 'row--single', 'menu__row', item.danger && 'menu__row--danger'],
+        type: 'button', class: ['row', 'row--single', 'menu__row', item.danger && 'menu__row--danger'], dataset: { href: item.href },
         onclick: () => { sheet.close({ restore: false }); run(item); }, disabled: item.disabled,
       }, item.icon ? icon(item.icon) : null, h('span', { class: 'row__body' }, h('span', { class: 'row__title' }, item.label)))));
       sheet = openSheet({ title: title || label, body: h('div', { class: 'list menu__list' }, rows), cls: 'sheet--menu' });
@@ -234,7 +234,7 @@ export function menu(items, { label = 'Další možnosti', icon: iconName = 'mor
       items.map((item) => {
         if (item === '-') return h('hr', { class: 'menu__rule', role: 'separator' });
         const b = h('button', {
-          type: 'button', role: 'menuitem', class: ['menu__item', item.danger && 'menu__item--danger'], tabIndex: -1,
+          type: 'button', role: 'menuitem', class: ['menu__item', item.danger && 'menu__item--danger'], tabIndex: -1, dataset: { href: item.href },
           disabled: item.disabled, onclick: () => run(item),
         }, item.icon ? icon(item.icon, { size: 's' }) : null, item.label);
         buttons.push(b);

@@ -7,19 +7,20 @@
 
 import {
   h, icon, screen, topBar, segmented, menu, searchField, chips, list, row, personRow, indexLetter, empty, button,
-  link, rowLink, detailPane, splitView, isDesktop, isSplit, toast, joinMeta, plural, agree, dateArch, note, section,
-  caption, pill, avatar, personName,
+  link, rowLink, detailPane, splitView, isDesktop, isSplit, toast, joinMeta, plural, dateArch, note, section,
+  caption, pill, avatar, personName, table, sortHead,
 } from './kit.js';
 import { S, can, myId, navigate, render } from '../../ui/state.js';
 import { personById, householdById, sortPeople, sortHouseholds, householdMembers, upcomingBirthdays, statusOf, MISSING_LABELS, comparePeople } from '../../lib/people.js';
 import { lastDutyDays } from '../../lib/events.js';
 import { today } from '../../lib/time.js';
 import {
-  FILTERS, FILTER_ALIASES, filterCounts, inFilter, matchesQuery, seesContact, isKid, isFormer, missingOf, missingNote,
-  membershipWord, peopleCount, fold, groupsInOrder, copyEmails, csvDownload, telHref, mailHref, dayMonth, fullDate,
-  daysToBirthday, nextAge, householdNames, capital, MEMBERSHIP_WORDS, yearsText, andJoin,
+  FILTERS, FILTER_ALIASES, filterCounts, inFilter, matchesQuery, seesContact, isKid, isFormer, missingOf,
+  missingNote, membershipWord, peopleCount, fold, groupsInOrder, copyEmails, csvDownload, telHref, mailHref,
+  dayMonth, fullDate, daysToBirthday, nextAge, householdNames, capital, MEMBERSHIP_WORDS, yearsText,
 } from './people-common.js';
-import { addPersonSheet, bulkGroupSheet, inviteSheet, householdSheet } from './people-forms.js';
+import { addPersonSheet, bulkGroupSheet, householdSheet } from './people-forms.js';
+import { inviteSheet } from './access.js';
 import { personCard, personMenu, householdBody, householdMenu } from './people-card.js';
 
 // ---------- module state (kept while the app runs) ----------
@@ -295,9 +296,10 @@ function tableBody(slug) {
     leader ? h('th', { class: 'col-pick', scope: 'col' }, check(allOn, 'Vybrat všechny', (e) => { for (const p of sorted) { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); } render(); })) : null,
     columns.map((c) => {
       const active = c.key === col.key;
-      return h('th', { scope: 'col', class: `col-${c.key}`, 'aria-sort': active ? (state.sort.dir > 0 ? 'ascending' : 'descending') : null },
-        h('button', { type: 'button', class: 'th-sort', onclick: () => { state.sort = { key: c.key, dir: active ? -state.sort.dir : 1 }; write(SORT_KEY, JSON.stringify(state.sort)); render(); } },
-          c.label, active ? icon(state.sort.dir > 0 ? 'chevron-down' : 'chevron-right', { size: 's' }) : null));
+      return sortHead(c.label, {
+        active, dir: state.sort.dir, cls: `col-${c.key}`,
+        onSort: () => { state.sort = { key: c.key, dir: active ? -state.sort.dir : 1 }; write(SORT_KEY, JSON.stringify(state.sort)); render(); },
+      });
     }));
   const cell = (c, p) => {
     const contact = seesContact(p);
@@ -336,8 +338,7 @@ function tableBody(slug) {
   return [
     households.length ? h('div', { class: 'people-households' }, h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'), list(households.map(householdRow), { label: 'Domácnosti' })) : null,
     leader ? bulkBar() : null,
-    sorted.length ? h('div', { class: 'table-wrap' }, h('table', { class: 'people-table', 'aria-label': 'Lidé – seřadíš je klepnutím na nadpis sloupce' },
-      h('thead', {}, head), h('tbody', {}, rows))) : null,
+    sorted.length ? table({ label: 'Lidé – seřadíš je klepnutím na nadpis sloupce', head, rows, cls: 'people-table' }) : null,
     h('p', { class: 'people-foot meta' }, peopleCount(sorted.length)),
   ];
 }

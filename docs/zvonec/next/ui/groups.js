@@ -5,9 +5,9 @@
 // Role (teams), Kde slouží / Setkání (six weeks). Members read names, leaders and the schedule only.
 
 import {
-  h, icon, screen, topBar, menu, list, row, personRow, teamMark, avatar, avatars, section, empty, button, iconButton,
+  h, icon, screen, topBar, menu, list, row, personRow, teamMark, avatar, avatars, section, empty, button, iconButton, table,
   slot, pill, note, eventRow, fill, rowLink, detailPane, splitView, isDesktop, isSplit, joinMeta, plural, agree,
-  peoplePicker, personName, title as titleEl, caption, disclosure, card,
+  peoplePicker, personName, title as titleEl, caption, disclosure, card, quiet,
 } from './kit.js';
 import { S, can, myId } from '../../ui/state.js';
 import { personById, comparePeople, statusOf } from '../../lib/people.js';
@@ -15,7 +15,7 @@ import { groupById, rolesOf, membersOf, memberRecord, skillMatrix } from '../../
 import { needsOf } from '../../lib/events.js';
 import { placesOf } from '../../lib/places.js';
 import { today, addDays, dayOf, prettyTime } from '../../lib/time.js';
-import { groupWords, leadersLine, compareGroups, peopleCount, GROUP_WORDS, rowActions } from './people-common.js';
+import { groupWords, leadersLine, compareGroups, peopleCount, GROUP_WORDS } from './people-common.js';
 import { sectionBar, keepListPlace } from './people.js';
 import { skillPills } from './people-card.js';
 import {
@@ -151,13 +151,15 @@ function matrix(group) {
   const { roles } = skillMatrix(S.data, { groupId: group.id, includeFormer: true });
   const rows = members(group);
   const levelOf = (p, r) => memberRecord(S.data, group.id, p.id)?.roles?.[r.id] || '';
-  return h('div', { class: 'table-wrap' }, h('table', { class: 'skill-matrix', 'aria-label': `Kdo co umí v týmu ${group.name}` },
-    h('thead', {}, h('tr', {},
+  return table({
+    label: `Kdo co umí v týmu ${group.name}`,
+    cls: 'skill-matrix',
+    head: h('tr', {},
       h('th', { scope: 'col', class: 'skill-matrix__who' }, 'Člověk'),
       roles.map(({ role, trained }) => h('th', { scope: 'col' },
         h('button', { type: 'button', class: 'th-role', onclick: () => roleSheet(group, role) }, role.name),
-        h('span', { class: ['skill-matrix__count', trained <= 1 && 'is-scarce'] }, trained ? (trained === 1 ? 'umí to jen 1' : `umí to ${trained}`) : 'nikdo to neumí'))))),
-    h('tbody', {}, rows.map(({ m, p }) => h('tr', {},
+        h('span', { class: ['skill-matrix__count', trained <= 1 && 'is-scarce'] }, trained ? (trained === 1 ? 'umí to jen 1' : `umí to ${trained}`) : 'nikdo to neumí')))),
+    rows: rows.map(({ m, p }) => h('tr', {},
       h('th', { scope: 'row', class: 'skill-matrix__who' },
         h('button', { type: 'button', class: 'skill-matrix__person', onclick: () => memberSheet(group, p.id), 'aria-label': `${personName(p)} – upravit` },
           avatar(p, { size: 's', me: p.id === myId() }), h('span', { class: 'skill-matrix__name' }, personName(p)), m.leader ? pill(groupWords(group).leads) : null)),
@@ -168,7 +170,8 @@ function matrix(group) {
           'aria-label': `${personName(p)}, ${role.name}: ${SKILL_WORDS[level]}. Změnit.`,
           onclick: () => cycleSkill(p, role),
         }, level === 'trained' ? [icon('check', { size: 's' }), 'umí'] : level === 'learning' ? 'učí se' : h('span', { 'aria-hidden': 'true' }, '–')));
-      }))))));
+      }))),
+  });
 }
 
 function peopleSection(group) {
@@ -180,7 +183,7 @@ function peopleSection(group) {
     title: useMatrix ? 'Kdo co umí' : 'Lidé', count: count || null, id: 'lide', cls: 'group-section',
     body: [
       useMatrix ? [matrix(group), caption('Klepnutím na políčko změníš, co kdo umí: neumí → učí se → umí. Klepnutím na jméno nastavíš, kdo tým vede.')]
-        : count ? list(peopleRows(group), { label: 'Lidé' }) : h('p', { class: 'meta person-quiet' }, 'Zatím tu nikdo není.'),
+        : count ? list(peopleRows(group), { label: 'Lidé' }) : quiet('Zatím tu nikdo není.'),
       leader ? slot(words.add, () => pickPerson(group)) : null,
     ],
   });
@@ -196,17 +199,17 @@ function rolesSection(group) {
     wrap: true,
     note: trained <= 1 ? note(trained ? 'Umí to jen 1' : 'Nikdo to neumí', { tone: 'wait', icon: 'alert' }) : null,
     trail: [
-      leader ? rowActions([
+      leader ? menu([
         { label: 'Upravit roli', icon: 'pencil', onclick: () => roleSheet(group, role) },
         '-',
         { label: 'Smazat roli', icon: 'trash', danger: true, onclick: () => deleteRole(role) },
-      ], { label: `Možnosti – ${role.name}`, title: role.name }) : null,
+      ], { label: `Možnosti: ${role.name}`, title: role.name }) : null,
     ],
     onclick: leader ? () => roleSheet(group, role) : null,
   }));
   return section({
     title: 'Role', count: roles.length || null, id: 'role', cls: 'group-section',
-    body: [rows.length ? list(rows, { label: 'Role' }) : h('p', { class: 'meta person-quiet' }, 'Tým zatím nemá žádnou roli. Bez rolí se z něj nesloží rozpis.'),
+    body: [rows.length ? list(rows, { label: 'Role' }) : quiet('Tým zatím nemá žádnou roli. Bez rolí se z něj nesloží rozpis.'),
       leader ? slot('Přidat roli', () => roleSheet(group)) : null],
   });
 }
@@ -246,7 +249,7 @@ function eventsSection(group) {
   return section({
     title: team ? 'Kde slouží' : 'Setkání', id: 'kde-slouzi', cls: 'group-section',
     body: [
-      rows.length ? list(rows, { label: team ? 'Kde slouží' : 'Setkání' }) : h('p', { class: 'meta person-quiet' }, team ? 'Příštích šest týdnů tým nikde neslouží.' : 'Příštích šest týdnů tu nic není.'),
+      rows.length ? list(rows, { label: team ? 'Kde slouží' : 'Setkání' }) : quiet(team ? 'Příštích šest týdnů tým nikde neslouží.' : 'Příštích šest týdnů tu nic není.'),
       all.length > items.length ? h('p', { class: 'meta' }, `A ještě ${all.length - items.length} do ${WEEKS_AHEAD} týdnů.`) : null,
       team ? rowLink('Celý rozpis', { href: '#kalendar/rozpis' }) : rowLink('Celý kalendář', { href: '#kalendar' }),
     ],

@@ -75,6 +75,7 @@ export const SHAPES = {
   image: [rect(3.5, 4.5, 17, 15, 3), circle(9, 9.5, 1.75), 'M20.5 15.5l-5-5-9 9'],
   key: [circle(8, 15, 4), 'M10.8 12.2 19.5 3.5', 'M16.5 6.5l2.5 2.5', 'M14 9l2 2'],
   'bulls-eye': [circle(12, 12, 8.5), dot(12, 12, 3)],
+  message: ['M6.5 4.5h11a3 3 0 0 1 3 3V14a3 3 0 0 1-3 3H11l-4.5 3.5V17a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3z', dot(8.5, 10.75, 1.1), dot(12, 10.75, 1.1), dot(15.5, 10.75, 1.1)],
 };
 
 /** A line icon. size: 'm' (24) | 's' (20). label: accessible name (otherwise aria-hidden). */

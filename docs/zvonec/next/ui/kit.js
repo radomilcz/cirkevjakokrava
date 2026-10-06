@@ -4,7 +4,7 @@
 // sheet.js    layers: openSheet, formSheet, confirmSheet, menu (⋯), toast
 // fields.js   field, text / select / date / time / stepper / switch / search, chips & segmented fields,
 //             disclosure („Další možnosti“), peoplePicker
-// layout.js   screen, topBar, period, screenHead, splitView, detailPane, placeholder, breakpoints
+// layout.js   screen, topBar, period, screenHead, splitView, detailPane, breakpoints
 // icons.js    icon(name), statusSymbol(status), fillRing(filled, total)
 // API reference: scratchpad/next/reports/kit.md · living specimen: #kit.
 

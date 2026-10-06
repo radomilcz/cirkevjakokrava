@@ -10,17 +10,18 @@
 
 import {
   h, icon, button, buttonRow, segmented, statusNote, warningRow, dutyRow, teamHead, statusSymbol, openSheet, formSheet,
-  toast, sev, field, textInput, stepper, disclosure, peoplePicker, avatar, personName, agree, shortDate, plural, dateArch, SEP,
+  toast, sev, field, textInput, stepper, disclosure, peoplePicker, avatar, personName, agree, shortDate, plural, dateArch,
+  link, joinMeta, SEP, STATUS_WORDS,
 } from './kit.js';
-import { S, can, myId, change, newId } from '../../ui/state.js';
+import { S, can, myId, change, newId, render } from '../../ui/state.js';
 import { eventById, needsOf, missingCount, followingInSeries, updateSeries } from '../../lib/events.js';
 import { programNeeds } from '../../lib/program.js';
-import { candidates, proposeRemaining, sameAsLastTime, previousEvent } from '../../lib/scheduling.js';
-import { roleById } from '../../lib/groups.js';
-import { fullName } from '../../lib/people.js';
+import { candidates, proposeRemaining, sameAsLastTime, previousEvent, limitsOf } from '../../lib/scheduling.js';
+import { roleById, memberRecord, setSkill, removeMember } from '../../lib/groups.js';
+import { fullName, sortPeople, statusOf } from '../../lib/people.js';
 import { today, dayOf } from '../../lib/time.js';
 import {
-  personOf, nameOf, shortName, assignmentWarnings, eventConflicts, teamsWithRoles, capital,
+  personOf, nameOf, shortName, assignmentWarnings, eventConflicts, teamsWithRoles, capital, whenText, placeText,
 } from './calendar-shared.js';
 
 /** Re-find the event at click time – a refresh may have swapped S.data meanwhile. */
@@ -29,12 +30,13 @@ const roleName = (roleId) => roleById(S.data, roleId)?.name || 'služba';
 const dayWords = (event) => shortDate(event.start);
 
 /** Keep a copy of an event's assignments; the returned function puts them back (Vrátit). */
-function snapshot(eventId, note) {
+function snapshot(eventId, note, extra) {
   const before = JSON.stringify(fresh(eventId)?.assignments || []);
   return () => {
     const e = fresh(eventId);
     if (!e) return;
     e.assignments = JSON.parse(before);
+    extra?.();
     change(`vráceno: ${note}`);
   };
 }
@@ -52,17 +54,23 @@ function sinceWords(lastStart) {
   return `naposledy před ${Math.floor(days / 30)} měsíci`;
 }
 
-const reasonsOf = (c) => {
+/** Reason pills of one candidate: what speaks against them first (solid = it will not work), then facts. */
+const reasonsOf = (c, roleId) => {
   const pills = c.reasons.filter((r) => r.code !== 'K4' || !c.inTeam || c.level).map((r) => ({ text: r.severity === 'error' && r.code === 'K3' ? 'nemůže' : r.text, solid: r.severity === 'error' }));
   const since = sinceWords(c.lastServed);
-  if (since && pills.length < 3) pills.push({ text: since });
-  if (c.monthCount && pills.length < 3) pills.push({ text: `tento měsíc ${c.monthCount}×` });
+  if (since && !c.hardCount && pills.length < 3) pills.push({ text: since });
+  if (c.monthCount && !c.reasons.some((r) => r.code === 'K7') && pills.length < 3) {
+    pills.push({ text: `tento měsíc ${c.monthCount} z ${limitsOf(S.data, c.person.id).maxPerMonth}` });
+  }
   return pills.slice(0, 3);
 };
 
 /**
- * Výběr člověka for a slot: an empty one (assignmentId null) or „Vybrat jiného“ (replaces that duty).
- * Ranked: who can and has time first; pills say why someone would not fit.
+ * Výběr člověka for a slot – the one picker of the app (Setkání, Rozpis, Domů › Co je potřeba): an empty
+ * slot (assignmentId null) or „Vybrat jiného“ (replaces that duty). Pools Umí to · Celý tým · Všichni lidé,
+ * ranked by lib/scheduling (who can and has time first; pills say why someone would not fit), a search over
+ * everyone who still comes, „Přidat „…“ a vybrat“ for a new name (a quick card: host, to be completed,
+ * learning the role). The pick waits for an answer; the toast offers „Vrátit“.
  */
 export function pickFor(eventId, roleId, assignmentId = null) {
   const event = fresh(eventId);
@@ -71,30 +79,44 @@ export function pickFor(eventId, roleId, assignmentId = null) {
   const replacing = assignmentId ? (event.assignments || []).find((a) => a.id === assignmentId) : null;
   const taken = new Set((event.assignments || []).filter((a) => a.roleId === roleId && (a.status !== 'declined' || a.id === assignmentId)).map((a) => a.personId));
   const pool = (scope) => candidates(S.data, eventId, roleId, { today: today(), scope, includeInactive: scope === 'all' })
-    .filter((c) => !taken.has(c.person.id)).map((c) => ({ person: c.person, reasons: reasonsOf(c) }));
+    .filter((c) => !taken.has(c.person.id)).map((c) => ({ person: c.person, reasons: reasonsOf(c, roleId) }));
+  const pools = [{ id: 'skilled', label: 'Umí to', items: pool('skilled') }, { id: 'team', label: 'Celý tým', items: pool('team') }, { id: 'all', label: 'Všichni lidé', items: pool('all') }];
   peoplePicker({
     title: `Kdo bude dělat ${role?.name || 'službu'}?`,
     meta: [replacing ? `Teď: ${nameOf(replacing.personId)}` : null, dayWords(event), event.title].filter(Boolean).join(SEP),
-    pools: [{ id: 'skilled', label: 'Umí to', items: pool('skilled') }, { id: 'team', label: 'Celý tým', items: pool('team') }, { id: 'all', label: 'Všichni lidé', items: pool('all') }],
-    everyone: (S.data.people || []).filter((p) => !taken.has(p.id)),
+    pools,
+    pool: pools[0].items.length ? 'skilled' : 'team',
+    everyone: sortPeople((S.data.people || []).filter((p) => !taken.has(p.id) && statusOf(p) !== 'former')),
     onPick: (person) => assign(eventId, roleId, person.id, assignmentId),
-    onAdd: (name) => {
-      const [first = '', ...rest] = name.trim().split(/\s+/);
-      const cap = (t) => t.charAt(0).toLocaleUpperCase('cs') + t.slice(1);
-      const person = { id: newId('p'), firstName: cap(first), membership: { status: 'guest' }, needsReview: true };
-      if (rest.length) person.lastName = rest.map(cap).join(' ');
-      S.data.people.push(person);
-      assign(eventId, roleId, person.id, assignmentId, { created: true });
+    onAdd: (name) => addAndAssign(eventId, roleId, name, assignmentId),
+  });
+}
+
+/** „Přidat „Jana Malá“ a vybrat“: a quick card (host, to be completed) learning the role, on the slot. */
+function addAndAssign(eventId, roleId, name, assignmentId) {
+  const cap = (t) => t.charAt(0).toLocaleUpperCase('cs') + t.slice(1);
+  const [first = '', ...rest] = name.trim().split(/\s+/);
+  const person = { id: newId('p'), firstName: cap(first), membership: { status: 'guest' }, needsReview: true };
+  if (rest.length) person.lastName = rest.map(cap).join(' ');
+  S.data.people.push(person);
+  const role = roleById(S.data, roleId);
+  const wasMember = role ? !!memberRecord(S.data, role.groupId, person.id) : true;
+  if (role) setSkill(S.data, person.id, roleId, 'learning');
+  assign(eventId, roleId, person.id, assignmentId, {
+    created: true,
+    undoExtra: () => {
+      if (role && !wasMember) removeMember(S.data, role.groupId, person.id);
+      S.data.people = S.data.people.filter((p) => p.id !== person.id);
     },
   });
 }
 
 /** Put a person on a slot (or in place of `assignmentId`): „čeká na potvrzení“, toast with Vrátit. */
-export function assign(eventId, roleId, personId, assignmentId = null, { created = false } = {}) {
+export function assign(eventId, roleId, personId, assignmentId = null, { created = false, undoExtra } = {}) {
   const e = fresh(eventId);
   if (!e) return;
   const name = nameOf(personId);
-  const undo = snapshot(eventId, `${name} (${roleName(roleId)})`);
+  const undo = snapshot(eventId, `${name} (${roleName(roleId)})`, undoExtra);
   e.assignments = e.assignments || [];
   const target = assignmentId && e.assignments.find((a) => a.id === assignmentId);
   if (target) {
@@ -105,19 +127,24 @@ export function assign(eventId, roleId, personId, assignmentId = null, { created
     e.assignments.push({ id: newId('a'), roleId, personId, status: 'proposed' });
   }
   change(`${created ? 'nový člověk ' : ''}${name} na ${roleName(roleId)} ${shortDate(e.start, { weekday: false })}`);
-  toast(`${name}: ${roleName(roleId)} · čeká na potvrzení`, { action: undo });
+  toast(`${name}: ${roleName(roleId)}${SEP}čeká na potvrzení`, { action: undo });
 }
 
 // ---------- status ----------
 
 const ANSWER_TOAST = { confirmed: 'Díky, počítáme s tebou.', declined: 'Vedoucí uvidí, že nemůžeš.', proposed: 'Zase to čeká na potvrzení.' };
-const STATUS_NOTE = { confirmed: 'potvrzeno', proposed: 'čeká na potvrzení', declined: 'nemůže' };
+const STATUS_NOTE = { confirmed: STATUS_WORDS.confirmed, proposed: STATUS_WORDS.waiting, declined: STATUS_WORDS.declined };
 
 /** Change the status of a duty (a member only their own, a leader any). Toast with Vrátit. */
 export function answer(eventId, assignmentId, status, { quiet = false } = {}) {
   const e = fresh(eventId);
   const a = e?.assignments?.find((x) => x.id === assignmentId);
-  if (!a || a.status === status) return;
+  if (!a) {
+    toast('Tahle služba už tu není. Mezitím se rozpis změnil.', { icon: 'info' });
+    render();
+    return;
+  }
+  if (a.status === status) return;
   if (!can('leader') && a.personId !== myId()) return;
   const previous = a.status;
   a.status = status;
@@ -143,9 +170,9 @@ export function removeDuty(eventId, assignmentId) {
 }
 
 const STATUS_OPTIONS = [
-  { value: 'confirmed', label: 'potvrzeno' },
+  { value: 'confirmed', label: STATUS_WORDS.confirmed },
   { value: 'proposed', label: 'čeká' },
-  { value: 'declined', label: 'nemůže' },
+  { value: 'declined', label: STATUS_WORDS.declined },
 ];
 
 /** Služba – a leader taps a filled slot. */
@@ -177,18 +204,28 @@ export function openDutySheet(eventId, assignmentId) {
   draw();
 }
 
-/** Moje odpověď – my own slot: Můžu / Nemůžu. */
+/**
+ * Moje odpověď – a tap on one of my duties (Domů › Tvoje služby, Kdo slouží, Rozpis): what it is, my
+ * answer now, Můžu / Nemůžu; „Otevřít setkání“ unless I am on that event already.
+ */
 export function openMyAnswer(eventId, assignmentId) {
   const e = fresh(eventId);
   const a = e?.assignments?.find((x) => x.id === assignmentId);
   if (!a || a.personId !== myId()) return;
   let sheet;
   const pick = (status) => { sheet.close(); answer(eventId, assignmentId, status); };
+  const past = dayOf(e.end || e.start) < today();
+  const here = location.hash.startsWith(`#setkani/${e.id}`);
+  const now = e.cancelled
+    ? h('p', { class: 'text' }, 'Setkání je zrušené. Nic odpovídat nemusíš.')
+    : h('p', { class: 'answer-now' }, h('span', { class: 'meta' }, 'Teď:'), ' ', statusNote(a.status, { word: a.status === 'declined' ? 'nemůžeš' : undefined }));
   sheet = openSheet({
-    title: `Děláš ${roleName(a.roleId)}`,
-    subtitle: [dayWords(e), e.title].join(SEP),
-    body: [h('p', {}, statusNote(a.status))],
-    foot: buttonRow(button('Můžu', { variant: 'primary', size: 'l', onclick: () => pick('confirmed') }), button('Nemůžu', { size: 'l', onclick: () => pick('declined') })),
+    title: `${roleName(a.roleId)}${SEP}${e.title}`,
+    subtitle: joinMeta([whenText(e), placeText(e)]),
+    body: [now, here ? null : link('Otevřít setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
+    foot: e.cancelled || past ? null : buttonRow(
+      button('Můžu', { variant: 'primary', size: 'l', onclick: () => pick('confirmed') }),
+      button('Nemůžu', { size: 'l', onclick: () => pick('declined') })),
   });
 }
 
@@ -237,10 +274,11 @@ export function clearOverride(conflict) {
 }
 
 /**
- * One upozornění in place with its fix buttons. `assignment` – the duty it sits under (then „Vybrat
- * jiného“ replaces that person); `withEvent` adds the event to the sentence (Rozpis list).
+ * One upozornění in place with its fix buttons – the same everywhere (Setkání, Rozpis, Služba, the person
+ * card). `assignment` – the duty it sits under (then „Vybrat jiného“ replaces that person); `text` replaces
+ * the sentence (the card adds the day); `extra` – more buttons after the fixes („Otevřít setkání“).
  */
-export function warningFor(conflict, { eventId, assignment, onDone } = {}) {
+export function warningFor(conflict, { eventId, assignment, onDone, text, extra } = {}) {
   const excused = !!conflict.overrideNote;
   const done = (fn) => () => { onDone?.(); fn(); };
   const canReplace = assignment && assignment.personId === conflict.personId && dayOf(fresh(eventId)?.end || '') >= today();
@@ -252,9 +290,11 @@ export function warningFor(conflict, { eventId, assignment, onDone } = {}) {
     canReplace ? button('Vybrat jiného', { size: 's', onclick: done(() => pickFor(eventId, assignment.roleId, assignment.id)) }) : null,
     overridable ? button('Vím o tom', { size: 's', variant: 'quiet', onclick: done(() => openOverride(conflict)) }) : null,
   ].filter(Boolean);
+  if (extra) actions.push(extra);
+  const sentence = text || conflict.text;
   return warningRow({
     severity: conflict.severity,
-    text: excused ? `${conflict.text} Vím o tom: ${conflict.overrideNote}` : conflict.text,
+    text: excused ? `${sentence} Vím o tom: ${conflict.overrideNote}` : sentence,
     actions: actions.length ? actions : null,
   });
 }

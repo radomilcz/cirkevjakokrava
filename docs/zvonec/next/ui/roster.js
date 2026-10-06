@@ -8,7 +8,7 @@
 
 import {
   h, icon, button, chip, segmented, statusSymbol, dateArch, fill, empty, list, row, avatar, personName, openSheet, detailPane,
-  sev, isDesktop, isSplit, isLayerOpen, shortDate, clock, monthLabel, SEP, STATUS_WORDS, STATUS_KEY,
+  sev, isDesktop, isSplit, isLayerOpen, shortDate, clock, monthLabel, SEP, STATUS_WORDS, STATUS_KEY, table,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
 import { eventsInRange, needsOf, eventById } from '../../lib/events.js';
@@ -163,8 +163,7 @@ function rosterTable(items, chipValue) {
         return h('td', { class: cls }, h('div', { class: 'roster__entries' }, slots.map((s) => cellEntry(event, s, conflicts, { narrow }))));
       })));
   });
-  return h('div', { class: 'roster-wrap', tabindex: 0, role: 'region', 'aria-label': 'Rozpis' },
-    h('table', { class: ['roster', narrow && 'roster--narrow'] }, h('thead', {}, head1, head2), h('tbody', {}, rows)));
+  return table({ label: 'Rozpis', region: true, wrapCls: 'roster-wrap', cls: ['roster', narrow && 'roster--narrow'], head: [head1, head2], rows });
 }
 
 // ---------- Břemeno ----------

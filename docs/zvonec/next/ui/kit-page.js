@@ -4,12 +4,13 @@
 
 import {
   h, screen, topBar, section, paletteChoices, title, lead, text, meta, caption, brand, button, buttonRow, iconButton,
-  link, rowLink, fab, count, badge, pill, tag, kindTag, segmented, chips, chip, switchControl, slot, avatar, teamMark,
-  avatars, status, statusNote, note, sev, fill, callout, warningRow, list, row, personRow, dateArch, eventRow, agenda,
-  agendaDay, agendaEvent, weekLabel, needRow, teamHead, dutyRow, feature, answerItem, weekStrip, monthGrid, facts, card,
-  empty, skeleton, indexLetter, field, textInput, textArea, selectInput, dateInput, timeInput, timeRange, stepper,
-  switchRow, searchField, segmentedField, chipsField, disclosure, peoplePicker, openSheet, formSheet, confirmSheet, menu,
-  toast, fieldError, splitView, detailPane, isSplit, icon, ICONS, isoDay, shortDate, period,
+  link, rowLink, fab, count, badge, pill, tag, kindTag, segmented, chips, chip, slot, avatar, teamMark, avatars,
+  status, statusNote, note, sev, fill, callout, warningRow, list, personRow, eventRow, agenda, agendaDay,
+  agendaEvent, weekLabel, needRow, teamHead, dutyRow, feature, answerItem, weekStrip, monthGrid, facts, empty,
+  skeleton, indexLetter, field, textInput, textArea, selectInput, dateInput, timeInput, timeRange, stepper,
+  switchRow, searchField, segmentedField, chipsField, disclosure, peoplePicker, openSheet, formSheet, confirmSheet,
+  menu, toast, fieldError, splitView, detailPane, isSplit, icon, ICONS, isoDay, shortDate, period, row, table, sortHead,
+  quiet, mapLink,
 } from './kit.js';
 
 const P = [
@@ -33,7 +34,7 @@ export function renderKit() {
     onClose: () => demoNote('Panel by se zavřel.'),
     body: [
       h('div', { class: 'detail__head' }, avatar(P[1], { size: 'l' }), h('div', {}, title('Martin Dvořák', { small: true, tag: 'h3' }), meta('člen · Technika, vede tým'))),
-      h('div', { class: 'cluster' }, button('Zavolat', { icon: 'phone' }), button('Napsat SMS', { variant: 'quiet' }), button('Napsat e-mail', { variant: 'quiet', icon: 'mail' })),
+      h('div', { class: 'cluster' }, button('Zavolat', { icon: 'phone' }), button('Napsat SMS', { variant: 'quiet', icon: 'message' }), button('Napsat e-mail', { variant: 'quiet', icon: 'mail' })),
       facts([{ icon: 'phone', text: '731 204 118', href: 'tel:731204118' }, { icon: 'mail', text: 'martin@example.cz' }, { icon: 'home', text: 'Domácnost · Dvořákovi' }]),
       section({ title: 'Služby', body: list([
         eventRow({ day: sunday, title: 'Světla · Setkání na pastvě', note: statusNote('confirmed'), href: '#kit' }),
@@ -51,7 +52,7 @@ export function renderKit() {
       h('div', { class: 'kit-palettes' }, h('span', { class: 'field__label' }, 'Barvy'), paletteChoices()),
       h('div', { class: 'kit-grid' },
         plate('Písmo',
-          brand(), title('Domů'), lead('Co je potřeba'), text('Běžný text – 17/24 na telefonu, 16/22 na počítači.'),
+          brand(), title('Domů', { tag: 'p' }), lead('Co je potřeba'), text('Běžný text – 17/24 na telefonu, 16/22 na počítači.'),
           meta('Druhý řádek, nápověda, popisky – 15/20.'), caption('Popisek 13/16'), indexLetter('Č'),
           h('div', { class: 'cluster' }, link('Další 1', { href: '#kit', iconEnd: 'chevron-right' }), rowLink('Celý rozpis', { href: '#kit' }), rowLink('Přidat do kalendáře v telefonu', { href: '#kit', icon: 'download' }))),
 
@@ -101,7 +102,7 @@ export function renderKit() {
             more: { text: `Projekce · ${shortDate(day(14))}`, link: 'Ukázat další 1', href: '#kit' },
           }),
           section({ title: 'Co je potřeba', action: chip('Moje týmy', { iconEnd: 'chevron-down' }), body: [
-            needRow({ day: sunday, title: 'Setkání na pastvě', href: '#kit', summary: [['error', 'chybí 2'], ['warning', '3 čekají']], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick: () => {} }, { label: 'Projekce', onclick: () => {} }] }),
+            needRow({ day: sunday, title: 'Setkání na pastvě', href: '#kit', summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick: () => demoNote('Kdo čeká – s tlačítkem Zavolat.'), label: '3 čekají na potvrzení – ukázat koho' }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick: () => {} }, { label: 'Projekce', onclick: () => {} }] }),
             needRow({ day: day(4), title: 'Zkouška chval', href: '#kit', summary: [['warning', '1 čeká']], filled: 5, total: 6 }),
             rowLink('Celý rozpis', { href: '#kit' }),
           ] })),
@@ -155,7 +156,21 @@ export function renderKit() {
             button('Toast s Vrátit', { onclick: () => toast('Ondřej Černý: Zvuk · čeká na potvrzení', { action: () => demoNote('Vráceno.') }) }),
             menu([{ label: 'Upravit setkání', icon: 'pencil', onclick: () => demoNote('Upravit') }, { label: 'Prodloužit řadu', icon: 'calendar-plus', onclick: () => {} }, { label: 'Vytisknout', icon: 'printer', onclick: () => {} }, '-', { label: 'Zrušit setkání', icon: 'x', onclick: () => {} }, { label: 'Smazat setkání', icon: 'trash', danger: true, onclick: () => {} }]))),
 
+        plate('Řádky s ⋯ a tabulka',
+          list([
+            row({ title: 'Úvodní slovo', meta: '10 min · vede Kazatel', onclick: () => demoNote('Upravit bod'), trail: menu([{ label: 'Posunout níž', onclick: () => {} }, '-', { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => demoNote('Odebráno.') }], { label: 'Možnosti: Úvodní slovo', title: 'Úvodní slovo' }) }),
+            personRow(P[4], { meta: 'vedoucí · Chvály', href: '#kit', trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => {} }], { label: 'Možnosti: Alžběta Svobodová' }) }),
+          ]),
+          table({
+            label: 'Ukázka tabulky',
+            head: h('tr', {}, sortHead('Jméno', { active: true, dir: 1, onSort: () => demoNote('Seřadit podle jména') }), sortHead('Ve sboru', { onSort: () => {} }), h('th', { scope: 'col' }, 'Telefon')),
+            rows: P.slice(0, 3).map((p, i) => h('tr', {}, h('td', {}, `${p.firstName} ${p.lastName}`), h('td', {}, i ? 'člen' : 'host'), h('td', {}, '731 204 118'))),
+          }),
+          mapLink({ address: 'Monta, Nádražní 12, Nový Jičín' })),
+
         plate('Prázdno a načítání',
+          quiet('Teď žádnou službu nemáš.'),
+          quiet('Na příští tři týdny je všechno obsazené.', { icon: 'check' }),
           empty({ icon: 'calendar', title: 'Tenhle měsíc tu nic není.', text: 'Přidej první setkání, nebo se podívej na další měsíc.', action: button('Přidat setkání', { variant: 'primary', icon: 'plus' }) }),
           skeleton({ rows: 2 })),
 

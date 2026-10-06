@@ -25,10 +25,8 @@
 @media (min-width: 960px) { .group-screen .group-page { padding-top: var(--space-7); } }
 
 /* „Kdo co umí“: people × roles */
-.skill-matrix { border-collapse: collapse; font-size: var(--type-meta); line-height: var(--lh-meta); min-width: 100%; }
 .skill-matrix th, .skill-matrix td { padding: 6px var(--space-1); text-align: center; vertical-align: middle; }
-.skill-matrix thead th { vertical-align: bottom; padding-bottom: var(--space-2); box-shadow: inset 0 -1px 0 var(--edge); }
-.skill-matrix tbody tr + tr > * { border-top: 1px solid var(--hairline); }
+.skill-matrix thead th { vertical-align: bottom; padding-bottom: var(--space-2); }
 .skill-matrix__who { text-align: left !important; min-width: 200px; }
 thead .skill-matrix__who { color: var(--ink-2); font-weight: var(--weight-strong); }
 .th-role {
@@ -63,3 +61,4 @@ thead .skill-matrix__who { color: var(--ink-2); font-weight: var(--weight-strong
 @media (min-width: 960px) {
   .skill-row { grid-template-columns: 140px 1fr; align-items: center; gap: var(--space-3); }
 }
+.group-card .avatars > .avatar { box-shadow: 0 0 0 2px var(--card); }

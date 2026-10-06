@@ -9,7 +9,7 @@
 import {
   h, icon, screen, topBar, period, segmented, button, menu, agenda, agendaDay, agendaEvent, weekLabel, monthGrid,
   dateArch, fillRing, sev, count, empty, chipsField, switchRow, openSheet, splitView, isSplit, isDesktop, monthLabel,
-  shiftMonth, link, clock, SEP,
+  shiftMonth, link, clock, SEP, quiet,
 } from './kit.js';
 import { S, can, render, navigate } from '../../ui/state.js';
 import { eventById, eventsInRange, EVENT_KINDS, KIND_LABELS } from '../../lib/events.js';
@@ -222,7 +222,7 @@ function monthPhone({ month, day }) {
         list.length
           ? agenda([agendaDay({ day: chosen, today: chosen === today(), label: dayLabel(chosen), events: list.map((e) => eventItem(e)) })])
           : h('div', { class: 'cal-day__none' }, dateArch(chosen, { today: chosen === today(), quiet: true }),
-            h('p', { class: 'meta' }, 'Tento den nic není.'),
+            quiet('Tento den nic není.'),
             can('leader') ? button('Přidat setkání', { size: 's', icon: 'plus', onclick: () => openAddEvent({ day: chosen }) }) : null)),
     ],
     chosen,
@@ -241,7 +241,7 @@ function monthDesktop({ month, day, openId }) {
     const num = Number(d.slice(8));
     return h('div', { class: 'cal-cell', role: 'gridcell', dataset: { today: d === today() ? '' : null, outside: outside ? '' : null, selected: d === day ? '' : null } },
       h('div', { class: 'cal-cell__head' },
-        h('span', { class: 'cal-cell__num', 'aria-hidden': 'true' }, String(num)),
+        h('span', { class: 'cal-cell__num arch-shape', 'aria-hidden': 'true' }, String(num)),
         h('span', { class: 'visually-hidden' }, new Date(`${d}T12:00`).toLocaleDateString('cs', { weekday: 'long', day: 'numeric', month: 'numeric' })),
         leader ? h('button', { type: 'button', class: 'cal-cell__add', 'aria-label': `Přidat setkání ${num}. ${Number(d.slice(5, 7))}.`, title: 'Přidat setkání', onclick: () => openAddEvent({ day: d }) }, icon('plus', { size: 's' })) : null),
       shown.map((e) => {

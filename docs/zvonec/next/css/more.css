@@ -14,9 +14,6 @@
   .more-page .split__aside > .detail { padding: var(--space-6); }
 }
 
-/* a ⋯ menu at the end of a row stays its own tap target above the stretched row link */
-.row__trail > .menu-wrap { position: relative; z-index: 1; }
-
 /* ---------- Více ---------- */
 .more-list { display: grid; }
 .more-heading {
@@ -53,8 +50,6 @@
 .secret__value { font-size: var(--type-meta); }
 
 /* a map frame (OpenStreetMap, allowed by the CSP) */
-.map { overflow: hidden; border-radius: var(--shape-block); box-shadow: 0 0 0 1px var(--edge); background: var(--tint); }
-.map > iframe { display: block; width: 100%; height: 220px; border: 0; }
 
 /* pills */
 .pill--web { background: var(--count-bg); color: var(--ink); }
@@ -183,9 +178,3 @@ body.is-public:has(.login-setup) .topbar--public { max-width: calc(560px + 2 * v
   .login-page .seg { flex-direction: column; }
 }
 
-/* kit fix (reported to the shell): a centred dialog taller than half the window pushed its sticky foot
-   up over the fields – sticky measures from the untransformed box. The dialog is a flex column whose
-   body scrolls, so the foot sits at the bottom without sticky. */
-@media (min-width: 960px) {
-  .sheet:not(.sheet--inline) > .sheet__foot { position: relative; }
-}

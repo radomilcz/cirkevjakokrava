@@ -1,10 +1,9 @@
 // Zvonec Next – Lidé and Skupiny, shared pieces (no screens): filters, who may see what, Czech words
-// for memberships, ages, dates and groups, copying e-mails, CSV, the .ics of someone's duties, and two
-// local helpers the kit does not have (an SMS icon, a file download).
+// for memberships, ages, dates and groups, copying e-mails and CSV.
 // Privacy (README „Kdo co vidí“): a member never sees membership, birth dates, notes, consent or
 // logins of others; phone and e-mail only when the person shares them (showInDirectory).
 
-import { h, plural, agree, toast, openSheet, button, textArea, iconButton, icon } from './kit.js';
+import { h, plural, agree, toast, openSheet, button, textArea, download } from './kit.js';
 import { S, can, myId } from '../../ui/state.js';
 import {
   childAgeOf, age, isChild, statusOf, matchesFilter, missingData, fullName, displayName, MISSING_LABELS,
@@ -12,7 +11,6 @@ import {
 } from '../../lib/people.js';
 import { groupsOf, rolesOf, memberRecord, leadersOf, GROUP_KINDS } from '../../lib/groups.js';
 import { personById } from '../../lib/people.js';
-import { ics, icsForPerson } from '../../lib/ics.js';
 import { today, addDays } from '../../lib/time.js';
 
 // ---------- filters ----------
@@ -172,7 +170,6 @@ export function householdNames(householdId, { except } = {}) {
 export const telHref = (phone) => `tel:${String(phone).replace(/[^\d+]/g, '')}`;
 export const smsHref = (phone) => `sms:${String(phone).replace(/[^\d+]/g, '')}`;
 export const mailHref = (email) => `mailto:${email}`;
-export const mapHref = (address) => `https://mapy.cz/zakladni?q=${encodeURIComponent(address || '')}`;
 
 // ---------- groups ----------
 
@@ -211,16 +208,6 @@ export function skillsIn(group, personId) {
 
 // ---------- e-mails, CSV, .ics ----------
 
-/** A file for the person to save (CSV, .ics) – the kit has no download helper yet. */
-export function download(name, content, type) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const a = h('a', { href: url, download: name, hidden: true });
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-
 /** Copy the e-mails of these people (only those the viewer may see); a sheet with the text when the clipboard fails. */
 export async function copyEmails(people) {
   const withMail = people.filter((p) => p.email && seesContact(p));
@@ -246,61 +233,6 @@ const csvCell = (value) => {
 /** A CSV with semicolons and a BOM (Czech Excel opens it right). */
 export function csvDownload(name, rows) {
   download(name, `﻿${rows.map((r) => r.map(csvCell).join(';')).join('\r\n')}\r\n`, 'text/csv;charset=utf-8');
-}
-
-const asciiName = (value) => String(value || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'clovek';
-/** .ics with the person's duties from a month back on. */
-export function downloadDuties(person) {
-  const items = icsForPerson(S.data, person.id, addDays(today(), -30));
-  download(`sluzby-${asciiName(displayName(person))}.ics`, ics(S.data, items, `Služby – ${displayName(person)}`), 'text/calendar');
-  toast(items.length ? `Stahuju ${plural(items.length, 'službu', 'služby', 'služeb')} do kalendáře.` : 'Stahuju kalendář. Zatím v něm nic není.', { icon: 'download' });
-}
-
-// ---------- local icon: SMS (the kit set has no speech bubble) ----------
-
-const NS = 'http://www.w3.org/2000/svg';
-/** A speech bubble in the kit's drawing rule (24 grid, 1.75 stroke from CSS, round joins). */
-export function smsIcon({ size = 's' } = {}) {
-  const svg = document.createElementNS(NS, 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('class', size === 's' ? 'icon icon--s' : 'icon');
-  svg.setAttribute('aria-hidden', 'true');
-  const path = document.createElementNS(NS, 'path');
-  path.setAttribute('d', 'M6.5 4.5h11a3 3 0 0 1 3 3v6.5a3 3 0 0 1-3 3H11l-4.5 3.5V17h0a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3z');
-  svg.append(path);
-  for (const cx of [8.5, 12, 15.5]) {
-    const c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', cx); c.setAttribute('cy', 10.75); c.setAttribute('r', 1.1);
-    c.setAttribute('fill', 'currentColor'); c.setAttribute('stroke', 'none');
-    svg.append(c);
-  }
-  return svg;
-}
-
-/** A button that reads like the kit's button() but leads with a custom svg node. */
-export function nodeButton(label, iconNode, { href, onclick, variant = 'tint', cls } = {}) {
-  const classes = ['btn', variant !== 'tint' && `btn--${variant}`, cls];
-  return href ? h('a', { class: classes, href }, iconNode, label) : h('button', { class: classes, type: 'button', onclick }, iconNode, label);
-}
-
-// ---------- ⋯ inside a row ----------
-
-/**
- * The ⋯ of a row that is itself tappable: menu() is a div, which row() does not treat as a control
- * (it would end up inside the row's link). This is an icon button that opens the same list of
- * actions as a sheet. items: [{ label, icon, onclick, danger } | '-'].
- */
-export function rowActions(items, { label = 'Další možnosti', title } = {}) {
-  return iconButton('more', label, {
-    onclick: () => {
-      let sheet;
-      const rows = items.map((item) => (item === '-' ? h('hr', { class: 'menu__rule' }) : h('button', {
-        type: 'button', class: ['row', 'row--single', 'menu__row', item.danger && 'menu__row--danger'],
-        onclick: () => { sheet.close({ restore: false }); item.onclick?.(); },
-      }, item.icon ? icon(item.icon) : null, h('span', { class: 'row__body' }, h('span', { class: 'row__title' }, item.label)))));
-      sheet = openSheet({ title: title || label, body: h('div', { class: 'list menu__list' }, rows), cls: 'sheet--menu' });
-    },
-  });
 }
 
 // ---------- misc ----------

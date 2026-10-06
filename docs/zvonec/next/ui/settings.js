@@ -10,9 +10,9 @@ import { normalize, COLLECTIONS, SCHEMA } from '../../lib/store/store.js';
 import { today } from '../../lib/time.js';
 import {
   h, list, row, section, agree, plural, toast, confirmSheet, field, textInput, selectInput, stepper, icon, isSplit,
-  fieldError, clearErrors,
+  fieldError, clearErrors, download,
 } from './kit.js';
-import { morePage, download } from './more-common.js';
+import { morePage } from './more-common.js';
 
 /** The rules, grouped as the page shows them. `where`: settings.defaults or settings.rules. */
 const RULES = [

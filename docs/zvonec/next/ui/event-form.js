@@ -8,13 +8,14 @@
 //   deleteEventFlow()  Smazat setkání – the one confirmation (cannot be undone)
 
 import {
-  h, icon, row, list, openSheet, formSheet, confirmSheet, toast, button, link, field, fieldError, textInput, textArea,
-  selectInput, dateInput, timeRange, segmentedField, chipsField, switchRow, disclosure, shortDate, clock, plural, SEP,
+  h, icon, row, list, openSheet, formSheet, confirmSheet, toast, button, link, field, fieldError, textInput,
+  textArea, selectInput, dateInput, timeRange, segmentedField, chipsField, switchRow, disclosure, shortDate, clock,
+  plural, SEP,
 } from './kit.js';
 import { S, change, newId, navigate } from '../../ui/state.js';
 import {
-  EVENT_KINDS, KIND_ICONS, KIND_LABELS, addSeries, cancelEvent, createFromType, deleteEvent, eventById, eventTypeById,
-  followingInSeries, seriesCount, seriesFor, seriesOfType, seriesSummary, sortEvents, updateSeries, extendSeries,
+  EVENT_KINDS, KIND_ICONS, KIND_LABELS, addSeries, cancelEvent, createFromType, deleteEvent, eventById,
+  eventTypeById, followingInSeries, seriesFor, seriesOfType, seriesSummary, sortEvents, updateSeries, extendSeries,
 } from '../../lib/events.js';
 import { placeTree } from '../../lib/places.js';
 import { saveImage, deleteImage } from '../../lib/store/store.js';
@@ -331,27 +332,37 @@ export function openEditEvent(eventId) {
 export function openExtendSeries(eventId) {
   const event = eventById(S.data, eventId);
   const series = event && seriesFor(S.data, event);
+  if (series?.step) extendSeriesSheet(series);
+}
+
+/**
+ * „Prodloužit řadu“ – the one sheet for it (Setkání ⋯ and Šablona › Řady): Do kdy, how many events come
+ * („Přibudou 3 setkání“), then they are added without people; the toast offers „Vrátit“.
+ */
+export function extendSeriesSheet(series) {
   if (!series?.step) return;
   const events = (S.data.events || []).filter((e) => e.seriesId === series.id).map((e) => dayOf(e.start)).sort();
-  const lastDay = events[events.length - 1] || series.until;
+  const lastDay = events[events.length - 1] || series.until || today();
   const words = h('p', { class: 'meta', 'aria-live': 'polite' });
+  const count = (until) => (until > lastDay ? recurrences(`${series.from}T10:00`, `${series.from}T11:00`, series.step, until, 400).filter((t) => dayOf(t.start) > lastDay).length : 0);
   const paint = (until) => {
-    const n = until > lastDay ? recurrences(`${series.from}T10:00`, `${series.from}T11:00`, series.step, until, 400).filter((t) => dayOf(t.start) > lastDay).length : 0;
-    words.textContent = n ? `${n === 1 ? 'Přibude' : n <= 4 ? 'Přibudou' : 'Přibude'} ${setkani(n)}.` : 'Vyber den po posledním setkání řady.';
+    const n = count(until);
+    words.textContent = n ? `${n === 1 ? 'Přibude' : n <= 4 ? 'Přibudou' : 'Přibude'} ${setkani(n)}, zatím bez lidí.` : 'Vyber den po posledním setkání řady.';
   };
-  const initial = addMonths(lastDay, 3);
+  const initial = addMonths(lastDay > today() ? lastDay : today(), 3);
   formSheet({
     title: 'Prodloužit řadu',
+    subtitle: `${seriesSummary(series, { today: today() })}${SEP}poslední ${shortDate(lastDay)}`,
     submitLabel: 'Prodloužit řadu',
     body: [
-      h('p', { class: 'meta' }, `${seriesSummary(series, { today: today() })}${SEP}poslední ${shortDate(lastDay)}`),
-      field({ label: 'Do kdy', control: dateInput({ name: 'until', value: initial, label: 'Do kdy', onChange: paint }) }),
+      field({ label: 'Do kdy', control: dateInput({ name: 'until', value: initial, min: lastDay, label: 'Do kdy', onChange: paint }) }),
       words,
     ],
     onSubmit: (form, values) => {
+      if (!values.until || !count(values.until)) return 'Vyber den po posledním setkání řady.';
       const created = extendSeries(S.data, series.id, values.until, { newId });
-      if (!created.length) return 'Vyber den po posledním setkání řady.';
-      change(`prodloužená řada ${event.title} do ${shortDate(values.until, { weekday: false })}`);
+      if (!created.length) return 'Do toho dne nepřibude žádné setkání.';
+      change(`prodloužená řada do ${shortDate(values.until, { weekday: false, year: true })}`);
       toast(`${created.length === 1 ? 'Přibylo' : created.length <= 4 ? 'Přibyla' : 'Přibylo'} ${setkani(created.length)}.`, {
         action: () => {
           const ids = new Set(created.map((e) => e.id));
@@ -397,7 +408,7 @@ export function deleteEventFlow(eventId) {
     const removed = deleteEvent(S.data, target, { following: all });
     for (const e of removed) dropImageIfUnused(e.image);
     change(`smazáno: ${target.title} ${shortDate(target.start, { weekday: false })}${removed.length > 1 ? ` (+${removed.length - 1})` : ''}`);
-    toast(removed.length > 1 ? `Smazáno ${setkani(removed.length)}.` : 'Setkání je smazané.');
+    toast(removed.length > 1 ? `Smazáno: ${setkani(removed.length)}.` : `Smazáno: ${target.title}.`);
     if (location.hash.startsWith(`#setkani/${eventId}`)) navigate(back);
   };
   if (!following) {

@@ -7,8 +7,8 @@
 
 import {
   h, icon, avatar, teamMark, title as titleEl, section, facts, list, row, personRow, eventRow, statusNote, note, pill,
-  button, iconButton, rowLink, link, callout, warningRow, menu, joinMeta, plural, agree, slot, caption, meta as metaEl,
-  personName,
+  button, iconButton, rowLink, link, callout, menu, joinMeta, plural, agree, slot, caption, meta as metaEl,
+  personName, quiet, mapLink,
 } from './kit.js';
 import { S, can, myId, change, isUpcoming } from '../../ui/state.js';
 import { householdById, householdMembers, age, statusOf, displayName } from '../../lib/people.js';
@@ -19,20 +19,21 @@ import { limitsOf, monthCount } from '../../lib/scheduling.js';
 import { today, dayOf, monthOf, prettyDay, prettyTime } from '../../lib/time.js';
 import {
   seesContact, isKid, isFormer, missingOf, kidText, yearsText, fullDate, dayMonth, membershipLine, missingSentence,
-  groupsInOrder, groupWords, skillsIn, telHref, smsHref, mailHref, mapHref, smsIcon, nodeButton, downloadDuties,
-  MEMBERSHIP_WORDS, daysToBirthday, outOf, peopleCount, rowActions,
+  groupsInOrder, groupWords, skillsIn, telHref, smsHref, mailHref,
+  MEMBERSHIP_WORDS, daysToBirthday, outOf, peopleCount,
 } from './people-common.js';
 import {
-  contactSheet, detailsSheet, consentSheet, limitsSheet, availabilitySheet, removeAvailability, householdChooseSheet,
-  personGroupSheet, inviteSheet, accessOf, overrideSheet, dropOverride, deletePerson, householdSheet, deleteHousehold,
-  addToHouseholdSheet, removeFromHousehold,
+  contactSheet, detailsSheet, consentSheet, limitsSheet, householdChooseSheet,
+  personGroupSheet, deletePerson, householdSheet, deleteHousehold, addToHouseholdSheet, removeFromHousehold,
 } from './people-forms.js';
 import { memberSheet } from './groups-forms.js';
+import { blockoutSection } from './blockouts.js';
+import { inviteSheet, accessOf } from './access.js';
+import { warningFor, openMyAnswer } from './event-duties.js';
+import { downloadDuties } from './calendar-shared.js';
 
 const DUTIES_SHOWN = 5;
 const editAction = (onclick, label = 'Upravit') => button(label, { variant: 'quiet', size: 's', onclick });
-const quiet = (...words) => h('p', { class: 'meta person-quiet' }, words);
-const rangeText = (v) => (v.from === v.to ? prettyDay(v.from) : `${prettyDay(v.from)} – ${prettyDay(v.to)}`);
 
 // ---------- the ⋯ of a card ----------
 
@@ -72,7 +73,7 @@ function reach(person) {
   if (person.id === myId() || !seesContact(person)) return null;
   const buttons = [
     person.phone ? button('Zavolat', { icon: 'phone', href: telHref(person.phone) }) : null,
-    person.phone ? nodeButton('Napsat SMS', smsIcon(), { href: smsHref(person.phone) }) : null,
+    person.phone ? button('Napsat SMS', { icon: 'message', href: smsHref(person.phone) }) : null,
     person.email ? button('Napsat e-mail', { icon: 'mail', href: mailHref(person.email) }) : null,
   ].filter(Boolean);
   return buttons.length ? h('div', { class: 'person-reach', dataset: { n: buttons.length } }, buttons) : null;
@@ -175,7 +176,7 @@ function householdSection(person) {
           href: `#osoba/${p.id}`, me: p.id === myId(),
         })),
       ], { label: `Domácnost ${household.name}` }),
-      address ? link('Otevřít v mapě', { href: mapHref(address), icon: 'pin', cls: 'person-map' }) : null,
+      address ? mapLink({ address }) : null,
     ],
   });
 }
@@ -234,11 +235,14 @@ function dutiesSection(person) {
   const serves = !isFormer(person) && !isKid(person);
   const rows = shown.map(({ event, assignment }) => {
     const role = roleById(S.data, assignment.roleId);
+    // the same row as Domů › Tvoje služby: status word, a refusal struck through, „zrušeno“ as a pill
     return eventRow({
       day: dayOf(event.start), today: dayOf(event.start) === today(),
       title: joinMeta([role?.name || 'Služba', event.title]),
-      note: event.cancelled ? note('Zrušeno', { icon: 'x' }) : statusNote(assignment.status),
-      href: `#setkani/${event.id}`,
+      note: event.cancelled ? h('span', { class: 'row__note' }, pill('zrušeno'))
+        : statusNote(assignment.status, { word: self && assignment.status === 'declined' ? 'nemůžeš' : undefined }),
+      declined: assignment.status === 'declined' && !event.cancelled,
+      ...(self ? { onclick: () => openMyAnswer(event.id, assignment.id), chevron: true } : { href: `#setkani/${event.id}` }),
     });
   });
   const limitWords = limits.paused ? 'Má pauzu – Zvonec ho teď nenavrhuje.'
@@ -251,31 +255,6 @@ function dutiesSection(person) {
       all.length > shown.length ? rowLink(`Ukázat ${agree(all.length - shown.length, 'další', 'další', 'dalších')} ${all.length - shown.length} v Rozpisu`, { href: '#kalendar/rozpis' }) : null,
       last ? quiet(`Naposledy: ${dayMonth(dayOf(last.event.start))}`) : null,
       leader && serves ? h('div', { class: 'person-limits' }, h('p', { class: 'meta' }, limitWords), editAction(() => limitsSheet(person), 'Kolik toho zvládne')) : null,
-    ],
-  });
-}
-
-// ---------- 5 Kdy nemůže ----------
-
-function availabilitySection(person) {
-  const leader = can('leader');
-  const self = person.id === myId();
-  const records = (S.data.availability || []).filter((v) => v.personId === person.id && v.to >= today()).sort((a, b) => a.from.localeCompare(b.from));
-  const reasons = leader || self;
-  if (!records.length && !leader && !self) return null;
-  const rows = records.map((v) => row({
-    lead: h('span', { class: 'avatar avatar--team person-house' }, icon('calendar', { size: 's' })),
-    title: rangeText(v),
-    meta: joinMeta([reasons ? v.reason : null, v.from <= today() ? 'právě teď' : null]) || null,
-    onclick: leader ? () => availabilitySheet(person, v) : null,
-    trail: leader ? iconButton('trash', `Smazat: ${rangeText(v)}`, { onclick: () => removeAvailability(person, v) }) : null,
-  }));
-  return section({
-    title: self ? 'Kdy nemůžu' : 'Kdy nemůže', cls: 'person-section',
-    action: leader ? editAction(() => availabilitySheet(person), 'Přidat') : null,
-    body: [
-      rows.length ? list(rows, { label: self ? 'Kdy nemůžu' : 'Kdy nemůže' }) : quiet(self ? 'Nic zapsaného.' : 'Nic zapsaného.'),
-      self && !leader ? rowLink('Zapsat, kdy nemůžu', { href: '#domu' }) : null,
     ],
   });
 }
@@ -293,14 +272,10 @@ function warningsSection(person) {
     body: h('div', { class: 'person-warnings' }, sorted.map((c) => {
       const event = eventById(S.data, c.eventId);
       const when = event ? `${prettyDay(event.start)} ${prettyTime(event.start)}` : '';
-      return warningRow({
-        severity: c.severity,
+      return warningFor(c, {
+        eventId: c.eventId,
         text: joinMeta([c.text, when && !c.text.includes(prettyDay(event.start)) ? when : null]),
-        actions: [
-          event ? button('Otevřít setkání', { size: 's', href: `#setkani/${event.id}` }) : null,
-          c.severity === 'error' && c.assignmentIds?.length ? button('Vím o tom', { size: 's', variant: 'quiet', onclick: () => overrideSheet(c) }) : null,
-          c.overrideNote ? button('Přece jen to hlídat', { size: 's', variant: 'quiet', onclick: () => dropOverride(c) }) : null,
-        ],
+        extra: event ? button('Otevřít setkání', { size: 's', href: `#setkani/${event.id}` }) : null,
       });
     })),
   });
@@ -366,7 +341,7 @@ export function personCard(person, { pane = false } = {}) {
     householdSection(person),
     groupsSection(person),
     dutiesSection(person),
-    availabilitySection(person),
+    blockoutSection(person, { cls: 'person-section' }),
     leader ? warningsSection(person) : null,
     leader ? detailsSection(person) : null,
     leader ? accessSection(person) : null);
@@ -387,7 +362,7 @@ export function householdBody(household) {
     household.address ? section({
       title: 'Adresa', cls: 'person-section',
       action: editAction(() => householdSheet(household)),
-      body: [facts([{ icon: 'pin', text: household.address }]), link('Otevřít v mapě', { href: mapHref(household.address), icon: 'external', cls: 'person-map' })],
+      body: [facts([{ icon: 'pin', text: household.address }]), mapLink({ address: household.address })],
     }) : null,
     section({
       title: 'Kdo tu bydlí', count: members.length || null, cls: 'person-section',
@@ -396,7 +371,7 @@ export function householdBody(household) {
         members.length ? list(members.map((p) => personRow(p, {
           meta: isKid(p) ? kidText(p) : MEMBERSHIP_WORDS[statusOf(p)],
           href: `#osoba/${p.id}`, me: p.id === myId(),
-          trail: rowActions([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => removeFromHousehold(p, household) }], { label: `Možnosti – ${personName(p)}`, title: personName(p) }),
+          trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => removeFromHousehold(p, household) }], { label: `Možnosti: ${personName(p)}`, title: personName(p) }),
         })), { label: 'Kdo tu bydlí' }) : quiet('Nikdo tu nebydlí.'),
         slot('Přidat do domácnosti', () => addToHouseholdSheet(household)),
       ],

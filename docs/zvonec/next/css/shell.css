@@ -90,15 +90,14 @@ body:has(.fab) .screen { padding-bottom: calc(var(--tabbar-h) + env(safe-area-in
   .screen--narrow { max-width: calc(480px + 2 * var(--gutter)); }
 }
 
-/* ---------- placeholder / sign-in ---------- */
+/* ---------- narrow pages (sign-in, invite) ---------- */
 .screen--narrow { max-width: calc(480px + 2 * var(--gutter)); }
-.signin__lead { margin-bottom: var(--space-2); color: var(--ink-2); }
-.signin__note { margin-top: var(--space-5); }
-.signin__after { display: grid; justify-items: start; gap: var(--space-3); margin-top: var(--space-7); padding-top: var(--space-5); border-top: 1px solid var(--hairline); }
 .screen-head__lead { grid-column: 1 / -1; margin-top: var(--space-1); }
 
 /* ---------- rows: the kit's variants ---------- */
-.row__trail > :is(a, button, input, select, .switch) { position: relative; z-index: 1; }
+/* a control in the trail (icon button, switch, ⋯ menu) stays its own tap target above the stretched row link */
+.row__trail > :is(a, button, input, select, .switch, .menu-wrap) { position: relative; z-index: 1; }
+.row__trail > .menu-wrap:has(> .menu) { z-index: 5; }   /* an open popover covers the rows below it */
 .row__trail > .icon:last-child { color: var(--ink-3); }
 button.row__body.row__stretch { border: 0; background: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
 .row__title--wrap { white-space: normal; }
@@ -108,6 +107,17 @@ button.row:disabled { color: var(--ink-3); cursor: not-allowed; }
 .fact__link { color: inherit; text-decoration: underline; text-decoration-color: var(--edge-control); text-underline-offset: 3px; }
 .need__title { color: inherit; }
 .need__title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.need__arch { display: block; border-radius: var(--shape-arch); }
+.need .fill { padding-top: 2px; }
+.need__sum > .need__act {                    /* „3 čekají“ (who waits) and „1 chyba“ (open Kdo slouží) */
+  position: relative; border: 0; background: none; padding: 0; margin: 0; font: inherit; font-weight: var(--weight-strong);
+  cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+  text-decoration-style: dotted;
+}
+.need__sum > .need__act:hover { text-decoration-style: solid; }
+.need__sum > .need__act::after { content: ""; position: absolute; inset: -12px -6px; }   /* 44 px to tap */
+.need__sum > .need__act[data-sev="warn"] { color: var(--wait-ink); }
+.need__sum > .need__act[data-sev="error"] { color: var(--no-ink); }
 .event--button { width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
 button.event--button:hover { background: var(--wash); }
 .fill { flex-wrap: nowrap; white-space: nowrap; }
@@ -132,6 +142,15 @@ a.duty__who { padding: 6px 8px; margin: -6px -8px; border-radius: var(--shape-in
 .day__num { display: inline-grid; place-items: center; min-width: 28px; height: 28px; border-radius: 50%; }
 .day[data-mine] .day__num { box-shadow: inset 0 0 0 1.5px currentColor; }
 
+/* a place on a map (mapFrame(), mapLink()) */
+.map { width: 100%; overflow: hidden; border-radius: var(--shape-block); box-shadow: 0 0 0 1px var(--edge); background: var(--tint); }
+.map > iframe { display: block; width: 100%; height: 200px; border: 0; }
+.map-link { align-self: flex-start; }
+
+/* a section with nothing (quiet()) */
+.quiet { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-2) 0; }
+.quiet > .icon { flex: none; margin-top: 2px; color: var(--ok-ink); }
+
 /* skeleton rows */
 .skeleton-list { display: grid; }
 .skeleton-row { display: flex; align-items: center; gap: var(--space-3); padding: 10px 0; }
@@ -139,6 +158,20 @@ a.duty__who { padding: 6px 8px; margin: -6px -8px; border-radius: var(--shape-in
 .skeleton-lines { display: grid; gap: var(--space-2); flex: 1; }
 .skel-1 { height: 18px; width: 70%; }
 .skel-2 { height: 14px; width: 45%; }
+
+/* ---------- tables (table(), sortHead()) ---------- */
+.table-wrap { overflow-x: auto; max-width: 100%; margin: 0 calc(-1 * var(--space-3)); padding: 0 var(--space-3); }
+.table { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: var(--type-meta); line-height: var(--lh-meta); }
+.table th { text-align: left; font-weight: var(--weight-strong); color: var(--ink-2); }
+.table tbody th { color: var(--ink); }
+.table thead th { background: var(--ground); box-shadow: inset 0 -1px 0 var(--edge); }
+.table tbody tr + tr > * { border-top: 1px solid var(--hairline); }
+.th-sort {
+  display: inline-flex; align-items: center; gap: 4px; min-height: var(--hit); margin: 0 -8px; padding: 0 8px; border: 0;
+  border-radius: var(--shape-inner); background: none; color: inherit; font: inherit; font-weight: var(--weight-strong); cursor: pointer;
+}
+.th-sort:hover { background: var(--wash); color: var(--ink); }
+th[aria-sort] .th-sort { color: var(--ink); }
 
 /* ---------- the ⋯ menu ---------- */
 .menu-wrap { position: relative; display: inline-flex; }
@@ -162,6 +195,7 @@ a.duty__who { padding: 6px 8px; margin: -6px -8px; border-radius: var(--shape-in
 .menu__row + .menu__row::before { left: calc(var(--space-3) + var(--icon-m) + var(--space-3)); }
 
 /* ---------- sheets ---------- */
+.sheet__head, .sheet__grabber { flex: none; }   /* a long body scrolls; the head and the grabber keep their height */
 .sheet__spacer { flex: 1; }
 .sheet__titles { flex: 1; min-width: 0; padding: var(--space-3) 0; }
 .sheet__titles > h2 { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
@@ -176,6 +210,9 @@ a.duty__who { padding: 6px 8px; margin: -6px -8px; border-radius: var(--shape-in
   .sheet:not(.sheet--inline) .sheet__head { min-height: 64px; }
   .sheet:not(.sheet--inline) .sheet__foot { margin: 0 calc(-1 * var(--space-6)); padding-left: var(--space-6); padding-right: var(--space-6); border-radius: 0 0 24px 24px; }
   .sheet:not(.sheet--inline).sheet--menu { width: 400px; }
+  /* a centred dialog is a flex column whose body scrolls, so the foot sits at the bottom without sticky
+     (sticky measured from the untransformed box and rode up over the last fields of a tall dialog) */
+  .sheet:not(.sheet--inline) > .sheet__foot { position: relative; }
 }
 #layers .scrim { z-index: 40; }
 
@@ -198,6 +235,8 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 
 /* ---------- forms ---------- */
 .form { display: grid; gap: var(--space-5); }
+.form__row--pair { grid-template-columns: 1fr 1fr !important; gap: var(--space-3) !important; }
+.form__row--pair > .field { min-width: 0; }
 .form__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--space-5) var(--space-3); align-items: start; }
 .field__optional { font-weight: var(--weight-regular); color: var(--ink-2); }
 .field__error > span { flex: 1; }

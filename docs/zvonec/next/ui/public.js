@@ -11,9 +11,8 @@ import { PUBLIC_FILE } from '../../lib/public.js';
 import { addDays, dayOf, today, weekday } from '../../lib/time.js';
 import {
   h, screen, topBar, button, list, row, eventRow, weekLabel, section, empty, pill, dateArch, openSheet, disclosure,
-  callout, skeleton, plural, joinMeta, clockRange, icon, title as titleEl,
+  callout, skeleton, plural, joinMeta, clockRange, icon, title as titleEl, download, asciiName, mapLink, mapFrame, hasCoords,
 } from './kit.js';
-import { download, mapLink, mapFrame, hasCoords, asciiName } from './more-common.js';
 
 const FALLBACK_NAME = 'Církev jako kráva';
 const WEEKS_OPEN = 6;

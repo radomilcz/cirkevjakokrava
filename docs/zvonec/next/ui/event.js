@@ -7,14 +7,14 @@
 
 import {
   h, icon, screen, topBar, menu, button, buttonRow, section, callout, kindTag, pill, fill, empty, statusNote, link,
-  switchRow, stepper, field, openSheet, textArea, toast, rowLink, detailPane, clock, plural, SEP,
+  switchRow, stepper, field, openSheet, textArea, toast, rowLink, detailPane, clock, plural, SEP, canMap, hasCoords, mapFrame, mapLink,
 } from './kit.js';
 import { S, can, myId, change, render } from '../../ui/state.js';
 import { eventById, followingInSeries, seriesFor, seriesSummary } from '../../lib/events.js';
 import { programTimes, programDuration, itemName, itemLeaders, formatById } from '../../lib/program.js';
 import { today, dayOf } from '../../lib/time.js';
 import {
-  cover, whenText, placeText, placesOf, openPlaceSheet, placeMap, canMap, mapUrl, slotsOf, fillOf, waitingWords,
+  cover, whenText, placeText, placesOf, openPlaceSheet, slotsOf, fillOf, waitingWords,
   missingWords, myDuties, eventConflicts, eventLevelWarnings, backHref, nameOf,
 } from './calendar-shared.js';
 import { teamBlock, answer, openMyAnswer, fillOpenSlots, sameAsLast, openNeedsSheet, askSeries, warningFor, andFollowing } from './event-duties.js';
@@ -151,12 +151,23 @@ function publish(eventId, on) {
     const target = eventById(S.data, eventId);
     if (!target) return;
     const list = [target, ...(following ? followingInSeries(S.data, target) : [])];
+    const before = list.map((x) => [x.id, x.public, x.description]);
     for (const x of list) {
       x.public = on;
       if (description && !String(x.description || '').trim()) x.description = description;
     }
     change(`${on ? 'na webu' : 'z webu'}: ${target.title}${list.length > 1 ? ` (+${list.length - 1})` : ''}`);
-    toast(on ? 'Na webu to bude za pár minut.' : 'Z webu to zmizí za pár minut.');
+    toast(on ? 'Na webu to bude za pár minut.' : 'Z webu to zmizí za pár minut.', {
+      action: () => {
+        for (const [id, pub, desc] of before) {
+          const x = eventById(S.data, id);
+          if (!x) continue;
+          if (pub === undefined) delete x.public; else x.public = pub;
+          if (desc === undefined) delete x.description; else x.description = desc;
+        }
+        change(`vráceno: ${target.title} na webu`);
+      },
+    });
   };
   const ask = (description) => askSeries(e, (following) => apply(following, description), {
     title: on ? 'Ukázat na webu i další setkání?' : 'Schovat z webu i další setkání?',
@@ -187,7 +198,7 @@ function publish(eventId, on) {
 function aboutSection(event) {
   const leader = can('leader');
   const places = placesOf(event);
-  const main = places.find((p) => Number.isFinite(Number(p.lat)) && p.lat != null) || places[0];
+  const main = places.find(hasCoords) || places[0];
   const description = String(event.description || '').trim();
   const note = String(event.note || '').trim();
   if (!leader && !description && !note && !main) return null;
@@ -198,9 +209,9 @@ function aboutSection(event) {
       description ? h('p', { class: 'text ev-text' }, description)
         : leader ? h('p', { class: 'meta' }, 'Popis pro web zatím chybí. ', link('Doplnit popis', { onclick: () => openEditEvent(event.id) })) : null,
       note ? h('div', { class: 'ev-note' }, h('p', { class: 'field__label' }, 'Pro tým'), h('p', { class: 'text' }, note)) : null,
-      main ? h('div', { class: 'ev-place' }, placeMap(main),
+      main ? h('div', { class: 'ev-place' }, mapFrame(main),
         h('p', { class: 'meta' }, [placeText(event), main.address].filter(Boolean).join(SEP)),
-        canMap(main) ? h('a', { class: 'link', href: mapUrl(main), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě', icon('external', { size: 's' })) : null) : null,
+        mapLink(main)) : null,
       leader && !event.cancelled ? switchRow({
         label: 'Ukázat na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
         onChange: (on) => publish(event.id, on),

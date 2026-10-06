@@ -11,22 +11,21 @@
 // (Co je potřeba, Tento týden, Lidé k doplnění, Pozvánky). Demo: „Díváš se jako … · Změnit“ on top.
 
 import {
-  h, screen, topBar, screenHead, feature, dateArch, answerItem, section, list, row, eventRow, statusNote, pill, rowLink,
-  button, chips, callout, sev, slot, fill, link, count, icon, joinMeta, shortDate, agree, plural, isSplit,
-  personName, SEP,
+  h, screen, topBar, screenHead, feature, answerItem, section, list, row, eventRow, needRow, statusNote, pill, rowLink,
+  chips, callout, link, count, icon, joinMeta, shortDate, agree, plural, isSplit, quiet, personName, SEP,
 } from './kit.js';
-import { S, can, myId, ACCESS_LABELS, loginList } from '../../ui/state.js';
+import { S, can, myId, ACCESS_LABELS } from '../../ui/state.js';
 import { upcomingDuties, eventsInRange, eventById, fillRatio, needsOf } from '../../lib/events.js';
 import { openSlots, unconfirmedDuties } from '../../lib/scheduling.js';
 import { personById, peopleWithMissingData, upcomingBirthdays } from '../../lib/people.js';
 import { roleById, ledBy } from '../../lib/groups.js';
-import { createDemoAccess } from '../../lib/demo.js';
-import { isExpired } from '../../lib/access.js';
 import { today, addDays, dayOf, weekday, prettyDayLong } from '../../lib/time.js';
-import {
-  answer, answerSheet, fillSlot, waitingSheet, myBlockouts, blockoutSheet, deleteBlockout, downloadDuties,
-  viewerSheet, roleName, whenWhere, rangeWords,
-} from './home-actions.js';
+import { answer, waitingSheet, roleName, whenWhere } from './home-actions.js';
+import { pickFor, openMyAnswer } from './event-duties.js';
+import { downloadDuties } from './calendar-shared.js';
+import { blockoutSection } from './blockouts.js';
+import { viewAsSheet } from './account.js';
+import { waitingInvites } from './access.js';
 
 const ANSWERS_SHOWN = 3;      // Odpověz: the first three, then „Ukázat další 2“
 const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four events, then „Celý rozpis“
@@ -151,32 +150,29 @@ function scopedFill(event, inScope) {
   return { filled, needed };
 }
 
-/**
- * One event that wants people – the kit's needRow, with two things it does not do yet: „3 čekají“ is a
- * button (who waits, with Zavolat) and „1 chyba“ a link to the event's Kdo slouží.
- */
+/** One event that wants people: „3 čekají“ opens who waits (with Zavolat), „1 chyba“ goes to its Kdo slouží. */
 function needItem({ event, slots, waiting, errors, filled, needed }) {
   const missing = slots.reduce((n, s) => n + s.missing, 0);
   const waitWords = `${waiting.length} ${agree(waiting.length, 'čeká', 'čekají', 'čeká')}`;
-  const summary = [
-    missing ? sev('error', `chybí ${missing}`) : null,
-    waiting.length ? h('button', {
-      type: 'button', class: 'sev need__act', dataset: { sev: 'warn' },
-      'aria-label': `${waitWords} na potvrzení – ukázat koho`, onclick: () => waitingSheet(event, waiting),
-    }, waitWords) : null,
-    errors ? h('a', { class: 'sev need__act', dataset: { sev: 'error' }, href: `#setkani/${event.id}/sluzby` },
-      `${errors} ${agree(errors, 'chyba', 'chyby', 'chyb')}`) : null,
-  ].filter(Boolean);
-  const chipsOf = slots.map((s) => slot(s.missing > 1 ? `${s.missing}× ${s.role.name}` : s.role.name, () => fillSlot(event.id, s.roleId), {
-    aria: `Doplnit: ${s.role.name}, ${event.title} ${shortDate(event.start)}`,
-  }));
-  return h('div', { class: 'need', dataset: { event: event.id } },
-    h('a', { class: 'need__arch', href: `#setkani/${event.id}`, tabIndex: -1, 'aria-hidden': 'true' }, dateArch(dayOf(event.start), { today: isToday(event) })),
-    h('div', { class: 'row__body' },
-      h('a', { class: 'row__title need__title', href: `#setkani/${event.id}` }, event.title),
-      summary.length ? h('span', { class: 'need__sum' }, summary) : null),
-    needed ? fill(filled, needed) : h('span'),
-    chipsOf.length ? h('div', { class: 'need__slots' }, chipsOf) : null);
+  return needRow({
+    day: dayOf(event.start),
+    today: isToday(event),
+    title: event.title,
+    href: `#setkani/${event.id}`,
+    dataset: { event: event.id },
+    summary: [
+      missing ? ['error', `chybí ${missing}`] : null,
+      waiting.length ? ['warning', waitWords, { onclick: () => waitingSheet(event, waiting), label: `${waitWords} na potvrzení – ukázat koho` }] : null,
+      errors ? ['error', `${errors} ${agree(errors, 'chyba', 'chyby', 'chyb')}`, { href: `#setkani/${event.id}/sluzby` }] : null,
+    ].filter(Boolean),
+    filled,
+    total: needed,
+    slots: slots.map((s) => ({
+      label: s.missing > 1 ? `${s.missing}× ${s.role.name}` : s.role.name,
+      onclick: () => pickFor(event.id, s.roleId),
+      aria: `Doplnit: ${s.role.name}, ${event.title} ${shortDate(event.start)}`,
+    })),
+  });
 }
 
 function needBlock() {
@@ -194,8 +190,7 @@ function needBlock() {
   }, { label: 'Čí služby ukázat' }) : null;
   const body = items.length
     ? [list(items.slice(0, NEEDS_SHOWN).map(needItem), { inset: false, cls: 'home-need__list' })]
-    : [h('p', { class: 'meta home-quiet' }, icon('check', { size: 's' }),
-      scoped ? 'V tvých týmech je na příští tři týdny všechno obsazené a potvrzené.' : 'Na příští tři týdny je všechno obsazené.')];
+    : [quiet(scoped ? 'V tvých týmech je na příští tři týdny všechno obsazené a potvrzené.' : 'Na příští tři týdny je všechno obsazené.', { icon: 'check' })];
   const hidden = items.length - NEEDS_SHOWN;
   return section({
     title: 'Co je potřeba',
@@ -225,7 +220,7 @@ function mineBlock(me) {
     note: event.cancelled ? h('span', { class: 'row__note' }, pill('zrušeno'))
       : statusNote(assignment.status, { word: assignment.status === 'declined' ? 'nemůžeš' : undefined }),
     declined: assignment.status === 'declined' && !event.cancelled,
-    onclick: () => answerSheet(event.id, assignment.id),
+    onclick: () => openMyAnswer(event.id, assignment.id),
     chevron: true,
     label: `${roleName(assignment.roleId)}, ${event.title} ${shortDate(event.start)} – změnit odpověď`,
   }));
@@ -233,10 +228,10 @@ function mineBlock(me) {
     title: 'Tvoje služby',
     cls: 'home-mine',
     body: [
-      rows.length ? list(rows, { label: 'Tvoje služby' }) : h('p', { class: 'meta home-quiet' }, waitingCount
+      rows.length ? list(rows, { label: 'Tvoje služby' }) : quiet(waitingCount
         ? 'Všechny tvoje služby čekají nahoře na odpověď.' : 'Teď žádnou službu nemáš.'),
       rest > 0 ? rowLink(showMore(rest), { onclick: () => { open.mine = true; rerender(el, () => mineBlock(me), `.home-mine .row:nth-child(${MINE_SHOWN + 1})`); } }) : null,
-      rowLink('Přidat do kalendáře v telefonu', { icon: 'download', onclick: () => downloadDuties(me.id) }),
+      rowLink('Přidat do kalendáře v telefonu', { icon: 'download', onclick: () => downloadDuties(me) }),
     ],
   });
   return el;
@@ -270,29 +265,6 @@ function weekBlock() {
   });
 }
 
-// ---------- Kdy nemůžu ----------
-
-function offBlock(me) {
-  const records = myBlockouts(me.id);
-  const rows = records.map((v) => row({
-    title: rangeWords(v.from, v.to),
-    meta: v.reason || (v.from === v.to ? 'jeden den' : null),
-    onclick: () => blockoutSheet(me.id, v),
-    label: `Změnit: ${rangeWords(v.from, v.to)}${v.reason ? `, ${v.reason}` : ''}`,
-    trail: h('button', {
-      type: 'button', class: 'icon-btn', 'aria-label': `Smazat: ${rangeWords(v.from, v.to)}`, title: 'Smazat',
-      onclick: () => deleteBlockout(v),
-    }, icon('trash', { size: 's' })),
-  }));
-  return section({
-    title: 'Kdy nemůžu',
-    cls: 'home-off',
-    action: button('Přidat', { size: 's', icon: 'plus', onclick: () => blockoutSheet(me.id), label: 'Přidat, kdy nemůžu' }),
-    body: rows.length ? list(rows, { label: 'Kdy nemůžu' })
-      : h('p', { class: 'meta home-quiet' }, 'Když víš, že nemůžeš, zapiš to. Zvonec tě na ty dny nebude navrhovat.'),
-  });
-}
-
 // ---------- Lidé k doplnění (leaders) ----------
 
 /** „Petr Novák, Jana Nováková a 3 další“ */
@@ -322,17 +294,6 @@ function peopleBlock() {
 
 // ---------- Pozvánky (leaders) ----------
 
-let demoInvites = null;
-function waitingInvites() {
-  let logins;
-  if (S.mode === 'live') logins = loginList();
-  else {
-    if (!demoInvites || demoInvites.day !== today()) demoInvites = { day: today(), logins: createDemoAccess(today()).logins };
-    logins = demoInvites.logins;
-  }
-  return logins.filter((l) => l.access === 'invite' && !isExpired(l, today())).length;
-}
-
 function invitesBlock() {
   const n = waitingInvites();
   if (!n) return null;
@@ -357,7 +318,7 @@ function demoBanner(me) {
   return h('div', { class: 'home-demo', role: 'note' },
     icon('user', { size: 's' }),
     h('span', { class: 'home-demo__text' }, 'Díváš se jako ', h('strong', {}, who), me ? ` (${ACCESS_LABELS[S.me.access]})` : null),
-    link('Změnit', { onclick: viewerSheet, label: 'Dívat se jako někdo jiný' }));
+    link('Změnit', { onclick: viewAsSheet, label: 'Dívat se jako někdo jiný' }));
 }
 
 // ---------- the screen ----------
@@ -378,7 +339,7 @@ export function renderHome() {
   const need = leader ? needBlock() : null;
   const mine = me ? mineBlock(me) : null;
   const week = weekBlock();
-  const off = me ? offBlock(me) : null;
+  const off = me ? blockoutSection(me, { cls: 'home-off' }) : null;
   const people = leader ? peopleBlock() : null;
   const invites = leader ? invitesBlock() : null;
 

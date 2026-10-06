@@ -9,9 +9,9 @@ import { today, dayOf } from '../../lib/time.js';
 import {
   h, list, row, button, empty, section, pill, plural, toast, formSheet, confirmSheet, field, textInput, selectInput,
   switchRow, disclosure, isSplit, splitView, detailPane, title as titleEl, joinMeta, icon, eventRow, clockRange,
-  fieldError, clearErrors, note,
+  fieldError, clearErrors, note, mapLink, mapFrame, mapUrl, canMap, quiet,
 } from './kit.js';
-import { morePage, byName, mapLink, mapFrame, mapUrl, canMap } from './more-common.js';
+import { morePage, byName } from './more-common.js';
 
 // ---------- coordinates ----------
 
@@ -146,7 +146,7 @@ function placeDetail(raw, { pane = false } = {}) {
           meta: joinMeta([clockRange(e.start, e.end), roomNames(e)]), href: `#setkani/${e.id}`,
         })), { label: 'Setkání' }),
         events.length > 6 ? h('p', { class: 'meta' }, `A ještě ${eventsWord(events.length - 6)}.`) : null]
-        : h('p', { class: 'meta' }, 'Tady teď nic v plánu není.'),
+        : quiet('Tady teď nic v plánu není.'),
     }));
 }
 
@@ -248,7 +248,7 @@ export function placeSheet(place, { partOf: presetPartOf = '' } = {}) {
       if (c) Object.assign(target, c); else { delete target.lat; delete target.lon; }
       if (created) navigate(`#misto/${target.id}`);
       change(`místo ${n}`);
-      toast(created ? 'Místo přidáno.' : 'Uloženo.');
+      toast(created ? `Přidáno: ${n}.` : 'Uloženo.');
       return undefined;
     },
   });
@@ -280,7 +280,7 @@ function deletePlace(place) {
       if (S.data.settings?.mainPlaceId === place.id) delete S.data.settings.mainPlaceId;
       navigate(place.partOf ? `#misto/${place.partOf}` : '#mista');
       change(`smazané místo ${place.name}`);
-      toast('Smazáno.');
+      toast(`Smazáno: ${place.name}.`);
     },
   });
 }

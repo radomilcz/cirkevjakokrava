@@ -42,23 +42,15 @@
   .people-screen--table .people-tools > .search { max-width: 440px; }
   .people-screen--table .people-tools > .chips { padding: 2px 0; }
 }
-.table-wrap { overflow-x: auto; margin: 0 calc(-1 * var(--space-3)); padding: 0 var(--space-3); }
 .people-results > .table-wrap { overflow: visible; }   /* fixed layout fits; no scroll box, so the header can stick to the top bar */
-.people-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: var(--type-meta); line-height: var(--lh-meta); }
-.people-table th { position: sticky; top: var(--topbar-h); z-index: 2; background: var(--ground); text-align: left; font-weight: var(--weight-strong); color: var(--ink-2); white-space: nowrap; box-shadow: inset 0 -1px 0 var(--edge); }
+.people-table { width: 100%; table-layout: fixed; }
+.people-table th { position: sticky; top: var(--topbar-h); z-index: 2; white-space: nowrap; }
 .people-table th, .people-table td { padding: 0 var(--space-3); height: 52px; }
-.people-table td { border-top: 1px solid var(--hairline); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.people-table td { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .people-table tbody tr { cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
 .people-table tbody tr:hover { background: var(--wash); }
 .people-table tbody tr[data-picked] { background: var(--pick); }
 .people-table tbody tr[data-picked] .table-quiet { color: var(--ink); }
-.people-table tbody tr:first-child td { border-top: 0; }
-.th-sort {
-  display: inline-flex; align-items: center; gap: 4px; min-height: var(--hit); margin: 0 -8px; padding: 0 8px; border: 0;
-  border-radius: var(--shape-inner); background: none; color: inherit; font: inherit; font-weight: var(--weight-strong); cursor: pointer;
-}
-.th-sort:hover { background: var(--wash); color: var(--ink); }
-th[aria-sort] .th-sort { color: var(--ink); }
 .col-pick { width: 44px; padding-right: 0 !important; }
 .people-table th.col-name { width: 26%; }
 .people-table th.col-status { width: 11%; }

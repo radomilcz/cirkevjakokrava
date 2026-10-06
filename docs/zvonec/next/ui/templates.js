@@ -8,19 +8,20 @@
 
 import { S, change, newId, navigate, render } from '../../ui/state.js';
 import {
-  EVENT_KINDS, KIND_LABELS, KIND_ICONS, seriesOfType, seriesSummary, seriesCount, seriesEvents, extendSeries,
+  EVENT_KINDS, KIND_LABELS, KIND_ICONS, seriesOfType, seriesSummary, seriesEvents,
 } from '../../lib/events.js';
 import { formatById, formatNeeds, mergeNeeds } from '../../lib/program.js';
 import { rolesOf, roleById } from '../../lib/groups.js';
 import { placeById, placeTree } from '../../lib/places.js';
 import { saveImage, loadImageUrl, deleteImage } from '../../lib/store/store.js';
-import { today, dayOf, weekday, addMonths } from '../../lib/time.js';
+import { today, dayOf, weekday } from '../../lib/time.js';
 import {
-  h, list, row, button, empty, pill, plural, agree, toast, formSheet, confirmSheet, openSheet, field, textInput,
-  textArea, selectInput, stepper, switchRow, disclosure, chips, chipsField, timeRange, dateInput, teamHead, menu,
-  icon, fillRing, clock, joinMeta, KIND_HUES, shortDate, isSplit, fieldError,
+  h, list, row, button, empty, pill, plural, toast, formSheet, confirmSheet, openSheet, field, textInput, textArea,
+  selectInput, stepper, switchRow, disclosure, chips, chipsField, timeRange, teamHead, menu, icon, fillRing, clock,
+  joinMeta, KIND_HUES, shortDate, isSplit, fieldError, quiet,
 } from './kit.js';
-import { morePage, byName, clone, durationText, clockPlus, minutesBetweenClocks, rowWithMenu } from './more-common.js';
+import { morePage, byName, clone, durationText, clockPlus, minutesBetweenClocks } from './more-common.js';
+import { extendSeriesSheet } from './event-form.js';
 
 // ---------- words ----------
 
@@ -49,7 +50,7 @@ function templateMeta(type) {
 }
 
 /** The Účel of a template as a small arch in its hue (a meeting type). */
-export const kindMark = (kind) => h('span', { class: 'tpl-kind', dataset: { hue: KIND_HUES[kind] || 'plum' }, 'aria-hidden': 'true' }, icon(KIND_ICONS[kind] || 'star'));
+export const kindMark = (kind) => h('span', { class: 'tpl-kind arch-shape', dataset: { hue: KIND_HUES[kind] || 'plum' }, 'aria-hidden': 'true' }, icon(KIND_ICONS[kind] || 'star'));
 
 // ---------- #sablony ----------
 
@@ -239,7 +240,7 @@ function basicsSection(d, dirty, onTimes) {
         v.placeIds = [...chosen].filter((x) => placeById(S.data, x));
         dirty();
       }, { multiple: true, label: g.caption || 'Místa' })));
-  const places = field({ label: 'Kde', control: h('div', { class: 'tpl-places' }, placeGroups.length ? placeGroups : h('p', { class: 'meta' }, 'Zatím tu nejsou žádná místa.')), hint: 'Místnost zdědí adresu i mapu po budově.' });
+  const places = field({ label: 'Kde', control: h('div', { class: 'tpl-places' }, placeGroups.length ? placeGroups : quiet('Zatím tu nejsou žádná místa.')), hint: 'Místnost zdědí adresu i mapu po budově.' });
   const groups = S.data.groups.filter((g) => !g.archived || g.id === v.groupId).sort(byName);
   const forWhom = field({
     label: 'Pro koho',
@@ -274,7 +275,7 @@ function needsSection(d, dirty) {
   const v = d.value;
   const teams = S.data.groups.filter((g) => g.kind === 'team' && !g.archived).sort(byName)
     .map((g) => ({ group: g, roles: rolesOf(S.data, g.id) })).filter((t) => t.roles.length);
-  if (!teams.length) return h('p', { class: 'meta' }, 'Zatím tu nejsou týmy s rolemi. Přidáš je v Lidé › Skupiny.');
+  if (!teams.length) return quiet('Zatím tu nejsou týmy s rolemi. Přidáš je v sekci Lidé › Skupiny.');
   const brought = programRoles(v.program);
   const total = h('p', { class: 'tpl-total' });
   const drawTotal = () => {
@@ -321,19 +322,20 @@ function outlineSection(d, redraw) {
     cursor += Number(item.minutes) || 0;
     const nameOf = format?.name || 'Smazaný formát';
     const move = (to) => { const [x] = v.program.splice(i, 1); v.program.splice(to, 0, x); redraw(); };
-    return rowWithMenu({
+    return row({
       lead: h('span', { class: 'tpl-time' }, clock(start)),
       title: nameOf,
       meta: joinMeta([`${item.minutes ?? 0} min`, roleById(S.data, format?.leadRoleId)?.name ? `vede ${roleById(S.data, format.leadRoleId).name}` : null]),
       onclick: () => itemSheet(d, i, redraw),
       label: `Upravit: ${nameOf}`,
       cls: 'tpl-item',
-    }, menu([
+      trail: menu([
       { label: 'Posunout výš', disabled: i === 0, onclick: () => move(i - 1) },
       { label: 'Posunout níž', disabled: i === v.program.length - 1, onclick: () => move(i + 1) },
       '-',
       { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => { v.program.splice(i, 1); redraw(); } },
-    ], { label: `Možnosti: ${nameOf}`, title: nameOf }));
+      ], { label: `Možnosti: ${nameOf}`, title: nameOf }),
+    });
   });
   const sum = cursor;
   const length = Number(v.minutes) || 0;
@@ -361,7 +363,7 @@ function addItemSheet(d, redraw) {
         lead: h('span', { class: 'fmt-min', 'aria-hidden': 'true' }, h('b', {}, String(f.minutes ?? 10)), h('span', {}, 'min')),
         title: f.name,
         meta: roleById(S.data, f.leadRoleId) ? `vede ${roleById(S.data, f.leadRoleId).name}` : null,
-        onclick: () => { d.value.program.push({ formatId: f.id, minutes: f.minutes ?? 10 }); sheet.close(); redraw(); toast(`Přidáno: ${f.name}`); },
+        onclick: () => { d.value.program.push({ formatId: f.id, minutes: f.minutes ?? 10 }); sheet.close(); redraw(); toast(`Přidáno: ${f.name}.`); },
       })), { label: 'Formáty' })
       : h('p', { class: 'meta' }, 'Nejdřív přidej formáty ve Více › Formáty.'),
   });
@@ -486,7 +488,7 @@ function webSection(d, dirty) {
 function seriesSection(d) {
   if (d.id === 'nova') return h('p', { class: 'meta' }, 'Až šablonu uložíš a v Kalendáři podle ní přidáš opakované setkání, ukáže se tu řada.');
   const records = seriesOfType(S.data, d.id);
-  if (!records.length) return h('p', { class: 'meta' }, 'Z téhle šablony zatím nevznikla žádná řada. Přidáš ji v Kalendáři jako opakované setkání.');
+  if (!records.length) return quiet('Z téhle šablony zatím nevznikla žádná řada. Přidáš ji v Kalendáři jako opakované setkání.');
   const now = today();
   return list(records.map((s) => {
     const ahead = seriesEvents(S.data, s.id).filter((e) => dayOf(e.start) >= now && !e.cancelled).length;
@@ -496,45 +498,10 @@ function seriesSection(d) {
       title: seriesSummary(s, { today: now }),
       meta: joinMeta([`${shortDate(s.from, { weekday: false, year: true })} – ${s.until ? shortDate(s.until, { weekday: false, year: true }) : '…'}`,
         ended ? 'skončila' : ahead ? `ještě ${plural(ahead, 'setkání', 'setkání', 'setkání')}` : 'nic dalšího v plánu']),
-      trail: s.step ? button('Prodloužit', { size: 's', onclick: () => extendSheet(s) }) : null,
+      trail: s.step ? button('Prodloužit', { size: 's', onclick: () => extendSeriesSheet(s) }) : null,
       wrap: true,
     });
   }), { label: 'Řady' });
-}
-
-function extendSheet(series) {
-  const now = today();
-  const base = series.until && series.until > now ? series.until : now;
-  let until = addMonths(base, 3);
-  const line = h('p', { class: 'meta', 'aria-live': 'polite' });
-  const countFor = (day) => {
-    if (!day || day <= (series.until || '')) return 0;
-    const start = `${series.from}T12:00`;
-    return seriesCount(start, series.step, day, 1000) - seriesCount(start, series.step, series.until || series.from, 1000);
-  };
-  const drawCount = () => {
-    const n = countFor(until);
-    line.textContent = n > 0 ? `${agree(n, 'Přibude', 'Přibudou', 'Přibude')} ${plural(n, 'setkání', 'setkání', 'setkání')}, bez lidí.` : 'Vyber den po konci řady.';
-  };
-  drawCount();
-  formSheet({
-    title: 'Prodloužit řadu',
-    submitLabel: 'Prodloužit řadu',
-    body: [
-      h('p', { class: 'meta' }, seriesSummary(series, { today: now })),
-      field({ label: 'Do kdy', control: dateInput({ name: 'until', value: until, min: series.until || now, label: 'Do kdy', onChange: (x) => { until = x; drawCount(); } }) }),
-      line,
-    ],
-    onSubmit: () => {
-      if (!until) return 'Vyber den.';
-      if (series.until && until <= series.until) return 'Vyber den po konci řady.';
-      const created = extendSeries(S.data, series.id, until, { newId });
-      if (!created.length) return 'Do toho dne nepřibude žádné setkání.';
-      change(`řada prodloužená do ${until}`);
-      toast(`${agree(created.length, 'Přibylo', 'Přibyla', 'Přibylo')} ${plural(created.length, 'setkání', 'setkání', 'setkání')}.`);
-      return undefined;
-    },
-  });
 }
 
 // ----- save, delete -----
@@ -592,7 +559,7 @@ async function saveTemplate(d) {
   drafts.set(target.id, draft);
   if (isNew) history.replaceState(null, '', `#sablona/${target.id}`);
   change(`šablona ${name}`);
-  toast(isNew ? 'Šablona přidaná.' : 'Šablona uložená.');
+  toast(isNew ? `Přidáno: ${name}.` : 'Uloženo.');
 }
 
 function deleteTemplate(type) {
@@ -609,7 +576,7 @@ function deleteTemplate(type) {
       drafts.delete(type.id);
       navigate('#sablony');
       change(`smazaná šablona ${type.name}`);
-      toast('Smazáno.');
+      toast(`Smazáno: ${type.name}.`);
       dropImage(type.image, type.id);
     },
   });

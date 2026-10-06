@@ -4,7 +4,10 @@
 // No screen here: calendar.js (Seznam · Měsíc), roster.js (Rozpis), event.js (Setkání), program.js
 // (Osnova), event-form.js and event-duties.js build on it.
 
-import { h, icon, openSheet, rowLink, row, list, toast, KIND_HUES, agree, shortDate, clockRange, isoDay } from './kit.js';
+import {
+  h, icon, openSheet, rowLink, row, list, toast, KIND_HUES, agree, plural, shortDate, clockRange, isoDay, download, asciiName,
+  hasCoords, canMap, mapFrame, mapLink,
+} from './kit.js';
 import { S, can, myId } from '../../ui/state.js';
 import { eventTypeById, needsOf, fillRatio, KIND_LABELS } from '../../lib/events.js';
 import { placesOf as resolvedPlaces } from '../../lib/places.js';
@@ -52,25 +55,6 @@ export function placeText(event) {
   return groups.map((g) => (g.building ? `${g.building}, ${andJoin(g.rooms)}` : g.name)).join('; ');
 }
 
-const hasCoords = (p) => Number.isFinite(Number(p?.lat)) && Number.isFinite(Number(p?.lon)) && p?.lat !== '' && p?.lon !== '' && p?.lat != null;
-export const canMap = (p) => hasCoords(p) || !!String(p?.address || '').trim();
-export function mapUrl(p) {
-  if (hasCoords(p)) return `https://mapy.cz/zakladni?x=${Number(p.lon)}&y=${Number(p.lat)}&z=16`;
-  return `https://mapy.cz/zakladni?q=${encodeURIComponent(p?.address || p?.name || '')}`;
-}
-
-/** A small OpenStreetMap of a place (the CSP allows frames from www.openstreetmap.org only). */
-export function placeMap(p) {
-  if (!hasCoords(p)) return null;
-  const lat = Number(p.lat);
-  const lon = Number(p.lon);
-  const bbox = [lon - 0.006, lat - 0.0035, lon + 0.006, lat + 0.0035].map((n) => n.toFixed(5)).join(',');
-  return h('div', { class: 'ev-map' }, h('iframe', {
-    src: `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`,
-    title: `Mapa: ${p.name || 'místo'}`, loading: 'lazy', referrerpolicy: 'no-referrer',
-  }));
-}
-
 /** The place sheet: name, address, the map, „Otevřít v mapě“. */
 export function openPlaceSheet(event) {
   const places = placesOf(event);
@@ -79,10 +63,7 @@ export function openPlaceSheet(event) {
   openSheet({
     title: placeText(event),
     subtitle: main.address || null,
-    body: [
-      placeMap(main),
-      canMap(main) ? h('a', { class: 'btn btn--quiet btn--block', href: mapUrl(main), target: '_blank', rel: 'noopener noreferrer' }, icon('external', { size: 's' }), 'Otevřít v mapě') : null,
-    ],
+    body: h('div', { class: 'stack' }, mapFrame(main), mapLink(main)),
   });
 }
 
@@ -312,45 +293,41 @@ export function weekRange(monday) {
 
 export { isoDay };
 
-// ---------- downloads, .ics ----------
+// ---------- .ics into the phone's calendar ----------
 
-/** A file download (Blob URL; the file name is Czech without diacritics). */
-export function download(name, content, type) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const a = h('a', { href: url, download: name, hidden: true });
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
+/** .ics of a person's duties from a month back on („sluzby-jana-novakova.ics“) – Domů, Můj účet, the card, Kalendář. */
+export function downloadDuties(person) {
+  if (!person) return;
+  const items = icsForPerson(S.data, person.id, addDays(today(), -30));
+  download(`sluzby-${asciiName(fullName(person), 'clovek')}.ics`, ics(S.data, items, `Služby – ${displayName(person)}`), 'text/calendar');
+  toast(items.length ? `Stahuju ${plural(items.length, 'službu', 'služby', 'služeb')}. Otevři soubor v telefonu.` : 'Stahuju soubor. Zatím v něm žádná služba není.', { icon: 'download' });
 }
 
-export const asciiName = (text) => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'zvonec';
+/** .ics of the whole calendar from a month back on (cancelled events say so inside). */
+export function downloadCalendar() {
+  const items = (S.data.events || []).filter((e) => dayOf(e.start) >= addDays(today(), -30)).map((event) => ({ event }));
+  download('kalendar-sboru.ics', ics(S.data, items, S.data.settings?.churchName || 'Zvonec'), 'text/calendar');
+  toast(`Stahuju ${plural(items.length, 'setkání', 'setkání', 'setkání')}. Otevři soubor v telefonu.`, { icon: 'download' });
+}
 
-/** „Přidat do kalendáře v telefonu“: Moje služby (when the viewer has a card) / Celý kalendář. */
-export function openCalendarExport() {
+/** The two .ics choices as rows: Moje služby (with a card) · Celý kalendář sboru. `onDone` closes a sheet first. */
+export function calendarExportRows({ onDone } = {}) {
   const me = personOf(myId());
+  const run = (fn) => () => { onDone?.(); fn(); };
+  return list([
+    me ? row({ lead: icon('user'), title: 'Moje služby', meta: 'Jen setkání, kde sloužíš', onclick: run(() => downloadDuties(me)), trail: icon('download', { size: 's' }) }) : null,
+    row({ lead: icon('calendar'), title: 'Celý kalendář sboru', meta: 'Všechna setkání', onclick: run(downloadCalendar), trail: icon('download', { size: 's' }) }),
+  ].filter(Boolean), { label: 'Přidat do kalendáře v telefonu' });
+}
+
+export const CALENDAR_EXPORT_NOTE = 'Stáhne se soubor .ics, telefon ho přidá do kalendáře. Když se rozpis změní, stáhni ho znovu.';
+
+/** „Přidat do kalendáře v telefonu“ (Kalendář ⋯): Moje služby / Celý kalendář sboru. */
+export function openCalendarExport() {
   let sheet;
-  const mine = () => {
-    sheet.close();
-    const items = icsForPerson(S.data, me.id, addDays(today(), -30));
-    download(`sluzby-${asciiName(fullName(me))}.ics`, ics(S.data, items, `Služby – ${displayName(me)}`), 'text/calendar');
-    toast('Soubor je stažený. Otevři ho v telefonu.');
-  };
-  const all = () => {
-    sheet.close();
-    const items = (S.data.events || []).filter((e) => dayOf(e.start) >= addDays(today(), -30)).map((event) => ({ event }));
-    download('kalendar-sboru.ics', ics(S.data, items, S.data.settings?.churchName || 'Zvonec'), 'text/calendar');
-    toast('Soubor je stažený. Otevři ho v telefonu.');
-  };
   sheet = openSheet({
     title: 'Přidat do kalendáře v telefonu',
-    body: [
-      h('p', { class: 'meta' }, 'Stáhne se soubor. Když ho otevřeš, telefon nabídne přidat setkání do kalendáře.'),
-      list([
-        me ? row({ lead: icon('user'), title: 'Moje služby', meta: 'Jen setkání, kde sloužíš', onclick: mine, chevron: true }) : null,
-        row({ lead: icon('calendar'), title: 'Celý kalendář', meta: 'Všechna setkání sboru', onclick: all, chevron: true }),
-      ]),
-    ],
+    body: [h('p', { class: 'meta' }, CALENDAR_EXPORT_NOTE), calendarExportRows({ onDone: () => sheet.close() })],
   });
 }
 

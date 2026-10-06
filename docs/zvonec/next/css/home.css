@@ -22,8 +22,6 @@
 /* ---------- columns ---------- */
 .home-col > :first-child { margin-top: 0; }
 .home-col > .feature + .section { margin-top: var(--section-gap); }
-.home-quiet { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-2) 0; }
-.home-quiet > .icon { flex: none; margin-top: 2px; color: var(--ok-ink); }
 
 /* ---------- Odpověz ---------- */
 .home-answer__link { color: inherit; }
@@ -32,17 +30,6 @@
 
 /* ---------- Co je potřeba ---------- */
 .home-need__scope { margin-bottom: var(--space-2); }
-.need__arch { display: block; border-radius: var(--shape-arch); }
-.need .fill { padding-top: 2px; }
-.need__sum > .need__act {                    /* „3 čekají“ (who waits) and „1 chyba“ (open Kdo slouží) */
-  position: relative; border: 0; background: none; padding: 0; margin: 0; font: inherit; font-weight: var(--weight-strong);
-  cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
-  text-decoration-style: dotted;
-}
-.need__sum > .need__act:hover { text-decoration-style: solid; }
-.need__sum > .need__act::after { content: ""; position: absolute; inset: -12px -6px; }   /* 44 px to tap */
-.need__sum > .need__act[data-sev="warn"] { color: var(--wait-ink); }
-.need__sum > .need__act[data-sev="error"] { color: var(--no-ink); }
 .home-need .row-link, .home-mine .row-link, .home-week .row-link { margin-top: var(--space-1); }
 .home-need__list > .need:first-child { padding-top: var(--space-2); }
 
@@ -53,14 +40,6 @@
   display: grid; place-items: center; flex: none; width: var(--avatar-m); height: var(--avatar-m);
   border-radius: 50%; background: var(--tint); color: var(--ink);
 }
-.home-off .row__trail > .icon-btn { color: var(--ink-2); }
-.home-off .row__trail > .icon-btn:hover { color: var(--ink); }
-
-/* ---------- sheets ---------- */
-.home-sheet__now { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
-.home-sheet__lead { margin-bottom: var(--space-2); }
-.home-dates { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-.home-dates > .field { min-width: 0; }
 
 /* ---------- desktop ---------- */
 @media (min-width: 960px) {

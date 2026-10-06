@@ -44,6 +44,32 @@ export function clock(value) {
 /** „10.00–12.00“ */
 export const clockRange = (start, end) => (end ? `${clock(start)}–${clock(end)}` : clock(start));
 
+/**
+ * A range of days, the one way everywhere (Kdy nemůžu, filters, weeks):
+ * „so 28. 11.“ (one day) · „28.–30. 11.“ (one month) · „28. 11. – 2. 12.“ · with a year when it differs from this one.
+ */
+export function dayRange(from, to = from) {
+  if (!to || from === to) return shortDate(from);
+  const [a, b] = [dateOf(from), dateOf(to)];
+  const year = a.getFullYear() !== b.getFullYear() || b.getFullYear() !== new Date().getFullYear();
+  if (!year && a.getMonth() === b.getMonth()) return `${a.getDate()}.–${b.getDate()}. ${b.getMonth() + 1}.`;
+  return `${shortDate(from, { weekday: false, year })} – ${shortDate(to, { weekday: false, year })}`;
+}
+
+/** „Jana Nováková“ → „jana-novakova“ (downloaded file names: Czech words without diacritics). */
+export const asciiName = (text, fallback = 'zvonec') => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || fallback;
+
+/** Hand the person a file (.ics, CSV, a backup): download('sluzby-jana.ics', text, 'text/calendar'). */
+export function download(name, content, type) {
+  const url = URL.createObjectURL(content instanceof Blob ? content : new Blob([content], { type }));
+  const a = h('a', { href: url, download: name, hidden: true });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
 // ---------- type ----------
 
 export const brand = (props = {}) => h('span', { class: 'brand', ...props }, 'církev jako kráva');
@@ -363,6 +389,13 @@ export function empty({ icon: iconName = 'sun', title: head, text: body, action 
     action || null);
 }
 
+/**
+ * The quiet line of a section that has nothing (yet) – the one wording style everywhere:
+ *   quiet('Teď žádnou službu nemáš.') · quiet('Na příští tři týdny je všechno obsazené.', { icon: 'check' })
+ * (a whole screen with nothing uses empty()).
+ */
+export const quiet = (words, { icon: iconName } = {}) => h('p', { class: 'meta quiet' }, iconName ? icon(iconName, { size: 's' }) : null, words);
+
 /** Loading placeholder rows. */
 export function skeleton({ rows = 3 } = {}) {
   return h('div', { class: 'skeleton-list', 'aria-busy': 'true', 'aria-label': 'Načítám…' },
@@ -374,11 +407,12 @@ export function skeleton({ rows = 3 } = {}) {
 /** A list drawn on the ground (hairlines between rows). `inset`: rows bleed 12 px into the gutter. */
 export const list = (rows, { inset = true, label, cls } = {}) => h('div', { class: ['list', inset && 'list--inset', cls], role: label ? 'list' : null, 'aria-label': label }, rows);
 
-const isControl = (n) => n instanceof Element && n.matches('a, button, input, select, textarea, .switch');
+/** Controls in a row's trail stay their own tap target (a ⋯ menu() too: its wrapper is a div). */
+const isControl = (n) => n instanceof Element && n.matches('a, button, input, select, textarea, .switch, .menu-wrap');
 
 /**
  * One row. lead: avatar / arch / teamMark. title (+ nick), meta (second line) or note (status line),
- * trail: anything on the right (icon button, count, status, switch). chevron: › at the end.
+ * trail: anything on the right (icon button, count, status, switch, a ⋯ menu()). chevron: › at the end.
  * href / onclick make the row open something; with a control in the trail the body becomes the
  * stretched link, so both stay separately tappable. selected (aria-selected), open (data-open: shown in
  * the detail pane at ≥ 1200), single (52 px one-liner), declined (title struck through).
@@ -425,6 +459,54 @@ export function personRow(person, { meta: metaText, note: noteNode, href, onclic
     lead: avatar(person, { me, status: st }), title: name, nick, meta: metaText, note: noteNode, href, onclick,
     trail: [trail, call], selected, open, declined: st === 'declined',
   });
+}
+
+// ---------- places on a map (Mapy.cz to open, an OpenStreetMap frame – the one frame the CSP allows) ----------
+
+export const hasCoords = (place) => place?.lat != null && place?.lon != null && place.lat !== '' && place.lon !== ''
+  && Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lon));
+export const canMap = (place) => hasCoords(place) || !!String(place?.address || '').trim();
+
+/** Mapy.cz: the coordinates, else a search for the address (or the name). */
+export function mapUrl(place) {
+  if (hasCoords(place)) return `https://mapy.cz/zakladni?x=${Number(place.lon)}&y=${Number(place.lat)}&z=16`;
+  return `https://mapy.cz/zakladni?q=${encodeURIComponent(place?.address || place?.name || '')}`;
+}
+
+/** „Otevřít v mapě ↗“ – the one wording and look everywhere; opens Mapy.cz in a new tab. null without an address. */
+export const mapLink = (place, { label = 'Otevřít v mapě' } = {}) => (canMap(place)
+  ? h('a', { class: 'link map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, icon('pin', { size: 's' }), label, icon('external', { size: 's' }))
+  : null);
+
+/** A small OpenStreetMap with a pin (only with coordinates). */
+export function mapFrame(place, { title } = {}) {
+  if (!hasCoords(place)) return null;
+  const lat = Number(place.lat);
+  const lon = Number(place.lon);
+  const bbox = [lon - 0.006, lat - 0.0035, lon + 0.006, lat + 0.0035].map((n) => n.toFixed(5)).join(',');
+  return h('div', { class: 'map' }, h('iframe', {
+    src: `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`,
+    title: title || `Mapa: ${place.name || 'místo'}`, loading: 'lazy', referrerpolicy: 'no-referrer',
+  }));
+}
+
+// ---------- tables (desktop: Lidé, Kdo co umí, Rozpis) ----------
+
+/**
+ * A data table in its own sideways scroll box – the page itself never scrolls sideways.
+ * head: the header row(s) (h('tr', …)), rows: body rows. `region`: the box is focusable and named (a wide
+ * table you scroll with the keyboard); otherwise the table carries the name.
+ *   table({ label: 'Lidé', head: h('tr', {}, …), rows, cls: 'people-table' })
+ */
+export function table({ label, head, rows, cls, wrapCls, region = false } = {}) {
+  return h('div', { class: ['table-wrap', wrapCls], role: region ? 'region' : null, tabindex: region ? 0 : null, 'aria-label': region ? label : null },
+    h('table', { class: ['table', cls], 'aria-label': region ? null : label }, h('thead', {}, head), h('tbody', {}, rows)));
+}
+
+/** A column head that sorts on a click (aria-sort on the active one): sortHead('Jméno', { active, dir: 1 | -1, onSort }). */
+export function sortHead(label, { active = false, dir = 1, onSort, cls } = {}) {
+  return h('th', { scope: 'col', class: cls, 'aria-sort': active ? (dir > 0 ? 'ascending' : 'descending') : null },
+    h('button', { type: 'button', class: 'th-sort', onclick: onSort }, label, active ? icon(dir > 0 ? 'chevron-down' : 'chevron-right', { size: 's' }) : null));
 }
 
 // ---------- time ----------
@@ -478,16 +560,23 @@ export function agendaEvent({ start, end, title: head, meta: metaText, hue, href
 }
 
 /**
- * Co je potřeba – one event that wants people.
- *   needRow({ day, title, href, summary: [['error', 'chybí 2'], ['warning', '3 čekají']], filled: 10, total: 15,
- *             slots: [{ label: 'Klávesy', onclick }] })
+ * Co je potřeba – one event that wants people. The arch and the title open the event (href).
+ *   needRow({ day, title, href, summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick, label }],
+ *             ['error', '1 chyba', { href }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick, aria }] })
+ * A summary item with onclick / href is a quiet button / link in its severity colour („3 čekají“ → who waits).
  */
-export function needRow({ day, today: isToday, title: head, href, summary = [], filled, total, slots = [] }) {
-  return h('div', { class: 'need' },
-    dateArch(day, { today: isToday }),
+export function needRow({ day, today: isToday, title: head, href, summary = [], filled, total, slots = [], dataset } = {}) {
+  const sumItem = ([s, w, act]) => {
+    if (!act?.onclick && !act?.href) return sev(s, w);
+    const props = { class: 'sev need__act', dataset: { sev: s === 'warning' ? 'warn' : s }, 'aria-label': act.label };
+    return act.href ? h('a', { ...props, href: act.href }, w) : h('button', { ...props, type: 'button', onclick: act.onclick }, w);
+  };
+  const arch = dateArch(day, { today: isToday });
+  return h('div', { class: 'need', dataset },
+    href ? h('a', { class: 'need__arch', href, tabIndex: -1, 'aria-hidden': 'true' }, arch) : arch,
     h('div', { class: 'row__body' },
       href ? h('a', { class: 'row__title need__title', href }, head) : h('span', { class: 'row__title' }, head),
-      summary.length ? h('span', { class: 'need__sum' }, summary.map(([s, w]) => sev(s, w))) : null),
+      summary.length ? h('span', { class: 'need__sum' }, summary.filter(Boolean).map(sumItem)) : null),
     total ? fill(filled, total) : h('span'),
     slots.length ? h('div', { class: 'need__slots' }, slots.map((s) => slot(s.label, s.onclick, { aria: s.aria }))) : null);
 }

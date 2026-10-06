@@ -5,7 +5,7 @@
 
 import { h, nodes } from './h.js';
 import { icon } from './icons.js';
-import { brand as brandMark, iconButton, fab, card, empty, button } from './core.js';
+import { brand as brandMark, iconButton, fab, card } from './core.js';
 
 // ---------- breakpoints ----------
 
@@ -102,24 +102,3 @@ export function detailPane({ body, closeHref, onClose, label = 'Zavřít' } = {}
     : onClose ? iconButton('x', label, { onclick: onClose, cls: 'detail__close', dataset: { paneClose: '' } }) : null;
   return card([close, body], { cls: 'detail' });
 }
-
-// ---------- placeholder for screens that are not built yet ----------
-
-/**
- * A screen that exists in the route table but not yet in Zvonec Next.
- *   placeholder({ title: 'Kalendář', legacy: 'kalendar', back: { href: '#vice', label: 'Více' } })
- * legacy: the hash of the same place in the current Zvonec (opened with „Otevřít v současném Zvonci“).
- */
-export function placeholder({ title, legacy, back, topbar, overline } = {}) {
-  return screen({
-    topbar: topbar || topBar(back ? { back } : { brand: true }),
-    head: { overline, title },
-    body: empty({
-      icon: 'bulls-eye',
-      title: 'Tuhle obrazovku ještě stavíme.',
-      text: legacy != null ? 'Zatím ji najdeš v současném Zvonci.' : 'Brzy tu bude.',
-      action: legacy != null ? button('Otevřít v současném Zvonci', { variant: 'quiet', iconEnd: 'external', href: `../#${legacy}` }) : null,
-    }),
-  });
-}
-

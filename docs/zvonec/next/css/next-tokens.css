@@ -98,6 +98,13 @@
   --dur-sheet: 280ms;                          /* sheet, toast */
 }
 
+/* The arch radius is computed where the size is: a block that sets its own --arch-w (a bigger date arch,
+   a month-cell numeral) gets its round head and its gentle feet at that size, not the 44 px ones of :root.
+   Use the class .arch (the date block) or .arch-shape on anything else drawn as an arch. */
+:where(.arch, .arch-shape) {
+  --shape-arch: calc(var(--arch-w) / 2) calc(var(--arch-w) / 2) calc(var(--arch-w) * .22) calc(var(--arch-w) * .22);
+}
+
 /* ---- colour roles (all from palettes.css) ---- */
 :where(:root, [data-palette], [data-theme]) {
   /* three surfaces, that is all: the ground, the bar, the overlay */

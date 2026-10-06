@@ -1,10 +1,10 @@
 // Zvonec Next – Více: what its pages share. The page frame (back to Více on a phone, actions in the
-// head on desktop), files to download, maps (Mapy.cz link, OpenStreetMap frame – the CSP allows it),
-// sorting by Czech names, a „send this link“ sheet, and small words (minutes, times).
+// head on desktop), sorting by Czech names, a „send this link“ sheet, and small words (minutes, times).
+// Downloads and maps are in the kit (download(), mapLink(), mapFrame()).
 
 import { S } from '../../ui/state.js';
 import {
-  h, nodes, screen, topBar, menu, isDesktop, button, toast, openSheet, icon, agree, row,
+  h, nodes, screen, topBar, menu, isDesktop, button, toast, openSheet, icon, agree,
 } from './kit.js';
 
 export const toMore = { href: '#vice', label: 'Více' };
@@ -33,19 +33,6 @@ export function morePage({
     wide,
     cls: ['more-page', cls],
   });
-}
-
-/**
- * A row with a ⋯ menu at its end. The kit's row() takes only plain controls as a separate tap target
- * (a menu wrapper would end up inside the row's link), so a hidden button holds the place and the menu
- * takes it: the row body stays the stretched link, the ⋯ its own button.
- */
-export function rowWithMenu(options, menuEl) {
-  if (!menuEl) return row(options);
-  const slot = h('button', { type: 'button', hidden: true });
-  const el = row({ ...options, trail: [options.trail, slot].flat().filter(Boolean) });
-  slot.replaceWith(menuEl);
-  return el;
 }
 
 /** A section heading inside a detail pane or a page column (h2, quiet action on the right). */
@@ -85,53 +72,8 @@ export function minutesBetweenClocks(from, to) {
 /** „2026-10-18“ → „18. 10. 2026“ */
 export const dayWithYear = (day) => (day ? `${Number(day.slice(8, 10))}. ${Number(day.slice(5, 7))}. ${day.slice(0, 4)}` : '');
 
-/** „petr-novak“ for file names. */
-export const asciiName = (text, fallback = 'zvonec') => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || fallback;
-
 /** „Přibude 1 setkání“ / „Přibudou 3 setkání“ / „Přibude 8 setkání“ */
 export const meetingsWord = (n) => `${n} ${agree(n, 'setkání', 'setkání', 'setkání')}`;
-
-// ---------- files ----------
-
-/** Hand the person a file (backup, .ics). */
-export function download(name, content, type) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const a = h('a', { href: url, download: name, hidden: true });
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-
-// ---------- maps ----------
-
-export const hasCoords = (place) => Number.isFinite(Number(place?.lat)) && Number.isFinite(Number(place?.lon)) && place?.lat != null && place?.lon != null;
-export const canMap = (place) => hasCoords(place) || !!String(place?.address || '').trim();
-
-/** Mapy.cz: the coordinates, else a search for the address (or the name). */
-export function mapUrl(place) {
-  if (hasCoords(place)) return `https://mapy.cz/zakladni?x=${Number(place.lon)}&y=${Number(place.lat)}&z=16`;
-  return `https://mapy.cz/zakladni?q=${encodeURIComponent(place?.address || place?.name || '')}`;
-}
-
-/** „Otevřít v mapě ↗“ – opens Mapy.cz in a new tab. */
-export const mapLink = (place, { label = 'Otevřít v mapě' } = {}) => (canMap(place)
-  ? h('a', { class: 'link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, icon('pin', { size: 's' }), label, icon('external', { size: 's' }))
-  : null);
-
-/** An OpenStreetMap frame with a pin (only with coordinates). */
-export function mapFrame(place, { title } = {}) {
-  if (!hasCoords(place)) return null;
-  const lat = Number(place.lat);
-  const lon = Number(place.lon);
-  const bbox = [lon - 0.006, lat - 0.0035, lon + 0.006, lat + 0.0035].map((n) => n.toFixed(5)).join(',');
-  return h('div', { class: 'map' },
-    h('iframe', {
-      src: `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`,
-      title: title || `Mapa: ${place.name || 'místo'}`, loading: 'lazy', referrerpolicy: 'no-referrer',
-    }));
-}
 
 // ---------- sharing a link or a password once ----------
 
