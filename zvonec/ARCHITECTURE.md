@@ -54,6 +54,20 @@ access.json          { "v": 2, "logins": [] }            published to Pages, con
 - Each file has its own sha. A save writes only the files that changed. A 409 on a file triggers the
   three-way merge per record id for that file (settings merge per key).
 - Refresh lists `data/` once and fetches only files whose sha changed.
+- **Sync never mass-deletes** (`mergeSafe` in lib/store/merge.js, used by both the conflict merge
+  and refresh). Mass deletion happens only through an explicit action in the UI.
+  - A missing file never means „all records deleted“. A PUT with our sha that GitHub refuses with
+    409, 422 or 404 (the demo: stale sha) counts as a conflict, so the file is read again. If that
+    read finds no file (storage cleared, file deleted by someone else), our version is written back
+    with a PUT without a sha, with no merge. Every other data file missing from `data/` is then
+    recreated from memory. A missing repo still fails, because the re-read asks for the repo.
+    Refresh ignores files that are missing from the listing.
+  - If a merge would drop at least 3 of our records **and** more than half of one collection
+    (`MASS_DELETION_MIN`), the dropped records are kept. Smaller per-record deletions by someone
+    else merge as usual.
+  - Warnings: `console.warn`, `onChange({ status, warning })` and the list `sync.warnings`.
+    The kinds are `{ kind: 'recreated', paths }` and `{ kind: 'massDeletion', path, collections }`.
+    The UI can show them from `event.warning` as it arrives, or read `sync.warnings` later.
 - Cross-file operations are not atomic. A deleted person leaves dangling `personId`s; they render as
   „někdo smazaný“ and are dropped on the next save of the file that holds them.
 - **Privacy, plainly:** one token means every logged-in browser can read every file. Hiding data from

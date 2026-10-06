@@ -7,7 +7,7 @@
 // sha. A save writes only the files whose collections changed; a 409 on one file merges that file
 // per record id and tries again. Refresh lists `data/` once and reloads only files whose sha moved.
 
-import { merge } from './merge.js';
+import { merge, mergeSafe } from './merge.js';
 import { Conflict, GithubError } from './github.js';
 
 export const SCHEMA = 2;
@@ -256,6 +256,13 @@ export function commitMessage(notes) {
  * Status: 'saved' | 'pending' (changes wait for the timer) | 'saving' | 'error' | 'offline'.
  * `onChange` gets { status, error? } on every status change and { status, reloaded: true } after
  * data in memory were replaced by merged or refreshed data (re-render then).
+ *
+ * Sync never mass-deletes (see `mergeSafe`). When it refuses to, `onChange` gets { status, warning }
+ * and the warning stays in `sync.warnings`:
+ *   { kind: 'recreated', paths }               a data file was missing (storage cleared, file deleted)
+ *                                              and was written back from what the app has in memory
+ *   { kind: 'massDeletion', path, collections } a merge would have deleted most of a collection;
+ *                                              the records were kept
  */
 export class Sync {
   constructor(store, data, { onChange, delay = 1500, base } = {}) {
@@ -270,6 +277,14 @@ export class Sync {
     this.error = null;
     this.timer = null;
     this.running = null;
+    this.warnings = [];
+    this.missing = new Set();        // data files found missing during the current save
+  }
+
+  warn(warning) {
+    this.warnings.push(warning);
+    console.warn('Zvonec sync:', warning);
+    this.onChange({ status: this.status, warning });
   }
 
   setStatus(status, error = null) {
@@ -310,8 +325,10 @@ export class Sync {
     this.dirty = false;
     const snapshot = deepCopy(normalize(this.data));
     this.setStatus('saving');
+    this.missing.clear();
     try {
       for (const path of this.changedFiles(snapshot)) await this.saveFile(path, snapshot, message);
+      if (this.missing.size) await this.restoreMissing(snapshot, message);
       if (this.dirty) {
         this.setStatus('pending');
         clearTimeout(this.timer);
@@ -338,8 +355,15 @@ export class Sync {
       } catch (error) {
         if (!(error instanceof Conflict)) throw error;
         const fresh = await this.store.read(path);
-        const theirs = fileSlice(fresh?.json, path);
-        const merged = merge(fileSlice(this.base, path), mine, theirs);
+        if (!fresh) {
+          // the file is gone (storage cleared, deleted by someone else) – that does not mean every
+          // record was deleted: write mine back; `read` forgot the sha, so the next write creates it
+          this.missing.add(path);
+          continue;
+        }
+        const theirs = fileSlice(fresh.json, path);
+        const { merged, kept } = mergeSafe(fileSlice(this.base, path), mine, theirs);
+        if (kept.length) this.warn({ kind: 'massDeletion', path, collections: kept });
         Object.assign(snapshot, deepCopy(merged));
         delete snapshot.schema;
         Object.assign(this.base, deepCopy(theirs));
@@ -349,6 +373,33 @@ export class Sync {
       }
     }
     throw new GithubError('Nepodařilo se to sloučit ani na třetí pokus.', 409);
+  }
+
+  /**
+   * A data file was missing during this save, so others may be gone too (the demo's storage was
+   * cleared): write back every data file that no longer exists, from what the app has in memory.
+   * Files that exist are left alone (their shas stay as they were, so a later save still merges).
+   */
+  async restoreMissing(snapshot, message) {
+    const paths = [...this.missing];
+    if (typeof this.store.list === 'function') {
+      const listing = await this.store.list(DATA_DIR);
+      const present = new Set(listing.map((e) => e.path || `${DATA_DIR}/${e.name}`));
+      for (const path of FILE_PATHS.filter((p) => !present.has(p))) {
+        const json = fileSlice(snapshot, path);
+        try {
+          await this.store.write(path, json, message, null);
+        } catch (error) {
+          if (error instanceof Conflict) continue;      // someone created it meanwhile – theirs stays
+          throw error;
+        }
+        Object.assign(this.base, deepCopy(json));
+        delete this.base.schema;
+        paths.push(path);
+      }
+    }
+    this.missing.clear();
+    this.warn({ kind: 'recreated', paths: [...new Set(paths)] });
   }
 
   /**
@@ -370,7 +421,9 @@ export class Sync {
       stale.forEach((path, i) => {
         const theirs = fileSlice(fresh[i]?.json, path);
         // changes made while we were fetching survive: three-way merge against the old base
-        update = { ...update, ...merge(fileSlice(this.base, path), fileSlice(this.data, path), theirs) };
+        const { merged, kept } = mergeSafe(fileSlice(this.base, path), fileSlice(this.data, path), theirs);
+        if (kept.length) this.warn({ kind: 'massDeletion', path, collections: kept });
+        update = { ...update, ...merged };
         Object.assign(this.base, deepCopy(theirs));
       });
       delete update.schema;

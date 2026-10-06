@@ -31,6 +31,15 @@ function fromBase64(b64) {
 
 const wait = (ms) => new Promise((done) => setTimeout(done, ms));
 
+/**
+ * A refused PUT that means "the file is not what you think – read it again":
+ * - without a sha, 422: the file exists already (someone created it meanwhile);
+ * - with a sha, 409 (handled in `request`), 422 or 404: the file changed or was deleted meanwhile.
+ *   A 404 for a missing repo surfaces on the re-read, which asks for the repo (`getOrNull`).
+ */
+const isStaleWrite = (error, sha) => error instanceof GithubError
+  && (error.status === 422 || (!!sha && error.status === 404));
+
 /** Serialise a data file the way it is stored in the repo (one space indent, trailing newline). */
 export const serialize = (json) => `${JSON.stringify(json, null, 1)}\n`;
 
@@ -121,8 +130,7 @@ export class GithubStore {
     try {
       response = await this.request(this.url(path), { method: 'PUT', body: JSON.stringify(body) });
     } catch (error) {
-      // without a sha GitHub answers 422 when the file already exists – someone created it meanwhile
-      if (!sha && error instanceof GithubError && error.status === 422) throw new Conflict();
+      if (isStaleWrite(error, sha)) throw new Conflict();
       throw error;
     }
     const newSha = (await response.json()).content.sha;
@@ -168,7 +176,7 @@ export class GithubStore {
     try {
       response = await this.request(this.url(path), { method: 'PUT', body: JSON.stringify(body) });
     } catch (error) {
-      if (!sha && error instanceof GithubError && error.status === 422) throw new Conflict();
+      if (isStaleWrite(error, sha)) throw new Conflict();
       throw error;
     }
     const newSha = (await response.json()).content.sha;
