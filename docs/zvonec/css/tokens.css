@@ -220,6 +220,7 @@
   --hover: var(--gray-a3);
   --pressed: var(--gray-a4);
   --line-strong: var(--gray-9);       /* checkbox / radio rings (≥ 3:1) */
+  --line-field: #9d8f89;              /* the resting ring of a field (≥ 3:1 on its fill and around it) */
 
   /* light: the primary action is clay on cream; rose marks selection */
   --primary-bg: var(--gray-12);  --primary-bg-hover: #534343;  --primary-fg: #fffaf6;
@@ -239,6 +240,8 @@
 }
 
 :where([data-theme="dark"]) {
+  /* dark: every solid is light enough to be a 3:1 icon on the cards and carries the dark ink (red, green) –
+     the same rule as the pink primary with clay text; see zvonec/palettes.mjs */
   color-scheme: dark;
   /* surfaces – not part of a scale */
   --surface-chrome: #2a2020;      /* sidebar ground */
@@ -293,7 +296,7 @@
   --green-a10:rgb(124 255 168 / 0.553);
   --green-a11:rgb(194 255 211 / 0.779);
   --green-a12:rgb(235 255 239 / 0.933);
-  --green-contrast:#2a1f1f;
+  --green-contrast:#221717;
 
   /* amber */
   --amber-1:#3f3324; --amber-2:#473826; --amber-3:#544129; --amber-4:#60482a; --amber-5:#6b502d; --amber-6:#795a31; --amber-7:#8e6a3c; --amber-8:#aa804a; --amber-9:#f3ae51; --amber-10:#ffb95d; --amber-11:#e3bd8e; --amber-12:#f8e8d6;
@@ -312,7 +315,7 @@
   --amber-contrast:#2a1f1f;
 
   /* red */
-  --red-1:#482e2a; --red-2:#51312d; --red-3:#613833; --red-4:#6f3d37; --red-5:#7c433c; --red-6:#8d4b43; --red-7:#a55950; --red-8:#c56c62; --red-9:#c6463c; --red-10:#d25146; --red-11:#fdaca1; --red-12:#ffe4e0;
+  --red-1:#482e2a; --red-2:#51312d; --red-3:#613833; --red-4:#6f3d37; --red-5:#7c433c; --red-6:#8d4b43; --red-7:#a55950; --red-8:#c56c62; --red-9:#e05e52; --red-10:#ec695c; --red-11:#fdaca1; --red-12:#ffe4e0;
   --red-a1:rgb(180 38 0 / 0.107);
   --red-a2:rgb(254 65 29 / 0.113);
   --red-a3:rgb(255 93 68 / 0.194);
@@ -321,14 +324,14 @@
   --red-a6:rgb(255 114 95 / 0.419);
   --red-a7:rgb(255 125 108 / 0.541);
   --red-a8:rgb(255 134 119 / 0.705);
-  --red-a9:rgb(255 79 65 / 0.71);
-  --red-a10:rgb(255 91 77 / 0.771);
+  --red-a9:rgb(255 103 89 / 0.842);
+  --red-a10:rgb(255 111 97 / 0.904);
   --red-a11:rgb(255 173 162 / 0.99);
   --red-a12:rgb(255 228 224 / 1);
-  --red-contrast:#fffaf6;
+  --red-contrast:#221717;
 
   /* blue */
-  --blue-1:#313448; --blue-2:#363951; --blue-3:#3f4262; --blue-4:#454971; --blue-5:#4c517e; --blue-6:#565b8f; --blue-7:#666ba7; --blue-8:#7c82c8; --blue-9:#6468bd; --blue-10:#6e73c9; --blue-11:#b7bffe; --blue-12:#e7eafe;
+  --blue-1:#313448; --blue-2:#363951; --blue-3:#3f4262; --blue-4:#454971; --blue-5:#4c517e; --blue-6:#565b8f; --blue-7:#666ba7; --blue-8:#7c82c8; --blue-9:#6468bd; --blue-10:#5c5fb3; --blue-11:#b7bffe; --blue-12:#e7eafe;
   --blue-a1:rgb(0 76 194 / 0.17);
   --blue-a2:rgb(29 108 254 / 0.164);
   --blue-a3:rgb(75 124 254 / 0.246);
@@ -338,13 +341,13 @@
   --blue-a7:rgb(134 151 255 / 0.577);
   --blue-a8:rgb(147 160 255 / 0.736);
   --blue-a9:rgb(119 130 255 / 0.683);
-  --blue-a10:rgb(128 139 255 / 0.741);
+  --blue-a10:rgb(111 123 255 / 0.635);
   --blue-a11:rgb(183 192 255 / 0.996);
   --blue-a12:rgb(232 235 255 / 0.996);
   --blue-contrast:#fffaf6;
 
   /* plum */
-  --plum-1:#3a3241; --plum-2:#41364a; --plum-3:#4d3f57; --plum-4:#564464; --plum-5:#604c6f; --plum-6:#6c557e; --plum-7:#7f6593; --plum-8:#997ab2; --plum-9:#895da7; --plum-10:#9367b2; --plum-11:#d3b7e9; --plum-12:#f1e6fa;
+  --plum-1:#3a3241; --plum-2:#41364a; --plum-3:#4d3f57; --plum-4:#564464; --plum-5:#604c6f; --plum-6:#6c557e; --plum-7:#7f6593; --plum-8:#997ab2; --plum-9:#895da7; --plum-10:#80549e; --plum-11:#d3b7e9; --plum-12:#f1e6fa;
   --plum-a1:rgb(145 64 254 / 0.058);
   --plum-a2:rgb(200 101 254 / 0.092);
   --plum-a3:rgb(238 137 254 / 0.145);
@@ -354,7 +357,7 @@
   --plum-a7:rgb(255 161 238 / 0.429);
   --plum-a8:rgb(255 167 236 / 0.577);
   --plum-a9:rgb(255 121 227 / 0.511);
-  --plum-a10:rgb(255 132 229 / 0.567);
+  --plum-a10:rgb(188 116 255 / 0.534);
   --plum-a11:rgb(255 198 238 / 0.868);
   --plum-a12:rgb(255 234 248 / 0.97);
   --plum-contrast:#fffaf6;
@@ -392,6 +395,7 @@
   --hover: var(--gray-a3);
   --pressed: var(--gray-a4);
   --line-strong: var(--gray-9);       /* checkbox / radio rings (≥ 3:1) */
+  --line-field: #8f7f7f;              /* the resting ring of a field (≥ 3:1 on its fill and around it) */
 
   /* dark: pink on clay is the brand pairing – the primary action is rose-9 with clay text */
   --primary-bg: var(--rose-9);   --primary-bg-hover: var(--rose-10);  --primary-fg: #3b2f2f;
@@ -466,7 +470,7 @@
   --green-a10:rgb(124 255 168 / 0.553);
   --green-a11:rgb(194 255 211 / 0.779);
   --green-a12:rgb(235 255 239 / 0.933);
-  --green-contrast:#2a1f1f;
+  --green-contrast:#221717;
 
   /* amber */
   --amber-1:#3f3324; --amber-2:#473826; --amber-3:#544129; --amber-4:#60482a; --amber-5:#6b502d; --amber-6:#795a31; --amber-7:#8e6a3c; --amber-8:#aa804a; --amber-9:#f3ae51; --amber-10:#ffb95d; --amber-11:#e3bd8e; --amber-12:#f8e8d6;
@@ -485,7 +489,7 @@
   --amber-contrast:#2a1f1f;
 
   /* red */
-  --red-1:#482e2a; --red-2:#51312d; --red-3:#613833; --red-4:#6f3d37; --red-5:#7c433c; --red-6:#8d4b43; --red-7:#a55950; --red-8:#c56c62; --red-9:#c6463c; --red-10:#d25146; --red-11:#fdaca1; --red-12:#ffe4e0;
+  --red-1:#482e2a; --red-2:#51312d; --red-3:#613833; --red-4:#6f3d37; --red-5:#7c433c; --red-6:#8d4b43; --red-7:#a55950; --red-8:#c56c62; --red-9:#e05e52; --red-10:#ec695c; --red-11:#fdaca1; --red-12:#ffe4e0;
   --red-a1:rgb(180 38 0 / 0.107);
   --red-a2:rgb(254 65 29 / 0.113);
   --red-a3:rgb(255 93 68 / 0.194);
@@ -494,14 +498,14 @@
   --red-a6:rgb(255 114 95 / 0.419);
   --red-a7:rgb(255 125 108 / 0.541);
   --red-a8:rgb(255 134 119 / 0.705);
-  --red-a9:rgb(255 79 65 / 0.71);
-  --red-a10:rgb(255 91 77 / 0.771);
+  --red-a9:rgb(255 103 89 / 0.842);
+  --red-a10:rgb(255 111 97 / 0.904);
   --red-a11:rgb(255 173 162 / 0.99);
   --red-a12:rgb(255 228 224 / 1);
-  --red-contrast:#fffaf6;
+  --red-contrast:#221717;
 
   /* blue */
-  --blue-1:#313448; --blue-2:#363951; --blue-3:#3f4262; --blue-4:#454971; --blue-5:#4c517e; --blue-6:#565b8f; --blue-7:#666ba7; --blue-8:#7c82c8; --blue-9:#6468bd; --blue-10:#6e73c9; --blue-11:#b7bffe; --blue-12:#e7eafe;
+  --blue-1:#313448; --blue-2:#363951; --blue-3:#3f4262; --blue-4:#454971; --blue-5:#4c517e; --blue-6:#565b8f; --blue-7:#666ba7; --blue-8:#7c82c8; --blue-9:#6468bd; --blue-10:#5c5fb3; --blue-11:#b7bffe; --blue-12:#e7eafe;
   --blue-a1:rgb(0 76 194 / 0.17);
   --blue-a2:rgb(29 108 254 / 0.164);
   --blue-a3:rgb(75 124 254 / 0.246);
@@ -511,13 +515,13 @@
   --blue-a7:rgb(134 151 255 / 0.577);
   --blue-a8:rgb(147 160 255 / 0.736);
   --blue-a9:rgb(119 130 255 / 0.683);
-  --blue-a10:rgb(128 139 255 / 0.741);
+  --blue-a10:rgb(111 123 255 / 0.635);
   --blue-a11:rgb(183 192 255 / 0.996);
   --blue-a12:rgb(232 235 255 / 0.996);
   --blue-contrast:#fffaf6;
 
   /* plum */
-  --plum-1:#3a3241; --plum-2:#41364a; --plum-3:#4d3f57; --plum-4:#564464; --plum-5:#604c6f; --plum-6:#6c557e; --plum-7:#7f6593; --plum-8:#997ab2; --plum-9:#895da7; --plum-10:#9367b2; --plum-11:#d3b7e9; --plum-12:#f1e6fa;
+  --plum-1:#3a3241; --plum-2:#41364a; --plum-3:#4d3f57; --plum-4:#564464; --plum-5:#604c6f; --plum-6:#6c557e; --plum-7:#7f6593; --plum-8:#997ab2; --plum-9:#895da7; --plum-10:#80549e; --plum-11:#d3b7e9; --plum-12:#f1e6fa;
   --plum-a1:rgb(145 64 254 / 0.058);
   --plum-a2:rgb(200 101 254 / 0.092);
   --plum-a3:rgb(238 137 254 / 0.145);
@@ -527,7 +531,7 @@
   --plum-a7:rgb(255 161 238 / 0.429);
   --plum-a8:rgb(255 167 236 / 0.577);
   --plum-a9:rgb(255 121 227 / 0.511);
-  --plum-a10:rgb(255 132 229 / 0.567);
+  --plum-a10:rgb(188 116 255 / 0.534);
   --plum-a11:rgb(255 198 238 / 0.868);
   --plum-a12:rgb(255 234 248 / 0.97);
   --plum-contrast:#fffaf6;
@@ -565,6 +569,7 @@
   --hover: var(--gray-a3);
   --pressed: var(--gray-a4);
   --line-strong: var(--gray-9);       /* checkbox / radio rings (≥ 3:1) */
+  --line-field: #8f7f7f;              /* the resting ring of a field (≥ 3:1 on its fill and around it) */
 
   /* dark: pink on clay is the brand pairing – the primary action is rose-9 with clay text */
   --primary-bg: var(--rose-9);   --primary-bg-hover: var(--rose-10);  --primary-fg: #3b2f2f;

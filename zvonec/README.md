@@ -6,16 +6,27 @@ v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další 
 
 **Ukázka s vymyšlenými lidmi:** https://manifest.cirkevjakokrava.cz/zvonec/
 
-## Vzhled
+## Barvy
 
-Zvonec je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, stejná
-paleta (hlína, růžová, krém), tykání. V nabídce **Vzhled** si vybereš režim: **Podle zařízení** (výchozí),
-**Světlý** nebo **Tmavý**. Nabídku najdeš na počítači dole v levém sloupci vedle svého jména, na telefonu
-v menu; stejnou volbu máš i v Mém účtu.
+Zvonec je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, tykání
+a stejné barvy. Barvy si vybereš **terčem** – kroužek má barvu podkladu, tečka barvu písma, stejně jako
+v Otázkách. Na počítači je terč dole v levém sloupci vedle tvého jména, na telefonu v menu; stejnou volbu
+máš i v Mém účtu. Na výběr je pět dvojic:
 
-Volbu si pamatuje prohlížeč, takže platí jen u tebe. Chceš někomu poslat odkaz rovnou v tmavém režimu?
-Přidej do adresy před `#` `?rezim=tmavy` (nebo `svetly`, `zarizeni`), tedy `…/zvonec/?rezim=tmavy#kalendar`.
-Tisk jde vždycky na bílý papír.
+- **Krém a hlína** – světlé, výchozí
+- **Hlína a růžová** – tmavé
+- **Růžová a hlína** – světlé
+- **Modrá a krém** – tmavé
+- **Krém a modrá** – světlé
+
+a pod nimi **Podle zařízení**: když máš v telefonu nebo počítači světlý režim, uvidíš Krém a hlínu, když
+tmavý, Hlínu a růžovou. Zelené dvojice z webu tu nejsou – na zelené by drobné písmo aplikace nešlo dobře
+přečíst.
+
+Volbu si pamatuje prohlížeč, takže platí jen u tebe. Chceš někomu poslat odkaz rovnou v určitých barvách?
+Přidej do adresy před `#` `?paleta=modra-krem` (nebo `hlina-ruzova`, `ruzova-hlina`, `krem-modra`,
+`krem-hlina`, `zarizeni`), tedy `…/zvonec/?paleta=modra-krem#kalendar`. Starší odkazy s `?rezim=svetly`
+a `?rezim=tmavy` fungují dál (světlý je Krém a hlína, tmavý Hlína a růžová). Tisk jde vždycky na bílý papír.
 
 ## Tři části: Lidé, Týmy a skupinky, Setkání
 
@@ -33,9 +44,9 @@ něco jiného než role v týmu a nikdy se nejmenují stejně.
 
 ## Co kde najdeš
 
-Nahoře je hlavička: vlevo název církve, vpravo nabídka Vzhled a tvoje jméno (vede na Můj účet). Menu
-s ikonami je na počítači vlevo pod hlavičkou, na telefonu pod tlačítkem **Menu** – tam najdeš i svoje jméno
-a Vzhled. Vedoucí vidí v menu všechno, člen jen Přehled, Kalendář, Lidé a Jak se scházíme. Kdo není
+Na počítači je vlevo sloupec s menu: nahoře název církve, pod ním položky s ikonami, dole tvoje jméno
+(vede na Můj účet) a terč s barvami. Na telefonu je nahoře lišta s názvem a tlačítkem **Menu** – v něm
+najdeš totéž. Vedoucí vidí v menu všechno, člen jen Přehled, Kalendář, Lidé a Jak se scházíme. Kdo není
 přihlášený, vidí jen **Program** a **Jak se scházíme** – setkání a formáty, které vedoucí zveřejnili –
 a tlačítko **Přihlásit se**.
 
@@ -55,7 +66,7 @@ s pohledy.
 | **Týmy a skupinky** | **Týmy**, **Skupinky**, **Vedení** a **Kdo co umí** (tabulka lidé × role: nic / učí se / umí, vedoucí klikem přepíná; u role je vidět, kolik lidí ji umí). V týmu záložky **Lidé**, **Role**, **Kdo co umí** a **Setkání**. Role: kolik lidí, „Bez toho to nepůjde“, jen pro dospělé, u dětí, jen část setkání, které role zvládne jeden člověk naráz. Starý tým jde dát do archivu |
 | **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: u každého proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
 | **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
-| **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, vzhled, změna hesla, odhlášení. V ukázce i „Dívat se jako“ |
+| **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, barvy, změna hesla, odhlášení. V ukázce i „Dívat se jako“ |
 | **Program**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: nejbližší setkání s obrázkem, časem, místem a mapou, pak další týdny a „Kde nás najdete“; u každého setkání je tlačítko „Stáhnout do kalendáře“ (.ics). Dál zveřejněné formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
@@ -174,15 +185,18 @@ Přesný tvar záznamů je v [ARCHITECTURE.md](ARCHITECTURE.md). Smazaný člov�
 
 ```
 docs/zvonec/index.html, style.css, imprint.svg   kostra stránky (CSP: ven jen api.github.com a mapy OpenStreetMap), základ vzhledu, tisk A4
-docs/zvonec/css/          barvy a rozměry (tokens.css) a styly jednotlivých částí
+docs/zvonec/css/          barvy a rozměry (tokens.css), barevné dvojice (palettes.css – vyrábí je zvonec/palettes.mjs)
+                          a styly jednotlivých částí
 docs/zvonec/app.js        start (ukázka / naostro), přihlášení, adresy obrazovek, menu, stav ukládání
 docs/zvonec/lib/          logika bez obrazovek: lidé, místa, skupiny, setkání a řady, osnova, plánování, upozornění,
                           kontrola dat, přístupy, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
 docs/zvonec/ui/           obrazovky a stavebnice (kit): Přehled, kalendář, setkání, rozpis, lidé, týmy, Jak se scházíme,
                           výběr lidí, upozornění, nastavení, Můj účet, veřejná část, přihlášení; stránka #kit ukazuje
-                          všechny součástky ve světlém i tmavém režimu
+                          všechny součástky v barvách Krém a hlína i Hlína a růžová
 zvonec/check.mjs          kontrola upozornění z příkazové řádky / Actions
 zvonec/build-public.mjs   veřejný výřez dat (zveřejněná setkání a formáty) pro web
+zvonec/palettes.mjs       barevné dvojice: z podkladu a písma dopočítá všechny barvy, ověří kontrast a zapíše
+                          docs/zvonec/css/palettes.css (node zvonec/palettes.mjs)
 zvonec/test/              testy (node --test zvonec/test/*.test.mjs)
 zvonec/data-repo/         vzory workflow pro datové repo (web.yml, check.yml)
 ```

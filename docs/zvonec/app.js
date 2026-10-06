@@ -15,6 +15,7 @@ import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
 import { restore, ACCESS_FILE } from './lib/access.js';
 import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
+import { palettePicker } from './ui/palette-picker.js';
 import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
@@ -307,16 +308,18 @@ document.querySelector('.sheet-close').addEventListener('click', () => setSheet(
 document.getElementById('sidebar').addEventListener('click', (e) => { if (e.target.closest('a[href]')) setSheet(false, { focus: false }); });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || !document.body.classList.contains('sheet-open')) return;
-  if (!document.querySelector('.look-menu').hidden) return;   // the Vzhled menu closes first
+  if (!document.querySelector('.palette-menu').hidden) return;   // the colour menu closes first
   setSheet(false);
 });
-/** Desktop: Vzhled and the person sit in the header. Phone: the header has room for the brand and
- * Menu only, so they move into the sheet (the same elements – their listeners come along). */
+/** Desktop: the colour picker and the person sit in the header (at the foot of the sidebar). Phone: the
+ * header has room for the brand and Menu only, so they move into the sheet (the same elements – their
+ * listeners come along). */
+document.querySelector('.appbar-tools .account').before(palettePicker());
 function placeTools() {
   const phone = sheetQuery.matches;
   const target = phone ? document.querySelector('.sheet-tools') : document.querySelector('.appbar-tools');
   const before = phone ? null : document.querySelector('.appbar-tools .topbar-signin');
-  for (const sel of phone ? ['.account', '.look'] : ['.look', '.account']) target.insertBefore(document.querySelector(sel), before);
+  for (const sel of phone ? ['.account', '.palette'] : ['.palette', '.account']) target.insertBefore(document.querySelector(sel), before);
 }
 placeTools();
 sheetQuery.addEventListener?.('change', () => { setSheet(false, { focus: false }); placeTools(); });

@@ -40,18 +40,33 @@ same change.
 ## 2. One look
 
 Zvonec has one look: the owner's Milníkovač prototype in the cow's palette and fonts – the sidebar on the
-cream ground (brand at its top, the person and Vzhled at its foot), the stage a lighter window inset in it,
+cream ground (brand at its top, the person and the colour picker at its foot), the stage a lighter window inset in it,
 pill controls and pill tabs, sentence-case titles in Agrandir Narrow Black, cards with a border and a soft
 shadow. Brand: clay `#3b2f2f`, pink `#e6acac`, cream `#f9e7dd`; Agrandir Regular, Agrandir Narrow Black,
 Agrandir Grand Heavy (the brand mark only).
 
-- **Mode** (`data-theme="light|dark"` on `<html>`, absent = the device decides) is chosen in the header menu
-  „Vzhled“ (section „Režim“: Podle zařízení · Světlý · Tmavý) and again in Můj účet. It is remembered per
-  browser (`localStorage` `zvonec-theme`, never part of the data); a link may set it with
-  `?rezim=svetly|tmavy|zarizeni`. An old `?vzhled=` or stored `zvonec-look` is ignored.
-- `ui/palette.js` is a classic script in `<head>`: it applies the mode before the first paint, exposes
-  `window.zvonecAppearance` and fires `zvonec:appearance`. The menu is a list of settings (`CHOICES`), each a
-  radio group, so another setting (a brand palette) is one more group, not a new look.
+- **Palettes.** The colours come in the website's ground / ink pairs, the same as Otázky na tělo:
+  Hlína a růžová `clay-pink` (dark) · Růžová a hlína `pink-clay` · Modrá a krém `blue-cream` (dark) ·
+  Krém a modrá `cream-blue` · Krém a hlína `cream-clay` (the light default), plus **Podle zařízení** (no
+  attribute: cream-clay on a light device, clay-pink on a dark one). `<html data-palette="…">` picks one and
+  `data-theme="light|dark"` follows from it (the few `[data-theme="dark"]` rules). The green pairs of the website
+  are left out: no light ink reaches 4.5 : 1 on green `#498660` (cream 3.60, pink 2.23, even white 4.32).
+- **One recipe, verified.** `zvonec/palettes.mjs` derives every colour token from the pair and writes
+  `css/palettes.css` (generated – never edit it by hand): the sidebar is the ground in light palettes (a deeper
+  ground in dark ones), the stage a lighter window (the ground itself in dark ones), cards and dialogs lighter
+  still; text-1 and the primary solid are the ink; meta text, placeholders, checkbox rings and field rings are
+  „the ink at x %“ toward the ground, solved so every check passes; status and categorical scales are re-fitted
+  to the ground. It checks 55 pairs per palette (text ≥ 4.5 : 1 on every surface it sits on, incl. tinted badges,
+  selected rows and solids; focus ring, field rings, checkbox rings, ink pills, bars and status icons ≥ 3 : 1)
+  and `zvonec/test/palettes.test.mjs` keeps it so. In dark palettes every solid (red, green, the pink primary)
+  is light enough to be a 3 : 1 icon on the cards and carries the dark ink.
+- **The picker** is the bullseye of Otázky (the favicon's mark: a ring in the ground colour, a dot in the
+  ink): `ui/palette-picker.js` builds it with `h()`; at the foot of the sidebar next to the person (in the
+  sheet on a phone) and as a radio group in Můj účet („Barvy“). Remembered per browser (`localStorage`
+  `zvonec-palette`); a link may set it with `?paleta=hlina-ruzova|ruzova-hlina|modra-krem|krem-modra|krem-hlina|zarizeni`,
+  the older `?rezim=svetly|tmavy|zarizeni` maps to cream-clay / clay-pink / the device.
+- `ui/palette.js` is a classic script in `<head>`: it applies the palette before the first paint (and migrates
+  a stored `zvonec-theme` once), exposes `window.zvonecAppearance` and fires `zvonec:appearance`.
 
 ## 3. Tokens and semantic rules
 
@@ -60,14 +75,17 @@ Components use only **semantic tokens**; raw scale steps only for categorical co
 - **Scales** (OKLCH, 12 steps, pinned to the palette): gray (warm „clay“), rose (accent), green, amber,
   red, blue, plum, teal. Steps: 1–2 backgrounds · 3–5 fills · 6–8 lines · 9 solid · 10 solid hover ·
   11 low-contrast text · 12 high-contrast text; `-aN` = alpha twin. Contrast is verified (WCAG AA for
-  text, 3:1 for non-text), light and dark.
+  text, 3:1 for non-text) in every palette.
 - **Surfaces**, lighter = closer: `--surface-chrome` (header, sidebar) → `--surface-app` (the stage,
   brand ground) → `--surface-panel` (cards, lists, tables, menus) → `--surface-overlay` (dialogs,
   popovers, toasts). Shadows define containers, `--line-1` divides content inside them.
 - **Text:** `--text-1` (ink) · `--text-2` (meta, ≥ 4.5:1 everywhere) · `--text-3` (placeholder,
   disabled only) · `--text-accent`.
-- **Status:** `--confirmed-*` green, `--waiting-*` amber, `--declined-*` red, `--info-*` blue, each
+- **Status:** `--confirmed-*` green, `--waiting-*` amber, `--declined-*` red, `--info-*` the accent, each
   `-bg` / `-fg` / `-solid`.
+- **Lines:** `--line-1` (dividers), `--line-2` (card edges), `--line-control` (surface buttons, chips, dashed
+  frames), `--line-field` (the resting ring of a field: ≥ 3 : 1 on its fill and the surface around it),
+  `--line-strong` (checkbox / radio rings), `--line-hover`.
 - **Role tokens:** `--radius-control-1..3`, `--radius-field|nav|card|dialog|menu|badge|chip|avatar|mark|stage`,
   `--shadow-card|card-hover|raised|popover|dialog|stage`, `--title-font|transform|size|line`, `--section-size`,
   `--row-min-height`, `--nav-item-height`, `--control-1..3`, `--control-icon`, `--w-*`, `--sidebar`,
@@ -123,8 +141,8 @@ column on every tab (Kdo co umí scrolls sideways inside it).
 
 ```
 header.appbar     brand „církev jako kráva“ + „Zvonec“ · save status (only while saving / on error) ·
-                  Vzhled menu · me (avatar + name → Můj účet) | „Přihlásit se“
-                  (desktop: the brand sits at the top of the sidebar, Vzhled and the person at its foot)
+                  colour picker (bullseye) · me (avatar + name → Můj účet) | „Přihlásit se“
+                  (desktop: the brand sits at the top of the sidebar, the picker and the person at its foot)
 div.app-body
   aside.sidebar   nav (icon + label, count on Upozornění) · at the bottom „Veřejná část“ / „Zpátky do Zvonce“
   main.stage      div.page > header.page-head (back link · h1 · lead · actions · tabs · toolbar) + div.page-body
@@ -143,7 +161,7 @@ dialog#dialog · div.toasts
     actions on one line, a lead as one small line, the tabs right under them, no band; about 116 px from
     the stage top to the bottom of the tabs on a desktop (134 with a lead), so the work starts high.
 - **Phone (< 960 px):** the appbar has the brand and „Menu“; the sidebar becomes a sheet that also holds
-  Vzhled and the person; tabs and filter chips scroll sideways in one row, the hidden edge fades and the
+  the colour picker and the person; tabs and filter chips scroll sideways in one row, the hidden edge fades and the
   chosen one is scrolled into view. Calendar and tables degrade on purpose: Měsíc is a compact grid with
   a day list under it, Týden shows 3 days, Rozpis becomes one card per event („Role · ✓ Jméno“),
   Tabulka falls back to Seznam, Kdo co umí becomes a row of role chips per person. No horizontal page
@@ -166,7 +184,7 @@ Sidebar in order of frequency; slugs are what people see and share.
 | Tým | `#tym/<id>/<lide\|role\|umi\|setkani>` | skupinka and vedení: Lidé · Setkání only | edit | – |
 | **Jak se scházíme** | `#sablony`, `#formaty[/<id>]`, `#mista` | **Šablony · Formáty · Místa**; full-page editors `#sablona/<id>`, `#misto/<id>` | edit | Formáty · Místa read |
 | **Nastavení** | `#nastaveni/<sbor\|pravidla\|pristupy\|zaloha>` | **Sbor · Pravidla · Přístupy · Záloha** (GitHub klíč and „Nahrát zálohu“: admin) | yes | – |
-| **Můj účet** | `#ucet` | contact, kdy nemůžu, .ics, Vzhled, heslo, odhlásit; demo „Dívat se jako“ | yes | yes |
+| **Můj účet** | `#ucet` | contact, kdy nemůžu, .ics, Barvy, heslo, odhlásit; demo „Dívat se jako“ | yes | yes |
 | **Veřejná část** | `#program[/<id>]`, `#jak-se-schazime` | Program (hero, weeks, „Kde nás najdete“), one event, published formats | everyone | everyone |
 
 Navigation per role: leader **Přehled · Kalendář · Upozornění · Lidé · Týmy a skupinky · Jak se

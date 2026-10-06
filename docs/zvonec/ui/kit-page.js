@@ -22,14 +22,18 @@ const SAMPLE_PEOPLE = [
 
 const people = () => (S.data?.people?.length ? S.data.people.filter((p) => p.membership?.status !== 'former').slice(0, 40) : SAMPLE_PEOPLE);
 
+// the two islands: the light and the dark default palette (css/palettes.css resolves every token on an
+// element with data-palette; data-theme keeps the few [data-theme="dark"] rules in step)
+const ISLANDS = [['cream-clay', 'light', 'Krém a hlína'], ['clay-pink', 'dark', 'Hlína a růžová']];
+
 /** One specimen block: a title, a note, and the same content rendered in a light and a dark island. */
 function spec(title, note, build) {
   return h('section', { class: 'kit-spec' },
     h('h2', { class: 'kit-spec-title label' }, title),
     note ? h('p', { class: 'kit-spec-note' }, note) : null,
     h('div', { class: 'kit-pair' },
-      ['light', 'dark'].map((theme) => h('div', { class: 'kit-island', dataset: { theme } },
-        h('span', { class: 'kit-island-tag' }, theme === 'light' ? 'Světlý' : 'Tmavý'),
+      ISLANDS.map(([palette, theme, label]) => h('div', { class: 'kit-island', dataset: { palette, theme } },
+        h('span', { class: 'kit-island-tag' }, label),
         build(theme)))));
 }
 

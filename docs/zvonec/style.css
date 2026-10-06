@@ -78,13 +78,48 @@ button,input,select,textarea{font:inherit;color:inherit}
 .appbar .menu-toggle,.appbar .topbar-signin,.sidebar .sheet-close,.sidebar-head{display:none}
 /* „Přihlásit se“ once: in the sidebar on a desktop, in the header on a phone (rules below) */
 .appbar .account .signin{display:none}
-/* the Vzhled menu: a small popover over the foot of the sidebar (in the sheet on a phone) */
-.look{position:relative;display:flex}
-.look-toggle-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .popover{background:var(--surface-overlay);color:var(--text-1);border-radius:var(--radius-menu);box-shadow:var(--shadow-popover)}
-.look-menu{position:absolute;bottom:calc(100% + 8px);left:-180px;z-index:60;display:flex;flex-direction:column;gap:6px;padding:12px 14px 14px;min-width:max-content}
-.look-heading{font-family:var(--font-mark);text-transform:uppercase;font-size:11px;line-height:16px;letter-spacing:var(--tracking-label);color:var(--text-2);margin:2px 0 0}
-.look-heading+.look-options{margin-bottom:6px}
+/* ---------- colour picker: the bullseye (the same component as Otázky na tělo, ui/palette-picker.js) ----------
+   The bullseye is the favicon's mark: a ring in the ground colour with a dot in the ink. The switcher shows
+   the current palette (--palette-ground / --palette-ink, per palette in css/palettes.css); each option shows
+   its own (--ring / --dot, one rule per palette in css/palettes.css – CSP: no inline style). Measures as in
+   Otázky: dot 39 % of the ring, 1.5 px outline, menu grid 3 × auto, gap .6em, padding .75em, radius 18,
+   options 2.2em, hover = a 2 px ring at 70 %, chosen = a 2 px ring in the ink. */
+.palette{position:relative;display:flex}
+:is(.palette,.palette-options) button{display:grid;place-items:center;padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;line-height:0}
+.bullseye{
+  display:inline-grid;place-items:center;flex:none;width:1.7em;height:1.7em;border-radius:50%;
+  background:var(--ring,var(--palette-ground));box-shadow:0 0 0 1.5px var(--line-hover);transition:box-shadow .2s;
+}
+.bullseye::before{content:"";width:39%;height:39%;border-radius:50%;background:var(--dot,var(--palette-ink))}
+/* the switcher: as tall as the icon buttons; the ring is an inset shadow so the dot keeps its share */
+.palette .switcher{width:var(--control-icon);height:var(--control-icon);border-radius:50%}
+.palette .switcher .bullseye{width:100%;height:100%;box-shadow:inset 0 0 0 1px var(--line-control)}
+.palette .switcher:is(:hover,:focus-visible) .bullseye{box-shadow:inset 0 0 0 1px var(--line-hover),0 0 0 .28em var(--hover)}
+.palette .switcher:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.switcher-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* the menu: over the foot of the sidebar, on the overlay surface (a hair apart from the page, so a bullseye
+   in the page colour never melts into it) */
+.palette-menu{
+  position:absolute;bottom:calc(100% + 8px);right:0;z-index:60;
+  display:grid;grid-template-columns:repeat(3,auto);gap:.6em;padding:.75em;
+  background:var(--surface-overlay);border-radius:18px;box-shadow:var(--shadow-popover);
+}
+.palette-menu[hidden]{display:none}
+.palette-options .bullseye{width:2.2em;height:2.2em}
+.palette-options button:is(:hover,:focus-visible) .bullseye{box-shadow:0 0 0 2px color-mix(in srgb,var(--text-1) 70%,transparent)}
+.palette-options button[aria-checked="true"] .bullseye{box-shadow:0 0 0 2px var(--text-1)}
+.palette-options button:focus-visible{outline:none}   /* the 2 px ring above is the focus mark */
+.palette-options .palette-auto{
+  grid-column:1/-1;height:var(--control-1);padding:var(--optical) 12px 0;border-radius:var(--radius-full);
+  font-size:var(--font-size-2);line-height:1;color:var(--text-1);box-shadow:inset 0 0 0 1px var(--line-control);
+}
+.palette-options .palette-auto:hover{background:var(--hover)}
+.palette-options .palette-auto:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.palette-options .palette-auto[aria-checked="true"]{background:var(--primary-bg);color:var(--primary-fg);box-shadow:none}
+/* Můj účet: the same options in one row */
+.palette-inline{display:flex;flex-wrap:wrap;align-items:center;gap:.6em;font-size:var(--font-size-4)}
+.palette-inline .palette-auto{grid-column:auto;margin-left:.4em}
 
 .app-body{display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);align-items:start;min-height:calc(100dvh - var(--appbar))}
 .sidebar{display:flex;flex-direction:column;gap:16px;overflow-y:auto;overscroll-behavior:contain;background:var(--surface-chrome)}
@@ -151,17 +186,17 @@ button,input,select,textarea{font:inherit;color:inherit}
   .sidebar .sheet-close{display:inline-flex}
   .nav-item{height:42px}
   .sheet-tools{display:flex;flex-direction:column;gap:8px}
-  .sheet-tools .account,.sheet-tools .look{display:block}
+  .sheet-tools .account,.sheet-tools .palette{display:block}
   .sheet-tools .me{display:flex;gap:8px;height:auto;min-height:52px;padding:6px 12px 6px 4px}
   .sheet-tools .me .avatar{width:40px;height:40px;font-size:14px}
   .sheet-tools .me-text{padding-top:4px;line-height:1.3;gap:1px}
   .sheet-tools .me-role{display:block}
   .sheet-tools .signin,.sidebar .nav-item[href="#prihlaseni"]{display:none}
-  .sheet-tools .look-toggle{width:100%;justify-content:flex-start;padding:0 0 0 14px;height:42px;gap:12px}
-  .sheet-tools .look-toggle .icon{width:18px;height:18px;margin:calc(-1*var(--optical)) 0 0;color:var(--text-2)}
-  .sheet-tools .look-toggle-label{position:static;width:auto;height:auto;overflow:visible;clip:auto}
-  .sheet-tools .look-menu{position:static;margin:4px 0 0;box-shadow:none;background:none;padding:4px 12px 8px;min-width:0}
-  .sheet-tools .look-options{flex-wrap:wrap}
+  /* the colour picker in the sheet: a full row with its word, the grid opens in place under it */
+  .sheet-tools .palette .switcher{width:100%;height:42px;justify-content:flex-start;grid-auto-flow:column;gap:12px;padding:0 14px;border-radius:var(--radius-full);line-height:1}
+  .sheet-tools .palette .switcher .bullseye{width:22px;height:22px}
+  .sheet-tools .switcher-label{position:static;width:auto;height:auto;overflow:visible;clip:auto;padding-top:var(--optical);font-size:var(--font-size-4)}
+  .sheet-tools .palette-menu{position:static;margin:4px 0 0 8px;box-shadow:none;background:none;padding:4px 6px 8px;justify-content:start}
 }
 @media (max-width:459.98px){
   .app-name{display:none}
@@ -486,6 +521,8 @@ a.link,.link{color:var(--text-accent);text-decoration:none;text-underline-offset
 .chip[aria-pressed="true"],.chip[aria-current="page"],.chip:has(>input:checked){background:var(--primary-bg);box-shadow:none;color:var(--primary-fg)}
 .chip[aria-pressed="true"] .chip-check,.chip[aria-current="page"] .chip-check,.chip>input:checked~.chip-check{display:block}
 .chip[aria-pressed="true"] .n,.chip[aria-current="page"] .n,.chip:has(>input:checked) .n{color:var(--primary-fg);opacity:.75}
+/* a status or severity icon inside a chosen chip takes the chip's ink (its own colour is tuned for the page, not for the ink pill) */
+:is(.chip[aria-pressed="true"],.chip[aria-current="page"],.chip:has(>input:checked)) :is(.status-icon,.severity-icon,.icon){color:currentColor}
 .chip>input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
 .chip:has(>input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
 .chip:has(>input:disabled){opacity:.55;cursor:not-allowed}
@@ -826,7 +863,7 @@ a.person-line-name:hover{text-decoration:underline;text-underline-offset:.2em;te
 /* text inputs, native selects, textareas */
 :where(input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea){
   width:100%;min-width:0;height:var(--control-2);padding:var(--optical) 12px 0;border:0;border-radius:var(--radius-field);
-  font-size:var(--font-size-4);line-height:1.2;color:var(--text-1);background-color:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-control);outline:none;
+  font-size:var(--font-size-4);line-height:1.2;color:var(--text-1);background-color:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-field);outline:none;
   transition:box-shadow .15s;
 }
 :where(textarea){height:auto;min-height:76px;padding:10px 12px;line-height:22px;resize:vertical}
@@ -903,7 +940,7 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 .number-unit{font-size:var(--font-size-3);color:var(--text-2)}
 input.count-input{width:5.2em;text-align:center}
 /* stepper (ui/stepper.js): − 2 + in one field */
-.stepper{display:inline-flex;align-items:center;gap:0;max-width:100%;height:var(--control-2);padding:0 3px;border-radius:var(--radius-field);background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-control)}
+.stepper{display:inline-flex;align-items:center;gap:0;max-width:100%;height:var(--control-2);padding:0 3px;border-radius:var(--radius-field);background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-field)}
 .stepper:focus-within{box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}
 .stepper input[type="number"]{width:3.6em;min-width:0;height:34px;padding:var(--optical) 2px 0;text-align:center;background:none;box-shadow:none;font-variant-numeric:tabular-nums}
 .stepper input[type="number"]:focus{box-shadow:none;outline:none}
@@ -921,7 +958,7 @@ input.count-input{width:5.2em;text-align:center}
 .select-btn{
   display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-width:0;height:var(--control-2);padding:var(--optical) 12px 0;
   text-align:left;cursor:pointer;border:0;border-radius:var(--radius-field);font-size:var(--font-size-4);line-height:1;color:var(--text-1);
-  background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-control);transition:box-shadow .15s;
+  background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-field);transition:box-shadow .15s;
 }
 .select-btn:hover{box-shadow:inset 0 0 0 1px var(--line-hover)}
 .select-btn:focus-visible,.select-btn[aria-expanded="true"]{outline:none;box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}
@@ -946,7 +983,7 @@ input.count-input{width:5.2em;text-align:center}
 .combo{position:relative;display:block;min-width:0}
 .combo-field{
   display:flex;align-items:center;gap:8px;height:var(--control-2);padding:0 4px 0 8px;border-radius:var(--radius-field);
-  background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-control);transition:box-shadow .15s;
+  background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-field);transition:box-shadow .15s;
 }
 .combo-field:hover{box-shadow:inset 0 0 0 1px var(--line-hover)}
 .combo-field:focus-within{box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}
@@ -973,7 +1010,7 @@ input.count-input{width:5.2em;text-align:center}
 .date-btn{
   display:flex;align-items:center;gap:8px;width:100%;min-width:0;height:var(--control-2);padding:var(--optical) 12px 0;text-align:left;cursor:pointer;
   border:0;border-radius:var(--radius-field);font-size:var(--font-size-4);line-height:1;color:var(--text-1);
-  background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-control);transition:box-shadow .15s;
+  background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-field);transition:box-shadow .15s;
 }
 .date-btn:hover{box-shadow:inset 0 0 0 1px var(--line-hover)}
 .date-btn:focus-visible,.date-btn[aria-expanded="true"]{outline:none;box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}

@@ -4,10 +4,11 @@
 
 import {
   h, page, card, list, row, button, facts, avatar, personName, toast, download, plural, segment,
-  textField, dateField, formDialog, personPicker, segmentedField, switchField, callout, emptyState, dateBlock, SEP,
+  textField, dateField, formDialog, personPicker, switchField, callout, emptyState, dateBlock, SEP,
 } from './dom.js';
 import { S, can, myId, newId, change, actAs, logout, ACCESS_LABELS, ACCESS_VIEW } from './state.js';
 import { passwordForm } from './login.js';
+import { paletteChoices } from './palette-picker.js';
 import { personById, fullName, displayName, sortPeople, statusOf } from '../lib/people.js';
 import { upcomingDuties } from '../lib/events.js';
 import { icsForPerson, ics } from '../lib/ics.js';
@@ -124,22 +125,14 @@ export function availabilityDialog(person, record = null) {
   });
 }
 
-// ---------- Vzhled ----------
+// ---------- Barvy ----------
 
-const THEMES = [['', 'Podle zařízení'], ['light', 'Světlý'], ['dark', 'Tmavý']];   // the same control as the header menu Vzhled: words, no icons
-
+/** The palette: the same bullseyes as the picker next to my name (ui/palette-picker.js). */
 function appearanceCard() {
-  const api = window.zvonecAppearance;
-  if (!api) return null;
-  const theme = segmentedField('theme', 'Režim', THEMES, api.theme() || '', { onchange: (e) => api.setTheme(e.target.value) });
-  // the header menu may change it too – keep both in step
-  const sync = () => {
-    for (const input of theme.querySelectorAll('input')) input.checked = input.value === (api.theme() || '');
-  };
-  document.addEventListener('zvonec:appearance', sync);
+  if (!window.zvonecAppearance) return null;
   return card({
-    title: 'Vzhled',
-    body: [h('p', { class: 'card-text' }, 'Platí jen v tomhle prohlížeči. Totéž najdeš v hlavičce v nabídce Vzhled.'), h('div', { class: 'form-grid appearance-grid' }, theme)],
+    title: 'Barvy',
+    body: [h('p', { class: 'card-text' }, 'Platí jen v tomhle prohlížeči. Barvy přepneš i terčem vedle svého jména.'), paletteChoices()],
   });
 }
 

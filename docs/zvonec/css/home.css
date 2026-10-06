@@ -68,6 +68,7 @@
 .sev-chip.sev-error .severity-icon{color:var(--declined-solid)}
 .sev-chip.sev-warning .severity-icon{color:var(--waiting-fg)}
 .sev-chip.sev-info .severity-icon{color:var(--info-fg)}
+.sev-chip:is([aria-pressed="true"],:has(>input:checked)) .severity-icon{color:currentColor}   /* on the ink pill of a chosen chip */
 
 /* a warning row: the sentence may wrap, the actions stay at the end */
 .conflict-row .item-title{line-height:21px}

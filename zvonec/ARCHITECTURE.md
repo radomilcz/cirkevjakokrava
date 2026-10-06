@@ -173,8 +173,9 @@ The sealed `gh` payload keeps its short keys (`t` token, `o` owner, `r` repo, `c
 `v` branch). PBKDF2 salt: `cirkevjakokrava-zvonec:login`.
 
 Browser storage keys (this browser only, never in the data): `zvonec-me` (remembered login),
-`zvonec-demo` (demo data), `zvonec-theme` (the mode, `ui/palette.js`; the old `zvonec-palette` is migrated
-once and removed, a stale `zvonec-look` is removed), `zvonec-calendar-view` (last Kalendář view per viewer),
+`zvonec-demo` (demo data), `zvonec-palette` (the colour palette, `ui/palette.js`; a stored `zvonec-theme` is
+migrated once – light → cream-clay, dark → clay-pink – and removed, as is a stale `zvonec-look`; a palette the
+old Zvonec offered and this one does not becomes the light or dark default), `zvonec-calendar-view` (last Kalendář view per viewer),
 `zvonec-people-view`, `zvonec-people-sort` (Lidé), `zvonec-more` (open „Další možnosti“ per form).
 
 ## 4. Code layout (`docs/zvonec/`, ES modules, no build, CSP unchanged)
@@ -214,9 +215,12 @@ ui/icons.js            the icon set (Lucide-like, drawn with SVG, no font) + sta
 ui/kit.js              the kit: page, tabs, buttons, badges, list parts, table, form fields, dialogs (see „The kit“ in §5)
 ui/dom.js              h(), older helpers, avatars, covers, place lines, dialogs; re-exports kit.js and icons.js –
                        screens import from here only
-ui/kit-page.js         #kit – the living specimen (leaders, not in the nav), every piece in light and dark
-ui/palette.js          the mode (classic script in <head>, applies it before first paint, wires the Vzhled menu;
-                       a setting = an entry in CHOICES + a radio group in index.html)
+ui/kit-page.js         #kit – the living specimen (leaders, not in the nav), every piece in two palette islands
+                       (Krém a hlína, Hlína a růžová)
+ui/palette.js          the colour palette (classic script in <head>: applies data-palette + data-theme before the
+                       first paint, ?paleta= / ?rezim= links, window.zvonecAppearance)
+ui/palette-picker.js   the bullseye picker of Otázky (h()): palettePicker() for the sidebar foot / phone sheet,
+                       paletteChoices() for Můj účet
 ui/select.js, stepper.js, datepicker.js   enhancers: drop-downs, number − / +, date fields with our own calendar
 ui/sortable.js         drag-and-drop (mouse, touch, keyboard) for ordered lists
 ui/picker.js           shared people picker (event slots, group members, households), quick-add
@@ -238,7 +242,7 @@ ui/templates.js        #sablony, #sablona/<id> – the full-page template editor
 ui/places.js           #mista, #misto/<id> – buildings, rooms, address and map; placeChipsField, coordsField
 ui/conflicts.js        #upozorneni: Podle setkání / Podle lidí, inline fix, override; warning rows for other screens
 ui/settings.js         #nastaveni: Sbor · Pravidla · Přístupy · Záloha
-ui/account.js          #ucet – Můj účet (contact, Kdy nemůžu, .ics, Vzhled, password, „Dívat se jako“)
+ui/account.js          #ucet – Můj účet (contact, Kdy nemůžu, .ics, Barvy, password, „Dívat se jako“)
 ui/public.js           the public part: #program[/<id>], #jak-se-schazime (from publicData(), never S.data)
 ui/login.js            sign-in (#prihlaseni), first setup, invite registration, the logins view
 ```
@@ -252,6 +256,7 @@ zvonec/check.mjs        conflict check for the data repo: node zvonec/check.mjs 
                         [--markdown file]; reads data/*.json via lib/store fromFiles, Czech output,
                         exit 1 when an upcoming event has an error
 zvonec/build-public.mjs  public.json for the data repo: node zvonec/build-public.mjs data site/public.json
+zvonec/palettes.mjs      the colour palettes → docs/zvonec/css/palettes.css: node zvonec/palettes.mjs [--report x.md|--check]
                         [--today YYYY-MM-DD]; reads data/*.json via lib/store fromFiles, writes lib/public.js output
                         and copies the pictures of published events from data/images/ to images/ next to it
 zvonec/data-repo/       workflow templates for the data repo: web.yml (publishes the app + access.json +
@@ -305,10 +310,11 @@ object. See DESIGN.md §8.
 
 ### The shell (app.js + index.html)
 
-`header.appbar` (brand, save status, the **Vzhled** menu, the signed-in person → Můj účet, or „Přihlásit se“)
+`header.appbar` (brand, save status, the colour picker – mounted by `app.js` –, the signed-in person → Můj účet,
+or „Přihlásit se“)
 across the top; under it `aside.sidebar` (navigation per role, at the bottom „Veřejná část“ / „Zpátky do
 Zvonce“) and `main.stage` with one `div.page`. On a phone (< 960 px) the appbar shows the brand and „Menu“;
-the sidebar becomes a sheet and `app.js` moves the Vzhled menu and the person into it (`placeTools`). The
+the sidebar becomes a sheet and `app.js` moves the colour picker and the person into it (`placeTools`). The
 hero page head gets `data-context` = the nav label of the section, shown as a quiet label above the title
 (not where it would repeat the title, not under a back link, not in a compact head).
 
@@ -418,13 +424,16 @@ creates a minimal card (`guest`, `needsReview`), optionally adds the person to t
 5. Update DESIGN.md §6 (sitemap), this file, `zvonec/README.md` (what people find where) and the `#kit`
    specimen if you added a kit piece. `node --test zvonec/test/*.test.mjs` and `node --check` every file.
 
-### One look, two modes
+### One look, five palettes
 
 There is one look (the Milníkovač system in the cow's palette, DESIGN.md §2). `css/tokens.css` holds every
-token for light and dark; `style.css` and the module CSS use semantic tokens only. A new colour scheme (e.g. a
-brand palette) is a set of token overrides per `[data-…]` attribute on `<html>` plus a setting in
-`ui/palette.js` (`CHOICES`) and a radio group in the Vzhled menu (index.html) and in `ui/account.js`; never
-fork module CSS or screens. Run the contrast check for any new colour pair.
+token (the scales and the light / dark base); `css/palettes.css`, loaded last, sets every colour token per
+`<html data-palette="…">` (and for „Podle zařízení“ – no attribute – per the device's mode). It is generated:
+change the recipe or the pairs in `zvonec/palettes.mjs`, run `node zvonec/palettes.mjs` (`--report x.md` lists
+all 55 checks per palette, `--check` fails on a stale file or a failing pair; `zvonec/test/palettes.test.mjs`
+runs the same). `style.css` and the module CSS use semantic tokens only – a new colour token goes into
+`tokens.css` and the generator (the coverage test names any token the palettes do not set). A new pair is an
+entry in `PALETTES` in `zvonec/palettes.mjs` and in `ui/palette.js`; never fork module CSS or screens.
 
 ## 6. Who sees what
 
