@@ -1,7 +1,7 @@
 // Zvonec Next – Setkání (#setkani/<id>): everything about one event on one scrolling page, no tabs.
 // Cover · title, time, place, Účel · event-level warnings (leader) · „Ty“ (my duty with Můžu / Nemůžu) ·
 // Kdo slouží (anchor „kdo-slouzi“) · Osnova (preview → its own page) · O setkání (popis, Pro tým, map,
-// „Ukázat na webu“) · Kolik lidí přišlo (leader, past) · the series line. ⋯ (leader): Upravit setkání ·
+// „Ukaž na webu“) · Kolik lidí přišlo (leader, past) · the series line. ⋯ (leader): Upravit setkání ·
 // Kolik lidí je potřeba · Prodloužit řadu · Zrušit / Obnovit setkání · Smazat setkání.
 // The same body fills the detail pane next to Kalendář at ≥ 1200 px (eventBody({ pane: true })).
 
@@ -220,7 +220,7 @@ function aboutSection(event) {
         h('p', { class: 'meta' }, [placeText(event), main.address].filter(Boolean).join(SEP)),
         mapLink(main)) : null,
       leader && !event.cancelled ? switchRow({
-        label: 'Ukázat na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
+        label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
         onChange: (on) => publish(event.id, on),
       }) : null,
     ],

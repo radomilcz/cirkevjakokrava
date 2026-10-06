@@ -221,7 +221,7 @@ function fieldsFor(base, { adding, image, moreOpen }) {
     field({ label: 'Pro koho', hint: 'Čí je to setkání – třeba zkouška chval nebo skupinka.', control: selectInput({ name: 'groupId', options: groupOptions(), value: base.groupId || '' }) }),
     adding ? field({ label: 'Popis pro web', optional: true, control: textArea({ name: 'description', value: base.description || '', rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' }) }) : null,
     image?.element,
-    switchRow({ name: 'public', label: 'Ukázat na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: base.public === true }),
+    switchRow({ name: 'public', label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: base.public === true }),
     field({ label: 'Pro tým', optional: true, hint: 'Tuhle poznámku na webu nikdo neuvidí.', control: textArea({ name: 'note', value: base.note || '', rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }) }),
   ];
   return {

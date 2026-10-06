@@ -263,7 +263,7 @@ function dutiesSection(person) {
       ...(self ? { onclick: () => openMyAnswer(event.id, assignment.id), chevron: true } : { href: `#setkani/${event.id}` }),
     });
   });
-  const limitWords = limits.paused ? 'Má pauzu – teď nenavrhovat do služeb.'
+  const limitWords = limits.paused ? 'Má pauzu, do služeb se teď nenavrhuje.'
     : `Nejvíc ${plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')} za měsíc · ${plural(limits.maxConsecutiveWeeks, 'neděle', 'neděle', 'nedělí')} po sobě`;
   return section({
     title: self ? 'Moje služby' : 'Služby', cls: 'person-section',

@@ -251,7 +251,7 @@ export function addSeries(data, draft, step, until, { newId = randomId, limit = 
 }
 
 /**
- * „Prodloužit řadu“: adds events to a series up to `until` ("YYYY-MM-DD") following its rule.
+ * „Prodluž řadu“: adds events to a series up to `until` ("YYYY-MM-DD") following its rule.
  * The new events copy the last event of the series (title, places, needs, osnova, time – whatever
  * the series looks like now), without people; when the series has no events left they are made from
  * its event type. Stores the series record (creating it for older data) with the new `until`.

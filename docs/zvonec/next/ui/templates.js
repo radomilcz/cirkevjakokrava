@@ -472,7 +472,7 @@ function webSection(d, dirty) {
   draw();
   return h('div', { class: 'form' },
     switchRow({
-      label: 'Nová setkání ukazovat na webu', hint: 'Název, čas, místo, obrázek a popis uvidí každý na Pastvě.', checked: !!v.public,
+      label: 'Ukazuj nová setkání na webu', hint: 'Název, čas, místo, obrázek a popis uvidí každý na Pastvě.', checked: !!v.public,
       onChange: (on) => { if (on) v.public = true; else delete v.public; dirty(); },
     }),
     field({ label: 'Popis', optional: true, control: textArea({ name: 'description', value: v.description || '', rows: 4, placeholder: 'např. Chvály, slovo a kafe. Přijď, jak jsi.', onInput: (t) => { if (t.trim()) v.description = t.trim(); else delete v.description; dirty(); } }), hint: 'Předvyplní se u nových setkání.' }),

@@ -362,7 +362,7 @@ function tableBody(slug, { openId, compact = false } = {}) {
   const allOn = sorted.length > 0 && sorted.every((p) => state.picked.has(p.id));
   const check = (on, label, onchange) => h('input', { type: 'checkbox', class: 'table-check', checked: on, 'aria-label': label, onchange });
   const head = h('tr', {},
-    leader ? h('th', { class: 'col-pick', scope: 'col' }, check(allOn, 'Vybrat všechny', (e) => { for (const p of sorted) { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); } render(); })) : null,
+    leader ? h('th', { class: 'col-pick', scope: 'col' }, check(allOn, 'Vyber všechny', (e) => { for (const p of sorted) { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); } render(); })) : null,
     columns.map((c) => {
       const active = c.key === col.key;
       return sortHead(c.label, {
@@ -399,7 +399,7 @@ function tableBody(slug, { openId, compact = false } = {}) {
   };
   const rows = sorted.map((p) => {
     const tr = h('tr', { dataset: { former: isFormer(p) ? '' : null, picked: state.picked.has(p.id) ? '' : null, open: p.id === openId ? '' : null }, 'aria-current': p.id === openId ? 'true' : null },
-      leader ? h('td', { class: 'col-pick' }, check(state.picked.has(p.id), `Vybrat – ${personName(p)}`, (e) => { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); render(); })) : null,
+      leader ? h('td', { class: 'col-pick' }, check(state.picked.has(p.id), `Vyber: ${personName(p)}`, (e) => { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); render(); })) : null,
       columns.map((c) => { const td = cell(c, p); td.classList.add(`col-${c.key}`); return td; }));
     tr.addEventListener('click', (e) => { if (!e.target.closest('a, button, input')) openFromTable(p.id); });
     return tr;

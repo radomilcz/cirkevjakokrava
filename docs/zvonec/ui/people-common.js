@@ -114,10 +114,10 @@ export function archivedText(person) {
   return day ? `v archivu od ${fullDate(day)}` : 'v archivu';
 }
 
-/** „5 karet je v archivu déle než rok. Smazat je?“ (1 karta je … Smazat ji? · 3 karty jsou … Smazat je?) */
+/** „5 karet je v archivu déle než rok. Chceš je smazat?“ (1 karta je … Chceš ji smazat? · 3 karty jsou … Chceš je smazat?) */
 export function overdueQuestion(n) {
   const verb = n >= 2 && n <= 4 ? 'jsou' : 'je';
-  return `${plural(n, 'karta', 'karty', 'karet')} ${verb} v archivu déle než rok. Smazat ${n === 1 ? 'ji' : 'je'}?`;
+  return `${plural(n, 'karta', 'karty', 'karet')} ${verb} v archivu déle než rok. Chceš ${n === 1 ? 'ji' : 'je'} smazat?`;
 }
 
 /** First letter upper case (Czech). */

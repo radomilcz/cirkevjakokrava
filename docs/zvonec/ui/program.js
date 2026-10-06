@@ -1,5 +1,5 @@
 // The osnova of an event (the Osnova tab of #setkani/<id>/osnova): items with running times, sortable
-// by dragging (leaders), the total against the event's length, „Převzít minulou osnovu“, adding and
+// by dragging (leaders), the total against the event's length, „Převezmi minulou osnovu“, adding and
 // editing items, and the printed sheet (A4 portrait, for the lectern) – the same tab, printed.
 
 import {
@@ -47,7 +47,7 @@ export function programTab(event, { leader }) {
       : format?.leadRoleId || item.personId ? h('span', { class: 'program-nobody' }, 'vede: zatím nikdo') : null;
     const info = format && (format.why || format.how);
     return row({
-      lead: [leader ? dragHandle(item.id, `Přesunout: ${itemName(S.data, item)}`) : null, h('span', { class: 'program-time' }, prettyTime(start))],
+      lead: [leader ? dragHandle(item.id, `Přesuň: ${itemName(S.data, item)}`) : null, h('span', { class: 'program-time' }, prettyTime(start))],
       title: itemName(S.data, item),
       meta: who || item.note || (showHow && format?.how) ? h('span', { class: 'program-meta' },
         who ? h('span', { class: 'program-who' }, who) : null,
@@ -55,7 +55,7 @@ export function programTab(event, { leader }) {
         showHow && format?.how ? h('span', { class: 'program-how' }, format.how) : null) : null,
       trail: h('span', { class: 'program-minutes' }, `${item.minutes} min`),
       onclick: leader ? () => itemDialog(id, item.id) : info ? () => openFormatInfo(format.id) : undefined,
-      label: leader ? `Upravit: ${itemName(S.data, item)}` : info ? `Proč a jak: ${itemName(S.data, item)}` : null,
+      label: leader ? `Uprav: ${itemName(S.data, item)}` : info ? `Proč a jak: ${itemName(S.data, item)}` : null,
       cls: 'program-row',
     });
   }, { cls: 'program-items', label: 'Osnova' }) : null;
@@ -70,7 +70,7 @@ export function programTab(event, { leader }) {
       change(`osnova z minula ${prettyDay(e.start, false)}`);
       toast('Osnova je z minula.', `${p.title} ${prettyDay(p.start)}`);
     };
-    if ((fresh(id)?.program || []).length) confirmDialog('Nahradit osnovu?', 'Současná osnova zmizí a místo ní bude ta z minula.', run, { buttonLabel: 'Nahradit' });
+    if ((fresh(id)?.program || []).length) confirmDialog('Chceš nahradit osnovu?', 'Současná osnova zmizí a místo ní bude ta z minula.', run, { buttonLabel: 'Nahraď' });
     else run();
   };
 
@@ -81,11 +81,11 @@ export function programTab(event, { leader }) {
       h('span', { class: 'program-end' }, over > 0 ? `O ${over} min delší než setkání` : over < 0 ? `Konec podle osnovy v ${prettyTime(addMinutes(event.start, total))}${SEP}zbývá ${durationText(-over)}` : 'Přesně na čas')),
     progressBar(Math.min(total, length), length, { tone: over > 0 ? 'warning' : null, label: `Osnova ${total} z ${length} minut` })) : null;
 
-  const takeButton = leader && previous && (previous.program || []).length ? button('Převzít minulou osnovu', { variant: 'surface', icon: 'copy', onclick: takePrevious }) : null;
+  const takeButton = leader && previous && (previous.program || []).length ? button('Převezmi minulou osnovu', { variant: 'surface', icon: 'copy', onclick: takePrevious }) : null;
   const tools = takeButton || times.length ? h('div', { class: 'side-tools' },
-    times.length ? button('Vytisknout', { variant: 'surface', icon: 'print', onclick: () => window.print(), title: 'Na A4 na výšku' }) : null,
+    times.length ? button('Vytiskni', { variant: 'surface', icon: 'print', onclick: () => window.print(), title: 'Na A4 na výšku' }) : null,
     takeButton,
-    times.length ? switchField('programShowHow', 'Ukázat i „Jak to probíhá“', showHow, { full: false, onchange: (e) => { S.filters.programShowHow = e.target.checked; render(); } }) : null,
+    times.length ? switchField('programShowHow', 'Ukaž i „Jak to probíhá“', showHow, { full: false, onchange: (e) => { S.filters.programShowHow = e.target.checked; render(); } }) : null,
   ) : null;
 
   // the same two columns as Přehled: the osnova, and at the side its length and the tools
@@ -93,9 +93,9 @@ export function programTab(event, { leader }) {
     h('div', { class: 'program-tab osnova-sheet event-main' },
       printHeader(`osnova${SEP}${prettyDay(event.start)}`),
       items || (leader
-        ? emptyState({ icon: 'list', title: 'Osnova je zatím prázdná.', text: 'Slož ji z formátů, časy se dopočítají samy.', action: button('Přidat bod', { variant: 'solid', icon: 'plus', onclick: () => addItemDialog(id) }) })
+        ? emptyState({ icon: 'list', title: 'Osnova je zatím prázdná.', text: 'Slož ji z formátů, časy se dopočítají samy.', action: button('Přidej bod', { variant: 'solid', icon: 'plus', onclick: () => addItemDialog(id) }) })
         : emptyState({ icon: 'list', text: 'Osnova ještě není hotová.' })),
-      leader && items ? button('Přidat bod', { variant: 'add', onclick: () => addItemDialog(id), cls: 'no-print' }) : null),
+      leader && items ? button('Přidej bod', { variant: 'add', onclick: () => addItemDialog(id), cls: 'no-print' }) : null),
     summary || tools ? h('aside', { class: 'event-side program-side' }, card({ title: summary ? 'Délka' : null, body: [summary, tools], cls: 'program-side-card' })) : null,
   );
 }
@@ -116,15 +116,15 @@ function addItemDialog(eventId) {
     change(`${format.name} do osnovy ${prettyDay(e.start, false)}`);
   };
   const content = h('div', { class: 'dialog-form' },
-    h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, 'Přidat bod do osnovy'), h('p', { class: 'dialog-sub' }, 'Vyber formát. Přidá se na konec, pak ho přetáhneš, kam patří.')),
+    h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, 'Nový bod osnovy'), h('p', { class: 'dialog-sub' }, 'Vyber formát. Přidá se na konec, pak ho přetáhneš, kam patří.')),
     h('div', { class: 'dialog-body' }, list(formats, (f) => row({
       lead: h('span', { class: 'format-minutes' }, `${f.minutes || 10}′`),
       title: f.name,
       meta: [f.leadRoleId ? `vede: ${roleById(S.data, f.leadRoleId)?.name || '?'}` : null, f.why ? f.why.split(/(?<=[.!?])\s/)[0] : null].filter(Boolean).join(SEP) || null,
       onclick: () => add(f),
-      label: `Přidat: ${f.name}`,
-    }), { cls: 'in-dialog', empty: emptyState({ compact: true, text: 'Nejsou tu žádné formáty.', action: button('Otevřít Formáty', { href: '#formaty', variant: 'surface', size: 's' }) }) })),
-    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zrušit', { variant: 'ghost', onclick: closeDialog })));
+      label: `Přidej: ${f.name}`,
+    }), { cls: 'in-dialog', empty: emptyState({ compact: true, text: 'Nejsou tu žádné formáty.', action: button('Otevři Formáty', { href: '#formaty', variant: 'surface', size: 's' }) }) })),
+    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zruš', { variant: 'ghost', onclick: closeDialog })));
   openDialog(content);
 }
 
@@ -173,7 +173,7 @@ function itemDialog(eventId, itemId, draft) {
       field('Kdo vede', h('div', { class: 'leader-pick' }, who,
         h('span', { class: 'leader-tools' },
           d.personId ? textButton(roleName ? `Podle role ${roleName}` : 'Nikdo', () => keep('')) : null,
-          button(d.personId ? 'Vybrat jiného' : 'Vybrat', { variant: 'surface', size: 's', icon: 'user', onclick: choosePerson }))), { full: true, group: true }),
+          button(d.personId ? 'Vyber jiného' : 'Vyber', { variant: 'surface', size: 's', icon: 'user', onclick: choosePerson }))), { full: true, group: true }),
       textField('note', 'Poznámka', d.note, { full: true, attr: { placeholder: 'např. tónina, text, kdo podá mikrofon' } }),
     ]),
     save: (f) => {
@@ -189,7 +189,7 @@ function itemDialog(eventId, itemId, draft) {
       change(`osnova ${prettyDay(e.start, false)}`);
       return null;
     },
-    removeLabel: 'Odebrat z osnovy',
+    removeLabel: 'Odeber z osnovy',
     remove: () => {
       const e = fresh(eventId);
       const index = (e?.program || []).findIndex((x) => x.id === itemId);
@@ -198,7 +198,7 @@ function itemDialog(eventId, itemId, draft) {
       const name = itemName(S.data, removed);
       change(`osnova ${prettyDay(e.start, false)} bez ${name}`);
       toast('Odebráno z osnovy.', name, {
-        actionLabel: 'Vrátit',
+        actionLabel: 'Vrať',
         action: () => {
           const again = fresh(eventId);
           if (!again || (again.program || []).some((x) => x.id === removed.id)) return;

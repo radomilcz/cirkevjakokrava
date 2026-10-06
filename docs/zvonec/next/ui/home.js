@@ -30,9 +30,9 @@ import { blockoutSection } from './blockouts.js';
 import { viewAsSheet } from './account.js';
 import { waitingInvites } from './access.js';
 
-const ANSWERS_SHOWN = 3;      // Odpověz: the first three as cards, then „Ukázat další 2“ (short rows)
+const ANSWERS_SHOWN = 3;      // Odpověz: the first three as cards, then „Ukaž další 2“ (short rows)
 const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four events, then „Celý rozpis“
-const MINE_SHOWN = 5;         // Tvoje služby: five rows, then „Ukázat další 3“
+const MINE_SHOWN = 5;         // Tvoje služby: five rows, then „Ukaž další 3“
 const WEEK_SHOWN = 3;         // Tento týden
 const NEED_DAYS = 21;
 const MINE_WEEKS = 8;

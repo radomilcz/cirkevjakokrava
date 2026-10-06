@@ -325,7 +325,7 @@ export function limitsSheet(person) {
     body: [
       field({ label: 'Nejvíc služeb za měsíc', hint: `Obvykle ${defaults.maxPerMonth}.`, control: stepper({ name: 'maxPerMonth', value: limits.maxPerMonth, min: 0, max: 31, label: 'Nejvíc služeb za měsíc' }) }),
       field({ label: 'Nejvíc nedělí po sobě', hint: `Obvykle ${defaults.maxConsecutiveWeeks}.`, control: stepper({ name: 'maxConsecutiveWeeks', value: limits.maxConsecutiveWeeks, min: 1, max: 52, label: 'Nejvíc nedělí po sobě' }) }),
-      switchRow({ label: 'Pauza – teď nenavrhovat do služeb', hint: 'Třeba je pryč nebo si potřebuje odpočinout.', name: 'paused', checked: !!limits.paused }),
+      switchRow({ label: 'Pauza – teď nenavrhuj do služeb', hint: 'Třeba je pryč nebo si potřebuje odpočinout.', name: 'paused', checked: !!limits.paused }),
     ],
     onSubmit: (f) => {
       const maxPerMonth = Number(ctl(f, 'maxPerMonth').value);

@@ -200,7 +200,7 @@ export function stepper({ name, value = 0, min = 0, max = 99, step = 1, onChange
   return h('span', { class: 'stepper', role: 'group', 'aria-label': label }, minus, input, plus);
 }
 
-/** Yes / no as a sentence with a switch („Pamatovat si mě na tomhle zařízení“). FormData gets name='on' or nothing. */
+/** Yes / no as a sentence with a switch („Pamatuj si mě na tomhle zařízení“). FormData gets name='on' or nothing. */
 export function switchRow({ label, hint, checked = false, onChange, name, disabled } = {}) {
   const textId = uid('sw');
   const hidden = name ? h('input', { type: 'hidden', name, value: checked ? 'on' : '', disabled: !checked }) : null;
@@ -215,7 +215,7 @@ export function switchRow({ label, hint, checked = false, onChange, name, disabl
   return row;
 }
 
-/** The search field („Hledat jméno, telefon, e-mail“). `/` focuses it (the shell's shortcut). */
+/** The search field („Hledej jméno, telefon, e-mail“). `/` focuses it (the shell's shortcut). */
 export function searchField({ placeholder = 'Hledej', value = '', onInput, label = 'Hledej', name = 'q' } = {}) {
   const input = h('input', { class: 'input', type: 'search', name, value, placeholder, autocomplete: 'off', enterkeyhint: 'search' });
   // our own ✕ in the palette's ink (the browser's own clear button is a blue of its own)
@@ -315,7 +315,7 @@ export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone
   search.querySelector('input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); results.querySelector('.picker__row')?.click(); }
   });
-  const poolChips = pools.length > 1 ? chips(pools.map((p) => ({ value: p.id, label: p.label })), current, (v) => { current = v; draw(); }, { label: 'Okruh lidí' }) : null;
+  const poolChips = pools.length > 1 ? chips(pools.map((p) => ({ value: p.id, label: p.label })), current, (v) => { current = v; draw(); }, { label: 'Z koho vybíráš' }) : null;
   sheet = openSheet({
     title,
     subtitle: metaText,

@@ -3,13 +3,13 @@
 // chips a day (then „a 2 další“ → the day in a popover). Leaders get a quiet „+“ on a day on hover.
 // Phone: a compact grid with dots, the chosen day's events in a list under it.
 
-import { h, icon, severityIcon, fillRing, list, button, emptyState, kindMark, plural, anchoredPopover, SEP } from './dom.js';
-import { S, myId, SEVERITY_LABELS } from './state.js';
+import { h, icon, severityIcon, list, button, emptyState, kindMark, plural, anchoredPopover, SEP } from './dom.js';
+import { S, myId } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, dayOf, monthGrid, monthOf, prettyDay, prettyDayLong, prettyTime, today, DAYS } from '../lib/time.js';
 import {
-  capital, eventRow, eventWarning, fillOf, filteredEmpty, isMultiDay, kindHue, kindLabel, myRoles, passesFilters, timeText,
-  activeFilterCount, isPhone, fillLegendItems,
+  capital, eventRow, filteredEmpty, isMultiDay, kindHue, kindLabel, myRoles, passesFilters, timeText,
+  activeFilterCount, isPhone, fillLegendItems, eventMarks,
 } from './calendar-shared.js';
 
 const MAX_CHIPS = 3;
@@ -20,37 +20,24 @@ function endDay(event) {
   return t === '00:00' ? addDays(d, -1) : d;
 }
 
-/** Marks at the end of a chip / bar: mine, missing people, a warning (leaders). */
-function marks(event, { leader }) {
-  const out = [];
-  if (myRoles(event).length && !event.cancelled) out.push(h('span', { class: 'cal-mark cal-mark-mine', title: 'Tady sloužíš' }, icon('user'), h('span', { class: 'visually-hidden' }, 'tady sloužíš')));
-  if (leader && !event.cancelled) {
-    const warning = eventWarning(event);
-    const fill = fillOf(event);
-    if (warning) out.push(h('span', { class: ['cal-mark', `cal-mark-${warning}`], title: SEVERITY_LABELS[warning] }, severityIcon(warning), h('span', { class: 'visually-hidden' }, SEVERITY_LABELS[warning])));
-    else if (fill.state === 'open') {
-      out.push(h('span', { class: 'cal-mark cal-mark-fill', title: `Obsazeno ${fill.filled} z ${fill.needed}` },
-        fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, text: false, size: 13, label: `obsazeno ${fill.filled} z ${fill.needed}` })));
-    }
-  }
-  return out.length ? h('span', { class: 'cal-marks' }, out) : null;
-}
-
 /** Accessible name of an event in the grid. */
-const chipLabel = (event) => [event.title, timeText(event), kindLabel(event.kind), event.cancelled ? 'zrušeno' : null].filter(Boolean).join(', ');
+const chipLabel = (event, words = []) => [event.title, timeText(event), kindLabel(event.kind), event.cancelled ? 'zrušeno' : null, ...words].filter(Boolean).join(', ');
+/** Marks of a chip or bar: „tady sloužíš“, a warning, else people missing (leaders). */
+const marksOf = (event, ctx) => eventMarks(event, { leader: ctx.leader, fill: 'open' });
 
 /** One event in a day: Účel hue, time in Narrow, the title (two lines at most), marks. */
 function chip(event, ctx) {
   const mine = myRoles(event).length > 0 && !event.cancelled;
+  const { el: marks, words } = marksOf(event, ctx);
   return h('a', {
     href: `#setkani/${event.id}`,
     class: ['cal-chip', `c-${kindHue(event.kind)}`, `kind-${event.kind}`, mine && 'mine', event.cancelled && 'cancelled',
-      dayOf(event.end) < today() && 'past'],
-    title: [event.title, timeText(event), event.cancelled ? 'zrušeno' : null].filter(Boolean).join(SEP),
-    'aria-label': chipLabel(event),
+      dayOf(event.end) < today() && 'past', marks && 'has-marks'],
+    title: [event.title, timeText(event), event.cancelled ? 'zrušeno' : null, ...words].filter(Boolean).join(SEP),
+    'aria-label': chipLabel(event, words),
   },
   h('span', { class: 'cal-chip-text' }, h('span', { class: 'cal-chip-time' }, prettyTime(event.start)), ' ', h('span', { class: 'cal-chip-title' }, event.title)),
-  marks(event, ctx));
+  marks);
 }
 
 /** Multi-day events of a week as bars: [{ event, from, to (columns 0–6), lane, cutStart, cutEnd }] and the lane count. */
@@ -98,7 +85,7 @@ export function monthView(ctx) {
     dayList.replaceChildren(
       h('div', { class: 'month-daylist-head' },
         h('h2', { class: 'month-daylist-title' }, capital(prettyDayLong(picked).replace(/ \d{4}$/, ''))),
-        leader ? button('Přidat', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => ctx.add(picked), label: `Přidat setkání na ${prettyDay(picked)}` }) : null),
+        leader ? button('Přidej', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => ctx.add(picked), label: `Přidej setkání na ${prettyDay(picked)}` }) : null),
       events.length ? list(events, (e) => eventRow(e, { past: dayOf(e.end) < now, showDate: false }), { cls: 'month-daylist-items' })
         : emptyState({ compact: true, text: picked < now ? 'Ten den se nic nekonalo.' : 'Ten den nic není.' }));
   };
@@ -128,10 +115,10 @@ export function monthView(ctx) {
       h('button', {
         type: 'button', class: 'month-day-num', dataset: { day }, 'aria-pressed': String(day === picked),
         'aria-label': `${capital(prettyDayLong(day))}${dots.length ? `, ${plural(dots.length, 'setkání', 'setkání', 'setkání')}` : ''}`,
-        title: isPhone() ? null : 'Ukázat týden',
+        title: isPhone() ? null : 'Ukaž týden',
         onclick: (e) => { if (isPhone()) pickDay(day, cell); else location.hash = `#kalendar/tyden/${day}`; e.currentTarget.blur?.(); },
       }, h('span', {}, String(Number(day.slice(8))))),
-      leader ? button(null, { variant: 'ghost', size: 's', icon: 'plus', label: `Přidat setkání na ${prettyDay(day)}`, cls: 'month-day-add', onclick: () => ctx.add(day) }) : null),
+      leader ? button(null, { variant: 'ghost', size: 's', icon: 'plus', label: `Přidej setkání na ${prettyDay(day)}`, cls: 'month-day-add', onclick: () => ctx.add(day) }) : null),
     h('div', { class: 'month-day-events' },
       shown.map((e) => chip(e, ctx)),
       more ? h('button', {
@@ -150,12 +137,13 @@ export function monthView(ctx) {
     const week = h('div', { class: 'month-week' },
       weekDays.map((day, i) => dayCell(day, i, lanes)),
       bars.length ? h('div', { class: 'month-bars' }, bars.map((b) => {
+        const { el: marks, words } = marksOf(b.event, ctx);
         const el = h('a', {
           href: `#setkani/${b.event.id}`,
-          class: ['cal-bar', `c-${kindHue(b.event.kind)}`, b.cutStart && 'cut-start', b.cutEnd && 'cut-end', myRoles(b.event).length && 'mine', b.event.cancelled && 'cancelled'],
-          title: [b.event.title, timeText(b.event)].join(SEP), 'aria-label': chipLabel(b.event),
+          class: ['cal-bar', `c-${kindHue(b.event.kind)}`, b.cutStart && 'cut-start', b.cutEnd && 'cut-end', myRoles(b.event).length && 'mine', b.event.cancelled && 'cancelled', marks && 'has-marks'],
+          title: [b.event.title, timeText(b.event), ...words].join(SEP), 'aria-label': chipLabel(b.event, words),
         }, h('span', { class: 'cal-chip-text' }, b.cutStart ? null : h('span', { class: 'cal-chip-time' }, prettyTime(b.event.start)), ' ', h('span', { class: 'cal-chip-title' }, b.event.title)),
-        marks(b.event, ctx));
+        marks);
         el.style.gridColumn = `${b.from + 1} / ${b.to + 2}`;
         el.style.gridRow = String(b.lane + 1);
         return el;
@@ -176,7 +164,7 @@ export function monthView(ctx) {
     dayList,
     !monthEvents.length ? (filtered ? filteredEmpty() : emptyState({
       icon: 'calendar', title: 'Tenhle měsíc tu ještě nic není.',
-      action: leader ? button('Přidat setkání', { variant: 'solid', icon: 'plus', onclick: () => ctx.add() }) : null,
+      action: leader ? button('Přidej setkání', { variant: 'solid', icon: 'plus', onclick: () => ctx.add() }) : null,
     })) : null,
   ];
 }
@@ -199,7 +187,7 @@ function dayPopover(anchor, day, ctx) {
   const content = h('div', { class: 'day-pop' },
     h('div', { class: 'day-pop-head' },
       h('h2', { class: 'day-pop-title' }, capital(prettyDayLong(day).replace(/ \d{4}$/, ''))),
-      ctx.leader ? button(null, { variant: 'ghost', size: 's', icon: 'plus', label: `Přidat setkání na ${prettyDay(day)}`, onclick: () => ctx.add(day) }) : null),
+      ctx.leader ? button(null, { variant: 'ghost', size: 's', icon: 'plus', label: `Přidej setkání na ${prettyDay(day)}`, onclick: () => ctx.add(day) }) : null),
     list(events, (e) => eventRow(e, { past: dayOf(e.end) < today(), showDate: false, cover: false }), { cls: 'day-pop-items' }));
   const pop = anchoredPopover(anchor, content, { label: prettyDay(day), cls: 'day-popover' });
   pop.el.querySelector('a, button')?.focus({ preventScroll: true });

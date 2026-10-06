@@ -1,4 +1,4 @@
-// The archive of people: „Přesunout do archivu“, „Vrátit z archivu“ and „Smazat kartu“.
+// The archive of people: „Přesuň do archivu“, „Vrať z archivu“ and „Smaž kartu“.
 // The archive is the stored membership status 'former' (lib/people.js: isArchived, archivedOn,
 // archiveOverdue). These operations reach across files (people, groups, events), so they live here
 // and not in the registry. Pure: they change `data` in place and touch no DOM.
@@ -45,7 +45,7 @@ function release(data, personId, now) {
 }
 
 /**
- * „Přesunout do archivu“. `today` = the day stored as membership.until, `now` = from when duties are
+ * „Přesuň do archivu“. `today` = the day stored as membership.until, `now` = from when duties are
  * released (defaults to the start of today). Returns { person, released, ledGroups } or null when
  * there is no such card. Archiving an archived card changes nothing (released: 0).
  */
@@ -67,7 +67,7 @@ export function archivePerson(data, personId, { today, now = today } = {}) {
 }
 
 /**
- * „Vrátit z archivu“: back to the status before the archive, 'regular' (přítel) when unknown.
+ * „Vrať z archivu“: back to the status before the archive, 'regular' (přítel) when unknown.
  * Teams and skills come back with the card (the records stayed); released duties and leading do not.
  * Returns the person or null.
  */
@@ -82,7 +82,7 @@ export function restorePerson(data, personId) {
 }
 
 /**
- * „Smazat kartu“ with the history kept: the person's past assignments and program items keep the
+ * „Smaž kartu“ with the history kept: the person's past assignments and program items keep the
  * full name in `personName` (old rosters and programs still say who served; lib/people.js
  * personOrSnapshot reads it), duties from `now` on are released, and the card, its group records,
  * blocked dates and serving limits are removed. Contact and every other detail disappear with the card.

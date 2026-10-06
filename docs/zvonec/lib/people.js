@@ -142,7 +142,7 @@ export function filterCounts(data, { today } = {}) {
 // ---------- archive ----------
 // The archive is the stored status 'former' (no migration: older data read the same).
 // membership.until = the day the card went to the archive; membership.previous = the status it had,
-// so „Vrátit z archivu“ can bring it back (older data without it come back as 'regular').
+// so „Vrať z archivu“ can bring it back (older data without it come back as 'regular').
 
 /** Is the card in the archive? */
 export const isArchived = (person) => statusOf(person) === 'former';

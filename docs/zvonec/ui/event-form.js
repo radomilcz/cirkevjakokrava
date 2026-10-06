@@ -1,8 +1,8 @@
 // Adding and editing an event (structure §4.2, W7):
-// – „Přidat setkání“ in two steps: 1. Podle čeho? (template tiles with covers + „Bez šablony“),
+// – „Přidej setkání“ in two steps: 1. Podle čeho? (template tiles with covers + „Bez šablony“),
 //   2. the form: Název · Kdy (with a repeat rule and its live summary) · Kde · Pro koho · Další možnosti.
-// – „Upravit setkání“: the same form, sections Název · Kdy · Kde · Pro koho · Na webu · Pro tým;
-//   „Zrušit setkání“ / „Smazat“ bottom left; a series asks „jen tohle / i další“ when saving.
+// – „Úprava setkání“ (opened by „Uprav setkání“): the same form, sections Název · Kdy · Kde · Pro koho · Na webu · Pro tým;
+//   „Zruš setkání“ / „Smaž“ bottom left; a series asks „jen tohle / i další“ when saving.
 // – „Kolik lidí je potřeba“ (needs per role) – its own dialog, opened from the Kdo slouží tab.
 // – Cancel / restore and delete, with the series question as two buttons.
 
@@ -78,16 +78,16 @@ function dropImageIfUnused(name) {
 }
 
 /**
- * The picture field: preview (photo or the generated cover), „Nahrát obrázek“ (resized in the
- * browser), „Odebrat obrázek“. Nothing is written until the form is saved.
+ * The picture field: preview (photo or the generated cover), „Nahraj obrázek“ (resized in the
+ * browser), „Odeber obrázek“. Nothing is written until the form is saved.
  * `state`: { current: own image name | null, typeImage: template image | null, pending: { data, ext } | null }
  */
 function imageField(state, previewEvent) {
   const input = h('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp,image/gif,image/*', class: 'visually-hidden', name: 'imageFile', tabindex: -1 });
-  const pickButton = button('Nahrát obrázek', { variant: 'surface', size: 's', icon: 'upload', onclick: () => input.click() });
+  const pickButton = button('Nahraj obrázek', { variant: 'surface', size: 's', icon: 'upload', onclick: () => input.click() });
   const pickLabel = () => pickButton.lastChild;
   const problem = h('small', { class: 'field-error', role: 'alert', hidden: true });
-  const removeButton = button('Odebrat', { variant: 'ghost', size: 's', icon: 'trash', onclick: () => { state.current = null; state.pending = null; draw(); } });
+  const removeButton = button('Odeber', { variant: 'ghost', size: 's', icon: 'trash', onclick: () => { state.current = null; state.pending = null; draw(); } });
   const previewBox = h('div', { class: 'image-preview' });
   const hint = h('small', { class: 'field-hint' });
 
@@ -97,7 +97,7 @@ function imageField(state, previewEvent) {
     const name = state.current || state.typeImage;
     if (state.pending) previewBox.replaceChildren(eventCover(ev, { size: 'card', imageUrl: state.pending.data }));
     else previewBox.replaceChildren(coverOf({ ...ev, image: name || undefined, typeId: undefined }, { size: 'card' }));
-    pickLabel().textContent = state.pending || name ? 'Vyměnit obrázek' : 'Nahrát obrázek';
+    pickLabel().textContent = state.pending || name ? 'Vyměň obrázek' : 'Nahraj obrázek';
     removeButton.hidden = !(state.pending || ownName);
     hint.textContent = state.pending || ownName ? 'Uloží se spolu se setkáním.'
       : name ? 'Obrázek je ze šablony. Můžeš nahrát jiný.' : IMAGE_NONE_HINT;
@@ -131,7 +131,7 @@ const KIND_OPTIONS = EVENT_KINDS.map((k) => [k, kindLabel(k), (KIND_ICONS || {})
 const teamOptions = () => [['', 'Celý sbor'], ...(S.data.groups || []).filter((g) => !g.archived).map((g) => [g.id, g.name])];
 const teamName = (groupId) => (S.data.groups || []).find((g) => g.id === groupId)?.name || 'celý sbor';
 
-// ---------- the form (step 2 and „Upravit setkání“) ----------
+// ---------- the form (step 2 and „Uprav setkání“) ----------
 
 /**
  * Builds the event form into a dialog. mode 'new' (from `type` or blank, on `day`) or 'edit' (`event`).
@@ -198,11 +198,11 @@ function openEventForm({ mode, event, type, day, onBack }) {
     forWhomControls.hidden = true;
     const line = h('p', { class: 'for-whom-line' },
       kindMark(base.kind, { size: 'm' }), h('span', {}, metaJoin([kindLabel(base.kind), teamName(base.groupId)])),
-      textButton('Změnit', () => { line.hidden = true; forWhomControls.hidden = false; forWhomControls.querySelector('input:checked')?.focus(); }));
+      textButton('Změň', () => { line.hidden = true; forWhomControls.hidden = false; forWhomControls.querySelector('input:checked')?.focus(); }));
     forWhom = [line, forWhomControls];
   } else forWhom = [forWhomControls];
 
-  const publicSwitch = switchField('public', 'Zveřejnit na webu', base.public === true, { hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', onchange: (e) => { publicChoice = e.target.checked; } });
+  const publicSwitch = switchField('public', 'Zveřejni na webu', base.public === true, { hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', onchange: (e) => { publicChoice = e.target.checked; } });
   const description = textArea('description', 'Popis', base.description || '', { attr: { rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' } });
   const note = textArea('note', 'Poznámka pro tým', base.note || '', { attr: { rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }, hint: 'Na webu ji nikdo neuvidí.' });
 
@@ -227,26 +227,26 @@ function openEventForm({ mode, event, type, day, onBack }) {
   if (untilField) untilField.hidden = true;
 
   // ----- head, body, foot -----
-  const submitLabel = editing ? 'Uložit' : 'Přidat';
+  const submitLabel = editing ? 'Ulož' : 'Přidej';
   const submit = button(submitLabel, { variant: 'solid', type: 'submit' });
   const head = h('div', { class: 'dialog-head' },
-    onBack ? button('Vybrat jinou šablonu', { variant: 'ghost', size: 's', icon: 'chevron-left', onclick: onBack, cls: 'dialog-back' }) : null,
-    h('h2', { class: 'dialog-title' }, editing ? 'Upravit setkání' : 'Přidat setkání'),
+    onBack ? button('Vyber jinou šablonu', { variant: 'ghost', size: 's', icon: 'chevron-left', onclick: onBack, cls: 'dialog-back' }) : null,
+    h('h2', { class: 'dialog-title' }, editing ? 'Úprava setkání' : 'Nové setkání'),
     h('p', { class: 'dialog-sub' }, editing ? metaJoin([event.title, prettyDay(event.start)]) : type ? `Podle šablony ${type.name}` : 'Bez šablony'));
   const body = h('div', { class: 'dialog-body' }, sections, formErrorLine());
   const cancelIt = () => { closeDialog(); cancelDialog(event.id); };
   const deleteIt = () => { closeDialog(); deleteDialog(event.id); };
   // on a phone the two destructive actions fold into one „Další možnosti“ menu, so the foot stays two even rows
   const leftActions = editing ? [
-    button(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', { variant: event.cancelled ? 'soft' : 'danger', onclick: cancelIt, cls: 'foot-wide' }),
-    button('Smazat', { variant: 'danger', icon: 'trash', onclick: deleteIt, cls: 'foot-wide' }),
+    button(event.cancelled ? 'Obnov setkání' : 'Zruš setkání', { variant: event.cancelled ? 'soft' : 'danger', onclick: cancelIt, cls: 'foot-wide' }),
+    button('Smaž', { variant: 'danger', icon: 'trash', onclick: deleteIt, cls: 'foot-wide' }),
     h('span', { class: 'foot-narrow' }, button('Další možnosti', { variant: 'soft', icon: 'more', onclick: (e) => popMenu(e.currentTarget, [
-      [event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', cancelIt, { icon: event.cancelled ? 'undo' : 'x' }],
-      ['Smazat', deleteIt, { danger: true, icon: 'trash' }],
+      [event.cancelled ? 'Obnov setkání' : 'Zruš setkání', cancelIt, { icon: event.cancelled ? 'undo' : 'x' }],
+      ['Smaž', deleteIt, { danger: true, icon: 'trash' }],
     ], { label: 'Další možnosti' }) })),
   ] : [];
   const foot = h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-left' }, leftActions), h('span', { class: 'dialog-foot-space' }),
-    button('Zrušit', { variant: 'ghost', onclick: closeDialog }), submit);
+    button('Zruš', { variant: 'ghost', onclick: closeDialog }), submit);
   form.append(head, body, foot);
 
   form.addEventListener('input', () => { if (submit.lastChild.textContent !== submitLabel) submit.lastChild.textContent = submitLabel; formError(form, null); updateWhen(); });
@@ -272,7 +272,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
     if ((overnight || minutes > LONG_EVENT) && minutes <= 24 * 60 && confirmedTime !== `${start}/${end}`) {
       confirmedTime = `${start}/${end}`;
       formError(form, overnight ? `Setkání skončí až další den ${atTime(end)}. Je to tak?` : `Setkání bude trvat ${plural(Math.round(minutes / 60), 'hodinu', 'hodiny', 'hodin')}. Je to tak?`);
-      submit.lastChild.textContent = editing ? 'Ano, uložit' : 'Ano, přidat';
+      submit.lastChild.textContent = editing ? 'Ano, ulož' : 'Ano, přidej';
       return null;
     }
     const step = !editing ? f.repeat.value : '';
@@ -328,7 +328,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
     const rule = series?.step ? seriesSummary(series, { today: today() }) : null;
     const question = h('div', { class: 'dialog-form series-question' },
       h('div', { class: 'dialog-head' },
-        h('h2', { class: 'dialog-title' }, 'Uložit změny i u dalších setkání?'),
+        h('h2', { class: 'dialog-title' }, 'Chceš uložit změny i u dalších setkání?'),
         h('p', { class: 'dialog-sub' }, `${event.title} je v řadě${rule ? ` (${rule.charAt(0).toLowerCase()}${rule.slice(1)})` : ''}. Po tomhle setkání jich přijde ještě ${following.length}. Lidé ve službě a osnova zůstanou, jak jsou.`)),
       h('div', { class: 'dialog-foot actions' },
         button('Zpět k úpravám', { variant: 'ghost', icon: 'chevron-left', onclick: () => { question.remove(); form.hidden = false; submit.focus(); } }),
@@ -391,7 +391,7 @@ function templateMeta(type) {
 }
 
 /**
- * „Přidat setkání“: step 1 picks a template (tiles with covers) or „Bez šablony“, step 2 is the form.
+ * „Přidej setkání“: step 1 picks a template (tiles with covers) or „Bez šablony“, step 2 is the form.
  * `day` pre-fills the date (a day in the calendar). Without templates it goes straight to the form.
  */
 export function addEventDialog({ day, exact = false } = {}) {
@@ -412,15 +412,15 @@ export function addEventDialog({ day, exact = false } = {}) {
       h('span', { class: 'template-meta' }, 'Všechno vyplníš ručně'))));
   const content = h('div', { class: 'dialog-form template-step' },
     h('div', { class: 'dialog-head' },
-      h('h2', { class: 'dialog-title' }, 'Přidat setkání'),
+      h('h2', { class: 'dialog-title' }, 'Nové setkání'),
       h('p', { class: 'dialog-sub' }, 'Podle čeho? Šablona vyplní čas, místo, služby i osnovu. Pak to můžeš upravit.')),
     h('div', { class: 'dialog-body' }, h('ul', { class: 'template-tiles' }, types.map(tile), blank)),
-    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zrušit', { variant: 'ghost', onclick: closeDialog })));
+    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zruš', { variant: 'ghost', onclick: closeDialog })));
   openDialog(content, { wide: true });
   content.querySelector('.template-tile')?.focus();
 }
 
-/** „Upravit setkání“: the form of an event. */
+/** „Uprav setkání“: the form of an event. */
 export function editEventDialog(eventOrId) {
   const event = typeof eventOrId === 'string' ? eventById(S.data, eventOrId) : eventOrId;
   if (!event) return null;
@@ -460,7 +460,7 @@ export function needsDialog(eventId) {
         segmentedField('scope', 'Platí pro', [['one', 'Jen tohle setkání'], ['following', capitalFirst(andFollowing(following))]], 'one', { full: true })) : null,
       formErrorLine()),
     h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }),
-      button('Zrušit', { variant: 'ghost', onclick: closeDialog }), button('Uložit', { variant: 'solid', type: 'submit' })));
+      button('Zruš', { variant: 'ghost', onclick: closeDialog }), button('Ulož', { variant: 'solid', type: 'submit' })));
   const total = () => {
     let people = 0; let roles = 0;
     form.querySelectorAll('input[type=number]').forEach((i) => { const n = Math.max(0, Number(i.value) || 0); people += n; roles += n ? 1 : 0; });
@@ -495,7 +495,7 @@ export function needsDialog(eventId) {
 
 // ---------- extend a series ----------
 
-/** „Prodloužit řadu“: up to a day; the new events copy the last one, without people. */
+/** „Prodluž řadu“: up to a day; the new events copy the last one, without people. */
 export function extendSeriesDialog(eventId) {
   const event = eventById(S.data, eventId);
   const series = event && seriesFor(S.data, event);
@@ -503,11 +503,11 @@ export function extendSeriesDialog(eventId) {
   const lastDay = series.until || dayOf(event.start);
   const form = h('form', { method: 'dialog', novalidate: true, class: 'dialog-form' },
     h('div', { class: 'dialog-head' },
-      h('h2', { class: 'dialog-title' }, 'Prodloužit řadu'),
+      h('h2', { class: 'dialog-title' }, 'Prodloužení řady'),
       h('p', { class: 'dialog-sub' }, `${seriesSummary(series, { today: today() })}. Nová setkání převezmou název, místo, služby i osnovu posledního, jen bez lidí.`)),
     h('div', { class: 'dialog-body' }, h('div', { class: 'form-grid' }, dateField('until', 'Do kdy', addMonths(lastDay, 3), { min: addDays(lastDay, 1) })), formErrorLine()),
     h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }),
-      button('Zrušit', { variant: 'ghost', onclick: closeDialog }), button('Prodloužit', { variant: 'solid', type: 'submit' })));
+      button('Zruš', { variant: 'ghost', onclick: closeDialog }), button('Prodluž', { variant: 'solid', type: 'submit' })));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const until = form.elements.until.value;
@@ -533,7 +533,7 @@ function seriesConfirm({ title, text, event, verb, danger, run }) {
   const content = h('div', { class: 'dialog-form' },
     h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, title), h('p', { class: 'dialog-sub' }, text)),
     h('div', { class: 'dialog-foot actions' },
-      button('Nechat být', { variant: 'ghost', onclick: closeDialog }),
+      button('Nech to být', { variant: 'ghost', onclick: closeDialog }),
       h('span', { class: 'dialog-foot-space' }),
       following
         ? [button(`${verb} jen tohle`, { variant: danger ? 'danger' : 'soft', onclick: () => act(false) }),
@@ -550,10 +550,10 @@ export function cancelDialog(eventId) {
   const restoring = !!event.cancelled;
   seriesConfirm({
     event,
-    title: restoring ? `Obnovit ${event.title} ${prettyDay(event.start, false)}?` : `Zrušit ${event.title} ${prettyDay(event.start, false)}?`,
+    title: restoring ? `Chceš obnovit ${event.title} ${prettyDay(event.start, false)}?` : `Chceš zrušit ${event.title} ${prettyDay(event.start, false)}?`,
     text: restoring ? 'Setkání se vrátí do kalendáře i s lidmi, kteří na něm byli zapsaní.'
       : 'Setkání zůstane v kalendáři přeškrtnuté a lidé v něm zůstanou zapsaní. Dej jim vědět i jinak.',
-    verb: restoring ? 'Obnovit' : 'Zrušit',
+    verb: restoring ? 'Obnov' : 'Zruš',
     danger: !restoring,
     run: (following) => {
       const e = eventById(S.data, eventId);
@@ -571,9 +571,9 @@ export function deleteDialog(eventId) {
   if (!event) return;
   seriesConfirm({
     event,
-    title: `Smazat ${event.title} ${prettyDay(event.start, false)}?`,
-    text: 'Zmizí i s rozpisem a osnovou. Když se to jen nekoná, je lepší „Zrušit setkání“.',
-    verb: 'Smazat',
+    title: `Chceš smazat ${event.title} ${prettyDay(event.start, false)}?`,
+    text: 'Zmizí i s rozpisem a osnovou. Když se to jen nekoná, je lepší „Zruš setkání“.',
+    verb: 'Smaž',
     danger: true,
     run: (following) => {
       const e = eventById(S.data, eventId);

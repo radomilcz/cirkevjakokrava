@@ -3,7 +3,7 @@
 // Přehled: the description and the team note, who serves in short, the first items of the osnova;
 // at the side the map, the warnings of this event (leaders), the series, the headcount afterwards.
 // Kdo slouží: duties by team with every person (avatar + full name + status), empty places, the
-// leader's tools (Navrhnout lidi, Obsadit jako minule, Kolik lidí je potřeba). Osnova: ui/program.js.
+// leader's tools (Navrhni lidi, Obsaď jako minule, Kolik lidí je potřeba). Osnova: ui/program.js.
 
 import {
   h, page, tabs, button, icon, badge, callout, card, emptyState, fillRing, progressBar, statusIcon, severityMark,
@@ -32,7 +32,7 @@ export function renderEvent(id, tab = '') {
   if (!event) {
     return page({
       title: 'Setkání tu není', back: ['Kalendář', '#kalendar'], width: 'list',
-      body: emptyState({ icon: 'calendar', title: 'Tohle setkání tu není.', text: 'Možná ho někdo smazal, nebo je odkaz starý.', action: button('Otevřít kalendář', { href: '#kalendar', variant: 'surface' }) }),
+      body: emptyState({ icon: 'calendar', title: 'Tohle setkání tu není.', text: 'Možná ho někdo smazal, nebo je odkaz starý.', action: button('Otevři kalendář', { href: '#kalendar', variant: 'surface' }) }),
     });
   }
   const current = TABS[tab] ? tab : '';
@@ -81,7 +81,7 @@ function eventMeta(event) {
 
 function headActions(event, leader) {
   const series = seriesFor(S.data, event);
-  const icsButton = button('Stáhnout do kalendáře', {
+  const icsButton = button('Stáhni do kalendáře', {
     variant: 'surface', icon: 'download', title: 'Soubor .ics pro kalendář v telefonu',
     onclick: () => download(`${event.title}-${dayOf(event.start)}.ics`, ics(S.data, [{ event }], event.title), 'text/calendar'),
   });
@@ -89,11 +89,11 @@ function headActions(event, leader) {
   return [
     icsButton,
     menuButton([
-      series?.step ? ['Prodloužit řadu', () => extendSeriesDialog(event.id), { icon: 'calendar-plus' }] : null,
-      [event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', () => cancelDialog(event.id), { icon: event.cancelled ? 'undo' : 'x' }],
-      ['Smazat', () => deleteDialog(event.id), { danger: true, icon: 'trash' }],
+      series?.step ? ['Prodluž řadu', () => extendSeriesDialog(event.id), { icon: 'calendar-plus' }] : null,
+      [event.cancelled ? 'Obnov setkání' : 'Zruš setkání', () => cancelDialog(event.id), { icon: event.cancelled ? 'undo' : 'x' }],
+      ['Smaž', () => deleteDialog(event.id), { danger: true, icon: 'trash' }],
     ], { label: 'Další možnosti' }),
-    button('Upravit setkání', { variant: 'solid', icon: 'pencil', onclick: () => editEventDialog(event.id) }),
+    button('Uprav setkání', { variant: 'solid', icon: 'pencil', onclick: () => editEventDialog(event.id) }),
   ];
 }
 
@@ -108,7 +108,7 @@ function myAnswer(event) {
     return callout('Dej vedoucímu vědět, jestli to platí.', {
       tone: 'warning', icon: 'clock', title: `Počítáme s tebou: ${role}. Můžeš?`,
       action: h('span', { class: 'answer-buttons' },
-        button('Potvrdit', { variant: 'solid', size: 's', icon: 'check', onclick: () => setStatus(event.id, a.id, 'confirmed') }),
+        button('Potvrď', { variant: 'solid', size: 's', icon: 'check', onclick: () => setStatus(event.id, a.id, 'confirmed') }),
         button('Nemůžu', { variant: 'soft', size: 's', onclick: () => setStatus(event.id, a.id, 'declined') })),
     });
   }));
@@ -135,7 +135,7 @@ function aboutCard(event, leader) {
   const edit = () => editEventDialog(event.id);
   const text = event.description
     ? h('p', { class: 'event-description' }, event.description)
-    : h('p', { class: 'event-description empty' }, 'Bez popisu.', leader ? [' ', textButton('Napsat popis', edit)] : null);
+    : h('p', { class: 'event-description empty' }, 'Bez popisu.', leader ? [' ', textButton('Napiš popis', edit)] : null);
   return card({
     title: 'O setkání',
     body: [text, event.note ? callout(event.note, { tone: 'neutral', icon: 'users', title: 'Pro tým' }) : null],
@@ -150,7 +150,7 @@ function dutiesSummaryCard(event, leader) {
   if (!needs.length) {
     return card({
       title: 'Kdo slouží',
-      body: emptyState({ compact: true, text: 'Tohle setkání nikoho do služby nepotřebuje.', action: leader && !event.cancelled ? button('Určit, kolik lidí je potřeba', { variant: 'surface', size: 's', onclick: () => needsDialog(event.id) }) : null }),
+      body: emptyState({ compact: true, text: 'Tohle setkání nikoho do služby nepotřebuje.', action: leader && !event.cancelled ? button('Urči, kolik lidí je potřeba', { variant: 'surface', size: 's', onclick: () => needsDialog(event.id) }) : null }),
     });
   }
   const fill = fillOf(event);
@@ -196,10 +196,10 @@ function programCard(event, leader) {
   const href = `#setkani/${event.id}/osnova`;
   return card({
     title: 'Osnova',
-    actions: all ? button(all > items.length ? `Celá osnova (${all})` : 'Otevřít', { variant: 'ghost', size: 's', iconEnd: 'chevron-right', href }) : null,
+    actions: all ? button(all > items.length ? `Celá osnova (${all})` : 'Otevři', { variant: 'ghost', size: 's', iconEnd: 'chevron-right', href }) : null,
     body: all
       ? h('ol', { class: 'program-preview' }, items.map((i) => h('li', {}, h('span', { class: 'program-time' }, i.time), h('span', { class: 'program-name' }, i.name), h('span', { class: 'program-minutes' }, `${i.minutes} min`))))
-      : emptyState({ compact: true, text: leader ? 'Osnova je zatím prázdná.' : 'Osnova ještě není hotová.', action: leader ? button('Složit osnovu', { variant: 'surface', size: 's', href }) : null }),
+      : emptyState({ compact: true, text: leader ? 'Osnova je zatím prázdná.' : 'Osnova ještě není hotová.', action: leader ? button('Slož osnovu', { variant: 'surface', size: 's', href }) : null }),
   });
 }
 
@@ -218,8 +218,8 @@ function warningsCard(event, conflicts) {
           h('span', { class: 'warn-text' }, c.text),
           c.overrideNote ? h('span', { class: 'warn-note' }, `V pořádku: ${c.overrideNote}`) : null,
           other || (overridable && aid) ? h('span', { class: 'warn-actions' },
-            overridable && aid ? textButton(c.overrideNote ? 'Upravit důvod' : 'Vím o tom', () => overrideDialog(aid)) : null,
-            other ? h('a', { class: 'text-btn', href: `#setkani/${other}` }, 'Otevřít druhé setkání') : null) : null));
+            overridable && aid ? textButton(c.overrideNote ? 'Uprav důvod' : 'Vím o tom', () => overrideDialog(aid)) : null,
+            other ? h('a', { class: 'text-btn', href: `#setkani/${other}` }, 'Otevři druhé setkání') : null) : null));
     })),
     cls: `warnings-card warnings-${sorted[0].severity}`,
   });
@@ -241,7 +241,7 @@ function seriesCard(event, leader) {
   const after = list_[at + 1];
   return card({
     title: 'Řada',
-    actions: leader && series?.step ? button('Prodloužit', { variant: 'ghost', size: 's', icon: 'calendar-plus', onclick: () => extendSeriesDialog(event.id) }) : null,
+    actions: leader && series?.step ? button('Prodluž', { variant: 'ghost', size: 's', icon: 'calendar-plus', onclick: () => extendSeriesDialog(event.id) }) : null,
     body: [
       h('p', { class: 'series-rule' }, icon('refresh'), h('span', {}, series ? seriesSummary(series, { today: today() }) : 'Opakuje se'), h('span', { class: 'series-pos' }, `${at + 1}. z ${list_.length}`)),
       h('div', { class: 'series-nav' },
@@ -279,7 +279,7 @@ function attendanceCard(event, leader) {
   const total = (a?.adults || 0) + (a?.children || 0);
   return card({
     title: 'Kolik lidí přišlo',
-    actions: leader ? button(a ? 'Upravit' : 'Zapsat', { variant: 'ghost', size: 's', icon: 'pencil', onclick: edit }) : null,
+    actions: leader ? button(a ? 'Uprav' : 'Zapiš', { variant: 'ghost', size: 's', icon: 'pencil', onclick: edit }) : null,
     body: a ? h('div', { class: 'attendance' },
       h('span', { class: 'attendance-total' }, String(total)),
       h('span', { class: 'attendance-split' }, [a.adults != null ? `${plural(a.adults, 'dospělý', 'dospělí', 'dospělých')}` : null, a.children != null ? `${plural(a.children, 'dítě', 'děti', 'dětí')}` : null].filter(Boolean).join(SEP)))
@@ -326,12 +326,12 @@ function dutiesTab(event, conflicts, leader) {
   const previous = previousEvent(S.data, id);
   const fill = fillOf(event);
   const tools = editable ? h('div', { class: 'side-tools' },
-    fill.state === 'open' ? button('Navrhnout lidi', { variant: 'surface', icon: 'users', onclick: () => proposeRest(id), title: 'Zvonec doplní, kdo umí a má čas' }) : null,
+    fill.state === 'open' ? button('Navrhni lidi', { variant: 'surface', icon: 'users', onclick: () => proposeRest(id), title: 'Zvonec doplní, kdo umí a má čas' }) : null,
     previous && (previous.assignments || []).some((a) => a.status !== 'declined') && fill.state === 'open'
-      ? button('Obsadit jako minule', { variant: 'surface', icon: 'copy', onclick: () => copyPeople(id), title: `Stejně jako ${prettyDay(previous.start)}` }) : null,
+      ? button('Obsaď jako minule', { variant: 'surface', icon: 'copy', onclick: () => copyPeople(id), title: `Stejně jako ${prettyDay(previous.start)}` }) : null,
     button('Kolik lidí je potřeba', { variant: 'surface', icon: 'sliders', onclick: () => needsDialog(id) })) : null;
   if (!needs.length) {
-    return emptyState({ icon: 'users', title: 'Tohle setkání nikoho do služby nepotřebuje.', action: editable ? button('Určit, kolik lidí je potřeba', { variant: 'solid', onclick: () => needsDialog(id) }) : null });
+    return emptyState({ icon: 'users', title: 'Tohle setkání nikoho do služby nepotřebuje.', action: editable ? button('Urči, kolik lidí je potřeba', { variant: 'solid', onclick: () => needsDialog(id) }) : null });
   }
   const problems = assignmentProblems(conflicts);
   const waiting = fill.filled - fill.confirmed;
@@ -378,7 +378,7 @@ function dutyRow(event, need, { editable, problems }) {
       h('span', { class: 'duty-role' }, roleName),
       h('span', { class: 'duty-sub' },
         h('span', { class: ['duty-count', empty && 'missing'] }, need.count ? `${active} z ${need.count}` : 'navíc'),
-        editable && !empty ? h('span', { class: 'duty-more' }, textButton('Přidat dalšího', () => pickFor(event.id, need.roleId), { 'aria-label': `Přidat dalšího: ${roleName}` })) : null)),
+        editable && !empty ? h('span', { class: 'duty-more' }, textButton('Přidej dalšího', () => pickFor(event.id, need.roleId), { 'aria-label': `Přidej dalšího: ${roleName}` })) : null)),
     h('div', { class: 'duty-people' },
       people.map((a) => {
         const problem = problems.get(a.id);
@@ -393,7 +393,7 @@ function dutyRow(event, need, { editable, problems }) {
           onEdit: () => pickFor(event.id, a.roleId, a.id),
           onStatus: (status) => setStatus(event.id, a.id, status),
           onOverride: problem?.overridable || a.override ? () => overrideDialog(a.id) : null,
-          overrideLabel: a.override ? 'Upravit důvod' : 'Vím o tom',
+          overrideLabel: a.override ? 'Uprav důvod' : 'Vím o tom',
           onRemove: () => removeAssignment(event.id, a.id),
           tone: problem?.severity || null,
           title: problem?.texts.join(' ') || (a.override ? `V pořádku: ${a.override.reason}` : null),
@@ -402,7 +402,7 @@ function dutyRow(event, need, { editable, problems }) {
       }),
       Array.from({ length: empty }, () => (editable
         ? h('button', { type: 'button', class: 'slot-pick', onclick: () => pickFor(event.id, need.roleId) },
-          h('span', { class: 'slot-ring', 'aria-hidden': 'true' }, icon('plus')), h('span', {}, 'Vybrat člověka'), h('span', { class: 'visually-hidden' }, `: ${roleName}`))
+          h('span', { class: 'slot-ring', 'aria-hidden': 'true' }, icon('plus')), h('span', {}, 'Vyber člověka'), h('span', { class: 'visually-hidden' }, `: ${roleName}`))
         : h('span', { class: 'slot-pick empty' }, h('span', { class: 'slot-ring', 'aria-hidden': 'true' }), h('span', {}, 'zatím nikdo'))))));
 }
 

@@ -75,14 +75,14 @@ export function needsEditor(needs, { label: text = 'Kolik lidí je potřeba', em
           type: 'number', min: 1, max: 20, value: need.count || 1, class: 'count-input', 'aria-label': `${role?.name || 'Role'}: počet lidí`,
           oninput: (e) => { need.count = Math.max(1, Math.round(Number(e.target.value)) || 1); onchange?.(); },
         }),
-        removeButton(`Odebrat: ${role?.name || 'roli'}`, () => { needs.splice(i, 1); redraw(); onchange?.(); }));
+        removeButton(`Odeber: ${role?.name || 'roli'}`, () => { needs.splice(i, 1); redraw(); onchange?.(); }));
     });
     const taken = new Set(needs.map((n) => n.roleId));
     const free = teams.map(({ group, roles }) => ({ group, roles: roles.filter((r) => !taken.has(r.id)) })).filter((t) => t.roles.length);
     const add = free.length ? h('select', {
-      class: 'needs-add', 'aria-label': 'Přidat roli',
+      class: 'needs-add', 'aria-label': 'Přidej roli',
       onchange: (e) => { if (e.target.value) { needs.push({ roleId: e.target.value, count: 1 }); redraw(true); onchange?.(); } },
-    }, h('option', { value: '' }, 'Přidat roli…'),
+    }, h('option', { value: '' }, 'Přidej roli…'),
     free.map(({ group, roles }) => h('optgroup', { label: group.name }, roles.map((r) => h('option', { value: r.id }, r.name))))) : null;
     wrap.replaceChildren(...nodes([
       h('span', { class: 'field-label' }, text),
@@ -97,7 +97,7 @@ export function needsEditor(needs, { label: text = 'Kolik lidí je potřeba', em
 export const cleanNeeds = (needs) => needs.filter((n) => n.count > 0).map(({ roleId, count }) => ({ roleId, count }));
 
 /**
- * „Zveřejnit na webu“ of formats, templates and events: a switch with a sentence and a hint under it,
+ * „Zveřejni na webu“ of formats, templates and events: a switch with a sentence and a hint under it,
  * in a quiet box (it decides what strangers see). It submits like a checkbox: form.elements[name].checked.
  */
 export function publishField(name, text, hint, checked) {
@@ -166,7 +166,7 @@ function renderList() {
     title: LIBRARY_TITLE,
     lead: 'Formáty jsou části setkání, třeba chvály nebo kázání. Z nich se skládá osnova.',
     tabs: libraryTabs('formaty'),
-    actions: leader ? button('Přidat formát', { variant: 'solid', icon: 'plus', onclick: add }) : null,
+    actions: leader ? button('Přidej formát', { variant: 'solid', icon: 'plus', onclick: add }) : null,
     width: 'list',   // Jak se scházíme: one width for Šablony · Formáty · Místa
     cls: 'library-page',
     body: list(formats, (f) => {
@@ -184,7 +184,7 @@ function renderList() {
       label: 'Formáty',
       empty: emptyState({
         icon: 'blocks', title: 'Zatím tu není žádný formát.', text: leader ? 'Začni třeba chválami nebo kázáním.' : 'Vedoucí je sem doplní.',
-        action: leader ? button('Přidat formát', { variant: 'solid', icon: 'plus', onclick: add }) : null,
+        action: leader ? button('Přidej formát', { variant: 'solid', icon: 'plus', onclick: add }) : null,
       }),
     }),
   });
@@ -234,7 +234,7 @@ function renderFormat(id) {
       metaItem('user', role ? `vede: ${role.name}` : 'kdo vede, vybereš v osnově'),
       leader ? (format.public ? metaItem('globe', 'na webu') : metaItem('eye-off', 'jen ve Zvonci')) : null,
     ].filter(Boolean),
-    actions: leader ? button('Upravit', { variant: 'surface', icon: 'pencil', onclick: () => formatDialog(format) }) : null,
+    actions: leader ? button('Uprav', { variant: 'surface', icon: 'pencil', onclick: () => formatDialog(format) }) : null,
     width: 'list',
     cls: 'format-page',
     body: h('div', { class: 'format-layout' },
@@ -243,7 +243,7 @@ function renderFormat(id) {
         text('Jak to probíhá', format.how),
         missing ? emptyState({
           icon: 'book', title: 'Vysvětlení tu zatím chybí.', text: leader ? 'Napiš, proč to děláme a jak to probíhá. Pomůže to každému, kdo to povede poprvé.' : 'Vedoucí ho sem doplní.',
-          action: leader ? button('Doplnit vysvětlení', { variant: 'soft', icon: 'pencil', onclick: () => formatDialog(format) }) : null,
+          action: leader ? button('Doplň vysvětlení', { variant: 'soft', icon: 'pencil', onclick: () => formatDialog(format) }) : null,
         }) : null),
       h('aside', { class: 'format-aside' }, aside)),
   });
@@ -260,9 +260,9 @@ export function openFormatInfo(formatId) {
     sub: metaJoin([`${format.minutes ?? 0} min`, role ? `vede: ${role.name}` : null, needs ? `potřebuje ${needs}` : null]),
     body: formatWhyHow(format) || h('p', { class: 'note' }, 'Vysvětlení tu zatím chybí.'),
     actions: [
-      button('Otevřít formát', { variant: 'ghost', href: `#formaty/${format.id}`, onclick: () => document.getElementById('dialog')?.close() }),
-      can('leader') ? button('Upravit', { variant: 'surface', icon: 'pencil', onclick: () => formatDialog(format) }) : null,
-      button('Zavřít', { variant: 'solid', onclick: () => document.getElementById('dialog')?.close() }),
+      button('Otevři formát', { variant: 'ghost', href: `#formaty/${format.id}`, onclick: () => document.getElementById('dialog')?.close() }),
+      can('leader') ? button('Uprav', { variant: 'surface', icon: 'pencil', onclick: () => formatDialog(format) }) : null,
+      button('Zavři', { variant: 'solid', onclick: () => document.getElementById('dialog')?.close() }),
     ],
   });
 }
@@ -273,7 +273,7 @@ export function formatDialog(format) {
   if (!can('leader')) return;
   const needs = clone(format?.needs || []);
   formDialog({
-    title: format ? 'Upravit formát' : 'Nový formát',
+    title: format ? 'Úprava formátu' : 'Nový formát',
     sub: format?.name || null,
     wide: true,
     sections: [
@@ -301,11 +301,11 @@ export function formatDialog(format) {
         { cols: 1, fields: [needsEditor(needs, { label: 'Kolik dalších lidí je potřeba', empty: 'Nikdo navíc. Ten, kdo vede, se započítá sám.' })] },
         { cols: 1, fields: [
           textField('link', 'Další čtení', format?.link, { full: true, type: 'url', attr: { placeholder: 'https://…' }, hint: 'Odkaz na článek nebo video, kde se dozvíš víc.' }),
-          publishField('public', 'Zveřejnit na webu', 'Části „Proč to děláme“ a „Jak to probíhá“ uvidí každý na stránce „Jak se scházíme“.', format?.public),
+          publishField('public', 'Zveřejni na webu', 'Části „Proč to děláme“ a „Jak to probíhá“ uvidí každý na stránce „Jak se scházíme“.', format?.public),
         ] },
       ],
     },
-    saveLabel: format ? 'Uložit' : 'Přidat',
+    saveLabel: format ? 'Ulož' : 'Přidej',
     save: (f) => {
       const name = f.name.value.trim();
       if (!name) return 'Doplň název.';
@@ -340,7 +340,7 @@ function deleteFormat(format) {
   const { types } = usage(format.id);
   const all = S.data.events.filter((e) => (e.program || []).some((i) => i.formatId === format.id)).length;
   const where = [all ? plural(all, 'setkání', 'setkání', 'setkání') : '', types.length ? `${types.length === 1 ? 'šabloně' : 'šablonách'} ${andJoin(types.map((t) => t.name))}` : ''].filter(Boolean);
-  confirmDialog(`Smazat formát ${format.name}?`, where.length ? `Je v osnově (${where.join(' a v ')}). Odtamtud zmizí.` : 'Není v žádné osnově.', () => {
+  confirmDialog(`Chceš smazat formát ${format.name}?`, where.length ? `Je v osnově (${where.join(' a v ')}). Odtamtud zmizí.` : 'Není v žádné osnově.', () => {
     S.data.formats = S.data.formats.filter((x) => x.id !== format.id);
     for (const e of S.data.events) if (e.program) e.program = e.program.filter((i) => i.formatId !== format.id);
     for (const t of S.data.eventTypes) {

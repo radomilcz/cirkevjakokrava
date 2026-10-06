@@ -100,7 +100,7 @@ function openPanel(input, button) {
   todayBtn.type = 'button';
   foot.append(todayBtn);
   if (!input.required) {
-    const clear = el('button', 'btn btn-ghost btn-s', 'Vymazat');
+    const clear = el('button', 'btn btn-ghost btn-s', 'Vymaž');
     clear.type = 'button';
     clear.addEventListener('click', () => setValue(input, button, ''));
     foot.append(clear);

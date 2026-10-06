@@ -1,4 +1,4 @@
-// Zvonec Next – getting in: Přihlásit se (#prihlaseni; live: name, password, „Pamatovat si mě“ – the
+// Zvonec Next – getting in: Přihlásit se (#prihlaseni; live: name, password, „Pamatuj si mě“ – the
 // lib/access.js flow of the current Zvonec; demo: one tap per prepared person), Založit Zvonec
 // (#prihlaseni/zalozit, and live without any login: GitHub key, repo, the first admin) and the invite
 // registration (#pozvanka/<kód>: check the invite, the newcomer fills in their data, picks a password
@@ -20,7 +20,7 @@ import {
 } from './kit.js';
 import { checkPassword } from './account.js';
 
-const REMEMBER = 'Pamatovat si mě na tomhle zařízení';
+const REMEMBER = 'Pamatuj si mě na tomhle zařízení';
 const DATA_PATH = 'data';
 
 /** The top bar of a signed-out page: brand, „Pastva“ on the right. */
@@ -189,7 +189,7 @@ function renderSetup() {
   });
   return screen({
     topbar: bar(),
-    head: { title: 'Založení Zvonce', lead: 'Zvonec tu zatím nikdo nepoužívá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.' },
+    head: { title: 'Nový Zvonec', lead: 'Zvonec tu zatím nikdo nepoužívá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.' },
     cls: 'screen--narrow login-page login-setup',
     body: form,
   });

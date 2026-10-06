@@ -176,7 +176,7 @@ function matrix(group) {
   });
 }
 
-const PEOPLE_SHOWN = 6;   // the list of a big team: six rows, then „Ukázat všech 19“
+const PEOPLE_SHOWN = 6;   // the list of a big team: six rows, then „Ukaž všech 19“
 const openGroups = new Set();   // groups whose whole list is open (kept while the app runs)
 
 function peopleSection(group) {
@@ -283,7 +283,7 @@ function groupMenu(group) {
   if (!can('leader')) return null;
   return menu([
     { label: 'Uprav skupinu', icon: 'pencil', onclick: () => groupSheet(group) },
-    { label: group.archived ? 'Vrať z archivu' : 'Dej do archivu', icon: 'layers', onclick: () => toggleArchive(group) },
+    { label: group.archived ? 'Vrať z archivu' : 'Přesuň do archivu', icon: 'layers', onclick: () => toggleArchive(group) },
     '-',
     { label: 'Smaž skupinu', icon: 'trash', danger: true, onclick: () => deleteGroup(group) },
   ], { title: group.name });

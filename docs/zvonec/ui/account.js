@@ -1,5 +1,5 @@
 // #ucet – Můj účet (from the person in the header): Můj kontakt (+ who sees it), Kdy nemůžu, Moje
-// služby do kalendáře (.ics), Vzhled, Změnit heslo, Odhlásit se; in the demo „Dívat se jako“.
+// služby do kalendáře (.ics), Vzhled, Změna hesla, Odhlášení; in the demo „Jak to vidí ostatní“.
 // The contact dialog, „Kdy nemůžu“ and the .ics of my duties are shared with Přehled (ui/home.js).
 
 import {
@@ -80,7 +80,7 @@ export const blockoutRow = (person, v) => row({
   title: rangeText(v),
   meta: v.reason || (v.from === v.to ? 'jeden den' : null),
   onclick: () => availabilityDialog(person, v),
-  label: `Upravit: ${rangeLong(v)}`,
+  label: `Uprav: ${rangeLong(v)}`,
 });
 
 /** Add (record null) or edit a time when I can't serve; delete on the left. */
@@ -91,7 +91,7 @@ export function availabilityDialog(person, record = null) {
   formDialog({
     title: self ? 'Kdy nemůžu' : 'Kdy nemůže',
     sub: self ? 'Zvonec tě na ty dny nebude nabízet do rozpisu.' : personName(person),
-    saveLabel: record ? 'Uložit' : 'Přidat',
+    saveLabel: record ? 'Ulož' : 'Přidej',
     sections: [{ fields: [
       dateField('from', 'Od', record?.from || day, { required: true }),
       dateField('to', 'Do', record?.to || day, { required: true }),
@@ -141,7 +141,7 @@ function appearanceCard() {
 function contactCard(person) {
   return card({
     title: 'Můj kontakt',
-    actions: button('Upravit', { variant: 'ghost', size: 's', icon: 'pencil', onclick: () => contactDialog(person) }),
+    actions: button('Uprav', { variant: 'ghost', size: 's', icon: 'pencil', onclick: () => contactDialog(person) }),
     body: [
       facts([
         ['Telefon', person.phone || h('span', { class: 'quiet' }, 'nevyplněno')],
@@ -157,7 +157,7 @@ function blockoutsCard(person) {
   const records = myBlockouts(person);
   return card({
     title: 'Kdy nemůžu',
-    actions: button('Přidat', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => availabilityDialog(person) }),
+    actions: button('Přidej', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => availabilityDialog(person) }),
     body: records.length ? list(records, (v) => blockoutRow(person, v), { label: 'Kdy nemůžu' })
       : h('p', { class: 'card-text' }, 'Když víš, že nemůžeš, zapiš to. Zvonec tě pak na ty dny nebude nabízet.'),
     flush: !!records.length,
@@ -172,14 +172,14 @@ function dutiesCard(person) {
       h('p', { class: 'card-text' }, count
         ? `Stáhni si ${plural(count, 'službu', 'služby', 'služeb')} do kalendáře v telefonu. Když se rozpis změní, stáhni je znovu.`
         : 'Teď žádnou službu nemáš. Až nějakou dostaneš, stáhneš si ji odsud do kalendáře.'),
-      h('div', { class: 'card-buttons' }, button('Stáhnout do kalendáře', { variant: 'surface', icon: 'download', onclick: () => downloadDuties(person), disabled: !count })),
+      h('div', { class: 'card-buttons' }, button('Stáhni do kalendáře', { variant: 'surface', icon: 'download', onclick: () => downloadDuties(person), disabled: !count })),
     ],
   });
 }
 
 function passwordCard() {
   if (S.mode !== 'live') return null;
-  return card({ title: 'Změnit heslo', body: passwordForm() });
+  return card({ title: 'Změna hesla', body: passwordForm() });
 }
 
 /** Demo: look at Zvonec as someone else – the three prepared people, or anyone with any access. */
@@ -202,7 +202,7 @@ function viewAsCard() {
   const form = h('form', { class: 'form-grid view-as-form', novalidate: true },
     personPicker({ name: 'personId', label: 'Za koho se chceš dívat', people, value: '', placeholder: 'Napiš jméno…' }),
     h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Oprávnění'), segment('access', [['member', 'člen'], ['leader', 'vedoucí'], ['admin', 'správce']], 'member', { label: 'Oprávnění' })),
-    h('div', { class: 'full' }, button('Podívat se', { variant: 'surface', type: 'submit' })));
+    h('div', { class: 'full' }, button('Podívej se', { variant: 'surface', type: 'submit' })));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const personId = form.elements.personId.value;
@@ -212,7 +212,7 @@ function viewAsCard() {
     toast(`${ACCESS_VIEW[access]}: ${fullName(personById(S.data, personId))}`);
   });
   return card({
-    title: 'Dívat se jako',
+    title: 'Jak to vidí ostatní',
     cls: 'view-as',
     body: [
       h('p', { class: 'card-text' }, 'Ukázka: vyzkoušej, co vidí člen, vedoucí nebo správce. Nic se tím nemění.'),
@@ -225,10 +225,10 @@ function viewAsCard() {
 function signOutCard() {
   if (S.mode !== 'live') return null;
   return card({
-    title: 'Odhlásit se',
+    title: 'Odhlášení',
     body: [
       h('p', { class: 'card-text' }, 'Na cizím počítači se odhlas vždycky. Na svém telefonu se odhlašovat nemusíš.'),
-      h('div', { class: 'card-buttons' }, button('Odhlásit se', { variant: 'surface', icon: 'log-out', onclick: () => logout() })),
+      h('div', { class: 'card-buttons' }, button('Odhlas se', { variant: 'surface', icon: 'log-out', onclick: () => logout() })),
     ],
   });
 }

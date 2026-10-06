@@ -100,10 +100,10 @@ export function rosterView(ctx) {
     const slot = missing
       ? editable
         ? h('button', { type: 'button', class: 'roster-missing', 'aria-haspopup': 'dialog', onclick: (e) => pickFor(event.id, roleId, null, { anchor: e.currentTarget }) },
-          openIcon(), missing > 1 ? `chybí ${missing}` : 'chybí', h('span', { class: 'visually-hidden' }, `: ${roleName}, ${prettyDay(event.start)} – vybrat`))
+          openIcon(), missing > 1 ? `chybí ${missing}` : 'chybí', h('span', { class: 'visually-hidden' }, `: ${roleName}, ${prettyDay(event.start)} – vyber`))
         : h('span', { class: 'roster-missing' }, openIcon(), missing > 1 ? `chybí ${missing}` : 'chybí')
       : editable ? h('button', {
-        type: 'button', class: 'roster-add', 'aria-label': `Přidat dalšího: ${roleName}, ${prettyDay(event.start)}`, title: 'Přidat dalšího',
+        type: 'button', class: 'roster-add', 'aria-label': `Přidej dalšího: ${roleName}, ${prettyDay(event.start)}`, title: 'Přidej dalšího',
         onclick: (e) => pickFor(event.id, roleId, null, { anchor: e.currentTarget }),
       }, icon('plus')) : null;
     td.append(h('div', { class: 'roster-cell-in' }, people, slot));

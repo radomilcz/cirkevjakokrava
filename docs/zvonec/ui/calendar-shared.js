@@ -3,7 +3,7 @@
 // remembered view per viewer. No screen here – the views live in calendar-*.js, roster.js, event*.js.
 
 import {
-  h, row, dateBlock, eventCover, coverKey, andJoin, metaJoin, statusIcon, severityMark, icon, fillRing, kindMark,
+  h, row, dateBlock, eventCover, coverKey, andJoin, metaJoin, statusIcon, severityMark, severityIcon, icon, fillRing, kindMark,
   KIND_HUES, emptyState, button,
   cancelledBadge,
 } from './dom.js';
@@ -133,6 +133,42 @@ export function fillLegendItems() {
 }
 
 /** The Účel of an event in Czech. */
+const MARK_SIZE = 16;
+const MARK_GAP = 3;
+const DOT_ORDER = ['error', 'warning', 'mine', 'fill'];
+
+/**
+ * The marks of an event in the calendar grid (month chip, bar, week block): „tady sloužíš“, a warning
+ * and people missing (leaders). `fill`: 'open' = only when people are missing and nothing is wrong
+ * (Měsíc), 'any' = every state but all confirmed (Týden). Returns { el, words }: `el` is null when there
+ * is nothing to show; it carries data-n (how many), data-dot (the most important one – the one-dot form
+ * when there is no room) and --marks-w (their width). The CSS picks the form by the measured size of
+ * the chip or block (container queries), so marks never sit on the time or squeeze the title. `words`
+ * go into the accessible name of the link (the marks themselves are aria-hidden).
+ */
+export function eventMarks(event, { leader = false, fill: fillMode = 'any' } = {}) {
+  const items = [];
+  if (myRoles(event).length && !event.cancelled) {
+    items.push(['mine', 'tady sloužíš', h('span', { class: 'cal-mark cal-mark-mine', title: 'Tady sloužíš' }, icon('user'))]);
+  }
+  if (leader && !event.cancelled) {
+    const warning = eventWarning(event);
+    const fill = fillOf(event);
+    if (warning) items.push([warning, SEVERITY_LABELS[warning], h('span', { class: ['cal-mark', `cal-mark-${warning}`], title: capital(SEVERITY_LABELS[warning]) }, severityIcon(warning))]);
+    const showFill = fill.state && fill.state !== 'confirmed' && (fillMode === 'any' || (!warning && fill.state === 'open'));
+    if (showFill) {
+      const text = `obsazeno ${fill.filled} z ${fill.needed}`;
+      items.push(['fill', text, h('span', { class: ['cal-mark', 'cal-mark-fill', `fill-state-${fill.state}`], title: capital(text) },
+        fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, text: false, size: 13, label: text }))]);
+    }
+  }
+  if (!items.length) return { el: null, words: [] };
+  const el = h('span', { class: 'cal-marks', 'data-n': String(items.length), 'data-dot': DOT_ORDER.find((k) => items.some(([key]) => key === k)), 'aria-hidden': 'true' },
+    items.map(([, , mark]) => mark));
+  el.style.setProperty('--marks-w', `${items.length * MARK_SIZE + (items.length - 1) * MARK_GAP}px`);
+  return { el, words: items.map(([, word]) => word) };
+}
+
 export const kindLabel = (kind) => EVENT_KIND_LABELS[kind] || EVENT_KIND_LABELS.event;
 /** The categorical hue of an Účel (class c-<hue>). */
 export const kindHue = (kind) => KIND_HUES[kind] || 'plum';
@@ -294,7 +330,7 @@ export function clearFilters() {
 
 /** The empty state when the filters hide everything. */
 export function filteredEmpty(text = 'Tomu, co máš ve filtrech, tu nic neodpovídá.') {
-  return emptyState({ icon: 'filter', title: text, action: button('Zrušit filtry', { variant: 'soft', icon: 'x', onclick: clearFilters }) });
+  return emptyState({ icon: 'filter', title: text, action: button('Zruš filtry', { variant: 'soft', icon: 'x', onclick: clearFilters }) });
 }
 
 /** Is the week view on a phone (3 days)? Same breakpoint as the CSS. */

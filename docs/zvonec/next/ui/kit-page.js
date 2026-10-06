@@ -70,7 +70,7 @@ export function renderKit() {
           chips([{ value: 'service', label: 'Nedělní setkání' }, { value: 'rehearsal', label: 'Zkouška' }, { value: 'smallGroup', label: 'Skupinka' }, { value: 'event', label: 'Akce' }], ['service'], () => {}, { multiple: true, label: 'Účel' }),
           h('div', { class: 'cluster' }, chip('Moje týmy', { iconEnd: 'chevron-down' }), slot('Klávesy', () => demoNote('Výběr člověka')), slot('Doplň', () => {})),
           switchRow({ label: 'Jen moje služby', checked: true }),
-          switchRow({ label: 'Ukázat na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.' })),
+          switchRow({ label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.' })),
 
         plate('Lidé a skupiny',
           h('div', { class: 'cluster' }, avatar(P[0], { size: 's' }), avatar(P[1]), avatar(P[4], { size: 'l' }), avatar(P[3], { me: true }), avatar(P[6], { status: 'declined' }), teamMark(TEAM), teamMark(TEAM2, { size: 's' }), avatars(P.slice(0, 6))),
@@ -107,7 +107,7 @@ export function renderKit() {
             more: { link: 'Ukaž další 2', icon: 'chevron-down', href: '#kit' },
           }),
           section({ title: 'Co je potřeba', action: chip('Moje týmy', { iconEnd: 'chevron-down' }), body: [
-            needRow({ day: sunday, title: 'Setkání na pastvě', href: '#kit', summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick: () => demoNote('Kdo čeká – s tlačítkem Zavolej.'), label: '3 čekají na potvrzení – ukázat koho' }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick: () => {} }, { label: 'Projekce', onclick: () => {} }] }),
+            needRow({ day: sunday, title: 'Setkání na pastvě', href: '#kit', summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick: () => demoNote('Kdo čeká – s tlačítkem Zavolej.'), label: '3 čekají na potvrzení – ukaž koho' }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick: () => {} }, { label: 'Projekce', onclick: () => {} }] }),
             needRow({ day: day(4), title: 'Zkouška chval', href: '#kit', summary: [['warning', '1 čeká']], filled: 5, total: 6 }),
             rowLink('Celý rozpis', { href: '#kit' }),
           ] })),
@@ -150,7 +150,7 @@ export function renderKit() {
             chipsField({ name: 'where', label: 'Kde', options: [{ value: 'a', label: 'Monta' }, { value: 'b', label: 'Sál' }, { value: 'c', label: 'Malá místnost' }], value: ['b'], multiple: true }),
             searchField({ placeholder: 'Hledej jméno, telefon, e-mail', value: 'Jana' }),
             field({ label: 'Heslo', hint: 'Aspoň 8 znaků.', control: passwordInput({ name: 'kit-password', autocomplete: 'off' }) }),
-            disclosure([field({ label: 'Pro tým', control: textInput({ name: 'note', placeholder: 'např. klíče má Martin' }) }), switchRow({ label: 'Ukázat na webu', name: 'public' })])),
+            disclosure([field({ label: 'Pro tým', control: textInput({ name: 'note', placeholder: 'např. klíče má Martin' }) }), switchRow({ label: 'Ukaž na webu', name: 'public' })])),
           h('p', { class: 'kit-sub' }, 'Uložení stránky s formulářem (jen když je co uložit)'),
           h('div', { class: 'kit-foot' }, formFoot({ always: true, onSave: () => demoNote('Uloženo.'), onDiscard: () => demoNote('Změny zahozené.') }))),
 

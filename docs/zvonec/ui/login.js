@@ -22,7 +22,7 @@ import { today, addDays } from '../lib/time.js';
 
 export const INVITE_VALID_DAYS = 14;
 const DATA_PATH = 'data';
-const REMEMBER_TEXT = 'Pamatovat si mě na tomhle zařízení';
+const REMEMBER_TEXT = 'Pamatuj si mě na tomhle zařízení';
 const REMEMBER_HINT = 'Na cizím počítači to vypni.';
 
 /** Czech problem with a new password, or null. */
@@ -50,7 +50,7 @@ export function renderLogin(message) {
     textField('password', 'Heslo', '', { full: true, type: 'password', attr: { autocomplete: 'current-password' } }),
     switchField('remember', REMEMBER_TEXT, true, { hint: REMEMBER_HINT }),
     formErrorLine(message || '', { full: true }),
-    h('div', { class: 'full form-submit' }, submitButton('Přihlásit se')));
+    h('div', { class: 'full form-submit' }, submitButton('Přihlas se')));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = form.elements;
@@ -59,7 +59,7 @@ export function renderLogin(message) {
     submit.textContent = 'Ověřuju…';
     const result = await signIn(S.logins, f.name.value, f.password.value);
     submit.disabled = false;
-    submit.textContent = 'Přihlásit se';
+    submit.textContent = 'Přihlas se';
     if (!result || result.record.access === 'invite') {
       formError(form, 'Jméno nebo heslo nesedí. Jestli ti vedoucí přístup vytvořil právě teď, počkej pár minut.');
       return;
@@ -68,7 +68,7 @@ export function renderLogin(message) {
     await signedIn(result);
   });
   return signedOutPage({
-    title: 'Přihlásit se',
+    title: 'Přihlášení',
     lead: 'Uvidíš rozpis, svoje služby a lidi.',
     body: [
       card({ body: form, cls: 'signin-card' }),
@@ -87,7 +87,7 @@ export function renderDemoLogin({ viewers, onSignIn }) {
     textField('name', 'Jméno a příjmení', '', { full: true, attr: { autocomplete: 'off', autofocus: true, placeholder: `např. ${viewers[0]?.name || ''}` } }),
     textField('password', 'Heslo', '', { full: true, type: 'password', hint: 'V ukázce platí jakékoli heslo.', attr: { autocomplete: 'off' } }),
     formErrorLine('', { full: true }),
-    h('div', { class: 'full form-submit' }, submitButton('Přihlásit se')));
+    h('div', { class: 'full form-submit' }, submitButton('Přihlas se')));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const wanted = foldName(form.elements.name.value);
@@ -96,14 +96,14 @@ export function renderDemoLogin({ viewers, onSignIn }) {
     onSignIn(viewer);
   });
   return signedOutPage({
-    title: 'Přihlásit se',
+    title: 'Přihlášení',
     lead: 'Uvidíš rozpis, svoje služby a lidi.',
     body: [
       callout(h('ul', { class: 'demo-logins' }, viewers.map((v) => h('li', {},
         h('button', { type: 'button', class: 'text-btn', onclick: () => { form.elements.name.value = v.name; form.elements.password.focus(); } }, v.name),
         ` – ${v.access}`))), { tone: 'info', title: 'Tohle je ukázka. Přihlásit se můžeš jako:' }),
       card({ body: form, cls: 'signin-card' }),
-      h('p', { class: 'signin-note' }, 'Chceš Zvonec pro svůj sbor? ', h('a', { href: '#prihlaseni/zalozit' }, 'Založit vlastní Zvonec'), '.'),
+      h('p', { class: 'signin-note' }, 'Chceš Zvonec pro svůj sbor? ', h('a', { href: '#prihlaseni/zalozit' }, 'Založ si vlastní Zvonec'), '.'),
     ],
   });
 }
@@ -128,10 +128,10 @@ export function renderSetup() {
     textField('lastName', 'Příjmení', '', { attr: { autocomplete: 'family-name' } }),
     textField('password', 'Heslo', '', { type: 'password', hint: 'Aspoň 8 znaků.', attr: { autocomplete: 'new-password' } }),
     textField('password2', 'Ještě jednou', '', { type: 'password', attr: { autocomplete: 'new-password' } }),
-    segmentedField('base', 'Začít', [['base', 'Se základem z ukázky'], ['empty', 'Úplně načisto']], 'base',
+    segmentedField('base', 'Jak začneš', [['base', 'Se základem z ukázky'], ['empty', 'Úplně načisto']], 'base',
       { full: true, hint: 'Základ z ukázky: týmy, role, formáty, šablony a místa. Bez lidí a bez setkání.' }),
     formErrorLine('', { full: true }),
-    h('div', { class: 'full form-submit' }, submitButton('Založit Zvonec')));
+    h('div', { class: 'full form-submit' }, submitButton('Založ Zvonec')));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = form.elements;
@@ -170,11 +170,11 @@ export function renderSetup() {
   });
   const step = (...content) => h('li', {}, h('span', {}, content));
   return signedOutPage({
-    title: 'Založit Zvonec',
+    title: 'Nový Zvonec',
     lead: 'Zvonec tu zatím nikdo nepoužívá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.',
     body: card({ body: form, cls: 'signin-card' }),
     aside: card({
-      title: 'Jak získat klíč',
+      title: 'Jak získáš klíč',
       cls: 'signin-steps',
       body: h('ol', { class: 'steps' },
         step('Na GitHubu: Settings → Developer settings → Fine-grained tokens → Generate new token.'),
@@ -201,7 +201,7 @@ export async function renderInvite(code) {
   const failed = (text) => {
     S.screen = () => signedOutPage({
       title: 'Pozvánka',
-      body: emptyState({ icon: 'alert', text, action: button('Zkusit znovu', { variant: 'solid', onclick: () => renderInvite(code) }) }),
+      body: emptyState({ icon: 'alert', text, action: button('Zkus to znovu', { variant: 'solid', onclick: () => renderInvite(code) }) }),
     });
     render();
   };
@@ -241,7 +241,7 @@ function renderRegistration(invite, store, data) {
     h('h3', { class: 'form-section-title full' }, 'Souhlas'),
     checkboxField('consent', `Souhlasím, že ${churchName} si tyhle údaje zapíše, aby mohla plánovat služby. Uvidí je jen lidé, kteří se můžou do Zvonce přihlásit. Nikomu dalšímu je nepředá. Souhlas můžu kdykoli vzít zpět.`, !!person.consentDate),
     formErrorLine('', { full: true }),
-    h('div', { class: 'full form-submit' }, submitButton('Přidat se')));
+    h('div', { class: 'full form-submit' }, submitButton('Přidej se')));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = form.elements;
@@ -346,7 +346,7 @@ export function createLoginDialog(person) {
       selectField('access', 'Oprávnění', levels, existing?.access || 'member', { full: true }),
     ] }],
     intro: callout(`${existing ? 'Staré heslo přestane platit. ' : ''}Heslo vymyslí Zvonec a ukáže ti ho jen jednou. Lepší je poslat pozvánku: heslo si pak každý zvolí sám.`, { tone: 'info' }),
-    saveLabel: 'Vytvořit heslo',
+    saveLabel: 'Vytvoř heslo',
     save: async (f) => {
       const name = f.name.value.trim();
       if (!name) return 'Doplň jméno.';
@@ -396,7 +396,7 @@ export function revokeLogin(login) {
   if (S.mode !== 'live') { demoOnly(); return; }
   const invite = login.access === 'invite';
   const who = fullName(personById(S.data, login.personId));
-  confirmDialog(invite ? 'Zrušit pozvánku?' : 'Zrušit přístup?',
+  confirmDialog(invite ? 'Chceš zrušit pozvánku?' : 'Chceš zrušit přístup?',
     invite ? 'Odkaz přestane fungovat za pár minut.' : `${who} se po změně už nepřihlásí. Změna začne platit za pár minut.`,
     async () => {
       try {
@@ -404,7 +404,7 @@ export function revokeLogin(login) {
         render();
         toast('Zrušeno.');
       } catch (error) { toast('Nepodařilo se.', error.message, { tone: 'error' }); }
-    }, { buttonLabel: invite ? 'Zrušit pozvánku' : 'Zrušit přístup' });
+    }, { buttonLabel: invite ? 'Zruš pozvánku' : 'Zruš přístup' });
 }
 
 /** May the current user manage this person's login? Leaders manage members, admins everyone. */
@@ -412,7 +412,7 @@ const mayManage = (login) => !login || can('admin') || login.access === 'member'
 
 // ---------- Můj účet: password ----------
 
-/** „Změnit heslo“ (live): login name, the new password twice. */
+/** „Změna hesla“ (live): login name, the new password twice. */
 export function passwordForm() {
   const person = personById(S.data, myId());
   const form = h('form', { class: 'form-grid one', novalidate: true },
@@ -420,7 +420,7 @@ export function passwordForm() {
     textField('password', 'Nové heslo', '', { full: true, type: 'password', attr: { autocomplete: 'new-password', minlength: 8 }, hint: 'Aspoň 8 znaků.' }),
     textField('password2', 'Nové heslo ještě jednou', '', { full: true, type: 'password', attr: { autocomplete: 'new-password' } }),
     formErrorLine('', { full: true }),
-    h('div', { class: 'full' }, button('Změnit heslo', { variant: 'surface', type: 'submit' })));
+    h('div', { class: 'full' }, button('Změň heslo', { variant: 'surface', type: 'submit' })));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = form.elements;
@@ -490,8 +490,8 @@ export function loginsView() {
   const nameOf = (l) => fullName(personById(S.data, l.personId));
   const isMe = (l) => live && l.id === S.me.login?.id;
   const menuFor = (l) => (!isMe(l) && mayManage(l) ? menuButton([
-    l.access !== 'invite' && personById(S.data, l.personId) ? ['Změnit heslo nebo oprávnění', () => (live ? createLoginDialog(personById(S.data, l.personId)) : demoOnly()), { icon: 'pencil' }] : null,
-    [l.access === 'invite' ? 'Zrušit pozvánku' : 'Zrušit přístup', () => revokeLogin(l), { danger: true, icon: 'x' }],
+    l.access !== 'invite' && personById(S.data, l.personId) ? ['Změň heslo nebo oprávnění', () => (live ? createLoginDialog(personById(S.data, l.personId)) : demoOnly()), { icon: 'pencil' }] : null,
+    [l.access === 'invite' ? 'Zruš pozvánku' : 'Zruš přístup', () => revokeLogin(l), { danger: true, icon: 'x' }],
   ].filter(Boolean), { label: `Možnosti: ${l.access === 'invite' ? 'pozvánka' : nameOf(l)}`, size: 's' }) : null);
 
   const { invites, orphans } = loginIssues();
@@ -535,7 +535,7 @@ export function keyCard() {
   const form = h('form', { class: 'form-grid one', novalidate: true },
     textField('token', 'Nový GitHub klíč', '', { full: true, type: 'password', attr: { autocomplete: 'off', placeholder: 'github_pat_…', spellcheck: false } }),
     formErrorLine('', { full: true }),
-    h('div', { class: 'full' }, button('Vyměnit klíč', { variant: 'surface', type: 'submit' })));
+    h('div', { class: 'full' }, button('Vyměň klíč', { variant: 'surface', type: 'submit' })));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const token = form.elements.token.value.trim();

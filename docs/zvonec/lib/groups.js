@@ -40,7 +40,7 @@ export function groupsOf(data, personId, { includeArchived = false } = {}) {
 }
 
 /**
- * Ids of the people whose card is in the archive. Their groupMember records stay (so „Vrátit z archivu“
+ * Ids of the people whose card is in the archive. Their groupMember records stay (so „Vrať z archivu“
  * brings back their teams and skills), but no list of a group shows them.
  */
 function archivedIds(data) {

@@ -204,7 +204,7 @@ export function accountBody({ pane = false } = {}) {
 
   return h('div', { class: ['acct', pane && 'acct--pane'] },
     who,
-    S.mode === 'demo' && !pane ? viewAsRow() : null,   // beside the Více list the list has „Dívat se jako“
+    S.mode === 'demo' && !pane ? viewAsRow() : null,   // beside the Více list the list has „Podívej se očima druhých“
     contact,
     blockoutSection(person),
     calendarSection(),

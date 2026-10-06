@@ -1,5 +1,5 @@
 // Zvonec Next – Formáty (#formaty, #formaty/<id>): the building blocks of an osnova – Proč to děláme,
-// Jak to probíhá, who leads, who else is needed, where it is used, „Ukázat na webu“. Leaders add, edit,
+// Jak to probíhá, who leads, who else is needed, where it is used, „Ukaž na webu“. Leaders add, edit,
 // publish and delete; members read. At ≥ 1200 px: list | the format in the detail pane.
 
 import { S, can, change, newId, navigate } from '../../ui/state.js';
@@ -108,7 +108,7 @@ function publishSwitch(format) {
     change(`formát ${target.name} ${on ? 'na webu' : 'jen ve Zvonci'}`);
   };
   return switchRow({
-    label: 'Ukázat na webu',
+    label: 'Ukaž na webu',
     hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý na Pastvě.',
     checked: !!format.public,
     onChange: (on) => { set(on); toast(on ? 'Na webu to bude za pár minut.' : 'Z webu to zmizí za pár minut.', { action: () => set(!on) }); },
@@ -222,7 +222,7 @@ export function formatSheet(format) {
       disclosure([
         field({ label: 'Kdo je potřeba navíc', control: needsEditor(needs), hint: 'Ten, kdo vede, se započítá sám.' }),
         field({ label: 'Další čtení', control: linkInput, optional: true, hint: 'Odkaz na článek nebo video.' }),
-        switchRow({ label: 'Ukázat na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý na Pastvě.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
+        switchRow({ label: 'Ukaž na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý na Pastvě.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
       ], { open: !!(format?.needs?.length || format?.link || format?.public) }),
     ],
     onSubmit: (form, values) => {

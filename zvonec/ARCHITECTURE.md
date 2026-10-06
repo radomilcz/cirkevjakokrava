@@ -149,7 +149,7 @@ servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWee
 
 Older data with a `seriesId` but no `series` record still work: `seriesFor()` infers `{ …, inferred: true }`
 from the events (`step: null` when the dates do not follow a rule). New series go through `addSeries`
-(stores the record and the events), `extendSeries` is „Prodloužit řadu“. `validateData()` (lib/validate.js)
+(stores the record and the events), `extendSeries` is „Prodluž řadu“. `validateData()` (lib/validate.js)
 reports records that do not hold together: an unknown series step, a series ending before it starts,
 negative or non-integer `attendance`, `partOf` pointing to a missing place, to itself or to a room, a
 non-text household address. It returns Czech texts; `zvonec/check.mjs` prints them as warnings and never
@@ -180,15 +180,15 @@ K5 (unfilled) and K12 (childcare). K17 is left for a format whose lead role no l
 
 No migration: the archive **is** the stored status `former`, and older data read the same.
 `lib/archive.js` (pure, tested in `zvonec/test/archive.test.mjs`):
-- `archivePerson(data, id, { today, now })` – „Přesunout do archivu“: `membership = { status: "former",
+- `archivePerson(data, id, { today, now })` – „Přesuň do archivu“: `membership = { status: "former",
   since?, until: today, previous: <status before> }`; the person's assignments and program items of
   events starting from `now` are removed / lose `personId` (the slots open again); `leader` is dropped
   on their `groupMember` records. The records themselves stay (teams and skills come back with the
   card), but `membersOf`, `leadersOf`, `peopleForRole` and `skillMatrix` skip archived cards. Past
   events stay untouched. In live mode the UI also removes their logins from `access.json`.
-- `restorePerson(data, id)` – „Vrátit z archivu“: back to `previous`, `regular` (přítel) when unknown
+- `restorePerson(data, id)` – „Vrať z archivu“: back to `previous`, `regular` (přítel) when unknown
   (older data); released duties and leading do not come back.
-- `deletePersonKeepHistory(data, id, { now })` – „Smazat kartu“: past assignments and program items
+- `deletePersonKeepHistory(data, id, { now })` – „Smaž kartu“: past assignments and program items
   keep `personId` and get `personName` (the full name), future ones are released; the card, its
   `groupMember` records, availability and serving limits are removed. `personOrSnapshot(data, record)`
   (lib/people.js) and `personInEvent(data, event, personId)` give the card or a stand-in
@@ -196,11 +196,11 @@ No migration: the archive **is** the stored status `former`, and older data read
   reads through them (and does not link a stand-in to `#osoba/`).
 - An archived card is left out everywhere else: Lidé filters and search, pickers and proposals
   (`candidates` never returns it, not even with `includeInactive`), Břemeno (`servingLoad`), birthdays,
-  `missingData`, group lists, the household block of a card, „Dívat se jako“, CSV of everyone. Only
+  `missingData`, group lists, the household block of a card, „Jak to vidí ostatní“, CSV of everyone. Only
   `#lide/archiv` (leaders) and the card itself (leaders) show it.
 - One year: `archiveOverdue(person, today)` is true after more than a year in the archive (a card
   without `until`, older data, counts as over). `#lide/archiv` asks „<n> karet je v archivu déle než
-  rok. Smazat je?“ (one confirmation deletes them all with the history kept); Přehled / Domů show the
+  rok. Chceš je smazat?“ (one confirmation deletes them all with the history kept); Přehled / Domů show the
   same line to leaders.
 
 ### settings.json
@@ -279,7 +279,7 @@ ui/calendar-month.js, calendar-week.js, calendar-list.js   the Měsíc, Týden a
 ui/roster.js           the Rozpis view (events × roles, planning in place, print)
 ui/event.js            #setkani/<id>: Přehled · Kdo slouží · Osnova
 ui/event-duties.js     changing who serves (shared by Kdo slouží and Rozpis)
-ui/event-form.js       Přidat / Upravit setkání, series question, „Kolik lidí je potřeba“
+ui/event-form.js       Nové setkání / Úprava setkání, series question, „Kolik lidí je potřeba“
 ui/program.js          the Osnova tab and the printable program (A4)
 ui/people.js           front door of Lidé (re-exports); people-views.js (Seznam, Tabulka, Domácnosti, Podle skupin,
                        Narozeniny, Břemeno), people-card.js (person card, household page), people-forms.js (dialogs),
@@ -290,7 +290,7 @@ ui/templates.js        #sablony, #sablona/<id> – the full-page template editor
 ui/places.js           #mista, #misto/<id> – buildings, rooms, address and map; placeChipsField, coordsField
 ui/conflicts.js        #upozorneni: Podle setkání / Podle lidí, inline fix, override; warning rows for other screens
 ui/settings.js         #nastaveni: Sbor · Pravidla · Přístupy · Záloha
-ui/account.js          #ucet – Můj účet (contact, Kdy nemůžu, .ics, Barvy, password, „Dívat se jako“)
+ui/account.js          #ucet – Můj účet (contact, Kdy nemůžu, .ics, Barvy, password, „Jak to vidí ostatní“)
 ui/public.js           the public part: #pastva[/<id>], #jak-se-schazime (from publicData(), never S.data)
 ui/login.js            sign-in (#prihlaseni), first setup, invite registration, the logins view
 ```
@@ -359,7 +359,7 @@ object. See DESIGN.md §8.
 ### The shell (app.js + index.html)
 
 `header.appbar` (brand, save status, the colour picker – mounted by `app.js` –, the signed-in person → Můj účet,
-or „Přihlásit se“)
+or „Přihlas se“)
 across the top; under it `aside.sidebar` (navigation per role, at the bottom „Veřejná část“ / „Zpátky do
 Zvonce“) and `main.stage` with one `div.page`. On a phone (< 960 px) the appbar shows the brand and „Menu“;
 the sidebar becomes a sheet and `app.js` moves the colour picker and the person into it (`placeTools`). The
@@ -369,7 +369,7 @@ hero page head gets `data-context` = the nav label of the section, shown as a qu
 Navigation per role (`NAV_LEADER`, `NAV_MEMBER`, `NAV_PUBLIC` in app.js; `[id, label, icon, href]`):
 leader **Přehled · Kalendář · Upozornění (count) · Lidé · Týmy a skupinky · Jak se scházíme · Nastavení**;
 member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor and public routes **Pastva · Jak se
-scházíme · Přihlásit se**. The demo is signed in as admin; „Veřejná část“ opens the public pages as a
+scházíme · Přihlas se**. The demo is signed in as admin; „Veřejná část“ opens the public pages as a
 visitor sees them.
 
 ### Routes
@@ -386,7 +386,7 @@ section; `null` = none). `render` returns a kit `page()` (older screens may retu
 | `#setkani/<id>[/sluzby\|/osnova]` | event: Přehled · Kdo slouží · Osnova | member (leader edits) |
 | `#upozorneni[/lide]` | Upozornění: Podle setkání / Podle lidí | leader |
 | `#lide[/<pohled>[/<filtr>]]` | Lidé; views seznam · tabulka · domacnosti · skupiny · narozeniny · bremeno; filters `clenove` · `pratele` · `hoste` · `deti` · `doplnit`; `bremeno` takes a month | member (members: seznam, domacnosti, skupiny) |
-| `#lide/archiv` | Archiv: cards in the archive, „Vrátit z archivu“, „Smazat kartu“, the one-year question | leader |
+| `#lide/archiv` | Archiv: cards in the archive, „Vrať z archivu“, „Smaž kartu“, the one-year question | leader |
 | `#osoba/<id>` | person card | member (reduced) |
 | `#domacnost/<id>` | household | leader |
 | `#tymy[/<tymy\|skupinky\|vedeni\|umi>[/<týmId>]]`, `#tym/<id>[/<lide\|role\|umi\|setkani>]` | teams and groups, team page | leader |
@@ -447,14 +447,14 @@ it. A piece that only one module needs lives in that module first (`placeChipsFi
   the planning surface: a leader's click on a cell opens the picker in place (`ui/event-duties.js`).
 - **Lidé** – Tabulka is the default on a desktop, Seznam on a phone; the view is remembered. Leaders find
   a quiet „Archiv (n)“ at the end of Seznam and Tabulka.
-- **Archiv** (`#lide/archiv`) – name, „v archivu od …“, „Vrátit z archivu“, „Smazat kartu“ per row, search
+- **Archiv** (`#lide/archiv`) – name, „v archivu od …“, „Vrať z archivu“, „Smaž kartu“ per row, search
   inside the archive, the one-year question on top.
-- **Person card** – „Přesunout do archivu“ in ⋯ and at the bottom of Členství (whose status field is
-  „Stav“); an archived card opens with a callout (since when, Vrátit z archivu, Smazat kartu) and is
+- **Person card** – „Přesuň do archivu“ in ⋯ and at the bottom of Členství (whose status field is
+  „Stav“); an archived card opens with a callout (since when, Vrať z archivu, Smaž kartu) and is
   for leaders only. Left column owned by the registry (contact, household, membership, consent, note, login),
   right column read-only blocks from planning (teams and roles, upcoming duties, Kdy nemůže, Břemeno,
-  Upozornění) with links to where they are edited; each block has its own small „Upravit“ dialog.
-- **Template page** – sections Základ · Na webu · Kdo je potřeba · Osnova · Řady, edits a draft, writes on „Uložit“.
+  Upozornění) with links to where they are edited; each block has its own small „Uprav“ dialog.
+- **Template page** – sections Základ · Na webu · Kdo je potřeba · Osnova · Řady, edits a draft, writes on „Ulož“.
 
 Picking people (`ui/picker.js`): one picker for event slots, program leaders, group members and
 households. With an event and a role it ranks `candidates()` and shows the reasons as pills (solid =
