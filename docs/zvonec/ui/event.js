@@ -328,7 +328,7 @@ function dutiesTab(event, conflicts, leader) {
   const tools = editable ? h('div', { class: 'side-tools' },
     fill.state === 'open' ? button('Navrhnout lidi', { variant: 'surface', icon: 'users', onclick: () => proposeRest(id), title: 'Zvonec doplní, kdo umí a má čas' }) : null,
     previous && (previous.assignments || []).some((a) => a.status !== 'declined') && fill.state === 'open'
-      ? button('Obsadit jako minule', { variant: 'surface', icon: 'copy', onclick: () => copyPeople(id), title: `Jako ${prettyDay(previous.start)}` }) : null,
+      ? button('Obsadit jako minule', { variant: 'surface', icon: 'copy', onclick: () => copyPeople(id), title: `Stejně jako ${prettyDay(previous.start)}` }) : null,
     button('Kolik lidí je potřeba', { variant: 'surface', icon: 'sliders', onclick: () => needsDialog(id) })) : null;
   if (!needs.length) {
     return emptyState({ icon: 'users', title: 'Tohle setkání nikoho do služby nepotřebuje.', action: editable ? button('Určit, kolik lidí je potřeba', { variant: 'solid', onclick: () => needsDialog(id) }) : null });

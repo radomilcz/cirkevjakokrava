@@ -92,7 +92,7 @@ export function renderDemoLogin({ viewers, onSignIn }) {
     e.preventDefault();
     const wanted = foldName(form.elements.name.value);
     const viewer = viewers.find((v) => foldName(v.name) === wanted);
-    if (!viewer) { formError(form, `Takový přístup v ukázce není. Zkus třeba ${viewers.map((v) => `„${v.name}“`).join(' nebo ')}.`); return; }
+    if (!viewer) { formError(form, `Pod tímhle jménem se v ukázce přihlásit nedá. Zkus třeba ${viewers.map((v) => `„${v.name}“`).join(' nebo ')}.`); return; }
     onSignIn(viewer);
   });
   return signedOutPage({

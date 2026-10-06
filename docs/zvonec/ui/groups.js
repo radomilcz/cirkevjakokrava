@@ -377,7 +377,7 @@ function skillCards(matrix, { editable, multi, scroller }) {
     h('p', { class: 'skill-legend' },
       h('span', {}, skillSymbol('trained'), 'umí'),
       h('span', {}, skillSymbol('learning'), 'učí se'),
-      editable && multi ? h('span', { class: 'skill-legend-hint' }, 'Další roli přidáš, když nahoře vybereš tým.') : editable ? h('span', { class: 'skill-legend-hint' }, 'Klepni na roli a změníš ji.') : null));
+      editable && multi ? h('span', { class: 'skill-legend-hint' }, 'Další roli přidáš, když nahoře vybereš tým.') : editable ? h('span', { class: 'skill-legend-hint' }, 'Klepni na roli a změníš, jak ji umí.') : null));
 }
 
 /** „Ukázat všechny“: Kdo co umí shows the people of the team(s) unless this is on. */

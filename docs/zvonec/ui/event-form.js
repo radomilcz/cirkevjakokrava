@@ -236,14 +236,14 @@ function openEventForm({ mode, event, type, day, onBack }) {
   const body = h('div', { class: 'dialog-body' }, sections, formErrorLine());
   const cancelIt = () => { closeDialog(); cancelDialog(event.id); };
   const deleteIt = () => { closeDialog(); deleteDialog(event.id); };
-  // on a phone the two destructive actions fold into one „Další akce“ menu, so the foot stays two even rows
+  // on a phone the two destructive actions fold into one „Další možnosti“ menu, so the foot stays two even rows
   const leftActions = editing ? [
     button(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', { variant: event.cancelled ? 'soft' : 'danger', onclick: cancelIt, cls: 'foot-wide' }),
     button('Smazat', { variant: 'danger', icon: 'trash', onclick: deleteIt, cls: 'foot-wide' }),
-    h('span', { class: 'foot-narrow' }, button('Další akce', { variant: 'soft', icon: 'more', onclick: (e) => popMenu(e.currentTarget, [
+    h('span', { class: 'foot-narrow' }, button('Další možnosti', { variant: 'soft', icon: 'more', onclick: (e) => popMenu(e.currentTarget, [
       [event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', cancelIt, { icon: event.cancelled ? 'undo' : 'x' }],
       ['Smazat', deleteIt, { danger: true, icon: 'trash' }],
-    ], { label: 'Další akce' }) })),
+    ], { label: 'Další možnosti' }) })),
   ] : [];
   const foot = h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-left' }, leftActions), h('span', { class: 'dialog-foot-space' }),
     button('Zrušit', { variant: 'ghost', onclick: closeDialog }), submit);
