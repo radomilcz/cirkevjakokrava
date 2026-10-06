@@ -1,4 +1,4 @@
-/* The public part – #program, #program/<id>, #jak-se-schazime (ui/public.js).
+/* The public part – #pastva, #pastva/<id>, #jak-se-schazime (ui/public.js).
    Semantic tokens only (css/tokens.css). */
 
 /* ---------- the next event: a hero card ---------- */
@@ -73,7 +73,7 @@
 .pub-where-text .pub-where-updated{margin-top:auto;padding-top:12px;font-size:var(--font-size-3);color:var(--text-2)}
 .pub-where-map .place-map{margin:0;max-width:none;height:220px}
 
-/* ---------- #program/<id> ---------- */
+/* ---------- #pastva/<id> ---------- */
 .pub-detail .page-meta .badge{margin-top:-2px}
 .pub-detail-cover .cover{max-height:none}
 .pub-detail-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:start}

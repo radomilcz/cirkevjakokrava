@@ -169,7 +169,7 @@ export function renderTemplate(id = 'nova') {
     h('div', { class: 'tpl-right' },
       sec('lide', 'Kdo je potřeba', 'Kolik lidí z kterého týmu potřebuje každé nové setkání.', needsHolder),
       sec('osnova', 'Osnova', 'Každé nové setkání dostane kopii, kterou pak můžeš upravit.', outlineHolder)),
-    sec('web', 'Na webu', 'Co uvidí návštěvníci u setkání v Programu. Jména lidí nikdy.', webSection(d, markDirty)),
+    sec('web', 'Na webu', 'Co uvidí návštěvníci u setkání na Pastvě. Jména lidí nikdy.', webSection(d, markDirty)),
     sec('rady', 'Řady', null, seriesSection(d)));
 
   return morePage({
@@ -472,7 +472,7 @@ function webSection(d, dirty) {
   draw();
   return h('div', { class: 'form' },
     switchRow({
-      label: 'Nová setkání ukazovat na webu', hint: 'Název, čas, místo, obrázek a popis uvidí každý v Programu.', checked: !!v.public,
+      label: 'Nová setkání ukazovat na webu', hint: 'Název, čas, místo, obrázek a popis uvidí každý na Pastvě.', checked: !!v.public,
       onChange: (on) => { if (on) v.public = true; else delete v.public; dirty(); },
     }),
     field({ label: 'Popis', optional: true, control: textArea({ name: 'description', value: v.description || '', rows: 4, placeholder: 'např. Chvály, slovo a kafe. Přijď, jak jsi.', onInput: (t) => { if (t.trim()) v.description = t.trim(); else delete v.description; dirty(); } }), hint: 'Předvyplní se u nových setkání.' }),

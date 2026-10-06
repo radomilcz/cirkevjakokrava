@@ -291,7 +291,7 @@ ui/places.js           #mista, #misto/<id> – buildings, rooms, address and map
 ui/conflicts.js        #upozorneni: Podle setkání / Podle lidí, inline fix, override; warning rows for other screens
 ui/settings.js         #nastaveni: Sbor · Pravidla · Přístupy · Záloha
 ui/account.js          #ucet – Můj účet (contact, Kdy nemůžu, .ics, Barvy, password, „Dívat se jako“)
-ui/public.js           the public part: #program[/<id>], #jak-se-schazime (from publicData(), never S.data)
+ui/public.js           the public part: #pastva[/<id>], #jak-se-schazime (from publicData(), never S.data)
 ui/login.js            sign-in (#prihlaseni), first setup, invite registration, the logins view
 ```
 Rules: `lib/*` never touches the DOM. `lib/people.js` and `lib/places.js` import nothing. `lib/groups.js` never imports
@@ -351,7 +351,7 @@ images/<name>   the pictures of the published events (copied from data/images/)
   guard fails the run when `site/images/` holds anything `public.json` does not list. The workflow also
   runs on a push to `data/images/**`.
 - The app loads `public.json` (same origin) for signed-out visitors; demo mode builds the same object
-  from the demo data with `buildPublic`. The public pages (Program, one event, Jak se scházíme) read only this
+  from the demo data with `buildPublic`. The public pages (Pastva, one event, Jak se scházíme) read only this
 object. See DESIGN.md §8.
 
 ## 5. Shell, routes and screens
@@ -368,7 +368,7 @@ hero page head gets `data-context` = the nav label of the section, shown as a qu
 
 Navigation per role (`NAV_LEADER`, `NAV_MEMBER`, `NAV_PUBLIC` in app.js; `[id, label, icon, href]`):
 leader **Přehled · Kalendář · Upozornění (count) · Lidé · Týmy a skupinky · Jak se scházíme · Nastavení**;
-member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor and public routes **Program · Jak se
+member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor and public routes **Pastva · Jak se
 scházíme · Přihlásit se**. The demo is signed in as admin; „Veřejná část“ opens the public pages as a
 visitor sees them.
 
@@ -395,7 +395,7 @@ section; `null` = none). `render` returns a kit `page()` (older screens may retu
 | `#mista`, `#misto/<id>` | places | member (leader edits) |
 | `#nastaveni[/<sbor\|pravidla\|pristupy\|zaloha>]` | settings | leader |
 | `#ucet` | Můj účet | member |
-| `#program[/<id>]`, `#jak-se-schazime` | public: events, one event, published formats | public |
+| `#pastva[/<id>]`, `#jak-se-schazime` | public: events, one event, published formats | public |
 | `#prihlaseni`, `#pozvanka/<code>` | sign-in (first setup while there are no logins), registration | signedOut |
 | `#kit`, `#kit/ikony` | the living specimen | leader, not in the nav |
 
@@ -404,10 +404,10 @@ Old slugs redirect (`REDIRECTS` in app.js, applied until none matches): `#moje` 
 `#udalost/<id>` → `#setkani/<id>`; `#porad/<id>`, `#setkani/<id>/porad`, `#setkani/<id>/prubeh` →
 `#setkani/<id>/osnova`; `#nastaveni/formaty` → `#formaty`; `#nastaveni/sablony` → `#sablony`;
 `#nastaveni/mista` → `#mista`; `#nastaveni/ucet` → `#ucet`; `#skupiny`, `#sluzby` → `#tymy`; `#skupina/<id>` →
-`#tym/<id>`; `#kolize` → `#upozorneni`; `#lide[/<seznam|tabulka|skupiny>]/nechodi` → `#lide/archiv`. In
+`#tym/<id>`; `#kolize` → `#upozorneni`; `#program[/<id>]` → `#pastva[/<id>]`; `#lide[/<seznam|tabulka|skupiny>]/nechodi` → `#lide/archiv`. In
 `#lide`, the old filter slugs `vsichni` and `neclenove` still open.
 
-An empty or unknown hash opens `#prehled` for signed-in people, `#program` for visitors (`#prihlaseni`
+An empty or unknown hash opens `#prehled` for signed-in people, `#pastva` for visitors (`#prihlaseni`
 while there are no logins). A person opening a route above their access lands on the home of their role;
 a visitor opening an app route lands on `#prihlaseni` and, after signing in, on the route they asked for
 (`S.afterSignIn`). Inside a screen the UI still hides what members must not see (§6).

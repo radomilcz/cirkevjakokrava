@@ -109,7 +109,7 @@ function publishSwitch(format) {
   };
   return switchRow({
     label: 'Ukázat na webu',
-    hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý v Programu.',
+    hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý na Pastvě.',
     checked: !!format.public,
     onChange: (on) => { set(on); toast(on ? 'Na webu to bude za pár minut.' : 'Z webu to zmizí za pár minut.', { action: () => set(!on) }); },
   });
@@ -222,7 +222,7 @@ export function formatSheet(format) {
       disclosure([
         field({ label: 'Kdo je potřeba navíc', control: needsEditor(needs), hint: 'Ten, kdo vede, se započítá sám.' }),
         field({ label: 'Další čtení', control: linkInput, optional: true, hint: 'Odkaz na článek nebo video.' }),
-        switchRow({ label: 'Ukázat na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý v Programu.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
+        switchRow({ label: 'Ukázat na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý na Pastvě.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
       ], { open: !!(format?.needs?.length || format?.link || format?.public) }),
     ],
     onSubmit: (form, values) => {

@@ -173,7 +173,7 @@ test('buildPublic: a bad today is an error', () => {
 test('buildPublic: no person data, even with assignments, program leaders and notes', () => {
   const data = base([
     event('e1', '2026-10-11', {
-      public: true, description: 'Přijďte.', note: 'Tajná poznámka pro vedoucí',
+      public: true, description: 'Přijď.', note: 'Tajná poznámka pro vedoucí',
       assignments: [{ id: 'a1', roleId: 'r1', personId: 'pSecret1', status: 'confirmed', override: { reason: 'Důvod přepsání', by: 'pSecret2' } }],
       program: [{ id: 'i1', formatId: 'f1', minutes: 30, personId: 'pSecret3', title: 'Kázání', note: 'Soukromá poznámka k bodu' }],
     }),
@@ -188,7 +188,7 @@ test('buildPublic: no person data, even with assignments, program leaders and no
     assert.ok(!json.includes(needle), `public data leak "${needle}"`);
   }
   for (const key of FORBIDDEN_KEYS) assert.ok(!json.includes(`"${key}"`), `public data contain key ${key}`);
-  assert.ok(json.includes('Přijďte.'));
+  assert.ok(json.includes('Přijď.'));
 });
 
 test('demo: public.json is not empty and holds no person data at all', () => {

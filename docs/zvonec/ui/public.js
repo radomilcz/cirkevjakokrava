@@ -1,7 +1,7 @@
 // The public part: what a visitor who is not signed in sees (DESIGN §4, §4b). Only published data
 // from publicData() (lib/public.js shape) – never S.data directly, so nothing private can slip in.
-// #program – the next event as a hero, then the weeks, „Kde nás najdeš“ at the end ·
-// #program/<id> – one public event (shareable, „Stáhnout do kalendáře“) · #jak-se-schazime – published formats.
+// #pastva – the next event as a hero, then the weeks, „Kde nás najdeš“ at the end ·
+// #pastva/<id> – one public event (shareable, „Stáhnout do kalendáře“) · #jak-se-schazime – published formats.
 
 import {
   h, page, card, button, badge, andJoin, emptyState, eventCover, coverKey, placeLine, placeMap, mapUrl, callout, icon, plural, download, MONTHS_SHORT, SEP,
@@ -119,25 +119,25 @@ function downloadEvent(event, data) {
 
 const calendarButton = (event, data, variant = 'surface') => button('Stáhnout do kalendáře', { variant, icon: 'calendar-plus', onclick: () => downloadEvent(event, data) });
 
-// ---------- #program ----------
+// ---------- #pastva ----------
 
 /** The next event, big: picture, title, when, where (+ map), what it is, two buttons. */
 function hero(event, data) {
   const places = placesOf(event);
   const mapPlace = places.find(hasCoords);
   return h('article', { class: 'pub-hero card' },
-    h('a', { class: 'pub-hero-cover', href: `#program/${event.id}`, tabindex: '-1', 'aria-hidden': 'true' }, coverOf(event, 'hero')),
+    h('a', { class: 'pub-hero-cover', href: `#pastva/${event.id}`, tabindex: '-1', 'aria-hidden': 'true' }, coverOf(event, 'hero')),
     h('div', { class: 'pub-hero-body' },
       h('div', { class: 'pub-hero-text' },
         h('p', { class: 'pub-kicker' }, 'Nejbližší setkání', stateBadge(event)),
         // a generated cover carries the title in big letters already; a photo does not
-        (event.image && S.mode === 'live') ? h('h2', { class: 'pub-hero-title' }, h('a', { href: `#program/${event.id}` }, event.title)) : h('h2', { class: 'visually-hidden' }, event.title),
+        (event.image && S.mode === 'live') ? h('h2', { class: 'pub-hero-title' }, h('a', { href: `#pastva/${event.id}` }, event.title)) : h('h2', { class: 'visually-hidden' }, event.title),
         h('p', { class: 'pub-hero-when' }, icon('clock'), h('time', { datetime: event.start }, whenText(event))),
         places.length ? h('div', { class: 'pub-hero-where' }, icon('map-pin'), placeLine(places)) : null,
         event.description ? h('p', { class: 'pub-hero-desc' }, event.description) : null,
         h('div', { class: 'pub-actions' },
           calendarButton(event, data, 'solid'),
-          button('Podrobnosti', { variant: 'surface', href: `#program/${event.id}`, iconEnd: 'chevron-right' }))),
+          button('Podrobnosti', { variant: 'surface', href: `#pastva/${event.id}`, iconEnd: 'chevron-right' }))),
       mapPlace ? h('div', { class: 'pub-hero-map' }, placeMap(mapPlace)) : null));
 }
 
@@ -146,7 +146,7 @@ function eventItem(event) {
   const places = placesOf(event);
   const d = parseDate(dayOf(event.start));
   return h('li', {},
-    h('a', { class: ['pub-item', event.cancelled && 'cancelled'], href: `#program/${event.id}` },
+    h('a', { class: ['pub-item', event.cancelled && 'cancelled'], href: `#pastva/${event.id}` },
       h('span', { class: 'pub-item-date', 'aria-hidden': 'true' },
         h('span', { class: 'pub-item-dow' }, DAYS_FULL[weekday(dayOf(event.start))].slice(0, 2)),
         h('span', { class: 'pub-item-day' }, String(d.getDate())),
@@ -169,7 +169,7 @@ function whereWeAre(data) {
   const name = data.churchName || FALLBACK_NAME;
   const places = (data.events || []).flatMap((e) => e.places || []);
   const home = data.address ? places.find((p) => p.address === data.address && hasCoords(p)) : null;
-  const updated = data.generated && /^\d{4}-\d{2}-\d{2}$/.test(data.generated) ? `Program jsme naposledy upravili ${longDay(data.generated).replace(/^\S+ /, '')}.` : null;
+  const updated = data.generated && /^\d{4}-\d{2}-\d{2}$/.test(data.generated) ? `Pastvu jsme naposledy upravili ${longDay(data.generated).replace(/^\S+ /, '')}.` : null;
   if (!data.address && !updated) return null;
   return h('footer', { class: 'pub-where card' },
     h('div', { class: 'pub-where-text' },
@@ -183,9 +183,9 @@ function whereWeAre(data) {
 
 export function renderPublicProgram() {
   const data = publicData();
-  const title = 'Program';
+  const title = 'Pastva';
   const lead = 'Kdy a kde se potkáváme. Přijď, jak jsi.';
-  if (!data) return page({ title, lead, width: 'list', cls: 'pub-page', body: emptyState({ icon: 'calendar', text: 'Program se nepodařilo načíst. Zkus to za chvíli znovu.' }) });
+  if (!data) return page({ title, lead, width: 'list', cls: 'pub-page', body: emptyState({ icon: 'calendar', text: 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.' }) });
 
   const now = today();
   const upcoming = (data.events || []).filter((e) => dayOf(e.end || e.start) >= now);
@@ -211,16 +211,16 @@ export function renderPublicProgram() {
   });
 }
 
-// ---------- #program/<id> ----------
+// ---------- #pastva/<id> ----------
 
 export function renderPublicEvent(id) {
   const data = publicData();
   const event = (data?.events || []).find((e) => e.id === id);
-  const back = ['Program', '#program'];
+  const back = ['Pastva', '#pastva'];
   if (!event) {
     return page({
       title: 'Setkání', back, width: 'list', cls: 'pub-page',
-      body: emptyState({ icon: 'calendar', title: 'Tohle setkání tu není.', text: data ? 'Už proběhlo, nebo ho někdo přestal zveřejňovat.' : 'Program se nepodařilo načíst. Zkus to za chvíli znovu.', action: button('Celý program', { variant: 'surface', href: '#program' }) }),
+      body: emptyState({ icon: 'calendar', title: 'Tohle setkání tu není.', text: data ? 'Už proběhlo, nebo ho někdo přestal zveřejňovat.' : 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.', action: button('Zpátky na Pastvu', { variant: 'surface', href: '#pastva' }) }),
     });
   }
   const places = placesOf(event);

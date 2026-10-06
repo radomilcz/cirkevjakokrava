@@ -186,10 +186,10 @@ Sidebar in order of frequency; slugs are what people see and share.
 | **Jak se scházíme** | `#sablony`, `#formaty[/<id>]`, `#mista` | **Šablony · Formáty · Místa**; full-page editors `#sablona/<id>`, `#misto/<id>` | edit | Formáty · Místa read |
 | **Nastavení** | `#nastaveni/<sbor\|pravidla\|pristupy\|zaloha>` | **Sbor · Pravidla · Přístupy · Záloha** (GitHub klíč and „Nahrát zálohu“: admin) | yes | – |
 | **Můj účet** | `#ucet` | contact, kdy nemůžu, .ics, Barvy, heslo, odhlásit; demo „Dívat se jako“ | yes | yes |
-| **Veřejná část** | `#program[/<id>]`, `#jak-se-schazime` | Program (hero, weeks, „Kde nás najdete“), one event, published formats | everyone | everyone |
+| **Veřejná část** | `#pastva[/<id>]`, `#jak-se-schazime` | Pastva (hero, weeks, „Kde nás najdeš“), one event, published formats | everyone | everyone |
 
 Navigation per role: leader **Přehled · Kalendář · Upozornění · Lidé · Týmy a skupinky · Jak se
-scházíme · Nastavení**; member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor **Program · Jak se
+scházíme · Nastavení**; member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor **Pastva · Jak se
 scházíme · Přihlásit se**. Rozpis is a Kalendář view (the planning surface: a cell opens the picker in
 place), not a module. Each module is complete on its own: list → detail → create / edit / delete,
 with no detour through another module. Old slugs redirect (list in ARCHITECTURE.md §5).
@@ -227,7 +227,7 @@ with no detour through another module. Old slugs redirect (list in ARCHITECTURE.
 - The public site is built from `public.json`, written by the data-repo workflow from published,
   upcoming items only (`lib/public.js`, pure, tested; no person data at all). Rooms are resolved to
   `{ name, building?, address?, lat?, lon? }`.
-- A visitor sees Program, Jak se scházíme and „Přihlásit se“; the sign-in form is a page, not the site.
+- A visitor sees Pastva, Jak se scházíme and „Přihlásit se“; the sign-in form is a page, not the site.
   Demo mode shows the same public pages built from demo data („Veřejná část“ in the sidebar).
 - Every event has a picture, title, date, time and description: uploaded `event.image`, else the
   template's, else a **generated cover** (palette, imprint, title in Narrow Black; one template or

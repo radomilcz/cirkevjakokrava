@@ -263,7 +263,7 @@ function editorPage(d) {
 
   form.append(
     sectionCard('zaklad', 'Základ', null, basics.node),
-    sectionCard('web', 'Na webu', 'Co uvidí návštěvníci u veřejného setkání na stránce Program.', web.node),
+    sectionCard('web', 'Na webu', 'Co uvidí návštěvníci u veřejného setkání na Pastvě.', web.node),
     sectionCard('lide', 'Kdo je potřeba', 'Kolik lidí z kterého týmu potřebuje každé nové setkání.', people),
     sectionCard('osnova', 'Osnova', 'Z čeho se setkání skládá. Každé nové setkání dostane kopii, kterou pak můžeš upravit.', outline),
     sectionCard('rady', 'Řady', 'Opakovaná setkání z téhle šablony. Řadu založíš v kalendáři přes „Přidat setkání“.', seriesSection(d)),

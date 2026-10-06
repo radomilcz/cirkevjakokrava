@@ -23,8 +23,8 @@ import { checkPassword } from './account.js';
 const REMEMBER = 'Pamatovat si mě na tomhle zařízení';
 const DATA_PATH = 'data';
 
-/** The top bar of a signed-out page: brand, „Program“ on the right. */
-const bar = () => topBar({ cls: 'topbar--public', brand: true, actions: button('Program', { size: 's', variant: 'quiet', href: '#program', icon: 'calendar' }) });
+/** The top bar of a signed-out page: brand, „Pastva“ on the right. */
+const bar = () => topBar({ cls: 'topbar--public', brand: true, actions: button('Pastva', { size: 's', variant: 'quiet', href: '#pastva', icon: 'calendar' }) });
 
 /** A form-wide error line (under the fields, above the button). */
 function errorLine() {
@@ -85,7 +85,7 @@ function liveLogin() {
       form,
       h('div', { class: 'login-after' },
         h('p', { class: 'meta' }, 'Ještě přístup nemáš? Požádej vedoucího o pozvánku.'),
-        button('Program', { variant: 'quiet', href: '#program', icon: 'calendar' })),
+        button('Zpátky na Pastvu', { variant: 'quiet', href: '#pastva', icon: 'calendar' })),
     ],
   });
 }

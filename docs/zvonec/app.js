@@ -90,13 +90,13 @@ const GROUPS_LIBRARY_ROUTES = {
 // ROUTES:groups-library end
 
 // ROUTES:home-admin – Přehled, Upozornění (#upozorneni[/lide]), Nastavení (#nastaveni/<sbor|pravidla|
-// pristupy|zaloha>), Můj účet and the public part (#program[/<id>], #jak-se-schazime).
+// pristupy|zaloha>), Můj účet and the public part (#pastva[/<id>], #jak-se-schazime).
 const HOME_ADMIN_ROUTES = {
   prehled: { render: () => renderHome(), access: 'member' },
   upozorneni: { render: (parts) => renderConflicts(parts), access: 'leader' },
   nastaveni: { render: ([part]) => renderSettings(part || ''), access: 'leader' },
   ucet: { render: () => renderAccount(), access: 'member' },
-  program: { render: ([id]) => (id ? renderPublicEvent(id) : renderPublicProgram()), access: 'public' },
+  pastva: { render: ([id]) => (id ? renderPublicEvent(id) : renderPublicProgram()), access: 'public' },
   'jak-se-schazime': { render: () => renderPublicFormats(), access: 'public' },
 };
 // ROUTES:home-admin end
@@ -126,6 +126,7 @@ const REDIRECTS = [
   [/^(skupiny|sluzby)$/, () => 'tymy'],
   [/^skupina\/(.+)$/, (m) => `tym/${m[1]}`],
   [/^kolize$/, () => 'upozorneni'],
+  [/^program(\/.*)?$/, (m) => `pastva${m[1] || ''}`],   // the public page used to be „Program“; links people shared
 ];
 
 // ---------- navigation per role (structure.md §2.1) ----------
@@ -147,13 +148,13 @@ const NAV_MEMBER = [
   ['knihovna', 'Jak se scházíme', 'layers', '#formaty'],
 ];
 const NAV_PUBLIC = [
-  ['program', 'Program', 'calendar', '#program'],
+  ['pastva', 'Pastva', 'calendar', '#pastva'],
   ['jak-se-schazime', 'Jak se scházíme', 'layers', '#jak-se-schazime'],
   ['prihlaseni', 'Přihlásit se', 'log-in', '#prihlaseni'],
 ];
 
 const signedIn = () => !!S.me;
-const homeSection = () => (!signedIn() ? (S.logins.length ? 'program' : 'prihlaseni') : 'prehled');
+const homeSection = () => (!signedIn() ? (S.logins.length ? 'pastva' : 'prihlaseni') : 'prehled');
 
 /** May the current visitor open a route with this access? */
 function allowedFor(access, parts) {
@@ -182,7 +183,7 @@ function resolve() {
     section = needsSignIn ? 'prihlaseni' : homeSection();
     parts = [];
     route = ROUTES[section];
-    history.replaceState(null, '', `#${section}`);   // the address says where we are (#program, #prehled…)
+    history.replaceState(null, '', `#${section}`);   // the address says where we are (#pastva, #prehled…)
   }
   return { section, parts, route };
 }
@@ -261,7 +262,7 @@ function updateShell(route, section, parts) {
   const foot = document.querySelector('.sidebar .nav-foot');
   const footItem = !signedIn() ? null
     : isPublic ? ['zpet', 'Zpátky do Zvonce', 'arrow-left', `#${homeSection()}`]
-      : ['verejne', 'Veřejná část', 'globe', '#program'];
+      : ['verejne', 'Veřejná část', 'globe', '#pastva'];
   foot.replaceChildren(...nodes(footItem ? h('ul', { class: 'nav-list' }, navItem(footItem)) : null));
 
   // the header's right side: who is signed in (→ Můj účet), or Přihlásit se
@@ -477,7 +478,7 @@ async function startLive(result) {
   const wanted = S.afterSignIn;
   S.afterSignIn = null;
   if (wanted) history.replaceState(null, '', `#${wanted}`);
-  else if (/^#(prihlaseni|pozvanka\/|program|jak-se-schazime)/.test(location.hash)) history.replaceState(null, '', '#');
+  else if (/^#(prihlaseni|pozvanka\/|pastva|program|jak-se-schazime)/.test(location.hash)) history.replaceState(null, '', '#');
   useStore(store, data || emptyData());
   if (can('leader')) refreshLogins();
 }
