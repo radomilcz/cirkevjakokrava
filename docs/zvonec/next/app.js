@@ -73,13 +73,13 @@ const HOME_ROUTES = {
 const CALENDAR_ROUTES = CALENDAR_SCREENS;
 // ROUTES:calendar end
 
-// ROUTES:people – Lidé (#lide[/<filtr>]: vsichni · clenove · pratele · hoste · deti · nechodi · doplnit ·
-// narozeniny), Skupiny (#lide/skupiny), Karta člověka (#osoba/<id>), Domácnost (#domacnost/<id>),
+// ROUTES:people – Lidé (#lide[/<filtr>]: vsichni · clenove · pratele · hoste · deti · doplnit ·
+// narozeniny · archiv), Skupiny (#lide/skupiny), Karta člověka (#osoba/<id>), Domácnost (#domacnost/<id>),
 // Skupina (#tym/<id>).
 const PEOPLE_ROUTES = {
   lide: {
     render: (parts) => (parts[0] === 'skupiny' ? renderGroups(parts.slice(1)) : renderPeople(parts)),
-    access: (parts) => (parts[0] === 'narozeniny' ? 'leader' : 'member'),
+    access: (parts) => (['narozeniny', 'archiv'].includes(parts[0]) ? 'leader' : 'member'),
   },
   osoba: { render: (parts) => renderPerson(parts), access: 'member', nav: 'lide' },
   domacnost: { render: (parts) => renderHousehold(parts), access: 'leader', nav: 'lide' },
@@ -131,6 +131,7 @@ const REDIRECTS = [
   [/^lide\/bremeno(?:\/(\d{4}-\d{2}))?$/, (m) => `kalendar/rozpis${m[1] ? `/${m[1]}` : ''}/bremeno`],
   [/^lide\/(?:domacnosti|tabulka|seznam)(?:\/(.+))?$/, (m) => `lide${m[1] ? `/${m[1]}` : ''}`],
   [/^domacnosti$/, () => 'lide'],
+  [/^lide\/nechodi$/, () => 'lide/archiv'],   // the filter „Už nechodí“ became the archive
   [/^(?:tymy|skupiny|sluzby)(?:\/.*)?$/, () => 'lide/skupiny'],
   [/^skupina\/(.+)$/, (m) => `tym/${m[1]}`],
   [/^tym\/([^/]+)\/.+$/, (m) => `tym/${m[1]}`],

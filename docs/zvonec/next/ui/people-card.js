@@ -20,11 +20,12 @@ import { today, dayOf, monthOf, prettyDay, prettyTime } from '../../lib/time.js'
 import {
   seesContact, isKid, isFormer, missingOf, kidText, yearsText, fullDate, dayMonth, membershipLine, missingSentence,
   groupsInOrder, groupWords, skillsIn, telHref, smsHref, mailHref,
-  MEMBERSHIP_WORDS, daysToBirthday, outOf, peopleCount,
+  MEMBERSHIP_WORDS, daysToBirthday, outOf, peopleCount, archivedText, capital,
 } from './people-common.js';
 import {
   contactSheet, detailsSheet, consentSheet, limitsSheet, householdChooseSheet,
   personGroupSheet, deletePerson, householdSheet, deleteHousehold, addToHouseholdSheet, removeFromHousehold,
+  archiveSheet, restoreFromArchive,
 } from './people-forms.js';
 import { memberSheet } from './groups-forms.js';
 import { blockoutSection } from './blockouts.js';
@@ -47,6 +48,8 @@ export function personMenu(person) {
     leader && !isFormer(person) && !accessOf(person.id).login ? { label: 'Pozvat do Zvonce', icon: 'log-in', onclick: () => inviteSheet(person) } : null,
     leader || self ? { label: 'Stáhnout do kalendáře', icon: 'download', onclick: () => downloadDuties(person) } : null,
     leader && !self ? '-' : null,
+    leader && !self && !isFormer(person) ? { label: 'Přesunout do archivu', icon: 'archive', onclick: () => archiveSheet(person) } : null,
+    leader && isFormer(person) ? { label: 'Vrátit z archivu', icon: 'undo', onclick: () => restoreFromArchive(person) } : null,
     leader && !self ? { label: 'Smazat kartu', icon: 'trash', danger: true, onclick: () => deletePerson(person) } : null,
   ].filter(Boolean);
   return items.length ? menu(items, { label: 'Další možnosti', title: personName(person) }) : null;
@@ -86,6 +89,21 @@ function head(person, { pane }) {
     h('div', { class: 'person-head__text' },
       titleEl(personName(person), { small: pane, tag: pane ? 'h2' : 'h1' }),
       h('p', { class: 'meta' }, headMeta(person) || null, self ? [headMeta(person) ? ' · ' : '', pill('ty')] : null)));
+}
+
+/** A card in the archive (leaders): since when, and the two ways out. */
+function archiveCallout(person) {
+  if (!isFormer(person)) return null;
+  return callout({
+    tone: 'info',
+    icon: 'archive',
+    title: capital(archivedText(person)),
+    text: 'Karta se neukazuje v seznamech, kontaktech ani v návrzích do služeb. Ve starých rozpisech zůstává.',
+    actions: [
+      button('Vrátit z archivu', { size: 's', icon: 'undo', onclick: () => restoreFromArchive(person) }),
+      person.id !== myId() ? button('Smazat kartu', { size: 's', variant: 'quiet', icon: 'trash', onclick: () => deletePerson(person) }) : null,
+    ],
+  });
 }
 
 /** What is missing on the card – in context, with the way to fill it in (leaders). */
@@ -160,7 +178,7 @@ function householdSection(person) {
         slot('Přidat do domácnosti', () => householdChooseSheet(person))],
     });
   }
-  const others = householdMembers(S.data, household.id, { today: today() }).filter((p) => p.id !== person.id);
+  const others = householdMembers(S.data, household.id, { today: today() }).filter((p) => p.id !== person.id && !isFormer(p));
   const address = household.address && (leader || self) ? household.address : null;
   return section({
     title: 'Domácnost', cls: 'person-section',
@@ -289,13 +307,15 @@ function detailsSection(person) {
   const years = age(person, today());
   const exact = String(person.birthDate || '').length >= 10;
   const needsConsent = status === 'guest' || status === 'regular';
-  const span = [m.since ? `od ${fullDate(m.since)}` : null, status === 'former' && m.until ? `do ${fullDate(m.until)}` : null].filter(Boolean).join(' ');
+  const archived = isFormer(person);
+  const membership = archived ? archivedText(person)
+    : joinMeta([MEMBERSHIP_WORDS[status], m.since ? `od ${fullDate(m.since)}` : null]);
   return section({
     title: 'Údaje', cls: 'person-section',
     action: editAction(() => detailsSheet(person)),
     body: [
       facts([
-        { icon: 'user', text: joinMeta([MEMBERSHIP_WORDS[status], span || null]) },
+        { icon: 'user', text: membership },
         person.birthDate ? { icon: 'cake', text: exact ? `${fullDate(person.birthDate)} · ${yearsText(years)}` : `rok ${person.birthDate.slice(0, 4)} · asi ${yearsText(years)}` } : null,
         person.nickname ? { icon: 'star', text: `přezdívka ${person.nickname}` } : null,
         person.consentDate ? { icon: 'check', text: `Souhlas se zpracováním údajů ${fullDate(person.consentDate)}` } : null,
@@ -336,6 +356,7 @@ export function personCard(person, { pane = false } = {}) {
   return h('article', { class: ['person-card', pane && 'person-card--pane'] },
     head(person, { pane }),
     reach(person),
+    leader ? archiveCallout(person) : null,
     leader ? missingCallout(person) : null,
     contactSection(person),
     householdSection(person),

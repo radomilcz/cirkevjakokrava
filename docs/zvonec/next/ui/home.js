@@ -19,7 +19,8 @@ import { S, can, myId, ACCESS_LABELS } from '../../ui/state.js';
 import { DEMO_VIEWERS } from '../../lib/demo.js';
 import { upcomingDuties, eventsInRange, eventById, fillRatio, needsOf } from '../../lib/events.js';
 import { openSlots, unconfirmedDuties } from '../../lib/scheduling.js';
-import { personById, peopleWithMissingData, upcomingBirthdays } from '../../lib/people.js';
+import { personById, peopleWithMissingData, upcomingBirthdays, overdueArchive } from '../../lib/people.js';
+import { overdueQuestion } from './people-common.js';
 import { roleById, ledBy } from '../../lib/groups.js';
 import { today, addDays, dayOf, weekday, prettyDayLong } from '../../lib/time.js';
 import { answer, waitingSheet, roleName, whenWhere } from './home-actions.js';
@@ -331,6 +332,7 @@ function peopleBlock() {
   const missing = peopleWithMissingData(S.data, { today: day });
   const noConsent = missing.filter((x) => x.missing.includes('consent')).map((x) => x.person);
   const birthdays = upcomingBirthdays(S.data, { today: day, months: 1 }).flatMap((m) => m.items).filter((b) => b.thisWeek && !b.past);
+  const overdue = overdueArchive(S.data, { today: day }).length;   // GDPR: a year in the archive is enough
   const rows = [
     missing.length ? row({ title: 'Chybí údaje', meta: names(missing.map((x) => x.person)), trail: count(missing.length), chevron: true, href: '#lide/doplnit' }) : null,
     noConsent.length ? row({ title: 'Hosté bez souhlasu', meta: names(noConsent), trail: count(noConsent.length), chevron: true, href: '#lide/hoste' }) : null,
@@ -339,6 +341,7 @@ function peopleBlock() {
       meta: birthdays.slice(0, 2).map((b) => `${personName(b.person)} (${b.isToday ? 'dnes' : shortDate(b.date)})`).join(', ') + (birthdays.length > 2 ? ` a ${plural(birthdays.length - 2, 'další', 'další', 'dalších')}` : ''),
       trail: count(birthdays.length), chevron: true, href: '#lide/narozeniny',
     }) : null,
+    overdue ? row({ title: 'Archiv', meta: overdueQuestion(overdue), trail: count(overdue), chevron: true, href: '#lide/archiv' }) : null,
   ].filter(Boolean);
   if (!rows.length) return null;
   return section({ title: 'Lidé k doplnění', cls: 'home-people', body: list(rows, { label: 'Lidé k doplnění' }) });

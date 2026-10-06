@@ -307,3 +307,14 @@ a.household-link:hover{text-decoration:underline;text-underline-offset:.2em;text
 .skill-row:last-child{border-bottom:1px solid var(--line-1)}
 .skill-role{min-width:0;overflow-wrap:anywhere;font-size:var(--font-size-4)}
 @media (min-width:720px){.birthday-tile{max-width:calc((100% - 2 * var(--space-3)) / 3)}}
+
+/* ---------- Archiv ---------- */
+.people-archive-link{margin:var(--space-3) 0 0;padding:0 var(--space-2);font-size:var(--font-size-3);line-height:var(--line-height-3)}
+.people-archive-link a{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);text-decoration:none}
+.people-archive-link a:hover{color:var(--text-1);text-decoration:underline}
+.people-archive-link .icon{width:16px;height:16px}
+.archive-actions{display:flex;flex-wrap:nowrap;gap:var(--space-1)}
+@media (max-width:719.98px){
+  .archive-list .item{flex-wrap:wrap}
+  .archive-list .item-trail{order:3;flex-basis:100%;max-width:none;justify-content:flex-start;padding-left:54px}
+}

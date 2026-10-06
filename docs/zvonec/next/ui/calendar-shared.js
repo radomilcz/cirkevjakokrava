@@ -12,7 +12,7 @@ import { S, can, myId } from '../../ui/state.js';
 import { eventTypeById, needsOf, fillRatio, KIND_LABELS } from '../../lib/events.js';
 import { placesOf as resolvedPlaces } from '../../lib/places.js';
 import { roleById, groupById, ledBy, memberRecord } from '../../lib/groups.js';
-import { fullName, displayName } from '../../lib/people.js';
+import { fullName, displayName, personOrSnapshot, DELETED_NAME } from '../../lib/people.js';
 import { loadImageUrl } from '../../lib/store/store.js';
 import { ics, icsForPerson } from '../../lib/ics.js';
 import { addDays, addMinutes, dayOf, today, weekday } from '../../lib/time.js';
@@ -69,12 +69,19 @@ export function openPlaceSheet(event) {
 
 // ---------- people and roles ----------
 
-export const personOf = (id) => (S.data.people || []).find((p) => p.id === id) || null;
-export const nameOf = (id) => { const p = personOf(id); return p ? fullName(p) : 'Někdo smazaný'; };
-/** „Veronika F.“ – only where a column is narrow (Rozpis table). */
-export function shortName(id) {
-  const p = personOf(id);
-  if (!p) return 'Někdo smazaný';
+/**
+ * The person of an id – or of a record (an assignment, a program item): then a deleted card comes back as
+ * the stand-in made from the name the record kept ({ …, deleted: true }, lib/people.js personOrSnapshot),
+ * so old rosters still say who served. Link to #osoba/ only when the result is not `deleted`.
+ */
+export const personOf = (x) => (x && typeof x === 'object' ? personOrSnapshot(S.data, x) : (S.data.people || []).find((p) => p.id === x) || null);
+export const nameOf = (x) => { const p = personOf(x); return p ? fullName(p) : DELETED_NAME; };
+/** A card that can be opened (not deleted): for links to #osoba/<id>. */
+export const openable = (x) => { const p = personOf(x); return !!p && !p.deleted; };
+/** „Veronika F.“ – only where a column is narrow (Rozpis table). An id or a record, as personOf. */
+export function shortName(x) {
+  const p = personOf(x);
+  if (!p) return DELETED_NAME;
   const first = p.nickname && p.nickname !== p.firstName ? p.nickname : p.firstName || displayName(p);
   return p.lastName ? `${first} ${[...p.lastName][0]}.` : first;
 }

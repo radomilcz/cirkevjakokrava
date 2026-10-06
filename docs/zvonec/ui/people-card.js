@@ -21,11 +21,12 @@ import { ics, icsForPerson } from '../lib/ics.js';
 import { today, addDays, prettyDay, prettyDayLong, prettyTime, monthOf, dayOf } from '../lib/time.js';
 import {
   seesContact, isKid, isFormer, missingOf, kidText, yearsText, dutiesText, outOf, fullDate, telHref, membershipText,
-  capital, missingSentence, birthdaySoon, groupsInOrder, groupWords, peopleCount,
+  capital, missingSentence, birthdaySoon, groupsInOrder, groupWords, peopleCount, archivedText,
 } from './people-common.js';
 import {
   contactEditDialog, membershipDialog, householdEditDialog, detailsDialog, groupDialog, removeFromGroup,
   availabilityDialog, limitsDialog, householdDialog, addToHouseholdDialog, removeFromHousehold,
+  archiveDialog, restoreFromArchive, deletePerson,
 } from './people-forms.js';
 
 const DUTIES_SHOWN = 6;
@@ -39,7 +40,8 @@ const quiet = (text) => h('p', { class: 'card-quiet' }, text);
 
 export function renderPersonCard(id) {
   const person = personById(S.data, id);
-  if (!person) {
+  // a card in the archive is for leaders only (and the person themselves)
+  if (!person || (isFormer(person) && !can('leader') && person.id !== myId())) {
     return page({
       title: 'Lidé', back: ['Lidé', '#lide'], width: 'list',
       body: emptyState({ icon: 'user', title: 'Tenhle člověk tu není.', text: 'Možná ho někdo smazal, nebo je odkaz starý.', action: button('Zpátky do Lidí', { variant: 'surface', href: '#lide', icon: 'chevron-left' }) }),
@@ -48,6 +50,7 @@ export function renderPersonCard(id) {
   const leader = can('leader');
   const self = person.id === myId();
   if (!leader && !self) return reducedCard(person);
+  const archived = isFormer(person);
 
   const household = householdById(S.data, person.householdId);
   const nick = (person.nickname || '').trim();
@@ -71,6 +74,9 @@ export function renderPersonCard(id) {
       leader ? ['Přidat do skupiny', () => groupDialog(person), { icon: 'users' }] : null,
       leader ? ['Upravit jméno a další údaje', () => detailsDialog(person), { icon: 'pencil' }] : null,
       ['Zapsat, kdy nemůže', () => availabilityDialog(person), { icon: 'calendar' }],
+      leader && !self && !archived ? ['Přesunout do archivu', () => archiveDialog(person), { icon: 'archive' }] : null,
+      leader && archived ? ['Vrátit z archivu', () => restoreFromArchive(person), { icon: 'undo' }] : null,
+      leader && !self ? ['Smazat kartu', () => deletePerson(person), { danger: true, icon: 'trash' }] : null,
     ].filter(Boolean), { label: 'Další možnosti' }),
   ];
 
@@ -90,7 +96,7 @@ export function renderPersonCard(id) {
   ];
 
   return page({
-    back: ['Lidé', '#lide'],
+    back: archived && leader ? ['Archiv', '#lide/archiv'] : ['Lidé', '#lide'],
     media: avatar(person, { size: 'l', mine: self }),
     title: fullName(person),
     meta: metaItems,
@@ -98,11 +104,24 @@ export function renderPersonCard(id) {
     width: 'wide',
     cls: 'person-page',
     body: [
+      leader && archived ? archiveCallout(person) : null,
       leader ? missingCallout(person) : null,
       h('div', { class: ['person-columns', self && !leader ? 'service-first' : null] },
         h('div', { class: 'person-col col-registry' }, h('h2', { class: 'person-col-label label' }, 'Údaje'), registry),
         h('div', { class: 'person-col col-service' }, h('h2', { class: 'person-col-label label' }, 'Služba'), service)),
     ],
+  });
+}
+
+/** A card in the archive: since when, and the two ways out. */
+function archiveCallout(person) {
+  return callout('Karta se neukazuje v seznamech, kontaktech ani v návrzích do služeb. Ve starých rozpisech zůstává.', {
+    tone: 'info',
+    icon: 'archive',
+    title: capital(archivedText(person)),
+    action: h('span', { class: 'callout-buttons' },
+      button('Vrátit z archivu', { variant: 'surface', size: 's', icon: 'undo', onclick: () => restoreFromArchive(person) }),
+      person.id !== myId() ? button('Smazat kartu', { variant: 'ghost', size: 's', icon: 'trash', onclick: () => deletePerson(person) }) : null),
   });
 }
 
@@ -172,7 +191,7 @@ function householdCard(person) {
       body: quiet(self ? 'Nepatříš k žádné domácnosti.' : 'Nepatří k žádné domácnosti.'), cls: 'person-card',
     });
   }
-  const others = householdMembers(S.data, household.id, { today: today() }).filter((p) => p.id !== person.id);
+  const others = householdMembers(S.data, household.id, { today: today() }).filter((p) => p.id !== person.id && !isFormer(p));
   const where = { address: household.address };
   return card({
     title: 'Domácnost',
@@ -195,14 +214,16 @@ function householdCard(person) {
 function membershipCard(person) {
   const m = person.membership || {};
   const status = statusOf(person);
+  const archived = isFormer(person);
   const needsConsent = status === 'guest' || status === 'regular';
   return card({
     title: 'Členství',
     actions: editButton(() => membershipDialog(person)),
+    footer: archived || person.id === myId() ? null
+      : button('Přesunout do archivu', { variant: 'ghost', size: 's', icon: 'archive', onclick: () => archiveDialog(person) }),
     body: facts([
-      ['Členství', MEMBERSHIP_LABELS[status]],
+      ['Stav', archived ? archivedText(person) : MEMBERSHIP_LABELS[status]],
       ['Chodí od', m.since ? fullDate(m.since) : null],
-      ['Do', status === 'former' && m.until ? fullDate(m.until) : null],
       ['Souhlas', person.consentDate ? fullDate(person.consentDate)
         : needsConsent ? h('span', { class: 'fact-missing' }, severityIcon('warning'), 'chybí – zeptej se a datum zapiš') : null],
       ['Registrace', person.registeredAt ? `přes pozvánku ${fullDate(person.registeredAt)}` : null],

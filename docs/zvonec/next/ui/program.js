@@ -17,8 +17,13 @@ import { roleById } from '../../lib/groups.js';
 import { previousEvent } from '../../lib/scheduling.js';
 import { candidates } from '../../lib/scheduling.js';
 import { today } from '../../lib/time.js';
-import { nameOf, personOf } from './calendar-shared.js';
+import { personOf } from './calendar-shared.js';
+import { personInEvent } from '../../lib/archive.js';
+import { fullName, DELETED_NAME } from '../../lib/people.js';
 import { notFound } from './event.js';
+
+/** The full name of a leader at this event – a deleted card by the name the event kept (lib/archive.js). */
+const nameAt = (event, personId) => { const p = personInEvent(S.data, event, personId); return p ? fullName(p) : DELETED_NAME; };
 
 const fresh = (id) => eventById(S.data, id);
 
@@ -88,8 +93,8 @@ function openPoint(eventId, itemId) {
   let personId = item.personId || '';
   const whoText = h('span', {});
   const paintWho = () => {
-    const byRole = role ? itemLeaders(S.data, { ...e, program: [] }, { ...item, personId: undefined }).map(nameOf) : [];
-    whoText.textContent = personId ? nameOf(personId) : role ? `podle role ${role.name}${byRole.length ? ` (${byRole.join(', ')})` : ' – zatím nikdo'}` : 'nikdo';
+    const byRole = role ? itemLeaders(S.data, { ...e, program: [] }, { ...item, personId: undefined }).map((pid) => nameAt(e, pid)) : [];
+    whoText.textContent = personId ? nameAt(e, personId) : role ? `podle role ${role.name}${byRole.length ? ` (${byRole.join(', ')})` : ' – zatím nikdo'}` : 'nikdo';
     reset.hidden = !personId;
   };
   const reset = link(role ? 'Podle role' : 'Nikdo', { onclick: () => { personId = ''; paintWho(); } });
@@ -122,6 +127,7 @@ function openPoint(eventId, itemId) {
       const title = String(values.title || '').trim();
       if (title && title !== format?.name) it.title = title; else if (format) delete it.title; else if (title) it.title = title;
       it.minutes = Math.max(0, parseInt(values.minutes, 10) || 0);
+      if (personId !== (it.personId || '')) delete it.personName;   // a kept name belongs to the old leader
       if (personId) it.personId = personId; else delete it.personId;
       const note = String(values.note || '').trim();
       if (note) it.note = note; else delete it.note;
@@ -245,7 +251,7 @@ export function renderProgram(id) {
   if (sum) sum.querySelector('.osnova-sum__fill').style.width = `${length ? Math.min(100, Math.round((total / length) * 100)) : 100}%`;
 
   const points = items.map(({ item, start, end }, index) => {
-    const leaders = itemLeaders(S.data, event, item).map(nameOf);
+    const leaders = itemLeaders(S.data, event, item).map((pid) => nameAt(event, pid));
     const format = formatById(S.data, item.formatId);
     const needsLeader = !!format?.leadRoleId || !!item.personId;
     const who = leaders.length ? leaders.join(', ') : needsLeader ? 'chybí, kdo vede' : null;

@@ -1,7 +1,8 @@
 // Lidé – the dialogs: „Přidat člověka“ (structure §4.1), the small per-section edits of the person
 // card (Kontakt · Členství · Domácnost · Další údaje · Týmy a skupinky · Kdy nemůže · Břemeno), the
-// household dialogs and the bulk „Přidat do skupiny“. Deleting a person lives at the bottom of the
-// „Členství“ dialog (never in a list).
+// household dialogs and the bulk „Přidat do skupiny“. The archive: „Přesunout do archivu“ (the ⋯ of the
+// card), „Vrátit z archivu“, „Smazat kartu“ (the bottom of the „Členství“ dialog, the archive list) and
+// deleting the cards that waited in the archive over a year – the logic is lib/archive.js.
 // Kit addition (module-local, for the orchestrator to promote): householdPicker() – a combobox like
 // personPicker() for households, with „+ Nová domácnost „Novákovi““ as the last option.
 
@@ -9,16 +10,18 @@ import {
   h, icon, plural, toast, formDialog, textField, textArea, dateField, numberField, switchField, segmentedField,
   selectField, field, callout, button, personPicker, avatarStack, personName, confirmDialog, segment, fitComboList, agree, metaJoin,
 } from './dom.js';
-import { S, can, myId, newId, change, navigate, loginList, updateLogins } from './state.js';
+import { S, can, myId, newId, change, navigate, hasLogin, revokeLoginsOf } from './state.js';
 import {
   personById, householdById, displayName, fullName, isChild, statusOf, householdMembers, sortHouseholds, sortPeople,
+  ACTIVE_STATUSES,
 } from '../lib/people.js';
+import { archivePerson, restorePerson, deletePersonKeepHistory, futureDutiesOf } from '../lib/archive.js';
 import { groupById, rolesOf, memberRecord, addMember, removeMember, setLeader, setSkill } from '../lib/groups.js';
 import { upcomingDuties } from '../lib/events.js';
 import { limitsOf, DEFAULT_LIMITS } from '../lib/scheduling.js';
-import { today, prettyDay, daySpan, inBlockout } from '../lib/time.js';
+import { today, now, prettyDay, daySpan, inBlockout } from '../lib/time.js';
 import {
-  childAge, fold, fullDate, householdNameFor, activeGroups, groupWords, peopleCount, isFormer,
+  childAge, fold, fullDate, householdNameFor, activeGroups, groupWords, peopleCount, isFormer, archivedText, capital,
 } from './people-common.js';
 
 // ---------- small helpers ----------
@@ -331,31 +334,39 @@ export function contactEditDialog(person) {
 /** The person edits their own contact (members may change only this; also #prehled / #ucet). */
 export const contactDialog = (person) => contactEditDialog(person);
 
-/** Členství: membership, since / until, consent. „Smazat z Lidí“ at the bottom left. */
+const STATUS_CHOICES = { member: 'Člen', regular: 'Přítel', guest: 'Host' };
+
+/**
+ * Členství: Stav (člen · přítel · host), since, consent. „Smazat kartu“ at the bottom left. A card in the
+ * archive keeps its status here – it leaves the archive only through „Vrátit z archivu“.
+ */
 export function membershipDialog(person) {
   const self = person.id === myId();
+  const archived = isFormer(person);
   const st = statusOf(person);
   const m = person.membership || {};
   const form = formDialog({
     title: 'Členství',
     sub: sub(person),
+    intro: archived ? callout(`${capital(archivedText(person))}. Stav změníš, až kartu vrátíš z archivu.`, { tone: 'info', icon: 'archive' }) : null,
     fields: [
-      segmentedField('status', 'Členství', ['member', 'regular', 'guest', 'former'].map((s) => [s, { member: 'Člen', regular: 'Přítel', guest: 'Host', former: 'Už nechodí' }[s]]), st, { full: true }),
+      archived ? null : segmentedField('status', 'Stav', ACTIVE_STATUSES.map((s) => [s, STATUS_CHOICES[s]]), st, { full: true }),
       dateField('since', 'Chodí od', m.since),
-      dateField('until', 'Do', m.until),
       dateField('consentDate', 'Souhlas se zpracováním údajů', person.consentDate, { hint: 'U hostů a přátel je nutný.' }),
       person.registeredAt ? h('p', { class: 'field-note full' }, `Registrace přes pozvánku ${fullDate(person.registeredAt)}. Souhlas je její součástí.`) : null,
     ],
     remove: self ? null : () => deletePerson(person),
-    removeLabel: 'Smazat z Lidí',
+    removeLabel: 'Smazat kartu',
     save: (f) => {
-      const status = f.status.value;
       const since = f.since.value;
-      const until = status === 'former' ? f.until.value : '';
-      if (since && until && until < since) return 'Datum „Do“ je dřív než „Chodí od“.';
       const target = personById(S.data, person.id);
       if (!target) return 'Mezitím ho někdo smazal.';
-      target.membership = { status, ...(since ? { since } : {}), ...(until ? { until } : {}) };
+      if (archived) {
+        const { since: _old, ...rest } = target.membership || {};
+        target.membership = { ...rest, ...(since ? { since } : {}) };
+      } else {
+        target.membership = { status: f.status.value, ...(since ? { since } : {}) };
+      }
       assign(target, { consentDate: f.consentDate.value });
       change(`členství ${displayName(target)}`);
       toast('Uloženo.');
@@ -364,10 +375,7 @@ export function membershipDialog(person) {
   });
   const els = form.elements;
   const toggle = () => {
-    const former = els.status.value === 'former';
-    showField(els.until, former);
-    if (former && !els.until.value) els.until.value = today();
-    showField(els.consentDate, els.status.value !== 'member' || !!els.consentDate.value);
+    showField(els.consentDate, archived || els.status.value !== 'member' || !!els.consentDate.value);
   };
   form.addEventListener('change', toggle);
   toggle();
@@ -611,36 +619,71 @@ export function limitsDialog(person) {
   });
 }
 
-// ---------- delete a person ----------
+// ---------- the archive, deleting a card ----------
 
-/** Delete a person with their group memberships, availability, limits and duties – one change. */
+const GITHUB_NOTE = 'Údaje ale zůstanou v historii na GitHubu. Jak je smazat úplně, najdeš v návodu ke Zvonci.';
+const revoke = (personId, message) => revokeLoginsOf(personId, message)?.catch((error) => toast('Přístup se nepodařilo zrušit.', error.message, { tone: 'error' }));
+
+/** „Přesunout do archivu“: asks once, then archives (lib/archive.js) and releases the future duties. */
+export function archiveDialog(person) {
+  const name = fullName(person);
+  const future = futureDutiesOf(S.data, person.id, { now: now() }).active;
+  const text = [
+    `${name} zmizí ze seznamů, kontaktů a návrhů do služeb. Ve starých rozpisech zůstane.`,
+    future ? 'Budoucí služby se uvolní.' : '',
+    hasLogin(person.id) ? 'Přístup do Zvonce se zruší.' : '',
+  ].filter(Boolean).join(' ');
+  confirmDialog(`Přesunout kartu ${name} do archivu?`, text, () => {
+    const result = archivePerson(S.data, person.id, { today: today(), now: now() });
+    if (!result) { toast('Mezitím tu kartu někdo smazal.', '', { tone: 'error' }); return; }
+    revoke(person.id, `v archivu: ${displayName(person)}`);
+    change(`v archivu: ${displayName(person)}`);
+    toast('Přesunuto do archivu.', result.released ? `${name}. ${agree(result.released, 'Uvolnilo se', 'Uvolnila se', 'Uvolnilo se')} ${plural(result.released, 'místo', 'místa', 'míst')} v rozpisu.` : name);
+  }, { buttonLabel: 'Přesunout do archivu' });
+}
+
+/** „Vrátit z archivu“: back to the status before (přítel when unknown). No question – it is easy to undo. */
+export function restoreFromArchive(person) {
+  const target = restorePerson(S.data, person.id);
+  if (!target) { toast('Mezitím tu kartu někdo smazal.', '', { tone: 'error' }); return; }
+  change(`zpátky z archivu: ${displayName(target)}`);
+  toast('Vráceno z archivu.', fullName(target));
+}
+
+/** Delete a card and keep the history: past rosters keep the name, everything else goes – one change. */
 export function deletePerson(person) {
   const name = fullName(person);
   const id = person.id;
-  const future = upcomingDuties(S.data, id, { from: today(), includeDeclined: false, includeCancelled: false }).length;
+  const archived = isFormer(person);
+  const future = futureDutiesOf(S.data, id, { now: now() }).active;
   const text = [
-    'Zmizí z Lidí, z týmů i z rozpisu.',
+    'Kontakt a ostatní údaje se smažou. Ve starých rozpisech zůstane jen jméno.',
     future ? `Uvolní se ${plural(future, 'služba', 'služby', 'služeb')}.` : '',
-    S.mode === 'live' ? 'Údaje ale zůstanou v historii na GitHubu. Jak je smazat úplně, najdeš v návodu ke Zvonci.' : '',
+    S.mode === 'live' ? GITHUB_NOTE : '',
   ].filter(Boolean).join(' ');
-  confirmDialog(`Smazat ${name}?`, text, () => {
-    S.data.people = S.data.people.filter((p) => p.id !== id);
-    S.data.groupMembers = S.data.groupMembers.filter((m) => m.personId !== id);
-    S.data.availability = S.data.availability.filter((v) => v.personId !== id);
-    S.data.servingLimits = S.data.servingLimits.filter((l) => l.personId !== id && l.id !== id);
-    for (const event of S.data.events) {
-      if ((event.assignments || []).some((a) => a.personId === id)) event.assignments = event.assignments.filter((a) => a.personId !== id);
-      for (const item of event.program || []) if (item.personId === id) delete item.personId;
-    }
-    if (S.mode === 'live' && loginList().some((l) => l.personId === id)) {
-      updateLogins((logins) => {
-        for (let i = logins.length - 1; i >= 0; i--) if (logins[i].personId === id) logins.splice(i, 1);
-      }, `smazaná karta ${displayName(person)}`).catch((error) => toast('Přístup se nepodařilo zrušit.', error.message, { tone: 'error' }));
-    }
-    navigate('#lide');
+  confirmDialog(`Smazat kartu ${name}?`, text, () => {
+    if (!deletePersonKeepHistory(S.data, id, { now: now() })) return;
+    revoke(id, `smazaná karta ${displayName(person)}`);
+    navigate(archived ? '#lide/archiv' : '#lide');
     change(`smazaná karta ${displayName(person)}`);
-    toast('Smazáno.', name);
-  }, { buttonLabel: 'Smazat z Lidí' });
+    toast('Karta je smazaná.', name);
+  }, { buttonLabel: 'Smazat kartu' });
+}
+
+/** The cards over a year in the archive: one question, then all of them go (with the history kept). */
+export function deleteOverdueDialog(people) {
+  if (!people.length) return;
+  const names = people.map(fullName);
+  const listed = names.length > 6 ? `${names.slice(0, 6).join(', ')} a ${plural(names.length - 6, 'další', 'další', 'dalších')}` : names.length > 1 ? `${names.slice(0, -1).join(', ')} a ${names[names.length - 1]}` : names[0];
+  const what = plural(people.length, 'kartu', 'karty', 'karet');
+  confirmDialog(`Smazat ${what}?`, [`${listed}.`, 'Kontakty a ostatní údaje se smažou, ve starých rozpisech zůstanou jen jména.', S.mode === 'live' ? GITHUB_NOTE : ''].filter(Boolean).join(' '), () => {
+    for (const p of people) {
+      if (!deletePersonKeepHistory(S.data, p.id, { now: now() })) continue;
+      revoke(p.id, `smazaná karta ${displayName(p)}`);
+    }
+    change(`smazané karty z archivu (${people.length})`);
+    toast(`Smazáno: ${plural(people.length, 'karta', 'karty', 'karet')}.`);
+  }, { buttonLabel: `Smazat ${what}` });
 }
 
 // ---------- households ----------

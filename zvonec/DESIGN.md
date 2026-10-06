@@ -178,8 +178,9 @@ Sidebar in order of frequency; slugs are what people see and share.
 | **Kalendář** | `#kalendar/<pohled>/<datum>` | **Měsíc · Týden · Seznam · Rozpis**; filters Účel, Tým, „Jen moje služby“ | edit, plan in Rozpis | read |
 | Setkání | `#setkani/<id>[/sluzby\|/osnova]` | **Přehled · Kdo slouží · Osnova** | edit | read, answer own duty |
 | **Upozornění** | `#upozorneni[/lide]` | **Podle setkání · Podle lidí**; Závažnost, Kdy | yes | – |
-| **Lidé** | `#lide/<pohled>/<filtr>` | **Seznam · Tabulka · Domácnosti · Podle skupin · Narozeniny · Břemeno**; filters Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí (+ Chybí údaje) | all six | Seznam · Domácnosti · Podle skupin |
-| Karta člověka | `#osoba/<id>`, `#domacnost/<id>` | per-section editing | edit | reduced card |
+| **Lidé** | `#lide/<pohled>/<filtr>` | **Seznam · Tabulka · Domácnosti · Podle skupin · Narozeniny · Břemeno**; filters Všichni · Členové · Přátelé · Hosté · Děti (+ Chybí údaje); a quiet „Archiv (n)“ at the end of the list | all six | Seznam · Domácnosti · Podle skupin |
+| Archiv | `#lide/archiv` (old `…/nechodi` opens it) | cards in the archive: „v archivu od …“, Vrátit z archivu, Smazat kartu; after a year „<n> karet je v archivu déle než rok. Smazat je?“ | yes | – |
+| Karta člověka | `#osoba/<id>`, `#domacnost/<id>` | per-section editing; „Přesunout do archivu“ in ⋯ (and under Členství, field „Stav“) | edit | reduced card (never an archived one) |
 | **Týmy a skupinky** | `#tymy/<tymy\|skupinky\|vedeni\|umi>` | **Týmy · Skupinky · Vedení · Kdo co umí** (matrix) | yes | – |
 | Tým | `#tym/<id>/<lide\|role\|umi\|setkani>` | skupinka and vedení: Lidé · Setkání only | edit | – |
 | **Jak se scházíme** | `#sablony`, `#formaty[/<id>]`, `#mista` | **Šablony · Formáty · Místa**; full-page editors `#sablona/<id>`, `#misto/<id>` | edit | Formáty · Místa read |

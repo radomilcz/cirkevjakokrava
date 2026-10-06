@@ -14,14 +14,15 @@ import {
   addFormat, copyProgram, eventDuration, formatById, itemLeaders, itemName, programDuration, programTimes,
 } from '../lib/program.js';
 import { previousEvent } from '../lib/scheduling.js';
-import { personById } from '../lib/people.js';
+import { personInEvent } from '../lib/archive.js';
 import { roleById } from '../lib/groups.js';
 import { sortable, dragHandle, moveInArray } from './sortable.js';
 import { addMinutes, prettyDay, prettyTime } from '../lib/time.js';
 import { durationText } from './event-form.js';
 
 const fresh = (id) => eventById(S.data, id);
-const nameOf = (personId) => personById(S.data, personId);
+/** The card of a leader – or, after the card was deleted, the name the event kept (lib/archive.js). */
+const nameOf = (event, personId) => personInEvent(S.data, event, personId);
 
 /** „115 z 120 min“ for a tab count (null without items). */
 export function programCount(event) {
@@ -42,7 +43,7 @@ export function programTab(event, { leader }) {
   const items = times.length ? list(times, ({ item, start }) => {
     const format = formatById(S.data, item.formatId);
     const leaders = itemLeaders(S.data, event, item);
-    const who = leaders.length ? leaders.map((pid) => personLine(nameOf(pid), { size: 'xs' }))
+    const who = leaders.length ? leaders.map((pid) => personLine(nameOf(event, pid), { size: 'xs' }))
       : format?.leadRoleId || item.personId ? h('span', { class: 'program-nobody' }, 'vede: zatím nikdo') : null;
     const info = format && (format.why || format.how);
     return row({
@@ -160,8 +161,8 @@ function itemDialog(eventId, itemId, draft) {
   const keep = (personId) => { const kept = readForm(form.elements); kept.personId = personId; itemDialog(eventId, itemId, kept); };
 
   const who = d.personId
-    ? personLine(nameOf(d.personId), { size: 's' })
-    : byRole.length ? h('span', { class: 'leader-by-role' }, byRole.map((pid) => personLine(nameOf(pid), { size: 's', meta: `podle role ${roleName}` })))
+    ? personLine(nameOf(event, d.personId), { size: 's' })
+    : byRole.length ? h('span', { class: 'leader-by-role' }, byRole.map((pid) => personLine(nameOf(event, pid), { size: 's', meta: `podle role ${roleName}` })))
       : h('span', { class: 'faint' }, roleName ? `Zatím nikdo (podle role ${roleName})` : 'Nikdo');
   form = dialogForm({
     title: itemName(S.data, item),
@@ -182,6 +183,7 @@ function itemDialog(eventId, itemId, draft) {
       const values = readForm(f);
       target.minutes = Math.max(0, Math.min(600, Math.round(Number(values.minutes) || 0)));
       if (values.title) target.title = values.title; else delete target.title;
+      if (values.personId !== (target.personId || '')) delete target.personName;   // a kept name belongs to the old leader
       if (values.personId) target.personId = values.personId; else delete target.personId;
       if (values.note) target.note = values.note; else delete target.note;
       change(`osnova ${prettyDay(e.start, false)}`);

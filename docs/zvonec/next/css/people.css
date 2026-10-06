@@ -161,3 +161,12 @@
   .people-table th.col-email { width: auto; }
 }
 @media (min-width: 960px) { .people-screen--table .people-tools { position: static; } }
+
+/* ---------- Archiv ---------- */
+.people-archive-link { margin: 0; padding: 0 0 var(--space-4); }
+.people-archive-link .link { color: var(--ink-3); }
+@media (max-width: 719.98px) {
+  .archive-list .row { flex-wrap: wrap; min-width: 0; }
+  .archive-list .row__trail { order: 3; flex: 1 0 100%; flex-wrap: wrap; padding-left: calc(var(--avatar-m) + var(--space-3)); }
+  .archive-list .row__trail .btn .icon { display: none; }   /* both buttons fit on one line at 360 */
+}

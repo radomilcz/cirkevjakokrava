@@ -274,7 +274,7 @@ test('K13: former members and paused people in the schedule', () => {
   })];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K13:warning', 'K13:warning']);
-  assert.ok(k.some((x) => x.text === 'Petr už k nám nechodí, ale v rozpisu má: Zvuk.'));
+  assert.ok(k.some((x) => x.text === 'Petr je v archivu, ale v rozpisu má: Zvuk.'));
   assert.ok(k.some((x) => x.text === 'Jana má teď pauzu, ale v rozpisu má: Zpěv.'));
 });
 
@@ -373,7 +373,7 @@ test('K16: a leader who is gone, former or paused', () => {
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(k.map((x) => x.key).sort(), ['K16:i1:gone', 'K16:i2', 'K16:i3']);
   assert.ok(k.some((x) => x.text === 'Příběh: vede někdo, kdo už v rozpisu není.'));
-  assert.ok(k.some((x) => x.text === 'Svědectví: Petr už k nám nechodí.'));
+  assert.ok(k.some((x) => x.text === 'Svědectví: Petr je v archivu.'));
   assert.ok(k.some((x) => x.text === 'Příběh: Jana má teď pauzu.'));
 });
 
@@ -425,7 +425,7 @@ test('candidates: scope pills – skilled, whole team, everybody', () => {
   assert.deepEqual(ids(), ids('skilled'), 'skilled is the default');
   assert.deepEqual(ids('team'), ['petr', 'ota', 'iva']);
   assert.deepEqual(ids('all'), ['petr', 'ota', 'iva', 'jana']);
-  assert.deepEqual(ids('all', { includeInactive: true }), ['petr', 'ota', 'iva', 'jana', 'eva'], 'someone outside the team is only a note – a former member goes last');
+  assert.deepEqual(ids('all', { includeInactive: true }), ['petr', 'ota', 'iva', 'jana'], 'someone outside the team is only a note – an archived card is never offered');
 
   const all = candidates(d, 'a', 'zvuk', { today: TODAY, scope: 'all' });
   assert.deepEqual(all.find((c) => c.person.id === 'ota').reasons.map((r) => `${r.code}:${r.severity}`), ['K4b:info']);
@@ -433,8 +433,7 @@ test('candidates: scope pills – skilled, whole team, everybody', () => {
   assert.equal(all.find((c) => c.person.id === 'jana').reasons[0].severity, 'info', 'not in the team is not a problem');
   assert.equal(all.find((c) => c.person.id === 'jana').reasons[0].text, 'není v týmu');
   assert.equal(all.find((c) => c.person.id === 'jana').inTeam, false);
-  const eva = candidates(d, 'a', 'zvuk', { today: TODAY, scope: 'skilled', includeInactive: true }).find((c) => c.person.id === 'eva');
-  assert.deepEqual(eva.reasons.map((r) => `${r.code}:${r.text}`), ['K13:už nechodí']);
+  assert.ok(!candidates(d, 'a', 'zvuk', { today: TODAY, scope: 'skilled', includeInactive: true }).some((c) => c.person.id === 'eva'), 'not even a search finds an archived card');
 });
 
 test('candidates: whoever declined this duty goes last with the reason and is never proposed again', () => {

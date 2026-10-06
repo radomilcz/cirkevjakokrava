@@ -13,7 +13,8 @@ import { S, can, myId, change, render, newId, ACCESS_LABELS } from './state.js';
 import { topConflicts, conflictRow, pickPerson } from './conflicts.js';
 import { availabilityDialog, myBlockouts, blockoutRow, downloadDuties } from './account.js';
 import { loginIssues, inviteRow, orphanRow } from './login.js';
-import { personById, peopleWithMissingData, upcomingBirthdays, statusOf } from '../lib/people.js';
+import { personById, peopleWithMissingData, upcomingBirthdays, statusOf, overdueArchive } from '../lib/people.js';
+import { overdueQuestion } from './people-common.js';
 import { groupsOf, leadersOf, skillsOf, roleById, ledBy } from '../lib/groups.js';
 import { upcomingDuties, eventById, eventsInRange, fillRatio, needsOf } from '../lib/events.js';
 import { openSlots, unconfirmedDuties, proposeRemaining } from '../lib/scheduling.js';
@@ -324,6 +325,7 @@ function peopleBlock() {
   const missing = peopleWithMissingData(S.data, { today: day });
   const guests = (S.data.people || []).filter((p) => statusOf(p) === 'guest');
   const birthdays = upcomingBirthdays(S.data, { today: day, months: 1 }).flatMap((m) => m.items).filter((b) => b.thisWeek && !b.past);
+  const overdue = overdueArchive(S.data, { today: day }).length;   // GDPR: a year in the archive is enough
   const rows = [
     { lead: rowIcon(missing.length, { tone: 'warn' }), title: 'Karty k doplnění', meta: missing.length ? avatarNames(missing.map((x) => x.person)) : 'Všechny karty jsou v pořádku.', href: '#lide/doplnit' },
     { lead: rowIcon(guests.length), title: 'Hosté', meta: guests.length ? avatarNames(guests) : 'Zatím k nám nikdo nový nechodí.', href: '#lide/hoste' },
@@ -334,7 +336,8 @@ function peopleBlock() {
       trail: birthdays.length ? avatarStack(birthdays.map((b) => b.person), { max: 3, size: 'xs' }) : null,
       href: '#lide/narozeniny',
     },
-  ];
+    overdue ? { lead: rowIcon(overdue, { tone: 'warn' }), title: 'Archiv', meta: overdueQuestion(overdue), href: '#lide/archiv' } : null,
+  ].filter(Boolean);
   return block({ key: 'people', title: 'Lidé', all: ['Všichni', '#lide'], body: list(rows, (r) => row(r), { label: 'Lidé' }) });
 }
 

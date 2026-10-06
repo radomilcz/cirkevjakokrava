@@ -3,23 +3,28 @@
 // row whose phone may be seen, the card as its own page. Desktop ≥ 960: a sortable table with selection
 // and bulk actions; ≥ 1200 a card opens next to the list (split view). Members see everybody who still
 // comes, contacts only where shared, never membership or notes; leaders get the filters, Narozeniny,
-// Vybrat lidi, CSV and „Přidat člověka“.
+// Vybrat lidi, CSV and „Přidat člověka“. Archiv (#lide/archiv, leaders): the cards moved to the archive,
+// reached by the quiet „Archiv (n)“ at the end of the list and the table (the old `nechodi` redirects here).
 
 import {
   h, icon, screen, topBar, segmented, menu, searchField, chips, list, row, personRow, indexLetter, empty, button,
   link, rowLink, detailPane, splitView, isDesktop, isSplit, toast, joinMeta, plural, dateArch, note, section,
-  caption, pill, avatar, personName, table, sortHead,
+  caption, pill, avatar, personName, table, sortHead, callout,
 } from './kit.js';
 import { S, can, myId, navigate, render } from '../../ui/state.js';
-import { personById, householdById, sortPeople, sortHouseholds, householdMembers, upcomingBirthdays, statusOf, MISSING_LABELS, comparePeople } from '../../lib/people.js';
+import {
+  personById, householdById, sortPeople, sortHouseholds, householdMembers, upcomingBirthdays, statusOf, MISSING_LABELS, comparePeople,
+  archivedPeople, archiveOverdue,
+} from '../../lib/people.js';
 import { lastDutyDays } from '../../lib/events.js';
 import { today } from '../../lib/time.js';
 import {
   FILTERS, FILTER_ALIASES, filterCounts, inFilter, matchesQuery, seesContact, isKid, isFormer, missingOf,
   missingNote, membershipWord, peopleCount, fold, groupsInOrder, copyEmails, csvDownload, telHref, mailHref,
   dayMonth, fullDate, daysToBirthday, nextAge, householdNames, capital, MEMBERSHIP_WORDS, yearsText,
+  ARCHIVE_SLUG, archivedText, overdueQuestion,
 } from './people-common.js';
-import { addPersonSheet, bulkGroupSheet, householdSheet } from './people-forms.js';
+import { addPersonSheet, bulkGroupSheet, householdSheet, restoreFromArchive, deletePerson, deleteOverdueSheet } from './people-forms.js';
 import { inviteSheet } from './access.js';
 import { personCard, personMenu, householdBody, householdMenu } from './people-card.js';
 
@@ -67,7 +72,7 @@ function listMenu(people) {
     { label: 'Přidat domácnost', icon: 'home', onclick: () => householdSheet(null) },
     '-',
     { label: 'Zkopírovat e-maily', icon: 'copy', onclick: () => copyEmails(people()) },
-    { label: 'Stáhnout všechny jako CSV', icon: 'download', onclick: () => downloadCsv(sortPeople(S.data.people)) },
+    { label: 'Stáhnout všechny jako CSV', icon: 'download', onclick: () => downloadCsv(sortPeople(S.data.people.filter((p) => !isFormer(p)))) },
   ].filter(Boolean), { title: 'Lidé' });
 }
 
@@ -216,7 +221,15 @@ function listBody(slug, { openId } = {}) {
   }
   out.push(...householdBlock(households, homePeople, { openId }));
   out.push(h('p', { class: 'people-foot meta' }, peopleCount(people.length + homePeople.length)));
+  out.push(archiveLink());
   return out;
+}
+
+/** The quiet way into the archive at the end of the list (leaders): „Archiv (3)“, nothing when it is empty. */
+function archiveLink() {
+  if (!can('leader')) return null;
+  const n = archivedPeople(S.data).length;
+  return n ? h('p', { class: 'people-archive-link' }, link(`Archiv (${n})`, { href: `#lide/${ARCHIVE_SLUG}`, icon: 'archive' })) : null;
 }
 
 /** „Přidat člověka „Jana Malá““ from an empty search. */
@@ -396,6 +409,7 @@ function tableBody(slug, { openId, compact = false } = {}) {
     sorted.length ? table({ label: 'Lidé – seřadíš je klepnutím na nadpis sloupce', head, rows, cls: ['people-table', compact && 'people-table--compact'] }) : null,
     households.length ? h('div', { class: 'people-households' }, h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'), list(households.map(householdRow), { label: 'Domácnosti' })) : null,
     h('p', { class: 'people-foot meta' }, peopleCount(sorted.length)),
+    compact ? null : archiveLink(),
   ];
 }
 
@@ -410,6 +424,7 @@ export function renderPeople(parts = []) {
   const [first = ''] = parts;
   if (first === 'narozeniny') return renderBirthdays();
   const leader = can('leader');
+  if (first === ARCHIVE_SLUG && leader) return renderArchive();
   const slug = leader ? normalizeSlug(first) : '';
   state.slug = slug;
   const canonical = `#lide${slug ? `/${slug}` : ''}`;
@@ -452,8 +467,10 @@ function keepListPlace(e) {
 export { keepListPlace };
 
 export function renderPerson([id] = []) {
-  const person = personById(S.data, id);
   const leader = can('leader');
+  const found = personById(S.data, id);
+  // a card in the archive is for leaders only (and the person themselves)
+  const person = found && isFormer(found) && !leader && found.id !== myId() ? null : found;
   if (isSplit()) {
     const box = h('div', { class: 'people-results', onclick: keepListPlace });
     const redraw = () => box.replaceChildren(...tableBody(state.slug, { openId: id, compact: true }).filter(Boolean));
@@ -477,9 +494,57 @@ export function renderPerson([id] = []) {
     });
   }
   return screen({
-    topbar: topBar({ back: { href: listHref(), label: 'Lidé' }, actions: person ? personMenu(person) : null }),
+    topbar: topBar({ back: person && isFormer(person) ? { href: `#lide/${ARCHIVE_SLUG}`, label: 'Archiv' } : { href: listHref(), label: 'Lidé' }, actions: person ? personMenu(person) : null }),
     body: person ? personCard(person) : [h('h1', { class: 'visually-hidden' }, 'Karta člověka'), missingPerson()],
     cls: 'person-screen',
+  });
+}
+
+// ---------- #lide/archiv (leaders) ----------
+
+const archive = { query: '' };
+
+/** The cards in the archive: since when, „Vrátit z archivu“, „Smazat kartu“; the one-year question on top. */
+function renderArchive() {
+  const day = today();
+  const all = archivedPeople(S.data);
+  const overdue = all.filter((p) => archiveOverdue(p, day));
+  const box = h('div', { class: 'people-results archive-results' });
+  const archiveRow = (p) => personRow(p, {
+    meta: joinMeta([archivedText(p), archiveOverdue(p, day) ? 'déle než rok' : null]),
+    href: `#osoba/${p.id}`,
+    // the buttons straight in the trail: the row's name stays the link, each button its own tap target
+    trail: [
+      button('Vrátit z archivu', { size: 's', icon: 'undo', label: `Vrátit z archivu – ${personName(p)}`, onclick: () => restoreFromArchive(p) }),
+      p.id !== myId() ? button('Smazat kartu', { size: 's', variant: 'quiet', icon: 'trash', label: `Smazat kartu – ${personName(p)}`, onclick: () => deletePerson(p) }) : null,
+    ].filter(Boolean),
+  });
+  const redraw = () => {
+    const shown = all.filter((p) => matchesQuery(p, archive.query));
+    box.replaceChildren(...[
+      shown.length ? list(shown.map(archiveRow), { label: 'Archiv', cls: 'archive-list' })
+        : archive.query.trim() ? empty({ icon: 'search', title: 'V archivu nikdo takový není.', text: 'Zkus jiné jméno. Diakritiku psát nemusíš.' })
+          : empty({ icon: 'archive', title: 'Archiv je prázdný.', text: 'Když k nám někdo přestane chodit, přesuneš kartu do archivu v nabídce ⋯ na kartě člověka.' }),
+      shown.length ? h('p', { class: 'people-foot meta' }, plural(shown.length, 'karta', 'karty', 'karet')) : null,
+    ].filter(Boolean));
+  };
+  redraw();
+  return screen({
+    topbar: topBar({ back: { href: listHref(), label: 'Lidé' } }),
+    head: { title: 'Archiv', lead: 'Lidé, kteří k nám už nechodí. Neukazují se v seznamech, kontaktech ani v návrzích do služeb, ve starých rozpisech zůstávají.' },
+    body: [
+      overdue.length ? callout({
+        tone: 'info', icon: 'archive', text: overdueQuestion(overdue.length),
+        actions: button(`Smazat ${plural(overdue.length, 'kartu', 'karty', 'karet')}`, { size: 's', icon: 'trash', onclick: () => deleteOverdueSheet(overdue) }),
+      }) : null,
+      all.length ? h('div', { class: 'sticky-tools people-tools' }, searchField({
+        placeholder: 'Hledat v archivu', value: archive.query, label: 'Hledat v archivu',
+        onInput: (v) => { archive.query = v; redraw(); },
+      })) : null,
+      box,
+    ],
+    wide: isDesktop(),
+    cls: 'archive-screen',
   });
 }
 

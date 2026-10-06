@@ -7,7 +7,7 @@ import { S, can, change, myId, newId, ASSIGNMENT_STATUS_LABELS } from './state.j
 import { openPicker } from './picker.js';
 import { canOverride } from './conflicts.js';
 import { eventById } from '../lib/events.js';
-import { personById } from '../lib/people.js';
+import { personById, personOrSnapshot } from '../lib/people.js';
 import { groupById, roleById, memberRecord, setSkill } from '../lib/groups.js';
 import { prettyDay } from '../lib/time.js';
 
@@ -15,7 +15,8 @@ export const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
 
 /** Re-find the event at click time – a refresh may have swapped S.data.events meanwhile. */
 export const fresh = (id) => eventById(S.data, id);
-export const nameOf = (personId) => personName(personById(S.data, personId));
+/** The name of an id – or of an assignment, which knows the name of a deleted card (lib/people.js personOrSnapshot). */
+export const nameOf = (x) => personName(x && typeof x === 'object' ? personOrSnapshot(S.data, x) : personById(S.data, x));
 
 /** Conflicts of an event the viewer should see (leaders only). */
 export function eventConflicts(eventId) {
@@ -51,7 +52,7 @@ export function setStatus(eventId, assignmentId, status) {
   if (!can('leader') && a.personId !== myId()) return;
   a.status = status;
   const role = roleById(S.data, a.roleId)?.name || 'službu';
-  change(`${nameOf(a.personId)} ${role}: ${ASSIGNMENT_STATUS_LABELS[status]}`);
+  change(`${nameOf(a)} ${role}: ${ASSIGNMENT_STATUS_LABELS[status]}`);
   if (a.personId === myId()) toast(status === 'confirmed' ? 'Díky, počítáme s tebou.' : status === 'declined' ? 'Dobře, vedoucí uvidí, že nemůžeš.' : 'Uloženo.');
 }
 
@@ -61,10 +62,10 @@ export function removeAssignment(eventId, assignmentId) {
   if (!a) return;
   e.assignments = e.assignments.filter((x) => x.id !== assignmentId);
   const role = roleById(S.data, a.roleId)?.name || 'služba';
-  change(`odebráno: ${nameOf(a.personId)} (${role})`);
-  toast(`Odebráno: ${nameOf(a.personId)}.`, '', {
+  change(`odebráno: ${nameOf(a)} (${role})`);
+  toast(`Odebráno: ${nameOf(a)}.`, '', {
     actionLabel: 'Vrátit',
-    action: () => { const again = fresh(eventId); if (again) { again.assignments.push(a); change(`vráceno: ${nameOf(a.personId)} (${role})`); } },
+    action: () => { const again = fresh(eventId); if (again) { again.assignments.push(a); change(`vráceno: ${nameOf(a)} (${role})`); } },
   });
 }
 
@@ -77,7 +78,7 @@ export function pickFor(eventId, roleId, assignmentId, { anchor } = {}) {
   // not offered: who is on the role already, and the person being replaced (even when they said no)
   const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && (a.status !== 'declined' || a.id === assignmentId)).map((a) => a.personId);
   openPicker({
-    title: replacing ? `Vyměnit: ${nameOf(replacing.personId)}` : `Kdo na ${role?.name || 'službu'}?`,
+    title: replacing ? `Vyměnit: ${nameOf(replacing)}` : `Kdo na ${role?.name || 'službu'}?`,
     eventId,
     roleId,
     scope: 'skilled',

@@ -62,7 +62,8 @@ s pohledy.
 | **Přidat setkání** | ve dvou krocích: nejdřív **Podle čeho?** (šablona, nebo „Bez šablony“), pak název, kdy, kde a pro koho; zbytek (obrázek, popis, zveřejnění, poznámka pro tým) je v **Dalších možnostech**. Opakování: každý týden, každých 14 dní, každý měsíc ve stejný den v týdnu (třeba každou první neděli). Hotovou řadu prodloužíš v detailu setkání (**Prodloužit řadu**). Při úpravě řady se Zvonec zeptá, jestli jen tohle setkání, nebo i další |
 | **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…). Časy se dopočítají, vedoucí bodů se doplní podle rolí, body jdou přetahovat, je tu „Převzít minulou osnovu“ a součet proti délce setkání. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
 | **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně. Pohledy **Podle setkání** a **Podle lidí**, filtr chyba / pozor / info. Rovnou tu jde vybrat jiného člověka nebo napsat „Vím o tom“ |
-| **Lidé** | pohledy **Seznam**, **Tabulka** (třídění, sloupce, hromadné akce: zkopírovat e-maily, přidat do skupiny, stáhnout jako CSV; na počítači výchozí), **Domácnosti**, **Podle skupin**, **Narozeniny** a **Břemeno** (kolik služeb má kdo tenhle měsíc proti tomu, kolik jich zvládne). Filtry Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí (a Chybí údaje, když nějaké chybí), hledání podle jména, telefonu i e-mailu. Karta člověka: vlevo osobní údaje, vpravo skupiny, služby, kdy nemůže, břemeno a upozornění; každý blok upravíš zvlášť. Člen má Seznam, Domácnosti a Podle skupin |
+| **Lidé** | pohledy **Seznam**, **Tabulka** (třídění, sloupce, hromadné akce: zkopírovat e-maily, přidat do skupiny, stáhnout jako CSV; na počítači výchozí), **Domácnosti**, **Podle skupin**, **Narozeniny** a **Břemeno** (kolik služeb má kdo tenhle měsíc proti tomu, kolik jich zvládne). Filtry Všichni · Členové · Přátelé · Hosté · Děti (a Chybí údaje, když nějaké chybí), hledání podle jména, telefonu i e-mailu. Karta člověka: vlevo osobní údaje, vpravo skupiny, služby, kdy nemůže, břemeno a upozornění; každý blok upravíš zvlášť. Člen má Seznam, Domácnosti a Podle skupin |
+| **Archiv** | kdo k nám přestal chodit, nepatří do seznamu, ale do archivu. Na kartě člověka zvol v nabídce ⋯ **Přesunout do archivu** (nebo dole v Členství). Člověk pak zmizí ze seznamů, kontaktů, výběru lidí i návrhů do služeb, jeho budoucí služby se uvolní a přestane vést skupiny. Ve starých rozpisech a osnovách zůstane. Archiv najdeš úplně dole v Lidech pod odkazem **Archiv (počet)**; u každého uvidíš, odkdy tam je, a tlačítka **Vrátit z archivu** (karta dostane zpátky dřívější členství, a když ho Zvonec nezná, bude přítel; týmy a dovednosti zůstávají) a **Smazat kartu**. Po roce v archivu se Zvonec zeptá, jestli karty nesmazat. Archiv vidí jen vedoucí. Starý odkaz na filtr „Už nechodí“ otevře archiv |
 | **Týmy a skupinky** | **Týmy**, **Skupinky**, **Vedení** a **Kdo co umí** (tabulka lidé × role: nic / učí se / umí, vedoucí klikem přepíná; u role je vidět, kolik lidí ji umí). V týmu záložky **Lidé**, **Role**, **Kdo co umí** a **Setkání**. Role: kolik lidí, „Bez toho to nepůjde“, jen pro dospělé, u dětí, jen část setkání, které role zvládne jeden člověk naráz. Starý tým jde dát do archivu |
 | **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: u každého proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
 | **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
@@ -117,10 +118,10 @@ Pozor = ať o tom víš: prázdné kolečko, v kalendáři čárkovaný obrys. U
 | K10 | oba rodiče malých dětí slouží naráz a nikdo z nich není u dětí | pozor |
 | K11 | dítě v roli jen pro dospělé | chyba |
 | K12 | u dětí méně než dva dospělí | pozor |
-| K13 | v rozpisu je někdo, kdo už nechodí nebo má pauzu | pozor |
+| K13 | v rozpisu je někdo, kdo je v archivu nebo má pauzu | pozor |
 | K14 | zrušené setkání, na kterém pořád někdo je | info |
 | K15 | osnova je delší než setkání | pozor |
-| K16 | bod osnovy vede člověk, který v tu dobu nemůže, už nechodí nebo má pauzu | chyba / pozor |
+| K16 | bod osnovy vede člověk, který v tu dobu nemůže, je v archivu nebo má pauzu | chyba / pozor |
 | K17 | bod osnovy nikdo nevede, protože role z formátu už neexistuje | pozor |
 
 Pravidla jsou v `docs/zvonec/lib/conflicts.js`. Stejný kód běží v aplikaci, v testech i v kontrole
@@ -178,8 +179,9 @@ data/settings.json   název a adresa sboru, výchozí limity, kdy Zvonec bučí
 access.json          zapečetěné přístupy – jde na web, neobsahuje jména
 ```
 
-Přesný tvar záznamů je v [ARCHITECTURE.md](ARCHITECTURE.md). Smazaný člověk může někde zůstat jako
-„někdo smazaný“; při dalším uložení souboru, ve kterém je, zmizí.
+Přesný tvar záznamů je v [ARCHITECTURE.md](ARCHITECTURE.md). Když smažeš kartu, ve starých rozpisech
+a osnovách zůstane jen jméno. Kontakt a ostatní údaje zmizí. Kde jméno uložené není (starší data), uvidíš
+„někdo smazaný“.
 
 ### Kód
 
@@ -249,8 +251,9 @@ umí poslat e-mail nebo SMS – to už je mimo GitHub).
   církve (čl. 9 odst. 2 písm. d GDPR) a nikam mimo sbor nejdou. **Hosté:** bez souhlasu jen křestní jméno,
   víc až po souhlasu (na kartě je jeho datum). Kdo se registruje přes pozvánku, dává souhlas sám.
 - **Děti do 15 let:** kontakt jde přes rodiče, dítě nemá vlastní telefon ani e-mail.
-- **Jak dlouho:** hosty, kteří rok nepřišli, smažeme. U bývalých členů po roce necháme jen jméno a data
-  členství.
+- **Jak dlouho:** hosty, kteří rok nepřišli, smažeme. Kdo přestal chodit, jde do archivu. Po roce
+  v archivu se Zvonec v Archivu i na Přehledu zeptá, jestli karty smazat; po smazání zůstane jen jméno ve
+  starých rozpisech.
 - **Kdo co vidí:** viz tabulka výš. Členství prozrazuje vyznání (zvláštní kategorie údajů), proto ho člen
   nevidí u nikoho a netiskne se. Důvod, proč někdo nemůže, a upozornění vidí jen vedoucí. V rozpisu na nástěnku
   telefony nejsou.

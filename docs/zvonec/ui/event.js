@@ -15,7 +15,7 @@ import { canOverride, overrideDialog } from './conflicts.js';
 import { needsOf, seriesFor, seriesOf, seriesSummary } from '../lib/events.js';
 import { proposeRemaining, previousEvent, sameAsLastTime } from '../lib/scheduling.js';
 import { ics } from '../lib/ics.js';
-import { personById } from '../lib/people.js';
+import { personById, personOrSnapshot } from '../lib/people.js';
 import { groupById, roleById } from '../lib/groups.js';
 import { dayOf, monthOf, now, prettyDay, prettyDayLong, today } from '../lib/time.js';
 import {
@@ -165,7 +165,7 @@ function dutiesSummaryCard(event, leader) {
       confirmed += active.filter((a) => a.status === 'confirmed').length;
       waiting += active.filter((a) => a.status === 'proposed').length;
       missing += Math.max(0, (need.count || 0) - active.length);
-      people.push(...active.map((a) => personById(S.data, a.personId)));
+      people.push(...active.map((a) => personOrSnapshot(S.data, a)));
     }
     const mine = me && teamNeeds.some((n) => (event.assignments || []).some((a) => a.roleId === n.roleId && a.personId === me && a.status !== 'declined'));
     return h('li', { class: ['team-sum', mine && 'mine'] },
@@ -383,9 +383,10 @@ function dutyRow(event, need, { editable, problems }) {
       people.map((a) => {
         const problem = problems.get(a.id);
         const mine = !!me && a.personId === me;
+        const person = personOrSnapshot(S.data, a);   // a deleted card: the kept name, no link
         return assignee({
           assignment: a,
-          person: personById(S.data, a.personId),
+          person,
           mine,
           canEdit: editable,
           onAnswer: mine && !event.cancelled && dayOf(event.end) >= today() ? (status) => setStatus(event.id, a.id, status) : null,
@@ -396,7 +397,7 @@ function dutyRow(event, need, { editable, problems }) {
           onRemove: () => removeAssignment(event.id, a.id),
           tone: problem?.severity || null,
           title: problem?.texts.join(' ') || (a.override ? `V pořádku: ${a.override.reason}` : null),
-          href: `#osoba/${a.personId}`,
+          href: person && !person.deleted ? `#osoba/${a.personId}` : null,
         });
       }),
       Array.from({ length: empty }, () => (editable

@@ -279,7 +279,7 @@ export function initials(person) {
 export function avatar(person, { size = 'm', me = false, status, hue } = {}) {
   return h('span', {
     class: ['avatar', size !== 'm' && `avatar--${size}`, me && 'avatar--me'],
-    dataset: { hue: me || !person ? null : hue || hueOf(person.id), status: status === 'declined' ? 'declined' : null },
+    dataset: { hue: me || !person || person.deleted ? null : hue || hueOf(person.id), status: status === 'declined' || person?.deleted ? 'declined' : null },
     'aria-hidden': 'true',
   }, initials(person));
 }

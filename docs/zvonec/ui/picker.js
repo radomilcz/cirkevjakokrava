@@ -1,6 +1,6 @@
 // The one people picker: event slots, osnova leaders, team members, households. ARCHITECTURE §5.
 // With an event and a role it ranks candidates (lib/scheduling) and says why someone would not fit;
-// otherwise it lists the registry. The search always covers the whole registry, and when nobody
+// otherwise it lists the registry. The search covers the whole registry except the archive, and when nobody
 // fits, „Nový člověk“ creates a minimal card (guest, needsReview) and picks it in one step.
 // Every row: avatar, FULL name, one quiet meta line. Keyboard: arrows move, Enter picks, Esc closes.
 //
@@ -11,7 +11,7 @@ import {
   h, nodes, avatar, personName, openDialog, closeDialog, chips, button, searchField, icon, textField,
   checkboxField, formErrorLine, formError, toast, severityIcon, anchoredPopover, SEP,
 } from './dom.js';
-import { S, can, newId, change, navigate, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
+import { S, can, newId, change, navigate, SKILL_LABELS } from './state.js';
 import { householdById, fullName, displayName, sortPeople, matchesText, statusOf } from '../lib/people.js';
 import { groupById, roleById, memberRecord, addMember, setSkill } from '../lib/groups.js';
 import { eventById } from '../lib/events.js';
@@ -31,7 +31,7 @@ const fold = (text) => String(text || '').normalize('NFD').replace(/\p{M}/gu, ''
 function similarPeople(query) {
   const words = fold(query).split(/\s+/).filter((w) => w.length >= 3).map((w) => w.slice(0, 4));
   if (!words.length) return [];
-  return sortPeople(S.data.people.filter((p) => [p.firstName, p.lastName, p.nickname]
+  return sortPeople(S.data.people.filter((p) => statusOf(p) !== 'former' && [p.firstName, p.lastName, p.nickname]
     .some((n) => fold(n).split(/\s+/).some((part) => words.some((w) => part.startsWith(w))))))
     .slice(0, 6);
 }
@@ -102,7 +102,8 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
 
   function registryRows() {
     const q = state.query.trim();
-    let people = S.data.people.filter((p) => !excluded.has(p.id) && (q ? matchesText(p, q) : statusOf(p) !== 'former'));
+    // a card in the archive is never offered, not even to a search (it is found only in Lidé › Archiv)
+    let people = S.data.people.filter((p) => !excluded.has(p.id) && statusOf(p) !== 'former' && (!q || matchesText(p, q)));
     people = sortPeople(people);
     if (group) {
       const inGroup = (p) => !!memberRecord(S.data, group.id, p.id);
@@ -120,7 +121,6 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
           member ? h('span', {}, member.leader ? 'vede' : group.kind === 'team' ? 'v týmu' : 've skupince') : null,
           level ? h('span', {}, `${role.name}: ${SKILL_LABELS[level]}`) : null,
           household ? h('span', {}, household.name) : null,
-          leader && statusOf(p) === 'former' ? h('span', {}, MEMBERSHIP_LABELS.former) : null,
           leader && p.needsReview ? reasonText({ severity: 'warning', text: 'chybí údaje' }) : null,
         ].filter(Boolean),
       };

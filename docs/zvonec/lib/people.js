@@ -6,8 +6,11 @@ export const DELETED_NAME = 'Někdo smazaný';
 export const NO_NAME = 'Bez jména';
 export const CHILD_AGE = 15;
 
-/** Membership statuses as stored in data. */
+/** Membership statuses as stored in data. 'former' = the card is in the archive (see „archive“ below). */
 export const MEMBERSHIP_STATUSES = ['member', 'regular', 'guest', 'former'];
+
+/** The statuses a leader picks from; 'former' is set only by moving a card to the archive. */
+export const ACTIVE_STATUSES = ['member', 'regular', 'guest'];
 
 /** Registry filters in the order of the UI pills. Keys are stable, slugs are in the UI. */
 export const PEOPLE_FILTERS = ['attending', 'members', 'friends', 'guests', 'children', 'former', 'all', 'needsReview', 'nonMembers'];
@@ -101,8 +104,8 @@ export function statusOf(person) {
 /**
  * Does the person belong under a registry filter?
  * ctx: { today: "YYYY-MM-DD", childAge?: number }.
- * members = member; nonMembers = regular + guest; children = derived from age (not former);
- * former = former; all = everyone; needsReview = card created quickly while planning.
+ * members = member; nonMembers = regular + guest; children = derived from age (not archived);
+ * former = the archive; all = everyone; needsReview = card created quickly while planning (not archived).
  */
 export function matchesFilter(person, filter, { today, childAge = CHILD_AGE } = {}) {
   const status = statusOf(person);
@@ -114,7 +117,7 @@ export function matchesFilter(person, filter, { today, childAge = CHILD_AGE } = 
     case 'nonMembers': return status === 'regular' || status === 'guest';
     case 'children': return status !== 'former' && isChild(person, today, childAge);
     case 'former': return status === 'former';
-    case 'needsReview': return !!person.needsReview;
+    case 'needsReview': return !!person.needsReview && status !== 'former';
     case 'all': return true;
     default: return true;
   }
@@ -134,6 +137,62 @@ export function filterCounts(data, { today } = {}) {
     for (const f of PEOPLE_FILTERS) if (matchesFilter(p, f, { today, childAge })) counts[f]++;
   }
   return counts;
+}
+
+// ---------- archive ----------
+// The archive is the stored status 'former' (no migration: older data read the same).
+// membership.until = the day the card went to the archive; membership.previous = the status it had,
+// so „Vrátit z archivu“ can bring it back (older data without it come back as 'regular').
+
+/** Is the card in the archive? */
+export const isArchived = (person) => statusOf(person) === 'former';
+
+/** The day the card went to the archive ("YYYY-MM-DD") or null when unknown (older data). */
+export const archivedOn = (person) => (isArchived(person) && person.membership?.until) || null;
+
+/** How long a card waits in the archive before Zvonec suggests deleting it. */
+export const ARCHIVE_KEEP_YEARS = 1;
+
+/**
+ * Has the card been in the archive longer than a year on `today`? A card without the day
+ * (older data) counts as over: it has been „former“ since before the archive existed.
+ */
+export function archiveOverdue(person, today) {
+  if (!isArchived(person)) return false;
+  const since = archivedOn(person);
+  if (!since) return true;
+  return since < shiftYears(today, -ARCHIVE_KEEP_YEARS);
+}
+
+/** Cards in the archive, sorted by name. */
+export function archivedPeople(data) {
+  return sortPeople((data.people || []).filter(isArchived));
+}
+
+/** Cards in the archive longer than a year, sorted by name. */
+export function overdueArchive(data, { today } = {}) {
+  return archivedPeople(data).filter((p) => archiveOverdue(p, today));
+}
+
+/**
+ * The person a record (an assignment, a program item) points to. When the card was deleted, a record
+ * that kept the name (`personName`, see lib/archive.js) gives a stand-in
+ * { id, firstName, lastName?, deleted: true } (the kept name split at the first space, so fullName()
+ * gives it back), and old rosters and programs still say who served. null when there is nobody.
+ */
+export function personOrSnapshot(data, record) {
+  if (!record?.personId && !record?.personName) return null;
+  const person = record.personId ? personById(data, record.personId) : null;
+  if (person) return person;
+  return snapshotPerson(record.personId, record.personName);
+}
+
+/** The stand-in for a deleted card from its kept name, or null without a name. */
+export function snapshotPerson(id, name) {
+  const text = String(name || '').trim();
+  if (!text) return null;
+  const [firstName, ...rest] = text.split(/\s+/);
+  return { id: id || null, firstName, ...(rest.length ? { lastName: rest.join(' ') } : {}), deleted: true };
 }
 
 // ---------- households ----------
@@ -212,6 +271,13 @@ const fmt = (date) => `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-
 function shiftDay(day, count) { const d = utc(day); d.setUTCDate(d.getUTCDate() + count); return fmt(d); }
 function shiftMonth(firstOfMonth, count) { const d = utc(firstOfMonth); return fmt(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + count, 1))); }
 const weekdayOf = (day) => (utc(day).getUTCDay() + 6) % 7;
+/** The same day `count` years later (29 February → 28 February in other years). */
+function shiftYears(day, count) {
+  const y = Number(day.slice(0, 4)) + count;
+  let md = day.slice(5, 10);
+  if (md === '02-29' && !isLeap(y)) md = '02-28';
+  return `${y}-${md}`;
+}
 
 // ---------- card completeness ----------
 

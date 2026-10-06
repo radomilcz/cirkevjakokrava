@@ -3,32 +3,37 @@
 // Privacy (README „Kdo co vidí“): members never see membership, birth dates, notes, consent or logins;
 // phone and e-mail only when the person set showInDirectory; groups by name only.
 
-import { h, plural, toast, download, infoDialog, button, SEP } from './dom.js';
+import { h, plural, toast, download, infoDialog, button } from './dom.js';
 import { S, can, myId, MEMBERSHIP_LABELS } from './state.js';
 import {
-  childAgeOf, age, isChild, statusOf, matchesFilter, missingData, fullName, MISSING_LABELS,
+  childAgeOf, age, isChild, statusOf, matchesFilter, missingData, fullName, MISSING_LABELS, isArchived, archivedOn,
 } from '../lib/people.js';
 import { groupsOf } from '../lib/groups.js';
 import { today } from '../lib/time.js';
 
 // ---------- filters ----------
 
-/** Registry filters: URL slug → key → chip label. '' = everybody who still comes. 'missing' = lib missingData. */
+/**
+ * Registry filters: URL slug → key → chip label. '' = everybody who still comes. 'missing' = lib missingData.
+ * Cards in the archive are under none of them – they have their own list, #lide/archiv (ARCHIVE_SLUG).
+ */
 export const FILTERS = [
   ['', 'attending', 'Všichni'],
   ['clenove', 'members', 'Členové'],
   ['pratele', 'friends', 'Přátelé'],
   ['hoste', 'guests', 'Hosté'],
   ['deti', 'children', 'Děti'],
-  ['nechodi', 'former', 'Už nechodí'],
   ['doplnit', 'missing', 'Chybí údaje'],
 ];
 /** Old slugs (bookmarks) → current ones. */
 export const FILTER_ALIASES = { vsichni: '', neclenove: 'pratele' };
+/** The archive's slug; the old filter „Už nechodí“ (`nechodi`) opens it too. */
+export const ARCHIVE_SLUG = 'archiv';
+export const OLD_ARCHIVE_SLUGS = ['nechodi'];
 
 export const childAge = () => childAgeOf(S.data.settings);
 export const isKid = (person) => isChild(person, today(), childAge());
-export const isFormer = (person) => statusOf(person) === 'former';
+export const isFormer = (person) => isArchived(person);   // „former“ = the card is in the archive
 export const missingOf = (person) => missingData(person, { today: today(), childAge: childAge() });
 
 /** Does the person belong under a filter key (FILTERS)? */
@@ -95,15 +100,24 @@ export const shortDate = (date) => (date && date.length >= 10 ? `${Number(date.s
 
 export const telHref = (phone) => `tel:${String(phone).replace(/[^\d+]/g, '')}`;
 
-/** „člen od 10. 4. 2016“, „už nechodí · od 10. 4. 2016 do 3. 1. 2024“. */
+/** „člen od 10. 4. 2016“, „v archivu od 3. 1. 2024“. */
 export function membershipText(person) {
   const m = person.membership || {};
   const label = MEMBERSHIP_LABELS[statusOf(person)];
-  if (isFormer(person)) {
-    const span = [m.since && `od ${fullDate(m.since)}`, m.until && `do ${fullDate(m.until)}`].filter(Boolean).join(' ');
-    return span ? `${label}${SEP}${span}` : label;
-  }
+  if (isFormer(person)) return archivedText(person);
   return m.since ? `${label} od ${fullDate(m.since)}` : label;
+}
+
+/** „v archivu od 3. 1. 2024“, or „v archivu“ when the day is not known (older data). */
+export function archivedText(person) {
+  const day = archivedOn(person);
+  return day ? `v archivu od ${fullDate(day)}` : 'v archivu';
+}
+
+/** „5 karet je v archivu déle než rok. Smazat je?“ (1 karta je … Smazat ji? · 3 karty jsou … Smazat je?) */
+export function overdueQuestion(n) {
+  const verb = n >= 2 && n <= 4 ? 'jsou' : 'je';
+  return `${plural(n, 'karta', 'karty', 'karet')} ${verb} v archivu déle než rok. Smazat ${n === 1 ? 'ji' : 'je'}?`;
 }
 
 /** First letter upper case (Czech). */

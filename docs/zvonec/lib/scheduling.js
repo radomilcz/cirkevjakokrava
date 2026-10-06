@@ -140,6 +140,8 @@ function poolFor(data, role, scope, includeInactive, members) {
     }
     pool = people.filter((p) => inTeam.has(p.id));
   }
+  // an archived card is never offered, not even when searching everybody
+  pool = pool.filter((p) => !isFormer(p));
   return includeInactive ? pool : pool.filter((p) => !isInactive(data, p));
 }
 
@@ -149,7 +151,8 @@ function poolFor(data, role, scope, includeInactive, members) {
  * not be a good idea.
  *
  * Options: today ("YYYY-MM-DD"), scope ('skilled' = team members with the role, 'team' = whole team,
- * 'all' = everybody), includeInactive (also former members and paused people, default false).
+ * 'all' = everybody), includeInactive (also paused people, default false). Cards in the archive
+ * (status 'former') are never candidates.
  */
 export function candidates(data, eventId, roleId, { today, scope = 'skilled', includeInactive = false } = {}) {
   today = today || todayLocal();
@@ -206,7 +209,7 @@ export function candidates(data, eventId, roleId, { today, scope = 'skilled', in
         reasons.push({ code: 'K10', severity: 'warning', text: 'děti by zůstaly bez rodičů' });
       }
     }
-    if (isFormer(person)) reasons.push({ code: 'K13', severity: 'warning', text: 'už nechodí' });
+    if (isFormer(person)) reasons.push({ code: 'K13', severity: 'warning', text: 'v archivu' });
     else if (limits.paused) reasons.push({ code: 'K13', severity: 'warning', text: 'má pauzu' });
 
     const count = monthCount(data, person.id, month, { exceptEventId: event.id, all });
@@ -315,7 +318,8 @@ const daysFrom = (today, day) => Math.round((Date.parse(day) - Date.parse(today)
 
 /**
  * Břemeno: how much each person serves in a month ("YYYY-MM") against their limits.
- * Rows for adults who serve (a skill in a non-archived team) plus anyone with a duty in the month:
+ * Rows for adults who serve (a skill in a non-archived team) plus anyone with a duty in the month;
+ * never a card in the archive:
  * [{ person, count, limit, sundaysInRow, maxSundays, paused, custom, over, overSundays }]
  *   count        – distinct events with a duty (rehearsals do not count, as in K7)
  *   sundaysInRow – longest run of Sunday services in a row that reaches into the month (as in K8)
@@ -338,6 +342,7 @@ export function servingLoad(data, month, { today } = {}) {
   }
   const rows = [];
   for (const person of data.people || []) {
+    if (isFormer(person)) continue;   // an archived card is out of Břemeno, even with an old duty in the month
     const count = monthCount(data, person.id, month, { all });
     const serves = skilled.has(person.id) && !isFormer(person) && !isChild(person, today, childAge);
     if (!serves && !count) continue;

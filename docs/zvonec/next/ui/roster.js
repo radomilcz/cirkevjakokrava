@@ -20,7 +20,7 @@ import { servingLoad } from '../../lib/scheduling.js';
 import { dayOf, today } from '../../lib/time.js';
 import {
   prefs, savePrefs, rosterTeam, ALL_TEAMS, teamsWithRoles, passes, slotsOf, fillOfTeams, waitingWords, missingWords, eventConflicts,
-  assignmentWarnings, eventLevelWarnings, timeText, placeText, shortName, nameOf, personOf, kindHue,
+  assignmentWarnings, eventLevelWarnings, timeText, placeText, shortName, nameOf, openable, kindHue,
 } from './calendar-shared.js';
 import { teamBlock, slotRow, fillOpenSlots, pickFor, openDutySheet, openMyAnswer, warningFor } from './event-duties.js';
 import { eventPane } from './event.js';
@@ -261,9 +261,9 @@ function cellEntry(event, slot, conflicts, { narrow }) {
   const me = a.personId === myId();
   const warnings = leader ? assignmentWarnings(conflicts, a).filter((c) => c.severity !== 'info') : [];
   const worst = warnings.some((c) => c.severity === 'error') ? 'error' : warnings.length ? 'warning' : null;
-  const name = narrow ? shortName(a.personId) : nameOf(a.personId);
+  const name = narrow ? shortName(a) : nameOf(a);   // the record: a deleted card keeps its name
   const word = CELL_WORD[key] || null;
-  const label = [nameOf(a.personId), word || 'potvrzeno', me ? 'ty' : null, worst === 'error' ? 'chyba' : worst ? 'pozor' : null].filter(Boolean).join(', ');
+  const label = [nameOf(a), word || 'potvrzeno', me ? 'ty' : null, worst === 'error' ? 'chyba' : worst ? 'pozor' : null].filter(Boolean).join(', ');
   const inner = [
     statusSymbol(key),
     h('span', { class: 'roster-entry__text' },
@@ -275,7 +275,7 @@ function cellEntry(event, slot, conflicts, { narrow }) {
   const props = { class: 'roster-entry', dataset: { status: key, me: me ? '' : null }, title: label, 'aria-label': `${slot.role.name}: ${label}` };
   if (leader) return h('button', { ...props, type: 'button', onclick: () => openDutySheet(event.id, a.id) }, inner);
   if (me) return h('button', { ...props, type: 'button', onclick: () => openMyAnswer(event.id, a.id) }, inner);
-  return personOf(a.personId) ? h('a', { ...props, href: `#osoba/${a.personId}` }, inner) : h('span', props, inner);
+  return openable(a) ? h('a', { ...props, href: `#osoba/${a.personId}` }, inner) : h('span', props, inner);
 }
 
 /** The first column: date arch, title (opens the event), time, how full (for the shown teams). */

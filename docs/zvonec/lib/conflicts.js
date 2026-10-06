@@ -30,7 +30,7 @@ export const CODES = {
   K10: 'Nikdo nehlídá děti',
   K11: 'Dítě ve službě pro dospělé',
   K12: 'Málo dospělých u dětí',
-  K13: 'Nechodí nebo má pauzu',
+  K13: 'Je v archivu nebo má pauzu',
   K14: 'Zrušené setkání',
   K15: 'Osnova přetéká',
   K16: 'Problém v osnově',
@@ -45,7 +45,7 @@ function describeEvent(event) {
 
 /** Why a person should not be planned now, or null. Czech, used inside sentences. */
 function inactiveText(data, person) {
-  if (isFormer(person)) return 'už k nám nechodí';
+  if (isFormer(person)) return 'je v archivu';
   if (limitsOf(data, person.id).paused) return 'má teď pauzu';
   return null;
 }

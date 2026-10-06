@@ -24,6 +24,8 @@ events     event types (templates), events, series,       imports: people, group
 scheduling candidate ranking, propose, same as last time,  imports: people, events (needsOf)
            serving load (Břemeno), open slots, unconfirmed
 conflicts  rules K1–K17                                   imports: all, read-only, pure
+archive    the archive of people: archive, restore,       imports: people
+           delete a card with the history kept
 validate   data that does not hold together (warnings)    imports: events (RECURRENCE_STEPS)
 access     logins, sealing the GitHub token               imports: nothing (links by personId)
 ```
@@ -68,8 +70,9 @@ access.json          { "v": 2, "logins": [] }            published to Pages, con
   - Warnings: `console.warn`, `onChange({ status, warning })` and the list `sync.warnings`.
     The kinds are `{ kind: 'recreated', paths }` and `{ kind: 'massDeletion', path, collections }`.
     The UI can show them from `event.warning` as it arrives, or read `sync.warnings` later.
-- Cross-file operations are not atomic. A deleted person leaves dangling `personId`s; they render as
-  „někdo smazaný“ and are dropped on the next save of the file that holds them.
+- Cross-file operations are not atomic. A deleted person leaves dangling `personId`s in past events;
+  a record that kept the name (`personName`, §3 The archive) shows that name, any other renders as
+  „někdo smazaný“.
 - **Privacy, plainly:** one token means every logged-in browser can read every file. Hiding data from
   members is a UI rule, not access control. Therefore no pastoral, health or financial notes, ever.
 - `data/images/<name>` holds binary pictures (§3 Pictures); they are not part of the files above.
@@ -85,7 +88,8 @@ Ids are a prefix + random string unless noted.
 person {
   id: "p…", firstName, lastName?, nickname?, phone?, email?,
   householdId?, birthDate?,                 // "YYYY-MM-DD" or just "YYYY"
-  membership: { status: "member" | "regular" | "guest" | "former", since?: date, until?: date },
+  membership: { status: "member" | "regular" | "guest" | "former", since?: date, until?: date,
+                previous?: "member" | "regular" | "guest" },   // former = in the archive (below)
   consentDate?: date,                       // required for guests before storing more than a name
   registeredAt?: date,                      // came through an invite
   showInDirectory?: bool,                   // members may see phone/e-mail
@@ -127,8 +131,9 @@ series        { id: "s…", typeId?, step: "weekly" | "biweekly" | "monthly", fr
                                                 // events stay materialised and point to it by `seriesId`;
                                                 // monthly = the same nth (or last) weekday every month
 need          { roleId, count: int }
-programItem   { id: "i…", formatId, minutes: int, title?, personId?, note? }   // UI: „osnova“
+programItem   { id: "i…", formatId, minutes: int, title?, personId?, personName?, note? }   // UI: „osnova“
 assignment    { id: "a…", roleId, personId, status: "proposed" | "confirmed" | "declined",
+                personName?,                    // the full name, kept when the card was deleted (§3 The archive)
                 override?: { reason, by?: personId, at?: date } }
 format        { id: "f…", name, minutes: int, leadRoleId?, why?, how?, link?, needs?: [need],
                 public?: bool }                 // name, minutes, why and how are public (§4b)
@@ -171,6 +176,33 @@ needs; the program's needs are never copied into `event.needs`. Everything that 
 full list: the slots on the event screen, the roster columns, `proposeRemaining`, `sameAsLastTime`,
 K5 (unfilled) and K12 (childcare). K17 is left for a format whose lead role no longer exists.
 
+### The archive (people who no longer come)
+
+No migration: the archive **is** the stored status `former`, and older data read the same.
+`lib/archive.js` (pure, tested in `zvonec/test/archive.test.mjs`):
+- `archivePerson(data, id, { today, now })` – „Přesunout do archivu“: `membership = { status: "former",
+  since?, until: today, previous: <status before> }`; the person's assignments and program items of
+  events starting from `now` are removed / lose `personId` (the slots open again); `leader` is dropped
+  on their `groupMember` records. The records themselves stay (teams and skills come back with the
+  card), but `membersOf`, `leadersOf`, `peopleForRole` and `skillMatrix` skip archived cards. Past
+  events stay untouched. In live mode the UI also removes their logins from `access.json`.
+- `restorePerson(data, id)` – „Vrátit z archivu“: back to `previous`, `regular` (přítel) when unknown
+  (older data); released duties and leading do not come back.
+- `deletePersonKeepHistory(data, id, { now })` – „Smazat kartu“: past assignments and program items
+  keep `personId` and get `personName` (the full name), future ones are released; the card, its
+  `groupMember` records, availability and serving limits are removed. `personOrSnapshot(data, record)`
+  (lib/people.js) and `personInEvent(data, event, personId)` give the card or a stand-in
+  `{ id, firstName, lastName?, deleted: true }`; every screen that shows a past duty or osnova leader
+  reads through them (and does not link a stand-in to `#osoba/`).
+- An archived card is left out everywhere else: Lidé filters and search, pickers and proposals
+  (`candidates` never returns it, not even with `includeInactive`), Břemeno (`servingLoad`), birthdays,
+  `missingData`, group lists, the household block of a card, „Dívat se jako“, CSV of everyone. Only
+  `#lide/archiv` (leaders) and the card itself (leaders) show it.
+- One year: `archiveOverdue(person, today)` is true after more than a year in the archive (a card
+  without `until`, older data, counts as over). `#lide/archiv` asks „<n> karet je v archivu déle než
+  rok. Smazat je?“ (one confirmation deletes them all with the history kept); Přehled / Domů show the
+  same line to leaders.
+
 ### settings.json
 ```
 settings { churchName, address?, mainPlaceId?, timezone: "Europe/Prague",   // mainPlaceId: where we usually meet
@@ -210,7 +242,9 @@ lib/store/github.js    Contents API client (GET/PUT/DELETE, directory listing, r
 lib/store/local.js     localStorage backend for the demo (incl. binary files)
 lib/store/store.js     file map {collection → file}, load all, one save queue per file, refresh by sha,
                        image helpers (saveImage, loadImageUrl, deleteImage)
-lib/people.js          names, households, age, membership queries, upcomingBirthdays, missingData (no planning)
+lib/people.js          names, households, age, membership queries, upcomingBirthdays, missingData, the archive's
+                       queries (isArchived, archivedOn, archiveOverdue, overdueArchive, personOrSnapshot) (no planning)
+lib/archive.js         archivePerson, restorePerson, deletePersonKeepHistory, futureDutiesOf, personInEvent (§3)
 lib/places.js          placeById, buildingOf, resolvePlace, placeAddress, placesOf, roomsOf, placeTree
 lib/groups.js          members of a group, roles of a person, leaders, skill level, skillMatrix
 lib/events.js          event types → events, series (addSeries, extendSeries, seriesFor, seriesSummary), needs,
@@ -351,7 +385,8 @@ section; `null` = none). `render` returns a kit `page()` (older screens may retu
 | `#kalendar[/<mesic\|tyden\|seznam\|rozpis>[/<datum>]]` | Kalendář; `#kalendar` opens the remembered view | member |
 | `#setkani/<id>[/sluzby\|/osnova]` | event: Přehled · Kdo slouží · Osnova | member (leader edits) |
 | `#upozorneni[/lide]` | Upozornění: Podle setkání / Podle lidí | leader |
-| `#lide[/<pohled>[/<filtr>]]` | Lidé; views seznam · tabulka · domacnosti · skupiny · narozeniny · bremeno; filters `clenove` · `pratele` · `hoste` · `deti` · `nechodi` · `doplnit`; `bremeno` takes a month | member (members: seznam, domacnosti, skupiny) |
+| `#lide[/<pohled>[/<filtr>]]` | Lidé; views seznam · tabulka · domacnosti · skupiny · narozeniny · bremeno; filters `clenove` · `pratele` · `hoste` · `deti` · `doplnit`; `bremeno` takes a month | member (members: seznam, domacnosti, skupiny) |
+| `#lide/archiv` | Archiv: cards in the archive, „Vrátit z archivu“, „Smazat kartu“, the one-year question | leader |
 | `#osoba/<id>` | person card | member (reduced) |
 | `#domacnost/<id>` | household | leader |
 | `#tymy[/<tymy\|skupinky\|vedeni\|umi>[/<týmId>]]`, `#tym/<id>[/<lide\|role\|umi\|setkani>]` | teams and groups, team page | leader |
@@ -369,7 +404,8 @@ Old slugs redirect (`REDIRECTS` in app.js, applied until none matches): `#moje` 
 `#udalost/<id>` → `#setkani/<id>`; `#porad/<id>`, `#setkani/<id>/porad`, `#setkani/<id>/prubeh` →
 `#setkani/<id>/osnova`; `#nastaveni/formaty` → `#formaty`; `#nastaveni/sablony` → `#sablony`;
 `#nastaveni/mista` → `#mista`; `#nastaveni/ucet` → `#ucet`; `#skupiny`, `#sluzby` → `#tymy`; `#skupina/<id>` →
-`#tym/<id>`; `#kolize` → `#upozorneni`. In `#lide`, the old filter slugs `vsichni` and `neclenove` still open.
+`#tym/<id>`; `#kolize` → `#upozorneni`; `#lide[/<seznam|tabulka|skupiny>]/nechodi` → `#lide/archiv`. In
+`#lide`, the old filter slugs `vsichni` and `neclenove` still open.
 
 An empty or unknown hash opens `#prehled` for signed-in people, `#program` for visitors (`#prihlaseni`
 while there are no logins). A person opening a route above their access lands on the home of their role;
@@ -409,8 +445,13 @@ it. A piece that only one module needs lives in that module first (`placeChipsFi
   (`unconfirmedDuties`), Lidé (cards to complete, guests, birthdays); admins: Přístupy.
 - **Kalendář** – one toolbar for four views (period navigator, Účel, Tým, „Jen moje služby“). Rozpis is
   the planning surface: a leader's click on a cell opens the picker in place (`ui/event-duties.js`).
-- **Lidé** – Tabulka is the default on a desktop, Seznam on a phone; the view is remembered.
-- **Person card** – left column owned by the registry (contact, household, membership, consent, note, login),
+- **Lidé** – Tabulka is the default on a desktop, Seznam on a phone; the view is remembered. Leaders find
+  a quiet „Archiv (n)“ at the end of Seznam and Tabulka.
+- **Archiv** (`#lide/archiv`) – name, „v archivu od …“, „Vrátit z archivu“, „Smazat kartu“ per row, search
+  inside the archive, the one-year question on top.
+- **Person card** – „Přesunout do archivu“ in ⋯ and at the bottom of Členství (whose status field is
+  „Stav“); an archived card opens with a callout (since when, Vrátit z archivu, Smazat kartu) and is
+  for leaders only. Left column owned by the registry (contact, household, membership, consent, note, login),
   right column read-only blocks from planning (teams and roles, upcoming duties, Kdy nemůže, Břemeno,
   Upozornění) with links to where they are edited; each block has its own small „Upravit“ dialog.
 - **Template page** – sections Základ · Na webu · Kdo je potřeba · Osnova · Řady, edits a draft, writes on „Uložit“.
@@ -418,7 +459,7 @@ it. A piece that only one module needs lives in that module first (`placeChipsFi
 Picking people (`ui/picker.js`): one picker for event slots, program leaders, group members and
 households. With an event and a role it ranks `candidates()` and shows the reasons as pills (solid =
 error); pills **Umí to · Celý tým · Všichni lidé** switch the pool. The search always covers the whole
-registry (former and paused people included). For a leader, a search adds „+ Nový člověk „…““: a small
+registry except the archive (paused people included). For a leader, a search adds „+ Nový člověk „…““: a small
 form (first name, last name, phone, e-mail – split from the query) that warns about similar names,
 creates a minimal card (`guest`, `needsReview`), optionally adds the person to the team (the role as
 `learning`) or group, and picks it in one step. Enter picks the first row.
@@ -466,6 +507,7 @@ Membership reveals religion (GDPR Art. 9), so it never appears in member views o
 - Members, former members and regular attenders: Art. 9(2)(d) (legitimate activities of a religious
   body), data never leaves the church. Guests: consent before storing more than a first name.
 - Children under 15: contact goes through a parent; no own phone or e-mail.
-- Retention: guests without a visit for 12 months are deleted; former members keep only name and
-  membership dates after 12 months.
+- Retention: guests without a visit for 12 months are deleted. People who stop coming go to the archive
+  (§3 The archive); after a year there Zvonec asks leaders to delete the cards, and deleting keeps only
+  the name on past duties (`personName`) – contact and every other detail go.
 - Git history keeps old versions; full erasure means rewriting the data repo history.

@@ -7,7 +7,7 @@ import { h, plural, agree, toast, openSheet, button, textArea, download } from '
 import { S, can, myId } from '../../ui/state.js';
 import {
   childAgeOf, age, isChild, statusOf, matchesFilter, missingData, fullName, displayName, MISSING_LABELS,
-  householdById, householdMembers,
+  householdById, householdMembers, isArchived, archivedOn,
 } from '../../lib/people.js';
 import { groupsOf, rolesOf, memberRecord, leadersOf, GROUP_KINDS } from '../../lib/groups.js';
 import { personById } from '../../lib/people.js';
@@ -15,22 +15,26 @@ import { today, addDays } from '../../lib/time.js';
 
 // ---------- filters ----------
 
-/** Lidé filters: URL slug → lib key → chip label. '' = everybody who still comes. 'missing' = missingData. */
+/**
+ * Lidé filters: URL slug → lib key → chip label. '' = everybody who still comes. 'missing' = missingData.
+ * Cards in the archive are under none of them – they have their own list, #lide/archiv (ARCHIVE_SLUG).
+ */
 export const FILTERS = [
   ['', 'attending', 'Všichni'],
   ['clenove', 'members', 'Členové'],
   ['pratele', 'friends', 'Přátelé'],
   ['hoste', 'guests', 'Hosté'],
   ['deti', 'children', 'Děti'],
-  ['nechodi', 'former', 'Už nechodí'],
   ['doplnit', 'missing', 'Chybí údaje'],
 ];
 /** Older slugs (bookmarks, the current Zvonec) → today's. */
 export const FILTER_ALIASES = { vsichni: '', neclenove: 'pratele' };
+/** The archive's slug; the old filter „Už nechodí“ (`nechodi`) opens it too (a redirect in app.js). */
+export const ARCHIVE_SLUG = 'archiv';
 
 export const childAge = () => childAgeOf(S.data.settings);
 export const isKid = (person) => isChild(person, today(), childAge());
-export const isFormer = (person) => statusOf(person) === 'former';
+export const isFormer = (person) => isArchived(person);   // „former“ = the card is in the archive
 export const missingOf = (person) => missingData(person, { today: today(), childAge: childAge() });
 
 /** Does the person belong under a filter key? */
@@ -66,9 +70,10 @@ export function matchesQuery(person, query) {
 
 // ---------- words ----------
 
-export const MEMBERSHIP_WORDS = { member: 'člen', regular: 'přítel', guest: 'host', former: 'už nechodí' };
+export const MEMBERSHIP_WORDS = { member: 'člen', regular: 'přítel', guest: 'host', former: 'v archivu' };
+/** What a leader picks; the archive is not a choice – a card gets there through „Přesunout do archivu“. */
 export const MEMBERSHIP_CHOICES = [
-  { value: 'member', label: 'Člen' }, { value: 'regular', label: 'Přítel' }, { value: 'guest', label: 'Host' }, { value: 'former', label: 'Už nechodí' },
+  { value: 'member', label: 'Člen' }, { value: 'regular', label: 'Přítel' }, { value: 'guest', label: 'Host' },
 ];
 export const peopleCount = (n) => plural(n, 'člověk', 'lidé', 'lidí');
 export const yearsText = (n) => plural(n, 'rok', 'roky', 'let');
@@ -97,18 +102,27 @@ export function kidText(person) {
   return months < 1 ? 'miminko' : `miminko, ${plural(months, 'měsíc', 'měsíce', 'měsíců')}`;
 }
 
-/** The membership word of a row (leaders): „člen“, „dítě, 9 let“, „už nechodí“. */
+/** The membership word of a row (leaders): „člen“, „dítě, 9 let“, „v archivu“. */
 export const membershipWord = (person) => (isKid(person) && !isFormer(person) ? kidText(person) : MEMBERSHIP_WORDS[statusOf(person)]);
 
-/** „člen od 2017“ / „už nechodí · 2016–2024“. */
+/** „člen od 2017“ / „v archivu od 3. 1. 2024“. */
 export function membershipLine(person) {
   const m = person.membership || {};
   const word = MEMBERSHIP_WORDS[statusOf(person)];
-  if (isFormer(person)) {
-    const span = [m.since?.slice(0, 4), m.until?.slice(0, 4)].filter(Boolean).join('–');
-    return span ? `${word} · ${span}` : word;
-  }
+  if (isFormer(person)) return archivedText(person);
   return m.since ? `${word} od ${m.since.slice(0, 4)}` : word;
+}
+
+/** „v archivu od 3. 1. 2024“, or „v archivu“ when the day is not known (older data). */
+export function archivedText(person) {
+  const day = archivedOn(person);
+  return day ? `v archivu od ${fullDate(day)}` : 'v archivu';
+}
+
+/** „5 karet je v archivu déle než rok. Smazat je?“ (1 karta je … Smazat ji? · 3 karty jsou … Smazat je?) */
+export function overdueQuestion(n) {
+  const verb = n >= 2 && n <= 4 ? 'jsou' : 'je';
+  return `${plural(n, 'karta', 'karty', 'karet')} ${verb} v archivu déle než rok. Smazat ${n === 1 ? 'ji' : 'je'}?`;
 }
 
 /** „Chybí příjmení a telefon nebo e-mail.“ */

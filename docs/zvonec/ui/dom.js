@@ -323,7 +323,7 @@ export function initials(person) {
  */
 export function avatar(person, { size = 'm', mine = false } = {}) {
   return h('span', {
-    class: ['avatar', `avatar-${size}`, person ? `c-${hueOf(person.id)}` : 'avatar-gone', mine && 'mine'],
+    class: ['avatar', `avatar-${size}`, person && !person.deleted ? `c-${hueOf(person.id)}` : 'avatar-gone', mine && 'mine'],
     'aria-hidden': 'true',
   }, initials(person));
 }

@@ -4,7 +4,7 @@
 // reads `people`, through lib/people.js – the foundation layer).
 // Mutating helpers change `data` in place and return the changed record.
 
-import { comparePeople, statusOf } from './people.js';
+import { comparePeople, statusOf, isArchived } from './people.js';
 
 export const SKILL_LEVELS = ['trained', 'learning'];
 export const GROUP_KINDS = ['team', 'community', 'leadership'];
@@ -39,15 +39,25 @@ export function groupsOf(data, personId, { includeArchived = false } = {}) {
     .sort((a, b) => byName.compare(a.name || '', b.name || ''));
 }
 
-/** groupMember records of a group (leaders first, otherwise in data order). */
-export function membersOf(data, groupId) {
-  const list = (data.groupMembers || []).filter((m) => m.groupId === groupId);
+/**
+ * Ids of the people whose card is in the archive. Their groupMember records stay (so „Vrátit z archivu“
+ * brings back their teams and skills), but no list of a group shows them.
+ */
+function archivedIds(data) {
+  return new Set((data.people || []).filter(isArchived).map((p) => p.id));
+}
+
+/** groupMember records of a group (leaders first, otherwise in data order). Archived people only with includeArchived. */
+export function membersOf(data, groupId, { includeArchived = false } = {}) {
+  const gone = includeArchived ? new Set() : archivedIds(data);
+  const list = (data.groupMembers || []).filter((m) => m.groupId === groupId && !gone.has(m.personId));
   return [...list.filter((m) => m.leader), ...list.filter((m) => !m.leader)];
 }
 
-/** groupMember records of the group's leaders. */
+/** groupMember records of the group's leaders (never an archived card). */
 export function leadersOf(data, groupId) {
-  return (data.groupMembers || []).filter((m) => m.groupId === groupId && m.leader);
+  const gone = archivedIds(data);
+  return (data.groupMembers || []).filter((m) => m.groupId === groupId && m.leader && !gone.has(m.personId));
 }
 
 /** Groups the person leads. */
@@ -84,14 +94,15 @@ export function skillsOf(data, personId) {
 /**
  * People who can take a role: [{ personId, level }], trained before learning.
  * level: 'trained' | 'learning' limits the result to that level; omitted = both.
- * Archived groups do not count.
+ * Archived groups and archived people do not count.
  */
 export function peopleForRole(data, roleId, { level } = {}) {
   const role = roleById(data, roleId);
   if (!role || groupById(data, role.groupId)?.archived) return [];
+  const gone = archivedIds(data);
   const result = [];
   for (const m of data.groupMembers || []) {
-    if (m.groupId !== role.groupId) continue;
+    if (m.groupId !== role.groupId || gone.has(m.personId)) continue;
     const l = m.roles?.[roleId];
     if (!SKILL_LEVELS.includes(l) || (level && l !== level)) continue;
     result.push({ personId: m.personId, level: l });

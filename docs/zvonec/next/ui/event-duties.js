@@ -23,7 +23,7 @@ import { roleById, memberRecord, setSkill, removeMember } from '../../lib/groups
 import { fullName, sortPeople, statusOf } from '../../lib/people.js';
 import { today, dayOf } from '../../lib/time.js';
 import {
-  personOf, nameOf, shortName, assignmentWarnings, eventConflicts, teamsWithRoles, capital, whenText, placeText,
+  personOf, openable, nameOf, shortName, assignmentWarnings, eventConflicts, teamsWithRoles, capital, whenText, placeText,
 } from './calendar-shared.js';
 
 /** Re-find the event at click time – a refresh may have swapped S.data meanwhile. */
@@ -85,7 +85,7 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
   const pools = [{ id: 'skilled', label: 'Umí to', items: pool('skilled') }, { id: 'team', label: 'Celý tým', items: pool('team') }, { id: 'all', label: 'Všichni lidé', items: pool('all') }];
   peoplePicker({
     title: `Kdo bude dělat ${role?.name || 'službu'}?`,
-    meta: [replacing ? `Teď: ${nameOf(replacing.personId)}` : null, dayWords(event), event.title].filter(Boolean).join(SEP),
+    meta: [replacing ? `Teď: ${nameOf(replacing)}` : null, dayWords(event), event.title].filter(Boolean).join(SEP),
     pools,
     pool: pools[0].items.length ? 'skilled' : 'team',
     everyone: sortPeople((S.data.people || []).filter((p) => !taken.has(p.id) && statusOf(p) !== 'former')),
@@ -150,13 +150,13 @@ export function answer(eventId, assignmentId, status, { quiet = false } = {}) {
   if (!can('leader') && a.personId !== myId()) return;
   const previous = a.status;
   a.status = status;
-  change(`${nameOf(a.personId)} ${roleName(a.roleId)} ${shortDate(e.start, { weekday: false })}: ${STATUS_NOTE[status]}`);
+  change(`${nameOf(a)} ${roleName(a.roleId)} ${shortDate(e.start, { weekday: false })}: ${STATUS_NOTE[status]}`);
   if (quiet) return;
-  const words = a.personId === myId() ? ANSWER_TOAST[status] : `${nameOf(a.personId)}: ${STATUS_NOTE[status]}`;
+  const words = a.personId === myId() ? ANSWER_TOAST[status] : `${nameOf(a)}: ${STATUS_NOTE[status]}`;
   toast(words, {
     action: () => {
       const again = fresh(eventId)?.assignments?.find((x) => x.id === assignmentId);
-      if (again) { again.status = previous; change(`vráceno: ${nameOf(a.personId)} ${roleName(a.roleId)}`); }
+      if (again) { again.status = previous; change(`vráceno: ${nameOf(a)} ${roleName(a.roleId)}`); }
     },
   });
 }
@@ -165,10 +165,10 @@ export function removeDuty(eventId, assignmentId) {
   const e = fresh(eventId);
   const a = e?.assignments?.find((x) => x.id === assignmentId);
   if (!a) return;
-  const undo = snapshot(eventId, `${nameOf(a.personId)} (${roleName(a.roleId)})`);
+  const undo = snapshot(eventId, `${nameOf(a)} (${roleName(a.roleId)})`);
   e.assignments = e.assignments.filter((x) => x.id !== assignmentId);
-  change(`odebráno: ${nameOf(a.personId)} (${roleName(a.roleId)})`);
-  toast(`${nameOf(a.personId)} už nedělá ${roleName(a.roleId)}.`, { action: undo });
+  change(`odebráno: ${nameOf(a)} (${roleName(a.roleId)})`);
+  toast(`${nameOf(a)} už nedělá ${roleName(a.roleId)}.`, { action: undo });
 }
 
 const STATUS_OPTIONS = [
@@ -183,7 +183,7 @@ export function openDutySheet(eventId, assignmentId) {
   const a = e?.assignments?.find((x) => x.id === assignmentId);
   if (!a) return;
   if (!can('leader')) { if (a.personId === myId()) openMyAnswer(eventId, assignmentId); return; }
-  const person = personOf(a.personId);
+  const person = personOf(a);
   const phone = person?.phone;
   let sheet;
   const draw = () => {
@@ -198,7 +198,7 @@ export function openDutySheet(eventId, assignmentId) {
       h('div', { class: 'duty-sheet__actions' },
         button('Vybrat jiného', { icon: 'people', block: true, onclick: () => { sheet.close(); pickFor(eventId, now.roleId, assignmentId); } }),
         phone ? button('Zavolat', { icon: 'phone', block: true, href: `tel:${String(phone).replace(/\s+/g, '')}` }) : null,
-        person ? button('Otevřít kartu', { icon: 'user', block: true, href: `#osoba/${person.id}` }) : null,
+        person && !person.deleted ? button('Otevřít kartu', { icon: 'user', block: true, href: `#osoba/${person.id}` }) : null,
         button('Odebrat ze služby', { variant: 'danger', icon: 'trash', block: true, onclick: () => { sheet.close(); removeDuty(eventId, assignmentId); } })),
     ]);
   };
@@ -269,7 +269,7 @@ export function openOverride(conflict) {
       const again = overrideTarget(conflict);
       if (!again) return undefined;
       again.assignment.override = { reason, at: today(), ...(myId() ? { by: myId() } : {}) };
-      change(`výjimka ${nameOf(again.assignment.personId)}`);
+      change(`výjimka ${nameOf(again.assignment)}`);
       toast('Uloženo. Zvonec to přestane hlásit.');
       return undefined;
     },
@@ -281,7 +281,7 @@ export function clearOverride(conflict) {
   if (!target?.assignment.override) return;
   const kept = target.assignment.override;
   delete target.assignment.override;
-  change(`zase hlídat ${nameOf(target.assignment.personId)}`);
+  change(`zase hlídat ${nameOf(target.assignment)}`);
   toast('Zvonec to zase hlídá.', { action: () => { const t = overrideTarget(conflict); if (t) { t.assignment.override = kept; change('vráceno: výjimka'); } } });
 }
 
@@ -328,12 +328,12 @@ export function slotRow(event, slot, conflicts, { short = false, warnings: showW
   const me = a.personId === myId();
   const warnings = leader && showWarnings ? assignmentWarnings(conflicts, a) : [];
   const opts = {
-    role: slot.role.name, person: personOf(a.personId), name: short ? shortName(a.personId) : undefined, status: a.status, me, short,
+    role: slot.role.name, person: personOf(a), name: short ? shortName(a) : undefined, status: a.status, me, short,
     warn: warnings.length ? warnings.map((c) => warningFor(c, { eventId: event.id, assignment: a })) : null,
   };
   if (leader) opts.onclick = () => openDutySheet(event.id, a.id);
   else if (me) opts.onclick = () => openMyAnswer(event.id, a.id);
-  else if (personOf(a.personId)) opts.href = `#osoba/${a.personId}`;
+  else if (openable(a)) opts.href = `#osoba/${a.personId}`;
   return dutyRow(opts);
 }
 

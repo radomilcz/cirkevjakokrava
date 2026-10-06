@@ -7,7 +7,7 @@
 import { h, icon, severityIcon, statusIcon, statusLabel, personName, groupMark, emptyState, printHeader, popMenu, metaJoin, agree, SEP } from './dom.js';
 import { S, can, myId, SEVERITY_LABELS } from './state.js';
 import { eventsInRange, needsOf } from '../lib/events.js';
-import { personById } from '../lib/people.js';
+import { personById, personOrSnapshot } from '../lib/people.js';
 import { addDays, addMonths, dayOf, monthOf, prettyDay, prettyTime, today } from '../lib/time.js';
 import {
   filteredEmpty, kindHue, kindLabel, monthTitle, openIcon, passesFilters, roleComparator, activeFilterCount, isPhone,
@@ -84,7 +84,7 @@ export function rosterView(ctx) {
     });
     if (!need && !here.length) { td.append(h('span', { class: 'roster-none', 'aria-label': 'není potřeba' }, '–')); return td; }
     const people = here.map((a) => {
-      const person = personById(S.data, a.personId);
+      const person = personOrSnapshot(S.data, a);   // a deleted card keeps its name in old rosters
       const name = personName(person);
       const problem = problems.get(a.id);
       const content = [statusIcon(a.status), h('span', { class: 'roster-name' }, name), h('span', { class: 'visually-hidden' }, ` – ${statusLabel(a.status)}`),

@@ -19,7 +19,7 @@ import {
   GROUP_KINDS, groupById, roleById, rolesOf, membersOf, leadersOf, memberRecord, addMember, removeMember, setLeader, setSkill,
   skillMatrix, groupsOf,
 } from '../lib/groups.js';
-import { personById, displayName, comparePeople, statusOf, sortPeople } from '../lib/people.js';
+import { personById, displayName, comparePeople, statusOf, sortPeople, personOrSnapshot } from '../lib/people.js';
 import { needsOf } from '../lib/events.js';
 import { servingLoad } from '../lib/scheduling.js';
 import { placesOf } from '../lib/places.js';
@@ -1058,7 +1058,7 @@ function teamEventItem(group, { event, needs, assignments }) {
       h('span', { class: 'team-duty-role' }, role?.name || 'Role'),
       h('span', { class: 'team-duty-people' },
         people.map((a) => h('span', { class: ['team-duty-person', `status-${a.status}`], title: statusWord(a.status) },
-          personLine(personById(S.data, a.personId), { size: 'xs', struck: a.status === 'declined' }), statusIcon(a.status))),
+          personLine(personOrSnapshot(S.data, a), { size: 'xs', struck: a.status === 'declined' }), statusIcon(a.status))),
         missing ? h('span', { class: 'team-duty-missing' }, missing > 1 ? `chybí ${missing}` : 'chybí') : null));
   });
   return h('div', { class: 'team-event' },

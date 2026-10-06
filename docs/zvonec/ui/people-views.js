@@ -3,17 +3,20 @@
 // Seznam · Domácnosti · Podle skupin with contacts only where shared and no membership, ages or
 // addresses of others. The view is remembered in this browser; Tabulka is the default on a desktop,
 // Seznam on a phone. Filters are chips in the hash, the search is kept for the session.
+// Archiv (#lide/archiv, leaders): the cards moved to the archive, reached by the quiet „Archiv (n)“ at the
+// end of Seznam and Tabulka; the old filter slug `nechodi` opens it too.
 
 import {
   h, icon, nodes, plural, page, tabs, toolbar, spacer, searchField, chipLinks, chips, list, row, groupedList,
   avatar, personName, personLine, groupMark, avatarStack, badge, button, table, emptyState, toast, progressBar,
   dateNav, metaJoin, severityIcon, SEP,
-  meTag, disclosure,
+  meTag, disclosure, callout,
 } from './dom.js';
 import { S, can, myId, render, MEMBERSHIP_LABELS } from './state.js';
 import { createInvite } from './login.js';
 import {
   sortPeople, householdById, peopleByHousehold, upcomingBirthdays, statusOf, comparePeople, MISSING_LABELS,
+  archivedPeople, archiveOverdue,
 } from '../lib/people.js';
 import { membersOf, rolesOf } from '../lib/groups.js';
 import { lastDutyDays } from '../lib/events.js';
@@ -22,9 +25,10 @@ import { today, monthOf, addMonths, MONTHS, weekday, DAYS } from '../lib/time.js
 import {
   FILTERS, FILTER_ALIASES, filterCounts, inFilter, matchesQuery, seesContact, isKid, isFormer, missingOf, kidText,
   peopleCount, dutiesText, outOf, shortDate, fullDate, groupsInOrder, activeGroups, groupWords, fold, copyEmails,
-  csvDownload, telHref, capital, daysToBirthday, fullName, missingShort,
+  csvDownload, telHref, capital, daysToBirthday, fullName, missingShort, ARCHIVE_SLUG, OLD_ARCHIVE_SLUGS, archivedText,
+  overdueQuestion,
 } from './people-common.js';
-import { addPersonDialog, bulkGroupDialog, householdDialog } from './people-forms.js';
+import { addPersonDialog, bulkGroupDialog, householdDialog, restoreFromArchive, deletePerson, deleteOverdueDialog } from './people-forms.js';
 
 // ---------- views, remembered ----------
 
@@ -66,6 +70,8 @@ const selected = new Set();   // Tabulka: chosen rows (kept while the search cha
 export function renderPeoplePage(parts = []) {
   const leader = can('leader');
   const allowed = viewsFor().map(([id]) => id);
+  const archiveSlugs = [ARCHIVE_SLUG, ...OLD_ARCHIVE_SLUGS];
+  if (leader && parts.some((part) => archiveSlugs.includes(part))) return renderArchive();
   let [first = '', second = ''] = parts;
   let view;
   let arg;
@@ -82,7 +88,7 @@ export function renderPeoplePage(parts = []) {
   const hrefFor = (v) => `#lide/${v}${filter[0] && FILTER_VIEWS.includes(v) ? `/${filter[0]}` : ''}`;
   const body = h('div', { class: ['people-body', `people-${view}`] });
   const ctx = { view, filter, leader, body };
-  const draw = () => body.replaceChildren(...nodes(VIEW_BODIES[view](ctx)));
+  const draw = () => body.replaceChildren(...nodes(VIEW_BODIES[view](ctx)), leader && ['seznam', 'tabulka'].includes(view) ? archiveLink() : '');
 
   const usesFilter = FILTER_VIEWS.includes(view);
   const usesSearch = usesFilter || view === 'domacnosti';
@@ -408,6 +414,65 @@ function skupiny(ctx) {
     const els = cards.filter(([k]) => k === kind).map(([, el]) => el);
     // a real section heading (the h2 recipe), not a 12 px label lost above the big cards
     return els.length ? h('section', { class: 'section group-section' }, h('div', { class: 'section-head' }, h('h2', {}, title, ' ', h('span', { class: 'n' }, String(els.length)))), h('div', { class: 'masonry' }, els)) : null;
+  });
+}
+
+// ---------- Archiv ----------
+
+/** The quiet way into the archive at the end of the list: „Archiv (3)“ (nothing when it is empty). */
+function archiveLink() {
+  const n = archivedPeople(S.data).length;
+  if (!n) return '';
+  return h('p', { class: 'people-archive-link' }, h('a', { href: `#lide/${ARCHIVE_SLUG}` }, icon('archive'), `Archiv (${n})`));
+}
+
+let archiveSearch = '';
+
+/** #lide/archiv (leaders): the cards in the archive – since when, „Vrátit z archivu“, „Smazat kartu“. */
+function renderArchive() {
+  const canonical = `#lide/${ARCHIVE_SLUG}`;
+  if (location.hash !== canonical) history.replaceState(history.state, '', canonical);
+  const day = today();
+  const all = archivedPeople(S.data);
+  const overdue = all.filter((p) => archiveOverdue(p, day));
+  const body = h('div', { class: 'people-body people-archive' });
+  const archiveRow = (p) => row({
+    lead: avatar(p, { size: 'm' }),
+    title: personName(p),
+    meta: metaJoin([archivedText(p), archiveOverdue(p, day) ? h('span', { class: 'meta-missing' }, 'déle než rok') : null]),
+    href: `#osoba/${p.id}`,
+    trail: h('span', { class: 'archive-actions' },
+      button('Vrátit z archivu', { variant: 'surface', size: 's', icon: 'undo', onclick: () => restoreFromArchive(p) }),
+      p.id !== myId() ? button('Smazat kartu', { variant: 'ghost', size: 's', icon: 'trash', onclick: () => deletePerson(p) }) : null),
+  });
+  const draw = () => {
+    const shown = all.filter((p) => matchesQuery(p, archiveSearch));
+    body.replaceChildren(...nodes([
+      shown.length ? list(shown, archiveRow, { cls: 'archive-list', label: 'Archiv' })
+        : archiveSearch.trim() ? emptyState({ icon: 'search', title: 'V archivu nikdo takový není.', text: 'Zkus jiné jméno. Diakritiku psát nemusíš.' })
+          : emptyState({ icon: 'archive', title: 'Archiv je prázdný.', text: 'Když k nám někdo přestane chodit, přesuneš kartu do archivu v nabídce ⋯ na kartě člověka.' }),
+      shown.length ? h('p', { class: 'people-foot' }, h('span', {}, plural(shown.length, 'karta', 'karty', 'karet'))) : null,
+    ]));
+  };
+  draw();
+  return page({
+    title: 'Archiv',
+    back: ['Lidé', '#lide'],
+    lead: 'Lidé, kteří k nám už nechodí. Neukazují se v seznamech, kontaktech ani v návrzích do služeb, ve starých rozpisech zůstávají.',
+    toolbar: all.length ? toolbar(searchField({
+      value: archiveSearch, placeholder: 'Hledat v archivu', label: 'Hledat v archivu', cls: 'people-search',
+      oninput: (e) => { archiveSearch = e.target.value; draw(); },
+    })) : null,
+    width: 'list',
+    cls: 'people-page archive-page',
+    body: [
+      overdue.length ? callout(overdueQuestion(overdue.length), {
+        tone: 'info',
+        icon: 'archive',
+        action: button(`Smazat ${plural(overdue.length, 'kartu', 'karty', 'karet')}`, { variant: 'surface', size: 's', icon: 'trash', onclick: () => deleteOverdueDialog(overdue) }),
+      }) : null,
+      body,
+    ],
   });
 }
 

@@ -39,7 +39,7 @@ export const S = {
 export { KIND_LABELS as EVENT_KIND_LABELS } from '../lib/events.js';   // Účel: Nedělní setkání · Zkouška · Skupinka · Akce
 export const ASSIGNMENT_STATUS_LABELS = { proposed: 'čeká na potvrzení', confirmed: 'potvrzeno', declined: 'nemůže' };
 export const SEVERITY_LABELS = { error: 'chyba', warning: 'pozor', info: 'info' };
-export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel', guest: 'host', former: 'už nechodí' };
+export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel', guest: 'host', former: 'v archivu' };
 export const SKILL_LABELS = { trained: 'umí', learning: 'učí se' };
 export const GROUP_KIND_LABELS = { team: 'tým', community: 'skupinka', leadership: 'vedení' };
 export const ACCESS_LABELS = { admin: 'správce', leader: 'vedoucí', member: 'člen', invite: 'pozvánka' };
@@ -171,6 +171,20 @@ export async function updateLogins(mutate, message) {
   }, `Zvonec – přístupy: ${message}`, emptyAccess());
   S.loginsFromRepo = json.logins;
   return result;
+}
+
+/** Live mode: does the person have a login or an invite in access.json? */
+export const hasLogin = (personId) => S.mode === 'live' && loginList().some((l) => l.personId === personId);
+
+/**
+ * Live mode: remove the person's logins and invites from access.json (archive, deleting a card).
+ * Returns the promise of the change, or null when there is nothing to remove.
+ */
+export function revokeLoginsOf(personId, message) {
+  if (!hasLogin(personId)) return null;
+  return updateLogins((logins) => {
+    for (let i = logins.length - 1; i >= 0; i -= 1) if (logins[i].personId === personId) logins.splice(i, 1);
+  }, message);
 }
 
 // ---------- remembered login ----------

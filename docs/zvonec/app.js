@@ -66,10 +66,11 @@ const CALENDAR_ROUTES = {
 // ROUTES:calendar end
 
 // ROUTES:people – Lidé (views seznam · tabulka · domacnosti · skupiny · narozeniny · bremeno, then a
-// filter or – for bremeno – a month), the person card and the household. #lide/<pohled>/<filtr>;
-// #lide/<filtr> keeps the remembered view. ui/people.js parses the parts itself.
+// filter or – for bremeno – a month), the archive (#lide/archiv), the person card and the household.
+// #lide/<pohled>/<filtr>; #lide/<filtr> keeps the remembered view. ui/people.js parses the parts itself.
 const PEOPLE_ROUTES = {
-  lide: { render: (parts) => renderPeople(parts), access: 'member' },
+  // #lide/archiv (the old filter `nechodi` opens it too) is for leaders
+  lide: { render: (parts) => renderPeople(parts), access: (parts) => (parts.some((x) => ['archiv', 'nechodi'].includes(x)) ? 'leader' : 'member') },
   osoba: { render: ([id]) => renderPerson(id), access: 'member', menu: 'lide' },
   domacnost: { render: ([id]) => renderHousehold(id), access: 'leader', menu: 'lide' },
 };
@@ -117,6 +118,7 @@ const REDIRECTS = [
   [/^rozpis(?:\/(.+))?$/, (m) => `kalendar/rozpis${m[1] ? `/${m[1]}` : ''}`],
   [/^kalendar\/(\d{4}-\d{2}(?:-\d{2})?)$/, (m) => `kalendar/mesic/${m[1]}`],
   [/^domacnosti$/, () => 'lide/domacnosti'],
+  [/^lide\/(?:(?:seznam|tabulka|skupiny)\/)?nechodi$/, () => 'lide/archiv'],   // the filter „Už nechodí“ became the archive
   [/^nastaveni\/formaty$/, () => 'formaty'],
   [/^nastaveni\/sablony$/, () => 'sablony'],
   [/^nastaveni\/mista$/, () => 'mista'],
