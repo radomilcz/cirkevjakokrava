@@ -296,11 +296,12 @@ th[aria-sort] .th-sort { color: var(--ink); }
 .sheet__foot .form-error { margin: 0; }
 .sheet--menu .sheet__body { padding-bottom: var(--space-3); }
 @media (min-width: 960px) {
-  .sheet:not(.sheet--inline) { width: 560px; max-height: min(86dvh, 820px); padding-left: var(--space-6); padding-right: var(--space-6); }
+  .sheet:not(.sheet--inline) { --sheet-pad: var(--space-6); width: 560px; max-height: min(86dvh, 820px); padding-top: var(--space-4); }
   .sheet.sheet--wide:not(.sheet--inline) { width: 760px; }
   .sheet:not(.sheet--inline) .sheet__head { min-height: 64px; }
-  .sheet:not(.sheet--inline) .sheet__foot { margin: 0 calc(-1 * var(--space-6)); padding-left: var(--space-6); padding-right: var(--space-6); border-radius: 0 0 24px 24px; }
+  .sheet:not(.sheet--inline) .sheet__foot { padding-bottom: var(--space-5); border-radius: 0 0 24px 24px; }
   .sheet:not(.sheet--inline).sheet--menu { width: 400px; }
+  .sheet:not(.sheet--inline).sheet--compact { width: 460px; }   /* a short question (Moje odpověď) */
   /* a centred dialog is a flex column whose body scrolls, so the foot sits at the bottom without sticky
      (sticky measured from the untransformed box and rode up over the last fields of a tall dialog) */
   .sheet:not(.sheet--inline) > .sheet__foot { position: relative; }
@@ -392,7 +393,7 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .detail .section { margin-top: 0; }
 @media (min-width: 1200px) {
   .split > .split__aside { max-height: calc(100dvh - var(--topbar-h) - var(--space-6)); overflow-y: auto; scrollbar-width: thin; }
-  .split { grid-template-columns: minmax(340px, 400px) minmax(0, 1fr); }
+  .split { grid-template-columns: minmax(360px, 1fr) minmax(0, 2fr); }
 }
 
 /* ---------- the bullseye palette picker (logic: ../ui/palette-picker.js) ---------- */
