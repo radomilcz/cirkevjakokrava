@@ -62,7 +62,7 @@
 .pub-later>summary{font-size:var(--font-size-4);height:var(--control-2)}
 .pub-later>.disclosure-body{padding-top:16px}
 
-/* ---------- Kde nás najdete ---------- */
+/* ---------- Kde nás najdeš ---------- */
 .pub-where{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding:22px 24px;margin-top:48px}
 .pub-where:has(.pub-where-map){grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}
 @media (max-width:760px){.pub-where:has(.pub-where-map){grid-template-columns:minmax(0,1fr)}}
