@@ -139,7 +139,7 @@ function nextBlock(event, d) {
       event.description ? h('p', { class: 'text pub-next__desc' }, event.description) : null,
       h('div', { class: 'cluster pub-actions' },
         button('Stáhni do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }),
-        button('Podrobnosti', { href: `#pastva/${event.id}`, iconEnd: 'chevron-right' }))));
+        button('Ukaž podrobnosti', { href: `#pastva/${event.id}`, iconEnd: 'chevron-right' }))));
 }
 
 function eventItem(event) {
@@ -271,8 +271,8 @@ function renderPublicEvent(id) {
       topbar: publicBar({ back }), head: { title: 'Setkání' }, cls: 'pub-page',
       body: loading ? skeleton({ rows: 2 }) : empty({
         icon: 'calendar', title: 'Tohle setkání tu není.',
-        text: d ? 'Už proběhlo, nebo ho někdo přestal ukazovat na webu.' : 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.',
-        action: d ? button('Zpátky na Pastvu', { href: '#pastva' }) : button('Zkus to znovu', { variant: 'primary', onclick: retry }),
+        text: d ? 'Už proběhlo, nebo ho na webu už neukazujeme.' : 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.',
+        action: d ? button('Vrať se na Pastvu', { href: '#pastva' }) : button('Zkus to znovu', { variant: 'primary', onclick: retry }),
       }),
     });
   }

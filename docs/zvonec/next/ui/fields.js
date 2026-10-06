@@ -30,7 +30,7 @@ export function field({ label, hint, error, control, cls, optional = false } = {
     target.setAttribute('aria-describedby', [hintId, errId].filter(Boolean).join(' '));
   }
   const el = h('div', { class: ['field', cls] },
-    label ? h('label', { class: 'field__label', for: target?.id || null }, label, optional ? h('span', { class: 'field__optional' }, ' (nemusíš)') : null) : null,
+    label ? h('label', { class: 'field__label', for: target?.id || null }, label, optional ? h('span', { class: 'field__optional' }, ' (nepovinné)') : null) : null,
     controlNodes,
     hint ? h('p', { class: 'field__hint', id: hintId }, hint) : null,
     h('p', { class: 'field__error', id: errId, hidden: !error }, icon('x', { size: 's' }), h('span', {}, error || '')));
@@ -272,10 +272,10 @@ export function disclosure(body, { label = 'Další možnosti', open = false } =
 // ---------- people picker (sheet) ----------
 
 /**
- * Výběr člověka. Opens a sheet: title („Kdo bude dělat Zvuk?“), meta, a search over everyone, pool pills
+ * Výběr člověka. Opens a sheet: title (the role, „Zvuk“), meta, a search over everyone, pool pills
  * (Umí to · Celý tým · Všichni lidé) and ranked rows with reason pills. A tap picks and closes.
  *   peoplePicker({
- *     title: 'Kdo bude dělat Zvuk?', meta: 'ne 18. 10. · Setkání na pastvě',
+ *     title: 'Zvuk', meta: 'ne 18. 10. · Setkání na pastvě',
  *     pools: [{ id: 'skilled', label: 'Umí to', items: [{ person, reasons: [{ text: 'naposledy před 3 týdny' }, { text: 'nemůže – dovolená', solid: true }] }] }, …],
  *     everyone: S.data.people, onPick: (person) => …, onAdd: (name) => … (leader: „Přidat „Jana Malá“ a vybrat“),
  *   })
@@ -308,7 +308,7 @@ export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone
     if (!rows.length) {
       rows.push(h('p', { class: 'meta picker__none' }, q ? 'Nikdo takový tu není.' : 'Tady nikdo není.'));
     }
-    if (q && onAdd) rows.push(button(`Přidej „${q}“ a vyber`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close(); onAdd(q); } }));
+    if (q && onAdd) rows.push(button(`Přidej nového člověka „${q}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close(); onAdd(q); } }));
     results.replaceChildren(...rows);
   };
   const search = searchField({ placeholder: searchPlaceholder, label: 'Hledej člověka', onInput: (v) => { query = v; draw(); } });

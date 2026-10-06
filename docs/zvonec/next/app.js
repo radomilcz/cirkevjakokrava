@@ -281,9 +281,9 @@ function updateShell(route, section, parts) {
   return nav;
 }
 
-/** Signed in and looking at a public page: „Takhle to vidí návštěvníci · Zpátky do Zvonce“. */
+/** Signed in and looking at a public page: „Takhle to vidí návštěvníci · Vrať se do Zvonce“. */
 const publicStrip = () => h('div', { class: 'strip', role: 'note' },
-  h('span', {}, 'Takhle to vidí návštěvníci'), h('a', { class: 'link', href: '#domu' }, icon('arrow-left', { size: 's' }), 'Zpátky do Zvonce'));
+  h('span', {}, 'Takhle to vidí návštěvníci'), h('a', { class: 'link', href: '#domu' }, icon('arrow-left', { size: 's' }), 'Vrať se do Zvonce'));
 
 // ---------- rendering ----------
 
@@ -393,7 +393,7 @@ function showSaveStatus({ status, error }) {
   if (failed) {
     saveLine.dataset.tone = 'no';
     saveLine.replaceChildren(
-      h('span', {}, status === 'offline' ? 'Chybí připojení k internetu. Změny uložím, až bude zpátky.' : 'Neuloženo.'),
+      h('span', {}, status === 'offline' ? 'Chybí připojení k internetu. Zvonec změny uloží, až se připojení vrátí.' : 'Změny se neuložily.'),
       h('button', { type: 'button', class: 'btn btn--s', onclick: () => S.sync.save() }, 'Zkus to znovu'));
     saveLine.hidden = false;
   } else if (status === 'saving' || status === 'pending') {

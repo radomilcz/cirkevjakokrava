@@ -97,7 +97,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
   const consentBox = h('div', { hidden: true });
   const consentNote = callout({ tone: 'info', text: 'Bez souhlasu smíme mít u hosta jen křestní jméno.' });
   const household = householdSelect({ value: householdId, suggest: () => householdNameFor(form?.elements.lastName.value, form?.elements.firstName.value) });
-  const consent = switchRow({ label: 'Souhlasí se zpracováním údajů', hint: 'Zapíšu dnešní datum.', name: 'consent', onChange: () => update() });
+  const consent = switchRow({ label: 'Souhlasí se zpracováním údajů', hint: 'Zvonec zapíše dnešní datum.', name: 'consent', onChange: () => update() });
   consentBox.append(consent, consentNote);
   const body = [
     h('div', { class: 'form__row' },
@@ -185,7 +185,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
     dupe.hidden = !twins.length;
     dupe.replaceChildren(...(twins.length ? [callout({
       tone: 'wait', title: `${fullName(twins[0])} už v seznamu je.`,
-      text: householdById(S.data, twins[0].householdId) ? `Domácnost ${householdById(S.data, twins[0].householdId).name}. Nejde o stejného člověka?` : 'Nejde o stejného člověka?',
+      text: householdById(S.data, twins[0].householdId) ? `Domácnost ${householdById(S.data, twins[0].householdId).name}. Není to tentýž člověk?` : 'Není to tentýž člověk?',
     })] : []));
     if (sameNameOk && sameNameOk !== key) {
       sameNameOk = '';
@@ -325,7 +325,7 @@ export function limitsSheet(person) {
     body: [
       field({ label: 'Nejvíc služeb za měsíc', hint: `Obvykle ${defaults.maxPerMonth}.`, control: stepper({ name: 'maxPerMonth', value: limits.maxPerMonth, min: 0, max: 31, label: 'Nejvíc služeb za měsíc' }) }),
       field({ label: 'Nejvíc nedělí po sobě', hint: `Obvykle ${defaults.maxConsecutiveWeeks}.`, control: stepper({ name: 'maxConsecutiveWeeks', value: limits.maxConsecutiveWeeks, min: 1, max: 52, label: 'Nejvíc nedělí po sobě' }) }),
-      switchRow({ label: 'Pauza – teď nenavrhuj do služeb', hint: 'Třeba je pryč nebo si potřebuje odpočinout.', name: 'paused', checked: !!limits.paused }),
+      switchRow({ label: 'Pauza od služeb', hint: 'Třeba je pryč nebo si potřebuje odpočinout.', name: 'paused', checked: !!limits.paused }),
     ],
     onSubmit: (f) => {
       const maxPerMonth = Number(ctl(f, 'maxPerMonth').value);
@@ -414,7 +414,7 @@ export function deleteHousehold(household) {
   const members = householdMembers(S.data, household.id);
   confirmSheet({
     title: `Chceš smazat domácnost ${household.name}?`,
-    text: members.length ? `Lidé zůstanou v seznamu, jen už nebudou spolu (${andJoin(members.map(fullName))}).` : 'Nikdo v ní nebydlí.',
+    text: members.length ? `Lidé zůstanou v seznamu, jen už nebudou v jedné domácnosti (${andJoin(members.map(fullName))}).` : 'Nikdo v ní nebydlí.',
     confirmLabel: 'Smaž domácnost',
     onConfirm: () => {
       S.data.households = S.data.households.filter((x) => x.id !== household.id);
@@ -497,7 +497,7 @@ export function bulkGroupSheet(people, done) {
     const already = people.filter((p) => memberRecord(S.data, id, p.id)).length;
     countLine.textContent = !already ? `${agree(people.length, 'Přibude', 'Přibudou', 'Přibude')} ${peopleCount(people.length)}.`
       : already === people.length ? 'Všichni vybraní už tam jsou.'
-        : `${already} z vybraných už tam ${agree(already, 'je', 'jsou', 'je')}, přidám jen ${people.length - already}.`;
+        : `${already} z vybraných už tam ${agree(already, 'je', 'jsou', 'je')}, Zvonec přidá jen ${people.length - already}.`;
   };
   const select = selectInput({ name: 'group', value: groups[0].id, options: groups.map((g) => ({ value: g.id, label: joinMeta([g.name, groupWords(g).kind]) })), onChange: recount });
   recount(groups[0].id);

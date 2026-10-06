@@ -84,7 +84,7 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
     .filter((c) => !taken.has(c.person.id)).map((c) => ({ person: c.person, reasons: reasonsOf(c, roleId) }));
   const pools = [{ id: 'skilled', label: 'Umí to', items: pool('skilled') }, { id: 'team', label: 'Celý tým', items: pool('team') }, { id: 'all', label: 'Všichni lidé', items: pool('all') }];
   peoplePicker({
-    title: `Kdo bude dělat ${role?.name || 'službu'}?`,
+    title: role?.name || 'Služba',
     meta: [replacing ? `Teď: ${nameOf(replacing)}` : null, dayWords(event), event.title].filter(Boolean).join(SEP),
     pools,
     pool: pools[0].items.length ? 'skilled' : 'team',
@@ -168,7 +168,7 @@ export function removeDuty(eventId, assignmentId) {
   const undo = snapshot(eventId, `${nameOf(a)} (${roleName(a.roleId)})`);
   e.assignments = e.assignments.filter((x) => x.id !== assignmentId);
   change(`odebráno: ${nameOf(a)} (${roleName(a.roleId)})`);
-  toast(`${nameOf(a)} už nedělá ${roleName(a.roleId)}.`, { action: undo });
+  toast(`${nameOf(a)} už nemá službu ${roleName(a.roleId)}.`, { action: undo });
 }
 
 const STATUS_OPTIONS = [
@@ -193,7 +193,7 @@ export function openDutySheet(eventId, assignmentId) {
     sheet.setBody([
       h('div', { class: 'duty-sheet__who' }, avatar(person, { size: 'l', status: now.status === 'declined' ? 'declined' : null }),
         h('div', {}, h('p', { class: 'lead' }, personName(person)), statusNote(now.status))),
-      field({ label: 'Odpověď', hint: 'Když odpověď víš osobně, zapiš ji tady.', control: segmented(STATUS_OPTIONS, now.status, (v) => { answer(eventId, assignmentId, v, { quiet: true }); draw(); }, { label: 'Stav služby' }) }),
+      field({ label: 'Odpověď', hint: 'Když ti odpověď řekl osobně, zapiš ji tady.', control: segmented(STATUS_OPTIONS, now.status, (v) => { answer(eventId, assignmentId, v, { quiet: true }); draw(); }, { label: 'Stav služby' }) }),
       warnings.length ? h('div', { class: 'duty-sheet__warn' }, warnings.map((c) => warningFor(c, { eventId, assignment: now, onDone: () => sheet.close() }))) : null,
       h('div', { class: 'duty-sheet__actions' },
         button('Vyber jiného', { icon: 'people', block: true, onclick: () => { sheet.close(); pickFor(eventId, now.roleId, assignmentId); } }),
@@ -483,8 +483,8 @@ export function openEmptySlots(eventIds, { teams = null, nobody = false, written
   }
   const places = plural(missing, 'místo', 'místa', 'míst');
   sheet = openSheet({
-    title: nobody ? 'Zvonec nikoho volného nenašel' : `Zbývá obsadit ${places}`,
-    subtitle: `${nobody ? `Zbývá obsadit ${places}. ` : 'Zvonec pro ně nikoho volného nenašel. '}U každého místa vybereš z celého týmu nebo ze všech lidí.`,
+    title: 'Volná místa',
+    subtitle: `Zbývá obsadit ${places}. ${nobody ? 'Zvonec nikoho volného nenašel. ' : 'Zvonec pro ně nikoho volného nenašel. '}U každého místa vybereš z celého týmu nebo ze všech lidí.`,
     body,
     cls: 'plan-sheet',
   });
@@ -534,7 +534,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   });
   if (left) {
     body.push(h('p', { class: 'plan-left' }, sev('error', `chybí ${left}`), ' ',
-      left === 1 ? 'Pro jedno místo Zvonec nikoho nenašel – ukáže ti ho hned potom.' : `Pro ${plural(left, 'místo', 'místa', 'míst')} Zvonec nikoho nenašel – ukáže ti je hned potom.`));
+      left === 1 ? 'Pro jedno místo Zvonec nikoho nenašel. Ukáže ti ho, až tyhle zapíšeš.' : `Pro ${plural(left, 'místo', 'místa', 'míst')} Zvonec nikoho nenašel. Ukáže ti je, až tyhle zapíšeš.`));
   }
   let sheet;
   submit.addEventListener('click', () => {
@@ -562,8 +562,8 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
     toast(`Zapsáno: ${written.length} ${agree(written.length, 'služba', 'služby', 'služeb')}. Všichni čekají na potvrzení.`, { action: undo });
   });
   sheet = openSheet({
-    title: `Zvonec navrhuje ${sluzbyAcc(total)}`,
-    subtitle: 'Odškrtni, koho nechceš. Ostatní dostanou „čeká na potvrzení“.',
+    title: 'Návrh služeb',
+    subtitle: `Zvonec navrhuje ${sluzbyAcc(total)}. Odškrtni, koho nechceš. Ostatní dostanou službu k potvrzení.`,
     body,
     foot: submit,
     cls: 'plan-sheet',
@@ -577,7 +577,7 @@ export function sameAsLast(eventId) {
   const e = fresh(eventId);
   if (!e) return;
   const prev = previousEvent(S.data, eventId);
-  if (!prev) { toast('Tohle setkání nemá žádné předchozí.', { icon: 'info' }); return; }
+  if (!prev) { toast('Minule tu takové setkání nebylo.', { icon: 'info' }); return; }
   const undo = snapshot(eventId, 'jako minule');
   const added = sameAsLastTime(S.data, eventId, () => newId('a'));
   if (!added.length) { toast('Z minula nebylo koho přidat.', { icon: 'info' }); return; }

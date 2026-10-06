@@ -46,7 +46,7 @@ function usage(formatId) {
 
 const leadText = (format) => {
   const role = roleById(S.data, format.leadRoleId);
-  return role ? `vede ${role.name}` : 'kdo vede, vybereš v osnově';
+  return role ? `vede role ${role.name}` : 'kdo vede, vybereš v osnově';
 };
 
 /** The minutes as the lead of a row: „25 min“ in a soft square. */
@@ -131,7 +131,7 @@ function formatDetail(format, { pane = false } = {}) {
     textBlock('Proč to děláme', format.why),
     textBlock('Jak to probíhá', format.how),
     missing ? h('p', { class: 'meta fmt-missing' }, leader ? 'Vysvětlení tu zatím chybí. Napiš, proč to děláme a jak to probíhá – pomůže to každému, kdo to povede poprvé.' : 'Vysvětlení sem vedoucí ještě doplní.') : null,
-    format.link && safeLink(format.link) ? h('p', {}, h('a', { class: 'link', href: format.link, target: '_blank', rel: 'noopener noreferrer' }, 'Další čtení', icon('external', { size: 's' }))) : null,
+    format.link && safeLink(format.link) ? h('p', {}, h('a', { class: 'link', href: format.link, target: '_blank', rel: 'noopener noreferrer' }, 'K přečtení', icon('external', { size: 's' }))) : null,
     section({
       title: 'Kdo je potřeba',
       body: needs.length
@@ -159,7 +159,7 @@ function renderFormatPage(id) {
   if (!format) {
     return morePage({
       title: 'Formát', back,
-      body: empty({ icon: 'book', title: 'Tenhle formát tu není.', text: 'Možná ho mezitím někdo smazal.', action: button('Zpátky na formáty', { href: '#formaty' }) }),
+      body: empty({ icon: 'book', title: 'Tenhle formát tu není.', text: 'Možná ho mezitím někdo smazal.', action: button('Vrať se na formáty', { href: '#formaty' }) }),
     });
   }
   return morePage({
@@ -221,7 +221,7 @@ export function formatSheet(format) {
       h('div', { class: 'form__row' }, field({ label: 'Proč to děláme', control: why }), field({ label: 'Jak to probíhá', control: how })),
       disclosure([
         field({ label: 'Kdo je potřeba navíc', control: needsEditor(needs), hint: 'Ten, kdo vede, se započítá sám.' }),
-        field({ label: 'Další čtení', control: linkInput, optional: true, hint: 'Odkaz na článek nebo video.' }),
+        field({ label: 'K přečtení', control: linkInput, optional: true, hint: 'Odkaz na článek nebo video.' }),
         switchRow({ label: 'Ukaž na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý na Pastvě.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
       ], { open: !!(format?.needs?.length || format?.link || format?.public) }),
     ],
@@ -278,7 +278,7 @@ function deleteFormat(format) {
 /** Proč / Jak of a format as a sheet (for an osnova item – other screens may open it). */
 export function formatInfoSheet(formatId) {
   const format = formatById(S.data, formatId);
-  if (!format) { toast('Tenhle formát už neexistuje.', { icon: 'info' }); return null; }
+  if (!format) { toast('Tenhle formát už tu není.', { icon: 'info' }); return null; }
   return openSheet({
     title: format.name,
     subtitle: joinMeta([`${format.minutes ?? 0} min`, leadText(format)]),

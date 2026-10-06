@@ -85,7 +85,7 @@ function liveLogin() {
       form,
       h('div', { class: 'login-after' },
         h('p', { class: 'meta' }, 'Ještě přístup nemáš? Požádej vedoucího o pozvánku.'),
-        button('Zpátky na Pastvu', { variant: 'quiet', href: '#pastva', icon: 'calendar' })),
+        button('Vrať se na Pastvu', { variant: 'quiet', href: '#pastva', icon: 'calendar' })),
     ],
   });
 }
@@ -141,7 +141,7 @@ function renderSetup() {
       step('Klíč vlož sem. Zvonec ho schová pod hesla, nikdo další ho znát nemusí.')), { label: 'Jak získáš klíč' }),
     h('div', { class: 'form__row' }, field({ label: 'Vlastník repa', control: owner }), field({ label: 'Repo', control: repoName })),
     h('h2', { class: 'login-part' }, 'První správce'),
-    h('div', { class: 'form__row' }, field({ label: 'Tvoje jméno', control: first }), field({ label: 'Příjmení', control: last })),
+    h('div', { class: 'form__row' }, field({ label: 'Jméno', control: first }), field({ label: 'Příjmení', control: last })),
     field({ label: 'Heslo', control: passBox, hint: 'Aspoň 8 znaků.' }),
     segmentedField({
       name: 'base', label: 'Základ', value: 'base',
@@ -184,7 +184,7 @@ function renderSetup() {
       toast('Zvonec je založený. Ostatní se přihlásí za pár minut.', { duration: 9000 });
     } catch (err) {
       busy(submit, false, 'Založ Zvonec');
-      error.show(`Nepodařilo se. ${err.message || err}`);
+      error.show(`Zvonec se nepodařilo založit. ${err.message || err}`);
     }
   });
   return screen({
@@ -220,7 +220,7 @@ async function checkInvite(code) {
 }
 
 export function renderInvite(code = '') {
-  const head = { title: 'Přidej se', lead: 'Uvidíš rozpis, svoje služby a lidi.' };
+  const head = { title: 'Pozvánka do Zvonce', lead: 'Uvidíš rozpis, svoje služby a lidi.' };
   if (S.mode === 'demo') return registration({ demo: true, data: S.data, person: null });
   if (!invite || invite.code !== code) { checkInvite(code); }
   if (invite.status === 'ready') return registration(invite);
@@ -262,7 +262,7 @@ function registration({ demo = false, result, store, data }) {
   let picked = [...mine];
   const consentRow = switchRow({
     label: 'Souhlasím, že si sbor moje údaje zapíše',
-    hint: 'Aby mohl plánovat služby. Uvidí je jen ti, kdo se do Zvonce přihlásí, a nikomu dalšímu je nepředá. Souhlas můžeš kdykoli vzít zpět.',
+    hint: 'Sbor je potřebuje k plánování služeb a nikomu dalšímu je nedá. Uvidí je jen ti, kdo se do Zvonce přihlásí. Souhlas můžeš kdykoli vzít zpět.',
     checked: consent, onChange: (on) => { consent = on; },
   });
   const error = errorLine();
@@ -331,12 +331,12 @@ function registration({ demo = false, result, store, data }) {
       toast(`${welcome(firstName, { end: '!' })} Příště se přihlásíš jménem a heslem.`, { duration: 8000 });
     } catch (err) {
       busy(submit, false, 'Přidej se');
-      error.show(`Nepodařilo se. ${err.message || err}`);
+      error.show(`Nepodařilo se tě přidat. ${err.message || err}`);
     }
   });
   return screen({
     topbar: bar(),
-    head: { overline: church, title: 'Přidej se', lead: 'Vyplň pár údajů a zvol si heslo. Pak uvidíš rozpis a svoje služby.' },
+    head: { overline: church, title: 'Pozvánka do Zvonce', lead: 'Vyplň pár údajů a zvol si heslo. Pak uvidíš rozpis a svoje služby.' },
     cls: 'screen--narrow login-page',
     body: form,
   });

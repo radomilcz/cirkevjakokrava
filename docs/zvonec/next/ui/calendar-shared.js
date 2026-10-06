@@ -358,7 +358,7 @@ export function calendarExportRows({ onDone } = {}) {
   ].filter(Boolean), { label: 'Kalendář v telefonu' });
 }
 
-export const CALENDAR_EXPORT_NOTE = 'Stáhne se soubor .ics, telefon ho přidá do kalendáře. Když se rozpis změní, stáhni ho znovu.';
+export const CALENDAR_EXPORT_NOTE = 'Stáhne se soubor .ics, telefon ho přidá do kalendáře. Když se rozpis změní, stáhni soubor znovu.';
 
 /** „Stáhnout do kalendáře“ (Kalendář ⋯): Moje služby / Celý kalendář. */
 export function openCalendarExport() {

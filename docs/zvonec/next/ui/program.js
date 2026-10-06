@@ -97,7 +97,7 @@ function openPoint(eventId, itemId) {
     whoText.textContent = personId ? nameAt(e, personId) : role ? `podle role ${role.name}${byRole.length ? ` (${byRole.join(', ')})` : ' – zatím nikdo'}` : 'nikdo';
     reset.hidden = !personId;
   };
-  const reset = link(role ? 'Podle role' : 'Nikdo', { onclick: () => { personId = ''; paintWho(); } });
+  const reset = link(role ? 'Vrať podle role' : 'Zruš výběr', { onclick: () => { personId = ''; paintWho(); } });
   const choose = button('Vyber', {
     size: 's', onclick: () => {
       const all = (S.data.people || []).filter((p) => p.membership?.status !== 'former');

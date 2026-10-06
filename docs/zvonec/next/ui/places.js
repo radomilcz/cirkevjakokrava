@@ -63,7 +63,7 @@ function placeRows(open) {
     for (const room of rooms) {
       rows.push(row({
         title: room.name,
-        meta: room.shared ? 'víc věcí naráz' : null,
+        meta: room.shared ? 'víc setkání naráz' : null,
         single: !room.shared,
         href: `#misto/${room.id}`,
         chevron: !isSplit(),
@@ -126,7 +126,7 @@ function placeDetail(raw, { pane = false } = {}) {
       h('div', { class: 'cluster' },
         mapLink(place),
         building ? h('a', { class: 'link', href: `#misto/${building.id}` }, icon('home', { size: 's' }), building.name) : null,
-        raw.shared ? pill('víc věcí naráz') : null,
+        raw.shared ? pill('víc setkání naráz') : null,
         main && !pane ? pill('hlavní místo') : null)),
     mapFrame(place, { title: `Mapa: ${raw.name}` }),
     rooms.length || (leader && !building) ? section({
@@ -134,7 +134,7 @@ function placeDetail(raw, { pane = false } = {}) {
       count: rooms.length || null,
       action: leader && !building ? button('Přidej místnost', { size: 's', icon: 'plus', onclick: () => placeSheet(null, { partOf: raw.id }) }) : null,
       body: rooms.length
-        ? list(rooms.map((r) => row({ title: r.name, meta: joinMeta([r.shared ? 'víc věcí naráz' : null, `${eventsWord(upcomingAt(r.id).length)} před námi`]), href: `#misto/${r.id}`, chevron: true })), { label: 'Místnosti' })
+        ? list(rooms.map((r) => row({ title: r.name, meta: joinMeta([r.shared ? 'víc setkání naráz' : null, `${eventsWord(upcomingAt(r.id).length)} před námi`]), href: `#misto/${r.id}`, chevron: true })), { label: 'Místnosti' })
         : h('p', { class: 'meta' }, 'Má budova sál a menší místnosti? Přidej je a Zvonec pohlídá, aby se setkání nepotkala.'),
     }) : null,
     section({
@@ -165,7 +165,7 @@ export function renderPlace(id) {
   if (!raw) {
     return morePage({
       title: 'Místo', back,
-      body: empty({ icon: 'pin', title: 'Tohle místo tu není.', text: 'Možná ho mezitím někdo smazal.', action: button('Zpátky na místa', { href: '#mista' }) }),
+      body: empty({ icon: 'pin', title: 'Tohle místo tu není.', text: 'Možná ho mezitím někdo smazal.', action: button('Vrať se na místa', { href: '#mista' }) }),
     });
   }
   return morePage({
@@ -226,7 +226,7 @@ export function placeSheet(place, { partOf: presetPartOf = '' } = {}) {
       own,
       inherit,
       disclosure([
-        switchRow({ label: 'Vejde se tu víc věcí naráz', hint: 'Dvě setkání naráz tu Zvonec nebude hlásit jako chybu. Třeba kuchyňka nebo zahrada.', checked: shared, onChange: (on) => { shared = on; } }),
+        switchRow({ label: 'Vejde se sem víc setkání naráz', hint: 'Dvě setkání naráz tu Zvonec nebude hlásit jako chybu. Třeba kuchyňka nebo zahrada.', checked: shared, onChange: (on) => { shared = on; } }),
         coordsField,
       ], { open: !!(place?.shared || coordsText(place)) }),
     ],

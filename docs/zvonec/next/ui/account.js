@@ -87,7 +87,7 @@ export function passwordSheet() {
           if (mine) Object.assign(mine, { lookup: record.lookup, iv: record.iv, ct: record.ct });
         }, 'nové heslo');
         S.me.login = { ...S.me.login, lookup: record.lookup, iv: record.iv, ct: record.ct };
-        toast('Nové heslo platí za pár minut.', { duration: 8000 });
+        toast('Nové heslo začne platit za pár minut.', { duration: 8000 });
         return undefined;
       } catch (error) {
         return `Heslo se nepodařilo změnit. ${error.message || ''}`.trim();

@@ -133,7 +133,7 @@ export function deleteGroup(group) {
     use.all ? `V rozpisu ${agree(use.all, 'zmizí', 'zmizí', 'zmizí')} ${plural(use.all, 'služba', 'služby', 'služeb')}. Když chceš historii nechat, dej skupinu radši do archivu.` : '',
   ].filter(Boolean).join(' ') || 'Nikdo v ní není, nic dalšího nezmizí.';
   confirmSheet({
-    title: `Chceš smazat ${group.name}?`,
+    title: `Chceš smazat skupinu ${group.name}?`,
     text,
     confirmLabel: 'Smaž skupinu',
     onConfirm: () => {
@@ -273,7 +273,7 @@ export function roleSheet(group, role = null) {
         switchRow({ label: 'Je s dětmi', hint: 'Zvonec pohlídá, aby u dětí byli aspoň dva dospělí.', name: 'childcare', checked: !!role?.childcare }),
         switchRow({ label: 'Jen část setkání', name: 'partial', checked: !!w, onChange: (v) => { windowBox.hidden = !v; } }),
         windowBox,
-        others.length ? chipsField({ name: 'partners', label: 'Dá se dělat zároveň s', hint: 'Jeden člověk zvládne obě role naráz, třeba zpěv a kytaru.', options: others, value: partners, multiple: true }) : null,
+        others.length ? chipsField({ name: 'partners', label: 'Jde naráz s', hint: 'Jeden člověk zvládne obě role naráz, třeba zpěv a kytaru.', options: others, value: partners, multiple: true }) : null,
       ], { open: anyMore }),
     ],
     onSubmit: (f) => {

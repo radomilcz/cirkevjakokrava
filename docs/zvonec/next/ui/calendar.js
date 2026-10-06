@@ -237,7 +237,7 @@ function monthPhone({ month, day }) {
         list.length
           ? agenda([agendaDay({ day: chosen, today: chosen === today(), label: dayLabel(chosen), events: list.map((e) => eventItem(e)) })])
           : h('div', { class: 'cal-day__none' }, dateArch(chosen, { today: chosen === today(), quiet: true }),
-            quiet('Tento den nic není.'),
+            quiet('Na tenhle den nic není.'),
             can('leader') ? button('Přidej setkání', { size: 's', icon: 'plus', onclick: () => openAddEvent({ day: chosen }) }) : null)),
     ],
     chosen,

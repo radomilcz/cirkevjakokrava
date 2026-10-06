@@ -7,7 +7,7 @@
 //   Tento týden (all)      ≤ 3 events of this week → Celý kalendář
 //   Kdy nemůžu (all)       my ranges, Přidat (always shown)
 //   Lidé (leader)          one line each: Chybí údaje · Hosté bez souhlasu · Narozeniny · Dlouho v archivu ·
-//                          Nevyřízené pozvánky – the names are on the page behind each line
+//                          Nepoužité pozvánky – the names are on the page behind each line
 // Desktop ≥ 1200: two columns – left „pro tebe“ (Odpověz, Tvoje služby, Kdy nemůžu), right „pro tým“
 // (Co je potřeba, Tento týden, Lidé). Demo: „Díváš se jako … · Změnit“ under
 // the title while looking through someone else's eyes.
@@ -122,7 +122,7 @@ function answerBlock(me) {
     items,
     more: rest ? {
       text: `${roleName(next.assignment.roleId)}${SEP}${shortDate(next.event.start)}`,
-      link: `Další ${rest}`,
+      link: `Ukaž další ${rest}`,
       onclick: () => { open.answers = true; rerender(el, () => answerBlock(me), `.feature__item:nth-of-type(${answersShown() + 1}) .btn`); },
     } : null,
   });
@@ -346,7 +346,7 @@ function weekBlock() {
 
 /**
  * What waits on a leader about people, one line each with its count – Chybí údaje · Hosté bez souhlasu ·
- * Narozeniny tento týden · Dlouho v archivu · Nevyřízené pozvánky. The names are one tap further (the page
+ * Narozeniny tento týden · Dlouho v archivu · Nepoužité pozvánky. The names are one tap further (the page
  * behind each line), so Domů stays short.
  */
 function peopleBlock() {
@@ -362,7 +362,7 @@ function peopleBlock() {
     line('Hosté bez souhlasu', noConsent, '#lide/hoste'),
     line('Narozeniny tento týden', birthdays, '#lide/narozeniny'),
     line('Dlouho v archivu', overdue, '#lide/archiv'),
-    line('Nevyřízené pozvánky', invites, '#pristupy'),
+    line('Nepoužité pozvánky', invites, '#pristupy'),
   ].filter(Boolean);
   if (!rows.length) return null;
   return section({ title: 'Lidé', cls: 'home-people', body: list(rows, { label: 'Lidé' }) });
