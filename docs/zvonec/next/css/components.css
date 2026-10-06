@@ -387,14 +387,15 @@ textarea.input { min-height: 112px; padding: 14px var(--space-4); line-height: v
 
 /* ---------- agenda (calendar list) ---------- */
 .agenda { display: grid; }
-.agenda__day { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: 0 var(--space-4); padding: var(--space-4) 0; }
+.agenda__day { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: 0 var(--space-5); padding: var(--space-4) 0; }   /* 24 px: an event's tint (12 px past its text) still keeps 12 px from the arch */
 .agenda__day + .agenda__day { border-top: 1px solid var(--hairline); }
 .agenda__day > .arch { position: sticky; top: calc(var(--topbar-h) + var(--space-3)); align-self: start; }
 .agenda__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); padding: 2px 0 var(--space-2); }
 .agenda__items { display: grid; gap: var(--space-1); min-width: 0; }
 .event {
   position: relative; display: grid; grid-template-columns: 52px 1fr; gap: 2px var(--space-3);
-  padding: var(--space-2) var(--space-3) var(--space-2) 0; margin-right: calc(-1 * var(--space-3)); border-radius: var(--shape-control);
+  /* the tint (hover, the open event) reaches 12 px past the text on both sides, so the time never sits on its edge */
+  padding: var(--space-2) var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--shape-control);
   color: inherit; transition: background-color var(--dur-state) var(--ease);
 }
 a.event:hover { background: var(--wash); }
