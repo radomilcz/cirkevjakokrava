@@ -48,7 +48,7 @@ function directorySwitch(person) {
 
 function calendarSection() {
   return section({
-    title: 'Přidat do kalendáře v telefonu',
+    title: 'Stáhnout do kalendáře',
     body: [calendarExportRows(), h('p', { class: 'meta acct-note' }, CALENDAR_EXPORT_NOTE)],
   });
 }

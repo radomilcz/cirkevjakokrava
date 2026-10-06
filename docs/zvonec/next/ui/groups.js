@@ -203,7 +203,7 @@ function rolesSection(group) {
         { label: 'Upravit roli', icon: 'pencil', onclick: () => roleSheet(group, role) },
         '-',
         { label: 'Smazat roli', icon: 'trash', danger: true, onclick: () => deleteRole(role) },
-      ], { label: `Možnosti: ${role.name}`, title: role.name }) : null,
+      ], { label: `Další možnosti – ${role.name}`, title: role.name }) : null,
     ],
     onclick: leader ? () => roleSheet(group, role) : null,
   }));
@@ -250,7 +250,7 @@ function eventsSection(group) {
     title: team ? 'Kde slouží' : 'Setkání', id: 'kde-slouzi', cls: 'group-section',
     body: [
       rows.length ? list(rows, { label: team ? 'Kde slouží' : 'Setkání' }) : quiet(team ? 'Příštích šest týdnů tým nikde neslouží.' : 'Příštích šest týdnů tu nic není.'),
-      all.length > items.length ? h('p', { class: 'meta' }, `A ještě ${all.length - items.length} do ${WEEKS_AHEAD} týdnů.`) : null,
+      all.length > items.length ? h('p', { class: 'meta' }, `A ještě ${all.length - items.length} setkání v příštích ${WEEKS_AHEAD} týdnech.`) : null,
       team ? rowLink('Celý rozpis', { href: '#kalendar/rozpis' }) : rowLink('Celý kalendář', { href: '#kalendar' }),
     ],
   });

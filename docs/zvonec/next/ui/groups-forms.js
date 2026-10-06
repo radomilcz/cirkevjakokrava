@@ -256,7 +256,7 @@ export function roleSheet(group, role = null) {
     .flatMap((g) => rolesOf(S.data, g.id).filter((r) => r.id !== role?.id).map((r) => ({ value: r.id, label: g.id === group.id ? r.name : `${r.name} (${g.name})` })));
   const w = role?.window || null;
   const windowBox = h('div', { class: 'form__row' },
-    field({ label: 'Od', hint: 'Minut od začátku setkání; −15 je čtvrt hodiny předem.', control: stepper({ name: 'startMin', value: w?.startMin ?? 0, min: -60, max: 240, step: 5, label: 'Od minuty' }) }),
+    field({ label: 'Od', hint: 'V minutách od začátku setkání, −15 znamená čtvrt hodiny předem.', control: stepper({ name: 'startMin', value: w?.startMin ?? 0, min: -60, max: 240, step: 5, label: 'Od minuty' }) }),
     field({ label: 'Do', hint: '0 znamená až do konce.', control: stepper({ name: 'endMin', value: w?.endMin ?? 0, min: 0, max: 300, step: 5, label: 'Do minuty' }) }));
   windowBox.hidden = !w;
   const anyMore = !!(role && (role.adultsOnly || role.childcare || role.window || partners.length));

@@ -451,7 +451,7 @@ function renderBirthdays() {
       })),
       missing.length ? section({
         title: 'Bez data narození', count: missing.length, cls: 'birthday-missing',
-        body: h('p', { class: 'meta' }, missing.slice(0, 40).map((p, i) => [i ? ', ' : '', h('a', { class: 'link', href: `#osoba/${p.id}` }, personName(p))]), missing.length > 40 ? ` a ${missing.length - 40} dalších` : ''),
+        body: h('p', { class: 'meta' }, missing.slice(0, 40).map((p, i) => [i ? ', ' : '', h('a', { class: 'link', href: `#osoba/${p.id}` }, personName(p))]), missing.length > 40 ? ` a ${missing.length - 40} ${missing.length - 40 <= 4 ? 'další' : 'dalších'}` : ''),
       }) : null,
     ];
   return screen({

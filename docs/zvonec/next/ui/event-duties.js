@@ -415,7 +415,7 @@ export function fillOpenSlots(eventIds) {
       written.push({ eventId, id: record.id });
     }
     if (!written.length) { toast('Mezitím to někdo obsadil.', { icon: 'info' }); return; }
-    change(`navrženo ${sluzbyAcc(written.length)}`);
+    change(`navrženo: ${written.length} ${agree(written.length, 'služba', 'služby', 'služeb')}`);
     toast(`Zapsáno: ${written.length} ${agree(written.length, 'služba', 'služby', 'služeb')}. Všichni čekají na potvrzení.`, {
       action: () => {
         for (const w of written) { const e = fresh(w.eventId); if (e) e.assignments = (e.assignments || []).filter((x) => x.id !== w.id); }

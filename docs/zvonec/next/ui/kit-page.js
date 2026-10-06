@@ -54,7 +54,7 @@ export function renderKit() {
         plate('Písmo',
           brand(), title('Domů', { tag: 'p' }), lead('Co je potřeba'), text('Běžný text – 17/24 na telefonu, 16/22 na počítači.'),
           meta('Druhý řádek, nápověda, popisky – 15/20.'), caption('Popisek 13/16'), indexLetter('Č'),
-          h('div', { class: 'cluster' }, link('Další 1', { href: '#kit', iconEnd: 'chevron-right' }), rowLink('Celý rozpis', { href: '#kit' }), rowLink('Přidat do kalendáře v telefonu', { href: '#kit', icon: 'download' }))),
+          h('div', { class: 'cluster' }, link('Další 1', { href: '#kit', iconEnd: 'chevron-right' }), rowLink('Celý rozpis', { href: '#kit' }), rowLink('Stáhnout do kalendáře', { href: '#kit', icon: 'download' }))),
 
         plate('Tlačítka',
           h('div', { class: 'cluster' }, button('Uložit', { variant: 'primary' }), button('Nemůžu'), button('Dnes', { variant: 'quiet' }), button('Smazat setkání', { variant: 'danger' })),
@@ -158,8 +158,8 @@ export function renderKit() {
 
         plate('Řádky s ⋯ a tabulka',
           list([
-            row({ title: 'Úvodní slovo', meta: '10 min · vede Kazatel', onclick: () => demoNote('Upravit bod'), trail: menu([{ label: 'Posunout níž', onclick: () => {} }, '-', { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => demoNote('Odebráno.') }], { label: 'Možnosti: Úvodní slovo', title: 'Úvodní slovo' }) }),
-            personRow(P[4], { meta: 'vedoucí · Chvály', href: '#kit', trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => {} }], { label: 'Možnosti: Alžběta Svobodová' }) }),
+            row({ title: 'Úvodní slovo', meta: '10 min · vede Kazatel', onclick: () => demoNote('Upravit bod'), trail: menu([{ label: 'Posunout níž', onclick: () => {} }, '-', { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => demoNote('Odebráno.') }], { label: 'Další možnosti – Úvodní slovo', title: 'Úvodní slovo' }) }),
+            personRow(P[4], { meta: 'vedoucí · Chvály', href: '#kit', trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => {} }], { label: 'Další možnosti – Alžběta Svobodová' }) }),
           ]),
           table({
             label: 'Ukázka tabulky',

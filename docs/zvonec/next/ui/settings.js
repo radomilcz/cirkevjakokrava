@@ -76,7 +76,7 @@ function churchSection(v, dirty) {
         }),
         hint: 'Kde se obvykle scházíme. Nové šablony ho dostanou předvyplněné.',
       }),
-      field({ label: 'Adresa', control: address, hint: 'Jedním řádkem. Ukáže se v Programu v „Kde nás najdete“.' })),
+      field({ label: 'Adresa', control: address, hint: 'Jedním řádkem. Ukáže se v Programu v „Kde nás najdeš“.' })),
   });
 }
 

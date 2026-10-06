@@ -317,16 +317,16 @@ export function calendarExportRows({ onDone } = {}) {
   return list([
     me ? row({ lead: icon('user'), title: 'Moje služby', meta: 'Jen setkání, kde sloužíš', onclick: run(() => downloadDuties(me)), trail: icon('download', { size: 's' }) }) : null,
     row({ lead: icon('calendar'), title: 'Celý kalendář sboru', meta: 'Všechna setkání', onclick: run(downloadCalendar), trail: icon('download', { size: 's' }) }),
-  ].filter(Boolean), { label: 'Přidat do kalendáře v telefonu' });
+  ].filter(Boolean), { label: 'Stáhnout do kalendáře' });
 }
 
 export const CALENDAR_EXPORT_NOTE = 'Stáhne se soubor .ics, telefon ho přidá do kalendáře. Když se rozpis změní, stáhni ho znovu.';
 
-/** „Přidat do kalendáře v telefonu“ (Kalendář ⋯): Moje služby / Celý kalendář sboru. */
+/** „Stáhnout do kalendáře“ (Kalendář ⋯): Moje služby / Celý kalendář sboru. */
 export function openCalendarExport() {
   let sheet;
   sheet = openSheet({
-    title: 'Přidat do kalendáře v telefonu',
+    title: 'Stáhnout do kalendáře',
     body: [h('p', { class: 'meta' }, CALENDAR_EXPORT_NOTE), calendarExportRows({ onDone: () => sheet.close() })],
   });
 }

@@ -291,7 +291,7 @@ function registration({ demo = false, result, store, data }) {
     const problem = checkPassword(pass.value, again.value);
     if (problem) { fieldError(problem.startsWith('Hesla') ? again : pass, problem); return; }
     if (!consent) { error.show('Bez souhlasu tě do rozpisu zapsat nemůžeme.'); consentRow.querySelector('.switch').focus(); return; }
-    if (demo) { toast('V ukázce se nikdo nepřidává. V ostrém Zvonci by tě teď pustil dovnitř.', { icon: 'info' }); return; }
+    if (demo) { toast('V ukázce se nikdo nepřidává. Ostrý Zvonec by tě teď pustil dovnitř.', { icon: 'info' }); return; }
     busy(submit, true, 'Přidávám tě…');
     const loginName = `${firstName} ${last.value.trim()}`.trim();
     try {

@@ -65,7 +65,7 @@ function eventWarnings(event, conflicts) {
     else if (c.code === 'K14') action = button('Odebrat všechny', { size: 's', onclick: () => removeAll(event.id) });
     else if (c.code === 'K9') action = button('Upravit setkání', { size: 's', onclick: () => openEditEvent(event.id) });
     const tone = c.severity === 'error' ? 'no' : c.severity === 'warning' ? 'wait' : 'info';
-    return callout({ tone, title: { no: 'Chyba', wait: 'Pozor', info: 'Dej jim vědět' }[tone], text: c.text, actions: action });
+    return callout({ tone, title: { no: 'Chyba', wait: 'Pozor', info: c.code === 'K14' ? 'Dej jim vědět' : 'Pro informaci' }[tone], text: c.text, actions: action });
   }));
 }
 
@@ -112,7 +112,7 @@ function whoServes(event, conflicts) {
       leader && f.missing && !event.cancelled && dayOf(event.end) >= today()
         ? h('div', { class: 'ev-who__fill' }, button('Doplnit volná místa', { icon: 'people', onclick: () => fillOpenSlots([event.id]) })) : null,
     ]
-    : h('p', { class: 'meta ev-none' }, 'Na tohle setkání zatím nikoho nepotřebujete.',
+    : h('p', { class: 'meta ev-none' }, 'Na tohle setkání zatím nikoho nepotřebujeme.',
       leader ? [' ', link('Kolik lidí je potřeba', { onclick: () => openNeedsSheet(event.id) })] : null);
   return section({ title: 'Kdo slouží', id: 'kdo-slouzi', action, body, cls: 'ev-who' });
 }

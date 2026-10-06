@@ -8,7 +8,7 @@
 
 import {
   h, icon, button, chip, segmented, statusSymbol, dateArch, fill, empty, list, row, avatar, personName, openSheet, detailPane,
-  sev, isDesktop, isSplit, isLayerOpen, shortDate, clock, monthLabel, SEP, STATUS_WORDS, STATUS_KEY, table,
+  sev, isDesktop, isSplit, isLayerOpen, shortDate, clock, monthLabel, SEP, STATUS_WORDS, STATUS_KEY, table, plural,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
 import { eventsInRange, needsOf, eventById } from '../../lib/events.js';
@@ -174,7 +174,7 @@ function loadRows(month) {
     const pct = r.limit > 0 ? Math.min(100, Math.round((r.count / r.limit) * 100)) : r.count ? 100 : 0;
     const bar = h('span', { class: 'load-bar', dataset: { over: r.over ? '' : null }, 'aria-hidden': 'true' }, h('span', { class: 'load-bar__fill' }));
     bar.firstChild.style.width = `${pct}%`;   // CSSOM – a measured value, allowed by the CSP
-    const meta = [`${r.count} z ${r.limit}`, r.paused ? 'má pauzu' : null, r.overSundays ? `${r.sundaysInRow} neděle po sobě` : null].filter(Boolean).join(SEP);
+    const meta = [`${r.count} z ${r.limit}`, r.paused ? 'má pauzu' : null, r.overSundays ? `${plural(r.sundaysInRow, 'neděle', 'neděle', 'nedělí')} po sobě` : null].filter(Boolean).join(SEP);
     return row({
       lead: avatar(r.person, { size: 's' }), title: personName(r.person), meta, wrap: true, href: `#osoba/${r.person.id}`,
       note: r.over ? sev('warning', 'víc, než zvládne') : null,

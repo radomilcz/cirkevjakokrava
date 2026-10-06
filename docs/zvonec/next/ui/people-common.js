@@ -120,7 +120,9 @@ export function missingSentence(keys) {
 const MISSING_SHORT = { lastName: 'příjmení', contact: 'telefon a e-mail', consent: 'souhlas', household: 'domácnost' };
 /** „Chybí telefon a e-mail“ – the short note under a row. */
 export function missingNote(keys) {
-  const words = keys.filter((k) => k !== 'review').map((k) => MISSING_SHORT[k]).filter(Boolean);
+  const shown = keys.filter((k) => k !== 'review' && MISSING_SHORT[k]);
+  // „Chybí příjmení a kontakt“, not „příjmení a telefon a e-mail“
+  const words = shown.map((k) => (k === 'contact' && shown.length > 1 ? 'kontakt' : MISSING_SHORT[k]));
   if (!words.length) return keys.includes('review') ? 'Karta vznikla narychlo' : '';
   return `Chybí ${words.length > 1 ? `${words.slice(0, -1).join(', ')} a ${words[words.length - 1]}` : words[0]}`;
 }

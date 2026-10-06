@@ -281,7 +281,7 @@ function needsSection(d, dirty) {
   const drawTotal = () => {
     const merged = mergeNeeds(v.needs, [...brought].map(([roleId, x]) => ({ roleId, count: x.count }))).filter((n) => n.count > 0 && roleById(S.data, n.roleId));
     const people = merged.reduce((s, n) => s + n.count, 0);
-    total.textContent = people ? `Každé setkání potřebuje ${plural(people, 'člověka', 'lidi', 'lidí')} v ${plural(merged.length, 'roli', 'rolích', 'rolích')}.` : 'Zatím není potřeba nikdo.';
+    total.textContent = people ? `Každé setkání potřebuje ${plural(people, 'člověka', 'lidi', 'lidí')} ${[2, 3, 4, 12, 13, 14].includes(merged.length) ? 've' : 'v'} ${plural(merged.length, 'roli', 'rolích', 'rolích')}.` : 'Zatím není potřeba nikdo.';
   };
   drawTotal();
   const setCount = (roleId, n) => {
@@ -334,7 +334,7 @@ function outlineSection(d, redraw) {
       { label: 'Posunout níž', disabled: i === v.program.length - 1, onclick: () => move(i + 1) },
       '-',
       { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => { v.program.splice(i, 1); redraw(); } },
-      ], { label: `Možnosti: ${nameOf}`, title: nameOf }),
+      ], { label: `Další možnosti – ${nameOf}`, title: nameOf }),
     });
   });
   const sum = cursor;

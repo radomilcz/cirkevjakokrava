@@ -45,7 +45,7 @@ export function personMenu(person) {
     leader ? { label: 'Upravit jméno a údaje', icon: 'pencil', onclick: () => detailsSheet(person) } : null,
     leader ? { label: 'Přidat do skupiny', icon: 'teams', onclick: () => personGroupSheet(person) } : null,
     leader && !isFormer(person) && !accessOf(person.id).login ? { label: 'Pozvat do Zvonce', icon: 'log-in', onclick: () => inviteSheet(person) } : null,
-    leader || self ? { label: 'Přidat služby do kalendáře', icon: 'download', onclick: () => downloadDuties(person) } : null,
+    leader || self ? { label: 'Stáhnout do kalendáře', icon: 'download', onclick: () => downloadDuties(person) } : null,
     leader && !self ? '-' : null,
     leader && !self ? { label: 'Smazat kartu', icon: 'trash', danger: true, onclick: () => deletePerson(person) } : null,
   ].filter(Boolean);
@@ -245,7 +245,7 @@ function dutiesSection(person) {
       ...(self ? { onclick: () => openMyAnswer(event.id, assignment.id), chevron: true } : { href: `#setkani/${event.id}` }),
     });
   });
-  const limitWords = limits.paused ? 'Má pauzu – Zvonec ho teď nenavrhuje.'
+  const limitWords = limits.paused ? 'Má pauzu – teď nenavrhovat do služeb.'
     : `Nejvíc ${plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')} za měsíc · ${plural(limits.maxConsecutiveWeeks, 'neděle', 'neděle', 'nedělí')} po sobě`;
   return section({
     title: self ? 'Moje služby' : 'Služby', cls: 'person-section',
@@ -371,7 +371,7 @@ export function householdBody(household) {
         members.length ? list(members.map((p) => personRow(p, {
           meta: isKid(p) ? kidText(p) : MEMBERSHIP_WORDS[statusOf(p)],
           href: `#osoba/${p.id}`, me: p.id === myId(),
-          trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => removeFromHousehold(p, household) }], { label: `Možnosti: ${personName(p)}`, title: personName(p) }),
+          trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => removeFromHousehold(p, household) }], { label: `Další možnosti – ${personName(p)}`, title: personName(p) }),
         })), { label: 'Kdo tu bydlí' }) : quiet('Nikdo tu nebydlí.'),
         slot('Přidat do domácnosti', () => addToHouseholdSheet(household)),
       ],

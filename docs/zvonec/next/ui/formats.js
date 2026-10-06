@@ -109,7 +109,7 @@ function publishSwitch(format) {
   };
   return switchRow({
     label: 'Ukázat na webu',
-    hint: 'Proč to děláme a Jak to probíhá uvidí každý v Programu.',
+    hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý v Programu.',
     checked: !!format.public,
     onChange: (on) => { set(on); toast(on ? 'Na webu to bude za pár minut.' : 'Z webu to zmizí za pár minut.', { action: () => set(!on) }); },
   });
@@ -217,12 +217,12 @@ export function formatSheet(format) {
       field({ label: 'Název', control: name }),
       h('div', { class: 'form__row' },
         field({ label: 'Kolik minut', control: stepper({ name: 'minutes', value: minutes, min: 1, max: 600, step: 5, label: 'Kolik minut', onChange: (v) => { minutes = v; } }) }),
-        field({ label: 'Kdo vede', control: roleSelect('leadRoleId', format?.leadRoleId || '', 'Vybere se v osnově'), hint: 'Kdo má na setkání tuhle roli, ten bod vede.' })),
+        field({ label: 'Kdo vede', control: roleSelect('leadRoleId', format?.leadRoleId || '', 'Vybereš v osnově'), hint: 'Kdo má na setkání tuhle roli, ten bod vede.' })),
       h('div', { class: 'form__row' }, field({ label: 'Proč to děláme', control: why }), field({ label: 'Jak to probíhá', control: how })),
       disclosure([
         field({ label: 'Kdo je potřeba navíc', control: needsEditor(needs), hint: 'Ten, kdo vede, se započítá sám.' }),
         field({ label: 'Další čtení', control: linkInput, optional: true, hint: 'Odkaz na článek nebo video.' }),
-        switchRow({ label: 'Ukázat na webu', hint: 'Proč to děláme a Jak to probíhá uvidí každý v Programu.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
+        switchRow({ label: 'Ukázat na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ uvidí každý v Programu.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
       ], { open: !!(format?.needs?.length || format?.link || format?.public) }),
     ],
     onSubmit: (form, values) => {

@@ -210,7 +210,7 @@ function fieldsFor(base, { adding, image, moreOpen }) {
     adding ? field({ label: 'Popis pro web', optional: true, control: textArea({ name: 'description', value: base.description || '', rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' }) }) : null,
     image?.element,
     switchRow({ name: 'public', label: 'Ukázat na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: base.public === true }),
-    field({ label: 'Pro tým', optional: true, hint: 'Na webu ji nikdo neuvidí.', control: textArea({ name: 'note', value: base.note || '', rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }) }),
+    field({ label: 'Pro tým', optional: true, hint: 'Tuhle poznámku na webu nikdo neuvidí.', control: textArea({ name: 'note', value: base.note || '', rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }) }),
   ];
   return {
     nodes: [...visible, disclosure(more, { open: moreOpen })],
@@ -388,7 +388,7 @@ export function cancelOrRestore(eventId) {
     const changed = cancelEvent(S.data, target, { following, cancelled: cancelling });
     const before = changed.map((e) => [e.id, !cancelling]);
     change(`${cancelling ? 'zrušeno' : 'obnoveno'}: ${target.title} ${shortDate(target.start, { weekday: false })}${changed.length > 1 ? ` (+${changed.length - 1})` : ''}`);
-    toast(cancelling ? (changed.length > 1 ? `Zrušeno ${setkani(changed.length)}.` : 'Setkání je zrušené.') : (changed.length > 1 ? `Obnoveno ${setkani(changed.length)}.` : 'Setkání zase platí.'), {
+    toast(cancelling ? (changed.length > 1 ? `${changed.length <= 4 ? 'Zrušena' : 'Zrušeno'} ${setkani(changed.length)}.` : 'Setkání je zrušené.') : (changed.length > 1 ? `${changed.length <= 4 ? 'Obnovena' : 'Obnoveno'} ${setkani(changed.length)}.` : 'Setkání zase platí.'), {
       action: () => {
         for (const [id, was] of before) { const e = eventById(S.data, id); if (e) { if (was) e.cancelled = true; else delete e.cancelled; } }
         change('vráceno: zrušení');

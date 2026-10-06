@@ -231,7 +231,7 @@ function mineBlock(me) {
       rows.length ? list(rows, { label: 'Tvoje služby' }) : quiet(waitingCount
         ? 'Všechny tvoje služby čekají nahoře na odpověď.' : 'Teď žádnou službu nemáš.'),
       rest > 0 ? rowLink(showMore(rest), { onclick: () => { open.mine = true; rerender(el, () => mineBlock(me), `.home-mine .row:nth-child(${MINE_SHOWN + 1})`); } }) : null,
-      rowLink('Přidat do kalendáře v telefonu', { icon: 'download', onclick: () => downloadDuties(me) }),
+      rowLink('Stáhnout do kalendáře', { icon: 'download', onclick: () => downloadDuties(me) }),
     ],
   });
   return el;

@@ -1,8 +1,8 @@
 // Zvonec Next – the public part (#program, #program/<id>): what a visitor who is not signed in sees.
 // Only publicData() – the lib/public.js shape (published events and formats, church name and address) –
 // never S.data, so no person data can slip in. Program: Nejbližší setkání, Co nás čeká (by week), Co na
-// setkání děláme (published formats → a sheet; anchor „jak-se-schazime“), Kde nás najdete. One event:
-// when, where with the map, the description, „Přidat do kalendáře“ (.ics).
+// setkání děláme (published formats → a sheet; anchor „jak-se-schazime“), Kde nás najdeš. One event:
+// when, where with the map, the description, „Stáhnout do kalendáře“ (.ics).
 
 import { S, publicData, render } from '../../ui/state.js';
 import { ics } from '../../lib/ics.js';
@@ -138,7 +138,7 @@ function nextBlock(event, d) {
       mapPlace ? mapLink(mapPlace) : null,
       event.description ? h('p', { class: 'text pub-next__desc' }, event.description) : null,
       h('div', { class: 'cluster pub-actions' },
-        button('Přidat do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }),
+        button('Stáhnout do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }),
         button('Podrobnosti', { href: `#program/${event.id}`, iconEnd: 'chevron-right' }))));
 }
 
@@ -220,12 +220,12 @@ function findUsBlock(d) {
   const updated = /^\d{4}-\d{2}-\d{2}$/.test(d.generated || '') ? `Program jsme naposledy upravili ${longDay(d.generated).replace(/^\S+ /, '')}.` : null;
   if (!d.address && !home) return updated ? h('p', { class: 'meta pub-updated' }, updated) : null;
   return section({
-    title: 'Kde nás najdete',
+    title: 'Kde nás najdeš',
     cls: 'pub-find',
     body: [
       h('p', { class: 'text' }, h('b', {}, home?.building || home?.name || d.churchName || FALLBACK_NAME), h('br'), d.address || home?.address || ''),
       mapLink(home || { address: d.address }),
-      mapFrame(home, { title: 'Mapa: kde nás najdete' }),
+      mapFrame(home, { title: 'Mapa: kde nás najdeš' }),
       updated ? h('p', { class: 'meta pub-updated' }, updated) : null,
     ],
   });
@@ -291,7 +291,7 @@ function renderPublicEvent(id) {
           picture(event, 'pub-photo--wide'),
           event.description ? h('p', { class: 'text pub-event__desc' }, event.description) : h('p', { class: 'meta' }, 'Víc jsme o tomhle setkání zatím nenapsali.'),
           event.cancelled ? null : h('div', { class: 'cluster pub-actions' },
-            button('Přidat do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }))),
+            button('Stáhnout do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }))),
         h('aside', { class: 'pub-event__facts' },
           h('h2', { class: 'pub-facts__head' }, 'Kdy a kde'),
           h('p', { class: 'fact' }, icon('clock', { size: 's' }), h('span', {}, cap(whenText(event)), statePill(event) ? [' ', statePill(event)] : null)),

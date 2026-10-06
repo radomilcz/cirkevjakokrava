@@ -296,7 +296,7 @@ export function renderCalendar(parts = [], { openId } = {}) {
 
   let content;
   let primary = null;
-  let menuItems = [{ label: 'Přidat do kalendáře v telefonu', icon: 'download', onclick: openCalendarExport }];
+  let menuItems = [{ label: 'Stáhnout do kalendáře', icon: 'download', onclick: openCalendarExport }];
   const bar = toolbar(view, periodPart);
 
   if (view === 'rozpis') {

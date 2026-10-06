@@ -119,7 +119,7 @@ export function loginSheet(person) {
         }, `přístup pro ${displayName(person)}`);
         render();
         setTimeout(() => secretSheet({
-          title: `Přihlášení: ${fullName(person)}`,
+          title: `Přístup: ${fullName(person)}`,
           text: 'Předej to osobně nebo soukromou zprávou, ne do skupinového chatu. Přihlásit se půjde za pár minut.',
           rows: [{ label: 'Jméno', value: login }, { label: 'Heslo', value: password }, { label: 'Adresa', value: appUrl() }],
           note: 'Zvonec si heslo nepamatuje. Po zavření ho už neuvidíš.',
@@ -195,7 +195,7 @@ function rowMenu(login) {
     invite ? { label: 'Poslat znovu', icon: 'share', onclick: () => createInvite(person, { replace: login }) } : null,
     !invite && person ? { label: 'Změnit heslo nebo oprávnění', icon: 'key', onclick: () => loginSheet(person) } : null,
     { label: invite ? 'Zrušit pozvánku' : 'Zrušit přístup', icon: 'x', danger: true, onclick: () => revokeLogin(login) },
-  ].filter(Boolean), { label: `Možnosti: ${person ? fullName(person) : invite ? 'pozvánka' : 'přístup'}` });
+  ].filter(Boolean), { label: `Další možnosti – ${person ? fullName(person) : invite ? 'pozvánka' : 'přístup'}` });
 }
 
 function inviteRow(login) {
