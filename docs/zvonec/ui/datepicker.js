@@ -4,6 +4,8 @@
 // (hidden) and keeps the value, so screens work unchanged: picking a day sets input.value and
 // fires the usual input and change events. On touch screens the native picker stays.
 
+import { icon } from './icons.js';
+
 const fine = () => typeof matchMedia === 'function' && matchMedia('(pointer: fine)').matches;
 const MONTHS = ['leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září', 'říjen', 'listopad', 'prosinec'];
 const DAYS = ['po', 'út', 'st', 'čt', 'pá', 'so', 'ne'];
@@ -95,11 +97,11 @@ function openPanel(input, button) {
   const grid = el('div', 'date-grid');
   grid.setAttribute('role', 'grid');
   const foot = el('div', 'date-foot');
-  const todayBtn = el('button', 'btn small', 'Dnes');
+  const todayBtn = el('button', 'btn btn-soft btn-s', 'Dnes');
   todayBtn.type = 'button';
   foot.append(todayBtn);
   if (!input.required) {
-    const clear = el('button', 'btn small plain', 'Vymazat');
+    const clear = el('button', 'btn btn-ghost btn-s', 'Vymazat');
     clear.type = 'button';
     clear.addEventListener('click', () => setValue(input, button, ''));
     foot.append(clear);
@@ -182,7 +184,7 @@ export function enhance(input) {
   button.setAttribute('aria-expanded', 'false');
   const label = input.getAttribute('aria-label') || input.closest('label')?.querySelector('span')?.textContent;
   if (label) button.setAttribute('aria-label', label);
-  button.append(el('span', 'date-value'), el('span', 'date-icon'));
+  button.append(icon('calendar'), el('span', 'date-value'));
   input.replaceWith(wrap);
   input.tabIndex = -1;
   input.setAttribute('aria-hidden', 'true');

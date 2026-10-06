@@ -1,14 +1,21 @@
 // Generic DOM helpers shared by every screen. No app state here (that is ui/state.js).
-// The components (pageHeader, section, list/row, avatar, assignee…) are the shared look of every module.
+// This is the one import surface of the design kit: the older helpers live here (pageHeader, section,
+// list/row, avatar, assignee, dialogs, fields…), the newer components in ui/kit.js and the icons in
+// ui/icons.js – both re-exported below, so screens import everything from './dom.js'.
 // Content is always built with h(): text goes in as text, never as HTML, so a name like
 // "<script>" in the data runs nothing (the GitHub token lives in this browser, that matters).
+// API reference: scratchpad/redesign/reports/shell-kit.md (and the living specimen at #kit).
 
 import { fullName, DELETED_NAME, NO_NAME } from '../lib/people.js';
+import { icon, statusIcon, severityIcon, svgEl } from './icons.js';
+
+export { icon, statusIcon, severityIcon, svgEl, ICON_NAMES } from './icons.js';
+export * from './kit.js';
 
 // ---------- elements ----------
 
 /**
- * Create an element. `props`: `class` (string or array, falsy entries skipped), `text`,
+ * Create an element. `props`: `class` (string or array – nested arrays too, falsy entries skipped), `text`,
  * `dataset` (object), `on<event>` (listener), DOM properties for non-string values
  * (`checked: true`, `hidden: true`, `disabled: true`…), attributes otherwise.
  * null / false props and children are skipped; children may be nested arrays.
@@ -17,7 +24,7 @@ export function h(tag, props, ...children) {
   const el = document.createElement(tag);
   for (const [key, value] of Object.entries(props || {})) {
     if (value == null || value === false) continue;
-    if (key === 'class') el.className = Array.isArray(value) ? value.filter(Boolean).join(' ') : value;
+    if (key === 'class') el.className = Array.isArray(value) ? value.flat(Infinity).filter(Boolean).join(' ') : value;
     else if (key === 'text') el.textContent = value;
     else if (key.startsWith('on')) el.addEventListener(key.slice(2), value);
     else if (key === 'dataset') Object.assign(el.dataset, value);
@@ -40,7 +47,12 @@ export function append(el, ...children) {
 /** Flatten whatever a screen returned into a node list for replaceChildren(). */
 export const nodes = (content) => [content].flat(Infinity).filter((x) => x != null && x !== false);
 
-/** A pill button. `cls`: 'primary', 'small', 'mini', 'plain' (underlined text), 'left' (combine with spaces). */
+/**
+ * The older button helper (kept for every screen that uses it). `cls`: 'primary' (= solid), 'small'
+ * (36 px, the default size now), 'mini' (28 px), 'large' (44 px), 'plain' (ghost), 'left'; or any kit
+ * classes ('btn-soft', 'btn-ghost', 'btn-danger'…). Without a variant it is a surface button.
+ * New code: button(text, { variant, size, icon, onclick }) from the kit.
+ */
 export const btn = (text, onclick, cls = '', extra = {}) => h('button', { type: 'button', class: ['btn', cls], onclick, ...extra }, text);
 
 /** A quiet action inside text: underlined words, no pill (Vím o tom, Proč a jak). */
@@ -50,16 +62,16 @@ export const textButton = (text, onclick, extra = {}) => h('button', { type: 'bu
 export const link = (text, href, cls = '', extra = {}) => h('a', { href, class: cls || null, ...extra }, text);
 
 /** Button label with a leading plus: btn(plus('Přidat setkání'), …). */
-export const plus = (text) => [h('span', { class: 'plus' }), ` ${text}`];
+export const plus = (text) => [icon('plus', { cls: 'plus' }), text];
 
-/** Round × button (remove a row). */
-export const removeButton = (label, onclick) => h('button', { type: 'button', class: 'btn-x', 'aria-label': label, title: label, onclick });
+/** Small × button (remove a row). */
+export const removeButton = (label, onclick) => h('button', { type: 'button', class: 'btn btn-ghost btn-s btn-icon btn-x', 'aria-label': label, title: label, onclick }, icon('x'));
 
-/** Back link above a page header: backLink('Kalendář', '#kalendar'). */
-export const backLink = (text, href) => link(text, href, 'back');
+/** Back link above a page header: backLink('Kalendář', '#kalendar') → „‹ Kalendář“. */
+export const backLink = (text, href) => h('a', { class: 'back page-back', href }, icon('chevron-left'), text);
 
-/** The same way back as a button (an empty state of a page that is gone): „← Lidé“. */
-export const backButton = (text, href) => link(text, href, 'btn back-arrow');
+/** The same way back as a button (an empty state of a page that is gone): „‹ Lidé“. */
+export const backButton = (text, href) => h('a', { class: 'btn btn-surface back-arrow', href }, icon('chevron-left'), text);
 
 // ---------- page structure ----------
 
@@ -74,12 +86,13 @@ export const backButton = (text, href) => link(text, href, 'btn back-arrow');
  */
 export function pageHeader({ title, lead, actions: buttons, media } = {}) {
   const tools = nodes(buttons || []);
-  return h('header', { class: ['page-header', media && 'with-media'] },
-    media ? h('div', { class: 'page-header-media' }, media) : null,
-    h('div', { class: 'page-header-text' },
-      h('h1', { class: ['title', typeof title === 'string' && title.length > 22 && 'long'] }, title),
-      lead ? h('p', { class: 'lead' }, typeof lead === 'string' ? lead.replaceAll(' · ', SEP) : lead) : null),
-    tools.length ? h('div', { class: 'page-header-actions' }, tools) : null);
+  return h('header', { class: ['page-head', 'page-header', media && 'with-media'] },
+    h('div', { class: 'page-head-row' },
+      media ? h('div', { class: 'page-head-media page-header-media' }, media) : null,
+      h('div', { class: 'page-head-text page-header-text' },
+        h('h1', { class: 'page-title title' }, title),
+        lead ? h('p', { class: 'page-lead lead' }, typeof lead === 'string' ? lead.replaceAll(' · ', SEP) : lead) : null),
+      tools.length ? h('div', { class: 'page-actions page-header-actions' }, tools) : null));
 }
 
 /** Thin horizontal rule between the header and the content. */
@@ -88,7 +101,7 @@ export const rule = () => h('div', { class: 'rule' });
 const isOptions = (x) => !!x && typeof x === 'object' && !Array.isArray(x) && !(x instanceof Node);
 
 /**
- * A block of a page with an h2 (Narrow Black, mixed case), an optional count next to it and quiet
+ * A block of a page with an h2 (Narrow Black, uppercase, 20 px), an optional count next to it and quiet
  * actions on the right of the heading. Children follow; the options object may be left out.
  *   section('Členové', { count: 12, actions: btn(plus('Přidat'), add, 'small') }, list(…))
  *   section('Kontakt', facts(…))
@@ -154,11 +167,23 @@ export const printHeader = (eyebrow) => h('div', { class: 'print-header' },
   h('p', { class: 'eyebrow' }, eyebrow), h('p', { class: 'brand' }, 'církev jako kráva'));
 
 /**
- * Nothing here yet: one sentence and, when it helps, the page's primary action.
- *   emptyState('Zatím tu není žádný tým.', btn(plus('Přidat tým'), add, 'primary'))
+ * Nothing here yet – in a panel: an icon in a soft circle, an optional title, one sentence and, when
+ * it helps, the page's primary action. Two call forms:
+ *   emptyState({ icon: 'map-pin', title: 'Zatím tu nejsou žádná místa.', text: '…', action: button(…) })
+ *   emptyState('Zatím tu není žádný tým.', btn(plus('Přidat tým'), add, 'primary'))   (older screens)
+ * `compact`: no icon, less padding (inside a card or a dialog). `bare`: no panel around it.
+ * @param {string|{icon?: string, title?: any, text?: any, action?: any, compact?: boolean, bare?: boolean, cls?: string}} options
+ * @param {Node} [action]
  */
-export function emptyState(text, action) {
-  return h('div', { class: 'empty-state' }, h('p', {}, text), action || null);
+export function emptyState(options, action) {
+  const o = typeof options === 'object' && options !== null && !(options instanceof Node) && !Array.isArray(options)
+    ? options : { text: options, action };
+  const iconName = o.icon === undefined ? 'inbox' : o.icon;
+  return h('div', { class: ['empty-state', o.compact && 'compact', o.bare && 'bare', o.cls] },
+    iconName && !o.compact ? h('span', { class: 'empty-icon' }, icon(iconName)) : null,
+    o.title ? h('p', { class: 'empty-title' }, o.title) : null,
+    o.text ? h('p', { class: 'empty-text' }, o.text) : null,
+    o.action ? h('div', { class: 'empty-action' }, o.action) : null);
 }
 
 // ---------- lists ----------
@@ -179,7 +204,27 @@ export function list(items, renderRow, { empty, cls, label } = {}) {
     return empty instanceof Node ? empty : emptyState(empty);
   }
   return h('ul', { class: ['items', cls], 'aria-label': label || null },
-    items.map((item, i) => h('li', {}, renderRow(item, i))));
+    items.map((item, i) => {
+      const node = renderRow(item, i);
+      return node instanceof Element && node.tagName === 'LI' ? node : h('li', {}, node);   // listGroup() gives its own <li>
+    }));
+}
+
+/**
+ * A group label inside a list (Narrow, uppercase) with an optional quiet action on the right. Return it
+ * from list()'s renderRow, or use groupedList().
+ *   listGroup('Chvály', btn(plus('Přidat'), add, 'mini plain'))
+ */
+export const listGroup = (label, action) => h('li', { class: 'list-group' }, h('span', { class: 'label' }, label), action || null);
+
+/**
+ * A list in groups: groupedList([{ label: 'Chvály', action, items }, …], renderRow, { empty }).
+ * Groups without items are left out unless `keepEmpty`.
+ */
+export function groupedList(groups, renderRow, { empty, cls, label, keepEmpty = false } = {}) {
+  const kept = groups.filter((g) => keepEmpty || (g.items && g.items.length));
+  const flat = kept.flatMap((g) => [{ group: g }, ...(g.items || []).map((item) => ({ item }))]);
+  return list(flat, (x, i) => (x.group ? listGroup(x.group.label, x.group.action) : renderRow(x.item, i)), { empty, cls: ['grouped', cls].filter(Boolean).join(' '), label });
 }
 
 /**
@@ -187,8 +232,9 @@ export function list(items, renderRow, { empty, cls, label } = {}) {
  * joined with „ · “ keeps the dot at the end of a line when it wraps – see metaJoin), trailing
  * (status / count / small actions). With `href` or `onclick` the whole row opens it: the title becomes
  * the link (or button) and its hit area covers the row, so buttons in `trail` still work on their own.
- * `tone`: 'quiet' (muted: archived, former), 'cancelled' (struck through), 'error' (filled dot),
- * 'warning' (ring), 'mine' (marked as the viewer's own).
+ * `tone`: 'quiet' (muted: archived, former), 'cancelled' (struck through), 'error' / 'warning'
+ * (severity mark before the title), 'mine' (the viewer's own: rose ring on the avatar / solid date
+ * block), 'selected' (rose fill + indicator bar). Several tones: 'mine selected'.
  *   row({ lead: dateBlock(day), title: event.title, meta: '10.00 · Sál', trail: statusIcon('confirmed'), href })
  * @param {{ lead?: any, title: any, meta?: any, trail?: any, href?: string, onclick?: Function,
  *   tone?: string, label?: string, cls?: string }} options label = accessible name when the title is not enough
@@ -201,23 +247,25 @@ export function row({ lead, title, meta: metaLine, trail, href, onclick, tone, l
       ? h('button', { type: 'button', class: 'item-link', onclick, 'aria-label': label || null }, title)
       : h('span', {}, title);
   const trailNodes = nodes(trail == null ? [] : trail);
-  return h('div', { class: ['item', opens && 'opens', tone && `tone-${tone}`, cls] },
+  const tones = String(tone || '').split(/\s+/).filter(Boolean).map((t) => `tone-${t}`);
+  return h('div', { class: ['item', opens && 'opens', ...tones, cls] },
     lead != null ? h('span', { class: 'item-lead' }, lead) : null,
     h('span', { class: 'item-body' },
       h('span', { class: 'item-title' }, titleEl),
       metaLine != null && metaLine !== '' ? h('span', { class: 'item-meta' }, typeof metaLine === 'string' ? metaLine.replaceAll(' · ', SEP) : metaLine) : null),
     trailNodes.length ? h('span', { class: 'item-trail' }, trailNodes) : null,
-    opens ? h('span', { class: 'item-chevron', 'aria-hidden': 'true' }) : null);
+    opens ? h('span', { class: 'item-chevron', 'aria-hidden': 'true' }, icon('chevron-right')) : null);
 }
 
 /**
  * Date block for the leading slot of an event row: weekday over the day number.
  *   dateBlock('2026-10-11') → „ne / 11“ (the month is in the meta line or the list heading).
+ * `today` / `solid`: filled with the primary colour (today, or the viewer's own).
  */
-export function dateBlock(day) {
+export function dateBlock(day, { today = false, solid = false } = {}) {
   const date = new Date(`${day}T12:00`);
   const weekday = ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'][date.getDay()];
-  return h('span', { class: 'date-block', 'aria-hidden': 'true' },
+  return h('span', { class: ['date-block', (today || solid) && 'solid'], 'aria-hidden': 'true' },
     h('span', { class: 'date-block-dow' }, weekday), h('span', { class: 'date-block-day' }, String(date.getDate())));
 }
 
@@ -249,7 +297,18 @@ export function shortName(person, people = []) {
   return `${first} ${clash ? last : initial}`;
 }
 
-const AVATAR_VARIANTS = 5;
+/** The six categorical hues (avatars, team marks, Účel, calendar chips): class `c-<hue>` sets --c3 … --cc. */
+export const HUES = ['rose', 'blue', 'green', 'plum', 'teal', 'amber'];
+
+/** Účel → hue (calendar chips, covers, kindMark): Nedělní setkání rose · Zkouška blue · Skupinka teal · Akce plum. */
+export const KIND_HUES = { service: 'rose', rehearsal: 'blue', smallGroup: 'teal', event: 'plum' };
+
+/** Stable hue for an id (or any text): hueOf('p123') → 'teal'. */
+export function hueOf(key) {
+  let hash = 0;
+  for (const ch of String(key || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
+  return HUES[hash % HUES.length];
+}
 
 /** Initials of a person: „VF“ (first + last name), „V“ without a last name, „?“ when deleted. */
 export function initials(person) {
@@ -260,103 +319,37 @@ export function initials(person) {
 }
 
 /**
- * Initials in a circle. Its look is one of five ink/ground mixes of the current palette (fill, ring,
- * solid…), always the same for the same person (derived from the id), never a random hue.
- * Decorative (aria-hidden): put the name next to it. Prints as a plain circle.
+ * Initials in a circle, in one of the six categorical hues – always the same for the same person
+ * (hueOf(id)). Decorative (aria-hidden): put the FULL name next to it (personLine() does).
+ * Prints as a plain circle.
  * @param {object|null} person
- * @param {{ size?: 's'|'m'|'l' }} [options] s = 28px (duties, dense rows), m = 36px (lists), l = 64px (person card)
+ * @param {{ size?: 'xs'|'s'|'m'|'l', mine?: boolean }} [options] xs = 24 (header, chips), s = 32 (duties, rows),
+ *   m = 40 (people lists), l = 64 (person card). mine: rose ring (the viewer).
  */
-export function avatar(person, { size = 'm' } = {}) {
-  let hash = 0;
-  for (const ch of String(person?.id || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
+export function avatar(person, { size = 'm', mine = false } = {}) {
   return h('span', {
-    class: ['avatar', `avatar-${size}`, person ? `avatar-v${hash % AVATAR_VARIANTS}` : 'avatar-gone'],
+    class: ['avatar', `avatar-${size}`, person ? `c-${hueOf(person.id)}` : 'avatar-gone', mine && 'mine'],
     'aria-hidden': 'true',
   }, initials(person));
 }
 
 /**
  * The mark of a group (team, home group, leadership) where a person would have an avatar: one or two
- * initials in a rounded square, one of five ink/ground mixes derived from the id (square = a group,
- * round = a person). Decorative (aria-hidden): put the name next to it.
- * @param {{ id?: string, name?: string }|null} group
- * @param {{ size?: 'm'|'l' }} [options] m = 36px (lists), l = 64px (page header)
+ * initials (one word: its first two letters) in a rounded square (square = a group, round = a person), hue from the id – or the group's
+ * own `color` when it is one of HUES. Decorative (aria-hidden): put the name next to it.
+ * @param {{ id?: string, name?: string, color?: string }|null} group
+ * @param {{ size?: 'xs'|'s'|'m'|'l' }} [options] xs 24 · s 32 · m 40 (lists) · l 64 (page header)
  */
 export function groupMark(group, { size = 'm' } = {}) {
-  let hash = 0;
-  for (const ch of String(group?.id || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
   const words = String(group?.name || '?').split(/\s+/).filter(Boolean);
-  const letters = (words.length > 1 ? [words[0], words[1]] : [words[0] || '?']).map((w) => [...w][0]).join('');
-  return h('span', { class: ['group-mark', `group-mark-${size}`, `group-mark-v${hash % AVATAR_VARIANTS}`], 'aria-hidden': 'true' },
+  // two words → their initials (Mládež Nový Jičín → MN); one word → its first two letters (Chvály → CH)
+  const letters = words.length > 1 ? [words[0], words[1]].map((w) => [...w][0]).join('') : [...(words[0] || '?')].slice(0, 2).join('');
+  const hue = HUES.includes(group?.color) ? group.color : hueOf(group?.id);
+  return h('span', { class: ['group-mark', `group-mark-${size}`, `c-${hue}`], 'aria-hidden': 'true' },
     letters.toLocaleUpperCase('cs'));
 }
 
 // ---------- assignment status ----------
-
-const SVG_NS = 'http://www.w3.org/2000/svg';
-const svg = (tag, attrs = {}, ...children) => {
-  const el = document.createElementNS(SVG_NS, tag);
-  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-  for (const c of children) el.append(c);
-  return el;
-};
-
-// ---------- icons ----------
-
-/* One line-icon set for the navigation: 20 × 20, one stroke (1.7), round ends, currentColor.
-   Shapes are drawn here (no icon font, no extra file: the CSP stays 'self' and nothing loads). */
-const ICONS = {
-  moje: ['M3.4 9.2 10 3.6l6.6 5.6', 'M5.2 7.9v8.6h9.6V7.9', 'M8.4 16.5v-4.2h3.2v4.2'],
-  kalendar: [['rect', { x: 3, y: 4.4, width: 14, height: 12.6, rx: 2.6 }], 'M3 8.6h14', 'M7 2.8v3.2M13 2.8v3.2', 'M7 12h.01M10 12h.01M13 12h.01M7 14.6h.01M10 14.6h.01'],
-  rozpis: [['rect', { x: 3, y: 3.5, width: 14, height: 13, rx: 2.6 }], 'M3 8h14M3 12.3h14', 'M8 3.5v13'],
-  lide: [['circle', { cx: 7.6, cy: 7, r: 2.7 }], 'M2.8 16.4c.5-2.8 2.4-4.4 4.8-4.4s4.3 1.6 4.8 4.4', ['circle', { cx: 13.9, cy: 7.7, r: 2.1 }], 'M13.5 12c2.1.1 3.6 1.5 4 4.1'],
-  tymy: [['circle', { cx: 10, cy: 6.3, r: 2.4 }], ['circle', { cx: 4.6, cy: 9.2, r: 1.8 }], ['circle', { cx: 15.4, cy: 9.2, r: 1.8 }], 'M5.9 16.6c.6-2.7 2.1-4.1 4.1-4.1s3.5 1.4 4.1 4.1', 'M1.9 15.6c.3-1.7 1.2-2.7 2.7-2.9M18.1 15.6c-.3-1.7-1.2-2.7-2.7-2.9'],
-  formaty: [['rect', { x: 2.9, y: 10.6, width: 6.2, height: 6.2, rx: 1.4 }], ['rect', { x: 10.9, y: 10.6, width: 6.2, height: 6.2, rx: 1.4 }], ['rect', { x: 6.9, y: 3.2, width: 6.2, height: 6.2, rx: 1.4 }]],
-  upozorneni: ['M5.4 13.6V9.2a4.6 4.6 0 0 1 9.2 0v4.4l1.6 2H3.8z', 'M8.2 17.4a2 2 0 0 0 3.6 0'],
-  nastaveni: ['M15.36 8.05 17.41 8.29 17.41 11.71 15.36 11.95 15.17 12.41 16.45 14.03 14.03 16.45 12.41 15.17 11.95 15.36 11.71 17.41 8.29 17.41 8.05 15.36 7.59 15.17 5.97 16.45 3.55 14.03 4.83 12.41 4.64 11.95 2.59 11.71 2.59 8.29 4.64 8.05 4.83 7.59 3.55 5.97 5.97 3.55 7.59 4.83 8.05 4.64 8.29 2.59 11.71 2.59 11.95 4.64 12.41 4.83 14.03 3.55 16.45 5.97 15.17 7.59Z', ['circle', { cx: 10, cy: 10, r: 2.4 }]],
-  'jak-se-schazime': ['M4.2 3.9h11.6a1.7 1.7 0 0 1 1.7 1.7v7.1a1.7 1.7 0 0 1-1.7 1.7H9.6l-3.9 3v-3H4.2a1.7 1.7 0 0 1-1.7-1.7V5.6a1.7 1.7 0 0 1 1.7-1.7z', 'M10 11.6 7.7 9.4a1.4 1.4 0 0 1 2.3-1.6 1.4 1.4 0 0 1 2.3 1.6z'],
-  prihlaseni: ['M11.6 3.4h2.9a2 2 0 0 1 2 2v9.2a2 2 0 0 1-2 2h-2.9', 'M3 10h9.2', 'M9 6.7l3.3 3.3L9 13.3'],
-  verejne: [['circle', { cx: 10, cy: 10, r: 7.1 }], 'M2.9 10h14.2', 'M10 2.9c2 1.9 3 4.3 3 7.1s-1 5.2-3 7.1c-2-1.9-3-4.3-3-7.1s1-5.2 3-7.1z'],
-};
-ICONS.program = ICONS.kalendar;
-
-/**
- * A line icon from the set above, 1.25em by default (20 px at 16 px text), currentColor, decorative.
- *   icon('kalendar') → <svg class="icon icon-kalendar">
- * @param {string} name
- */
-export function icon(name) {
-  const el = svg('svg', { class: `icon icon-${name}`, viewBox: '0 0 20 20', 'aria-hidden': 'true', focusable: 'false',
-    fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
-  for (const part of ICONS[name] || []) {
-    el.append(typeof part === 'string' ? svg('path', { d: part.startsWith('M') ? part : `M${part}` }) : svg(part[0], part[1]));
-  }
-  return el;
-}
-
-/**
- * The drawn symbol of an assignment status (DESIGN §1.5), 1em, currentColor, aria-hidden – always put
- * statusLabel() next to it. confirmed = filled circle with a tick, proposed = dashed ring with a
- * clock, declined = ring with a cross.
- * @param {'confirmed'|'proposed'|'declined'} status
- */
-export function statusIcon(status) {
-  const icon = svg('svg', { class: `status-icon status-${status}`, viewBox: '0 0 16 16', width: '1em', height: '1em', 'aria-hidden': 'true', focusable: 'false' });
-  if (status === 'confirmed') {
-    icon.append(
-      svg('circle', { cx: 8, cy: 8, r: 7.25, fill: 'currentColor' }),
-      svg('path', { class: 'status-icon-cut', d: 'M4.7 8.3l2.2 2.2 4.4-4.6', fill: 'none', 'stroke-width': 1.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
-  } else if (status === 'declined') {
-    icon.append(
-      svg('circle', { cx: 8, cy: 8, r: 6.6, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.4 }),
-      svg('path', { d: 'M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.5, 'stroke-linecap': 'round' }));
-  } else {
-    icon.append(
-      svg('circle', { cx: 8, cy: 8, r: 6.6, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.4, 'stroke-dasharray': '2.6 1.85' }),
-      svg('path', { d: 'M8 4.9V8.2l2.2 1.4', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
-  }
-  return icon;
-}
 
 const STATUS_WORDS = { confirmed: 'potvrzeno', proposed: 'čeká na potvrzení', declined: 'nemůže' };
 
@@ -368,9 +361,21 @@ export function statusLabel(status, person) {
   return STATUS_WORDS[status] || STATUS_WORDS.proposed;
 }
 
-/** Status symbol + word in one span: statusBadge('proposed') → ◌ čeká na potvrzení. */
-export const statusBadge = (status, person) => h('span', { class: ['status-badge', `status-${status}`] },
-  statusIcon(status), h('span', {}, statusLabel(status, person)));
+/**
+ * An assignment status: drawn symbol + colour + word – never colour or outline alone.
+ * Default form per status: „čeká na potvrzení“ is a soft amber pill (it needs attention), „potvrzeno“
+ * and „nemůže“ are plain (coloured symbol + word) – calm in lists.
+ *   statusBadge('proposed') · statusBadge('confirmed', { word: 'potvrdila' }) · statusBadge('declined', { variant: 'badge' })
+ * @param {'confirmed'|'proposed'|'declined'} status
+ * @param {{ variant?: 'badge'|'plain', word?: string }|object} [options] (older screens pass the person: ignored)
+ */
+export function statusBadge(status, options) {
+  const o = options && ('variant' in options || 'word' in options) ? options : {};
+  const variant = o.variant || (status === 'proposed' ? 'badge' : 'plain');
+  const tone = { confirmed: 'success', proposed: 'warning', declined: 'danger' }[status] || 'warning';
+  return h('span', { class: ['status-badge', `status-${status}`, variant === 'badge' ? ['badge', `badge-${tone}`] : 'status'] },
+    statusIcon(status), o.word || statusLabel(status));
+}
 
 /**
  * A person on a duty: avatar, FULL name, status symbol and word. For the person themselves (`mine`)
@@ -395,13 +400,13 @@ export function assignee({ assignment, person, mine = false, canEdit = false, on
   ].filter(Boolean) : [];
   const answer = mine && status === 'proposed' && onAnswer;
   return h('div', { class: ['assignee', `status-${status}`, mine && 'mine', tone && `tone-${tone}`], title: title || null },
-    avatar(person, { size: 's' }),
+    avatar(person, { size: 's', mine }),
     h('span', { class: 'assignee-text' },
       href && !canEdit ? h('a', { class: 'assignee-name', href }, name) : h('span', { class: 'assignee-name' }, name),
       statusBadge(status, person)),
     answer ? h('span', { class: 'assignee-answer' },
-      btn('Potvrdit', () => onAnswer('confirmed'), 'mini primary'),
-      btn('Nemůžu', () => onAnswer('declined'), 'mini')) : null,
+      h('button', { type: 'button', class: 'btn btn-solid btn-s', onclick: () => onAnswer('confirmed') }, icon('check'), 'Potvrdit'),
+      h('button', { type: 'button', class: 'btn btn-soft btn-s', onclick: () => onAnswer('declined') }, 'Nemůžu')) : null,
     menuItems.length ? menuButton(menuItems, { label: `Možnosti: ${name}` }) : null);
 }
 
@@ -420,13 +425,14 @@ const hashOf = (text) => {
  * pattern and the title in Narrow Black with the date small. Which of four compositions (and light or
  * dark tone) it gets comes from `variantKey` – pass the same key for events of one template or series
  * (e.g. the title) so a row of Sundays looks alike; without it the event id. Decorative (aria-hidden).
- * Prints as a light outline.
- * @param {{ id?: string, title?: string, start?: string }} event
+ * The field takes the colour of the event's Účel (event.kind → KIND_HUES, step 9 + contrast text), or
+ * `hue` when given. Prints as a light outline.
+ * @param {{ id?: string, title?: string, start?: string, kind?: string }} event
  * @param {{ size?: 'card'|'hero'|'thumb', imageUrl?: string, title?: boolean, variantKey?: string }} [options]
  *   card = 16:9 in a grid, hero = wide banner on the detail page, thumb = small square in a list row.
  *   title: false = colours and imprint only (the page shows the title and the date anyway).
  */
-export function eventCover(event, { size = 'card', imageUrl, title = true, variantKey } = {}) {
+export function eventCover(event, { size = 'card', imageUrl, title = true, variantKey, hue } = {}) {
   if (imageUrl) {
     return h('figure', { class: ['cover', `cover-${size}`, 'cover-photo'], 'aria-hidden': 'true' },
       h('img', { src: imageUrl, alt: '', loading: 'lazy', decoding: 'async' }));
@@ -435,15 +441,10 @@ export function eventCover(event, { size = 'card', imageUrl, title = true, varia
   const day = event?.start ? event.start.slice(0, 10) : '';
   const date = day ? new Date(`${day}T12:00`) : null;
   const dateText = date ? `${date.getDate()}. ${date.getMonth() + 1}.` : '';
-  const imprint = document.createElementNS(SVG_NS, 'svg');
-  imprint.setAttribute('class', 'cover-imprint');
-  imprint.setAttribute('aria-hidden', 'true');
-  imprint.setAttribute('focusable', 'false');
-  const use = document.createElementNS(SVG_NS, 'use');
-  use.setAttribute('href', 'imprint.svg#o');
-  imprint.append(use);
+  const imprint = svgEl('svg', { class: 'cover-imprint', 'aria-hidden': 'true', focusable: 'false' }, svgEl('use', { href: 'imprint.svg#o' }));
   const key = variantKey || event?.id || event?.title;
-  return h('div', { class: ['cover', `cover-${size}`, 'cover-generated', `cover-v${hashOf(String(key || '').trim().toLocaleLowerCase('cs')) % COVER_VARIANTS}`, !words && 'cover-plain'], 'aria-hidden': 'true' },
+  const tint = HUES.includes(hue) ? hue : KIND_HUES[event?.kind];
+  return h('div', { class: ['cover', `cover-${size}`, 'cover-generated', `cover-v${hashOf(String(key || '').trim().toLocaleLowerCase('cs')) % COVER_VARIANTS}`, tint && ['cover-hue', `c-${tint}`], !words && 'cover-plain'], 'aria-hidden': 'true' },
     imprint,
     words ? [h('span', { class: 'cover-title' }, event?.title || ''), dateText ? h('span', { class: 'cover-date' }, dateText) : null] : null);
 }
@@ -555,20 +556,20 @@ function listenForMenus() {
 }
 
 /**
- * A round ⋯ button with a small menu for secondary actions (leader actions in lists).
- * items: [[label, onclick, { danger }?], …]. The menu opens below the button (above near the bottom
+ * The ⋯ (kebab) button with a small menu for secondary actions (leader actions in lists).
+ * items: [[label, onclick, { danger, icon }?], …]. The menu opens below the button (above near the bottom
  * of the window), closes on Escape, on a click elsewhere and after a choice. Arrow keys move.
  *   menuButton([['Upravit', edit], ['Odebrat', remove, { danger: true }]], { label: 'Možnosti: Petr' })
  */
-export function menuButton(items, { label = 'Další možnosti' } = {}) {
+export function menuButton(items, { label = 'Další možnosti', size = 'm', icon: iconName = 'more' } = {}) {
   listenForMenus();
   const menu = h('div', { class: 'menu-list', role: 'menu', hidden: true },
-    items.map(([text, onclick, opts = {}]) => h('button', {
+    items.filter(Boolean).map(([text, onclick, opts = {}]) => h('button', {
       type: 'button', role: 'menuitem', class: opts.danger ? 'danger' : null,
       onclick: (e) => { e.stopPropagation(); closeMenu({ focus: true }); onclick(); },
-    }, text)));
+    }, opts.icon ? icon(opts.icon) : null, text)));
   const button = h('button', {
-    type: 'button', class: 'menu-btn', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': label, title: label,
+    type: 'button', class: ['btn btn-ghost btn-icon menu-btn', size === 's' && 'btn-s'], 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': label, title: label,
     onclick: (e) => {
       e.stopPropagation();
       if (openMenu?.button === button) { closeMenu(); return; }
@@ -585,38 +586,46 @@ export function menuButton(items, { label = 'Další možnosti' } = {}) {
       menu.style.top = `${below ? r.bottom + 6 : Math.max(8, r.top - 6 - height)}px`;
       menu.querySelector('[role=menuitem]')?.focus({ preventScroll: true });
     },
-  });
+  }, icon(iconName));
   return h('span', { class: 'menu-wrap' }, button, menu);
 }
 
 // ---------- filters ----------
 
 /**
- * Pill row of buttons with aria-pressed: filterButtons([['all', 'Všechno'], ['error', 'Chyby']], current, pick).
- * Pass several groups by calling it several times inside one h('div', { class: 'filter' }) – or use the
- * returned element directly.
+ * Filter chips (one choice) with aria-pressed: filterButtons([['all', 'Všechno'], ['error', 'Chyby']], current, pick).
+ * The chosen chip: rose fill + ✓ + rose text. For several choices at once use chips() from the kit.
  */
 export function filterButtons(options, value, onPick, { label } = {}) {
-  return h('div', { class: 'filter', role: 'group', 'aria-label': label || null },
-    options.map(([v, text]) => h('button', { type: 'button', 'aria-pressed': String(v === value), onclick: () => onPick(v) }, text)));
+  return h('div', { class: 'filter chips', role: 'group', 'aria-label': label || null },
+    options.map(([v, text]) => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(v === value), onclick: () => onPick(v) },
+      icon('check', { cls: 'chip-check' }), text)));
 }
 
-/** The same pills as links, for filters kept in the hash: filterLinks([['#lide', 'Členové'], …], '#lide'). */
+/** The same chips as links, for filters kept in the hash: filterLinks([['#lide', 'Členové'], …], '#lide'). */
 export function filterLinks(options, currentHref, { label } = {}) {
-  return h('nav', { class: 'filter', 'aria-label': label || null },
-    options.map(([href, text]) => h('a', { href, 'aria-current': href === currentHref ? 'page' : null }, text)));
+  return h('nav', { class: 'filter chips', 'aria-label': label || null },
+    options.map(([href, text]) => h('a', { href, class: 'chip', 'aria-current': href === currentHref ? 'page' : null },
+      icon('check', { cls: 'chip-check' }), text)));
 }
 
 // ---------- toasts, download ----------
 
-/** A toast at the bottom: toast('Uloženo.') or toast('Smazáno.', 'Petr', { action: undo, actionLabel: 'Vrátit' }). */
-export function toast(title, text = '', { action, actionLabel, duration = 3800 } = {}) {
+/**
+ * A toast at the bottom: one line (+ an optional detail line), one action.
+ *   toast('Uloženo.') · toast('Smazáno.', 'Petr Novák', { action: undo, actionLabel: 'Vrátit' })
+ *   toast('Nepodařilo se uložit.', 'GitHub neodpovídá.', { tone: 'error', action: retry, actionLabel: 'Zkusit znovu' })
+ * tone: 'ok' (green ✓, default), 'error' (red ✕ + red edge, stays 8 s), 'info' (no symbol).
+ */
+export function toast(title, text = '', { action, actionLabel, duration, tone = 'ok' } = {}) {
   const wrap = document.querySelector('.toasts');
-  const el = h('div', { class: 'toast', role: 'status' },
-    h('span', {}, h('strong', {}, title), text ? ` ${text}` : ''),
-    action ? btn(actionLabel, () => { action(); el.remove(); }, 'small') : null);
-  wrap.append(el);
-  setTimeout(() => el.remove(), duration);
+  const symbol = tone === 'error' ? statusIcon('declined') : tone === 'ok' ? statusIcon('confirmed') : null;
+  const el = h('div', { class: ['toast', `toast-${tone}`], role: tone === 'error' ? 'alert' : 'status' },
+    symbol,
+    h('span', { class: 'toast-text' }, h('strong', {}, title), text ? h('small', {}, text) : null),
+    action ? h('button', { type: 'button', class: ['btn btn-s', tone === 'error' ? 'btn-soft' : 'btn-ghost'], onclick: () => { action(); el.remove(); } }, actionLabel) : null);
+  wrap?.append(el);
+  setTimeout(() => el.remove(), duration || (tone === 'error' ? 8000 : 3800));
   return el;
 }
 
@@ -633,8 +642,9 @@ export function download(name, content, type) {
 /** Copy to the clipboard; the button label tells how it went. */
 export function copyButton(value, label = 'Kopírovat') {
   return btn(label, async (e) => {
-    try { await navigator.clipboard.writeText(value); e.target.textContent = 'Zkopírováno'; } catch { e.target.textContent = 'Označ a zkopíruj ručně'; }
-  }, 'mini');
+    const b = e.currentTarget;
+    try { await navigator.clipboard.writeText(value); b.textContent = 'Zkopírováno'; } catch { b.textContent = 'Označ a zkopíruj ručně'; }
+  }, 'mini btn-soft');
 }
 
 // ---------- dialogs ----------
@@ -643,7 +653,7 @@ export const dialogElement = () => document.getElementById('dialog');
 export const isDialogOpen = () => !!dialogElement()?.open;
 let backdropClose = false;
 
-/** Show content in the one modal <dialog>. `wide` for forms with two columns. */
+/** Show content in the one modal <dialog> (560 px; `wide` = 760 px for two text areas side by side). */
 export function openDialog(content, { wide = false } = {}) {
   const d = dialogElement();
   if (!backdropClose) {
@@ -668,15 +678,17 @@ export function closeDialog() {
 /**
  * Ask before doing something: confirmDialog('Smazat Petra?', 'Zmizí i ze služeb.', () => …).
  * `extra` is put between the text and the buttons (e.g. radio choices); onYes gets the form.
+ * `danger` (default: the label starts with Smazat / Odebrat / Zrušit) makes the button red.
  */
-export function confirmDialog(title, text, onYes, { buttonLabel = 'Smazat', extra } = {}) {
-  const form = h('form', { method: 'dialog' },
-    h('h2', {}, title),
-    text ? h('p', { class: 'note' }, text) : null,
-    extra || null,
-    h('div', { class: 'actions' },
-      btn('Nechat být', closeDialog),
-      h('button', { type: 'submit', class: 'btn primary' }, buttonLabel)));
+export function confirmDialog(title, text, onYes, { buttonLabel = 'Smazat', extra, danger = /^(Smazat|Odebrat|Zrušit)/.test(buttonLabel) } = {}) {
+  const form = h('form', { method: 'dialog', class: 'dialog-form' },
+    h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, title),
+      text ? h('p', { class: 'dialog-sub' }, text) : null),
+    extra ? h('div', { class: 'dialog-body' }, extra) : null,
+    h('div', { class: 'dialog-foot actions' },
+      h('span', { class: 'dialog-foot-space' }),
+      h('button', { type: 'button', class: 'btn btn-ghost', onclick: closeDialog }, 'Nechat být'),
+      h('button', { type: 'submit', class: ['btn', danger ? 'btn-danger-solid' : 'btn-solid'] }, buttonLabel)));
   form.addEventListener('submit', (e) => { e.preventDefault(); closeDialog(); onYes(form); });
   openDialog(form);
   return form;
@@ -691,24 +703,36 @@ export function formError(form, text) {
 }
 
 /** The error line of a form (hidden until formError() fills it). `full` spans both grid columns. */
-export const formErrorLine = (text = '', { full = false } = {}) => h('p', { class: ['form-error', 'error-fill', full && 'full'], hidden: !text }, text);
+export const formErrorLine = (text = '', { full = false } = {}) => h('p', { class: ['form-error', full && 'full'], role: 'alert', hidden: !text }, text);
 
 /**
- * A form in a dialog: (eyebrow,) title (+ `sub` under it), a two-column grid of fields, Smazat / Zrušit / Uložit.
+ * A form in a dialog: title (+ `sub` under it), a two-column grid of fields, Smazat / Zrušit / Uložit.
  * `save(elements, form)` returns an error text (shown, dialog stays open) or nothing (dialog closes);
- * it may be async – the Uložit button is disabled meanwhile. `remove` adds a quiet button on the left,
- * „Smazat“ unless `removeLabel` says otherwise („Odebrat z týmu“). `extra` follows the form in the dialog.
+ * it may be async – the Uložit button is disabled meanwhile. `remove` adds a soft red button on the
+ * left, „Smazat“ unless `removeLabel` says otherwise („Odebrat z týmu“). `extra` follows the form in
+ * the dialog. `eyebrow` is accepted and shown as the sub line (no eyebrows above titles).
+ * Sections and „Další možnosti“: formDialog() in the kit.
  */
 export function simpleDialog({ eyebrow, title, sub, fields, save, remove, removeLabel = 'Smazat', wide = true, saveLabel = 'Uložit', extra }) {
-  const submit = h('button', { type: 'submit', class: 'btn primary' }, saveLabel);
-  const form = h('form', { method: 'dialog', novalidate: true },
-    eyebrow ? h('p', { class: 'eyebrow' }, eyebrow) : null, h('h2', {}, title),
-    sub ? h('p', { class: 'sub' }, sub) : null,
-    h('div', { class: 'form-grid' }, fields),
-    formErrorLine(),
-    h('div', { class: 'actions' },
-      remove ? btn(removeLabel, () => { closeDialog(); remove(); }, 'left plain') : null,
-      btn('Zrušit', closeDialog), submit));
+  return dialogForm({ title, sub: [eyebrow, sub].filter(Boolean).join(' · ') || null, body: h('div', { class: 'form-grid' }, fields), save, remove, removeLabel, saveLabel, wide, extra });
+}
+
+/**
+ * The engine behind simpleDialog() and the kit's formDialog(): head, body, error line, sticky foot.
+ * @param {{ title: any, sub?: any, body: any, save: Function, remove?: Function, removeLabel?: string,
+ *   saveLabel?: string, cancelLabel?: string, wide?: boolean, extra?: any, cls?: string }} options
+ */
+export function dialogForm({ title, sub, body, save, remove, removeLabel = 'Smazat', saveLabel = 'Uložit', cancelLabel = 'Zrušit', wide = false, extra, cls }) {
+  const submit = h('button', { type: 'submit', class: 'btn btn-solid' }, saveLabel);
+  const form = h('form', { method: 'dialog', novalidate: true, class: ['dialog-form', cls] },
+    h('div', { class: 'dialog-head' },
+      h('h2', { class: 'dialog-title' }, title),
+      sub ? h('p', { class: 'dialog-sub sub' }, sub) : null),
+    h('div', { class: 'dialog-body' }, body, formErrorLine()),
+    h('div', { class: 'dialog-foot actions' },
+      remove ? h('button', { type: 'button', class: 'btn btn-danger left', onclick: () => { closeDialog(); remove(); } }, removeLabel) : null,
+      h('span', { class: 'dialog-foot-space' }),
+      h('button', { type: 'button', class: 'btn btn-ghost', onclick: closeDialog }, cancelLabel), submit));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     submit.disabled = true;
@@ -724,35 +748,41 @@ export function simpleDialog({ eyebrow, title, sub, fields, save, remove, remove
 
 // ---------- form fields ----------
 
-const hintOf = (hint) => (hint ? h('small', {}, hint) : null);
+const hintOf = (hint) => (hint ? h('small', { class: 'field-hint' }, hint) : null);
+const labelOf = (label) => h('span', { class: 'field-label' }, label);
 
 /** Labelled input. options: { full, type = 'text', attr: { …input attributes }, hint }. */
 export function textField(name, label, value = '', { full = false, type = 'text', attr = {}, hint } = {}) {
-  return h('label', { class: ['field', full && 'full'] }, h('span', {}, label),
+  return h('label', { class: ['field', full && 'full'] }, labelOf(label),
     h('input', { type, name, value: value ?? '', ...attr }),
     hintOf(hint));
 }
 
 /** Labelled textarea (always full width unless full: false). */
 export function textArea(name, label, value = '', { full = true, attr = {}, hint } = {}) {
-  return h('label', { class: ['field', full && 'full'] }, h('span', {}, label),
+  return h('label', { class: ['field', full && 'full'] }, labelOf(label),
     h('textarea', { name, ...attr, text: value ?? '' }),
     hintOf(hint));
 }
 
-/** Labelled select; options = [[value, text], …]. */
+/** Labelled select; options = [[value, text], …]. ui/select.js turns it into the styled drop-down. */
 export function selectField(name, label, options, value, { full = false, attr = {}, hint } = {}) {
-  return h('label', { class: ['field', full && 'full'] }, h('span', {}, label),
+  return h('label', { class: ['field', full && 'full'] }, labelOf(label),
     h('select', { name, ...attr },
       options.map(([v, text]) => h('option', { value: v, selected: v === value }, text))),
     hintOf(hint));
 }
 
-/** Pill choices (checkbox or radio) – only for short words (a place, a role), never a sentence. */
+/**
+ * Chips to pick from (checkbox = several, radio = one) – short words only (a place, a role), never a
+ * sentence. Chosen = rose fill + ✓ + rose text. options: [[value, text, count?], …].
+ */
 export function choices(name, options, selected = [], type = 'checkbox') {
   const picked = Array.isArray(selected) ? selected : [selected];
-  return h('div', { class: 'choices' }, options.map(([v, text]) => h('label', { class: 'choice' },
-    h('input', { type, name, value: v, checked: picked.includes(v) }), h('span', {}, text))));
+  return h('div', { class: 'choices chips' }, options.map(([v, text, n]) => h('label', { class: 'chip choice' },
+    h('input', { type, name, value: v, checked: picked.includes(v) }),
+    icon('check', { cls: 'chip-check' }), h('span', {}, text),
+    n != null && n !== '' ? h('span', { class: 'n' }, String(n)) : null)));
 }
 
 /**
@@ -762,19 +792,23 @@ export function choices(name, options, selected = [], type = 'checkbox') {
 export function checkboxField(name, text, checked = false, value = 'yes', { hint } = {}) {
   return h('label', { class: ['check-row', 'full', hint && 'with-hint'] },
     h('input', { type: 'checkbox', name, value, checked }),
-    h('span', { class: 'box', 'aria-hidden': 'true' }),
     h('span', { class: 'caption' }, text, hint ? h('small', {}, hint) : null));
 }
 
-/** Segment control: one of a few short options side by side (ne / učí se / umí). */
-export function segment(name, options, value, { label, onchange } = {}) {
-  return h('span', { class: 'segment', role: 'radiogroup', 'aria-label': label || null, onchange: onchange || null },
-    options.map(([v, text]) => h('label', {},
-      h('input', { type: 'radio', name, value: v, checked: v === value }), h('span', {}, text))));
+/**
+ * Segmented control for a form: one of a few short options side by side, the chosen one on a raised
+ * thumb (radio inputs inside, so it submits with the form). options: [[value, text, icon?], …].
+ *   segment('membership', [['member', 'Člen'], ['regular', 'Přítel sboru'], ['guest', 'Host']], 'member', { label: 'Členství' })
+ */
+export function segment(name, options, value, { label, onchange, size } = {}) {
+  return h('span', { class: ['segment', 'seg', size === 's' && 'seg-s'], role: 'radiogroup', 'aria-label': label || null, onchange: onchange || null },
+    options.map(([v, text, iconName]) => h('label', {},
+      h('input', { type: 'radio', name, value: v, checked: v === value }),
+      h('span', {}, iconName ? icon(iconName) : null, text))));
 }
 
 /** Values of the checked inputs with this name inside `root`. */
 export const checkedValues = (root, name) => [...root.querySelectorAll(`input[name="${name}"]:checked`)].map((i) => i.value);
 
 /** A group of fields with a small label, spanning the grid row: fieldGroup('Vlastnosti', checkboxField(…), …). */
-export const fieldGroup = (label, ...children) => h('div', { class: 'field full' }, h('span', {}, label), children);
+export const fieldGroup = (label, ...children) => h('div', { class: 'field full', role: 'group' }, labelOf(label), children);

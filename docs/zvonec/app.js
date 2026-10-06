@@ -1,9 +1,12 @@
-// Zvonec – the app: boot (demo or live), session, router, the shell (sidebar / phone sheet), save status.
-// No framework and no build: the files sit on GitHub Pages as they are. Screens live in ui/*.js
-// and talk to the rest only through ui/state.js and ui/dom.js.
+// Zvonec – the app: boot (demo or live), session, router, the shell (header, sidebar / phone sheet),
+// save status. No framework and no build: the files sit on GitHub Pages as they are. Screens live in
+// ui/*.js and talk to the rest only through ui/state.js and ui/dom.js (the kit).
+//
+// Routes are registered per module in the marked blocks below („// ROUTES:<module>“). A module agent
+// edits only its own block (and its own import block „// IMPORTS:<module>“); the shell owns the rest.
 
 import { S, setHooks, can, myId, recompute, isUpcoming, loadRemembered, forgetRemembered, ACCESS_LABELS } from './ui/state.js';
-import { h, btn, nodes, emptyState, pageHeader, isDialogOpen, avatar, personName, icon } from './ui/dom.js';
+import { h, nodes, emptyState, page, placeholderPage, isDialogOpen, avatar, personName, icon, countBadge, button } from './ui/dom.js';
 import './ui/stepper.js';   // − and + buttons on every number field
 import './ui/select.js';    // drop-downs in the Zvonec style
 import './ui/datepicker.js'; // date fields with our own calendar
@@ -16,73 +19,162 @@ import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
 
-import { renderHome } from './ui/home.js';
+import { renderLogin, renderSetup, renderInvite } from './ui/login.js';
+import { renderKit } from './ui/kit-page.js';
+
+// IMPORTS:calendar
 import { renderCalendar } from './ui/calendar.js';
 import { renderEvent } from './ui/event.js';
 import { renderProgram } from './ui/program.js';
 import { renderRoster } from './ui/roster.js';
+// IMPORTS:calendar end
+
+// IMPORTS:people
 import { renderPeople, renderPerson, renderHouseholds, renderHousehold } from './ui/people.js';
+// IMPORTS:people end
+
+// IMPORTS:groups-library
 import { renderGroups, renderGroup } from './ui/groups.js';
+import { renderFormats } from './ui/formats.js';
+// IMPORTS:groups-library end
+
+// IMPORTS:home-admin
+import { renderHome } from './ui/home.js';
 import { renderConflicts } from './ui/conflicts.js';
 import { renderSettings } from './ui/settings.js';
-import { renderFormats } from './ui/formats.js';
 import { renderPublicProgram, renderPublicFormats } from './ui/public.js';
-import { renderLogin, renderSetup, renderInvite } from './ui/login.js';
+// IMPORTS:home-admin end
 
 // ---------- routes ----------
 // Slugs are Czech (people see and share them). `parts` = the hash split by '/', without the section.
+// A route: { render(parts) → a page (kit page()) or older content, access, menu? }
 // `access`: who may open it –
 //   'public'    everyone, signed in or not (the public part: published events and formats)
 //   'signedOut' only visitors who are not signed in (sign-in, invite); signed-in people go home
-//   'member'    anyone signed in · 'leader' leaders and admins · or a function of the parts → one of these
-// `menu`: which nav item lights up (defaults to the section itself; may be a function of the parts).
+//   'member'    anyone signed in · 'leader' leaders and admins · 'admin' · or a function of the parts
+// `menu`: which nav item lights up (NAV ids below; defaults to the section; may be a function of the parts).
 
-const ROUTES = {
-  program: { render: () => renderPublicProgram(), access: 'public' },
-  'jak-se-schazime': { render: () => renderPublicFormats(), access: 'public' },
-  prihlaseni: { render: () => signInPage(), access: 'signedOut' },
-  pozvanka: { render: ([code]) => invitePage(code), access: 'signedOut', menu: 'prihlaseni' },
-  moje: { render: () => renderHome(), access: 'member' },
-  kalendar: { render: ([month]) => renderCalendar(month || ''), access: 'member' },
-  setkani: { render: ([id, sub]) => (sub === 'osnova' ? renderProgram(id) : renderEvent(id)), access: 'member', menu: 'kalendar' },
-  rozpis: { render: ([month]) => renderRoster(month || ''), access: 'member' },
-  lide: { render: ([filter]) => renderPeople(filter || ''), access: 'member' },
-  osoba: { render: ([id]) => renderPerson(id), access: 'member', menu: 'lide' },
-  domacnosti: { render: () => renderHouseholds(), access: 'leader', menu: 'lide' },
-  domacnost: { render: ([id]) => renderHousehold(id), access: 'leader', menu: 'lide' },
-  tymy: { render: () => renderGroups(), access: 'leader' },
-  tym: { render: ([id]) => renderGroup(id), access: 'leader', menu: 'tymy' },
-  formaty: { render: ([id]) => renderFormats(id || ''), access: 'member' },
-  upozorneni: { render: () => renderConflicts(), access: 'leader' },
-  nastaveni: {
-    render: ([section]) => renderSettings(section || ''),
-    access: ([section]) => (!section || section === 'ucet' ? 'member' : 'leader'),
-    menu: ([section]) => (section === 'ucet' || !can('leader') ? 'ucet' : 'nastaveni'),
+const MONTH = /^\d{4}-\d{2}$/;
+
+// ROUTES:calendar – Kalendář (views mesic · tyden · seznam · rozpis) and the event detail.
+// #kalendar/<pohled>/<datum>, #setkani/<id>[/sluzby|/osnova]. Interim: the old screens.
+const CALENDAR_ROUTES = {
+  kalendar: {
+    render: ([view, date]) => {
+      if (view === 'rozpis') return renderRoster(date || '');
+      if (view === 'tyden') return placeholderPage('Kalendář', { lead: 'Týden – tenhle pohled právě stavíme.' });
+      return renderCalendar(MONTH.test(date || '') ? date : '');   // mesic, seznam (the old screen has both)
+    },
+    access: 'member',
+  },
+  setkani: {
+    render: ([id, tab]) => (tab === 'osnova' ? renderProgram(id) : renderEvent(id)),
+    access: 'member', menu: 'kalendar',
   },
 };
+// ROUTES:calendar end
 
-/** Old slugs keep working (printed links, bookmarks). */
+// ROUTES:people – Lidé (views seznam · tabulka · domacnosti · skupiny · narozeniny · bremeno, then a
+// filter), the person card and the household. #lide/<pohled>/<filtr>; #lide/<filtr> keeps the view.
+const PEOPLE_VIEWS = ['seznam', 'tabulka', 'domacnosti', 'skupiny', 'narozeniny', 'bremeno'];
+const PEOPLE_ROUTES = {
+  lide: {
+    render: (parts) => {
+      const [view, filter] = PEOPLE_VIEWS.includes(parts[0]) ? parts : ['', parts[0]];
+      if (view === 'domacnosti') return renderHouseholds();
+      if (['skupiny', 'narozeniny', 'bremeno'].includes(view)) return placeholderPage('Lidé');
+      return renderPeople(filter || '');
+    },
+    access: 'member',
+  },
+  osoba: { render: ([id]) => renderPerson(id), access: 'member', menu: 'lide' },
+  domacnost: { render: ([id]) => renderHousehold(id), access: 'leader', menu: 'lide' },
+};
+// ROUTES:people end
+
+// ROUTES:groups-library – Týmy a skupinky (#tymy/<pohled>, #tym/<id>/<záložka>) and Jak se scházíme
+// (#sablony, #sablona/<id>, #formaty[/<id>], #mista, #misto/<id>).
+const GROUPS_LIBRARY_ROUTES = {
+  tymy: {
+    render: ([view]) => (view === 'umi' ? placeholderPage('Týmy a skupinky', { lead: 'Kdo co umí – tenhle pohled právě stavíme.' }) : renderGroups()),
+    access: 'leader',
+  },
+  tym: { render: ([id]) => renderGroup(id), access: 'leader', menu: 'tymy' },
+  sablony: { render: () => renderSettings('sablony'), access: 'leader', menu: 'knihovna' },
+  sablona: { render: () => placeholderPage('Šablona', { back: ['Šablony', '#sablony'] }), access: 'leader', menu: 'knihovna' },
+  formaty: { render: ([id]) => renderFormats(id || ''), access: 'member', menu: 'knihovna' },
+  mista: { render: () => renderSettings('mista'), access: 'leader', menu: 'knihovna' },
+  misto: { render: () => placeholderPage('Místo', { back: ['Místa', '#mista'] }), access: 'member', menu: 'knihovna' },
+};
+// ROUTES:groups-library end
+
+// ROUTES:home-admin – Přehled, Upozornění, Nastavení, Můj účet and the public part.
+const SETTINGS_SECTIONS = { sbor: '', pravidla: '', prihlaseni: 'prihlaseni', zaloha: 'zaloha' };
+const HOME_ADMIN_ROUTES = {
+  prehled: { render: () => renderHome(), access: 'member' },
+  upozorneni: { render: () => renderConflicts(), access: 'leader' },
+  nastaveni: { render: ([part]) => renderSettings(SETTINGS_SECTIONS[part] ?? ''), access: 'leader' },
+  ucet: { render: () => renderSettings('ucet'), access: 'member' },
+  program: {
+    render: ([id]) => (id ? placeholderPage('Program', { back: ['Program', '#program'] }) : renderPublicProgram()),
+    access: 'public',
+  },
+  'jak-se-schazime': { render: () => renderPublicFormats(), access: 'public' },
+};
+// ROUTES:home-admin end
+
+const SHELL_ROUTES = {
+  prihlaseni: { render: () => signInPage(), access: 'signedOut' },
+  pozvanka: { render: ([code]) => invitePage(code), access: 'signedOut', menu: 'prihlaseni' },
+  kit: { render: ([tab]) => renderKit(tab), access: 'leader', menu: null },   // the living specimen, not in the nav
+};
+
+const ROUTES = { ...CALENDAR_ROUTES, ...PEOPLE_ROUTES, ...GROUPS_LIBRARY_ROUTES, ...HOME_ADMIN_ROUTES, ...SHELL_ROUTES };
+
+/** Old slugs keep working (printed links, bookmarks). Applied until none matches. */
 const REDIRECTS = [
   [/^udalost\/(.+)$/, (m) => `setkani/${m[1]}`],
   [/^porad\/(.+)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^setkani\/([^/]+)\/(porad|prubeh)$/, (m) => `setkani/${m[1]}/osnova`],
+  [/^moje$/, () => 'prehled'],
+  [/^rozpis(?:\/(.+))?$/, (m) => `kalendar/rozpis${m[1] ? `/${m[1]}` : ''}`],
+  [/^kalendar\/(\d{4}-\d{2}(?:-\d{2})?)$/, (m) => `kalendar/mesic/${m[1]}`],
+  [/^domacnosti$/, () => 'lide/domacnosti'],
   [/^nastaveni\/formaty$/, () => 'formaty'],
+  [/^nastaveni\/sablony$/, () => 'sablony'],
+  [/^nastaveni\/mista$/, () => 'mista'],
+  [/^nastaveni\/ucet$/, () => 'ucet'],
   [/^(skupiny|sluzby)$/, () => 'tymy'],
   [/^skupina\/(.+)$/, (m) => `tym/${m[1]}`],
   [/^kolize$/, () => 'upozorneni'],
 ];
 
-// Navigation per access level (DESIGN §3). [section, label, condition?]
-const LEADER_NAV = [
-  ['moje', 'Moje', () => !!myId()],
-  ['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé'], ['tymy', 'Týmy a role'],
-  ['formaty', 'Formáty'], ['upozorneni', 'Upozornění'], ['nastaveni', 'Nastavení'],
+// ---------- navigation per role (structure.md §2.1) ----------
+// [id, label, icon, href]; '-' = a divider. The id is what route.menu points at.
+const NAV_LEADER = [
+  ['prehled', 'Přehled', 'dashboard', '#prehled'],
+  ['kalendar', 'Kalendář', 'calendar', '#kalendar'],
+  ['upozorneni', 'Upozornění', 'bell', '#upozorneni'],
+  ['lide', 'Lidé', 'users', '#lide'],
+  ['tymy', 'Týmy a skupinky', 'groups', '#tymy'],
+  ['knihovna', 'Jak se scházíme', 'layers', '#sablony'],
+  '-',
+  ['nastaveni', 'Nastavení', 'sliders', '#nastaveni'],
 ];
-const MEMBER_NAV = [['moje', 'Moje'], ['kalendar', 'Kalendář'], ['rozpis', 'Rozpis'], ['lide', 'Lidé'], ['formaty', 'Formáty']];
-const PUBLIC_NAV = [['program', 'Program'], ['jak-se-schazime', 'Jak se scházíme']];
+const NAV_MEMBER = [
+  ['prehled', 'Přehled', 'dashboard', '#prehled'],
+  ['kalendar', 'Kalendář', 'calendar', '#kalendar'],
+  ['lide', 'Lidé', 'users', '#lide'],
+  ['knihovna', 'Jak se scházíme', 'layers', '#formaty'],
+];
+const NAV_PUBLIC = [
+  ['program', 'Program', 'calendar', '#program'],
+  ['jak-se-schazime', 'Jak se scházíme', 'layers', '#jak-se-schazime'],
+  ['prihlaseni', 'Přihlásit se', 'log-in', '#prihlaseni'],
+];
 
 const signedIn = () => !!S.me;
-const homeSection = () => (!signedIn() ? (S.logins.length ? 'program' : 'prihlaseni') : can('leader') ? 'kalendar' : 'moje');
+const homeSection = () => (!signedIn() ? (S.logins.length ? 'program' : 'prihlaseni') : 'prehled');
 
 /** May the current visitor open a route with this access? */
 function allowedFor(access, parts) {
@@ -95,14 +187,13 @@ function allowedFor(access, parts) {
 /** Current route after redirects and the permission check: { section, parts, route }. */
 function resolve() {
   let path = decodeURIComponent(location.hash.slice(1)).replace(/^\/+|\/+$/g, '');
-  for (const [pattern, target] of REDIRECTS) {
-    const m = path.match(pattern);
-    if (m) {
-      path = target(m);
-      history.replaceState(null, '', `#${path}`);
-      break;
-    }
+  const original = path;
+  for (let round = 0; round < 4; round += 1) {
+    const hit = REDIRECTS.find(([pattern]) => pattern.test(path));
+    if (!hit) break;
+    path = hit[1](path.match(hit[0]));
   }
+  if (path !== original) history.replaceState(history.state, '', `#${path}`);
   let [section, ...parts] = path.split('/');
   let route = ROUTES[section];
   if (!route || !allowedFor(route.access, parts)) {
@@ -112,7 +203,7 @@ function resolve() {
     section = needsSignIn ? 'prihlaseni' : homeSection();
     parts = [];
     route = ROUTES[section];
-    history.replaceState(null, '', `#${section}`);   // the address says where we are (#program, #kalendar…)
+    history.replaceState(null, '', `#${section}`);   // the address says where we are (#program, #prehled…)
   }
   return { section, parts, route };
 }
@@ -136,69 +227,75 @@ function invitePage(code) {
   return S.screen ? S.screen() : h('p', { class: 'loading' }, 'Otevírám pozvánku…');
 }
 
-// ---------- shell: sidebar (desktop) / top bar + sheet (phone) ----------
+// ---------- shell: header, sidebar (desktop) / sheet (phone) ----------
 
 let navKey = null;
 
-/** Which navigation fits: the public one on public routes and for visitors, otherwise per access. */
+/** Which navigation fits: the public one on public routes and for visitors, otherwise per role. */
 function navFor(route) {
-  if (!signedIn() || route.access === 'public') return { key: `public-${signedIn()}`, items: PUBLIC_NAV };
+  if (!signedIn() || route.access === 'public') return { key: `public-${signedIn()}`, items: NAV_PUBLIC.filter(([id]) => id !== 'prihlaseni' || !signedIn()) };
   const leader = can('leader');
-  const items = (leader ? LEADER_NAV : MEMBER_NAV).filter(([, , when]) => !when || when());
-  return { key: `${leader ? 'leader' : 'member'}-${items.length}`, items };
+  return { key: leader ? 'leader' : 'member', items: leader ? NAV_LEADER : NAV_MEMBER };
 }
+
+const navItem = ([id, label, iconName, href], extra = null) => h('li', {},
+  h('a', { class: 'nav-item', href, dataset: { nav: id } }, icon(iconName), h('span', { class: 'nav-label' }, label), extra));
+
+/** Labels of the nav ids, for the quiet section label of a page (data-context). */
+const NAV_LABELS = Object.fromEntries([...NAV_LEADER, ...NAV_MEMBER, ...NAV_PUBLIC].filter(Array.isArray).map(([id, label]) => [id, label]));
 
 function updateShell(route, section, parts) {
   const isPublic = !signedIn() || route.access === 'public';
   document.body.classList.toggle('signed-out', !signedIn());
   document.body.classList.toggle('public-view', isPublic);
-  const active = typeof route.menu === 'function' ? route.menu(parts) : route.menu || section;
+  const active = route.menu === null ? null : typeof route.menu === 'function' ? route.menu(parts) : route.menu || section;
 
   const { key, items } = navFor(route);
-  const nav = document.querySelector('.sidebar .nav');
+  const nav = document.querySelector('.sidebar .nav:not(.nav-foot)');
   if (key !== navKey) {
     navKey = key;
-    nav.replaceChildren(h('ul', {}, items.map(([slug, label]) => h('li', {},
-      h('a', { href: `#${slug}`, dataset: { section: slug } },
-        icon(slug),
-        h('span', { class: 'nav-label' }, label),
-        slug === 'upozorneni' ? h('span', { class: 'count', hidden: true }) : null)))));
+    nav.replaceChildren(h('ul', { class: 'nav-list' }, items.map((item) => (item === '-'
+      ? h('li', { class: 'nav-divider', role: 'separator' })
+      : navItem(item, item[0] === 'upozorneni' ? countBadge('', { label: '' }) : null)))));
   }
   nav.querySelectorAll('a').forEach((a) => {
-    if (a.dataset.section === active) a.setAttribute('aria-current', 'page');
+    if (a.dataset.nav === active) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });
-  const badge = nav.querySelector('.count');
+  const badge = nav.querySelector('[data-nav="upozorneni"] .count');
   if (badge) {
-    const upcoming = S.data ? S.conflicts.filter((c) => c.severity !== 'info' && isUpcoming(c)).length : 0;
-    badge.hidden = !upcoming;
-    badge.textContent = upcoming;
-    badge.setAttribute('aria-label', `${upcoming} upozornění`);
+    const upcoming = S.data ? S.conflicts.filter((c) => c.severity !== 'info' && isUpcoming(c)) : [];
+    badge.hidden = !upcoming.length;
+    badge.textContent = upcoming.length;
+    badge.classList.toggle('count-warn', upcoming.some((c) => c.severity === 'error'));
+    badge.setAttribute('aria-label', `${upcoming.length} upozornění`);
   }
 
-  // the header's right side: who is signed in (→ Můj účet), or Přihlásit se; in the demo the sidebar
-  // also offers the way to the public part
+  // bottom of the sidebar: the way to the public part (and back)
+  const foot = document.querySelector('.sidebar .nav-foot');
+  const footItem = !signedIn() ? null
+    : isPublic ? ['zpet', 'Zpátky do Zvonce', 'arrow-left', `#${homeSection()}`]
+      : ['verejne', 'Veřejná část', 'globe', '#program'];
+  foot.replaceChildren(...nodes(footItem ? h('ul', { class: 'nav-list' }, navItem(footItem)) : null));
+
+  // the header's right side: who is signed in (→ Můj účet), or Přihlásit se
   const account = document.querySelector('.account');
-  const links = document.querySelector('.sidebar-links');
   const person = signedIn() ? personById(S.data || {}, myId()) : null;
   if (!signedIn()) {
     account.replaceChildren(h('a', {
-      class: 'btn small primary signin', href: '#prihlaseni', 'aria-current': active === 'prihlaseni' ? 'page' : null,
-    }, icon('prihlaseni'), 'Přihlásit se'));
-  } else if (isPublic) {
-    account.replaceChildren(h('a', { class: 'btn small signin', href: `#${homeSection()}` }, 'Zpátky do Zvonce'));
+      class: 'btn btn-solid btn-s signin', href: '#prihlaseni', 'aria-current': active === 'prihlaseni' ? 'page' : null,
+    }, icon('log-in'), 'Přihlásit se'));
   } else {
     const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
     const role = ACCESS_LABELS[S.me.access] || '';
     account.replaceChildren(h('a', {
-      class: 'me', href: '#nastaveni/ucet', 'aria-current': active === 'ucet' ? 'page' : null, title: role ? `Můj účet · ${role}` : 'Můj účet',
+      class: 'me', href: '#ucet', 'aria-current': section === 'ucet' ? 'page' : null, title: role ? `Můj účet · ${role}` : 'Můj účet',
     },
-    person ? avatar(person, { size: 's' }) : h('span', { class: 'avatar avatar-s avatar-v0', 'aria-hidden': 'true' }, S.mode === 'demo' ? 'U' : '?'),
+    person ? avatar(person, { size: 'xs' }) : h('span', { class: 'avatar avatar-xs avatar-gone', 'aria-hidden': 'true' }, icon('user')),
     h('span', { class: 'me-text' }, h('span', { class: 'me-name' }, name), role ? h('span', { class: 'me-role' }, role) : null)));
   }
-  links.replaceChildren(...nodes(S.mode === 'demo' && !isPublic
-    ? h('a', { class: 'quiet-link', href: '#program' }, icon('verejne'), h('span', {}, 'Veřejná část')) : null));
   document.querySelector('.topbar-signin').hidden = signedIn() || active === 'prihlaseni';
+  return active;
 }
 
 // the phone sheet: Menu opens it, Esc / a link / the scrim close it
@@ -227,36 +324,60 @@ document.querySelector('.sheet-close').addEventListener('click', () => setSheet(
 document.getElementById('sidebar').addEventListener('click', (e) => { if (e.target.closest('a[href]')) setSheet(false, { focus: false }); });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || !document.body.classList.contains('sheet-open')) return;
-  if (!document.querySelector('.palette-menu').hidden) return;   // the palette closes first
+  if (!document.querySelector('.look-menu').hidden) return;   // the Vzhled menu closes first
   setSheet(false);
 });
-/** Desktop: colours and the person sit in the header. Phone: the header has room for the brand and
+/** Desktop: Vzhled and the person sit in the header. Phone: the header has room for the brand and
  * Menu only, so they move into the sheet (the same elements – their listeners come along). */
 function placeTools() {
-  const target = sheetQuery.matches ? document.querySelector('.sheet-tools') : document.querySelector('.appbar-tools');
-  const before = sheetQuery.matches ? null : document.querySelector('.appbar-tools .topbar-signin');
-  for (const sel of sheetQuery.matches ? ['.account', '.palette'] : ['.palette', '.account']) target.insertBefore(document.querySelector(sel), before);
+  const phone = sheetQuery.matches;
+  const target = phone ? document.querySelector('.sheet-tools') : document.querySelector('.appbar-tools');
+  const before = phone ? null : document.querySelector('.appbar-tools .topbar-signin');
+  for (const sel of phone ? ['.account', '.look'] : ['.look', '.account']) target.insertBefore(document.querySelector(sel), before);
 }
 placeTools();
 sheetQuery.addEventListener?.('change', () => { setSheet(false, { focus: false }); placeTools(); });
 
 // ---------- rendering ----------
 
+/**
+ * Whatever a screen returned, as one div.page: a kit page() passes through; older screens (a list of
+ * nodes starting with pageHeader()) get wrapped – the header becomes the page head, the rest the body.
+ */
+function asPage(content) {
+  const list_ = nodes(content);
+  if (list_.length === 1 && list_[0] instanceof Element && list_[0].classList.contains('page')) return list_[0];
+  const headIndex = list_.findIndex((n) => n instanceof Element && n.classList.contains('page-head'));
+  const before = headIndex > 0 ? list_.slice(0, headIndex) : [];   // e.g. a back link or a demo bar above the title
+  const head = headIndex >= 0 ? list_[headIndex] : null;
+  if (head) {
+    const back = before.filter((n) => n instanceof Element && n.classList.contains('back'));
+    back.forEach((n) => head.prepend(n));
+  }
+  const rest = headIndex >= 0 ? [...before.filter((n) => !(n instanceof Element && n.classList.contains('back'))), ...list_.slice(headIndex + 1)] : list_;
+  return h('div', { class: 'page w-wide legacy' }, head, h('div', { class: 'page-body' }, rest));
+}
+
 function renderApp({ toTop = false } = {}) {
   const main = document.getElementById('content');
   if (!S.mode) return;                               // still finding out whether this is the demo or live
   if (signedIn() && !S.data) return;                 // signed in, data still loading
   const { section, parts, route } = resolve();
-  updateShell(route, section, parts);
+  const active = updateShell(route, section, parts);
   const position = window.scrollY;
   let content;
   try {
-    content = route.render(parts);
+    content = asPage(route.render(parts));
   } catch (error) {
     console.error(error);
-    content = [pageHeader({ title: 'Jejda' }), emptyState('Tohle se nepodařilo zobrazit. Zkus stránku načíst znovu, a kdyby to nepomohlo, dej vědět správci.')];
+    content = page({ title: 'Jejda', width: 'list', body: emptyState({ icon: 'alert', title: 'Tohle se nepodařilo zobrazit.', text: 'Zkus stránku načíst znovu, a kdyby to nepomohlo, dej vědět správci.' }) });
   }
-  main.replaceChildren(...nodes(content));
+  const head = content.querySelector('.page-head');
+  const context = NAV_LABELS[active] || (section === 'ucet' ? 'Můj účet' : '');
+  if (head && context && !head.dataset.context) head.dataset.context = context;
+  main.replaceChildren(content);
+  const title = content.querySelector('.page-title')?.textContent?.trim();
+  document.title = title ? `${title} – Zvonec` : 'Zvonec – Církev jako kráva';
   window.scrollTo(0, toTop ? 0 : position);
 }
 
@@ -284,16 +405,17 @@ window.addEventListener('hashchange', () => {
 
 /**
  * Quiet unless it matters: „Ukládám…“ while saving, nothing once saved; a failed save stays on screen
- * with „Zkusit znovu“. There are two places (sidebar on desktop, top bar on phone), both get it.
+ * with „Zkusit znovu“.
  */
 function showSaveStatus({ status, error }) {
   const failed = status === 'error' || status === 'offline';
   for (const el of document.querySelectorAll('.save-status')) {
     el.classList.toggle('error', failed);
+    el.classList.toggle('saving', status === 'saving' || status === 'pending');
     el.title = failed && error ? error : '';   // the technical detail for whoever helps, not in the sentence
     if (failed) {
       const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : 'Neuloženo.';
-      el.replaceChildren(h('span', {}, text), ' ', btn('Zkusit znovu', () => S.sync.save(), 'mini'));
+      el.replaceChildren(h('span', { class: 'save-status-text' }, text), button('Zkusit znovu', { variant: 'soft', size: 's', onclick: () => S.sync.save() }));
     } else {
       el.textContent = status === 'saving' || status === 'pending' ? 'Ukládám…' : '';
     }

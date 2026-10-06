@@ -9,13 +9,14 @@
 <meta name="robots" content="noindex">
 <title>Zvonec – Církev jako kráva</title>
 <meta name="description" content="Kdo co kdy dělá: kalendář, lidi, služby a upozornění.">
-<meta name="theme-color" content="#3b2f2f">
+<meta name="theme-color" content="#f2ded4">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="../assets/icon-180.png">
 <link rel="preload" href="../assets/fonts/Agrandir-NarrowBlack.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="../assets/fonts/Agrandir-Regular.woff" as="font" type="font/woff" crossorigin>
 <script src="ui/palette.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/people.css">
 <link rel="stylesheet" href="css/events.css">
@@ -23,63 +24,59 @@
 <link rel="stylesheet" href="css/formats.css">
 <link rel="stylesheet" href="css/settings.css">
 <link rel="stylesheet" href="css/public.css">
+<!-- the second look overrides tokens and a few structural rules; last, so it wins at equal specificity -->
+<link rel="stylesheet" href="css/look-milnik.css">
 <script type="module" src="app.js"></script>
 </head>
 <body>
 
-<div class="backdrop" aria-hidden="true">
-  <svg class="imprint a"><use href="imprint.svg#o"/></svg>
-  <svg class="imprint b"><use href="imprint.svg#o"/></svg>
-</div>
-
-<!-- the header across the whole app: brand and app name left; save status, colours and the signed-in
-     person (or Přihlásit se) right. On a phone it is the top bar with the Menu button; app.js moves the
-     colours and the person into the sheet there. -->
+<!-- The shell (BUILD.md „Shell“): header across the top; under it the sidebar and the stage (the page
+     sheet). Phone (< 960 px): the header has the brand and Menu, the sidebar becomes a sheet and app.js
+     moves the Vzhled menu and the person into it. app.js fills the navigation per role. -->
 <header class="appbar">
   <a class="brand-link" href="#"><span class="brand">církev jako kráva</span><span class="app-name">Zvonec</span></a>
   <div class="appbar-tools">
     <p class="save-status" role="status" aria-live="polite"></p>
-    <div class="palette">
-      <button class="switcher" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Barvy" title="Barvy"><span class="bullseye"></span></button>
-      <div class="palette-menu" role="menu" aria-label="Barvy" hidden>
-        <!-- green and cream, cream and green, green and pink, pink and blue: not enough contrast for
-             small app text (below 4.5 : 1) – they stay in Otázky na tělo, not here -->
-        <button type="button" role="menuitemradio" aria-checked="false" data-palette="clay-pink" title="Hlína a růžová" aria-label="Hlína a růžová"><span class="bullseye"></span></button>
-        <button type="button" role="menuitemradio" aria-checked="false" data-palette="pink-clay" title="Růžová a hlína" aria-label="Růžová a hlína"><span class="bullseye"></span></button>
-        <button type="button" role="menuitemradio" aria-checked="false" data-palette="blue-cream" title="Modrá a krém" aria-label="Modrá a krém"><span class="bullseye"></span></button>
-        <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-blue" title="Krém a modrá" aria-label="Krém a modrá"><span class="bullseye"></span></button>
-        <button type="button" role="menuitemradio" aria-checked="false" data-palette="cream-clay" title="Krém a hlína" aria-label="Krém a hlína"><span class="bullseye"></span></button>
-        <button type="button" role="menuitemradio" aria-checked="false" data-palette="" class="auto">Podle zařízení</button>
+    <div class="look">
+      <button class="btn btn-ghost btn-icon look-toggle" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="look-menu" aria-label="Vzhled" title="Vzhled"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg><span class="look-toggle-label">Vzhled</span></button>
+      <div class="look-menu popover" id="look-menu" role="group" aria-label="Vzhled" hidden>
+        <p class="look-heading" id="look-theme-heading">Režim</p>
+        <div class="seg seg-s look-options" role="radiogroup" aria-labelledby="look-theme-heading">
+          <button type="button" role="radio" aria-checked="false" data-theme-choice="">Podle zařízení</button>
+          <button type="button" role="radio" aria-checked="false" data-theme-choice="light">Světlý</button>
+          <button type="button" role="radio" aria-checked="false" data-theme-choice="dark">Tmavý</button>
+        </div>
+        <p class="look-heading" id="look-look-heading">Vzhled</p>
+        <div class="seg seg-s look-options" role="radiogroup" aria-labelledby="look-look-heading">
+          <button type="button" role="radio" aria-checked="false" data-look-choice="zvonec">Zvonec</button>
+          <button type="button" role="radio" aria-checked="false" data-look-choice="milnik">Milníkovač</button>
+        </div>
       </div>
     </div>
     <div class="account"></div>
-    <a class="btn small primary topbar-signin" href="#prihlaseni" hidden>Přihlásit se</a>
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar"><span class="menu-toggle-icon" aria-hidden="true"></span><span class="menu-toggle-label">Menu</span></button>
+    <a class="btn btn-solid btn-s topbar-signin" href="#prihlaseni" hidden>Přihlásit se</a>
+    <button class="btn btn-surface menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg><span class="menu-toggle-label">Menu</span></button>
   </div>
 </header>
 
-<div class="scrim" hidden></div>
-
-<!-- desktop: the column on the left under the header, as tall as the page; phone: the sheet behind the
-     Menu button. app.js fills the navigation per access level (and for visitors who are not signed in). -->
-<aside class="sidebar" id="sidebar" aria-label="Menu">
-  <div class="sidebar-inner">
+<div class="app-body">
+  <div class="scrim" hidden></div>
+  <aside class="sidebar" id="sidebar" aria-label="Menu">
     <div class="sidebar-head">
       <span class="brand">církev jako kráva</span>
-      <button class="btn small sheet-close" type="button" aria-label="Zavřít menu">Zavřít</button>
+      <button class="btn btn-ghost btn-icon sheet-close" type="button" aria-label="Zavřít menu" title="Zavřít menu"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <nav class="nav" aria-label="Hlavní menu"></nav>
     <div class="sidebar-foot">
       <div class="sheet-tools"></div>
-      <div class="sidebar-links"></div>
+      <nav class="nav nav-foot" aria-label="Další"></nav>
     </div>
-  </div>
-</aside>
-
-<main id="content" class="page" tabindex="-1">
-  <p class="loading">Načítám…</p>
-  <noscript><p>Zvonec běží v prohlížeči – bez JavaScriptu to nepůjde.</p></noscript>
-</main>
+  </aside>
+  <main id="content" class="stage" tabindex="-1">
+    <div class="page"><p class="loading">Načítám…</p></div>
+    <noscript><p>Zvonec běží v prohlížeči – bez JavaScriptu to nepůjde.</p></noscript>
+  </main>
+</div>
 
 <dialog class="dialog" id="dialog"></dialog>
 <div class="toasts" aria-live="polite"></div>

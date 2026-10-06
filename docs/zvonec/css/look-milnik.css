@@ -1,0 +1,18 @@
+/* ============================================================
+   Look „milnik“ – an interpretation of the owner's Milníkovač prototype in our palette and fonts.
+   Active when <html data-look="milnik"> (header menu „Vzhled“, or ?vzhled=milnik in the URL).
+   Loaded last (after css/tokens.css, style.css and the module CSS).
+
+   How to write it:
+   - css/tokens.css is the base for every look (all its selectors are :where(), zero specificity), so
+     override only what differs: :root[data-look="milnik"] { --surface-app: …; --radius-card: …; }
+     For dark: :root[data-look="milnik"][data-theme="dark"] and
+     @media (prefers-color-scheme: dark) { :root[data-look="milnik"]:not([data-theme]) { … } }.
+     (#kit renders light and dark islands with [data-theme] on a subtree – mirror the root rules with
+     [data-look="milnik"] [data-theme="dark"] if those islands should follow.)
+   - Structural rules: prefix with [data-look="milnik"] (e.g. the appbar may become display:contents so
+     the brand sits at the top of the sidebar; .page-head[data-context]::before may show the quiet
+     section label – app.js sets data-context to the section name on every page head).
+   - The DOM is the same for both looks; never change markup for a look.
+   Owner of this file: the look-milnik agent.
+   ============================================================ */
