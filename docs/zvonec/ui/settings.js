@@ -6,7 +6,7 @@
 
 import {
   h, page, tabs, card, button, list, row, toast, download, plural, confirmDialog, callout, placeMap, placeLine,
-  formError, formErrorLine, textField, selectField, icon,
+  formError, formErrorLine, textField, selectField, rowIcon,
 } from './dom.js';
 import { S, can, change, replaceAll } from './state.js';
 import { loginsView, keyCard, createInvite } from './login.js';
@@ -214,20 +214,20 @@ function backupPart() {
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   const action = (text, onclick, iconName) => button(text, { variant: 'surface', size: 's', icon: iconName, onclick });
   const rows = [
-    { lead: h('span', { class: 'row-icon', 'aria-hidden': 'true' }, icon('download')), title: 'Stáhnout zálohu', meta: `Teď ${counts} v jednom souboru, bez obrázků${live ? ' a přihlášení' : ''}.`, trail: action('Stáhnout', backup) },
-    admin ? { lead: h('span', { class: 'row-icon', 'aria-hidden': 'true' }, icon('upload')), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [action('Nahrát', () => file.click()), file] } : null,
-    { lead: h('span', { class: 'row-icon', 'aria-hidden': 'true' }, icon('calendar')), title: 'Celý kalendář do telefonu', meta: 'Všechna setkání v jednom souboru .ics. Svoje služby si každý stáhne v Mém účtu.', trail: action('Stáhnout', calendar) },
+    { lead: rowIcon('download'), title: 'Stáhnout zálohu', meta: `Teď ${counts} v jednom souboru, bez obrázků${live ? ' a přihlášení' : ''}.`, trail: action('Stáhnout', backup) },
+    admin ? { lead: rowIcon('upload'), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [action('Nahrát', () => file.click()), file] } : null,
+    { lead: rowIcon('calendar'), title: 'Celý kalendář do telefonu', meta: 'Všechna setkání v jednom souboru .ics. Svoje služby si každý stáhne v Mém účtu.', trail: action('Stáhnout', calendar) },
   ].filter(Boolean);
   const demoRows = [
     {
-      lead: h('span', { class: 'row-icon', 'aria-hidden': 'true' }, icon('refresh')), title: 'Začít ukázku znovu', meta: 'Vrátí ukázku do původního stavu, tvoje změny zmizí.',
+      lead: rowIcon('refresh'), title: 'Začít ukázku znovu', meta: 'Vrátí ukázku do původního stavu, tvoje změny zmizí.',
       trail: action('Začít znovu', () => confirmDialog('Začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
         replaceAll(createDemo(today()), 'nová ukázka');
         toast('Ukázka je zpátky.');
       }, { buttonLabel: 'Začít znovu' })),
     },
     {
-      lead: h('span', { class: 'row-icon', 'aria-hidden': 'true' }, icon('trash')), title: 'Začít načisto', meta: 'Ukázka zmizí a Zvonec bude prázdný.',
+      lead: rowIcon('trash'), title: 'Začít načisto', meta: 'Ukázka zmizí a Zvonec bude prázdný.',
       trail: action('Vyprázdnit', () => confirmDialog('Začít s prázdným Zvoncem?', 'Ukázka zmizí.', () => {
         replaceAll(emptyData(), 'prázdný Zvonec');
         toast('Je to prázdné.', 'Začni třeba v Lidech nebo v Týmech.');

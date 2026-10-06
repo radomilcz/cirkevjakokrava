@@ -3,12 +3,12 @@
 // and the look agents can see and screenshot what they build from. Not a page for the church.
 
 import {
-  h, page, section, card, panel, button, iconButton, badge, statusBadge, countBadge, severityBadge, callout,
-  tabs, viewSwitch, segment, chips, chipLinks, list, row, listGroup, table, avatar, groupMark, avatarStack,
-  personLine, kindMark, emptyState, toast, formDialog, textField, textArea, selectField, choices, checkboxField,
+  h, page, card, panel, button, iconButton, badge, statusBadge, countBadge, severityBadge, callout,
+  tabs, viewSwitch, chips, chipLinks, list, row, listGroup, table, avatar, groupMark, avatarStack, personLine,
+  kindMark, emptyState, toast, formDialog, textField, textArea, selectField, choices, checkboxField,
   switchField, segmentedField, chipsField, dateField, timeRange, numberField, searchField, personPicker,
   menuButton, progressBar, fillRing, dateNav, toolbar, spacer, facts, label, dateBlock, statusCell,
-  formSection, disclosure, field, icon, statusIcon, ICON_NAMES, HUES, filterButtons, eventCover, metaJoin,
+  formSection, disclosure, field, icon, statusIcon, severityMark, severityWord, severityCounts, rowIcon, ICON_NAMES, HUES, filterButtons, eventCover, metaJoin,
 } from './dom.js';
 import { S } from './state.js';
 
@@ -44,7 +44,8 @@ function buttonsBlock() {
     line('surface', button('Tisk', { variant: 'surface', size: 's', icon: 'print' }), button('Upravit', { variant: 'surface', icon: 'pencil' }), button('Stáhnout', { variant: 'surface', size: 'l', icon: 'download' })),
     line('ghost', button('Přidat', { variant: 'ghost', size: 's', icon: 'plus' }), button('Zrušit', { variant: 'ghost' }), h('span', { class: 'kit-row' }, iconButton('more', 'Další možnosti'), iconButton('chevron-left', 'Předchozí'), iconButton('x', 'Zavřít', { size: 's' }))),
     line('danger', button('Odebrat', { variant: 'danger', size: 's' }), button('Smazat setkání', { variant: 'danger-solid' }), button('Smazat', { variant: 'danger', size: 'l', icon: 'trash' })),
-    line('disabled', button('Uložit', { variant: 'solid', size: 's', disabled: true }), button('Upravit', { variant: 'surface', disabled: true }), button('Přidat', { variant: 'ghost', disabled: true })));
+    line('disabled', button('Uložit', { variant: 'solid', size: 's', disabled: true }), button('Upravit', { variant: 'surface', disabled: true }), button('Přidat', { variant: 'ghost', disabled: true })),
+    h('span', { class: 'kit-key' }, 'add'), h('span', { class: 'kit-wide' }, button('Přidat bod', { variant: 'add' })));
 }
 
 function statusBlock() {
@@ -54,6 +55,9 @@ function statusBlock() {
     rowWrap(badge('Hotovo', { tone: 'success', symbol: 'confirmed', solid: true }), badge('2 čekají', { tone: 'warning', symbol: 'proposed', solid: true }), badge('Chybí 1', { tone: 'danger', symbol: 'declined', solid: true }),
       countBadge(5), countBadge(2, { tone: 'warn' }), countBadge(12, { tone: 'accent' })),
     rowWrap(severityBadge('error'), severityBadge('warning'), severityBadge('info'), severityBadge('error', { variant: 'plain' }), severityBadge('warning', { variant: 'plain' })),
+    rowWrap(severityMark('error'), severityMark('warning'), severityMark('info'), severityMark('error', { variant: 'inline' }), severityMark('warning', { variant: 'inline' }),
+      severityWord('error'), severityWord('warning'), severityCounts([{ severity: 'error' }, { severity: 'warning' }, { severity: 'warning' }]),
+      h('span', { class: 'status' }, statusIcon('progress'), 'probíhá'), rowIcon('download'), rowIcon(4, { tone: 'warn' })),
     callout(['Na neděli 18. 10. chybí zvukař. ', h('a', { href: '#kit', class: 'link' }, 'Najít náhradu')], { tone: 'warning' }),
     callout('Toto setkání uvidí i lidé bez přihlášení.', { tone: 'info', icon: 'globe' }));
 }
@@ -145,6 +149,7 @@ function marksBlock() {
 
 function surfacesBlock() {
   return h('div', { class: 'kit-cards' },
+    card({ title: 'Lidé', count: 4, body: h('p', { class: 'note' }, 'Karta s počtem u nadpisu: card({ title, count }).') }),
     card({ title: 'Kdy a kde', actions: button('Upravit', { variant: 'ghost', size: 's', icon: 'pencil' }), body: facts([['Začátek', '10.00'], ['Konec', '11.30'], ['Místo', ['Sál · ', h('a', { href: '#kit' }, 'Otevřít v mapě')]], ['Šablona', 'Nedělní setkání']]) }),
     card({ title: 'Obsazení', body: stack(progressBar(12, 14), progressBar(14, 14), rowWrap(fillRing(12, 14), fillRing(14, 14), fillRing(0, 3), fillRing(2, 5, { text: false }))), footer: button('Celý rozpis', { variant: 'ghost', size: 's', iconEnd: 'chevron-right' }) }),
     card({ href: '#kit', label: 'Ukázková karta jako odkaz', body: stack(h('span', { class: 'label' }, 'Ne 11. 10. · 10.00'), h('span', {}, 'Karta jako odkaz – najetí myší ji zvedne'), rowWrap(badge('Veřejné', { tone: 'info', icon: 'globe' }))) }),

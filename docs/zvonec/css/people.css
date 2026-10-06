@@ -123,7 +123,7 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .birthday-tile-meta .icon{width:14px;height:14px;margin-top:-2px}
 .month-card{padding:var(--space-3) var(--space-3) var(--space-2)}
 .bday-month-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:2px 6px var(--space-2)}
-.bday-month-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;letter-spacing:var(--tracking-mark);font-size:var(--font-size-5);line-height:22px;padding-top:2px}
+.bday-month-title{margin:0;font-family:var(--title-font);font-weight:900;text-transform:var(--title-transform);letter-spacing:var(--title-tracking);font-size:var(--font-size-5);line-height:22px;padding-top:2px}
 .birthday-rows{list-style:none;margin:0;padding:0}
 .birthday-row{display:grid;grid-template-columns:34px 24px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:40px;padding:4px 6px;border-radius:var(--radius-3)}
 .birthday-row+.birthday-row{box-shadow:0 -1px 0 var(--line-1)}
@@ -252,11 +252,6 @@ a.household-link:hover{text-decoration:underline;text-underline-offset:.2em;text
 /* Upozornění */
 .warnings-card .card-title{display:inline-flex;align-items:center;gap:8px}
 .warnings-card .card-title .count{font-family:var(--font-body);font-weight:400;letter-spacing:0}
-.sev-lead{display:grid;place-items:center;width:24px;height:24px}
-.sev-lead .severity-icon{width:16px;height:16px}
-.sev-lead.sev-error{color:var(--declined-fg)}
-.sev-lead.sev-warning{color:var(--waiting-fg)}
-.sev-lead.sev-info{color:var(--info-fg)}
 .warning-rows .item-title{font-size:var(--font-size-3);line-height:20px}
 
 /* Břemeno */
@@ -289,10 +284,3 @@ a.household-link:hover{text-decoration:underline;text-underline-offset:.2em;text
 .skill-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2) var(--space-4);padding:var(--space-2) 0;border-top:1px solid var(--line-1)}
 .skill-row:last-child{border-bottom:1px solid var(--line-1)}
 .skill-role{min-width:0;overflow-wrap:anywhere;font-size:var(--font-size-4)}
-
-/* ============================================================
-   Hosted for another module: the skill chips of a team member (ui/groups.js renders .skill.skill-<level>).
-   Move to css/groups.css when the groups module takes it over.
-   ============================================================ */
-.skill{display:inline-flex;align-items:center;height:24px;padding:var(--optical) .7em 0;border-radius:var(--radius-full);font-size:var(--font-size-2);line-height:1;white-space:nowrap;background:var(--confirmed-bg);color:var(--confirmed-fg)}
-.skill-learning.skill{background:var(--hover);color:var(--text-2)}

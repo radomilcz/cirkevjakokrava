@@ -22,7 +22,7 @@
 /* ---------- tokens shared by both themes (scale references resolve per theme) ---------- */
 :root[data-look="milnik"], [data-look="milnik"] [data-theme] {
   --milnik-display: var(--font-mark);    /* Agrandir Narrow Black in sentence case: the footprint of ABC Normal Bold */
-  --title-font: var(--milnik-display); --title-transform: none;
+  --title-font: var(--milnik-display); --title-transform: none; --title-tracking: .005em;
   --title-size: 36px; --title-line: 40px;
   --section-size: 17px; --dialog-title-size: 21px;
 
@@ -255,17 +255,15 @@
 /* section titles and date navigation: display cut, sentence case */
 [data-look="milnik"] :is(.section-head>h2,.kit-h2,.datenav-label){font-family:var(--milnik-display);font-weight:900;text-transform:none;letter-spacing:-.005em}
 [data-look="milnik"] .section-head{margin-bottom:14px;padding-inline:4px}
-/* module display titles written uppercase in their own CSS – sentence case here (request: use var(--title-transform)) */
-[data-look="milnik"] :is(.month-daylist-title,.day-pop-title,.template-card-title,.template-section-title,.place-card-title,.bday-month-title,.web-preview-title){text-transform:none;letter-spacing:.005em}
 [data-look="milnik"] .datenav-label{min-width:8.5em;font-size:18px}
 
 /* ============================================================
    BUTTONS – rounded-full; default = ink, outline, ghost, destructive; h 40 / sm 32 / icon 36
    ============================================================ */
 [data-look="milnik"] .btn{--px:20px;transition:background-color .15s,color .15s,box-shadow .15s,opacity .15s}
-[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid){
+[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):not(.btn-add){
   background:var(--surface-panel);box-shadow:inset 0 0 0 1px var(--line-control)}
-[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):hover{
+[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):not(.btn-add):hover{
   background:var(--surface-hover);box-shadow:inset 0 0 0 1px var(--line-hover)}
 [data-look="milnik"] :is(.btn-solid,.btn.primary){background:var(--primary-bg);color:var(--primary-fg)}
 [data-look="milnik"] :is(.btn-solid,.btn.primary):hover{background:var(--primary-bg-hover)}
@@ -288,18 +286,18 @@
 [data-look="milnik"] :is(.btn-ghost,.btn.plain):is(:disabled,[aria-disabled="true"]){background:none;color:var(--text-2)}
 [data-look="milnik"] .btn-danger:is(:disabled,[aria-disabled="true"]){background:var(--declined-bg);color:var(--declined-fg)}
 [data-look="milnik"] .btn-danger-solid:is(:disabled,[aria-disabled="true"]){background:var(--declined-solid);color:var(--text-on-danger)}
-[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):is(:disabled,[aria-disabled="true"]){background:var(--surface-panel);color:var(--text-1);box-shadow:inset 0 0 0 1px var(--line-control)}
+[data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):not(.btn-add):is(:disabled,[aria-disabled="true"]){background:var(--surface-panel);color:var(--text-1);box-shadow:inset 0 0 0 1px var(--line-control)}
 [data-look="milnik"] .btn-x{color:var(--text-2)}
 /* links: the accent, underline on hover (ArrowLink) */
 [data-look="milnik"] :is(a.link,.link,.text-btn){color:var(--text-accent);text-decoration:none}
 [data-look="milnik"] :is(a.link,.link,.text-btn):hover{text-decoration:underline;text-decoration-thickness:1px}
-/* the dashed add button (dashAdd) – kit hook requested: .btn-add / .dash-add */
-[data-look="milnik"] :is(.btn-add,.dash-add){
+/* the dashed add button (dashAdd): kit button variant 'add' */
+[data-look="milnik"] .btn-add{
   display:flex;width:100%;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:var(--optical) 16px 0;border:0;border-radius:var(--radius-3);
   background:none;box-shadow:none;outline:1.5px dashed var(--line-control);outline-offset:-1.5px;color:var(--text-2);font:inherit;font-size:var(--font-size-2);cursor:pointer;
   transition:color .15s,background-color .15s,outline-color .15s;
 }
-[data-look="milnik"] :is(.btn-add,.dash-add):hover{outline-color:var(--milnik-accent);color:var(--milnik-accent);background:color-mix(in srgb,var(--milnik-accent) 5%,transparent)}
+[data-look="milnik"] .btn-add:hover{outline-color:var(--milnik-accent);color:var(--milnik-accent);background:color-mix(in srgb,var(--milnik-accent) 5%,transparent)}
 
 /* ============================================================
    BADGES / PILLS – tones at /15, counts, status symbols
@@ -330,8 +328,8 @@
 /* ============================================================
    SURFACES – card: rounded-2xl + border + shadow-sm; hover: stronger border + shadow-lg
    ============================================================ */
-[data-look="milnik"] :is(.card,.items,.notice,.place-map){transition:box-shadow .2s}
-[data-look="milnik"] :is(.card,.items,.notice):hover{box-shadow:var(--shadow-card-hover)}
+[data-look="milnik"] :is(.card,.items,.place-map){transition:box-shadow .2s}
+[data-look="milnik"] :is(.card,.items):hover{box-shadow:var(--shadow-card-hover)}
 [data-look="milnik"] .card .card,[data-look="milnik"] .card .card:hover,[data-look="milnik"] .card .items,[data-look="milnik"] .card .items:hover{box-shadow:none}
 [data-look="milnik"] a.card-link:hover{box-shadow:var(--shadow-card-hover)}
 [data-look="milnik"] .card.pad,[data-look="milnik"] .panel.pad{padding:20px 22px}
@@ -411,7 +409,7 @@
    FIELDS – h 40, rounded-xl, border input; focus = ink border
    ============================================================ */
 [data-look="milnik"] :is(input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea,.select-btn,.date-btn,.combo-field,.stepper){border-radius:var(--radius-field)}
-[data-look="milnik"] :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=range]),select,textarea):focus,
+[data-look="milnik"] :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=range]):not(.combo-input):not(.stepper input),select,textarea):focus,
 [data-look="milnik"] :is(.select-btn:focus-visible,.select-btn[aria-expanded="true"],.date-btn:focus-visible,.date-btn[aria-expanded="true"],.combo-field:focus-within,.stepper:focus-within){box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}
 [data-look="milnik"] .stepper input[type="number"]:focus,[data-look="milnik"] .combo-input.combo-input:focus{box-shadow:none}
 [data-look="milnik"] .stepper input[type="number"]{height:34px}

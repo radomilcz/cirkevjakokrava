@@ -267,6 +267,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn-danger:hover{background:var(--danger-bg);box-shadow:inset 0 0 0 1px var(--declined-fg)}
 .btn-danger-solid{background:var(--declined-solid);color:var(--text-on-danger);box-shadow:none}
 .btn-danger-solid:hover{background:var(--danger-solid-hover);box-shadow:none}
+/* the last row of a list that adds to it (variant 'add'): full width, soft, the plus in the accent */
+.btn-add{--h:var(--control-3);display:flex;width:100%;justify-content:flex-start;gap:10px;background:var(--hover);box-shadow:none;color:var(--text-2);border-radius:var(--radius-3)}
+.btn-add .icon{color:var(--text-accent)}
+.btn-add:hover{background:var(--pressed);box-shadow:none;color:var(--text-1)}
 /* sizes: s 28 · m 36 · l 44 */
 .btn-s,.btn.mini{--h:var(--control-1);--fs:var(--font-size-2);--px:10px;--r:var(--radius-control-1);gap:6px}
 .btn-s .icon,.btn.mini .icon{width:14px;height:14px}
@@ -317,10 +321,35 @@ a.link,.link{color:var(--text-accent);text-decoration-thickness:1px;text-underli
 .status.status-confirmed .status-icon{color:var(--confirmed-solid)}
 .status.status-proposed .status-icon{color:var(--waiting-fg)}
 .status.status-declined,.status.status-declined .status-icon{color:var(--declined-fg)}
+.status-icon.status-progress{color:var(--text-accent)}
 .status.severity-error .severity-icon{color:var(--declined-fg)}
 .status.severity-warning .severity-icon{color:var(--waiting-fg)}
 .status.severity-info .severity-icon{color:var(--info-fg)}
 .status-icon,.severity-icon{display:inline-block;width:1em;height:1em;flex:none;overflow:visible}
+/* rowIcon: an icon or a number as the lead of a row */
+.row-icon{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:var(--radius-mark);background:var(--hover);color:var(--text-2)}
+.row-icon .icon{width:16px;height:16px}
+.row-icon-n{font-family:var(--font-mark);font-weight:900;font-size:15px;line-height:1;padding-top:var(--optical-n);color:var(--text-1);font-variant-numeric:tabular-nums}
+.row-icon.tone-warn{background:var(--waiting-bg)}
+.row-icon.tone-warn .row-icon-n{color:var(--warning-text)}
+/* severityMark (a row lead: symbol in a soft square; inline: the bare symbol), severityWord, severityCounts */
+.sev-mark{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:var(--radius-mark);background:var(--hover);color:var(--text-2)}
+.sev-mark .severity-icon{width:18px;height:18px}
+.sev-mark.sev-error{background:var(--declined-bg);color:var(--declined-solid)}
+.sev-mark.sev-warning{background:var(--waiting-bg);color:var(--waiting-fg)}
+.sev-mark.sev-info{background:var(--info-bg);color:var(--info-fg)}
+.sev-word.sev-error{color:var(--declined-fg)}
+.sev-word.sev-warning{color:var(--warning-text)}
+.sev-word.sev-info{color:var(--info-text)}
+.sev-counts{display:inline-flex;align-items:center;gap:10px;margin-right:4px}
+.sev-count{display:inline-flex;align-items:center;gap:4px;font-size:var(--font-size-3);line-height:1;padding-top:var(--optical);color:var(--text-1);font-variant-numeric:tabular-nums}
+.sev-count .severity-icon{width:15px;height:15px;margin-top:calc(-1*var(--optical))}
+.sev-count.sev-error .severity-icon{color:var(--declined-solid)}
+.sev-count.sev-warning .severity-icon{color:var(--waiting-fg)}
+.sev-count.sev-info .severity-icon{color:var(--info-fg)}
+.sev-mark.sev-inline{display:inline-grid;width:20px;height:20px;background:none}
+.sev-mark.sev-inline .severity-icon{width:16px;height:16px}
+.sev-mark.sev-inline.sev-warning{color:var(--waiting-fg)}
 /* count pill */
 .count{
   display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:20px;height:20px;padding:var(--optical) 6px 0;
@@ -389,6 +418,13 @@ a.link,.link{color:var(--text-accent);text-decoration-thickness:1px;text-underli
 .card.pad,.panel.pad{padding:16px 18px}
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px 10px;min-height:44px}
 .card-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-1);line-height:16px;letter-spacing:var(--tracking-label);color:var(--text-1);padding-top:2px}
+/* a count after the card title (card({ count })) */
+.card-title:has(.card-count){display:flex;align-items:center;gap:8px}
+.card-count{
+  display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:var(--optical) 6px 0;border-radius:var(--radius-full);
+  background:var(--count-bg);color:var(--text-1);font-family:var(--font-body);font-weight:400;font-size:var(--font-size-1);letter-spacing:0;line-height:1;font-variant-numeric:tabular-nums;
+}
+.card-count-warn{background:var(--waiting-bg);color:var(--warning-text)}
 .card-actions{display:flex;align-items:center;gap:6px;margin:-4px -8px -4px 0}
 .card-body{padding:4px 18px 16px}
 .card-head+.card-body{padding-top:0}
@@ -745,8 +781,6 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 .number-field{display:inline-flex;align-items:center;gap:10px}
 .number-unit{font-size:var(--font-size-3);color:var(--text-2)}
 input.count-input{width:5.2em;text-align:center}
-.minute-range{display:flex;align-items:center;gap:8px}
-.minute-range input.count-input{width:6em}
 /* stepper (ui/stepper.js): − 2 + in one field */
 .stepper{display:inline-flex;align-items:center;gap:0;max-width:100%;height:var(--control-2);padding:0 3px;border-radius:var(--radius-control-2);background:var(--field-bg);box-shadow:inset 0 0 0 1px var(--line-control)}
 .stepper:focus-within{box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}
@@ -802,6 +836,7 @@ input.count-input{width:5.2em;text-align:center}
 .combo-chevron{width:16px;height:16px;color:var(--text-2);margin:0 6px 0 2px;pointer-events:none}
 .combo-clear+.combo-chevron{display:none}
 .combo-list{position:absolute;left:0;right:0;top:calc(100% + 6px);max-height:300px}
+.combo-list.up{top:auto;bottom:calc(100% + 6px)}   /* fitComboList: no room below (the dialog's buttons) */
 .combo-option{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border-radius:var(--radius-3);cursor:pointer}
 .combo-option.active{background:var(--hover)}
 .combo-option[aria-selected="true"]{color:var(--selected-fg)}
@@ -850,14 +885,34 @@ input.count-input{width:5.2em;text-align:center}
 /* the enhanced controls are spans inside .field – they must not look like the field's label */
 .field>span.select,.field>span.date,.field>span.stepper{font-size:inherit}
 
+/* several people as chips + a combobox (kit peopleField) */
+.people-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.people-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.people-chip{
+  display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 2px 0 4px;border-radius:var(--radius-chip);
+  background:var(--selected-bg);color:var(--selected-fg);box-shadow:inset 0 0 0 1px var(--selected-line);font-size:var(--font-size-3);
+}
+.people-chip-name{padding-top:var(--optical);white-space:nowrap}
+.people-chip-x{width:26px;height:26px;border-radius:50%;color:inherit}
+.people-chip-x .icon{width:14px;height:14px}
+
+/* places as chips grouped by building (kit placeChipsField) */
+.place-chips{display:flex;flex-direction:column;gap:10px}
+.place-chips-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.place-chips-building{display:inline-flex;align-items:center;gap:6px;min-width:7.5em;font-size:var(--font-size-3);color:var(--text-2)}
+.place-chips-building .icon{width:16px;height:16px;margin-top:calc(-1*var(--optical))}
+
 /* ============================================================
    KIT – menus (⋯)
    ============================================================ */
 .menu-wrap{position:relative;display:inline-flex;flex:none}
 .menu-btn{color:var(--text-2)}
 .menu-btn:hover,.menu-btn[aria-expanded="true"]{color:var(--text-1);background:var(--hover)}
+/* a popover at an element (kit anchoredPopover: the people picker in place, the day, ⋯ menus) */
+.anchored-pop{position:fixed;z-index:90;max-width:calc(100vw - 16px);overflow:auto;overscroll-behavior:contain}
+.anchored-pop:focus{outline:none}
 .menu-list{
-  position:fixed;z-index:85;min-width:12em;padding:6px;display:flex;flex-direction:column;gap:1px;
+  position:fixed;z-index:90;min-width:12em;padding:6px;display:flex;flex-direction:column;gap:1px;
   background:var(--surface-overlay);color:var(--text-1);border-radius:var(--radius-5);box-shadow:var(--shadow-popover);
 }
 .menu-list button{
@@ -880,7 +935,6 @@ input.count-input{width:5.2em;text-align:center}
 .eyebrow{font-size:var(--font-size-3);line-height:20px;color:var(--text-2);margin:0}
 .sep{color:var(--text-3)}
 .rule{height:1px;background:var(--line-1);border:0;margin:24px 0}
-.spaced{margin-top:24px}
 .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0 0}
 .actions.right{justify-content:flex-end}
 /* meta(): inline facts under a title */
@@ -897,10 +951,6 @@ button.tag{
 button.tag .icon{width:13px;height:13px;margin-top:calc(-1*var(--optical))}
 button.tag:hover{background:var(--surface-hover)}
 /* a quiet box: something to finish, my answer, demo „looking as“ */
-.notice{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding:12px 16px;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}
-.notice p{margin:0;max-width:60ch}
-.demo-bar{margin:0}
-.quick-add-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(24px,4vw,40px)}
 @media (min-width:980px){.grid{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}}
 .narrow{max-width:var(--w-form)}
@@ -934,9 +984,14 @@ a.assignee-name:hover{text-decoration:underline;text-underline-offset:.2em;text-
 .drag-handle{
   width:28px;height:36px;padding:0;border:0;border-radius:var(--radius-control-1);cursor:grab;touch-action:none;color:var(--text-3);background:none;
   background-image:radial-gradient(circle,currentColor 1.3px,transparent 1.7px);background-size:7px 7px;background-position:center;background-repeat:repeat;
-  background-origin:content-box;padding:9px 7px;
+  background-origin:content-box;background-clip:content-box;padding:9px 7px;
 }
-.drag-handle:hover,.drag-handle:focus-visible{color:var(--text-1);background-color:var(--hover)}
+/* the dots stay in the content box (no 4×4 over the padding); the hover tint fills the whole button */
+.drag-handle:hover,.drag-handle:focus-visible{
+  color:var(--text-1);
+  background-image:radial-gradient(circle,currentColor 1.3px,transparent 1.7px),linear-gradient(var(--hover),var(--hover));
+  background-size:7px 7px,auto;background-origin:content-box,border-box;background-clip:content-box,border-box;background-repeat:repeat,no-repeat;
+}
 .sortable.sorting,.sortable.sorting *{cursor:grabbing;user-select:none}
 .sortable>li.dragging{position:relative;z-index:2;background:var(--surface-overlay);border-radius:var(--radius-3);box-shadow:var(--shadow-popover);border-top-color:transparent}
 /* eventCover(): the photo, or a generated cover (imprint on a field) */
@@ -971,32 +1026,6 @@ a.assignee-name:hover{text-decoration:underline;text-underline-offset:.2em;text-
 .place-map iframe{display:block;width:100%;height:100%;border:0}
 
 /* ============================================================
-   COMPAT – remove when modules are migrated.
-   The module CSS files (css/events.css, people.css, roster.css, formats.css, settings.css, public.css)
-   still use the old variables. They map onto semantic tokens here so the old screens keep working in
-   both themes and both looks. New CSS must not use these.
-   ============================================================ */
-:where(:root, [data-theme]){
-  --ink:var(--text-1);--ground:var(--surface-app);--muted:var(--text-2);--line:var(--line-1);--outline:var(--line-control);
-  --fill:var(--hover);--tint:var(--surface-sunken);--print:var(--surface-sunken);
-  --narrow:var(--font-mark);--body:var(--font-body);--display:var(--font-brand);--grand:var(--font-body);
-  --t1:var(--font-size-8);--t1-long:var(--font-size-7);--t2:var(--font-size-6);--t3:var(--font-size-4);--t4:var(--font-size-3);
-  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;
-  --pill-l:var(--control-3);--pill-m:var(--control-2);--pill-s:var(--control-1);--radius:var(--radius-card);--gutter:var(--page-pad-x);
-}
-:where(:root, [data-theme="light"]){--ink-rgb:59,47,47;--ground-rgb:249,231,221}
-:where([data-theme="dark"]){--ink-rgb:250,235,230;--ground-rgb:59,47,47}
-@media (prefers-color-scheme:dark){:where(:root:not([data-theme])){--ink-rgb:250,235,230;--ground-rgb:59,47,47}}
-/* compat: old screens' bits that lived in the base layer */
-.error-fill{background:var(--declined-bg);color:var(--declined-fg)}
-.page.legacy .page-body>.section+.section{margin-top:40px}
-.page.legacy .page-body>.items+.section,.page.legacy .page-body>.filter+*{margin-top:16px}
-.page.legacy .filter{margin:0}
-.settings-nav{margin:0 0 4px}
-.check-row .box{display:none}   /* older markup: the native checkbox is styled now */
-@media (max-width:520px){.setting-text{flex-basis:auto}}   /* css/settings.css: a 14em flex-basis turned into height in a column */
-
-/* ============================================================
    PRINT – the roster and the osnova for the notice board: white paper, clay ink, no chrome
    ============================================================ */
 @media print{
@@ -1005,11 +1034,11 @@ a.assignee-name:hover{text-decoration:underline;text-underline-offset:.2em;text-
     --text-1:#2a1f1f;--text-2:#5a4848;--text-3:#7a6868;--line-1:rgb(0 0 0 / .14);--line-2:rgb(0 0 0 / .2);--line-control:rgb(0 0 0 / .3);
     --hover:rgb(0 0 0 / .05);--primary-bg:#3b2f2f;--primary-fg:#fff;--selected-bg:rgb(0 0 0 / .06);--selected-fg:#2a1f1f;--indicator:#3b2f2f;
     --confirmed-solid:#2a6a3f;--confirmed-fg:#2a6a3f;--waiting-fg:#7e520a;--waiting-solid:#c9934b;--declined-fg:#9e2c25;--declined-solid:#9e2c25;
-    --shadow-card:0 0 0 1px rgb(0 0 0 / .15);--shadow-stage:none;--ink-rgb:59,47,47;--ground-rgb:255,255,255;color-scheme:light;
+    --shadow-card:0 0 0 1px rgb(0 0 0 / .15);--shadow-stage:none;color-scheme:light;
   }
   @page{size:A4 landscape;margin:11mm}
   html,body{background:#fff;color:var(--text-1);-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:9.5pt}
-  .appbar,.sidebar,.scrim,.actions,.page-actions,.page-head-actions,.page-header-actions,.section-actions,.page-tabs,.page-toolbar,.menu-btn,.filter,.toasts,.back,.page-back,.no-print,.dialog,.bulk-bar{display:none !important}
+  .appbar,.sidebar,.scrim,.actions,.page-actions,.section-actions,.page-tabs,.page-toolbar,.menu-btn,.filter,.toasts,.back,.page-back,.no-print,.dialog,.bulk-bar{display:none !important}
   .app-body{display:block}
   .stage{margin:0;box-shadow:none;border-radius:0;min-height:0}
   .page{max-width:none;padding:0}
@@ -1050,6 +1079,7 @@ a.assignee-name:hover{text-decoration:underline;text-underline-offset:.2em;text-
 .kit-stack>:is(.callout,.toast,.empty-state,.progress,.toolbar,.page-tabs,.chips,.kit-nav){align-self:stretch}
 .kit-buttons{display:grid;grid-template-columns:72px repeat(3,auto) 1fr;gap:12px 14px;align-items:center;justify-items:start}
 .kit-buttons::after{content:""}
+.kit-wide{grid-column:2 / -1;justify-self:stretch;width:100%}
 .kit-key{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--text-2)}
 .kit-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;align-items:start}
 .kit-icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:4px}

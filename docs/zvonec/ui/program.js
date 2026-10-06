@@ -84,8 +84,7 @@ export function programTab(event, { leader }) {
     leader && previous && (previous.program || []).length ? button('Převzít minulou osnovu', { variant: 'surface', size: 's', icon: 'copy', onclick: takePrevious }) : null,
     times.length ? button('Vytisknout', { variant: 'surface', size: 's', icon: 'print', onclick: () => window.print(), title: 'Na A4 na výšku' }) : null,
     times.length ? switchField('programShowHow', 'Ukázat i „Jak to probíhá“', showHow, { full: false, onchange: (e) => { S.filters.programShowHow = e.target.checked; render(); } }) : null,
-    h('span', { class: 'toolbar-spacer' }),
-    leader ? button('Přidat bod', { variant: 'soft', size: 's', icon: 'plus', onclick: () => addItemDialog(id) }) : null);
+  );
 
   return h('div', { class: 'program-tab osnova-sheet' },
     printHeader(`osnova · ${prettyDay(event.start)}`),
@@ -94,6 +93,7 @@ export function programTab(event, { leader }) {
     items || (leader
       ? emptyState({ icon: 'list', title: 'Osnova je prázdná.', text: 'Slož ji z formátů, časy se dopočítají samy.', action: button('Přidat bod', { variant: 'solid', icon: 'plus', onclick: () => addItemDialog(id) }) })
       : emptyState({ icon: 'list', text: 'Osnova ještě není.' })),
+    leader && items ? button('Přidat bod', { variant: 'add', onclick: () => addItemDialog(id), cls: 'no-print' }) : null,
   );
 }
 
@@ -205,11 +205,5 @@ function itemDialog(eventId, itemId, draft) {
       });
     },
   });
-}
-
-/** Older route #setkani/<id>/osnova rendered a print sheet – now the Osnova tab of the event. */
-export function renderProgram(id) {
-  location.replace(`#setkani/${id}/osnova`);
-  return [];
 }
 

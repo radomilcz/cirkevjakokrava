@@ -148,8 +148,9 @@ function cutOut(shape, cut) {
 /**
  * The drawn symbol of an assignment status, colour from currentColor (CSS sets it per status).
  * Always put the word next to it (statusBadge does). confirmed = filled circle with a tick cut out,
- * proposed = dashed ring with clock hands, declined = ring with a cross.
- * @param {'confirmed'|'proposed'|'declined'|'waiting'} status ('waiting' = 'proposed')
+ * proposed = dashed ring with clock hands, declined = ring with a cross, progress = ring half filled
+ * (under way; the accent colour).
+ * @param {'confirmed'|'proposed'|'declined'|'waiting'|'progress'} status ('waiting' = 'proposed')
  */
 export function statusIcon(status) {
   const key = status === 'waiting' ? 'proposed' : status;
@@ -158,6 +159,11 @@ export function statusIcon(status) {
     const [defs, circle] = cutOut({ cx: 10, cy: 10, r: 9, fill: 'currentColor' },
       svgEl('path', { d: 'm6 10.2 2.6 2.6L14.2 7.4', fill: 'none', stroke: '#000', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
     el.append(defs, svgEl('circle', circle));
+  } else if (key === 'progress') {
+    // under way (an event happening now, a plan partly filled): a ring with its right half filled
+    el.append(
+      svgEl('circle', { cx: 10, cy: 10, r: 8.2, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.6 }),
+      svgEl('path', { d: 'M10 4.6a5.4 5.4 0 0 1 0 10.8z', fill: 'currentColor' }));
   } else if (key === 'declined') {
     el.append(
       svgEl('circle', { cx: 10, cy: 10, r: 8.2, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.6 }),

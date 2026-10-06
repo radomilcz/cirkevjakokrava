@@ -6,10 +6,10 @@
 
 import {
   h, page, card, list, row, button, iconButton, avatar, personName, dateBlock, kindMark, groupMark,
-  fillRing, statusBadge, badge, callout, toast, plural, eventCover, coverKey, metaJoin, avatarStack, SEP,
+  fillRing, statusBadge, badge, callout, toast, plural, eventCover, coverKey, metaJoin, avatarStack, severityCounts, rowIcon, SEP,
 } from './dom.js';
 import { S, can, myId, change, render, newId, ACCESS_LABELS } from './state.js';
-import { topConflicts, conflictRow, severityCounts, pickPerson } from './conflicts.js';
+import { topConflicts, conflictRow, pickPerson } from './conflicts.js';
 import { availabilityDialog, myBlockouts, blockoutRow, downloadDuties } from './account.js';
 import { loginIssues, inviteRow, orphanRow } from './login.js';
 import { personById, peopleWithMissingData, upcomingBirthdays, statusOf } from '../lib/people.js';
@@ -42,7 +42,7 @@ function block({ key, title, count, all, actions, body, footer, empty, emptyActi
   }
   const tools = [actions, all ? button(all[0] || 'Všechno', { variant: 'ghost', size: 's', href: all[1], iconEnd: 'chevron-right', cls: 'home-all' }) : null];
   return card({
-    title: count != null ? [title, h('span', { class: 'card-count' }, String(count))] : title,
+    title, count,
     actions: tools,
     body, footer, flush,
     cls: `home-block home-${key}`,
@@ -326,10 +326,10 @@ function peopleBlock() {
   const guests = (S.data.people || []).filter((p) => statusOf(p) === 'guest');
   const birthdays = upcomingBirthdays(S.data, { today: day, months: 1 }).flatMap((m) => m.items).filter((b) => b.thisWeek && !b.past);
   const rows = [
-    { lead: h('span', { class: 'row-icon tone-warn', 'aria-hidden': 'true' }, h('span', { class: 'row-icon-n' }, String(missing.length))), title: 'Karty k doplnění', meta: missing.length ? avatarNames(missing.map((x) => x.person)) : 'Všechny karty jsou v pořádku.', href: '#lide/doplnit' },
-    { lead: h('span', { class: 'row-icon', 'aria-hidden': 'true' }, h('span', { class: 'row-icon-n' }, String(guests.length))), title: 'Hosté', meta: guests.length ? avatarNames(guests) : 'Zatím k nám nikdo nový nechodí.', href: '#lide/hoste' },
+    { lead: rowIcon(missing.length, { tone: 'warn' }), title: 'Karty k doplnění', meta: missing.length ? avatarNames(missing.map((x) => x.person)) : 'Všechny karty jsou v pořádku.', href: '#lide/doplnit' },
+    { lead: rowIcon(guests.length), title: 'Hosté', meta: guests.length ? avatarNames(guests) : 'Zatím k nám nikdo nový nechodí.', href: '#lide/hoste' },
     {
-      lead: h('span', { class: 'row-icon', 'aria-hidden': 'true' }, h('span', { class: 'row-icon-n' }, String(birthdays.length))),
+      lead: rowIcon(birthdays.length),
       title: 'Narozeniny tento týden',
       meta: birthdays.length ? birthdays.map((b) => `${personName(b.person)} (${prettyDay(b.date)}${b.age ? `, ${b.age}` : ''})`).join(', ') : 'Tenhle týden nikdo.',
       trail: birthdays.length ? avatarStack(birthdays.map((b) => b.person), { max: 3, size: 'xs' }) : null,

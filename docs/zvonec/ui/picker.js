@@ -5,12 +5,11 @@
 // Every row: avatar, FULL name, one quiet meta line. Keyboard: arrows move, Enter picks, Esc closes.
 //
 // It opens in the dialog, or – with `anchor` on a wide screen – as a popover right at the element
-// that asked (the Rozpis cell: planning in place). Also here: anchoredPopover() and popMenu(), the
-// small popovers the calendar uses (kit candidates, see reports/calendar.md).
+// that asked (the Rozpis cell: planning in place) – kit anchoredPopover().
 
 import {
-  h, nodes, avatar, personName, openDialog, closeDialog, dialogElement, chips, button, searchField, icon,
-  textField, checkboxField, formErrorLine, formError, toast, severityIcon,
+  h, nodes, avatar, personName, openDialog, closeDialog, chips, button, searchField, icon, textField,
+  checkboxField, formErrorLine, formError, toast, severityIcon, anchoredPopover,
 } from './dom.js';
 import { S, can, newId, change, navigate, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
 import { householdById, fullName, displayName, sortPeople, matchesText, statusOf } from '../lib/people.js';
@@ -18,90 +17,6 @@ import { groupById, roleById, memberRecord, addMember, setSkill } from '../lib/g
 import { eventById } from '../lib/events.js';
 import { candidates } from '../lib/scheduling.js';
 import { today, prettyDay } from '../lib/time.js';
-
-// ---------- anchored popover (kit candidate) ----------
-
-let currentPop = null;   // { el, anchor, close }
-
-/** Close the open popover (if any). */
-export function closePopover({ focus = false } = {}) {
-  currentPop?.close({ focus });
-}
-
-/**
- * A popover next to an element (fixed position; below, or above when there is no room). Closes on
- * Esc (focus goes back to the anchor), on a click outside, when the window resizes or the page under
- * it scrolls. One at a time. Returns { el, close, place }.
- *   anchoredPopover(cell, content, { label: 'Kdo na Zvuk?', cls: 'picker-pop' })
- */
-export function anchoredPopover(anchor, content, { label, cls, onClose, role = 'dialog', align = 'start' } = {}) {
-  closePopover();
-  const el = h('div', { class: ['popover', 'anchored-pop', cls], role, 'aria-label': label || null, tabindex: -1 }, content);
-  document.body.append(el);
-  const place = () => {
-    const r = anchor.getBoundingClientRect();
-    const width = el.offsetWidth;
-    const margin = 8;
-    const spaceBelow = window.innerHeight - r.bottom - margin * 2;
-    const spaceAbove = r.top - margin * 2;
-    const below = spaceBelow >= Math.min(el.scrollHeight, 320) || spaceBelow >= spaceAbove;
-    el.style.maxHeight = `${Math.max(180, below ? spaceBelow : spaceAbove)}px`;
-    const height = el.offsetHeight;
-    const left = align === 'end' ? r.right - width : r.left;
-    el.style.left = `${Math.max(margin, Math.min(left, window.innerWidth - width - margin))}px`;
-    el.style.top = `${below ? r.bottom + 6 : Math.max(margin, r.top - 6 - height)}px`;
-  };
-  const anchorTop = anchor.getBoundingClientRect().top;
-  const onDown = (e) => { if (!el.contains(e.target) && !anchor.contains(e.target)) close(); };
-  const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close({ focus: true }); } };
-  const onScroll = (e) => {
-    if (el.contains(e.target)) return;
-    if (Math.abs(anchor.getBoundingClientRect().top - anchorTop) > 40) close(); else place();
-  };
-  const onResize = () => close();
-  function close({ focus = false } = {}) {
-    if (currentPop?.el !== el) return;
-    currentPop = null;
-    document.removeEventListener('pointerdown', onDown, true);
-    document.removeEventListener('keydown', onKey, true);
-    window.removeEventListener('scroll', onScroll, true);
-    window.removeEventListener('resize', onResize);
-    el.remove();
-    anchor.classList.remove('pop-open');
-    if (focus && anchor.isConnected) anchor.focus({ preventScroll: true });
-    onClose?.();
-  }
-  document.addEventListener('pointerdown', onDown, true);
-  document.addEventListener('keydown', onKey, true);
-  window.addEventListener('scroll', onScroll, true);
-  window.addEventListener('resize', onResize);
-  anchor.classList.add('pop-open');
-  place();
-  currentPop = { el, anchor, close };
-  return { el, close, place };
-}
-
-/**
- * A small menu next to an element: popMenu(button, [[label, onclick, { danger, icon }?], …], { label }).
- * Arrow keys move, Esc closes and returns focus.
- */
-export function popMenu(anchor, items, { label = 'Možnosti', align = 'start' } = {}) {
-  const list = h('div', { class: 'pop-menu', role: 'menu', 'aria-label': label },
-    items.filter(Boolean).map(([text, onclick, opts = {}]) => h('button', {
-      type: 'button', role: 'menuitem', class: ['pop-menu-item', opts.danger && 'danger'],
-      onclick: () => { pop.close({ focus: true }); onclick(); },
-    }, opts.icon ? icon(opts.icon) : null, h('span', {}, text))));
-  list.addEventListener('keydown', (e) => {
-    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-    e.preventDefault();
-    const all = [...list.querySelectorAll('[role=menuitem]')];
-    const i = all.indexOf(document.activeElement);
-    all[(i + (e.key === 'ArrowDown' ? 1 : -1) + all.length) % all.length]?.focus();
-  });
-  const pop = anchoredPopover(anchor, list, { cls: 'menu-pop', role: 'presentation', align });
-  list.querySelector('[role=menuitem]')?.focus({ preventScroll: true });
-  return pop;
-}
 
 /** Wide screen with a mouse: popovers; otherwise the dialog (a sheet on a phone). */
 const popoverFits = () => window.matchMedia?.('(min-width: 720px) and (pointer: fine)').matches;
@@ -368,13 +283,4 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     h('div', { class: 'dialog-body' }, h('div', { class: 'pp-tools' }, scopeHolder, searchBox), listHolder),
     footer));
   search.focus();
-}
-
-/** One person or null (closed without a choice). Same options as openPicker, `multiple` is ignored. */
-export function pickOne(options = {}) {
-  return new Promise((resolve) => {
-    let done = false;
-    openPicker({ ...options, anchor: null, multiple: false, onPick: (ids) => { done = true; resolve(ids[0] || null); } });
-    dialogElement().addEventListener('close', () => { setTimeout(() => { if (!done) resolve(null); }); }, { once: true });
-  });
 }

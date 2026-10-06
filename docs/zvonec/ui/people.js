@@ -22,9 +22,6 @@ export const renderPerson = (id) => renderPersonCard(id);
 /** #domacnost/<id> */
 export const renderHousehold = (id) => renderHouseholdPage(id);
 
-/** #domacnosti (old link) – the Domácnosti view of Lidé. */
-export const renderHouseholds = () => renderPeoplePage(['domacnosti']);
-
 /** Phone and e-mail as links (only what the viewer may see). */
 export function contactLinks(person) {
   if (!seesContact(person)) return [];

@@ -322,7 +322,7 @@ visitor sees them.
 A route is `{ render(parts), access, menu? }`. `access`: `'public'` · `'signedOut'` · `'member'` ·
 `'leader'` · `'admin'` or a function of the parts. `menu` = which nav id lights up (defaults to the
 section; `null` = none). `render` returns a kit `page()` (older screens may return a list starting with
-`pageHeader()`; `asPage()` wraps it).
+`page()`; `asPage()` wraps it).
 
 | route | screen | access |
 |---|---|---|

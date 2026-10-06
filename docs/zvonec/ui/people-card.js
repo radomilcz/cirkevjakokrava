@@ -7,17 +7,16 @@
 
 import {
   h, icon, plural, page, card, facts, list, row, avatar, personName, groupMark, badge, button, menuButton, callout,
-  emptyState, dateBlock, statusBadge, severityIcon, progressBar, metaJoin, mapUrl, canMap, download, section, note, btn, plus,
+  emptyState, dateBlock, statusBadge, severityIcon, severityMark, progressBar, metaJoin, mapUrl, canMap, download, section, note, btn, plus,
 } from './dom.js';
-import { S, can, myId, change, isUpcoming, loginList, ACCESS_LABELS, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
-import { createInvite, createLoginDialog, revokeLogin } from './login.js';
+import { S, can, myId, change, isUpcoming, ACCESS_LABELS, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
+import { createInvite, createLoginDialog, revokeLogin, allLogins } from './login.js';
 import { personById, householdById, displayName, fullName, age, statusOf, householdMembers } from '../lib/people.js';
 import { memberRecord, rolesOf, roleById } from '../lib/groups.js';
 import { upcomingDuties, eventById } from '../lib/events.js';
 import { CODES } from '../lib/conflicts.js';
 import { limitsOf, monthCount, servingLoad } from '../lib/scheduling.js';
 import { ics, icsForPerson } from '../lib/ics.js';
-import { createDemoAccess } from '../lib/demo.js';
 import { today, addDays, prettyDay, prettyDayLong, prettyTime, monthOf, dayOf } from '../lib/time.js';
 import {
   seesContact, isKid, isFormer, missingOf, kidText, yearsText, dutiesText, outOf, fullDate, telHref, membershipText,
@@ -228,15 +227,8 @@ function detailsCard(person) {
   });
 }
 
-let demoLogins = null;
-function loginsNow() {
-  if (S.mode === 'live') return loginList();
-  if (!demoLogins || demoLogins.day !== today()) demoLogins = { day: today(), logins: createDemoAccess(today()).logins };
-  return demoLogins.logins;
-}
-
 function loginCard(person) {
-  const logins = loginsNow();
+  const logins = allLogins();
   const existing = logins.find((l) => l.personId === person.id && l.access !== 'invite');
   const invite = logins.find((l) => l.personId === person.id && l.access === 'invite');
   const self = person.id === myId();
@@ -267,12 +259,12 @@ function warningsCard(person) {
   const start = (c) => eventById(S.data, c.eventId)?.start || '';
   const sorted = found.slice().sort((a, b) => ({ error: 0, warning: 1, info: 2 }[a.severity] - { error: 0, warning: 1, info: 2 }[b.severity]) || start(a).localeCompare(start(b)));
   return card({
-    title: ['Upozornění', ' ', h('span', { class: ['count', sorted[0].severity !== 'info' && 'count-warn'] }, String(found.length))],
+    title: 'Upozornění', count: found.length, countTone: sorted[0].severity !== 'info' ? 'warn' : null,
     actions: button('Všechna', { variant: 'ghost', size: 's', href: '#upozorneni', iconEnd: 'chevron-right' }),
     body: list(sorted, (c) => {
       const event = eventById(S.data, c.eventId);
       return row({
-        lead: h('span', { class: ['sev-lead', `sev-${c.severity}`] }, severityIcon(c.severity)),
+        lead: severityMark(c.severity),
         title: c.text,
         meta: event ? `${prettyDay(event.start)} ${prettyTime(event.start)} · ${event.title}` : null,
         href: `#setkani/${c.eventId}`,

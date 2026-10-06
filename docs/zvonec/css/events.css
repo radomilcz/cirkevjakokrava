@@ -50,11 +50,6 @@
 .program-minutes{font-size:var(--font-size-3);color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
 .warn-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
 .warn{display:flex;align-items:flex-start;gap:10px;font-size:var(--font-size-3);line-height:20px}
-.warn-mark{flex:none;display:grid;place-items:center;width:20px;height:20px}
-.warn-mark .severity-icon{width:16px;height:16px}
-.warn-mark.sev-error{color:var(--declined-solid)}
-.warn-mark.sev-warning{color:var(--waiting-fg)}
-.warn-mark.sev-info{color:var(--info-fg)}
 .warn-body{display:flex;flex-direction:column;gap:2px;min-width:0}
 .warn-note{color:var(--text-2)}
 .warn-actions{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:2px}
@@ -165,10 +160,6 @@
 .time-hint{color:var(--waiting-fg)}
 .series-live{display:flex;align-items:center;gap:8px;margin:0;padding:10px 12px;border-radius:var(--radius-4);background:var(--selected-bg);color:var(--selected-fg);font-size:var(--font-size-3);line-height:20px}
 .series-live .icon{width:16px;height:16px;flex:none}
-.place-groups{display:flex;flex-direction:column;gap:10px}
-.place-group{display:flex;flex-direction:column;gap:6px}
-.place-group-label{display:inline-flex;align-items:center;gap:6px;font-size:var(--font-size-3);color:var(--text-2)}
-.place-group-label .icon{width:15px;height:15px;margin-top:calc(-1*var(--optical))}
 .for-whom-line{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0;font-size:var(--font-size-4)}
 .for-whom-line .text-btn{margin-left:4px}
 .for-whom-controls{display:flex;flex-direction:column;gap:14px}

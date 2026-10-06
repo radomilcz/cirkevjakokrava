@@ -9,7 +9,7 @@
 import {
   h, button, icon, openDialog, closeDialog, toast, formError, formErrorLine, textField, textArea, selectField,
   dateField, timeRange, switchField, formSection, disclosure, kindMark, eventCover, plural, field, numberField,
-  segmentedField, textButton, groupMark, andJoin,
+  segmentedField, textButton, groupMark, andJoin, placeChipsField,
 } from './dom.js';
 import { S, change, navigate, newId } from './state.js';
 import {
@@ -34,7 +34,6 @@ const atTime = (dateTime) => {
   return `${[2, 3, 4, 12, 13, 14, 20, 21, 22, 23].includes(hour) ? 've' : 'v'} ${prettyTime(dateTime)}`;
 };
 /** "HH:mm" + minutes → "HH:mm" (wraps over midnight). */
-const timePlus = (time, minutes) => timeOf(addMinutes(`2000-01-01T${time}`, minutes));
 /** 120 → „2 h“, 90 → „1 h 30 min“, 45 → „45 min“ */
 export function durationText(minutes) {
   const m = Math.max(0, Math.round(Number(minutes) || 0));
@@ -120,27 +119,6 @@ function imageField(state, previewEvent) {
     h('div', { class: 'image-tools' }, h('div', { class: 'image-buttons' }, pickButton, removeButton), hint, problem), input), { full: true, group: true, cls: 'image-field' });
   draw();
   return { element, redraw: draw };
-}
-
-/**
- * Places as chips grouped by building: „Monta: Celá budova · Sál · Malá místnost · Kuchyňka“, then
- * places on their own under „Jinde“. Checkboxes named `places`.
- */
-function placeChips(selected = []) {
-  const tree = placeTree(S.data);
-  const chip = (place, text) => h('label', { class: 'chip' },
-    h('input', { type: 'checkbox', name: 'places', value: place.id, checked: selected.includes(place.id) }),
-    icon('check', { cls: 'chip-check' }), h('span', {}, text || place.name));
-  const buildings = tree.filter((n) => n.rooms.length);
-  const single = tree.filter((n) => !n.rooms.length);
-  return field('Místo', h('div', { class: 'place-groups' },
-    buildings.map(({ place, rooms }) => h('div', { class: 'place-group' },
-      h('span', { class: 'place-group-label' }, icon('building'), place.name),
-      h('div', { class: 'chips' }, rooms.map((r) => chip(r)), chip(place, 'Celá budova')))),
-    single.length ? h('div', { class: 'place-group' },
-      buildings.length ? h('span', { class: 'place-group-label' }, icon('map-pin'), 'Jinde') : null,
-      h('div', { class: 'chips' }, single.map(({ place }) => chip(place)))) : null),
-  { full: true, group: true, cls: 'places-field' });
 }
 
 /** Repeat options for a first day: Neopakuje se · Každou neděli · Každou druhou neděli · Každou první neděli v měsíci. */
@@ -235,7 +213,7 @@ function openEventForm({ mode, event, type, day, onBack }) {
       h('div', { class: 'field-stack' }, timeRange('Čas', ['from', timeOf(base.start)], ['to', timeOf(base.end)]), overnightHint),
       repeatSelect, untilField, summary,
     ]),
-    formSection('Kde', [placeChips(base.placeIds || [])], { cols: 1 }),
+    formSection('Kde', [placeChipsField('places', placeTree(S.data), base.placeIds || [])], { cols: 1 }),
     formSection('Pro koho', forWhom, { cols: 1 }),
   ];
   if (editing) {

@@ -7,7 +7,7 @@
 
 import {
   h, icon, plural, toast, formDialog, textField, textArea, dateField, numberField, switchField, segmentedField,
-  selectField, field, callout, button, personPicker, avatarStack, personName, confirmDialog, segment,
+  selectField, field, callout, button, personPicker, avatarStack, personName, confirmDialog, segment, fitComboList,
 } from './dom.js';
 import { S, can, myId, newId, change, navigate, loginList, updateLogins } from './state.js';
 import {
@@ -127,6 +127,7 @@ export function householdPicker({ name = 'householdId', label = 'Domácnost', va
     input.setAttribute('aria-expanded', 'true');
     active = 0;
     draw();
+    fitComboList(listEl, box.firstChild);
   }
   function close() { listEl.hidden = true; input.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant'); }
 

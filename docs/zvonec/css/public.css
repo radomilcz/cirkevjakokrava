@@ -40,7 +40,7 @@
 .pub-item-day{font-size:22px;line-height:.85}
 .pub-item-body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px}
 .pub-item-title{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:var(--font-size-5);line-height:24px;overflow-wrap:anywhere}
-.pub-item-meta,.pub-item-place{font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.pub-item-meta{font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
 .pub-item-cover{flex:none;width:136px}
 .pub-item-cover .cover{border-radius:var(--radius-4)}
 .pub-item-cover .cover-title{font-size:13px}

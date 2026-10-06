@@ -6,7 +6,7 @@
 // edits only its own block (and its own import block „// IMPORTS:<module>“); the shell owns the rest.
 
 import { S, setHooks, can, myId, recompute, isUpcoming, loadRemembered, forgetRemembered, ACCESS_LABELS } from './ui/state.js';
-import { h, nodes, emptyState, page, placeholderPage, isDialogOpen, avatar, personName, icon, countBadge, button } from './ui/dom.js';
+import { h, nodes, emptyState, page, isDialogOpen, avatar, personName, icon, countBadge, button } from './ui/dom.js';
 import './ui/stepper.js';   // − and + buttons on every number field
 import './ui/select.js';    // drop-downs in the Zvonec style
 import './ui/datepicker.js'; // date fields with our own calendar
@@ -14,7 +14,7 @@ import { GithubStore } from './lib/store/github.js';
 import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
 import { restore, ACCESS_FILE } from './lib/access.js';
-import { createDemo } from './lib/demo.js';
+import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
 import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
@@ -48,14 +48,12 @@ import { renderPublicProgram, renderPublicEvent, renderPublicFormats } from './u
 
 // ---------- routes ----------
 // Slugs are Czech (people see and share them). `parts` = the hash split by '/', without the section.
-// A route: { render(parts) → a page (kit page()) or older content, access, menu? }
+// A route: { render(parts) → a page (kit page()), access, menu? }
 // `access`: who may open it –
 //   'public'    everyone, signed in or not (the public part: published events and formats)
 //   'signedOut' only visitors who are not signed in (sign-in, invite); signed-in people go home
 //   'member'    anyone signed in · 'leader' leaders and admins · 'admin' · or a function of the parts
 // `menu`: which nav item lights up (NAV ids below; defaults to the section; may be a function of the parts).
-
-const MONTH = /^\d{4}-\d{2}$/;
 
 // ROUTES:calendar – Kalendář (views mesic · tyden · seznam · rozpis) and the event detail.
 // #kalendar[/<pohled>[/<datum>]] (#kalendar alone opens the viewer's remembered view),
@@ -318,22 +316,12 @@ sheetQuery.addEventListener?.('change', () => { setSheet(false, { focus: false }
 
 // ---------- rendering ----------
 
-/**
- * Whatever a screen returned, as one div.page: a kit page() passes through; older screens (a list of
- * nodes starting with pageHeader()) get wrapped – the header becomes the page head, the rest the body.
- */
+/** Whatever a screen returned, as one div.page: a kit page() passes through; anything else (the
+ * „Otevírám pozvánku…“ line) becomes the body of a plain page. */
 function asPage(content) {
   const list_ = nodes(content);
   if (list_.length === 1 && list_[0] instanceof Element && list_[0].classList.contains('page')) return list_[0];
-  const headIndex = list_.findIndex((n) => n instanceof Element && n.classList.contains('page-head'));
-  const before = headIndex > 0 ? list_.slice(0, headIndex) : [];   // e.g. a back link or a demo bar above the title
-  const head = headIndex >= 0 ? list_[headIndex] : null;
-  if (head) {
-    const back = before.filter((n) => n instanceof Element && n.classList.contains('back'));
-    back.forEach((n) => head.prepend(n));
-  }
-  const rest = headIndex >= 0 ? [...before.filter((n) => !(n instanceof Element && n.classList.contains('back'))), ...list_.slice(headIndex + 1)] : list_;
-  return h('div', { class: 'page w-wide legacy' }, head, h('div', { class: 'page-body' }, rest));
+  return h('div', { class: 'page w-list' }, h('div', { class: 'page-body' }, list_));
 }
 
 function renderApp({ toTop = false } = {}) {
@@ -350,11 +338,13 @@ function renderApp({ toTop = false } = {}) {
     console.error(error);
     content = page({ title: 'Jejda', width: 'list', body: emptyState({ icon: 'alert', title: 'Tohle se nepodařilo zobrazit.', text: 'Zkus stránku načíst znovu, a kdyby to nepomohlo, dej vědět správci.' }) });
   }
+  // the quiet section label above the title (look „milnik“): only where it says more than the title
   const head = content.querySelector('.page-head');
-  const context = NAV_LABELS[active] || (section === 'ucet' ? 'Můj účet' : '');
-  if (head && context && !head.dataset.context) head.dataset.context = context;
-  main.replaceChildren(content);
   const title = content.querySelector('.page-title')?.textContent?.trim();
+  const context = NAV_LABELS[active] || (section === 'ucet' ? 'Můj účet' : '');
+  const same = (a, b) => (a || '').toLocaleLowerCase('cs') === (b || '').toLocaleLowerCase('cs');
+  if (head && head.dataset.context === undefined) head.dataset.context = context && !same(context, title) ? context : '';
+  main.replaceChildren(content);
   document.title = title ? `${title} – Zvonec` : 'Zvonec – Církev jako kráva';
   window.scrollTo(0, toTop ? 0 : position);
 }
@@ -509,10 +499,14 @@ async function boot() {
     return;
   }
   S.mode = 'demo';
-  S.me = { login: null, priv: null, github: null, personId: null, access: 'admin' };
+  // the demo starts as an admin who is also in Lidé (Radim), so Přehled shows the personal blocks too;
+  // „Dívat se jako“ (Můj účet) switches to a leader, a member or an admin without a card
+  S.me = { login: null, priv: null, github: null, personId: DEMO_VIEWERS.admin, access: 'admin' };
   const store = new LocalStore({ key: DEMO_KEY });
   if (!store.hasData()) await saveAll(store, createDemo(today()), 'Zvonec: ukázka');
-  useStore(store, (await load(store)) || emptyData());
+  const data = (await load(store)) || emptyData();
+  if (!personById(data, DEMO_VIEWERS.admin)) S.me.personId = null;   // an older demo, or Radim was deleted
+  useStore(store, data);
 }
 
 boot();

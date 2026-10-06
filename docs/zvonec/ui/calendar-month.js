@@ -3,7 +3,7 @@
 // chips a day (then „a 2 další“ → the day in a popover). Leaders get a quiet „+“ on a day on hover.
 // Phone: a compact grid with dots, the chosen day's events in a list under it.
 
-import { h, icon, severityIcon, fillRing, list, button, emptyState, kindMark, plural } from './dom.js';
+import { h, icon, severityIcon, fillRing, list, button, emptyState, kindMark, plural, anchoredPopover } from './dom.js';
 import { S, myId, SEVERITY_LABELS } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, dayOf, monthGrid, monthOf, prettyDay, prettyDayLong, prettyTime, today, DAYS } from '../lib/time.js';
@@ -11,7 +11,6 @@ import {
   capital, eventRow, eventWarning, fillOf, filteredEmpty, isMultiDay, kindHue, kindLabel, myRoles, passesFilters, timeText,
   activeFilterCount, isPhone,
 } from './calendar-shared.js';
-import { anchoredPopover } from './picker.js';
 
 const MAX_CHIPS = 3;
 

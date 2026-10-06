@@ -5,11 +5,10 @@
 // Reference with every export, its signature and the classes it emits: scratchpad/redesign/reports/
 // shell-kit.md; the living specimen is the #kit route (ui/kit-page.js).
 
-import { h, nodes, avatar, personName, openDialog, emptyState, dialogForm, KIND_HUES } from './dom.js';
+import { h, nodes, avatar, personName, openDialog, dialogForm, KIND_HUES } from './dom.js';
 import { icon, statusIcon, severityIcon, svgEl } from './icons.js';
 import { KIND_LABELS, KIND_ICONS } from '../lib/events.js';
 
-const isPlainObject = (x) => !!x && typeof x === 'object' && !Array.isArray(x) && !(x instanceof Node);
 /** [value, text, extra…] or { value, text, … } → object */
 const opt = (o, keys) => (Array.isArray(o) ? Object.fromEntries(keys.map((k, i) => [k, o[i]])) : o);
 const plain = (text) => String(text ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase('cs');
@@ -18,20 +17,22 @@ const nextId = (prefix) => `${prefix}-${++uid}`;
 
 // ---------- buttons ----------
 
-const VARIANTS = { solid: 'btn-solid', primary: 'btn-solid', soft: 'btn-soft', surface: 'btn-surface', outline: 'btn-surface', ghost: 'btn-ghost', danger: 'btn-danger', 'danger-solid': 'btn-danger-solid' };
+const VARIANTS = { solid: 'btn-solid', primary: 'btn-solid', soft: 'btn-soft', surface: 'btn-surface', outline: 'btn-surface', ghost: 'btn-ghost', danger: 'btn-danger', 'danger-solid': 'btn-danger-solid', add: 'btn-add' };
 
 /**
  * A button (or a link that looks like one with `href`). Rounded rectangle; one `solid` per view.
  *   button('Přidat setkání', { variant: 'solid', icon: 'plus', onclick: add })
  *   button('Tisk', { variant: 'surface', size: 's', icon: 'print', onclick: print })
  *   button('Upravit', { href: '#osoba/p1/upravit', variant: 'surface', icon: 'pencil' })
+ *   button('Přidat bod', { variant: 'add', onclick: add })   – the last row of a list that adds to it (full width, ＋)
  * @param {any} text  null/'' for an icon-only button (then pass `label`)
- * @param {{ variant?: 'solid'|'soft'|'surface'|'outline'|'ghost'|'danger'|'danger-solid', size?: 's'|'m'|'l',
+ * @param {{ variant?: 'solid'|'soft'|'surface'|'outline'|'ghost'|'danger'|'danger-solid'|'add', size?: 's'|'m'|'l',
  *   icon?: string, iconEnd?: string, onclick?: Function, href?: string, type?: string, disabled?: boolean,
  *   label?: string, title?: string, cls?: string, attrs?: object, pressed?: boolean }} [options]
  *   sizes: s 28 px · m 36 px (default) · l 44 px
  */
 export function button(text, { variant = 'soft', size = 'm', icon: iconName, iconEnd, onclick, href, type = 'button', disabled = false, label, title, cls, attrs = {}, pressed } = {}) {
+  if (variant === 'add' && !iconName) iconName = 'plus';
   const iconOnly = (text == null || text === '') && iconName;
   const classes = ['btn', VARIANTS[variant] || 'btn-soft', size !== 'm' && `btn-${size}`, iconOnly && 'btn-icon', cls];
   const content = [iconName ? icon(iconName) : null, iconOnly ? null : text, iconEnd ? icon(iconEnd, { cls: 'icon-end' }) : null];
@@ -76,6 +77,31 @@ export function severityBadge(severity, { word, variant = 'badge' } = {}) {
   const tone = { error: 'danger', warning: 'warning', info: 'info' }[severity] || 'info';
   return h('span', { class: ['severity', `severity-${severity}`, variant === 'badge' ? ['badge', `badge-${tone}`] : 'status'] },
     severityIcon(severity), word || SEVERITY_WORDS[severity] || severity);
+}
+
+/**
+ * The severity of a warning as a symbol in its colour (chyba ■ red, pozor △ amber, info ⓘ blue).
+ *   variant 'lead' (default): in a soft square of its colour, for the lead of a row – the word goes in
+ *   the row's meta (severityWord), so colour is never alone; hidden from screen readers.
+ *   variant 'inline': the bare symbol next to text or in a row trail, with the word for screen readers.
+ */
+export function severityMark(severity, { variant = 'lead', title } = {}) {
+  const word = SEVERITY_WORDS[severity] || severity;
+  if (variant === 'inline') {
+    return h('span', { class: ['sev-mark', 'sev-inline', `sev-${severity}`], title: title || word }, severityIcon(severity), h('span', { class: 'visually-hidden' }, `${word}: `));
+  }
+  return h('span', { class: ['sev-mark', `sev-${severity}`], 'aria-hidden': 'true' }, severityIcon(severity));
+}
+
+/** „chyba“ / „pozor“ / „info“ in its colour (text, read by screen readers). */
+export const severityWord = (severity) => h('span', { class: ['sev-word', `sev-${severity}`] }, SEVERITY_WORDS[severity] || severity);
+
+/** Small counts per severity: ■ 2 △ 3 – for a card head. `items` = anything with a `severity`. */
+export function severityCounts(items) {
+  return h('span', { class: 'sev-counts' }, ['error', 'warning', 'info'].map((s) => {
+    const n = items.filter((c) => c.severity === s).length;
+    return n ? h('span', { class: ['sev-count', `sev-${s}`], title: `${SEVERITY_WORDS[s]}: ${n}` }, severityIcon(s), String(n)) : null;
+  }));
 }
 
 /**
@@ -178,18 +204,30 @@ export function chipLinks(options, currentHref, { label } = {}) {
  *   card({ title: 'Kdy a kde', body: facts([...]) })
  *   card({ title: 'Chvály', actions: button('Přidat', { variant: 'ghost', size: 's', icon: 'plus' }), body: list(…), flush: true })
  * `href`: the whole card is a link (hover lifts it). `flush`: no padding in the body (lists, tables).
- * @param {{ title?: any, actions?: any, body?: any, footer?: any, href?: string, flush?: boolean, cls?: string,
+ * `count`: a small count pill after the title („Lidé 4“), `countTone: 'warn'` = amber.
+ * @param {{ title?: any, count?: number, countTone?: 'warn', actions?: any, body?: any, footer?: any, href?: string, flush?: boolean, cls?: string,
  *   hue?: string, label?: string }} options
  */
-export function card({ title, actions, body, footer, href, flush = false, cls, label } = {}) {
+export function card({ title, count, countTone, actions, body, footer, href, flush = false, cls, label } = {}) {
   const tools = nodes(actions || []);
+  const counted = count != null ? [title, h('span', { class: ['card-count', countTone === 'warn' && 'card-count-warn'] }, String(count))] : title;
   const head = title != null || tools.length
-    ? h('div', { class: 'card-head' }, title != null ? h('h2', { class: 'card-title' }, title) : h('span'), tools.length ? h('div', { class: 'card-actions' }, tools) : null)
+    ? h('div', { class: 'card-head' }, title != null ? h('h2', { class: 'card-title' }, counted) : h('span'), tools.length ? h('div', { class: 'card-actions' }, tools) : null)
     : null;
   const parts = [head, body != null ? h('div', { class: ['card-body', flush && 'flush'] }, body) : null, footer ? h('div', { class: 'card-foot' }, footer) : null];
   return href
     ? h('a', { class: ['card', 'card-link', cls], href, 'aria-label': label || null }, parts)
     : h('section', { class: ['card', cls], 'aria-label': label || null }, parts);
+}
+
+/**
+ * The lead of a row that is not a person, a date or a cover: an icon or a number in a small soft square
+ * (Karty k doplnění 4, Stáhnout zálohu ⤓). tone 'warn' = amber.
+ *   rowIcon('download') · rowIcon(4, { tone: 'warn' })
+ */
+export function rowIcon(content, { tone } = {}) {
+  const inner = typeof content === 'number' ? h('span', { class: 'row-icon-n' }, String(content)) : icon(content);
+  return h('span', { class: ['row-icon', tone === 'warn' && 'tone-warn'], 'aria-hidden': 'true' }, inner);
 }
 
 /** A plain panel (card surface, no head): panel(children, { pad: true }). */
@@ -525,6 +563,26 @@ export function searchField({ name = 'q', value = '', placeholder = 'Hledat', la
 }
 
 /**
+ * Place the list of a combobox (.combo-list inside .combo) where it fits: under the field, or above it
+ * when the window's edge or – in a dialog – the dialog's buttons leave too little room. It never covers
+ * Uložit / Zrušit. Call after the list is shown and filled.
+ */
+export function fitComboList(listEl, fieldEl) {
+  const r = fieldEl.getBoundingClientRect();
+  const dialog = fieldEl.closest('dialog');
+  const foot = dialog?.querySelector('.dialog-foot, .actions');
+  const bottomLimit = Math.min(window.innerHeight, foot ? foot.getBoundingClientRect().top : Infinity) - 8;
+  const topLimit = (dialog ? Math.max(0, dialog.getBoundingClientRect().top) : 0) + 8;
+  const below = bottomLimit - r.bottom - 6;
+  const above = r.top - topLimit - 6;
+  listEl.style.maxHeight = '';
+  const natural = Math.min(listEl.scrollHeight, 300);
+  const up = natural > below && above > below;
+  listEl.classList.toggle('up', up);
+  listEl.style.maxHeight = `${Math.max(96, Math.min(300, up ? above : below))}px`;
+}
+
+/**
  * Pick a person: a combobox with avatars and FULL names (type to filter, arrows, Enter, Esc). The id
  * goes into a hidden input `name`, so it submits with the form.
  *   personPicker({ name: 'personId', label: 'Kdo', people: S.data.people, value: a.personId,
@@ -587,27 +645,190 @@ export function personPicker({ name = 'personId', label: text, people = [], valu
     input.setAttribute('aria-expanded', 'true');
     active = Math.max(0, people.findIndex((p) => p.id === chosen?.id));
     draw();
+    fitComboList(listEl, box.firstChild);
   }
   function close() { listEl.hidden = true; input.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant'); }
 
   input.addEventListener('focus', () => { if (window.matchMedia?.('(pointer: fine)').matches) input.select(); });
   input.addEventListener('click', open);
-  input.addEventListener('input', () => { active = 0; if (listEl.hidden) open(); else draw(); });
+  // while typing a new search the field shows the magnifier, not the avatar of who is chosen
+  input.addEventListener('input', () => { lead.replaceChildren(icon('search')); active = 0; if (listEl.hidden) open(); else draw(); });
+  const restore = () => { input.value = chosen ? personName(chosen) : ''; setLead(); };
   input.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown') { e.preventDefault(); if (listEl.hidden) open(); else { active = Math.min(shown.length - 1, active + 1); mark(); } }
     else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(0, active - 1); mark(); }
     else if (e.key === 'Enter') { if (!listEl.hidden && shown[active]) { e.preventDefault(); pick(shown[active]); } }
-    else if (e.key === 'Escape') { if (!listEl.hidden) { e.preventDefault(); e.stopPropagation(); close(); input.value = chosen ? personName(chosen) : ''; } }
+    else if (e.key === 'Escape') { if (!listEl.hidden) { e.preventDefault(); e.stopPropagation(); close(); restore(); } }
   });
-  input.addEventListener('blur', () => { setTimeout(() => { if (!box.contains(document.activeElement)) { close(); input.value = chosen ? personName(chosen) : ''; } }, 0); });
+  input.addEventListener('blur', () => { setTimeout(() => { if (!box.contains(document.activeElement)) { close(); restore(); } }, 0); });
   clear?.addEventListener('click', () => { pick(null); input.focus(); });
   setLead();
   return field(text, box, { hint, full });
 }
 
-// ---------- menus ----------
+// ---------- several people ----------
 
-export { menuButton as kebab } from './dom.js';
+/**
+ * Several people as chips (avatar + FULL name + ×) and a combobox to add one more. The chosen ids are
+ * hidden inputs `name`, so they submit with the form. `people` = who can be added; `personOf(id)` finds
+ * someone already chosen who is not among them (a former member); `meta(person)` = the quiet line.
+ *   peopleField({ name: 'leaders', label: 'Kdo to vede', people, value: ['p1'] })
+ */
+export function peopleField({ name, label: text, people, value = [], hint, meta, personOf, placeholder = 'Přidat dalšího – napiš jméno', full = true }) {
+  const chosen = [...value];
+  const find = (id) => people.find((p) => p.id === id) || personOf?.(id) || null;
+  const holder = h('div', { class: 'people-field' });
+  const redraw = (focus = false) => {
+    const free = people.filter((p) => !chosen.includes(p.id));
+    const picker = personPicker({
+      name: `${name}-add`, label: text, people: free, placeholder: chosen.length ? placeholder : 'Napiš jméno…', clearable: false, meta,
+      onchange: (id) => { if (id && !chosen.includes(id)) { chosen.push(id); redraw(true); } },
+    });
+    const combo = picker.querySelector('.combo');
+    holder.replaceChildren(
+      chosen.length ? h('ul', { class: 'people-chips', 'aria-label': text }, chosen.map((id) => {
+        const person = find(id);
+        return h('li', { class: 'people-chip' },
+          avatar(person, { size: 'xs' }), h('span', { class: 'people-chip-name' }, personName(person)),
+          iconButton('x', `Odebrat: ${personName(person)}`, { size: 's', cls: 'people-chip-x', onclick: () => { chosen.splice(chosen.indexOf(id), 1); redraw(true); } }),
+          h('input', { type: 'hidden', name, value: id }));
+      })) : null,
+      combo);
+    if (focus) queueMicrotask(() => holder.querySelector('.combo-input')?.focus());
+  };
+  redraw();
+  return field(text, holder, { hint, full, group: true });
+}
+
+// ---------- places ----------
+
+/**
+ * Pick places as chips grouped by building: „Monta: Sál · Malá místnost · Kuchyňka · Celá budova“, then
+ * the places on their own under „Jinde“. `tree` = lib/places.js placeTree(data). Checkboxes `name`.
+ *   placeChipsField('places', placeTree(S.data), event.placeIds, { hint: '…' })
+ */
+export function placeChipsField(name, tree, selected = [], { label: text = 'Místo', hint, onchange } = {}) {
+  const chip = (place, cls, words = place.name) => h('label', { class: ['chip', cls] },
+    h('input', { type: 'checkbox', name, value: place.id, checked: selected.includes(place.id), onchange: onchange || null }),
+    icon('check', { cls: 'chip-check' }), h('span', {}, words));
+  const withRooms = tree.filter((t) => t.rooms.length);
+  const alone = tree.filter((t) => !t.rooms.length);
+  const groups = [
+    ...withRooms.map(({ place, rooms }) => h('div', { class: 'place-chips-group' },
+      h('span', { class: 'place-chips-building' }, icon('building'), place.name),
+      h('div', { class: 'chips' }, rooms.map((r) => chip(r)), chip(place, 'chip-whole', 'Celá budova')))),
+    alone.length ? h('div', { class: 'place-chips-group' },
+      withRooms.length ? h('span', { class: 'place-chips-building' }, icon('map-pin'), 'Jinde') : null,
+      h('div', { class: 'chips' }, alone.map(({ place }) => chip(place)))) : null,
+  ];
+  return field(text, h('div', { class: 'place-chips' }, groups), { hint, full: true, group: true });
+}
+
+// ---------- popovers and menus ----------
+
+let currentPop = null;   // { el, anchor, close } – one popover at a time
+
+/** Close the open popover (if any); `focus` returns focus to the element it belongs to. */
+export function closePopover({ focus = false } = {}) {
+  currentPop?.close({ focus });
+}
+
+/**
+ * A popover next to an element (fixed position; below, or above when there is no room). Closes on
+ * Esc (focus goes back to the anchor), on a click outside, when the window resizes or the page under
+ * it scrolls. One at a time. Inside an open dialog it lives in the dialog (the top layer). Returns
+ * { el, close, place }.
+ *   anchoredPopover(cell, content, { label: 'Kdo na Zvuk?', cls: 'picker-pop' })
+ */
+export function anchoredPopover(anchor, content, { label, cls, onClose, role = 'dialog', align = 'start' } = {}) {
+  closePopover();
+  const el = h('div', { class: ['popover', 'anchored-pop', cls], role, 'aria-label': label || null, tabindex: -1 }, content);
+  (anchor.closest('dialog[open]') || document.body).append(el);
+  const place = () => {
+    const r = anchor.getBoundingClientRect();
+    const width = el.offsetWidth;
+    const margin = 8;
+    const spaceBelow = window.innerHeight - r.bottom - margin * 2;
+    const spaceAbove = r.top - margin * 2;
+    const below = spaceBelow >= Math.min(el.scrollHeight, 320) || spaceBelow >= spaceAbove;
+    el.style.maxHeight = `${Math.max(180, below ? spaceBelow : spaceAbove)}px`;
+    const height = el.offsetHeight;
+    const left = align === 'end' ? r.right - width : r.left;
+    el.style.left = `${Math.max(margin, Math.min(left, window.innerWidth - width - margin))}px`;
+    el.style.top = `${below ? r.bottom + 6 : Math.max(margin, r.top - 6 - height)}px`;
+  };
+  const anchorTop = anchor.getBoundingClientRect().top;
+  const onDown = (e) => { if (!el.contains(e.target) && !anchor.contains(e.target)) close(); };
+  const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close({ focus: true }); } };
+  const onScroll = (e) => {
+    if (el.contains(e.target)) return;
+    if (Math.abs(anchor.getBoundingClientRect().top - anchorTop) > 40) close(); else place();
+  };
+  const onResize = () => close();
+  function close({ focus = false } = {}) {
+    if (currentPop?.el !== el) return;
+    currentPop = null;
+    document.removeEventListener('pointerdown', onDown, true);
+    document.removeEventListener('keydown', onKey, true);
+    window.removeEventListener('scroll', onScroll, true);
+    window.removeEventListener('resize', onResize);
+    el.remove();
+    anchor.classList.remove('pop-open');
+    if (focus && anchor.isConnected) anchor.focus({ preventScroll: true });
+    onClose?.();
+  }
+  document.addEventListener('pointerdown', onDown, true);
+  document.addEventListener('keydown', onKey, true);
+  window.addEventListener('scroll', onScroll, true);
+  window.addEventListener('resize', onResize);
+  anchor.classList.add('pop-open');
+  place();
+  currentPop = { el, anchor, close };
+  return { el, close, place };
+}
+
+/** Is a popover open at this element right now? */
+export const popoverOpenAt = (anchor) => currentPop?.anchor === anchor;
+
+/**
+ * A small menu next to an element: popMenu(button, [[label, onclick, { danger, icon }?], …], { label }).
+ * Arrow keys move, Esc closes and returns focus. The ⋯ button (menuButton) opens the same menu.
+ */
+export function popMenu(anchor, items, { label = 'Možnosti', align = 'start', onClose } = {}) {
+  const buttons = items.filter(Boolean).map(([text, onclick, opts = {}]) => h('button', {
+    type: 'button', role: 'menuitem', class: opts.danger ? 'danger' : null,
+    onclick: () => { pop.close({ focus: true }); onclick(); },
+  }, opts.icon ? icon(opts.icon) : null, h('span', {}, text)));
+  const pop = anchoredPopover(anchor, buttons, { cls: 'menu-list', role: 'menu', label, align, onClose });
+  pop.el.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    const i = buttons.indexOf(document.activeElement);
+    buttons[(i + (e.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length]?.focus();
+  });
+  buttons[0]?.focus({ preventScroll: true });
+  return pop;
+}
+
+/**
+ * The ⋯ (kebab) button with a small menu for secondary actions (leader actions in lists).
+ * items: [[label, onclick, { danger, icon }?], …]. The menu opens below the button (above near the bottom
+ * of the window), closes on Escape, on a click elsewhere and after a choice. Arrow keys move.
+ *   menuButton([['Upravit', edit], ['Odebrat', remove, { danger: true }]], { label: 'Možnosti: Petr' })
+ */
+export function menuButton(items, { label = 'Další možnosti', size = 'm', icon: iconName = 'more' } = {}) {
+  const btn = h('button', {
+    type: 'button', class: ['btn btn-ghost btn-icon menu-btn', size === 's' && 'btn-s'], 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': label, title: label,
+    onclick: (e) => {
+      e.stopPropagation();
+      if (popoverOpenAt(btn)) { closePopover(); return; }
+      btn.setAttribute('aria-expanded', 'true');
+      popMenu(btn, items, { label, align: 'end', onClose: () => btn.setAttribute('aria-expanded', 'false') });
+    },
+  }, icon(iconName));
+  return h('span', { class: 'menu-wrap' }, btn);
+}
+export { menuButton as kebab };
 
 // ---------- progress ----------
 
@@ -687,14 +908,6 @@ export function page({ title, lead, meta, back, media, actions, tabs: tabNav, to
       tabNav || null,
       bar ? h('div', { class: 'page-toolbar' }, bar) : null),
     h('div', { class: 'page-body' }, body));
-}
-
-/** A page whose new screen is not built yet: the title and „Tuhle stránku právě stavíme.“ */
-export function placeholderPage(title, { lead, back, tabs: tabNav, text } = {}) {
-  return page({
-    title, lead, back, tabs: tabNav, width: 'list',
-    body: emptyState({ icon: 'wrench', title: 'Tuhle stránku právě stavíme.', text: text || 'Brzy tu bude. Zatím použij ostatní části Zvonce.' }),
-  });
 }
 
 /** The status of an assignment in a dense table cell: symbol + short name (Rozpis). */

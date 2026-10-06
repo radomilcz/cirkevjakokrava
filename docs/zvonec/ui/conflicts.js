@@ -4,15 +4,16 @@
 // the event detail, the person card and Přehled use.
 
 import {
-  h, page, tabs, toolbar, spacer, chips, viewSwitch, card, list, row, emptyState, button, personName,
-  avatar, dateBlock, severityIcon, textField, dialogForm, closeDialog, toast, SEP,
+  h, page, tabs, toolbar, spacer, chips, viewSwitch, card, list, row, emptyState, button, personName, avatar,
+  dateBlock, severityIcon, severityMark, severityWord, severityCounts, textField, dialogForm, closeDialog, SEP,
 } from './dom.js';
-import { S, change, render, isUpcoming, myId, newId, SEVERITY_LABELS } from './state.js';
+import { S, change, render, isUpcoming, myId } from './state.js';
 import { SEVERITIES, CODES } from '../lib/conflicts.js';
 import { eventById } from '../lib/events.js';
 import { personById } from '../lib/people.js';
-import { roleById, groupById, memberRecord, setSkill } from '../lib/groups.js';
+import { roleById } from '../lib/groups.js';
 import { dayOf, prettyDay, prettyTime, today } from '../lib/time.js';
+import { pickFor } from './event-duties.js';
 
 const SEVERITY_WEIGHT = { error: 3, warning: 2, info: 1 };
 const SEVERITY_CHIPS = { error: 'Chyba', warning: 'Pozor', info: 'Info' };
@@ -49,63 +50,10 @@ function replaceTarget(conflict) {
   return hit && dayOf(hit.event.end) >= today() ? hit : null;
 }
 
-/**
- * The severity in front of a warning: its symbol in a soft square of its colour (chyba ■ red, pozor △
- * amber, info ⓘ blue). The word is in the meta line (severityWord), so colour is never alone.
- */
-export const severityMark = (severity) => h('span', { class: ['sev-mark', `sev-${severity}`], 'aria-hidden': 'true' }, severityIcon(severity));
-/** Kept for older callers: the same mark. */
-export const severityDot = severityMark;
-/** „chyba“ / „pozor“ / „info“ in its colour (text, read by screen readers). */
-export const severityWord = (severity) => h('span', { class: ['sev-word', `sev-${severity}`] }, SEVERITY_LABELS[severity] || severity);
-
 const eventWhen = (event) => `${prettyDay(event.start)} ${prettyTime(event.start)}`;
 
-/**
- * Fill or change a duty through the shared picker: `assignmentId` replaces that person (status back to
- * „čeká na potvrzení“, an override goes away); without it a new duty for eventId × roleId.
- */
-export function pickPerson(eventId, roleId, assignmentId = null) {
-  const event = eventById(S.data, eventId);
-  if (!event) return;
-  const role = roleById(S.data, roleId);
-  const replacing = assignmentId ? (event.assignments || []).find((a) => a.id === assignmentId) : null;
-  const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && (a.status !== 'declined' || a.id === assignmentId)).map((a) => a.personId);
-  import('./picker.js').then((m) => m.openPicker, () => null).then((open) => {
-    if (typeof open !== 'function') { location.hash = `#setkani/${eventId}`; return; }
-    open({
-      title: replacing ? `Vyměnit: ${personName(personById(S.data, replacing.personId))} (${role?.name || 'služba'})` : `Kdo na ${role?.name || 'službu'}?`,
-      eventId, roleId, scope: 'skilled', exclude,
-      onPick: (picked) => {
-        const first = Array.isArray(picked) ? picked[0] : picked;
-        const personId = typeof first === 'string' ? first : first?.id || null;
-        const fresh = eventById(S.data, eventId);
-        if (!personId || !fresh) return;
-        fresh.assignments = fresh.assignments || [];
-        const target = replacing && fresh.assignments.find((a) => a.id === assignmentId);
-        if (target) {
-          target.personId = personId;
-          target.status = 'proposed';
-          delete target.override;
-        } else {
-          fresh.assignments.push({ id: newId('a'), roleId, personId, status: 'proposed' });
-        }
-        closeDialog();
-        const name = personName(personById(S.data, personId));
-        change(`${name} na ${role?.name || 'službu'}`);
-        const team = role && groupById(S.data, role.groupId);
-        if (team && !memberRecord(S.data, team.id, personId)) {
-          toast(`${name} není v týmu ${team.name}.`, 'Bude to dělat častěji?', {
-            actionLabel: 'Přidat do týmu', duration: 9000,
-            action: () => { setSkill(S.data, personId, role.id, 'trained'); change(`${name} do týmu ${team.name}`); },
-          });
-        } else {
-          toast(`${name}: ${role?.name || 'služba'}.`, 'Teď ještě musí potvrdit, že může.');
-        }
-      },
-    });
-  });
-}
+/** Fill or change a duty through the shared picker (event-duties.js pickFor): `assignmentId` replaces that person. */
+export const pickPerson = (eventId, roleId, assignmentId = null) => pickFor(eventId, roleId, assignmentId);
 
 /** The inline actions of one warning: Vybrat jiného · Vím o tom / Upravit důvod. */
 function rowActions(conflict, { overrideButton = true, replaceButton = true } = {}) {
@@ -225,14 +173,6 @@ function groupsFor(view, shown) {
     return list_.sort((a, b) => (a.key === '~') - (b.key === '~') || weight(b) - weight(a) || a.sort.localeCompare(b.sort, 'cs'));
   }
   return list_.sort((a, b) => a.sort.localeCompare(b.sort));
-}
-
-/** Small counts per severity: ■ 2 △ 3 – for a card head. */
-export function severityCounts(conflicts) {
-  return h('span', { class: 'sev-counts' }, ['error', 'warning', 'info'].map((s) => {
-    const n = conflicts.filter((c) => c.severity === s).length;
-    return n ? h('span', { class: ['sev-count', `sev-${s}`], title: `${SEVERITY_LABELS[s]}: ${n}` }, severityIcon(s), String(n)) : null;
-  }));
 }
 
 function eventCard(group) {

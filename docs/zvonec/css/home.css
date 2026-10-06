@@ -12,11 +12,6 @@
 
 /* the head of a block: its title, a count, then the tools (Všechno on the right) */
 .home-block .card-head{min-height:52px;padding:14px 12px 10px 18px}
-.card-title:has(.card-count){display:flex;align-items:center;gap:8px}
-.card-count{
-  display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:var(--optical) 6px 0;border-radius:var(--radius-full);
-  background:var(--count-bg);color:var(--text-1);font-family:var(--font-body);font-weight:400;font-size:var(--font-size-1);letter-spacing:0;line-height:1;font-variant-numeric:tabular-nums;
-}
 .home-block .card-actions{margin:-4px 0}
 .home-all{color:var(--text-2)}
 .home-all:hover{color:var(--text-1)}
@@ -45,11 +40,6 @@
 /* a row's small extras */
 .title-n{color:var(--text-2)}
 .essential{color:var(--declined-fg)}
-.row-icon{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:var(--radius-mark);background:var(--hover);color:var(--text-2)}
-.row-icon .icon{width:16px;height:16px}
-.row-icon-n{font-family:var(--font-mark);font-weight:900;font-size:15px;line-height:1;padding-top:var(--optical-n);color:var(--text-1);font-variant-numeric:tabular-nums}
-.row-icon.tone-warn{background:var(--waiting-bg)}
-.row-icon.tone-warn .row-icon-n{color:var(--warning-text)}
 
 /* Příští neděle: the picture beside the title and the facts, what is missing under them */
 .next-sunday{display:grid;grid-template-columns:136px minmax(0,1fr);gap:14px 16px;align-items:start}
@@ -73,22 +63,7 @@
 .slot-btn .icon{color:var(--waiting-fg)}
 .slot-n{color:var(--text-2)}
 
-/* ---------- severity: symbol + colour + word ---------- */
-.sev-mark{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:var(--radius-mark);background:var(--hover);color:var(--text-2)}
-.sev-mark .severity-icon{width:18px;height:18px}
-.sev-mark.sev-error{background:var(--declined-bg);color:var(--declined-solid)}
-.sev-mark.sev-warning{background:var(--waiting-bg);color:var(--waiting-fg)}
-.sev-mark.sev-info{background:var(--info-bg);color:var(--info-fg)}
-.sev-word.sev-error{color:var(--declined-fg)}
-.sev-word.sev-warning{color:var(--warning-text)}
-.sev-word.sev-info{color:var(--info-text)}
-.sev-counts{display:inline-flex;align-items:center;gap:10px;margin-right:4px}
-.sev-count{display:inline-flex;align-items:center;gap:4px;font-size:var(--font-size-3);line-height:1;padding-top:var(--optical);color:var(--text-1);font-variant-numeric:tabular-nums}
-.sev-count .severity-icon{width:15px;height:15px;margin-top:calc(-1*var(--optical))}
-.sev-count.sev-error .severity-icon{color:var(--declined-solid)}
-.sev-count.sev-warning .severity-icon{color:var(--waiting-fg)}
-.sev-count.sev-info .severity-icon{color:var(--info-fg)}
-/* the severity chips: their symbol in colour */
+/* ---------- the severity chips (Upozornění): their symbol in colour ---------- */
 .sev-chip .severity-icon{width:15px;height:15px;margin-top:calc(-1*var(--optical))}
 .sev-chip.sev-error .severity-icon{color:var(--declined-solid)}
 .sev-chip.sev-warning .severity-icon{color:var(--waiting-fg)}

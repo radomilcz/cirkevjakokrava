@@ -1,16 +1,17 @@
 // Generic DOM helpers shared by every screen. No app state here (that is ui/state.js).
-// This is the one import surface of the design kit: the older helpers live here (pageHeader, section,
+// This is the one import surface of the design kit: the older helpers live here (section,
 // list/row, avatar, assignee, dialogs, fields…), the newer components in ui/kit.js and the icons in
 // ui/icons.js – both re-exported below, so screens import everything from './dom.js'.
 // Content is always built with h(): text goes in as text, never as HTML, so a name like
 // "<script>" in the data runs nothing (the GitHub token lives in this browser, that matters).
 // API reference: scratchpad/redesign/reports/shell-kit.md (and the living specimen at #kit).
 
-import { fullName, DELETED_NAME, NO_NAME } from '../lib/people.js';
-import { icon, statusIcon, severityIcon, svgEl } from './icons.js';
+import { fullName, DELETED_NAME } from '../lib/people.js';
+import { icon, statusIcon, svgEl } from './icons.js';
 
 export { icon, statusIcon, severityIcon, svgEl, ICON_NAMES } from './icons.js';
 export * from './kit.js';
+import { menuButton } from './kit.js';   // the ⋯ button lives in the kit; assignee() below uses it
 
 // ---------- elements ----------
 
@@ -67,33 +68,7 @@ export const plus = (text) => [icon('plus', { cls: 'plus' }), text];
 /** Small × button (remove a row). */
 export const removeButton = (label, onclick) => h('button', { type: 'button', class: 'btn btn-ghost btn-s btn-icon btn-x', 'aria-label': label, title: label, onclick }, icon('x'));
 
-/** Back link above a page header: backLink('Kalendář', '#kalendar') → „‹ Kalendář“. */
-export const backLink = (text, href) => h('a', { class: 'back page-back', href }, icon('chevron-left'), text);
-
-/** The same way back as a button (an empty state of a page that is gone): „‹ Lidé“. */
-export const backButton = (text, href) => h('a', { class: 'btn btn-surface back-arrow', href }, icon('chevron-left'), text);
-
 // ---------- page structure ----------
-
-/**
- * The header of a page: big title (h1), optional lead sentence, the page's actions on the right
- * (the primary action is the one `btn(…, 'primary')`). No eyebrow – if the title needs a tagline,
- * fix the title. `media` goes in front of the title: the large avatar of a person, the mark of a team.
- * Returns one element.
- *   pageHeader({ title: 'Lidé', actions: [btn(plus('Přidat člověka'), add, 'primary')] })
- *   pageHeader({ title: fullName(p), media: avatar(p, { size: 'l' }), actions: … })
- * @param {{ title: any, lead?: any, actions?: any, media?: Node }} options title/lead: text or nodes; actions: node(s)
- */
-export function pageHeader({ title, lead, actions: buttons, media } = {}) {
-  const tools = nodes(buttons || []);
-  return h('header', { class: ['page-head', 'page-header', media && 'with-media'] },
-    h('div', { class: 'page-head-row' },
-      media ? h('div', { class: 'page-head-media page-header-media' }, media) : null,
-      h('div', { class: 'page-head-text page-header-text' },
-        h('h1', { class: 'page-title title' }, title),
-        lead ? h('p', { class: 'page-lead lead' }, typeof lead === 'string' ? lead.replaceAll(' · ', SEP) : lead) : null),
-      tools.length ? h('div', { class: 'page-actions page-header-actions' }, tools) : null));
-}
 
 /** Thin horizontal rule between the header and the content. */
 export const rule = () => h('div', { class: 'rule' });
@@ -280,21 +255,6 @@ export function personName(person) {
   const full = fullName(person);
   const nick = (person.nickname || '').trim();
   return nick && nick !== person.firstName && nick !== full ? `${full} (${nick})` : full;
-}
-
-/**
- * „Veronika F.“ – for the dense roster table only. First name + initial of the last name; when two
- * people in `people` share both, the whole last name. A person without a last name: first name.
- */
-export function shortName(person, people = []) {
-  if (!person) return DELETED_NAME;
-  const first = person.firstName || person.nickname || NO_NAME;
-  const last = (person.lastName || '').trim();
-  if (!last) return first;
-  const initial = `${[...last][0]}.`;
-  const clash = people.some((p) => p && p.id !== person.id && p.firstName === person.firstName
-    && (p.lastName || '').trim() && [...p.lastName.trim()][0] === [...last][0]);
-  return `${first} ${clash ? last : initial}`;
 }
 
 /** The six categorical hues (avatars, team marks, Účel, calendar chips): class `c-<hue>` sets --c3 … --cc. */
@@ -518,78 +478,6 @@ export function placeMap(place) {
     }));
 }
 
-// ---------- small menu ----------
-
-let openMenu = null;   // { button, list } of the one open ⋯ menu
-
-function closeMenu({ focus = false } = {}) {
-  if (!openMenu) return;
-  const { button, list: menu } = openMenu;
-  openMenu = null;
-  menu.hidden = true;
-  button.setAttribute('aria-expanded', 'false');
-  if (focus) button.focus();
-}
-
-let menuListeners = false;
-function listenForMenus() {
-  if (menuListeners) return;
-  menuListeners = true;
-  document.addEventListener('click', (e) => { if (openMenu && !openMenu.button.parentNode.contains(e.target)) closeMenu(); });
-  document.addEventListener('keydown', (e) => {
-    if (!openMenu) return;
-    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeMenu({ focus: true }); return; }
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      const items = [...openMenu.list.querySelectorAll('[role=menuitem]')];
-      const i = items.indexOf(document.activeElement);
-      const next = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length;
-      items[next]?.focus({ preventScroll: true });
-    }
-  }, true);
-  window.addEventListener('resize', () => closeMenu());
-  // the menu is fixed: when the page under it moves, it closes (a scroll inside the menu does not count)
-  window.addEventListener('scroll', (e) => {
-    if (!openMenu || openMenu.list.contains(e.target)) return;
-    if (Math.abs(openMenu.button.getBoundingClientRect().top - openMenu.top) > 2) closeMenu();
-  }, true);
-}
-
-/**
- * The ⋯ (kebab) button with a small menu for secondary actions (leader actions in lists).
- * items: [[label, onclick, { danger, icon }?], …]. The menu opens below the button (above near the bottom
- * of the window), closes on Escape, on a click elsewhere and after a choice. Arrow keys move.
- *   menuButton([['Upravit', edit], ['Odebrat', remove, { danger: true }]], { label: 'Možnosti: Petr' })
- */
-export function menuButton(items, { label = 'Další možnosti', size = 'm', icon: iconName = 'more' } = {}) {
-  listenForMenus();
-  const menu = h('div', { class: 'menu-list', role: 'menu', hidden: true },
-    items.filter(Boolean).map(([text, onclick, opts = {}]) => h('button', {
-      type: 'button', role: 'menuitem', class: opts.danger ? 'danger' : null,
-      onclick: (e) => { e.stopPropagation(); closeMenu({ focus: true }); onclick(); },
-    }, opts.icon ? icon(opts.icon) : null, text)));
-  const button = h('button', {
-    type: 'button', class: ['btn btn-ghost btn-icon menu-btn', size === 's' && 'btn-s'], 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': label, title: label,
-    onclick: (e) => {
-      e.stopPropagation();
-      if (openMenu?.button === button) { closeMenu(); return; }
-      closeMenu();
-      menu.hidden = false;
-      button.setAttribute('aria-expanded', 'true');
-      openMenu = { button, list: menu, top: button.getBoundingClientRect().top };
-      // fixed position: dialogs and scrolling lists must not clip it
-      const r = button.getBoundingClientRect();
-      const width = menu.offsetWidth;
-      const height = menu.offsetHeight;
-      const below = r.bottom + 6 + height <= window.innerHeight;
-      menu.style.left = `${Math.max(8, Math.min(r.right - width, window.innerWidth - width - 8))}px`;
-      menu.style.top = `${below ? r.bottom + 6 : Math.max(8, r.top - 6 - height)}px`;
-      menu.querySelector('[role=menuitem]')?.focus({ preventScroll: true });
-    },
-  }, icon(iconName));
-  return h('span', { class: 'menu-wrap' }, button, menu);
-}
-
 // ---------- filters ----------
 
 /**
@@ -599,13 +487,6 @@ export function menuButton(items, { label = 'Další možnosti', size = 'm', ico
 export function filterButtons(options, value, onPick, { label } = {}) {
   return h('div', { class: 'filter chips', role: 'group', 'aria-label': label || null },
     options.map(([v, text]) => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(v === value), onclick: () => onPick(v) },
-      icon('check', { cls: 'chip-check' }), text)));
-}
-
-/** The same chips as links, for filters kept in the hash: filterLinks([['#lide', 'Členové'], …], '#lide'). */
-export function filterLinks(options, currentHref, { label } = {}) {
-  return h('nav', { class: 'filter chips', 'aria-label': label || null },
-    options.map(([href, text]) => h('a', { href, class: 'chip', 'aria-current': href === currentHref ? 'page' : null },
       icon('check', { cls: 'chip-check' }), text)));
 }
 
@@ -706,18 +587,6 @@ export function formError(form, text) {
 export const formErrorLine = (text = '', { full = false } = {}) => h('p', { class: ['form-error', full && 'full'], role: 'alert', hidden: !text }, text);
 
 /**
- * A form in a dialog: title (+ `sub` under it), a two-column grid of fields, Smazat / Zrušit / Uložit.
- * `save(elements, form)` returns an error text (shown, dialog stays open) or nothing (dialog closes);
- * it may be async – the Uložit button is disabled meanwhile. `remove` adds a soft red button on the
- * left, „Smazat“ unless `removeLabel` says otherwise („Odebrat z týmu“). `extra` follows the form in
- * the dialog. `eyebrow` is accepted and shown as the sub line (no eyebrows above titles).
- * Sections and „Další možnosti“: formDialog() in the kit.
- */
-export function simpleDialog({ eyebrow, title, sub, fields, save, remove, removeLabel = 'Smazat', wide = true, saveLabel = 'Uložit', extra }) {
-  return dialogForm({ title, sub: [eyebrow, sub].filter(Boolean).join(' · ') || null, body: h('div', { class: 'form-grid' }, fields), save, remove, removeLabel, saveLabel, wide, extra });
-}
-
-/**
  * The engine behind simpleDialog() and the kit's formDialog(): head, body, error line, sticky foot.
  * @param {{ title: any, sub?: any, body: any, save: Function, remove?: Function, removeLabel?: string,
  *   saveLabel?: string, cancelLabel?: string, wide?: boolean, extra?: any, cls?: string }} options
@@ -809,6 +678,3 @@ export function segment(name, options, value, { label, onchange, size } = {}) {
 
 /** Values of the checked inputs with this name inside `root`. */
 export const checkedValues = (root, name) => [...root.querySelectorAll(`input[name="${name}"]:checked`)].map((i) => i.value);
-
-/** A group of fields with a small label, spanning the grid row: fieldGroup('Vlastnosti', checkboxField(…), …). */
-export const fieldGroup = (label, ...children) => h('div', { class: 'field full', role: 'group' }, labelOf(label), children);

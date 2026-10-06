@@ -13,16 +13,15 @@
 import {
   h, plural, page, button, badge, icon, emptyState, toast, confirmDialog, formDialog, field, textField, textArea,
   selectField, segmentedField, numberField, dateField, eventCover, coverKey, kindMark, progressBar, list, row,
-  groupMark, metaJoin, removeButton,
+  groupMark, metaJoin, removeButton, placeChipsField,
 } from './dom.js';
 import { S, change, newId, navigate, render } from './state.js';
 import { sortable, dragHandle, moveInArray } from './sortable.js';
 import { libraryTabs, LIBRARY_TITLE, byName, clone, publishField, metaItem } from './formats.js';
-import { placeChipsField } from './places.js';
 import { EVENT_KINDS, KIND_LABELS, KIND_ICONS, seriesOfType, seriesSummary, seriesCount, seriesEvents, extendSeries } from '../lib/events.js';
 import { formatById, formatNeeds, mergeNeeds } from '../lib/program.js';
 import { rolesOf, roleById } from '../lib/groups.js';
-import { placeById } from '../lib/places.js';
+import { placeById, placeTree } from '../lib/places.js';
 import { saveImage, loadImageUrl, deleteImage } from '../lib/store/store.js';
 import { today, dayOf, weekday, addMinutes, addMonths, prettyDay, DAYS, DAYS_FULL } from '../lib/time.js';
 
@@ -371,7 +370,7 @@ function basicsSection(d, { onName }) {
     segmentedField('weekday', 'Den v týdnu', DAY_OPTIONS, Number.isInteger(v.weekday) ? String(v.weekday) : '', { full: true, hint: 'Kdy se obvykle schází. Předvyplní se v kalendáři.' }),
     textField('startTime', 'Začátek', v.startTime || '10:00', { type: 'time', attr: { step: 300, required: true } }),
     length,
-    placeChipsField('placeIds', v.placeIds, { hint: 'Místnost v budově zdědí adresu i mapu po budově.' }));
+    placeChipsField('placeIds', placeTree(S.data), v.placeIds, { hint: 'Místnost v budově zdědí adresu i mapu po budově.' }));
   drawUnit();
   const read = () => {
     const f = node.closest('form')?.elements || {};

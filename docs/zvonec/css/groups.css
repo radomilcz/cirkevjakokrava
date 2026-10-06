@@ -102,16 +102,6 @@ button.skill-cell.lvl-learning:hover{box-shadow:inset 0 0 0 1px var(--line-stron
 .member-skill-role{font-size:var(--font-size-4);min-width:0}
 .member-dialog-link{margin:0;font-size:var(--font-size-3)}
 
-/* ---------- several people: chips + combobox ---------- */
-.people-field{display:flex;flex-direction:column;gap:8px;min-width:0}
-.people-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
-.people-chip{
-  display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 2px 0 4px;border-radius:var(--radius-chip);
-  background:var(--selected-bg);color:var(--selected-fg);box-shadow:inset 0 0 0 1px var(--selected-line);font-size:var(--font-size-3);
-}
-.people-chip-name{padding-top:var(--optical);white-space:nowrap}
-.people-chip-x{width:26px;height:26px;border-radius:50%;color:inherit}
-.people-chip-x .icon{width:14px;height:14px}
 
 /* ---------- „Jen část setkání“: a range on a mini timeline ---------- */
 .minute-window{display:flex;flex-direction:column;gap:12px;min-width:0}

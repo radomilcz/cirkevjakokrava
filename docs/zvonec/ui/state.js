@@ -15,7 +15,7 @@ export const S = {
   data: null,              // the whole data object (lib/store/store.js), mutated in place by screens
   store: null,             // LocalStore | GithubStore
   sync: null,              // Sync – saves changes, refreshes what others saved
-  me: null,                // { login, priv, github, personId, access }; demo: login null, access 'admin'
+  me: null,                // { login, priv, github, personId, access }; demo: login null, admin Radim (DEMO_VIEWERS)
   logins: [],              // access.json as published next to the app (sealed records only, no names)
   loginsFromRepo: null,    // fresh list from the data repo (leaders), for managing logins
   repoInfo: null,          // repo.json next to the app: { owner, repo }
@@ -27,7 +27,6 @@ export const S = {
   publicData: null,        // live: public.json next to the app (null until loaded or when missing)
   filters: {               // remembered for the session; screens may add their own keys
     conflictScope: 'upcoming',      // 'upcoming' | 'all'
-    conflictSeverity: 'all',        // 'all' | 'error' | 'warning' | 'info'
     peopleSearch: '',
     rosterKind: 'service',          // event kind or ''
     rosterGroup: '',                // group id or ''
@@ -82,7 +81,7 @@ export function can(level) {
   return mine >= (RANK[level] || Infinity);
 }
 
-/** Person id of the signed-in user (null in the demo unless actAs() picked someone). */
+/** Person id of the signed-in user (null for an admin without a card in Lidé). */
 export const myId = () => S.me?.personId || null;
 
 /** Demo only: look at the app as someone else (personId) with another access level. */
@@ -91,9 +90,6 @@ export function actAs(personId, access = 'admin') {
   S.me = { ...S.me, personId: personId || null, access };
   render({ toTop: true });
 }
-
-/** Is someone signed in? Always in the demo; live only after signing in. */
-export const signedInNow = () => !!S.me;
 
 // ---------- public part ----------
 

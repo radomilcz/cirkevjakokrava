@@ -5,15 +5,14 @@
 // The person card reuses memberDialog(), addToGroupDialog(), removeFromGroup() and personGroupRows();
 // Přehled uses kindWords().
 //
-// Kit candidates defined here (the orchestrator may promote them to ui/kit.js): peopleField() – several
-// people as chips + a combobox; minuteWindowField() – „Jen část setkání“ on a mini timeline;
-// skillMatrixTable() – the „Kdo co umí“ matrix.
+// Also here: minuteWindowField() – „Jen část setkání“ on a mini timeline; skillMatrixTable() – the „Kdo co
+// umí“ matrix. Several people as chips + a combobox is the kit's peopleField().
 
 import {
-  h, plural, andJoin, page, tabs, toolbar, button, badge, list, row, groupedList, avatar, avatarStack, personName,
-  personLine, groupMark, emptyState, toast, confirmDialog, closeDialog, formDialog, field, textField, textArea,
+  h, plural, andJoin, page, tabs, button, badge, list, row, groupedList, avatar, avatarStack, personName,
+  personLine, groupMark, emptyState, toast, confirmDialog, closeDialog, formDialog, textField, textArea,
   segmentedField, switchField, numberField, personPicker, chipLinks, chipsField, menuButton, icon, dateBlock,
-  fillRing, checkedValues, link, selectField, statusIcon, metaJoin, kindMark,
+  fillRing, checkedValues, link, selectField, statusIcon, metaJoin, kindMark, peopleField,
 } from './dom.js';
 import { S, can, change, navigate, newId, SKILL_LABELS, GROUP_KIND_LABELS, MEMBERSHIP_LABELS } from './state.js';
 import {
@@ -73,14 +72,6 @@ export function leadersText(groupId) {
   if (!names.length) return 'bez vedoucího';
   const words = kindWords(groupById(S.data, groupId));
   return `${names.length > 1 ? words.leadN : words.lead1} ${andJoin(names)}`;
-}
-
-/** Compact skill marks of one member: „Zvuk: umí“, „Projekce: učí se“ (text chips, not buttons). */
-export function skillChips(member, roles) {
-  return roles.filter((r) => member?.roles?.[r.id]).map((r) => {
-    const level = member.roles[r.id];
-    return h('span', { class: ['skill', `skill-${level}`] }, `${r.name}: ${SKILL_LABELS[level]}`);
-  });
 }
 
 /** „umí Zpěv a Kytaru“ is grammar we can't do for every role name – „umí: Zpěv, Kytara · učí se: Klávesy“. */
@@ -169,42 +160,6 @@ const activePeople = () => S.data.people.filter((p) => !isFormer(p)).slice().sor
 function personMeta(person) {
   const groups = groupsOf(S.data, person.id).map((g) => g.name);
   return [MEMBERSHIP_LABELS[statusOf(person)] || '', groups.slice(0, 3).join(', ') + (groups.length > 3 ? '…' : '')].filter(Boolean).join(' · ');
-}
-
-// ---------- kit candidate: several people (chips + combobox) ----------
-
-/**
- * Several people as chips (avatar + FULL name + ×) and a combobox to add one more. The chosen ids are
- * hidden inputs `name`, so they submit with the form. Kit candidate.
- *   peopleField({ name: 'leaders', label: 'Vedoucí', people, value: ['p1'] })
- */
-export function peopleField({ name, label: text, people, value = [], hint, placeholder = 'Přidat dalšího – napiš jméno', full = true }) {
-  const chosen = [...value];
-  const holder = h('div', { class: 'people-field' });
-  const redraw = (focus = false) => {
-    const free = people.filter((p) => !chosen.includes(p.id));
-    const picker = personPicker({
-      name: `${name}-add`, label: text, people: free, placeholder: chosen.length ? placeholder : 'Napiš jméno…', clearable: false,
-      meta: personMeta,
-      onchange: (id) => { if (id && !chosen.includes(id)) { chosen.push(id); redraw(true); } },
-    });
-    const combo = picker.querySelector('.combo');
-    holder.replaceChildren(
-      chosen.length ? h('ul', { class: 'people-chips', 'aria-label': text }, chosen.map((id) => {
-        const person = personById(S.data, id);
-        return h('li', { class: 'people-chip' },
-          avatar(person, { size: 'xs' }), h('span', { class: 'people-chip-name' }, personName(person)),
-          h('button', {
-            type: 'button', class: 'btn btn-ghost btn-s btn-icon people-chip-x', 'aria-label': `Odebrat: ${personName(person)}`, title: 'Odebrat',
-            onclick: () => { chosen.splice(chosen.indexOf(id), 1); redraw(true); },
-          }, icon('x')),
-          h('input', { type: 'hidden', name, value: id }));
-      })) : null,
-      combo);
-    if (focus) queueMicrotask(() => holder.querySelector('.combo-input')?.focus());
-  };
-  redraw();
-  return field(text, holder, { hint, full, group: true });
 }
 
 // ---------- kit candidate: „Jen část setkání“ on a mini timeline ----------
@@ -487,7 +442,7 @@ function groupDialog(group, presetKind = 'team') {
           textField('name', 'Název', group?.name, { full: true, attr: { autofocus: true, placeholder: kind === 'team' ? 'Technika' : 'Skupinka u Nováků', autocomplete: 'off', required: true } }),
           kindField,
           textArea('description', 'Popis', group?.description, { attr: { rows: 3, placeholder: 'Co dělají a kdy se scházejí.' } }),
-          peopleField({ name: 'leaders', label: 'Kdo to vede', people: activePeople(), value: leaders, hint: 'Ukáže se u týmu, ať lidé vědí, za kým jít.' }),
+          peopleField({ name: 'leaders', label: 'Kdo to vede', people: activePeople(), value: leaders, meta: personMeta, personOf: (id) => personById(S.data, id), hint: 'Ukáže se u týmu, ať lidé vědí, za kým jít.' }),
         ],
       },
     ],
@@ -576,7 +531,6 @@ export function renderGroup(id, tab = 'lide') {
   const current = allowed.includes(tab) ? tab : 'lide';
   const members = sortedMembers(group.id);
   const roles = team ? rolesOf(S.data, group.id) : [];
-  const words = kindWords(group);
   const leaders = leadersOf(S.data, group.id).map((m) => personById(S.data, m.personId)).filter(Boolean);
   const nav = tabs([
     ['lide', 'Lidé', members.length],

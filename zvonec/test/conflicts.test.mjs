@@ -437,6 +437,21 @@ test('candidates: scope pills – skilled, whole team, everybody', () => {
   assert.deepEqual(eva.reasons.map((r) => `${r.code}:${r.text}`), ['K13:už nechodí']);
 });
 
+test('candidates: whoever declined this duty goes last with the reason and is never proposed again', () => {
+  const d = baseData();
+  d.people.push({ id: 'ota', firstName: 'Ota', membership: { status: 'member' } });
+  d.groupMembers.push(member('tech', 'ota', { zvuk: 'trained' }));
+  d.events = [event('a', '2026-10-11T10:00', '2026-10-11T12:00', {
+    needs: [{ roleId: 'zvuk', count: 1 }],
+    assignments: [asg('x', 'zvuk', 'petr', 'declined')],
+  })];
+  const k = candidates(d, 'a', 'zvuk', { today: TODAY, scope: 'skilled' });
+  assert.deepEqual(k.map((c) => c.person.id), ['ota', 'petr']);
+  assert.deepEqual(k[1].reasons.map((r) => `${r.code}:${r.severity}:${r.text}`), ['declined:error:odpověď: nemůže']);
+  const added = proposeRemaining(d, 'a', () => 'n1', { today: TODAY });
+  assert.deepEqual(added.map((a) => a.personId), ['ota']);
+});
+
 test('candidates: paused people are left out of every scope and never proposed', () => {
   const d = baseData();
   d.servingLimits = [{ id: 'petr', personId: 'petr', paused: true }];

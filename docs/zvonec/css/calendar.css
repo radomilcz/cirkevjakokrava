@@ -134,7 +134,7 @@
   .month-daylist{display:block}
 }
 .month-daylist-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px;padding:0 2px}
-.month-daylist-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-5);line-height:22px;letter-spacing:var(--tracking-mark)}
+.month-daylist-title{margin:0;font-family:var(--title-font);font-weight:900;text-transform:var(--title-transform);font-size:var(--font-size-5);line-height:22px;letter-spacing:var(--title-tracking)}
 
 /* ---------- Týden ---------- */
 .week{--week-gutter:58px;--days:7;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card);overflow:hidden}
@@ -211,10 +211,6 @@
 .kind-inline{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .kind-inline .kind-mark .icon{width:14px;height:14px;margin-top:calc(-1*var(--optical))}
 .mine-badge .icon{stroke-width:2.2}
-.event-row .sev-mark{display:inline-grid;place-items:center;width:20px;height:20px;background:none}
-.event-row .sev-mark .severity-icon{width:16px;height:16px}
-.event-row .sev-mark.sev-error{color:var(--declined-solid)}
-.event-row .sev-mark.sev-warning{color:var(--waiting-fg)}
 .fill-count{display:inline-flex;align-items:center;gap:6px;color:var(--text-2)}
 .fill-count.cancelled{font-size:var(--font-size-3);color:var(--declined-fg)}
 @media (max-width:520px){
@@ -222,27 +218,13 @@
   .event-row .mine-badge{max-width:100%;white-space:normal;height:auto;min-height:24px;padding-block:3px}
 }
 
-/* ---------- popovers: the day, small menus (ui/picker.js anchoredPopover / popMenu) ---------- */
-.anchored-pop{position:fixed;z-index:90;max-width:calc(100vw - 16px);overflow:auto;overscroll-behavior:contain}
-.anchored-pop:focus{outline:none}
+/* ---------- the day popover (kit anchoredPopover) ---------- */
 .day-popover{width:380px;padding:10px 10px 12px}
 .day-pop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 10px}
-.day-pop-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-4);line-height:20px;letter-spacing:var(--tracking-mark)}
+.day-pop-title{margin:0;font-family:var(--title-font);font-weight:900;text-transform:var(--title-transform);font-size:var(--font-size-4);line-height:20px;letter-spacing:var(--title-tracking)}
 .day-pop-items{box-shadow:none;background:none;border-radius:0}
 .day-pop-items .item{padding:8px 10px;min-height:52px;border-radius:var(--radius-3)}
 .day-pop-items>li+li{border-top:0}
-.menu-pop{min-width:200px;padding:6px}
-.pop-menu{display:flex;flex-direction:column;gap:1px}
-.pop-menu-item{
-  display:flex;align-items:center;gap:10px;height:var(--control-2);padding:var(--optical) 10px 0;border:0;border-radius:var(--radius-3);background:none;cursor:pointer;
-  font:inherit;font-size:var(--font-size-4);line-height:1;color:var(--text-1);text-align:left;white-space:nowrap;
-}
-.pop-menu-item .icon{width:16px;height:16px;margin-top:calc(-1*var(--optical));color:var(--text-2)}
-.pop-menu-item:hover,.pop-menu-item:focus-visible{background:var(--hover);outline:none}
-.pop-menu-item.danger{position:relative;margin-top:5px;color:var(--declined-fg)}
-.pop-menu-item.danger .icon{color:currentColor}
-.pop-menu-item.danger::before{content:"";position:absolute;left:4px;right:4px;top:-3px;border-top:1px solid var(--line-1)}
-.pop-menu-item.danger:hover{background:var(--declined-bg)}
 
 @media print{
   .cal-toolbar,.month-day-add,.cal-more,.week-day-add,.now-line,.cal-legend{display:none !important}

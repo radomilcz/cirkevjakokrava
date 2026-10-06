@@ -6,11 +6,11 @@
 // leader's tools (Navrhnout lidi, Obsadit jako minule, Kolik lidí je potřeba). Osnova: ui/program.js.
 
 import {
-  h, page, tabs, button, icon, badge, callout, card, emptyState, fillRing, progressBar, statusIcon, severityIcon,
+  h, page, tabs, button, icon, badge, callout, card, emptyState, fillRing, progressBar, statusIcon, severityMark,
   placeLine, placeMap, kindMark, groupMark, assignee, download, plural, menuButton, textButton,
   dialogForm, numberField, toast, avatarStack,
 } from './dom.js';
-import { S, can, change, myId, newId, SEVERITY_LABELS } from './state.js';
+import { S, can, change, myId, newId } from './state.js';
 import { canOverride, overrideDialog } from './conflicts.js';
 import { needsOf, seriesFor, seriesOf, seriesSummary } from '../lib/events.js';
 import { proposeRemaining, previousEvent, sameAsLastTime } from '../lib/scheduling.js';
@@ -212,7 +212,7 @@ function warningsCard(event, conflicts) {
       const overridable = canOverride(c);
       const aid = (c.assignmentIds || []).find((x) => (event.assignments || []).some((a) => a.id === x)) || (c.assignmentIds || [])[0];
       return h('li', { class: ['warn', `warn-${c.severity}`] },
-        h('span', { class: ['warn-mark', `sev-${c.severity}`], title: SEVERITY_LABELS[c.severity] }, severityIcon(c.severity), h('span', { class: 'visually-hidden' }, `${SEVERITY_LABELS[c.severity]}: `)),
+        severityMark(c.severity, { variant: 'inline' }),
         h('span', { class: 'warn-body' },
           h('span', { class: 'warn-text' }, c.text),
           c.overrideNote ? h('span', { class: 'warn-note' }, `V pořádku: ${c.overrideNote}`) : null,

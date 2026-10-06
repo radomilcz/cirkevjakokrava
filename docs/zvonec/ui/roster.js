@@ -4,17 +4,16 @@
 // Every person carries the status symbol in its colour (the word is in the legend and for screen
 // readers). Prints on A4 landscape (white paper, no marks of warnings).
 
-import { h, icon, severityIcon, statusIcon, statusLabel, personName, groupMark, emptyState, printHeader } from './dom.js';
+import { h, icon, severityIcon, statusIcon, statusLabel, personName, groupMark, emptyState, printHeader, popMenu } from './dom.js';
 import { S, can, myId, SEVERITY_LABELS } from './state.js';
 import { eventsInRange, needsOf } from '../lib/events.js';
 import { personById } from '../lib/people.js';
 import { addDays, addMonths, dayOf, monthOf, prettyDay, prettyTime, today } from '../lib/time.js';
 import {
-  filteredEmpty, kindHue, kindLabel, monthTitle, openIcon, passesFilters, roleComparator, activeFilterCount, validMonth,
+  filteredEmpty, kindHue, kindLabel, monthTitle, openIcon, passesFilters, roleComparator, activeFilterCount,
 } from './calendar-shared.js';
 import { SEVERITY_WEIGHT, assignmentMenu, assignmentProblems, eventConflicts, pickFor } from './event-duties.js';
 import { overrideDialog } from './conflicts.js';
-import { popMenu } from './picker.js';
 
 const STATUS_ORDER = { confirmed: 0, proposed: 1, declined: 2 };
 
@@ -153,11 +152,5 @@ export function rosterView(ctx) {
       skipped ? h('p', { class: 'roster-skipped no-print' }, skipped === 1 ? 'Skryto 1 setkání, které nikoho do služby nepotřebuje.'
         : `Skryto ${skipped} setkání, která nikoho do služby nepotřebují.`) : null),
     h('p', { class: 'note print-only' }, 'Kdo nemůže, ať dá vědět vedoucímu týmu.'));
-}
-
-/** Older call: #rozpis/<month> rendered the roster as its own page – now the Rozpis view of Kalendář. */
-export function renderRoster(month) {
-  location.replace(`#kalendar/rozpis/${validMonth(month)}`);
-  return [];
 }
 

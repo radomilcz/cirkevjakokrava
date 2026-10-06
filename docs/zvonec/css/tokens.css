@@ -61,7 +61,7 @@
   --radius-stage: var(--radius-6);  /* the workspace sheet inset in the chrome */
   --shadow-card: var(--shadow-2); --shadow-raised: var(--shadow-3); --shadow-popover: var(--shadow-4); --shadow-dialog: var(--shadow-5);
   --shadow-stage: var(--shadow-2);
-  --title-font: var(--font-mark); --title-transform: uppercase;
+  --title-font: var(--font-mark); --title-transform: uppercase; --title-tracking: var(--tracking-mark);   /* display titles: page, cards in modules */
   --title-size: var(--font-size-8); --title-line: var(--line-height-8);
   --section-size: var(--font-size-6); --dialog-title-size: var(--font-size-6);
   --row-min-height: 60px; --nav-item-height: var(--control-2);

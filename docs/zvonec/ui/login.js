@@ -2,9 +2,9 @@
 // As in Mobilise Playbook: one GitHub token, sealed to every login. People are just data.
 
 import {
-  h, page, card, button, plural, list, row, groupedList, toast, avatar, personName, menuButton, badge,
-  infoDialog, confirmDialog, formDialog, formError, formErrorLine, textField, selectField, checkboxField,
-  switchField, chipsField, segmentedField, checkedValues, copyButton, callout, emptyState, section, actions, note,
+  h, page, card, button, list, row, groupedList, toast, avatar, personName, menuButton, badge, infoDialog,
+  confirmDialog, formDialog, formError, formErrorLine, textField, selectField, checkboxField, switchField,
+  chipsField, segmentedField, checkedValues, copyButton, callout, emptyState,
 } from './dom.js';
 import {
   S, can, myId, newId, render, signedIn, rememberLogin, loginList, updateLogins, ACCESS_LABELS,
@@ -379,23 +379,6 @@ export function revokeLogin(login) {
 /** May the current user manage this person's login? Leaders manage members, admins everyone. */
 const mayManage = (login) => !login || can('admin') || login.access === 'member' || login.access === 'invite';
 
-/** Block for the person card (leaders, live mode only; null otherwise). */
-export function personLoginSection(person) {
-  if (S.mode !== 'live' || !can('leader')) return null;
-  const existing = loginOf(person.id);
-  const invite = loginList().find((l) => l.personId === person.id && l.access === 'invite');
-  const self = person.id === myId();
-  return section('Přihlášení',
-    note(existing
-      ? `Může se přihlásit jako ${ACCESS_LABELS[existing.access] || existing.access}, od ${dayWithYear(existing.created || today())}.`
-      : invite ? `Má pozvánku, platí do ${dayWithYear(invite.expires)}.` : self ? 'Zatím se nemůžeš přihlásit.' : 'Zatím se nemůže přihlásit.'),
-    mayManage(existing) ? actions([
-      button(existing ? 'Poslat pozvánku znovu' : 'Poslat pozvánku', { variant: 'surface', size: 's', icon: 'send', onclick: () => createInvite(person) }),
-      button(existing ? 'Změnit heslo nebo oprávnění' : 'Vytvořit heslo', { variant: 'surface', size: 's', onclick: () => createLoginDialog(person) }),
-      existing && existing.id !== S.me.login?.id ? button('Zrušit přihlášení', { variant: 'ghost', size: 's', onclick: () => revokeLogin(existing) }) : null,
-    ]) : null);
-}
-
 // ---------- Můj účet: password ----------
 
 /** „Změnit heslo“ (live): login name, the new password twice. */
@@ -500,12 +483,12 @@ export function loginsView() {
   return [
     live ? null : callout('V ukázce se nikdo nepřihlašuje. Takhle by vypadal seznam v ostrém Zvonci – zkus si menu u lidí.', { tone: 'info' }),
     invites.length || orphans.length ? card({
-      title: ['Pozvánky a nedořešené', h('span', { class: 'card-count' }, String(invites.length + orphans.length))],
+      title: 'Pozvánky a nedořešené', count: invites.length + orphans.length,
       body: list([...invites, ...orphans], (l) => (l.access === 'invite' ? inviteRow(l, { trail: menuFor(l) }) : orphanRow(l, { trail: menuFor(l) })), { label: 'Pozvánky' }),
       flush: true,
     }) : null,
     card({
-      title: ['Kdo se může přihlásit', h('span', { class: 'card-count' }, String(people.length))],
+      title: 'Kdo se může přihlásit', count: people.length,
       body: groupedList(groups, loginRow, { label: 'Přihlášení', empty: 'Zatím se nikdo nemůže přihlásit.' }),
       footer: h('p', { class: 'card-note' }, 'Přihlášení vytvoříš na kartě člověka. Nebo pošleš pozvánku a nový člověk si údaje i heslo vyplní sám. Každá změna začne platit za pár minut.'),
       flush: true,

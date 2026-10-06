@@ -2,8 +2,8 @@
 // #misto/<id> (one place: map, address, rooms, when we meet there). Leaders add, edit and delete;
 // members read. A room (place.partOf) inherits the address and the map from its building (lib/places.js).
 //
-// Kit candidates defined here: placeChipsField() – places as chips grouped by building (the template
-// editor and the event form); coordsField() – coordinates with a live OpenStreetMap preview.
+// Also here: coordsField() – coordinates with a live OpenStreetMap preview. Places as chips grouped by
+// building (the template editor, the event form) are the kit's placeChipsField().
 
 import {
   h, plural, page, button, badge, icon, list, row, emptyState, toast, confirmDialog, formDialog, field, textField,
@@ -78,30 +78,6 @@ export function coordsField(name, value, { addressInput, nameInput } = {}) {
   return node;
 }
 
-// ---------- places as chips grouped by building ----------
-
-/**
- * Pick places: chips grouped by building („Monta: Sál · Malá místnost · Kuchyňka“, then the places
- * on their own). A building can be picked too (the whole building). Checkboxes `name`. Kit candidate.
- */
-export function placeChipsField(name, selected = [], { label: text = 'Místo', hint, onchange } = {}) {
-  const tree = placeTree(S.data);
-  const chip = (place, cls, text = place.name) => h('label', { class: ['chip', cls] },
-    h('input', { type: 'checkbox', name, value: place.id, checked: selected.includes(place.id), onchange: onchange || null }),
-    icon('check', { cls: 'chip-check' }), h('span', {}, text));
-  const withRooms = tree.filter((t) => t.rooms.length);
-  const alone = tree.filter((t) => !t.rooms.length);
-  const groups = [
-    ...withRooms.map(({ place, rooms }) => h('div', { class: 'place-chips-group' },
-      h('span', { class: 'place-chips-building' }, icon('building'), place.name),
-      h('div', { class: 'chips' }, rooms.map((r) => chip(r)), chip(place, 'chip-whole', 'celá budova')))),
-    alone.length ? h('div', { class: 'place-chips-group' },
-      withRooms.length ? h('span', { class: 'place-chips-building' }, icon('map-pin'), 'Jinde') : null,
-      h('div', { class: 'chips' }, alone.map(({ place }) => chip(place)))) : null,
-  ];
-  return field(text, h('div', { class: 'place-chips' }, groups), { hint, full: true, group: true });
-}
-
 // ---------- usage ----------
 
 /** Upcoming (not cancelled) events at this place (exactly this id). */
@@ -167,7 +143,7 @@ function placeCard(place, rooms, leader) {
     h('div', { class: 'place-card-main' }, head,
       roomList,
       leader && rooms.length ? h('div', { class: 'place-card-foot' },
-        button('Přidat místnost', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => placeDialog(null, { partOf: place.id }) })) : null),
+        button('Přidat místnost', { variant: 'add', onclick: () => placeDialog(null, { partOf: place.id }) })) : null),
     map ? h('div', { class: 'place-card-map' }, map) : null);
 }
 

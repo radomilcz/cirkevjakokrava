@@ -3,8 +3,8 @@
 // remembered view per viewer. No screen here – the views live in calendar-*.js, roster.js, event*.js.
 
 import {
-  h, row, dateBlock, eventCover, coverKey, andJoin, metaJoin, statusIcon, severityIcon, icon, fillRing, kindMark,
-  KIND_HUES, link, emptyState, button,
+  h, row, dateBlock, eventCover, coverKey, andJoin, metaJoin, statusIcon, severityMark, icon, fillRing, kindMark,
+  KIND_HUES, emptyState, button,
 } from './dom.js';
 import { S, can, myId, render, EVENT_KIND_LABELS, SEVERITY_LABELS } from './state.js';
 import { eventTypeById, fillRatio, needsOf } from '../lib/events.js';
@@ -12,7 +12,7 @@ import { placesOf as resolvedPlaces } from '../lib/places.js';
 import { roleById } from '../lib/groups.js';
 import { loadImageUrl } from '../lib/store/store.js';
 import {
-  MONTHS_GENITIVE, addDays, addMinutes, addMonths, dayOf, monthName, monthOf, prettyRange, prettyTime, today, weekday,
+  MONTHS_GENITIVE, addDays, addMinutes, dayOf, monthName, monthOf, prettyRange, prettyTime, today, weekday,
 } from '../lib/time.js';
 
 export const capital = (text) => text.charAt(0).toLocaleUpperCase('cs') + text.slice(1);
@@ -172,8 +172,7 @@ export function eventRow(event, { past = false, cover = true, showDate = true } 
     meta: metaJoin([timeText(event), placeNames(event), kindLabelNode(event.kind)]),
     trail: [
       mine.length && !event.cancelled ? h('span', { class: 'badge badge-accent mine-badge' }, icon('user'), `sloužíš: ${mine.join(', ')}`) : null,
-      warning ? h('span', { class: ['sev-mark', `sev-${warning}`], title: SEVERITY_LABELS[warning] }, severityIcon(warning),
-        h('span', { class: 'visually-hidden' }, SEVERITY_LABELS[warning])) : null,
+      warning ? severityMark(warning, { variant: 'inline' }) : null,
       leader || event.cancelled ? fillCount(event) : null,
     ],
     href: `#setkani/${event.id}`,
@@ -221,9 +220,6 @@ export function rememberView(view) {
 
 const isDay = (text) => /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(text || '') && !Number.isNaN(new Date(`${text}T12:00`).getTime());
 const isMonth = (text) => /^\d{4}-(0[1-9]|1[0-2])$/.test(text || '');
-
-/** 'YYYY-MM' from the hash when it is a real month, otherwise the current one (#kalendar/2099-13). */
-export const validMonth = (month) => (isMonth(month) ? month : monthOf(today()));
 
 /**
  * The day a calendar view is anchored on: a day from the hash, the 1st of a month from the hash
@@ -295,15 +291,6 @@ export function filteredEmpty(text = 'Tomu, co máš ve filtrech, tu nic neodpov
 export const isPhone = () => !!window.matchMedia?.('(max-width: 719.98px)').matches;
 
 // ---------- older helpers kept for other modules ----------
-
-/** ‹ Říjen 2026 › – the old month bar (kept for older screens; the calendar uses the kit's dateNav). */
-export function monthBar(shown, base) {
-  const step = (n) => `${base}/${monthOf(addMonths(`${shown}-01`, n))}`;
-  return h('div', { class: 'month-bar' },
-    link('‹', step(-1), 'btn btn-ghost btn-icon', { 'aria-label': 'Předchozí měsíc' }),
-    h('h2', { class: 'datenav-label' }, monthTitle(shown)),
-    link('›', step(1), 'btn btn-ghost btn-icon', { 'aria-label': 'Další měsíc' }));
-}
 
 /** A status symbol as a node (re-exported for older screens). */
 export { statusIcon };

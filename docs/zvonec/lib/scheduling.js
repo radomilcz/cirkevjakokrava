@@ -176,6 +176,10 @@ export function candidates(data, eventId, roleId, { today, scope = 'skilled', in
     if (!level) reasons.push({ code: 'K4', severity: 'info', text: member ? 'tuhle roli ještě nedělal(a)' : 'není v týmu' });
     else if (level === 'learning') reasons.push({ code: 'K4b', severity: 'info', text: 'učí se' });
     if (unavailability(data, person.id, mine)) reasons.push({ code: 'K3', severity: 'error', text: 'nemůže' });
+    // they already said no to this very duty – offered last, never proposed again
+    if ((event.assignments || []).some((a) => a.personId === person.id && a.roleId === roleId && a.status === 'declined')) {
+      reasons.push({ code: 'declined', severity: 'error', text: 'odpověď: nemůže' });
+    }
     for (const s of theirs) {
       if (!overlaps(s, mine)) continue;
       if (s.event.id !== event.id) {

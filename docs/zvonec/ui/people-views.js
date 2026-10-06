@@ -36,6 +36,7 @@ const VIEWS = [
   ['bremeno', 'Břemeno', 'scale'],
 ];
 const MEMBER_VIEWS = ['seznam', 'domacnosti', 'skupiny'];
+const FILTER_VIEWS = ['seznam', 'tabulka', 'skupiny'];   // the views the chips Členové · Hosté… apply to
 export const PEOPLE_VIEWS = VIEWS.map(([id]) => id);
 
 const VIEW_KEY = 'zvonec-people-view';
@@ -68,18 +69,20 @@ export function renderPeoplePage(parts = []) {
   let view;
   let arg;
   if (PEOPLE_VIEWS.includes(first)) { view = allowed.includes(first) ? first : defaultView(); arg = second; } else { view = defaultView(); arg = first; }
-  write(VIEW_KEY, view);
   const slugIn = arg in FILTER_ALIASES ? FILTER_ALIASES[arg] : arg;
   const filter = leader ? FILTERS.find(([s]) => s === slugIn) || FILTERS[0] : FILTERS[0];
+  // #lide/<filtr> from another screen (Přehled › Karty k doplnění) needs a view that filters
+  if (filter[0] && !FILTER_VIEWS.includes(view)) view = can('leader') && !isPhone() ? 'tabulka' : 'seznam';
+  write(VIEW_KEY, view);
   const canonical = `#lide/${view}${arg && (view === 'bremeno' || filter[0]) ? `/${view === 'bremeno' ? arg : filter[0]}` : ''}`;
   if (location.hash !== canonical) history.replaceState(history.state, '', canonical);
 
-  const hrefFor = (v) => `#lide/${v}${filter[0] && ['seznam', 'tabulka', 'skupiny'].includes(v) ? `/${filter[0]}` : ''}`;
+  const hrefFor = (v) => `#lide/${v}${filter[0] && FILTER_VIEWS.includes(v) ? `/${filter[0]}` : ''}`;
   const body = h('div', { class: ['people-body', `people-${view}`] });
   const ctx = { view, filter, leader, body };
   const draw = () => body.replaceChildren(...nodes(VIEW_BODIES[view](ctx)));
 
-  const usesFilter = ['seznam', 'tabulka', 'skupiny'].includes(view);
+  const usesFilter = FILTER_VIEWS.includes(view);
   const usesSearch = usesFilter || view === 'domacnosti';
   const search = usesSearch ? searchField({
     value: S.filters.peopleSearch,
