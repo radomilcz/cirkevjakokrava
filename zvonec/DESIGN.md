@@ -1,137 +1,223 @@
-# Zvonec – design brief (binding for the redesign)
+# Zvonec – design brief (binding)
 
-Owner's words, condensed: the current UI is both overgrown and not working. Every module must work
-perfectly and be understandable on its own: people and roles, formats, events. Lists must be
-beautiful. It is a tool and must behave like one – but friendly. Generous with space, never wasteful.
-A left sidebar is welcome. Remember what the public sees and what only a signed-in person sees: the
-public part is made of what we publish from the private part (events, meetings…).
+Owner's words, condensed: a tool, not a poster. Every module works perfectly and is understandable on
+its own. Lists are beautiful. Friendly, generous with space, never wasteful. Remember what the public
+sees and what only a signed-in person sees: the public part is made of what we publish from the
+private part. Source of the numbers: `docs/zvonec/css/tokens.css` (tokens) and the living specimen
+`#kit` (leaders only, not in the nav). If this file and the code disagree, fix one of them in the
+same change.
 
 ## 1. Principles
 
-1. **One page = one job.** The page title says what it is. No taglines/eyebrows above titles – if the
-   title doesn't work, a tagline won't save it. A lead sentence under the title only when it adds
-   something the title can't (max one sentence).
-2. **Tool first.** Primary action of the page is one obvious button top-right of the page header.
-   Secondary actions are quiet. Destructive actions live in the edit dialog, never in lists.
-3. **Lists are the product.** Every collection (people, teams, roles, formats, events, warnings,
-   duties) uses the same list component: leading (avatar / date block / dot), primary line, one
-   secondary meta line, trailing (status / count / chevron). Whole row clickable when it opens
-   something. Same row height rhythm everywhere. Empty state = one sentence + the primary action.
-4. **People are shown with their full name** wherever a person is assigned to something (duty,
-   osnova item leader, team member, picker). Only the dense roster table may use
-   „Veronika F.“ – and only when it must; never a bare first name for an assignment.
-5. **Status is a symbol + word, never a word alone.** Assignment status:
-   - `confirmed` → filled circle with ✓ + „potvrdil(a)“ / „potvrzeno“
-   - `proposed`  → dashed ring with a clock + „čeká na potvrzení“
-   - `declined`  → ✕ in a ring, name struck through + „nemůže“
-   The symbol is drawn (SVG/CSS), works in every palette, prints in black.
-6. **Space:** content column max ~72ch for text, lists up to ~880px, wide tables may use the full
-   main area. Consistent spacing scale (4/8/12/16/24/32/48). No 1280px-wide forms; dialogs ≤ 560px
-   (wide variant 760px).
-7. **Type:** Agrandir Regular for everything readable; Narrow Black for page titles (h1, uppercase,
-   big – as in Otázky na tělo), section headings (h2, uppercase) and marks (initials in avatars, team
-   marks, day numbers, times); Grand Heavy only for the brand mark. Minimum 15px body on phone, 14px
-   meta. Muted text only for real meta, and it must pass 4.5:1 contrast in every palette.
-8. **Czech** natural and plain (CLAUDE.md). Buttons = verb (+ object). No calques
-   („mít přihlášení“ → „může se přihlásit“).
-9. **Pills are one family:** radius 999px, three heights (46 · 38 · 30 px); navigation, filters,
-   segments and buttons all use them. Outline = can be clicked, ink fill = chosen / primary. The text is
-   optically centred on the cap height (see the PILLS note at the top of style.css); font sizes in pills
-   are whole pixels that Agrandir lays out without rounding (12, 13, 15, 16, 17 px).
+1. **One page = one job.** The page title says what it is. No eyebrows or taglines above titles. A lead
+   sentence only when it adds something the title can't (max one).
+2. **Tool first.** One obvious primary action, top right of the page header (`solid` button, one per
+   view). Secondary actions are quiet. Destructive actions live bottom-left in the edit dialog or page,
+   never in lists.
+3. **Lists are the product.** Every collection uses the same `list` / `row`: leading (avatar, date
+   block, team mark), title, one meta line, trailing (status, count, chevron). The whole row is
+   clickable when it opens something. Lists sit in a panel, not as hairlines on the page. An empty
+   state is one sentence plus the primary action.
+4. **Full names** wherever a person is assigned to something (duty, osnova item, team member, picker).
+   Only the dense Rozpis table may shorten („Veronika F.“), never to a bare first name.
+5. **Status = symbol + colour + word**, never one of them alone and never outline style alone.
+   `confirmed` filled circle with a tick, green, „potvrzeno“; `proposed` dashed ring with a clock,
+   amber, „čeká na potvrzení“; `declined` ✕ in a ring, red, name struck through, „nemůže“. Warnings:
+   `error` / `warning` / `info` have their own symbols and the words chyba / pozor / info. Symbols
+   are drawn (SVG), use `currentColor` and print in black.
+6. **Semantics before looks.** Screens and the kit emit one semantic DOM; looks only override tokens
+   and a few structural rules (§2). No raw colours, font names or radius numbers in module CSS.
+7. **Czech** is natural and plain (CLAUDE.md, `kontrola-cestiny`). Buttons are a verb (+ object).
+   „Může se přihlásit“, never „má přihlášení“.
+8. **Keyboard and screen reader:** real buttons and links, a label on every field, a visible focus ring
+   (2 px `--focus`), Esc closes dialogs and menus, `aria-current` / `aria-pressed` / `aria-selected`
+   mirror what is shown as chosen.
 
-## 2. Layout
+## 2. Two looks, one DOM
 
-- **Desktop (≥ 960px):** a header across the page: brand „církev jako kráva“ on one line with the
-  quiet label „Zvonec“; on the right the save status (only while saving / on error), the palette
-  picker and the signed-in person (avatar + name → Můj účet) or „Přihlásit se“. Under it the sidebar
-  (256px) – a column as tall as the page whose navigation (an icon + label per item) sticks under the
-  header; at its bottom only „Veřejná část“ in the demo. Main area: page header (title, optional lead,
-  primary action) then content.
-- **Phone:** the header is the top bar with brand + menu button; the menu opens the same navigation as a
-  sheet, with the signed-in person and the palette picker at its bottom.
-  No horizontal scrolling anywhere except inside the roster table.
-- Print: no sidebar, no top bar.
+| | look **Zvonec** (default) | look **Milníkovač** (`milnik`) |
+|---|---|---|
+| attribute | `<html data-look="zvonec">` | `<html data-look="milnik">` |
+| file | `css/tokens.css` (the base for every look; no `look-zvonec.css`) | `css/look-milnik.css`, loaded last |
+| character | tool on a cream stage, sheet inset in the chrome, rounded rectangles for controls, uppercase Narrow titles 32 px | the owner's prototype in our palette: pill controls and pill tabs, sentence-case Narrow titles 36 px, hero page head, wider sidebar (264 px), narrower lists (780 px) |
 
-## 3. Modules and navigation
+Both use the brand: clay `#3b2f2f`, pink `#e6acac`, cream `#f9e7dd`; Agrandir Regular, Agrandir Narrow
+Black, Agrandir Grand Heavy.
 
-Leader / admin sidebar (in this order):
-1. **Moje** – my duties waiting for an answer, my next duties, when I can't, my teams (only when the
-   signed-in login has a person).
-2. **Kalendář** – month / list of events; event detail (people on duties, osnova); new event.
-3. **Rozpis** – month table, print.
-4. **Lidé** – registry: filters Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí; person detail;
-   households.
-5. **Týmy a role** – teams, home groups, leadership; a team lists its roles and who can do what.
-6. **Formáty** – building blocks of the osnova; each with Proč a Jak; can be published.
-7. **Upozornění** – with a count.
-8. **Nastavení** – Sbor, Šablony setkání, Místa, Přihlašování, Záloha.
+- **Mode** (`data-theme="light|dark"`, absent = the device decides) and **look** are independent.
+  Both are chosen in the header menu „Vzhled“ (sections „Režim“: Podle zařízení · Světlý · Tmavý, and
+  „Vzhled“: Zvonec · Milníkovač), and again in Můj účet. They are remembered per browser
+  (`localStorage` `zvonec-theme`, `zvonec-look`; never part of the data).
+- A link may set them: `?vzhled=milnik|zvonec`, `?rezim=svetly|tmavy|zarizeni`; the choice is kept.
+- `ui/palette.js` is a classic script in `<head>`: it applies both attributes before the first paint,
+  exposes `window.zvonecAppearance` and fires `zvonec:appearance`.
+- A look may change tokens, the shell, tabs, buttons, badges, titles; it must not change structure,
+  copy or behaviour. Every feature works the same in both.
 
-Member sidebar: Moje · Kalendář · Rozpis · Lidé (directory) · Formáty (read-only).
+## 3. Tokens and semantic rules
 
-Each module must be complete on its own: list → detail → create/edit/delete, with no detour through
-another module to finish its own job (e.g. adding a member to a team happens in the team; setting
-someone's roles can also be reached from the person's detail, which links to the team).
+Components use only **semantic tokens**; raw scale steps only for categorical colour.
 
-## 4. Public vs. signed-in
+- **Scales** (OKLCH, 12 steps, pinned to the palette): gray (warm „clay“), rose (accent), green, amber,
+  red, blue, plum, teal. Steps: 1–2 backgrounds · 3–5 fills · 6–8 lines · 9 solid · 10 solid hover ·
+  11 low-contrast text · 12 high-contrast text; `-aN` = alpha twin. Contrast is verified (WCAG AA for
+  text, 3:1 for non-text), light and dark.
+- **Surfaces**, lighter = closer: `--surface-chrome` (header, sidebar) → `--surface-app` (the stage,
+  brand ground) → `--surface-panel` (cards, lists, tables, menus) → `--surface-overlay` (dialogs,
+  popovers, toasts). Shadows define containers, `--line-1` divides content inside them.
+- **Text:** `--text-1` (ink) · `--text-2` (meta, ≥ 4.5:1 everywhere) · `--text-3` (placeholder,
+  disabled only) · `--text-accent`.
+- **Status:** `--confirmed-*` green, `--waiting-*` amber, `--declined-*` red, `--info-*` blue, each
+  `-bg` / `-fg` / `-solid`.
+- **Role tokens a look overrides:** `--radius-control-1..3`, `--radius-nav|card|dialog|badge|chip|tab|
+  avatar|mark|stage`, `--shadow-*`, `--title-font|transform|size|line`, `--section-size`,
+  `--row-min-height`, `--nav-item-height`, `--control-1..3`, `--w-*`, `--sidebar`.
+- **Selected vs clickable.** *Selected* changes three channels at once: fill hue (neutral → rose
+  `--selected-bg`), a shape mark (indicator bar on nav and rows, underline on tabs, raised thumb on a
+  segmented control, ✓ on a filter chip, tick or dot in checkbox / radio), and text colour
+  (`--selected-fg`), plus the matching `aria-` attribute. *Clickable* is shown by a fill (buttons are
+  never an outline alone), a hover fill, the cursor and a chevron or ⋯ at the row end. Rose means
+  selection; the primary action is the ink of the mode (clay in light, pink in dark).
+- **Shape rule.** Rounded rectangles are things you act on (buttons, fields, segmented, nav items);
+  full pills are state and identity (badges, counts, filter chips, avatars, switch). Dashed lines are
+  reserved for „čeká“. Round = a person, rounded square = a team. (Look Milníkovač makes controls pills
+  too, but selection still uses the three channels.)
+- **Categorical hues** (teams, Účel, avatars): rose, blue, green, plum, teal, amber through `.c-<hue>`
+  classes that set `--c3/4/5/9/11/12` (CSP-safe, no inline styles). Účel: Nedělní setkání rose,
+  Zkouška blue, Skupinka teal, Akce plum. An avatar's hue is a stable hash of the person id.
+  Colour never carries a meaning alone: Účel has an icon (`sun`, `music`, `home`, `star`).
+- **The imprint** (cow-skin pattern) only on public pages and generated covers.
+
+## 4. Type, space, size
+
+| token | px | use |
+|---|---|---|
+| `--font-size-8` | 32 (36 in Milníkovač) | h1 page title, Narrow Black, uppercase (sentence case in Milníkovač) |
+| `-7` | 24 | h1 on a phone, big numbers |
+| `-6` | 20 | h2 section, dialog title (Narrow, uppercase) |
+| `-5` | 17 | lead sentence, size-3 controls |
+| `-4` | 15 | body, row titles, size-2 controls |
+| `-3` | 14 | meta, table cells, labels, hints (not inside pills) |
+| `-2` | 13 | badges, chips, size-1 controls |
+| `-1` | 12 | Narrow labels (tracking .08em), counts |
+
+Agrandir Regular for everything readable; Narrow Black for titles, labels and marks (initials, day
+numbers, times in chips); Grand Heavy for the brand only. Font sizes in controls are whole pixels that
+Agrandir lays out without rounding (12, 13, 15, 16, 17); the optical centring (`--optical`) stays.
+Space: 4 · 8 · 12 · 16 · 24 · 32 · 40 · 48 · 64. Radius: 4 checkbox · 6 / 8 / 10 controls · 14 cards ·
+18 dialogs and stage. Control heights 28 / 36 / 44 (44 for anything tappable in a row on a phone).
+Widths: text 72ch, list 960, form 640, wide = the whole stage; dialogs 560 (wide 760).
+
+## 5. Layout and shell
+
+```
+header.appbar     brand „církev jako kráva“ + „Zvonec“ · save status (only while saving / on error) ·
+                  Vzhled menu · me (avatar + name → Můj účet) | „Přihlásit se“
+div.app-body
+  aside.sidebar   nav (icon + label, count on Upozornění) · at the bottom „Veřejná část“ / „Zpátky do Zvonce“
+  main.stage      div.page > header.page-head (back link · h1 · lead · actions · tabs · toolbar) + div.page-body
+dialog#dialog · div.toasts
+```
+
+- **Page head:** title, optional lead, primary action top right, **views as tabs** under the title
+  (`tabs`; sections of one object), a **toolbar** below (period navigator, filters, search).
+  `viewSwitch` (segmented) is for switching how one thing is shown inside a tab.
+- **Phone (< 960 px):** the appbar has the brand and „Menu“; the sidebar becomes a sheet that also holds
+  Vzhled and the person; tabs scroll sideways. Calendar and tables degrade on purpose: Měsíc is a compact
+  grid with a day list under it, Týden shows 3 days, Tabulka falls back to Seznam. No horizontal page
+  scroll except inside tables.
+- **Print:** no sidebar, no appbar, white paper. Osnova A4 portrait, Rozpis A4 landscape.
+
+## 6. Modules and views (sitemap)
+
+Sidebar in order of frequency; slugs are what people see and share.
+
+| module | route | views / tabs | leader | member |
+|---|---|---|---|---|
+| **Přehled** | `#prehled` | blocks per role (answer, my duties, next Sunday, week, open slots, what doesn't fit, people, logins) | yes | yes, own blocks |
+| **Kalendář** | `#kalendar/<pohled>/<datum>` | **Měsíc · Týden · Seznam · Rozpis**; filters Účel, Tým, „Jen moje služby“ | edit, plan in Rozpis | read |
+| Setkání | `#setkani/<id>[/sluzby\|/osnova]` | **Přehled · Kdo slouží · Osnova** | edit | read, answer own duty |
+| **Upozornění** | `#upozorneni[/lide]` | **Podle setkání · Podle lidí**; Závažnost, Kdy | yes | – |
+| **Lidé** | `#lide/<pohled>/<filtr>` | **Seznam · Tabulka · Domácnosti · Podle skupin · Narozeniny · Břemeno**; filters Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí (+ Chybí údaje) | all six | Seznam · Domácnosti · Podle skupin |
+| Karta člověka | `#osoba/<id>`, `#domacnost/<id>` | per-section editing | edit | reduced card |
+| **Týmy a skupinky** | `#tymy/<tymy\|skupinky\|vedeni\|umi>` | **Týmy · Skupinky · Vedení · Kdo co umí** (matrix) | yes | – |
+| Tým | `#tym/<id>/<lide\|role\|umi\|setkani>` | skupinka and vedení: Lidé · Setkání only | edit | – |
+| **Jak se scházíme** | `#sablony`, `#formaty[/<id>]`, `#mista` | **Šablony · Formáty · Místa**; full-page editors `#sablona/<id>`, `#misto/<id>` | edit | Formáty · Místa read |
+| **Nastavení** | `#nastaveni/<sbor\|pravidla\|prihlaseni\|zaloha>` | **Sbor · Pravidla · Přihlášení · Záloha** (GitHub klíč and „Nahrát zálohu“: admin) | yes | – |
+| **Můj účet** | `#ucet` | contact, kdy nemůžu, .ics, Vzhled, heslo, odhlásit; demo „Dívat se jako“ | yes | yes |
+| **Veřejná část** | `#program[/<id>]`, `#jak-se-schazime` | Program (hero, weeks, „Kde nás najdete“), one event, published formats | everyone | everyone |
+
+Navigation per role: leader **Přehled · Kalendář · Upozornění · Lidé · Týmy a skupinky · Jak se
+scházíme · Nastavení**; member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor **Program · Jak se
+scházíme · Přihlásit se**. Rozpis is a Kalendář view (the planning surface: a cell opens the picker in
+place), not a module. Each module is complete on its own: list → detail → create / edit / delete,
+with no detour through another module. Old slugs redirect (list in ARCHITECTURE.md §5).
+
+## 7. Forms
+
+- **At most ~7 visible controls.** The rest under **„Další možnosti“** (`disclosure`; remembers its
+  state; opens by itself when something inside is set).
+- Sections with a small heading and a one-line hint only when needed. Labels above, hints below.
+- Single choice of ≤ 4 options: segmented control; more: select or combobox. Yes / no: **switch with a
+  sentence label**, never a checkbox paragraph. Several entities: chips with a check mark and fill.
+- **Dialog ≤ 560 px** for ≤ 2 sections (wide 760 for two text areas). Anything with a list inside (needs,
+  osnova, rooms) is a **page** with a section nav and a sticky „Uložit“, not a dialog.
+- Validation inline, in Czech, with the ✕ symbol; never only a red border. Fields are 36 px with a
+  border plus a lighter fill plus a label.
+- A series question („Jen tohle setkání / I N dalších“) is asked **on save**, as two buttons.
+- Footer: destructive action soft red on the left, „Zrušit“ ghost and „Uložit“ solid on the right.
+
+## 8. Public vs. signed-in
 
 | | public (not signed in) | member | leader / admin |
 |---|---|---|---|
-| published events: title, date, time, place, public note | ✓ | ✓ | ✓ |
-| published formats: name, Proč, Jak | ✓ | ✓ | ✓ |
-| names of people, duties, roster, osnova leaders | – | ✓ | ✓ |
-| contacts | – | only people who show them | ✓ |
-| membership, notes, consent, availability reasons, warnings | – | – | ✓ |
+| published events: title, date, time, places (address, map), description, picture | yes | yes | yes |
+| published formats: name, minutes, Proč, Jak | yes | yes | yes |
+| names of people, duties, Rozpis, osnova leaders | – | yes | yes |
+| contacts | – | only people who share them | yes |
+| membership, ages, notes, consent, availability reasons, Upozornění, Břemeno | – | – | yes |
 
-- Publishing is explicit: `event.public` (default from the event type's `public`), optional
-  `event.description` (the text people read); `format.public`. Nothing else is ever public.
-- The public site is built from data the data repo publishes: the data-repo workflow writes
-  `public.json` = `{ churchName, address, events: [{id,title,kind,start,end,places:[{name,address,lat,lon}],description,image}],
-  formats: [{id,name,minutes,why,how}] }` next to the app; only `public: true` items, upcoming
-  (from today −1 day, 120 days ahead), no person data at all. `lib/public.js` builds it (pure,
-  tested); the workflow runs it with node.
-- Signed-out visitor sees: **Program** (upcoming published events, list grouped by week) ·
-  **Jak se scházíme** (published formats) · **Přihlásit se** (button in the sidebar/top bar).
-  The sign-in form is a page, not the whole site.
-- Demo mode shows the public view too (built from demo data with `lib/public.js`).
+- Publishing is explicit: `event.public` (a new event starts from its template's `public`), the text
+  people read in `event.description`; `format.public`. `event.note` („Pro tým“) is never public.
+  Nothing else ever is.
+- The public site is built from `public.json`, written by the data-repo workflow from published,
+  upcoming items only (`lib/public.js`, pure, tested; no person data at all). Rooms are resolved to
+  `{ name, building?, address?, lat?, lon? }`.
+- A visitor sees Program, Jak se scházíme and „Přihlásit se“; the sign-in form is a page, not the site.
+  Demo mode shows the same public pages built from demo data („Veřejná část“ in the sidebar).
+- Every event has a picture, title, date, time and description: uploaded `event.image`, else the
+  template's, else a **generated cover** (palette, imprint, title in Narrow Black; one template or
+  series = one composition). Places show address and „Otevřít v mapě“ and, with coordinates, an
+  OpenStreetMap iframe.
 
-## 4b. Events and places look like events
+## 9. Components (the kit: `ui/kit.js`, `ui/icons.js`, re-exported by `ui/dom.js`)
 
-- **Every event has: a picture, a title, date, time and a description.**
-  - Picture = an uploaded photo/graphic (`event.image`), else the event type's picture
-    (`eventType.image`), else a **generated cover** in the brand: palette colours, the imprint
-    pattern (imprint.svg) and the title set in Narrow Black. The generated cover is never empty
-    and always looks deliberate.
-  - `event.description` = the text people read about the event (public when the event is public).
-    `event.note` stays internal (for the team). The event type can carry a default description.
-- **Places have an address and a map.** `place.address` (one line), optional `place.lat`/`place.lon`.
-  The place shows the address with „Otevřít v mapě“ (link to mapy.cz search/coords, opens a new
-  tab) and, when coordinates are known, an embedded OpenStreetMap map (iframe; CSP gets
-  `frame-src https://www.openstreetmap.org`). Event detail and public event show the place with
-  its address and map link.
-- Images are stored in the private data repo under `data/images/` (resized in the browser to max
-  1600 px, WebP/JPEG ~80 %). The data-repo workflow copies images of **published** events into the
-  public site; unpublished images never leave the private repo.
+Screens import only from `ui/dom.js`. The specimen `#kit` renders every piece in both modes.
 
-## 5. Components (ui/dom.js and friends)
+- **Page:** `page({ title, lead, meta, back, media, actions, tabs, toolbar, body, width })`, `tabs`,
+  `viewSwitch`, `toolbar`, `spacer`, `dateNav`, `searchField`, `chips`, `chipLinks`.
+- **Actions:** `button` (variants `solid` · `soft` · `surface` · `ghost` · `danger`; sizes s / m / l),
+  `iconButton`, `menuButton` (kebab).
+- **Status:** `badge`, `countBadge`, `statusBadge`, `statusIcon`, `severityBadge`, `severityIcon`,
+  `callout`, `fillRing` / `progressBar` („12 z 14“), `toast`.
+- **Containers:** `card`, `panel`, `facts`, `emptyState`, `list` / `row` / `groupedList`, `dateBlock`,
+  `table` (sortable, selectable, bulk bar, `statusCell`).
+- **People and marks:** `avatar`, `avatarStack`, `personName`, `personLine`, `assignee`, `groupMark`,
+  `kindMark`, `eventCover`, `placeLine`, `placeMap`, `metaJoin`.
+- **Forms:** `formDialog`, `infoDialog`, `formSection`, `disclosure`, `field`, `textField`, `textArea`,
+  `selectField`, `segmentedField`, `chipsField`, `switchField`, `dateField`, `timeRange`, `numberField`,
+  `personPicker`; modules may define kit candidates (`peopleField`, `placeChipsField`, `coordsField`,
+  `skillMatrixTable`) until they are promoted.
+- Meta lines join their parts with „ · “ (`metaJoin`; the dot stays at the end of a wrapped line).
+- New piece needed: build it in your module, list it in the change, then promote it into the kit and
+  the specimen.
 
-- `pageHeader({ title, lead?, actions?, media? })` – no eyebrow parameter; `media` = the large avatar of a
-  person or the mark of a team in front of the title.
-- `list(items, row)` + `row({ lead, title, meta, trail, href|onclick })`.
-- `avatar(person, size)` – initials circle (colour derived from the palette, not random hues).
-- `personName(person, { full = true })` – full name; `shortName` only for the roster table.
-- `assignee(assignment, person, { canAnswer, canEdit })` – avatar + full name + status symbol and
-  word; answer buttons „Potvrdit“ / „Nemůžu“ when it's mine; leader actions in a small menu.
-- `statusIcon(status)` – the three symbols from §1.5.
-- `emptyState(text, action?)`, `section(title, actions?)`, dialogs ≤ 560px.
-- `eventCover(event, { size, title?, variantKey? })` – the picture or the generated brand cover (§4b). Events
-  with the same `variantKey` (`coverKey(event)` = the title: one template, one series) get the same
-  composition and tone; `title: false` on the event page, which shows title and date right under it.
-- `placeLine(place | places)` – name, address, „Otevřít v mapě“; places at one address share a line
-  („Sál a Malá místnost · Sokolovská 12 · Otevřít v mapě“). `placeMap(place)` – OSM iframe when coordinates exist.
-- Meta lines join their parts with „ · “ (`metaJoin`); the dot stays at the end of a wrapped line.
+## 10. Done means
 
-## 6. Done means
-
-- Every flow in every module works in demo and in live mode (mocked GitHub), tested in a browser.
-- Lists look calm and consistent at 1280 and 390; nothing stretched, nothing tiny.
+- Every flow of every module works in demo and in live mode (mocked GitHub) for admin, leader, member
+  (via „Dívat se jako“) and signed out.
+- Screens checked at 1440 × 900 and 390 × 844, light and dark, in **both looks**; nothing stretched or
+  tiny, no horizontal scroll, zero console errors.
+- Contrast holds in every mode; focus is visible; everything works by keyboard.
 - Public part shows only published data; tests prove `public.json` has no person data.
+- `node --test zvonec/test/*.test.mjs` is green and every JS file passes `node --check`.

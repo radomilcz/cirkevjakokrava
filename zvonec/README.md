@@ -1,22 +1,32 @@
 # Zvonec – kdo co kdy dělá
 
-Zvonec je správa sboru a plánovač setkání pro Církev jako kráva: **lidé, skupiny, kalendář, rozpis služeb,
-osnova setkání a upozornění**. Běží jen na GitHubu – aplikace na GitHub Pages, data v soukromém repu,
-kontrola v GitHub Actions. Žádný server, žádná další služba.
+Zvonec je správa sboru a plánovač setkání pro Církev jako kráva: **lidé, týmy a skupinky, kalendář
+s rozpisem služeb, osnova setkání a upozornění**. Běží jen na GitHubu – aplikace na GitHub Pages, data
+v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další služba.
 
 **Ukázka s vymyšlenými lidmi:** https://manifest.cirkevjakokrava.cz/zvonec/
 
-Design je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, otisk z Figmy,
-pilulky, šipky, tykání a stejná paleta. Bez volby se Zvonec řídí zařízením: ve světlém režimu krém a hlína
-(`#f9e7dd` / `#3b2f2f`), v tmavém hlína a růžová (`#3b2f2f` / `#e6acac`). Terč vpravo nahoře (na telefonu v menu) nabídne
-pět dvojic z palety, které mají dost kontrastu i na drobný text; volbu si pamatuje prohlížeč. Tisk jde vždycky na bílý papír.
+## Vzhled
 
-## Tři části: Lidé, Skupiny, Setkání
+Zvonec je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, stejná
+paleta (hlína, růžová, krém), tykání. Vzhled si nastavíš v hlavičce v nabídce **Vzhled** (na telefonu je
+v menu), stejnou volbu najdeš i v Můj účet:
+
+- **Režim:** Podle zařízení (výchozí) · Světlý · Tmavý.
+- **Vzhled:** **Zvonec** (výchozí – klidný pracovní nástroj na krémovém podkladu) nebo **Milníkovač**
+  (stejná data i stejné obrazovky, jen kulatější tlačítka, nadpisy psané normálně místo velkých písmen a jiné rozložení hlavičky stránky).
+
+Volbu si pamatuje prohlížeč, takže platí jen u tebe. Chceš někomu poslat odkaz rovnou v určitém vzhledu?
+Přidej do adresy před `#` třeba `?vzhled=milnik` (nebo `?vzhled=zvonec`) a případně `&rezim=tmavy` (`svetly`, `zarizeni`),
+tedy `…/zvonec/?vzhled=milnik&rezim=tmavy#kalendar`.
+Tisk jde vždycky na bílý papír.
+
+## Tři části: Lidé, Týmy a skupinky, Setkání
 
 Zvonec stojí na třech částech a každá navazuje na tu předchozí:
 
 1. **Lidé** – seznam všech, kdo k nám patří: kontakt, domácnost, členství. O plánování neví nic.
-2. **Skupiny** – vybírají si lidi ze seznamu. Tým (Technika, Chvály…) má role a u každého člověka je
+2. **Týmy a skupinky** – vybírají si lidi ze seznamu. Tým (Technika, Chvály…) má role a u každého člověka je
    napsané, jestli roli **umí**, nebo se ji **učí**. Skupinka a vedení jsou lidé, kteří k sobě patří.
 3. **Setkání** – plánování bere lidi z týmů. Do role na konkrétním setkání někoho zapíšeš, on potvrdí,
    nebo napíše, že nemůže.
@@ -25,31 +35,44 @@ Tři různé věci, tři různé záznamy: *Petr je v týmu Technika* (patří d
 v týmu), *Petr dělá 11. 10. zvuk* (služba na setkání). Přístup do aplikace (správce, vedoucí, člen) je
 něco jiného než role v týmu a nikdy se nejmenují stejně.
 
-## Co to umí
+## Co kde najdeš
 
-Nahoře je hlavička: vlevo název církve, vpravo terč s barvami a tvoje jméno (vede na Můj účet). Menu
+Nahoře je hlavička: vlevo název církve, vpravo nabídka Vzhled a tvoje jméno (vede na Můj účet). Menu
 s ikonami je na počítači vlevo pod hlavičkou, na telefonu pod tlačítkem **Menu** – tam najdeš i svoje jméno
-a terč. Kdo není přihlášený, vidí jen **Program** a **Jak se scházíme** – tedy
-setkání a formáty, které vedoucí zveřejnili – a tlačítko **Přihlásit se**.
+a Vzhled. Vedoucí vidí v menu všechno, člen jen Přehled, Kalendář, Lidé a Jak se scházíme. Kdo není
+přihlášený, vidí jen **Program** a **Jak se scházíme** – setkání a formáty, které vedoucí zveřejnili –
+a tlačítko **Přihlásit se**.
+
+Každá obrazovka má nahoře název, vpravo hlavní tlačítko (třeba **Přidat setkání**) a pod názvem záložky
+s pohledy.
 
 | obrazovka | co tam je |
 | --- | --- |
-| **Moje** | úvod pro členy: co čeká na odpověď (Jdu / Nemůžu), moje služby na osm týdnů dopředu i do kalendáře v telefonu (.ics), kdy nemůžu, moje skupiny s vedoucími, můj kontakt |
-| **Kalendář** | měsíc v mřížce (na mobilu seznam dnů), nové setkání ze šablony nebo bez ní, opakování (každý týden, každých 14 dní, každý měsíc) |
-| **Setkání** | kdo co dělá po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout lidi“, „Obsadit jako minule“, stavy navrženo → potvrzeno → nemůže, výjimka u upozornění, zrušení a úpravy celé řady |
-| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…) – časy se dopočítají, kdo vede, se doplní podle rolí, body jdou posouvat, „Převzít minulou osnovu“. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
-| **Rozpis** | tabulka měsíce (řádky setkání, sloupce role po týmech), výběr druhu setkání a týmu, tisk na A4 na šířku – bez telefonů |
-| **Lidé** | hledání podle jména, telefonu i e-mailu, pilulky Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí (a Chybí údaje, když nějaké chybí), domácnosti, karta člověka (vlevo údaje z registru, vpravo týmy a skupiny, služby, kdy nemůže sloužit, kolik služeb zvládne a upozornění) |
-| **Týmy a role** | týmy, skupinky a vedení, role týmu (kolik lidí, bez čeho to nejde, jen pro dospělé, u dětí, časové okno, které role zvládne jeden člověk naráz), členové a co umí, vedoucí, archiv |
-| **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně, filtr chyby / pozor / info |
-| **Formáty** | z čeho se skládá osnova: u každého formátu proč ho děláme a jak probíhá. Členové čtou, vedoucí upravují |
-| **Nastavení** | Sbor (název, adresa, kolik služeb je moc, kdy Zvonec bučí), Šablony setkání, Místa, Přihlašování, Záloha |
-| **Program**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: zveřejněná setkání a formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
+| **Přehled** | úvod pro všechny: co čeká na tvoji odpověď (Potvrdit / Nemůžu), tvoje služby na osm týdnů dopředu (i do kalendáře v telefonu, .ics), příští neděle, tento týden ve sboru, kdy nemůžeš, tvoje skupiny. Vedoucí navíc vidí, co nesedí, volná místa na příští tři týdny, služby čekající na potvrzení a karty lidí k doplnění; správce ještě pozvánky, které čekají, a přihlášení bez karty |
+| **Kalendář** | jedna stránka a čtyři pohledy: **Měsíc** (mřížka, na telefonu malá mřížka a pod ní seznam vybraného dne), **Týden** (hodiny na ose, na telefonu tři dny), **Seznam** (po týdnech, s obrázky) a **Rozpis**. Nad nimi šipky ‹ ›, **Dnes** a filtry: **Účel** (Nedělní setkání, Zkouška, Skupinka, Akce), **Tým** a **Jen moje služby**. Pohled si Zvonec pamatuje |
+| **Rozpis** | tabulka měsíce: řádky jsou setkání, sloupce role po týmech. Vedoucí klikne do buňky, vybere člověka a hotovo; člen vidí tabulku jen ke čtení se svými službami zvýrazněnými. Tisk na A4 na šířku – bez telefonů |
+| **Setkání** | detail s obrázkem a třemi záložkami. **Přehled**: popis, poznámka pro tým, kdo slouží, začátek osnovy, mapa, upozornění a po skončení kolik lidí přišlo (jen počet, ne kdo). **Kdo slouží**: služby po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout lidi“, „Obsadit jako minule“, „Kolik lidí je potřeba“, stavy čeká na potvrzení → potvrzeno → nemůže, výjimka u upozornění. **Osnova**: viz níže |
+| **Přidat setkání** | ve dvou krocích: nejdřív **Podle čeho?** (šablona, nebo „Bez šablony“), pak název, kdy, kde a pro koho; zbytek (obrázek, popis, zveřejnění, poznámka pro tým) je v **Dalších možnostech**. Opakování: každý týden, každých 14 dní, každý měsíc ve stejný den v týdnu (třeba každou první neděli). Hotovou řadu prodloužíš v detailu setkání (**Prodloužit řadu**). Při úpravě řady se Zvonec zeptá, jestli jen tohle setkání, nebo i další |
+| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…). Časy se dopočítají, kdo vede, se doplní podle rolí, body jdou přetahovat, je tu „Převzít minulou osnovu“ a součet proti délce setkání. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
+| **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně. Pohledy **Podle setkání** a **Podle lidí**, filtr chyba / pozor / info. Rovnou tu jde vybrat jiného člověka nebo napsat „Vím o tom“ |
+| **Lidé** | pohledy **Seznam**, **Tabulka** (třídění, sloupce, hromadné akce: zkopírovat e-maily, přidat do skupiny, stáhnout jako CSV; na počítači výchozí), **Domácnosti**, **Podle skupin**, **Narozeniny** a **Břemeno** (kolik služeb má kdo tenhle měsíc proti tomu, kolik jich zvládne). Filtry Všichni · Členové · Přátelé · Hosté · Děti · Už nechodí (a Chybí údaje, když nějaké chybí), hledání podle jména, telefonu i e-mailu. Karta člověka: vlevo údaje z registru, vpravo týmy a skupinky, služby, kdy nemůže sloužit, břemeno a upozornění; každý blok upravíš zvlášť. Člen má Seznam, Domácnosti a Podle skupin |
+| **Týmy a skupinky** | **Týmy**, **Skupinky**, **Vedení** a **Kdo co umí** (tabulka lidé × role: nic / učí se / umí, vedoucí klikem přepíná; u role je vidět, kolik lidí ji umí). V týmu záložky **Lidé**, **Role**, **Kdo co umí** a **Setkání**. Role: kolik lidí, bez čeho to nejde, jen pro dospělé, u dětí, jen část setkání, které role zvládne jeden člověk naráz. Starý tým jde dát do archivu |
+| **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
+| **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přihlášení** (přihlášení, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
+| **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, vzhled, změna hesla, odhlášení. V ukázce i „Dívat se jako“ |
+| **Program**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: nejbližší setkání s obrázkem, časem, místem a mapou, pak další týdny a „Kde nás najdete“; u každého setkání jde stáhnout .ics. Dál zveřejněné formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
 Celý tým · Všichni lidé**, hledání vždycky prochází všechny lidi. Když nikdo takový není,
 „+ Nový člověk“ založí krátkou kartu (host, bez dalších údajů) a rovnou ho vybere. Karta se pak objeví
 v Lidech pod „Chybí údaje“, ať ji někdo doplní.
+
+**Formuláře** ukazují nejvýš zhruba sedm polí. Co se hodí jen občas, je schované pod **Další možnosti**
+a Zvonec si pamatuje, jestli jsi je měl otevřené. Dlouhé věci (třeba šablona) mají vlastní stránku
+s tlačítkem **Uložit**.
+
+**Stavy** poznáš podle tvaru, barvy i slova: zelené plné kolečko s fajfkou je potvrzeno, přerušovaný
+oranžový kroužek s hodinkami čeká na potvrzení, červené ✕ je nemůže (jméno je navíc přeškrtnuté).
 
 ### Kdo co vidí
 
@@ -57,7 +80,7 @@ v Lidech pod „Chybí údaje“, ať ji někdo doplní.
 | --- | --- | --- |
 | jméno, domácnost | ano | ano |
 | telefon, e-mail | ano | jen když to člověk dovolil („Telefon a e-mail vidí“) |
-| členství, narození, poznámka, souhlas, přihlášení | ano | ne |
+| členství, narození, poznámka, souhlas, přihlášení, břemeno | ano | ne |
 | skupiny | ano | jen názvy |
 | služby, kdy nemůže, upozornění | ano | jen svoje (rozpis vidí celý) |
 
@@ -104,9 +127,10 @@ Jako [Mobilise Playbook](https://playbook.cirkevjakokrava.cz): **GitHub klíč j
 veřejné repo radomilcz/cirkevjakokrava          soukromé datové repo radomilcz/church-data
 
 docs/zvonec/  aplikace ── bere si ji ─────────▶  .github/workflows/web.yml
-                                                   aplikace + access.json → Pages
+                                                   aplikace + access.json + public.json → Pages
                                                    https://zvonec.cirkevjakokrava.cz
                                                 access.json   zapečetěná přihlášení (bez jmen)
+                                                public.json  jen zveřejněná setkání a formáty (bez lidí)
                                                 data/*.json   lidé, skupiny, setkání – na web NIKDY
 prohlížeč: jméno + heslo → odemkne klíč ───────▶  čte a zapisuje data/ přes GitHub API
 zvonec/check.mjs ◀── bere si kód ──────────────  .github/workflows/check.yml
@@ -122,7 +146,7 @@ zvonec/check.mjs ◀── bere si kód ─────────────�
   se k datům dostal i mimo aplikaci. Přihlášení proto dostávají lidé, kterým sbor věří, a do Zvonce
   nepatří žádné pastorační, zdravotní ani finanční poznámky. Klíč jde kdykoli vyměnit.
 - **Pozvánka = registrace online.** Vedoucí vytvoří pozvánku (Nastavení → Přihlášení → Pozvat nového
-  člověka, nebo na kartě člověka). Odkaz platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno,
+  člověka, nebo v Lidech tlačítkem Pozvat). Odkaz platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno,
   kontakt, s čím pomůže, vlastní heslo, zaškrtne **souhlas** a je v Lidech jako host. Role, se kterými
   chce pomáhat, dostane jako „učí se“. Vedoucí to pak upraví.
 - **Ukládání:** změny se sbírají a po chvilce odejdou jako commit („Zvonec: Petr na Zvuk, …“). Každý
@@ -132,7 +156,7 @@ zvonec/check.mjs ◀── bere si kód ─────────────�
 - **Nové a zrušené přihlášení** začne platit za pár minut – až workflow `web.yml` znovu vystaví web s novým
   `access.json`.
 - **Ukázka:** když vedle aplikace `access.json` neleží (manifest.cirkevjakokrava.cz/zvonec/), běží aplikace
-  jako ukázka v prohlížeči s vymyšlenými lidmi. V Nastavení → Můj účet jde „Dívat se jako“ kdokoli z ukázky – hodí se
+  jako ukázka v prohlížeči s vymyšlenými lidmi. V Můj účet jde „Dívat se jako“ kdokoli z ukázky – hodí se
   na školení vedoucích i na vyzkoušení pohledu člena.
 - **Kontrola v Actions:** `zvonec/check.mjs` pustí stejná pravidla nad složkou `data/`. Když najde chybu
   u setkání, které ještě nebylo, běh zčervená a GitHub pošle e-mail.
@@ -142,7 +166,7 @@ zvonec/check.mjs ◀── bere si kód ─────────────�
 ```
 data/people.json     lidé a domácnosti
 data/groups.json     skupiny, role týmů, kdo je ve skupině a co umí
-data/events.json     šablony, setkání se službami a osnovou, formáty, místa, kdy kdo nemůže, kolik kdo slouží
+data/events.json     šablony, setkání se službami a osnovou, řady, formáty, místa, kdy kdo nemůže, kolik kdo slouží
 data/settings.json   název a adresa sboru, výchozí limity, kdy Zvonec bučí
 access.json          zapečetěná přihlášení – jde na web, neobsahuje jména
 ```
@@ -153,16 +177,22 @@ Přesný tvar záznamů je v [ARCHITECTURE.md](ARCHITECTURE.md). Smazaný člov�
 ### Kód
 
 ```
-docs/zvonec/index.html, style.css, imprint.svg   kostra stránky (CSP: ven jen api.github.com), design, tisk A4
-docs/zvonec/app.js        start (ukázka / naostro), přihlášení, adresy obrazovek, stav ukládání
-docs/zvonec/lib/          logika bez obrazovek: lidé, skupiny, setkání, osnova, plánování, upozornění,
-                          přihlášení, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
-docs/zvonec/ui/           obrazovky: Moje, kalendář, setkání, osnova, rozpis, lidé, skupiny, výběr lidí,
-                          upozornění, nastavení, přihlášení
+docs/zvonec/index.html, style.css, imprint.svg   kostra stránky (CSP: ven jen api.github.com a mapy OpenStreetMap), základ vzhledu, tisk A4
+docs/zvonec/css/          barvy a rozměry (tokens.css), druhý vzhled Milníkovač (look-milnik.css), styly jednotlivých částí
+docs/zvonec/app.js        start (ukázka / naostro), přihlášení, adresy obrazovek, menu, stav ukládání
+docs/zvonec/lib/          logika bez obrazovek: lidé, místa, skupiny, setkání a řady, osnova, plánování, upozornění,
+                          kontrola dat, přihlášení, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
+docs/zvonec/ui/           obrazovky a stavebnice (kit): Přehled, kalendář, setkání, rozpis, lidé, týmy, Jak se scházíme,
+                          výběr lidí, upozornění, nastavení, Můj účet, veřejná část, přihlášení; stránka #kit ukazuje
+                          všechny součástky ve světlém i tmavém režimu
 zvonec/check.mjs          kontrola upozornění z příkazové řádky / Actions
+zvonec/build-public.mjs   veřejný výřez dat (zveřejněná setkání a formáty) pro web
 zvonec/test/              testy (node --test zvonec/test/*.test.mjs)
 zvonec/data-repo/         vzory workflow pro datové repo (web.yml, check.yml)
 ```
+
+Jak se přidává nová část nebo nový vzhled, je v [ARCHITECTURE.md](ARCHITECTURE.md), pravidla vzhledu
+v [DESIGN.md](DESIGN.md).
 
 Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`build.py`) do
 `docs/zvonec/` nesahá.
@@ -180,7 +210,7 @@ Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (
 5. Otevřít https://zvonec.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Zvonec**:
    vložit klíč, svoje jméno a heslo. Jako základ jde vzít ukázku (skupiny, role, formáty, šablony, místa –
    bez lidí).
-6. V Lidech přidat lidi (nebo rozeslat pozvánky), ve Skupinách je zařadit do týmů a v Kalendáři ze šablony
+6. V Lidech přidat lidi (nebo rozeslat pozvánky), v Týmech a skupinkách je zařadit do týmů a v Kalendáři ze šablony
    „Setkání na pastvě“ založit setkání, které se opakuje každý týden. Vedoucím dát přístup „vedoucí“
    (karta člověka → Přihlášení).
 
@@ -188,10 +218,10 @@ Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (
 
 | chceme | jde? | jak |
 | --- | --- | --- |
-| plánování, upozornění, osnova, správa lidí a skupin | ano | aplikace + soukromé repo |
+| plánování, upozornění, osnova, správa lidí, týmů a skupinek | ano | aplikace + soukromé repo |
 | přihlášení bez GitHub účtu | ano | jméno + heslo, jeden zapečetěný klíč (jako Playbook) |
 | registrace nových lidí online | ano, pozvánkou | odkaz na 14 dní, jen jednou; vyplní údaje, souhlas a heslo |
-| členové potvrzují nebo odmítají svoje služby | ano | po přihlášení v Moje nebo u setkání |
+| členové potvrzují nebo odmítají svoje služby | ano | po přihlášení v Přehledu nebo u setkání |
 | historie změn, kdo co změnil | ano | každé uložení je commit |
 | upozornění vedoucím | ano | Actions + e-mail od GitHubu, když je v rozpisu chyba |
 | kalendář v telefonu | ano, stažením .ics | odběr by musel ležet na veřejných Pages – jména by šla ven |
@@ -214,7 +244,8 @@ umí poslat e-mail nebo SMS – to už je mimo GitHub).
 - **Kdo co vidí:** viz tabulka výš. Členství prozrazuje vyznání (zvláštní kategorie údajů), proto ho člen
   nevidí u nikoho a netiskne se. Důvod, proč někdo nemůže, a upozornění vidí jen vedoucí. Rozpis na nástěnku
   netiskne telefony.
-- **Kde data leží:** jen v **soukromém** repu, na web jde jen `access.json` bez jmen (workflow to hlídá).
+- **Kde data leží:** jen v **soukromém** repu, na web jde jen `access.json` bez jmen a `public.json` se zveřejněnými
+  setkáními a formáty, bez jediného člověka (workflow to hlídá).
   Na veřejné ukázce jsou jen vymyšlení lidé (`@example.cz`). Žádné pastorační, zdravotní ani finanční
   poznámky – jeden klíč znamená, že každý přihlášený prohlížeč přečte všechno.
 - **Úplný výmaz:** git si pamatuje staré verze. Smazat někoho úplně znamená přepsat historii datového repa

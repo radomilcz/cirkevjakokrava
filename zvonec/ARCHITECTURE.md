@@ -13,12 +13,18 @@ Three layers with a one-way dependency. The **people registry** is the foundatio
 about planning. Groups pick people from the registry; planning picks people from groups.
 
 ```
-people     people, households, membership                 imports: nothing
-groups     groups, roles (duties a team covers), members  imports: people (ids only)
-events     event types, events, program, assignments,     imports: people, groups
-           formats, places, availability, serving limits
-scheduling candidate ranking, propose, same as last time   imports: people, events (needsOf)
+people     people, households, membership, birthdays,     imports: nothing
+           missing data
+places     places, rooms inside buildings                 imports: nothing
+groups     groups, roles (duties a team covers), members, imports: people
+           skill matrix („Kdo co umí“)
+events     event types (templates), events, series,       imports: people, groups
+           program, assignments, formats, availability,
+           serving limits, fill ratio
+scheduling candidate ranking, propose, same as last time,  imports: people, events (needsOf)
+           serving load (Břemeno), open slots, unconfirmed
 conflicts  rules K1–K17                                   imports: all, read-only, pure
+validate   data that does not hold together (warnings)    imports: events (RECURRENCE_STEPS)
 access     logins, sealing the GitHub token               imports: nothing (links by personId)
 ```
 
@@ -39,8 +45,8 @@ separate concepts and never share names.
 ```
 data/people.json     { "schema": 2, "people": [], "households": [] }
 data/groups.json     { "schema": 2, "groups": [], "roles": [], "groupMembers": [] }
-data/events.json     { "schema": 2, "eventTypes": [], "events": [], "formats": [], "places": [],
-                       "availability": [], "servingLimits": [] }
+data/events.json     { "schema": 2, "eventTypes": [], "events": [], "series": [], "formats": [],
+                       "places": [], "availability": [], "servingLimits": [] }
 data/settings.json   { "schema": 2, "settings": { … } }
 access.json          { "v": 2, "logins": [] }            published to Pages, contains no names
 ```
@@ -72,7 +78,7 @@ person {
   needsReview?: bool,                       // created quickly while planning, card incomplete
   note?                                     // short, non-sensitive, leaders only
 }
-household { id: "h…", name, address? }
+household { id: "h…", name, address? }     // address = one line, shown on the card and in Tabulka
 ```
 A child is derived: `birthDate` younger than `settings.rules.childAge` (default 15). Not a status.
 
@@ -89,7 +95,8 @@ Only `team` groups have roles and feed planning.
 
 ### events.json
 ```
-eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" | "event",
+eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" | "event",   // UI: Šablona, kind = Účel
+                weekday?: 0..6,                 // 0 = Monday; the day its events usually fall on (prefills the calendar)
                 startTime: "HH:mm", minutes: int, placeIds: [], needs: [need],
                 program?: [{ formatId, minutes }], groupId?,
                 public?: bool,                  // events made from this type start as published
@@ -97,10 +104,14 @@ eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" |
 event         { id: "e…", title, kind, typeId?, start, end, placeIds: [], seriesId?,
                 cancelled?: bool, groupId?, note?, needs: [need], program?: [programItem],
                 assignments: [assignment],
+                attendance?: { adults?: int, children?: int },   // headcount of a past event; never per person
                 public?: bool,                  // published on the public site (§4b); only `true` counts
                 description?: string,           // what people read about the event; public with the event
                 image? }                        // file name under data/images/ (e.g. "i-k3j9x0a2.webp")
                                                 // `note` stays internal (for the team) and is never public
+series        { id: "s…", typeId?, step: "weekly" | "biweekly" | "monthly", from: date, until: date }
+                                                // events stay materialised and point to it by `seriesId`;
+                                                // monthly = the same nth (or last) weekday every month
 need          { roleId, count: int }
 programItem   { id: "i…", formatId, minutes: int, title?, personId?, note? }   // UI: „osnova“
 assignment    { id: "a…", roleId, personId, status: "proposed" | "confirmed" | "declined",
@@ -108,12 +119,22 @@ assignment    { id: "a…", roleId, personId, status: "proposed" | "confirmed" |
 format        { id: "f…", name, minutes: int, leadRoleId?, why?, how?, link?, needs?: [need],
                 public?: bool }                 // name, minutes, why and how are public (§4b)
 place         { id: "l…", name, shared: bool,
-                address?: string,               // one line, e.g. "Sokolovská 12, Nový Jičín"
+                partOf?: placeId,               // a room inside a building (one level); it inherits the
+                                                // address and coordinates, its own values win
+                address?: string,               // one line, e.g. "B. Martinů 1885/2, Nový Jičín"
                 lat?: number, lon?: number }    // WGS84; both or none (a map is shown only with both)
 availability  { id: "v…", personId, from: date, to: date, reason? }
 servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWeeks?: int,
                 paused?: bool }             // paused = do not plan now (moved away, break)
 ```
+
+Older data with a `seriesId` but no `series` record still work: `seriesFor()` infers `{ …, inferred: true }`
+from the events (`step: null` when the dates do not follow a rule). New series go through `addSeries`
+(stores the record and the events), `extendSeries` is „Prodloužit řadu“. `validateData()` (lib/validate.js)
+reports records that do not hold together: an unknown series step, a series ending before it starts,
+negative or non-integer `attendance`, `partOf` pointing to a missing place, to itself or to a room, a
+non-text household address. It returns Czech texts; `zvonec/check.mjs` prints them as warnings and never
+fails the run over them.
 
 `public` has no default: a missing value means not published. `normalize()` keeps it as stored, and
 `createFromType` copies a boolean `public` from the event type to the new event (an edit of a series
@@ -138,7 +159,7 @@ K5 (unfilled) and K12 (childcare). K17 is left for a format whose lead role no l
 
 ### settings.json
 ```
-settings { churchName, address?, timezone: "Europe/Prague",
+settings { churchName, address?, mainPlaceId?, timezone: "Europe/Prague",   // mainPlaceId: where we usually meet
            defaults: { maxPerMonth: 4, maxConsecutiveWeeks: 3 },
            rules: { essentialDaysBefore: 7, unconfirmedDaysBefore: 5, childAge: 15 } }
 ```
@@ -151,50 +172,77 @@ settings { churchName, address?, timezone: "Europe/Prague",
 The sealed `gh` payload keeps its short keys (`t` token, `o` owner, `r` repo, `c` path = `"data"`,
 `v` branch). PBKDF2 salt: `cirkevjakokrava-zvonec:login`.
 
-Browser storage keys: `zvonec-me` (remembered login), `zvonec-demo` (demo data),
-`zvonec-palette` (colour choice).
+Browser storage keys (this browser only, never in the data): `zvonec-me` (remembered login),
+`zvonec-demo` (demo data), `zvonec-theme` and `zvonec-look` (mode and look, `ui/palette.js`; the old
+`zvonec-palette` is migrated once and removed), `zvonec-calendar-view` (last Kalendář view per viewer),
+`zvonec-people-view`, `zvonec-people-sort` (Lidé), `zvonec-more` (open „Další možnosti“ per form).
 
 ## 4. Code layout (`docs/zvonec/`, ES modules, no build, CSP unchanged)
 
 ```
-index.html, style.css, imprint.svg
-app.js                 boot, mode (demo / live), session, router, save-status badge
-lib/time.js            dates, recurrence, Czech formatting
+index.html             the shell skeleton (appbar, sidebar, stage, dialog, toasts) and the CSS order
+style.css              base layer: fonts, base, shell, page, kit components, print (semantic tokens only)
+css/tokens.css         design tokens: scales, surfaces, text, lines, status, role tokens; light + dark.
+                       It is look „zvonec“ and the base of every look (all selectors in :where())
+css/look-milnik.css    look „milnik“: overrides tokens and a few structural rules (loaded last)
+css/<module>.css       one per module: people, calendar, events, roster, groups, formats, library, home,
+                       settings, public – semantic tokens only, no raw colours, fonts or radius numbers
+imprint.svg
+app.js                 boot (demo / live), session, router, shell (nav per role, header, phone sheet), save status
+lib/time.js            dates, recurrence (incl. monthlyRule), Czech formatting
 lib/access.js          keypairs, PBKDF2, sealing, sign-in, invites
 lib/store/merge.js     three-way merge per record id (pure)
 lib/store/github.js    Contents API client (GET/PUT/DELETE, directory listing, raw fallback, binary files)
 lib/store/local.js     localStorage backend for the demo (incl. binary files)
 lib/store/store.js     file map {collection → file}, load all, one save queue per file, refresh by sha,
                        image helpers (saveImage, loadImageUrl, deleteImage)
-lib/people.js          names, households, age, membership queries (no planning)
-lib/groups.js          members of a group, roles of a person, leaders, skill level
-lib/events.js          event types → events, series, needs
+lib/people.js          names, households, age, membership queries, upcomingBirthdays, missingData (no planning)
+lib/places.js          placeById, buildingOf, resolvePlace, placeAddress, placesOf, roomsOf, placeTree
+lib/groups.js          members of a group, roles of a person, leaders, skill level, skillMatrix
+lib/events.js          event types → events, series (addSeries, extendSeries, seriesFor, seriesSummary), needs,
+                       fillRatio, lastDuty, KIND_LABELS / KIND_ICONS (Účel)
 lib/program.js         program times, leader of an item
-lib/scheduling.js      candidate ranking, availability and limits, "propose the rest", "same as last time"
+lib/scheduling.js      candidate ranking, availability and limits, "propose the rest", "same as last time",
+                       servingLoad (Břemeno), openSlots, unconfirmedDuties
 lib/conflicts.js       rules K1–K17 (used by the app, tests and zvonec/check.mjs)
+lib/validate.js        validateData(): records that do not hold together (series, attendance, partOf, address)
 lib/ics.js             calendar export
 lib/public.js          public view of the data: buildPublic() → public.json, publicImages() (pure, §4b)
-lib/demo.js            fictitious demo data relative to today
+lib/demo.js            fictitious demo data relative to today (seeded, deterministic): createDemo, createDemoAccess,
+                       demoBase (the first-setup base without people), DEMO_VIEWERS
 ui/state.js            app state S, can(), change(), render(), navigate(), actAs() (demo), shared Czech labels
-ui/dom.js              h(), buttons, dialogs, form fields, toasts; the shared components: pageHeader, section,
-                       list/row, avatar, personName/shortName, statusIcon/statusLabel, assignee, menuButton,
-                       emptyState, groupMark, eventCover/coverKey, placeLine/placeMap, metaJoin/andJoin
-ui/palette.js          colour picker (classic script, loaded in <head>)
-ui/home.js             #moje – member home
-ui/calendar.js         month grid / day list, new event
-ui/event.js            event detail: needs, assignments, program editor
-ui/program.js          printable program „osnova“ (A4)
-ui/roster.js           month table (rozpis), print
-ui/people.js           registry list, person card, person dialog, households, directory
-ui/groups.js           teams and groups (#tymy), roles, members and skill levels
-ui/formats.js          #formaty – the Formáty module (members read, leaders edit)
-ui/public.js           the public part: #program, #jak-se-schazime (from publicData(), never S.data)
+ui/icons.js            the icon set (Lucide-like, drawn with SVG, no font) + status and severity symbols
+ui/kit.js              the kit: page, tabs, buttons, badges, list parts, table, form fields, dialogs (see „The kit“ in §5)
+ui/dom.js              h(), older helpers, avatars, covers, place lines, dialogs; re-exports kit.js and icons.js –
+                       screens import from here only
+ui/kit-page.js         #kit – the living specimen (leaders, not in the nav), every piece in light and dark
+ui/palette.js          mode and look (classic script in <head>, applies them before first paint, wires the Vzhled menu)
+ui/select.js, stepper.js, datepicker.js   enhancers: drop-downs, number − / +, date fields with our own calendar
+ui/sortable.js         drag-and-drop (mouse, touch, keyboard) for ordered lists
 ui/picker.js           shared people picker (event slots, group members, households), quick-add
-ui/settings.js         church, event types, places, logins, backup, my account („Dívat se jako“ in the demo)
-ui/conflicts.js        conflict list and override
-ui/login.js            sign-in (#prihlaseni), first setup, invite registration
+ui/home.js             #prehled – blocks per role
+ui/calendar.js         #kalendar page: tabs, toolbar, filters; re-exports the calendar helpers
+ui/calendar-shared.js  views, filters, links, remembered view, event row, cover, fill, warnings of an event
+ui/calendar-month.js, calendar-week.js, calendar-list.js   the Měsíc, Týden and Seznam views
+ui/roster.js           the Rozpis view (events × roles, planning in place, print)
+ui/event.js            #setkani/<id>: Přehled · Kdo slouží · Osnova
+ui/event-duties.js     changing who serves (shared by Kdo slouží and Rozpis)
+ui/event-form.js       Přidat / Upravit setkání, series question, „Kolik lidí je potřeba“
+ui/program.js          the Osnova tab and the printable program (A4)
+ui/people.js           front door of Lidé (re-exports); people-views.js (Seznam, Tabulka, Domácnosti, Podle skupin,
+                       Narozeniny, Břemeno), people-card.js (person card, household page), people-forms.js (dialogs),
+                       people-common.js (filters, who sees what, wording)
+ui/groups.js           #tymy, #tym/<id>: teams, skupinky, vedení, roles, members, Kdo co umí
+ui/formats.js          #formaty – Formáty; also the helpers of Jak se scházíme (libraryTabs, needs editor, publishField)
+ui/templates.js        #sablony, #sablona/<id> – the full-page template editor
+ui/places.js           #mista, #misto/<id> – buildings, rooms, address and map; placeChipsField, coordsField
+ui/conflicts.js        #upozorneni: Podle setkání / Podle lidí, inline fix, override; warning rows for other screens
+ui/settings.js         #nastaveni: Sbor · Pravidla · Přihlášení · Záloha
+ui/account.js          #ucet – Můj účet (contact, Kdy nemůžu, .ics, Vzhled, password, „Dívat se jako“)
+ui/public.js           the public part: #program[/<id>], #jak-se-schazime (from publicData(), never S.data)
+ui/login.js            sign-in (#prihlaseni), first setup, invite registration, the logins view
 ```
-Rules: `lib/*` never touches the DOM. `lib/people.js` imports nothing. `lib/groups.js` never imports
+Rules: `lib/*` never touches the DOM. `lib/people.js` and `lib/places.js` import nothing. `lib/groups.js` never imports
 from events, program, scheduling or conflicts. `lib/events.js` and `lib/program.js` never import
 scheduling or conflicts (those read `needsOf` from events.js – no cycle). A test checks the import lines.
 
@@ -226,14 +274,15 @@ file next to `access.json`: `public.json`, built from `data/` by `lib/public.js`
 ```
 public.json  { v: 1, churchName, address, generated: "YYYY-MM-DD",
                events:  [{ id, title, kind, start, end, description, image: "images/<name>" | null,
-                           places: [{ name, address?, lat?, lon? }], cancelled?: true }],
+                           places: [{ name, building?, address?, lat?, lon? }], cancelled?: true }],
                formats: [{ id, name, minutes, why, how }] }
 images/<name>   the pictures of the published events (copied from data/images/)
 ```
 - Publishing is explicit. Events: `event.public === true` (a new event starts from its type's
-  `public`), text for visitors in `event.description` (empty string when none). `image` is the event's
+  template's `public`), text for visitors in `event.description` (empty string when none). `image` is the event's
   own picture, else its type's, else `null` (the UI then draws a generated cover). Places: name, plus
-  `address` and `lat`/`lon` only when the place has them. Formats: `format.public === true`. Nothing
+  `address` and `lat`/`lon` only when the place has them; a room is resolved through its building (`partOf`:
+  the building's name as `building`, its address and coordinates unless the room has its own). Formats: `format.public === true`. Nothing
   else is ever published.
 - Window: events reaching into the days from yesterday to 120 days ahead (`daysAhead`), sorted by start
   then id. Cancelled events stay with `cancelled: true`, so people see the cancellation.
@@ -249,51 +298,97 @@ images/<name>   the pictures of the published events (copied from data/images/)
   guard fails the run when `site/images/` holds anything `public.json` does not list. The workflow also
   runs on a push to `data/images/**`.
 - The app loads `public.json` (same origin) for signed-out visitors; demo mode builds the same object
-  from the demo data with `buildPublic`. See DESIGN.md §4.
+  from the demo data with `buildPublic`. The public pages (Program, one event, Jak se scházíme) read only this
+object. See DESIGN.md §8.
 
-## 5. Screens and routes
+## 5. Shell, routes and screens
 
-The shell (app.js): a fixed left sidebar on desktop (≥ 960 px) – brand, navigation, at the bottom the
-signed-in person (→ Můj účet), the colour picker and the save status (only while saving or on error);
-on a phone a top bar with the brand and „Menu“, which opens the same sidebar as a sheet.
+### The shell (app.js + index.html)
 
-Leader navigation: **Moje** (only when the login has a person) **· Kalendář · Rozpis · Lidé · Týmy a role ·
-Formáty · Upozornění · Nastavení**. Member navigation: **Moje · Kalendář · Rozpis · Lidé · Formáty**
-(Lidé = directory). Public navigation (signed out, and on public routes): **Program · Jak se scházíme**
-and the button **Přihlásit se**. The demo is signed in as admin; „Veřejná část“ at the bottom of the
-sidebar opens the public pages as a visitor sees them („Zpátky do Zvonce“ returns).
+`header.appbar` (brand, save status, the **Vzhled** menu, the signed-in person → Můj účet, or „Přihlásit se“)
+across the top; under it `aside.sidebar` (navigation per role, at the bottom „Veřejná část“ / „Zpátky do
+Zvonce“) and `main.stage` with one `div.page`. On a phone (< 960 px) the appbar shows the brand and „Menu“;
+the sidebar becomes a sheet and `app.js` moves the Vzhled menu and the person into it (`placeTools`). The
+page head gets `data-context` = the nav label of the section (a look may show it as a quiet label).
 
-| route | screen | who |
+Navigation per role (`NAV_LEADER`, `NAV_MEMBER`, `NAV_PUBLIC` in app.js; `[id, label, icon, href]`):
+leader **Přehled · Kalendář · Upozornění (count) · Lidé · Týmy a skupinky · Jak se scházíme · Nastavení**;
+member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor and public routes **Program · Jak se
+scházíme · Přihlásit se**. The demo is signed in as admin; „Veřejná část“ opens the public pages as a
+visitor sees them.
+
+### Routes
+
+A route is `{ render(parts), access, menu? }`. `access`: `'public'` · `'signedOut'` · `'member'` ·
+`'leader'` · `'admin'` or a function of the parts. `menu` = which nav id lights up (defaults to the
+section; `null` = none). `render` returns a kit `page()` (older screens may return a list starting with
+`pageHeader()`; `asPage()` wraps it).
+
+| route | screen | access |
 |---|---|---|
-| `#program` | upcoming published events | everyone |
-| `#jak-se-schazime` | published formats | everyone |
-| `#prihlaseni` | sign-in (first setup while there are no logins) | signed out |
-| `#pozvanka/<code>` | registration | signed out |
-| `#moje` | member home: waiting for answer, my duties (.ics), when I can't, my groups, my contact | signed in |
-| `#kalendar`, `#kalendar/2026-10` | month | signed in |
-| `#setkani/<id>` | event detail | signed in, edit leader |
-| `#setkani/<id>/osnova` | printable program („osnova“) | signed in |
-| `#rozpis`, `#rozpis/2026-10` | month table | signed in |
-| `#lide`, `#lide/clenove` · `pratele` · `hoste` · `deti` · `nechodi` · `doplnit` (old `vsichni`, `neclenove` still open) | registry + filter | leader; member = directory |
-| `#osoba/<id>` | person card | leader; member = reduced card |
-| `#domacnosti`, `#domacnost/<id>` | households | leader |
-| `#tymy`, `#tym/<id>` | teams and groups, team card with members × roles | leader |
-| `#formaty` | formats | signed in, edit leader |
-| `#upozorneni` | conflicts („Upozornění“) | leader |
-| `#nastaveni`, `#nastaveni/sablony` · `mista` · `prihlaseni` · `zaloha` | settings | leader |
-| `#nastaveni/ucet` | Můj účet (`#nastaveni` shows a member the account) | signed in |
+| `#prehled` | Přehled | member |
+| `#kalendar[/<mesic\|tyden\|seznam\|rozpis>[/<datum>]]` | Kalendář; `#kalendar` opens the remembered view | member |
+| `#setkani/<id>[/sluzby\|/osnova]` | event: Přehled · Kdo slouží · Osnova | member (leader edits) |
+| `#upozorneni[/lide]` | Upozornění: Podle setkání / Podle lidí | leader |
+| `#lide[/<pohled>[/<filtr>]]` | Lidé; views seznam · tabulka · domacnosti · skupiny · narozeniny · bremeno; filters `clenove` · `pratele` · `hoste` · `deti` · `nechodi` · `doplnit`; `bremeno` takes a month | member (members: seznam, domacnosti, skupiny) |
+| `#osoba/<id>` | person card | member (reduced) |
+| `#domacnost/<id>` | household | leader |
+| `#tymy[/<tymy\|skupinky\|vedeni\|umi>[/<týmId>]]`, `#tym/<id>[/<lide\|role\|umi\|setkani>]` | teams and groups, team page | leader |
+| `#sablony`, `#sablona/<id>` (`nova`) | templates (cards, full-page editor) | leader |
+| `#formaty[/<id>]` | formats | member (leader edits) |
+| `#mista`, `#misto/<id>` | places | member (leader edits) |
+| `#nastaveni[/<sbor\|pravidla\|prihlaseni\|zaloha>]` | settings | leader |
+| `#ucet` | Můj účet | member |
+| `#program[/<id>]`, `#jak-se-schazime` | public: events, one event, published formats | public |
+| `#prihlaseni`, `#pozvanka/<code>` | sign-in (first setup while there are no logins), registration | signedOut |
+| `#kit`, `#kit/ikony` | the living specimen | leader, not in the nav |
 
-Old slugs redirect: `#udalost/<id>` → `#setkani/<id>`; `#porad/<id>`, `#setkani/<id>/porad` and
-`#setkani/<id>/prubeh` → `#setkani/<id>/osnova`; `#skupiny`, `#sluzby` → `#tymy`; `#skupina/<id>` →
-`#tym/<id>`; `#nastaveni/formaty` → `#formaty`; `#kolize` → `#upozorneni`. An empty or unknown hash opens
-`#kalendar` for leaders, `#moje` for members and `#program` for visitors (`#prihlaseni` while there are
-no logins). A member opening a leader route lands on `#moje`; a visitor opening an app route lands on
-`#prihlaseni` and, after signing in, on the route they asked for (`S.afterSignIn`).
-Inside a screen the UI still hides what members must not see (§6).
+Old slugs redirect (`REDIRECTS` in app.js, applied until none matches): `#moje` → `#prehled`; `#rozpis[/m]` →
+`#kalendar/rozpis[/m]`; `#kalendar/2026-10` → `#kalendar/mesic/2026-10`; `#domacnosti` → `#lide/domacnosti`;
+`#udalost/<id>` → `#setkani/<id>`; `#porad/<id>`, `#setkani/<id>/porad`, `#setkani/<id>/prubeh` →
+`#setkani/<id>/osnova`; `#nastaveni/formaty` → `#formaty`; `#nastaveni/sablony` → `#sablony`;
+`#nastaveni/mista` → `#mista`; `#nastaveni/ucet` → `#ucet`; `#skupiny`, `#sluzby` → `#tymy`; `#skupina/<id>` →
+`#tym/<id>`; `#kolize` → `#upozorneni`. In `#lide`, the old filter slugs `vsichni` and `neclenove` still open.
 
-Person card: left column is owned by the registry (contact, household, membership, consent, note,
-login); right column shows read-only blocks from other modules with a link to where they are edited
-(groups and roles, upcoming duties, availability and limits, conflicts).
+An empty or unknown hash opens `#prehled` for signed-in people, `#program` for visitors (`#prihlaseni`
+while there are no logins). A person opening a route above their access lands on the home of their role;
+a visitor opening an app route lands on `#prihlaseni` and, after signing in, on the route they asked for
+(`S.afterSignIn`). Inside a screen the UI still hides what members must not see (§6).
+
+### Route slots (who edits app.js)
+
+Routes are grouped per module in marked blocks, so modules can be built in parallel:
+`// IMPORTS:<module>` … `// IMPORTS:<module> end` and `// ROUTES:<module>` … `// ROUTES:<module> end`
+(`calendar`, `people`, `groups-library`, `home-admin`); `SHELL_ROUTES` (sign-in, invite, kit), navigation,
+redirects and the shell belong to the shell. A module edits only its own blocks.
+
+### The kit
+
+`ui/kit.js` (re-exported by `ui/dom.js`, so screens import from `./dom.js` only) is the one set of
+components both looks style. A page is built with `page({ title, lead, actions, tabs, toolbar, body, width })`
+(DOM: `div.page > header.page-head + div.page-body`, widths `w-text` 72ch · `w-list` 960 · `w-form` 640 ·
+`w-wide`). The rest: `button` (variants solid · soft · surface · ghost · danger), `iconButton`, `badge`,
+`countBadge`, `statusBadge`, `severityBadge`, `callout`, `tabs`, `viewSwitch`, `chips`, `chipLinks`, `card`,
+`panel`, `facts`, `list` / `row` / `groupedList`, `table`, `avatar`, `avatarStack`, `personLine`, `assignee`,
+`kindMark`, `groupMark`, `eventCover`, `placeLine`, `placeMap`, `emptyState`, `progressBar`, `fillRing`,
+`dateNav`, `toolbar`, `toast`, and the forms: `formDialog`, `infoDialog`, `formSection`, `disclosure`
+(„Další možnosti“), `field`, `textField`, `textArea`, `selectField`, `segmentedField`, `chipsField`,
+`switchField`, `dateField`, `timeRange`, `numberField`, `searchField`, `personPicker`. `#kit` renders all of
+it. A piece that only one module needs lives in that module first (`placeChipsField`, `coordsField`,
+`skillMatrixTable`, `householdPicker`) and is promoted to the kit when a second module needs it.
+
+### Screens in short
+
+- **Přehled** – cards in two columns, ≤ 5 rows each: my answers, my duties, next Sunday (fill ring), this
+  week, Kdy nemůžu, my groups; leaders: Co nesedí, Volná místa (`openSlots`), Čeká na potvrzení
+  (`unconfirmedDuties`), Lidé (cards to complete, guests, birthdays); admins: Přihlášení.
+- **Kalendář** – one toolbar for four views (period navigator, Účel, Tým, „Jen moje služby“). Rozpis is
+  the planning surface: a leader's click on a cell opens the picker in place (`ui/event-duties.js`).
+- **Lidé** – Tabulka is the default on a desktop, Seznam on a phone; the view is remembered.
+- **Person card** – left column owned by the registry (contact, household, membership, consent, note, login),
+  right column read-only blocks from planning (teams and roles, upcoming duties, Kdy nemůže, Břemeno,
+  Upozornění) with links to where they are edited; each block has its own small „Upravit“ dialog.
+- **Template page** – sections Základ · Na webu · Kdo je potřeba · Osnova · Řady, edits a draft, writes on „Uložit“.
 
 Picking people (`ui/picker.js`): one picker for event slots, program leaders, group members and
 households. With an event and a role it ranks `candidates()` and shows the reasons as pills (solid =
@@ -302,6 +397,32 @@ registry (former and paused people included). For a leader, a search adds „+ N
 form (first name, last name, phone, e-mail – split from the query) that warns about similar names,
 creates a minimal card (`guest`, `needsReview`), optionally adds the person to the team (the role as
 `learning`) or group, and picks it in one step. Enter picks the first row.
+
+### How to add a module
+
+1. Data first: records and their rules in `lib/<name>.js` (no DOM, tests in `zvonec/test/`); a new
+   collection goes into `FILES` in `lib/store/store.js` (it then gets `emptyData`, `normalize`, merge
+   and save for free) and into `validateData` if it has invariants.
+2. Screens in `ui/<name>.js` (split `<name>-*.js` when it grows): return `page()`; import from `./dom.js`
+   only; text in Czech, code in English; DOM through `h()`, never `innerHTML`, no inline styles.
+3. Styles in `css/<name>.css` with semantic tokens only; add the `<link>` in `index.html` before
+   `css/look-milnik.css`. Check both looks and both modes.
+4. Routes: a `// IMPORTS:` and a `// ROUTES:` block in app.js (slug in Czech, `access`, `menu`), a row in
+   `NAV_LEADER` / `NAV_MEMBER` if it is a top-level module, redirects for any slug it replaces.
+5. Update DESIGN.md §6 (sitemap), this file, `zvonec/README.md` (what people find where) and the `#kit`
+   specimen if you added a kit piece. `node --test zvonec/test/*.test.mjs` and `node --check` every file.
+
+### How to add a look
+
+A look is `css/look-<name>.css` that overrides **tokens and a few structural rules** under
+`:root[data-look="<name>"]` (and `[data-theme="dark"]` / `prefers-color-scheme` variants); the DOM does not
+change. `css/tokens.css` is the base: every selector there is wrapped in `:where()` (zero specificity), so
+one attribute selector wins. Override the **role tokens** first (radii, shadows, title font and size,
+row and nav heights, control sizes, `--tab-style`, widths, selected / status fills), then restyle the shell,
+tabs, buttons and badges where tokens do not reach. Steps: add the file and its `<link>` after the module CSS
+in `index.html`; add the name to `LOOKS` in `ui/palette.js` and a button with `data-look-choice` in the
+Vzhled menu (index.html) and in `ui/account.js`; check every screen at 1440 and 390, light and dark; run
+the contrast check for any new colour pair. Never fork module CSS or screens per look.
 
 ## 6. Who sees what
 
