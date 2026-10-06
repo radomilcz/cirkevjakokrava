@@ -1,6 +1,6 @@
 // The public part: what a visitor who is not signed in sees (DESIGN §4, §4b). Only published data
 // from publicData() (lib/public.js shape) – never S.data directly, so nothing private can slip in.
-// #program – the next event as a hero, then the weeks, „Kde nás najdete“ at the end ·
+// #program – the next event as a hero, then the weeks, „Kde nás najdeš“ at the end ·
 // #program/<id> – one public event (shareable, „Stáhnout do kalendáře“) · #jak-se-schazime – published formats.
 
 import {
@@ -173,7 +173,7 @@ function whereWeAre(data) {
   if (!data.address && !updated) return null;
   return h('footer', { class: 'pub-where card' },
     h('div', { class: 'pub-where-text' },
-      h('h2', { class: 'pub-where-title' }, 'Kde nás najdete'),
+      h('h2', { class: 'pub-where-title' }, 'Kde nás najdeš'),
       h('p', { class: 'pub-where-name' }, home?.building || name),
       data.address ? h('p', { class: 'pub-where-address' }, data.address) : null,
       data.address ? h('p', {}, h('a', { class: 'place-map-link', href: mapUrl(home || { address: data.address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě')) : null,
