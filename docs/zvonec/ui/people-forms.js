@@ -1,7 +1,7 @@
 // Lidé – the dialogs: „Přidat člověka“ (structure §4.1), the small per-section edits of the person
-// card (Kontakt · Ve sboru · Domácnost · Další údaje · Týmy a skupinky · Kdy nemůže · Břemeno), the
+// card (Kontakt · Členství · Domácnost · Další údaje · Týmy a skupinky · Kdy nemůže · Břemeno), the
 // household dialogs and the bulk „Přidat do skupiny“. Deleting a person lives at the bottom of the
-// „Ve sboru“ dialog (never in a list).
+// „Členství“ dialog (never in a list).
 // Kit addition (module-local, for the orchestrator to promote): householdPicker() – a combobox like
 // personPicker() for households, with „+ Nová domácnost „Novákovi““ as the last option.
 
@@ -170,7 +170,7 @@ export function addPersonDialog({ householdId = '' } = {}) {
     callout('Bez souhlasu uložíme jen křestní jméno. Víc údajů až se souhlasem.', { tone: 'info' }));
   const kidContact = h('div', { class: 'full', hidden: true },
     callout('Je to dítě, kontakt jde přes rodiče. Vyber domácnost, ať víš, komu zavolat.', { tone: 'info' }));
-  const consentField = dateField('consentDate', 'Souhlas se zpracováním údajů', '', { hint: 'U hostů a přátel sboru je nutný.' });
+  const consentField = dateField('consentDate', 'Souhlas se zpracováním údajů', '', { hint: 'U hostů a přátel je nutný.' });
 
   const form = formDialog({
     title: 'Přidat člověka',
@@ -181,15 +181,15 @@ export function addPersonDialog({ householdId = '' } = {}) {
         textField('lastName', 'Příjmení', '', { attr: { autocomplete: 'off', placeholder: 'např. Svobodová' } }),
         dupe,
       ] },
-      { title: 'Ve sboru', fields: [
-        segmentedField('status', 'Členství', [['member', 'Člen'], ['regular', 'Přítel sboru'], ['guest', 'Host']], status, { full: true }),
+      { title: 'Členství', fields: [
+        segmentedField('status', 'Členství', [['member', 'Člen'], ['regular', 'Přítel'], ['guest', 'Host']], status, { full: true }),
         h('div', { class: 'full consent-slot' }, consentField),
         guestNote,
       ] },
       { title: 'Kontakt', cls: 'contact-section', fields: [
         textField('phone', 'Telefon', '', { type: 'tel', attr: { autocomplete: 'off', placeholder: 'např. 603 000 000' } }),
         textField('email', 'E-mail', '', { type: 'email', attr: { autocomplete: 'off', placeholder: 'např. jmeno@email.cz' } }),
-        switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', false, { hint: 'Jinak je vidí jen vedoucí.' }),
+        switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní', false, { hint: 'Jinak je vidí jen vedoucí.' }),
         kidContact,
       ] },
       { fields: [
@@ -205,7 +205,7 @@ export function addPersonDialog({ householdId = '' } = {}) {
       sections: [{ fields: [
         textField('nickname', 'Přezdívka', '', { hint: 'Ukáže se v závorce za jménem.', attr: { autocomplete: 'off', placeholder: 'např. Bětka' } }),
         textField('birthDate', 'Datum narození', '', { hint: 'Třeba 8. 6. 1984, stačí i rok.', attr: { autocomplete: 'off', inputmode: 'numeric', placeholder: 'např. 8. 6. 1984' } }),
-        dateField('since', 'Ve sboru od', ''),
+        dateField('since', 'Chodí od', ''),
         textArea('note', 'Poznámka', '', { hint: 'Krátce. Nic o zdraví, penězích ani pastoraci.', attr: { rows: 2, maxlength: 300 } }),
       ] }],
     },
@@ -306,7 +306,7 @@ export function contactEditDialog(person) {
     fields: [
       textField('phone', 'Telefon', person.phone, { type: 'tel', attr: { autocomplete: self ? 'tel' : 'off', placeholder: 'např. 603 000 000', disabled: restricted || null } }),
       textField('email', 'E-mail', person.email, { type: 'email', attr: { autocomplete: self ? 'email' : 'off', placeholder: 'např. jmeno@email.cz', disabled: restricted || null } }),
-      switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, {
+      switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní', !!person.showInDirectory, {
         hint: 'Jinak je vidí jen vedoucí.', disabled: restricted || kid,
       }),
     ],
@@ -331,19 +331,19 @@ export function contactEditDialog(person) {
 /** The person edits their own contact (members may change only this; also #prehled / #ucet). */
 export const contactDialog = (person) => contactEditDialog(person);
 
-/** Ve sboru: membership, since / until, consent. „Smazat z Lidí“ at the bottom left. */
+/** Členství: membership, since / until, consent. „Smazat z Lidí“ at the bottom left. */
 export function membershipDialog(person) {
   const self = person.id === myId();
   const st = statusOf(person);
   const m = person.membership || {};
   const form = formDialog({
-    title: 'Ve sboru',
+    title: 'Členství',
     sub: sub(person),
     fields: [
-      segmentedField('status', 'Členství', ['member', 'regular', 'guest', 'former'].map((s) => [s, { member: 'Člen', regular: 'Přítel sboru', guest: 'Host', former: 'Už nechodí' }[s]]), st, { full: true }),
-      dateField('since', 'Ve sboru od', m.since),
+      segmentedField('status', 'Členství', ['member', 'regular', 'guest', 'former'].map((s) => [s, { member: 'Člen', regular: 'Přítel', guest: 'Host', former: 'Už nechodí' }[s]]), st, { full: true }),
+      dateField('since', 'Chodí od', m.since),
       dateField('until', 'Do', m.until),
-      dateField('consentDate', 'Souhlas se zpracováním údajů', person.consentDate, { hint: 'U hostů a přátel sboru je nutný.' }),
+      dateField('consentDate', 'Souhlas se zpracováním údajů', person.consentDate, { hint: 'U hostů a přátel je nutný.' }),
       person.registeredAt ? h('p', { class: 'field-note full' }, `Registrace přes pozvánku ${fullDate(person.registeredAt)}. Souhlas je její součástí.`) : null,
     ],
     remove: self ? null : () => deletePerson(person),
@@ -352,7 +352,7 @@ export function membershipDialog(person) {
       const status = f.status.value;
       const since = f.since.value;
       const until = status === 'former' ? f.until.value : '';
-      if (since && until && until < since) return 'Datum „Do“ je dřív než „Ve sboru od“.';
+      if (since && until && until < since) return 'Datum „Do“ je dřív než „Chodí od“.';
       const target = personById(S.data, person.id);
       if (!target) return 'Mezitím ho někdo smazal.';
       target.membership = { status, ...(since ? { since } : {}), ...(until ? { until } : {}) };

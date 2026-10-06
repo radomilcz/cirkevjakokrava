@@ -100,14 +100,14 @@ function formsBlock(theme) {
     personPicker({ name: n('kit-person'), label: 'Kdo', people: ps, value: ps[0]?.id, meta: () => 'umí to' }),
     field('Hledat', searchField({ placeholder: 'Jméno, tým, role…' })),
     numberField(n('kit-max'), 'Nejvíc služeb za měsíc', 4, { min: 1, max: 9, unit: 'služby' }),
-    segmentedField(n('kit-membership'), 'Členství', [['member', 'Člen'], ['regular', 'Přítel sboru'], ['guest', 'Host']], 'member'),
+    segmentedField(n('kit-membership'), 'Členství', [['member', 'Člen'], ['regular', 'Přítel'], ['guest', 'Host']], 'member'),
     textArea(n('kit-desc'), 'Popis pro veřejnost', 'Nedělní setkání s dětským programem.', { hint: 'Uvidí ho i lidé bez přihlášení.' }),
     chipsField(n('kit-places'), 'Místo', [['l1', 'Sál'], ['l2', 'Malá místnost'], ['l3', 'Kuchyňka'], ['l4', 'Zahrada']], ['l1', 'l2']),
     switchField(n('kit-public'), 'Zveřejnit na webu', true, { hint: 'Název, čas, místo a popis uvidí každý. Jména ne.' }),
     switchField(n('kit-repeat'), 'Opakovat každý týden', false),
-    checkboxField(n('kit-phone'), 'Telefon a e-mail smí vidět i ostatní ve sboru', true),
+    checkboxField(n('kit-phone'), 'Telefon a e-mail smí vidět i ostatní', true),
     h('div', { class: 'full kit-row' }, h('label', { class: 'check-row' }, h('input', { type: 'radio', name: n('kit-r'), checked: true }), h('span', { class: 'caption' }, 'Člen')),
-      h('label', { class: 'check-row' }, h('input', { type: 'radio', name: n('kit-r') }), h('span', { class: 'caption' }, 'Přítel sboru'))),
+      h('label', { class: 'check-row' }, h('input', { type: 'radio', name: n('kit-r') }), h('span', { class: 'caption' }, 'Přítel'))),
     h('div', { class: 'full' }, choices(n('kit-roles'), [['r1', 'Zvuk'], ['r2', 'Projekce'], ['r3', 'Kytara']], ['r2'])));
 }
 
@@ -127,7 +127,7 @@ function listBlock() {
 
 function tableBlock() {
   const ps = people().slice(0, 6);
-  const rows = ps.map((p, i) => ({ ...p, membership: ['člen', 'přítel sboru', 'host', 'člen', 'člen', 'host'][i], phone: i % 3 ? `777 000 1${i}${i}` : '', age: [42, 17, 35, 8, 61, null][i], duty: ['confirmed', 'proposed', 'declined', 'missing', 'confirmed', 'proposed'][i] }));
+  const rows = ps.map((p, i) => ({ ...p, membership: ['člen', 'přítel', 'host', 'člen', 'člen', 'host'][i], phone: i % 3 ? `777 000 1${i}${i}` : '', age: [42, 17, 35, 8, 61, null][i], duty: ['confirmed', 'proposed', 'declined', 'missing', 'confirmed', 'proposed'][i] }));
   return table({
     label: 'Ukázková tabulka',
     columns: [
@@ -184,11 +184,11 @@ function openDemoDialog() {
     title: 'Přidat člověka',
     sections: [
       { title: 'Jméno', fields: [textField('firstName', 'Jméno', ''), textField('lastName', 'Příjmení', '')] },
-      { title: 'Ve sboru', fields: [segmentedField('membership', 'Členství', [['member', 'Člen'], ['regular', 'Přítel sboru'], ['guest', 'Host']], 'member', { full: true })] },
-      { title: 'Kontakt', fields: [textField('phone', 'Telefon', '', { type: 'tel' }), textField('email', 'E-mail', '', { type: 'email' }), switchField('shared', 'Telefon a e-mail uvidí i ostatní ve sboru', true)] },
+      { title: 'Členství', fields: [segmentedField('membership', 'Členství', [['member', 'Člen'], ['regular', 'Přítel'], ['guest', 'Host']], 'member', { full: true })] },
+      { title: 'Kontakt', fields: [textField('phone', 'Telefon', '', { type: 'tel' }), textField('email', 'E-mail', '', { type: 'email' }), switchField('shared', 'Telefon a e-mail uvidí i ostatní', true)] },
       { title: 'Domácnost', fields: [personPicker({ name: 'with', label: 'Bydlí s', people: ps, full: true })] },
     ],
-    more: { key: 'kit-person', fields: [textField('nickname', 'Přezdívka', ''), dateField('since', 'Ve sboru od', ''), textArea('note', 'Poznámka', '', { hint: 'Nic o zdraví, penězích ani pastoraci.' })] },
+    more: { key: 'kit-person', fields: [textField('nickname', 'Přezdívka', ''), dateField('since', 'Chodí od', ''), textArea('note', 'Poznámka', '', { hint: 'Nic o zdraví, penězích ani pastoraci.' })] },
     save: (els) => (els.firstName.value.trim() ? null : 'Doplň aspoň jméno.'),
     remove: noop, removeLabel: 'Smazat z Lidí',
   });

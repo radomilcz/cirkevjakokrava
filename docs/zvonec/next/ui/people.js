@@ -293,7 +293,7 @@ function downloadCsv(people) {
   const lastDays = lastDutyDays(S.data, { today: today() });
   const leader = can('leader');
   csvDownload(`lide-${today()}.csv`, [
-    leader ? ['Jméno', 'Příjmení', 'Přezdívka', 'Ve sboru', 'Domácnost', 'Adresa', 'Telefon', 'E-mail', 'Skupiny', 'Narození', 'Poslední služba', 'Chybí']
+    leader ? ['Jméno', 'Příjmení', 'Přezdívka', 'Členství', 'Domácnost', 'Adresa', 'Telefon', 'E-mail', 'Skupiny', 'Narození', 'Poslední služba', 'Chybí']
       : ['Jméno', 'Příjmení', 'Telefon', 'E-mail', 'Skupiny'],
     ...people.map((p) => {
       const household = householdById(S.data, p.householdId);
@@ -310,7 +310,7 @@ function downloadCsv(people) {
 
 const COLUMNS = [
   { key: 'name', label: 'Jméno', value: (p) => `${p.lastName || p.firstName || ''} ${p.firstName || ''}`, compare: comparePeople },
-  { key: 'status', label: 'Ve sboru', leader: true, value: (p) => ['member', 'regular', 'guest', 'former'].indexOf(statusOf(p)) + (isKid(p) ? 0.5 : 0) },
+  { key: 'status', label: 'Členství', leader: true, value: (p) => ['member', 'regular', 'guest', 'former'].indexOf(statusOf(p)) + (isKid(p) ? 0.5 : 0) },
   { key: 'household', label: 'Domácnost', value: (p) => householdById(S.data, p.householdId)?.name || '￿' },
   { key: 'phone', label: 'Telefon', value: (p) => (seesContact(p) ? p.phone : '') || '￿' },
   { key: 'email', label: 'E-mail', value: (p) => (seesContact(p) ? p.email : '') || '￿' },

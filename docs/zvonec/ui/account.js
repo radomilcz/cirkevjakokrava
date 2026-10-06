@@ -31,7 +31,7 @@ export function downloadDuties(person) {
 
 /** Who sees my phone and e-mail, as a sentence. */
 export const whoSeesContact = (person) => (person.showInDirectory
-  ? 'Telefon a e-mail vidí všichni ve sboru, kdo se můžou přihlásit.'
+  ? 'Telefon a e-mail vidí všichni, kdo se můžou přihlásit.'
   : 'Telefon a e-mail vidí jen vedoucí.');
 
 /** The person edits their own contact (members may change only this). */
@@ -45,7 +45,7 @@ export function contactDialog(person) {
         textField('nickname', 'Přezdívka', person.nickname, { full: true, hint: 'Ukáže se v závorce za jménem.', attr: { placeholder: 'např. Bětka', autocomplete: 'off' } }),
       ] },
       { title: 'Kdo kontakt uvidí', fields: [
-        switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, { hint: 'Jinak je vidí jen vedoucí.' }),
+        switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní', !!person.showInDirectory, { hint: 'Jinak je vidí jen vedoucí.' }),
       ] },
     ],
     save: (f) => {

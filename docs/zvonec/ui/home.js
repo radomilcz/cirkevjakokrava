@@ -235,8 +235,8 @@ function unconfirmedBlock() {
   const groupIds = can('admin') || !mine ? undefined : ledBy(S.data, mine).map((g) => g.id);
   const duties = unconfirmedDuties(S.data, { today: today(), groupIds }).filter((d) => d.person && d.person.id !== mine);
   const days = S.data.settings?.rules?.unconfirmedDaysBefore ?? 5;
-  const scope = groupIds ? 'v tvých týmech' : 've sboru';
-  if (!duties.length) return block({ key: 'unconfirmed', title: 'Čeká na potvrzení', empty: `${scope.charAt(0).toUpperCase()}${scope.slice(1)} je všechno potvrzené na ${plural(days, 'den', 'dny', 'dní')} dopředu.` });
+  const scope = groupIds ? 'V tvých týmech je všechno' : 'Všechno je';
+  if (!duties.length) return block({ key: 'unconfirmed', title: 'Čeká na potvrzení', empty: `${scope} potvrzené na ${plural(days, 'den', 'dny', 'dní')} dopředu.` });
   const tel = (phone) => `tel:${String(phone).replace(/[^\d+]/g, '')}`;
   return block({
     key: 'unconfirmed', title: 'Čeká na potvrzení', count: duties.length,
@@ -253,17 +253,17 @@ function unconfirmedBlock() {
   });
 }
 
-// Tento týden ve sboru
+// Tento týden
 function weekBlock() {
   const day = today();
   const monday = addDays(day, -weekday(day));
   const events = eventsInRange(S.data, monday, addDays(monday, 6));
   const ahead = events.filter((e) => dayOf(e.end) >= day);
-  if (!events.length) return block({ key: 'week', title: 'Tento týden ve sboru', empty: 'Tenhle týden se nic neděje.' });
+  if (!events.length) return block({ key: 'week', title: 'Tento týden', empty: 'Tenhle týden se nic neděje.' });
   const shown = (ahead.length ? ahead : events).slice(0, ROWS);
   const past = events.length - ahead.length;
   return block({
-    key: 'week', title: 'Tento týden ve sboru', count: events.length,
+    key: 'week', title: 'Tento týden', count: events.length,
     all: ['Celý týden', `#kalendar/tyden/${monday}`],
     body: list(shown, (e) => row({
       lead: kindMark(e.kind, { size: 'l' }),
@@ -272,7 +272,7 @@ function weekBlock() {
       trail: e.cancelled ? cancelledBadge() : isToday(e) ? badge('dnes', { tone: 'accent' }) : null,
       href: `#setkani/${e.id}`,
       tone: e.cancelled ? 'cancelled' : null,
-    }), { label: 'Tento týden ve sboru' }),
+    }), { label: 'Tento týden' }),
     footer: past && ahead.length ? h('p', { class: 'card-note' }, `A ${past === 1 ? 'jedno' : past} setkání už tenhle týden ${agree(past, 'proběhlo', 'proběhla', 'proběhlo')}.`) : null,
   });
 }

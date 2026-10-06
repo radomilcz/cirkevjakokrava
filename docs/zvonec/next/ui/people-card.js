@@ -136,7 +136,7 @@ function contactSection(person) {
         person.phone ? { icon: 'phone', text: person.phone, href: telHref(person.phone) } : null,
         person.email ? { icon: 'mail', text: person.email, href: mailHref(person.email) } : null,
       ]),
-      leader || self ? caption(person.showInDirectory ? 'Kontakt vidí všichni ve sboru.' : 'Kontakt vidí jen vedoucí.') : null,
+      leader || self ? caption(person.showInDirectory ? 'Kontakt vidí všichni.' : 'Kontakt vidí jen vedoucí.') : null,
     ];
   }
   return section({

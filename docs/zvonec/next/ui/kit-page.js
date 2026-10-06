@@ -79,7 +79,7 @@ export function renderKit() {
           list([
             personRow(P[0], { meta: 'člen · Skupinka Vinohrady', href: '#kit', phone: '731 204 118' }),
             personRow(P[5], { note: note('Chybí telefon a e-mail', { tone: 'wait', icon: 'alert' }), href: '#kit' }),
-            personRow(P[4], { meta: 'přítel sboru', href: '#kit', phone: '603 111 222', open: true }),
+            personRow(P[4], { meta: 'přítel', href: '#kit', phone: '603 111 222', open: true }),
             personRow(P[7], { meta: 'ty', me: true, href: '#kit' }),
           ], { label: 'Lidé' })),
 
@@ -171,7 +171,7 @@ export function renderKit() {
           ]),
           table({
             label: 'Ukázka tabulky',
-            head: h('tr', {}, sortHead('Jméno', { active: true, dir: 1, onSort: () => demoNote('Seřadit podle jména') }), sortHead('Ve sboru', { onSort: () => {} }), h('th', { scope: 'col' }, 'Telefon')),
+            head: h('tr', {}, sortHead('Jméno', { active: true, dir: 1, onSort: () => demoNote('Seřadit podle jména') }), sortHead('Členství', { onSort: () => {} }), h('th', { scope: 'col' }, 'Telefon')),
             rows: P.slice(0, 3).map((p, i) => h('tr', {}, h('td', {}, `${p.firstName} ${p.lastName}`), h('td', {}, i ? 'člen' : 'host'), h('td', {}, '731 204 118'))),
           }),
           mapLink({ address: 'Monta, Nádražní 12, Nový Jičín' })),

@@ -69,7 +69,7 @@ export function renderLogin(message) {
   });
   return signedOutPage({
     title: 'Přihlásit se',
-    lead: 'Uvidíš rozpis, svoje služby a lidi ze sboru.',
+    lead: 'Uvidíš rozpis, svoje služby a lidi.',
     body: [
       card({ body: form, cls: 'signin-card' }),
       h('p', { class: 'signin-note' }, 'Ještě se přihlásit nemůžeš? Požádej vedoucího o pozvánku. Program a setkání najdeš i bez přihlášení v ', h('a', { href: '#program' }, 'Programu'), '.'),
@@ -97,7 +97,7 @@ export function renderDemoLogin({ viewers, onSignIn }) {
   });
   return signedOutPage({
     title: 'Přihlásit se',
-    lead: 'Uvidíš rozpis, svoje služby a lidi ze sboru.',
+    lead: 'Uvidíš rozpis, svoje služby a lidi.',
     body: [
       callout(h('ul', { class: 'demo-logins' }, viewers.map((v) => h('li', {},
         h('button', { type: 'button', class: 'text-btn', onclick: () => { form.elements.name.value = v.name; form.elements.password.focus(); } }, v.name),
@@ -232,7 +232,7 @@ function renderRegistration(invite, store, data) {
     textField('lastName', 'Příjmení', person.lastName, { attr: { autocomplete: 'family-name' } }),
     textField('phone', 'Telefon', person.phone, { type: 'tel', attr: { autocomplete: 'tel' } }),
     textField('email', 'E-mail', person.email, { type: 'email', attr: { autocomplete: 'email' } }),
-    switchField('directory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, { hint: 'Jinak je uvidí jen vedoucí.' }),
+    switchField('directory', 'Telefon a e-mail smí vidět i ostatní', !!person.showInDirectory, { hint: 'Jinak je uvidí jen vedoucí.' }),
     roles.length ? chipsField('roles', 'S čím chceš pomáhat', roles.map((r) => [r.id, r.name]), mySkills, { hint: 'Nemusíš nic vybírat. Vedoucí se ti ozve.' }) : null,
     h('h3', { class: 'form-section-title full' }, 'Heslo'),
     textField('password', 'Heslo', '', { type: 'password', hint: 'Aspoň 8 znaků.', attr: { autocomplete: 'new-password' } }),

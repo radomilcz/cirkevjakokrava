@@ -23,7 +23,7 @@ import { checkPassword } from './account.js';
 const REMEMBER = 'Pamatovat si mě na tomhle zařízení';
 const DATA_PATH = 'data';
 
-/** The top bar of a signed-out page: brand, „Program sboru“ on the right. */
+/** The top bar of a signed-out page: brand, „Program“ on the right. */
 const bar = () => topBar({ cls: 'topbar--public', brand: true, actions: button('Program', { size: 's', variant: 'quiet', href: '#program', icon: 'calendar' }) });
 
 /** A form-wide error line (under the fields, above the button). */
@@ -79,13 +79,13 @@ function liveLogin() {
   requestAnimationFrame(() => name.focus({ preventScroll: true }));
   return screen({
     topbar: bar(),
-    head: { overline: 'Zvonec', title: 'Přihlásit se', lead: 'Uvidíš rozpis, svoje služby a lidi ze sboru.' },
+    head: { overline: 'Zvonec', title: 'Přihlásit se', lead: 'Uvidíš rozpis, svoje služby a lidi.' },
     cls: 'screen--narrow login-page',
     body: [
       form,
       h('div', { class: 'login-after' },
         h('p', { class: 'meta' }, 'Ještě přístup nemáš? Požádej vedoucího o pozvánku.'),
-        button('Program sboru', { variant: 'quiet', href: '#program', icon: 'calendar' })),
+        button('Program', { variant: 'quiet', href: '#program', icon: 'calendar' })),
     ],
   });
 }
@@ -220,7 +220,7 @@ async function checkInvite(code) {
 }
 
 export function renderInvite(code = '') {
-  const head = { title: 'Přidej se', lead: 'Uvidíš rozpis, svoje služby a lidi ze sboru.' };
+  const head = { title: 'Přidej se', lead: 'Uvidíš rozpis, svoje služby a lidi.' };
   if (S.mode === 'demo') return registration({ demo: true, data: S.data, person: null });
   if (!invite || invite.code !== code) { checkInvite(code); }
   if (invite.status === 'ready') return registration(invite);
@@ -278,7 +278,7 @@ function registration({ demo = false, result, store, data }) {
         name: 'roles', label: 'S čím chceš pomáhat', hint: 'Nemusíš nic vybírat. Vedoucí se ti ozve.', multiple: true, value: picked,
         options: roles.map((r) => ({ value: r.id, label: r.name })), onChange: (v) => { picked = v; },
       }) : null,
-      switchRow({ label: 'Telefon a e-mail smí vidět i ostatní ve sboru', hint: 'Jinak je uvidí jen vedoucí.', checked: directory, onChange: (on) => { directory = on; } }),
+      switchRow({ label: 'Telefon a e-mail smí vidět i ostatní', hint: 'Jinak je uvidí jen vedoucí.', checked: directory, onChange: (on) => { directory = on; } }),
       switchRow({ label: REMEMBER, hint: 'Na cizím počítači to vypni.', checked: true, onChange: (on) => { remember = on; } }),
     ]),
     error,

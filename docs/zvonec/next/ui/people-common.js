@@ -66,9 +66,9 @@ export function matchesQuery(person, query) {
 
 // ---------- words ----------
 
-export const MEMBERSHIP_WORDS = { member: 'člen', regular: 'přítel sboru', guest: 'host', former: 'už nechodí' };
+export const MEMBERSHIP_WORDS = { member: 'člen', regular: 'přítel', guest: 'host', former: 'už nechodí' };
 export const MEMBERSHIP_CHOICES = [
-  { value: 'member', label: 'Člen' }, { value: 'regular', label: 'Přítel sboru' }, { value: 'guest', label: 'Host' }, { value: 'former', label: 'Už nechodí' },
+  { value: 'member', label: 'Člen' }, { value: 'regular', label: 'Přítel' }, { value: 'guest', label: 'Host' }, { value: 'former', label: 'Už nechodí' },
 ];
 export const peopleCount = (n) => plural(n, 'člověk', 'lidé', 'lidí');
 export const yearsText = (n) => plural(n, 'rok', 'roky', 'let');

@@ -150,7 +150,7 @@ function contactCard(person) {
     body = [
       lines.length ? h('ul', { class: 'contact-lines' }, lines) : quiet(self ? 'Telefon ani e-mail tu zatím nemáš.' : 'Telefon ani e-mail zatím nemáme.'),
       lines.length ? h('p', { class: 'contact-visibility' }, icon(person.showInDirectory ? 'eye' : 'eye-off'),
-        person.showInDirectory ? 'Vidí je všichni ve sboru.' : 'Vidí je jen vedoucí.') : null,
+        person.showInDirectory ? 'Vidí je všichni.' : 'Vidí je jen vedoucí.') : null,
     ];
   }
   return card({
@@ -197,11 +197,11 @@ function membershipCard(person) {
   const status = statusOf(person);
   const needsConsent = status === 'guest' || status === 'regular';
   return card({
-    title: 'Ve sboru',
+    title: 'Členství',
     actions: editButton(() => membershipDialog(person)),
     body: facts([
       ['Členství', MEMBERSHIP_LABELS[status]],
-      ['Ve sboru od', m.since ? fullDate(m.since) : null],
+      ['Chodí od', m.since ? fullDate(m.since) : null],
       ['Do', status === 'former' && m.until ? fullDate(m.until) : null],
       ['Souhlas', person.consentDate ? fullDate(person.consentDate)
         : needsConsent ? h('span', { class: 'fact-missing' }, severityIcon('warning'), 'chybí – zeptej se a datum zapiš') : null],

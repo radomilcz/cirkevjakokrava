@@ -39,7 +39,7 @@ export const S = {
 export { KIND_LABELS as EVENT_KIND_LABELS } from '../lib/events.js';   // Účel: Nedělní setkání · Zkouška · Skupinka · Akce
 export const ASSIGNMENT_STATUS_LABELS = { proposed: 'čeká na potvrzení', confirmed: 'potvrzeno', declined: 'nemůže' };
 export const SEVERITY_LABELS = { error: 'chyba', warning: 'pozor', info: 'info' };
-export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel sboru', guest: 'host', former: 'už nechodí' };
+export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel', guest: 'host', former: 'už nechodí' };
 export const SKILL_LABELS = { trained: 'umí', learning: 'učí se' };
 export const GROUP_KIND_LABELS = { team: 'tým', community: 'skupinka', leadership: 'vedení' };
 export const ACCESS_LABELS = { admin: 'správce', leader: 'vedoucí', member: 'člen', invite: 'pozvánka' };

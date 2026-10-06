@@ -55,7 +55,7 @@ s pohledy.
 
 | obrazovka | co tam je |
 | --- | --- |
-| **Přehled** | úvod pro všechny: co čeká na tvoji odpověď (Potvrdit / Nemůžu), tvoje služby na osm týdnů dopředu (i do kalendáře v telefonu, .ics), příští neděle, tento týden ve sboru, kdy nemůžeš, tvoje skupiny. Vedoucí navíc vidí, co nesedí, volná místa na příští tři týdny, služby čekající na potvrzení a karty lidí k doplnění; správce ještě pozvánky, které čekají, a přístupy bez karty |
+| **Přehled** | úvod pro všechny: co čeká na tvoji odpověď (Potvrdit / Nemůžu), tvoje služby na osm týdnů dopředu (i do kalendáře v telefonu, .ics), příští neděle, tento týden, kdy nemůžeš, tvoje skupiny. Vedoucí navíc vidí, co nesedí, volná místa na příští tři týdny, služby čekající na potvrzení a karty lidí k doplnění; správce ještě pozvánky, které čekají, a přístupy bez karty |
 | **Kalendář** | jedna stránka a čtyři pohledy: **Měsíc** (mřížka, na telefonu malá mřížka a pod ní seznam vybraného dne), **Týden** (hodiny na ose, na telefonu tři dny), **Seznam** (po týdnech, s obrázky) a **Rozpis**. Nad nimi šipky ‹ ›, **Dnes** a filtry: **Účel** (Nedělní setkání, Zkouška, Skupinka, Akce), **Tým** a **Jen moje služby**. Pohled si Zvonec pamatuje |
 | **Rozpis** | tabulka měsíce: řádky jsou setkání, sloupce role po týmech. Vedoucí klikne do buňky, vybere člověka a hotovo; člen vidí tabulku jen ke čtení se svými službami zvýrazněnými. Tisk na A4 na šířku – bez telefonů |
 | **Setkání** | detail s obrázkem a třemi záložkami. **Přehled**: popis, poznámka pro tým, kdo slouží, začátek osnovy, mapa, upozornění a po skončení kolik lidí přišlo (jen počet, ne kdo). **Kdo slouží**: služby po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout lidi“, „Obsadit jako minule“, „Kolik lidí je potřeba“, stavy čeká na potvrzení → potvrzeno → nemůže, výjimka u upozornění. **Osnova**: viz níže |
@@ -86,7 +86,7 @@ oranžový kroužek s hodinkami čeká na potvrzení, červené ✕ je nemůže 
 | | správce a vedoucí | člen |
 | --- | --- | --- |
 | jméno, domácnost | ano | ano |
-| telefon, e-mail | ano | jen když to člověk dovolil („Telefon a e-mail smí vidět i ostatní ve sboru“) |
+| telefon, e-mail | ano | jen když to člověk dovolil („Telefon a e-mail smí vidět i ostatní“) |
 | členství, narození, poznámka, souhlas, přístup, břemeno | ano | ne |
 | skupiny | ano | jen názvy |
 | služby, kdy nemůže, upozornění | ano | jen svoje (rozpis vidí celý) |

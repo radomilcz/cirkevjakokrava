@@ -451,7 +451,7 @@ export function disclosure(text, children, { open = false, key, cls } = {}) {
  *     title: 'Přidat člověka',
  *     sections: [
  *       { title: 'Jméno', fields: [textField('firstName', 'Jméno', ''), textField('lastName', 'Příjmení', '')] },
- *       { title: 'Ve sboru', fields: [segmentedField('membership', 'Členství', [...], 'member')] },
+ *       { title: 'Členství', fields: [segmentedField('membership', 'Členství', [...], 'member')] },
  *     ],
  *     more: { key: 'person-new', sections: [{ fields: [textField('nickname', 'Přezdívka', '')] }] },
  *     save: (els, form) => { …; return 'Chybí jméno.' or nothing },

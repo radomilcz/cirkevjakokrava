@@ -95,13 +95,13 @@ export const shortDate = (date) => (date && date.length >= 10 ? `${Number(date.s
 
 export const telHref = (phone) => `tel:${String(phone).replace(/[^\d+]/g, '')}`;
 
-/** „člen od 10. 4. 2016“, „už nechodí · ve sboru 2016–2024“. */
+/** „člen od 10. 4. 2016“, „už nechodí · od 10. 4. 2016 do 3. 1. 2024“. */
 export function membershipText(person) {
   const m = person.membership || {};
   const label = MEMBERSHIP_LABELS[statusOf(person)];
   if (isFormer(person)) {
     const span = [m.since && `od ${fullDate(m.since)}`, m.until && `do ${fullDate(m.until)}`].filter(Boolean).join(' ');
-    return span ? `${label}${SEP}ve sboru ${span}` : label;
+    return span ? `${label}${SEP}${span}` : label;
   }
   return m.since ? `${label} od ${fullDate(m.since)}` : label;
 }

@@ -341,19 +341,19 @@ export function downloadCalendar() {
   toast(`Stahuju ${plural(items.length, 'setkání', 'setkání', 'setkání')}. Otevři soubor v telefonu.`, { icon: 'download' });
 }
 
-/** The two .ics choices as rows: Moje služby (with a card) · Celý kalendář sboru. `onDone` closes a sheet first. */
+/** The two .ics choices as rows: Moje služby (with a card) · Celý kalendář. `onDone` closes a sheet first. */
 export function calendarExportRows({ onDone } = {}) {
   const me = personOf(myId());
   const run = (fn) => () => { onDone?.(); fn(); };
   return list([
     me ? row({ lead: icon('user'), title: 'Moje služby', meta: 'Jen setkání, kde sloužíš', onclick: run(() => downloadDuties(me)), trail: icon('download', { size: 's' }) }) : null,
-    row({ lead: icon('calendar'), title: 'Celý kalendář sboru', meta: 'Všechna setkání', onclick: run(downloadCalendar), trail: icon('download', { size: 's' }) }),
+    row({ lead: icon('calendar'), title: 'Celý kalendář', meta: 'Všechna setkání', onclick: run(downloadCalendar), trail: icon('download', { size: 's' }) }),
   ].filter(Boolean), { label: 'Stáhnout do kalendáře' });
 }
 
 export const CALENDAR_EXPORT_NOTE = 'Stáhne se soubor .ics, telefon ho přidá do kalendáře. Když se rozpis změní, stáhni ho znovu.';
 
-/** „Stáhnout do kalendáře“ (Kalendář ⋯): Moje služby / Celý kalendář sboru. */
+/** „Stáhnout do kalendáře“ (Kalendář ⋯): Moje služby / Celý kalendář. */
 export function openCalendarExport() {
   let sheet;
   sheet = openSheet({

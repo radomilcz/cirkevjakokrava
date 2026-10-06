@@ -718,7 +718,7 @@ export function checkboxField(name, text, checked = false, value = 'yes', { hint
 /**
  * Segmented control for a form: one of a few short options side by side, the chosen one on a raised
  * thumb (radio inputs inside, so it submits with the form). options: [[value, text, icon?], …].
- *   segment('membership', [['member', 'Člen'], ['regular', 'Přítel sboru'], ['guest', 'Host']], 'member', { label: 'Členství' })
+ *   segment('membership', [['member', 'Člen'], ['regular', 'Přítel'], ['guest', 'Host']], 'member', { label: 'Členství' })
  */
 export function segment(name, options, value, { label, onchange, size } = {}) {
   return h('span', { class: ['segment', 'seg', size === 's' && 'seg-s'], role: 'radiogroup', 'aria-label': label || null, onchange: onchange || null },

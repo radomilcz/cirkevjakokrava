@@ -25,7 +25,7 @@ export const whoSeesContact = (person) => (person.showInDirectory
   ? 'Telefon a e-mail vidí všichni, kdo se do Zvonce přihlásí.'
   : 'Telefon a e-mail vidí jen vedoucí.');
 
-/** The switch „Telefon a e-mail smí vidět i ostatní ve sboru“ – applies at once, with Vrátit. */
+/** The switch „Telefon a e-mail smí vidět i ostatní“ – applies at once, with Vrátit. */
 function directorySwitch(person) {
   const set = (on) => {
     const target = personById(S.data, person.id);
@@ -34,7 +34,7 @@ function directorySwitch(person) {
     change(`kontakt ${displayName(target)}`);
   };
   return switchRow({
-    label: 'Telefon a e-mail smí vidět i ostatní ve sboru',
+    label: 'Telefon a e-mail smí vidět i ostatní',
     hint: 'Jinak je uvidí jen vedoucí.',
     checked: !!person.showInDirectory,
     onChange: (on) => {
