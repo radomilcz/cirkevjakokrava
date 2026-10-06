@@ -1,0 +1,105 @@
+/* Přehled (#prehled) and Upozornění (#upozorneni) – ui/home.js, ui/conflicts.js.
+   Semantic tokens only (css/tokens.css). */
+
+/* ---------- Přehled: two columns of cards, one on a phone (priority order via `order`) ---------- */
+.home-page .page-body>.callout{max-width:none}
+.home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.home-col{display:flex;flex-direction:column;gap:20px;min-width:0}
+@media (max-width:1099.98px){
+  .home-grid{display:flex;flex-direction:column;gap:16px}
+  .home-col{display:contents}
+}
+
+/* the head of a block: its title, a count, then the tools (Všechno on the right) */
+.home-block .card-head{min-height:52px}
+.home-block .card-actions{margin:-4px 0}
+.home-all{color:var(--text-2)}
+.home-all:hover{color:var(--text-1)}
+.home-block .card-body.flush{border-top:1px solid var(--line-1)}
+.home-block .card-foot{justify-content:flex-start}
+.home-block .card-foot .push-end{margin-left:auto}
+.card-note{margin:0;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+
+/* an empty block: its heading and one sentence, no card */
+.home-empty{padding:14px 18px 16px;min-width:0;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}   /* a slim card: in the grid of cards it is not an orphan */
+.home-empty-title{margin:0 0 6px;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-1);line-height:16px;letter-spacing:var(--tracking-label);color:var(--text-2);padding-top:2px}
+.home-empty-text{margin:0;font-size:var(--font-size-4);line-height:22px;color:var(--text-2);display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.home-empty-text .status{font-size:var(--font-size-4);color:var(--text-1)}
+.home-empty .inline-add{margin-left:-8px}
+
+/* answer buttons in a row */
+.answer-buttons{display:inline-flex;gap:4px}
+.answer-yes .icon{color:var(--confirmed-solid)}
+@media (max-width:520px){
+  .answer-row{flex-wrap:wrap}
+  .answer-row .item-body{flex:1 1 calc(100% - 100px)}
+  .answer-row .item-trail{order:3;flex-basis:100%;max-width:none;justify-content:flex-start;padding-left:54px}
+  .answer-row .item-chevron{order:2}
+}
+
+/* a row's small extras */
+.title-n{color:var(--text-2)}
+.essential{color:var(--declined-fg)}
+
+/* Příští neděle: the picture beside the title and the facts, what is missing under them */
+.next-sunday{display:grid;grid-template-columns:136px minmax(0,1fr);gap:14px 16px;align-items:start}
+.next-cover{display:block;border-radius:var(--radius-4);overflow:hidden;text-decoration:none}
+.next-cover .cover{aspect-ratio:1/1;border-radius:var(--radius-4)}
+.next-body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.next-title{margin:0;font-size:var(--font-size-5);line-height:var(--line-height-5);font-weight:400}
+.next-title a{color:var(--text-1);text-decoration:none}
+.next-title a:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+.next-when{margin:-4px 0 4px;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.next-sunday>.next-slots{grid-column:1/-1}
+@media (max-width:420px){.next-sunday{grid-template-columns:88px minmax(0,1fr)}}
+.next-facts{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:0;padding:0;list-style:none;font-size:var(--font-size-3)}
+.next-facts>li{display:inline-flex;align-items:center;gap:6px;color:var(--text-2)}
+.next-facts .next-fill{color:var(--text-1)}
+.next-slots{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding-top:12px;border-top:1px solid var(--line-1)}
+.next-slots>.label{margin-right:2px;padding-top:2px}
+.next-slot-list{display:flex;flex-wrap:wrap;gap:6px}
+.slot-btn{box-shadow:inset 0 0 0 1px var(--waiting-fg);color:var(--warning-text);background:var(--waiting-bg)}
+.slot-btn:hover{box-shadow:inset 0 0 0 1px var(--waiting-fg);background:var(--surface-hover)}
+.slot-btn .icon{color:var(--waiting-fg)}
+.slot-n{color:var(--text-2)}
+
+/* ---------- the severity chips (Upozornění): their symbol in colour ---------- */
+.sev-chip .severity-icon{width:15px;height:15px;margin-top:calc(-1*var(--optical))}
+.sev-chip.sev-error .severity-icon{color:var(--declined-solid)}
+.sev-chip.sev-warning .severity-icon{color:var(--waiting-fg)}
+.sev-chip.sev-info .severity-icon{color:var(--info-fg)}
+.sev-chip:is([aria-pressed="true"],:has(>input:checked)) .severity-icon{color:currentColor}   /* on the ink pill of a chosen chip */
+
+/* a warning row: the sentence may wrap, the actions stay at the end */
+.conflict-row .item-title{line-height:21px}
+.conflict-row .item-trail{gap:2px}
+/* „Vybrat jiného“, „Vím o tom“: soft buttons (a fill says it can be clicked, not the pink text alone) */
+@media (max-width:720px){
+  .conflict-row{flex-wrap:wrap}
+  .conflict-row .item-body{flex:1 1 calc(100% - 80px)}
+  .conflict-row .item-chevron{order:2}
+  .conflict-row .item-trail{order:3;flex-basis:100%;max-width:none;justify-content:flex-start;padding-left:36px;margin-left:-8px}
+  .conflict-row .item-trail:empty{display:none}
+}
+
+/* ---------- Upozornění: a card per event (or per person) ---------- */
+.conflict-groups{display:flex;flex-direction:column;gap:16px;max-width:var(--w-list)}
+.conflict-card-head{display:flex;align-items:center;gap:12px;padding:14px 14px 12px 18px;min-width:0}
+.conflict-card-text{flex:1 1 auto;min-width:0}
+.conflict-card-title{margin:0;font-family:var(--font-mark);font-weight:900;font-size:16px;line-height:20px;letter-spacing:.01em}
+.conflict-card-title a{color:var(--text-1);text-decoration:none}
+.conflict-card-title a:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+.conflict-card-meta{margin:0;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.conflict-card .card-body.flush{border-top:1px solid var(--line-1)}
+@media (max-width:640px){
+  .conflict-card-head{padding-inline:14px}
+  .conflict-open{display:none}   /* the title is the link on a phone */
+}
+.dialog-text{margin:0;font-size:var(--font-size-4);line-height:22px}
+.dialog-text.quiet{font-size:var(--font-size-3);color:var(--text-2)}
+
+@media print{
+  .home-grid{display:block}
+  .home-block{break-inside:avoid;margin-bottom:6mm}
+}
+.next-cover .cover-generated .cover-imprint{width:170%;right:-35%;top:-30%;left:auto;bottom:auto;opacity:.32}   /* the imprint fills the square: a picture, not a placeholder */

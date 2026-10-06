@@ -6,6 +6,7 @@ import { findConflicts } from '../lib/conflicts.js';
 import { eventById, randomId } from '../lib/events.js';
 import { dayOf, today } from '../lib/time.js';
 import { ACCESS_FILE, ACCESS_VERSION, emptyAccess } from '../lib/access.js';
+import { buildPublic } from '../lib/public.js';
 
 // ---------- state ----------
 
@@ -14,16 +15,18 @@ export const S = {
   data: null,              // the whole data object (lib/store/store.js), mutated in place by screens
   store: null,             // LocalStore | GithubStore
   sync: null,              // Sync – saves changes, refreshes what others saved
-  me: null,                // { login, priv, github, personId, access }; demo: login null, access 'admin'
+  me: null,                // { login, priv, github, personId, access }; demo: login null, admin Radim (DEMO_VIEWERS)
   logins: [],              // access.json as published next to the app (sealed records only, no names)
   loginsFromRepo: null,    // fresh list from the data repo (leaders), for managing logins
   repoInfo: null,          // repo.json next to the app: { owner, repo }
   conflicts: [],           // findConflicts(S.data) – recomputed on every change
   eventSeverity: new Map(),   // eventId → worst severity ('error' | 'warning' | 'info')
-  screen: null,            // what to show while nobody is signed in (live mode): () => nodes
+  screen: null,            // live, signed out: the invite pages (#pozvanka/…) – () => nodes, set by ui/login.js
+  signInMessage: null,     // live, signed out: an error line for the sign-in page (#prihlaseni)
+  afterSignIn: null,       // live: the route a signed-out visitor asked for, opened after signing in
+  publicData: null,        // live: public.json next to the app (null until loaded or when missing)
   filters: {               // remembered for the session; screens may add their own keys
     conflictScope: 'upcoming',      // 'upcoming' | 'all'
-    conflictSeverity: 'all',        // 'all' | 'error' | 'warning' | 'info'
     peopleSearch: '',
     rosterKind: 'service',          // event kind or ''
     rosterGroup: '',                // group id or ''
@@ -33,13 +36,15 @@ export const S = {
 
 // ---------- Czech labels of stored values (shared so every screen says the same) ----------
 
-export const EVENT_KIND_LABELS = { service: 'Setkání na pastvě', rehearsal: 'Zkouška', smallGroup: 'Skupinka', event: 'Akce' };
-export const ASSIGNMENT_STATUS_LABELS = { proposed: 'navrženo', confirmed: 'potvrzeno', declined: 'nemůže' };
+export { KIND_LABELS as EVENT_KIND_LABELS } from '../lib/events.js';   // Účel: Nedělní setkání · Zkouška · Skupinka · Akce
+export const ASSIGNMENT_STATUS_LABELS = { proposed: 'čeká na potvrzení', confirmed: 'potvrzeno', declined: 'nemůže' };
 export const SEVERITY_LABELS = { error: 'chyba', warning: 'pozor', info: 'info' };
-export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'chodí pravidelně', guest: 'host', former: 'už nechodí' };
+export const MEMBERSHIP_LABELS = { member: 'člen', regular: 'přítel', guest: 'host', former: 'v archivu' };
 export const SKILL_LABELS = { trained: 'umí', learning: 'učí se' };
 export const GROUP_KIND_LABELS = { team: 'tým', community: 'skupinka', leadership: 'vedení' };
 export const ACCESS_LABELS = { admin: 'správce', leader: 'vedoucí', member: 'člen', invite: 'pozvánka' };
+/** „Pohled člena: Anna Nováková“ – the demo's „look at it as someone else“, without the name's case. */
+export const ACCESS_VIEW = { admin: 'Pohled správce', leader: 'Pohled vedoucího', member: 'Pohled člena' };
 
 // ---------- hooks set by app.js ----------
 
@@ -76,7 +81,7 @@ export function can(level) {
   return mine >= (RANK[level] || Infinity);
 }
 
-/** Person id of the signed-in user (null in the demo unless actAs() picked someone). */
+/** Person id of the signed-in user (null for an admin without a card in Lidé). */
 export const myId = () => S.me?.personId || null;
 
 /** Demo only: look at the app as someone else (personId) with another access level. */
@@ -84,6 +89,18 @@ export function actAs(personId, access = 'admin') {
   if (S.mode !== 'demo') return;
   S.me = { ...S.me, personId: personId || null, access };
   render({ toTop: true });
+}
+
+// ---------- public part ----------
+
+/**
+ * What a visitor who is not signed in may see (lib/public.js shape: { churchName, address, events,
+ * formats }). Demo: built from the demo data right now. Live: public.json as published next to the
+ * app; null when it is not there (yet).
+ */
+export function publicData() {
+  if (S.mode === 'demo') return S.data ? buildPublic(S.data, { today: today() }) : null;
+  return S.publicData;
 }
 
 // ---------- data changes ----------
@@ -154,6 +171,20 @@ export async function updateLogins(mutate, message) {
   }, `Zvonec – přístupy: ${message}`, emptyAccess());
   S.loginsFromRepo = json.logins;
   return result;
+}
+
+/** Live mode: does the person have a login or an invite in access.json? */
+export const hasLogin = (personId) => S.mode === 'live' && loginList().some((l) => l.personId === personId);
+
+/**
+ * Live mode: remove the person's logins and invites from access.json (archive, deleting a card).
+ * Returns the promise of the change, or null when there is nothing to remove.
+ */
+export function revokeLoginsOf(personId, message) {
+  if (!hasLogin(personId)) return null;
+  return updateLogins((logins) => {
+    for (let i = logins.length - 1; i >= 0; i -= 1) if (logins[i].personId === personId) logins.splice(i, 1);
+  }, message);
 }
 
 // ---------- remembered login ----------

@@ -19,21 +19,21 @@ import {
 export const CODES = {
   K1: 'Dvakrát naráz',
   K2: 'Dvě služby naráz',
-  K3: 'Blokace',
+  K3: 'Nemá čas',
   K4: 'Neumí',
   K4b: 'Zaučuje se',
-  K5: 'Neobsazeno',
+  K5: 'Chybí lidi',
   K6: 'Nepotvrzeno',
   K7: 'Moc služeb v měsíci',
   K8: 'Neděle po sobě',
-  K9: 'Místo',
-  K10: 'Kdo pohlídá děti',
+  K9: 'Místo je obsazené',
+  K10: 'Nikdo nehlídá děti',
   K11: 'Dítě ve službě pro dospělé',
   K12: 'Málo dospělých u dětí',
-  K13: 'Nechodí nebo má pauzu',
+  K13: 'Je v archivu nebo má pauzu',
   K14: 'Zrušené setkání',
   K15: 'Osnova přetéká',
-  K16: 'Bod osnovy',
+  K16: 'Problém v osnově',
   K17: 'Nikdo nevede',
 };
 
@@ -45,7 +45,7 @@ function describeEvent(event) {
 
 /** Why a person should not be planned now, or null. Czech, used inside sentences. */
 function inactiveText(data, person) {
-  if (isFormer(person)) return 'už k nám nechodí';
+  if (isFormer(person)) return 'je v archivu';
   if (limitsOf(data, person.id).paused) return 'má teď pauzu';
   return null;
 }
@@ -59,7 +59,7 @@ function inactiveText(data, person) {
  */
 export function findConflicts(data, { today } = {}) {
   today = today || todayLocal();
-  const { essentialDaysBefore, unconfirmedDaysBefore, childAge } = rules(data);
+  const { essentialDaysBefore, unconfirmedDaysBefore, openDaysBefore, childAge } = rules(data);
   const child = (p) => isChild(p, today, childAge);
   const people = index(data.people);
   const roles = index(data.roles);
@@ -113,7 +113,7 @@ export function findConflicts(data, { today } = {}) {
           add({
             key: `K2:${personId}:${a.assignment.id}:${b.assignment.id}`, code: 'K2', severity: 'error',
             eventId: a.event.id, personId, assignments: [a.assignment, b.assignment],
-            text: `${who} má naráz dvě služby: ${a.role?.name || '?'} a ${b.role?.name || '?'}. Jednu mu vezmi.`,
+            text: `${who} má naráz dvě služby: ${a.role?.name || '?'} a ${b.role?.name || '?'}. Jednu z nich dej někomu jinému.`,
           });
         }
       }
@@ -132,15 +132,9 @@ export function findConflicts(data, { today } = {}) {
         });
       }
 
+      // Someone outside the team (a guest preacher, a stand-in) is the leader's choice, not a problem.
       const level = skillLevel(data, personId, s.role, members);
-      if (!level) {
-        const team = groups.get(s.role?.groupId)?.name;
-        add({
-          key: `K4:${s.assignment.id}`, code: 'K4', severity: 'error',
-          eventId: s.event.id, personId, assignments: [s.assignment],
-          text: `${who} nemá ${team ? `v týmu ${team} ` : ''}službu ${s.role?.name || '?'}. Umí to, nebo je to omyl?`,
-        });
-      } else if (level === 'learning') {
+      if (level === 'learning') {
         const experienced = (s.event.assignments || []).some((a) => isActive(a) && a.roleId === s.assignment.roleId
           && a.personId && a.personId !== personId && skillLevel(data, a.personId, s.role, members) === 'trained');
         if (!experienced) {
@@ -156,7 +150,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K11:${s.assignment.id}`, code: 'K11', severity: 'error',
           eventId: s.event.id, personId, assignments: [s.assignment],
-          text: `${who} je dítě a ${s.role.name} je služba pro dospělé.`,
+          text: `${who} je dítě, ale role ${s.role.name} je jen pro dospělé.`,
         });
       }
 
@@ -184,7 +178,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K7:${personId}:${m}`, code: 'K7', severity: 'warning',
           eventId: ids[ids.length - 1], eventIds: ids, personId,
-          text: `${who} má v měsíci ${events.size} služeb, chce nejvýš ${limits.maxPerMonth}.`,
+          text: `${who} má v měsíci ${events.size} ${events.size === 1 ? 'službu' : events.size <= 4 ? 'služby' : 'služeb'}, může mít nejvýš ${limits.maxPerMonth}.`,
         });
       }
     }
@@ -229,7 +223,7 @@ export function findConflicts(data, { today } = {}) {
       if (remaining.length) {
         add({
           key: `K14:${e.id}`, code: 'K14', severity: 'info', eventId: e.id, assignments: remaining,
-          text: `${describeEvent(e)} je zrušená, ale ${remaining.length === 1 ? 'jeden člověk o tom možná neví' : `${remaining.length} lidí o tom možná neví`}.`,
+          text: `Zrušeno: ${describeEvent(e)}. ${remaining.length === 1 ? 'Jeden člověk z rozpisu o tom možná neví' : remaining.length <= 4 ? `${remaining.length} lidé z rozpisu o tom možná nevědí` : `${remaining.length} lidí z rozpisu o tom možná neví`}.`,
         });
       }
       continue;
@@ -239,22 +233,32 @@ export function findConflicts(data, { today } = {}) {
     const needs = needsOf(data, e);
     const ownNeed = (roleId) => (e.needs || []).some((n) => n.roleId === roleId);
 
+    // K5 – empty roles, one card per event and kind. A freshly created event is not a problem yet:
+    // essential roles start to count 2× essentialDaysBefore ahead (error from essentialDaysBefore),
+    // the others openDaysBefore ahead.
+    const gaps = { essential: [], other: [] };
     for (const need of upcoming ? needs : []) {   // gaps in the past no longer hurt anyone
       const role = roles.get(need.roleId);
       if (!role && !ownNeed(need.roleId)) continue;   // a format leads with a deleted role – K17 says it
       const count = Number(need.count) || 0;
       const have = assignments.filter((a) => a.roleId === need.roleId && isActive(a) && a.personId).length;
       const missing = count - have;
-      if (missing > 0) {
-        const urgent = role?.essential && daysUntil <= essentialDaysBefore;
-        add({
-          key: `K5:${e.id}:${need.roleId}`, code: 'K5', severity: urgent ? 'error' : 'warning', eventId: e.id,
-          roleId: need.roleId,
-          text: missing === 1 && count === 1
-            ? `${role?.name || 'Služba'}: zatím nikdo.`
-            : `${role?.name || 'Služba'}: chybí ${missing} z ${count}.`,
-        });
-      }
+      if (missing > 0) gaps[role?.essential ? 'essential' : 'other'].push({ roleId: need.roleId, name: role?.name || 'Služba', missing });
+    }
+    const listGaps = (list) => list.map((g) => (g.missing > 1 ? `${g.name} (${g.missing})` : g.name)).join(', ');
+    if (gaps.essential.length && daysUntil <= 2 * essentialDaysBefore) {
+      add({
+        key: `K5:${e.id}:essential`, code: 'K5', severity: daysUntil <= essentialDaysBefore ? 'error' : 'warning', eventId: e.id,
+        roleIds: gaps.essential.map((g) => g.roleId), roleId: gaps.essential[0].roleId,
+        text: `Bez tohohle to nepůjde: ${listGaps(gaps.essential)}.`,
+      });
+    }
+    if (gaps.other.length && daysUntil <= openDaysBefore) {
+      add({
+        key: `K5:${e.id}:other`, code: 'K5', severity: 'warning', eventId: e.id,
+        roleIds: gaps.other.map((g) => g.roleId), roleId: gaps.other[0].roleId,
+        text: `Ještě chybí: ${listGaps(gaps.other)}.`,
+      });
     }
 
     if (upcoming && daysUntil <= unconfirmedDaysBefore) {
@@ -262,7 +266,7 @@ export function findConflicts(data, { today } = {}) {
         if (a.status !== 'proposed' || !a.personId) continue;
         add({
           key: `K6:${a.id}`, code: 'K6', severity: 'warning', eventId: e.id, personId: a.personId, assignments: [a],
-          text: `${roleName(a.roleId) || 'Služba'}: ${displayName(people.get(a.personId))} zatím nepotvrdil(a).`,
+          text: `${roleName(a.roleId) || 'Služba'}: ${displayName(people.get(a.personId))} – zatím nepotvrzeno.`,
         });
       }
     }
@@ -303,7 +307,7 @@ export function findConflicts(data, { today } = {}) {
         if (format?.leadRoleId && !roles.has(format.leadRoleId) && !itemLeaders(data, e, item).length) {
           add({
             key: `K17:${item.id}`, code: 'K17', severity: 'warning', eventId: e.id,
-            text: `${name}: nikdo to nevede, služba z formátu už neexistuje. Vyber člověka, nebo uprav formát.`,
+            text: `${name}: nikdo to nevede, role z formátu už neexistuje. Vyber člověka, nebo uprav formát.`,
           });
         }
       }
@@ -314,10 +318,11 @@ export function findConflicts(data, { today } = {}) {
       const adults = new Set(assignments
         .filter((a) => isActive(a) && a.personId && roles.get(a.roleId)?.childcare && !child(people.get(a.personId)))
         .map((a) => a.personId));
-      if (adults.size < 2) {
+      const withKids = assignments.some((a) => isActive(a) && a.personId && roles.get(a.roleId)?.childcare);
+      if (withKids && adults.size < 2) {   // nobody there at all is an empty role (K5), not this
         add({
           key: `K12:${e.id}`, code: 'K12', severity: 'warning', eventId: e.id,
-          text: `U dětí ${adults.size ? 'je jen jeden dospělý' : 'zatím není žádný dospělý'}. Mají tam být aspoň dva.`,
+          text: `U dětí ${adults.size ? 'je jen jeden dospělý' : 'není žádný dospělý'}. Mají tam být aspoň dva.`,
         });
       }
     }
@@ -367,7 +372,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K9:${a.id}:${b.id}:${placeId}`, code: 'K9', severity: place?.shared ? 'info' : 'error',
           eventId: a.id, eventIds: [a.id, b.id],
-          text: `${place?.name || 'Místo'} je naráz pro ${describeEvent(a)} i ${describeEvent(b)}.`,
+          text: `${place?.name || 'Místo'}: dvě setkání ve stejnou dobu – ${describeEvent(a)} a ${describeEvent(b)}.`,
         });
       }
     }

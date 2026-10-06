@@ -1,0 +1,224 @@
+/* Kalendář (ui/calendar*.js) – the toolbar, Měsíc, Týden, Seznam, the marks of an event and the
+   calendar's popovers. Semantic tokens only; Účel colours come from the .c-<hue> classes
+   (--c3 fill · --c4 hover · --c9 bar / solid · --c11 ring · --c12 text · --cc text on solid). */
+
+/* ---------- toolbar: ‹ Říjen 2026 › Dnes · Účel · Tým · Jen moje služby ---------- */
+.cal-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px}
+.cal-toolbar-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.cal-toolbar .datenav{margin-left:-8px}
+.cal-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-width:0}
+.cal-filters .switch-row{padding:0;align-items:center;white-space:nowrap}
+.cal-filters .switch-row>input{margin-top:0}
+.cal-filters .switch-row .caption{font-size:var(--font-size-3)}
+.cal-filter-toggle{display:none}
+.cal-filter-toggle .count{margin:calc(-1*var(--optical)) -4px 0 2px}
+.kind-chip{font-size:var(--font-size-3);gap:6px}
+.kind-chip .kind-mark{margin:calc(-1*var(--optical)) 0 0 -2px}
+.kind-chip .kind-mark .icon{width:15px;height:15px;margin:0}
+.kind-chip[aria-pressed="true"] .kind-mark{display:none}
+.toolbar-select{display:inline-flex;align-items:center;min-width:0}
+.toolbar-select :is(select,.select-btn){height:var(--control-1);padding:var(--optical) 12px 0 14px;font-size:var(--font-size-3);background-color:var(--surface-panel)}
+.toolbar-select select{padding-right:30px}
+.toolbar-select .select{min-width:10.5em}
+.toolbar-select.on :is(select,.select-btn){background-color:var(--selected-bg);color:var(--selected-fg);box-shadow:inset 0 0 0 1px var(--selected-line)}
+.cal-clear{color:var(--text-2)}
+@media (max-width:719.98px){
+  .cal-toolbar{flex-direction:column;align-items:stretch}
+  .cal-filter-toggle{display:inline-flex}
+  .cal-filters{display:none;padding:12px;border-radius:var(--radius-card);background:var(--surface-panel);box-shadow:var(--shadow-card)}
+  .cal-toolbar.filters-open .cal-filters{display:flex}
+  .calendar-page .page-head .page-tabs .tab{padding-inline:8px}
+}
+
+/* ---------- marks on an event (chip, bar, block) ---------- */
+.cal-marks{display:inline-flex;align-items:center;gap:3px;flex:none;margin:1px -1px 0 0}
+.cal-mark{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;border-radius:50%}
+.cal-mark :is(.icon,.severity-icon){width:12px;height:12px}
+.cal-mark .fill-ring{padding:0;gap:0}
+.cal-mark .fill-ring-svg{margin:0}
+.cal-mark-mine{background:var(--selected-fg);color:var(--surface-panel)}
+.cal-mark-mine .icon{stroke-width:2.2}
+.cal-mark-error{background:var(--surface-panel);color:var(--declined-solid)}
+.cal-mark-warning{background:var(--surface-panel);color:var(--waiting-fg)}
+.cal-mark-fill{background:var(--surface-panel)}
+.cal-mark-fill.fill-state-confirmed{display:none}   /* only what needs doing; all there is calm */
+
+/* ---------- Měsíc ---------- */
+.month{position:relative;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card);overflow:hidden}
+.month-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:var(--surface-sunken);box-shadow:inset 0 -1px 0 var(--line-1)}
+.month-dow{
+  display:flex;align-items:center;height:34px;padding:var(--optical) 12px 0;font-family:var(--font-mark);font-weight:900;font-size:11px;
+  letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-2);
+}
+.month-week{--lanes:0;position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.month-week+.month-week{box-shadow:inset 0 1px 0 var(--line-1)}
+.month-day{position:relative;display:flex;flex-direction:column;gap:3px;min-width:0;min-height:calc(124px + var(--lanes) * 24px);padding:6px 6px 8px}
+.month-day+.month-day{box-shadow:inset 1px 0 0 var(--line-1)}
+.month-day.weekend{background:var(--surface-sunken)}
+.month-day.today{background:var(--today-bg)}
+.month-day-head{display:flex;align-items:center;justify-content:space-between;gap:4px;height:28px;margin-bottom:calc(var(--lanes) * 24px)}
+.month-day-num{
+  display:inline-grid;place-items:center;min-width:28px;height:28px;padding:var(--optical-n) 6px 0;border:0;border-radius:var(--radius-full);background:none;cursor:pointer;
+  font-family:var(--font-mark);font-weight:900;font-size:14px;line-height:1;color:var(--text-1);font-variant-numeric:tabular-nums;
+}
+.month-day-num:hover{background:var(--hover)}
+.month-day.today .month-day-num{background:var(--primary-bg);color:var(--primary-fg)}
+.month-day.other .month-day-num{color:var(--text-3)}
+/* days of the next month are future: only their number is lighter, the chips stay full strength (only past chips fade) */
+.month-day-add{height:24px;margin-right:-2px;color:var(--text-2);opacity:0;transition:opacity .12s}
+.month-day-add .icon{width:15px;height:15px}
+.month-day:hover .month-day-add,.month-day-add:focus-visible{opacity:1}
+@media (hover:none){.month-day-add{opacity:.7}}
+.month-day-events{display:flex;flex-direction:column;gap:3px;min-width:0}
+.month-dots,.month-daylist{display:none}
+.cal-more{
+  align-self:flex-start;height:22px;padding:var(--optical) 6px 0;margin-left:2px;border:0;border-radius:var(--radius-2);background:none;cursor:pointer;
+  font:inherit;font-size:12px;line-height:1;color:var(--text-2);
+}
+.cal-more:hover{background:var(--hover);color:var(--text-1)}
+
+/* the chip: Účel fill + bar, time in Narrow, the title on two lines at most */
+.cal-chip,.cal-bar{
+  position:relative;display:flex;align-items:flex-start;gap:4px;min-width:0;padding:4px 5px 3px 8px;border-radius:var(--radius-2);
+  background:var(--c3);color:var(--c12);box-shadow:inset 3px 0 0 var(--c9);text-decoration:none;font-size:13px;line-height:16px;
+  transition:background .12s;
+}
+.cal-chip:hover,.cal-bar:hover{background:var(--c4)}
+.cal-chip:focus-visible,.cal-bar:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.cal-chip-text{flex:1 1 auto;min-width:0;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow-wrap:anywhere;padding-top:1px}
+.cal-chip-time{font-family:var(--font-mark);font-weight:900;font-size:11px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+/* every Účel the same recipe (soft fill + bar); the Sunday meeting is told apart by its icon in the legend, not a loud slab */
+/* „tady sloužíš“: the filled person disc in the marks (no heavy ring around the chip) */
+.cal-chip.cancelled,.cal-bar.cancelled{background:var(--hover);color:var(--text-2);box-shadow:none}
+.cal-chip.cancelled .cal-chip-title,.cal-bar.cancelled .cal-chip-title{text-decoration:line-through}
+.cal-chip.past:not(:hover){opacity:.66}
+/* multi-day: one bar across the days */
+.month-bars{
+  position:absolute;left:0;right:0;top:38px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:21px;row-gap:3px;column-gap:12px;
+  padding:0 6px;pointer-events:none;
+}
+.month-bars>.cal-bar{pointer-events:auto}
+.cal-bar{align-items:center;padding-block:0;white-space:nowrap}
+.cal-bar .cal-chip-text{display:block;white-space:nowrap;text-overflow:ellipsis;padding-top:var(--optical)}
+.cal-bar.cut-start{border-top-left-radius:0;border-bottom-left-radius:0;box-shadow:none}
+.cal-bar.cut-end{border-top-right-radius:0;border-bottom-right-radius:0}
+
+/* legend under the grid */
+.cal-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin:14px 0 0;padding:0 4px;list-style:none;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.cal-legend li{display:inline-flex;align-items:center;gap:6px}
+.cal-legend .fill-ring{padding-top:0}
+.cal-legend .fill-ring-svg{margin-top:0}
+.agenda .cal-legend{margin-top:4px}
+.cal-legend .cal-mark{box-shadow:0 0 0 1px var(--line-1)}
+.cal-legend .kind-mark .icon{width:16px;height:16px}
+
+/* phone: compact grid with dots, the chosen day's list under it */
+@media (max-width:719.98px){
+  .month-dow{justify-content:center;padding-inline:0;height:30px;font-size:10px}
+  .month-day{min-height:54px;padding:4px 2px 6px;align-items:center;gap:4px}
+  .month-day-head{justify-content:center;margin:0;height:30px}
+  .month-day-num{min-width:30px;height:30px;font-size:15px}
+  .month-day-num::after{content:"";position:absolute;inset:0}
+  .month-day-add,.month-day-events,.month-bars,.cal-legend{display:none}
+  .month-day.picked{background:var(--selected-bg)}
+  .month-day.picked .month-day-num{box-shadow:inset 0 0 0 2px var(--indicator)}
+  .month-day.today.picked .month-day-num{box-shadow:0 0 0 2px var(--surface-panel),0 0 0 4px var(--indicator)}
+  .month-dots{display:flex;align-items:center;justify-content:center;gap:3px;height:6px}
+  .month-dot{width:6px;height:6px;border-radius:50%;background:var(--c9)}
+  .month-dot.mine{box-shadow:0 0 0 1.5px var(--c11)}
+  .month-dot-more{font-size:10px;line-height:6px;color:var(--text-2)}
+  .month-day.other .month-dots{opacity:.5}
+  .month-daylist{display:block}
+}
+.month-daylist-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px;padding:0 2px}
+.month-daylist-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-3);line-height:20px;letter-spacing:.06em;padding-top:2px}
+
+/* ---------- Týden ---------- */
+.week{--week-gutter:58px;--days:7;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card);overflow:hidden}
+.week.week-3{--week-gutter:44px}
+.week-head,.week-band{display:grid;grid-template-columns:var(--week-gutter) minmax(0,1fr)}
+.week-head{grid-template-columns:var(--week-gutter) repeat(var(--days),minmax(0,1fr));background:var(--surface-sunken);box-shadow:inset 0 -1px 0 var(--line-1)}
+.week-day-head{position:relative;display:flex;align-items:center;justify-content:center;height:60px;box-shadow:inset 1px 0 0 var(--line-1)}
+.week-day-link{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 10px;border-radius:var(--radius-3);text-decoration:none;color:var(--text-1)}
+.week-day-link:hover{background:var(--hover)}
+.week-dow{font-family:var(--font-mark);font-weight:900;font-size:11px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-2)}
+.week-num{display:grid;place-items:center;min-width:30px;height:30px;padding:var(--optical-n) 6px 0;border-radius:var(--radius-full);font-family:var(--font-mark);font-weight:900;font-size:17px;line-height:1}
+.week-day-head.today .week-num{background:var(--primary-bg);color:var(--primary-fg)}
+.week-day-head.today .week-dow{color:var(--text-accent)}
+.week-day-add{position:absolute;top:6px;right:6px;height:24px;color:var(--text-2);opacity:0;transition:opacity .12s}
+.week-day-add .icon{width:15px;height:15px}
+.week-day-head:hover .week-day-add,.week-day-add:focus-visible{opacity:1}
+@media (hover:none){.week-day-add{opacity:.7}}
+.week-band{box-shadow:inset 0 -1px 0 var(--line-1)}
+.week-band-label{display:flex;align-items:center;justify-content:flex-end;padding:0 8px;font-size:11px;line-height:14px;color:var(--text-2);text-align:right}
+.week-band-bars{display:grid;grid-template-columns:repeat(var(--days),minmax(0,1fr));grid-auto-rows:24px;row-gap:3px;padding:5px 0;box-shadow:inset 1px 0 0 var(--line-1)}
+.week-band-bars .cal-bar{margin:0 3px}
+.week-body{display:grid;grid-template-columns:var(--week-gutter) minmax(0,1fr)}
+.week-hours{position:relative;height:var(--week-height)}
+.week-hour{position:absolute;right:8px;margin-top:-8px;font-size:11px;line-height:16px;color:var(--text-2);font-variant-numeric:tabular-nums}
+.week-hour:first-child{margin-top:3px}
+.week-cols{
+  display:grid;grid-template-columns:repeat(var(--days),minmax(0,1fr));height:var(--week-height);
+  background-image:linear-gradient(var(--line-1) 1px,transparent 1px);background-size:100% var(--hour);
+}
+.week-col{position:relative;box-shadow:inset 1px 0 0 var(--line-1);min-width:0}
+.week-col.weekend{background-color:var(--surface-sunken)}
+.week-col.today{background-color:var(--today-bg)}
+.week-event{
+  position:absolute;z-index:1;display:flex;flex-direction:column;gap:1px;min-width:0;padding:4px 5px 4px 9px;border-radius:var(--radius-2);overflow:hidden;
+  background:var(--c3);color:var(--c12);box-shadow:inset 3px 0 0 var(--c9),0 0 0 1px var(--surface-panel);text-decoration:none;font-size:13px;line-height:16px;
+}
+.week-event:hover{background:var(--c4);z-index:2}
+.week-event:focus-visible{outline:2px solid var(--focus);outline-offset:1px;z-index:3}
+/* „tady sloužíš“ = the filled person disc in the marks, like the month chips */
+.week-event.cancelled{background:var(--surface-sunken);color:var(--text-2);box-shadow:inset 3px 0 0 var(--line-2),0 0 0 1px var(--surface-panel)}
+.week-event.cancelled .week-event-title{text-decoration:line-through}
+.week-event.past:not(:hover){opacity:.66}
+.week-event-time{font-family:var(--font-mark);font-weight:900;font-size:11px;letter-spacing:.02em;font-variant-numeric:tabular-nums;padding-right:18px}
+.week-event-title{overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.week-event-place{font-size:12px;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.week-event .cal-marks{position:absolute;top:3px;right:3px;margin:0}
+.week-event.short{flex-direction:row;align-items:baseline;gap:6px;padding-block:3px}
+.week-event.short .week-event-title{-webkit-line-clamp:1}
+.week-event.side{box-shadow:inset 3px 0 0 var(--c9),0 0 0 1.5px var(--surface-panel),0 2px 6px -2px rgb(0 0 0 / .25)}
+.week-event.side .week-event-title{-webkit-line-clamp:2}
+.week-event.side .week-event-end{display:none}
+.now-line{position:absolute;z-index:4;left:-1px;right:0;height:2px;background:var(--indicator);pointer-events:none}
+.now-line::before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--indicator)}
+.cal-view-tyden .page-body>.empty-state{margin-top:12px}
+@media (max-width:719.98px){
+  .week-day-head{height:54px}
+  .week-hour{right:6px;font-size:10px}
+  .week-event{padding:3px 4px 3px 7px;font-size:12px;line-height:15px}
+  .week-event-place{display:none}
+}
+
+/* ---------- Seznam ---------- */
+.agenda{display:flex;flex-direction:column;gap:12px;max-width:var(--w-list)}
+.agenda-past{display:flex}
+.agenda-past .btn{margin-left:-8px;color:var(--text-2)}
+.agenda-list>.list-group{padding-top:16px}
+.agenda-list>.list-group:first-child{padding-top:12px}
+.event-row .item-lead{gap:12px}
+.event-row .cover-thumb{width:46px;height:46px}
+.event-row.past .date-block{opacity:.7}
+.kind-inline{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.kind-inline .kind-mark .icon{width:14px;height:14px;margin-top:calc(-1*var(--optical))}
+.mine-badge .icon{stroke-width:2.2}
+.fill-count{display:inline-flex;align-items:center;gap:6px;color:var(--text-2)}
+@media (max-width:520px){
+  .event-row .cover-thumb{display:none}
+  .event-row .mine-badge{max-width:100%;white-space:normal}
+}
+
+/* ---------- the day popover (kit anchoredPopover) ---------- */
+.day-popover{width:380px;padding:10px 10px 12px}
+.day-pop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 10px}
+.day-pop-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-3);line-height:20px;letter-spacing:.06em;padding-top:2px}
+.day-pop-items{box-shadow:none;background:none;border-radius:0}
+.day-pop-items .item{padding:8px 10px;min-height:52px;border-radius:var(--radius-3)}
+.day-pop-items>li+li{border-top:0}
+
+@media print{
+  .cal-toolbar,.month-day-add,.cal-more,.week-day-add,.now-line,.cal-legend{display:none !important}
+}

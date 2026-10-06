@@ -111,14 +111,14 @@ test('file map covers every collection and four files', () => {
   assert.deepEqual(Object.keys(f['data/groups.json']), ['schema', 'groups', 'roles', 'groupMembers']);
   assert.deepEqual(Object.keys(f['data/settings.json']), ['schema', 'settings']);
   assert.equal(commitMessage([]), 'Zvonec: úprava');
-  assert.equal(commitMessage(['a', 'b', 'c', 'd', 'e']), 'Zvonec: a, b, c a 2 dalších');
+  assert.equal(commitMessage(['a', 'b', 'c', 'd', 'e']), 'Zvonec: a, b, c a 2 další');
 });
 
 // ---------- GitHub (mocked API) ----------
 
 /** A small fake GitHub: files by path, every write gets a new sha. */
 function fakeGithub(initialFiles = {}, { owner = 'church', repo = 'data' } = {}) {
-  const state = { files: {}, writes: [], gets: [], counter: 0, offline: false };
+  const state = { files: {}, writes: [], puts: [], gets: [], counter: 0, offline: false, deletedStatus: 409 };
   for (const [path, json] of Object.entries(initialFiles)) state.files[path] = { content: JSON.stringify(json), sha: `${path}@0` };
   state.set = (path, json) => { state.files[path] = { content: JSON.stringify(json), sha: `${path}@x${++state.counter}` }; };
   state.json = (path) => JSON.parse(state.files[path].content);
@@ -147,7 +147,8 @@ function fakeGithub(initialFiles = {}, { owner = 'church', repo = 'data' } = {})
     const file = state.files[path];
     if (file && !body.sha) return new Response('{}', { status: 422 });
     if (file && body.sha !== file.sha) return new Response('{}', { status: 409 });
-    if (!file && body.sha) return new Response('{}', { status: 409 });
+    state.puts.push({ path, sha: body.sha || null });
+    if (!file && body.sha) return new Response('{}', { status: state.deletedStatus });   // stale sha of a deleted file
     state.counter += 1;
     state.files[path] = { content: Buffer.from(body.content, 'base64').toString('utf8'), sha: `${path}@${state.counter}` };
     state.writes.push({ path, message: body.message });
@@ -411,4 +412,208 @@ test('LocalStore: same interface under zvonec-demo, stale sha → Conflict, Sync
   assert.equal(data1.people[1].phone, '2');
   tab1.forget();
   assert.equal(storage.map.has(DEMO_KEY), false);
+});
+
+// ---------- a missing file is never "everything was deleted" ----------
+
+/** Sample data with many events, so a mass deletion is visible. */
+function manyEvents(count = 20) {
+  const d = sample();
+  d.events = Array.from({ length: count }, (_, i) => ({
+    id: `e${i}`, title: `Setkání ${i}`, kind: 'service', start: '2026-10-11T10:00', end: '2026-10-11T12:00',
+    placeIds: [], needs: [], assignments: [],
+  }));
+  return d;
+}
+
+/** Each backend: a fresh store with `d` saved, and helpers to delete files behind the app's back. */
+const backends = {
+  async local(d) {
+    const storage = memoryStorage();
+    await saveAll(new LocalStore({ storage }), d, 'Zvonec: ukázka');
+    const other = new LocalStore({ storage });
+    return {
+      store: new LocalStore({ storage }),
+      wipeAll: () => storage.removeItem(DEMO_KEY),                     // localStorage cleared, app still open
+      wipe: async (path) => { await other.read(path); await other.remove(path); },   // another tab deleted the file
+      json: async (path) => (await new LocalStore({ storage }).read(path))?.json,
+      set: async (path, json) => { await other.read(path); await other.write(path, json, 'jiná karta'); },
+    };
+  },
+  async github(d) {
+    const state = fakeGithub(filesOf(d));
+    return {
+      store: newGithub(),
+      wipeAll: () => { for (const p of Object.keys(state.files)) delete state.files[p]; },
+      wipe: async (path) => { delete state.files[path]; },               // someone deleted it → 404
+      json: async (path) => (state.files[path] ? state.json(path) : undefined),
+      set: async (path, json) => state.set(path, json),
+    };
+  },
+};
+
+for (const [name, make] of Object.entries(backends)) {
+  test(`Sync (${name}): storage emptied between load and save keeps every record and recreates the files`, async () => {
+    const b = await make(manyEvents());
+    const data = await load(b.store);
+    const warnings = [];
+    const sync = new Sync(b.store, data, { delay: 1, onChange: (e) => { if (e.warning) warnings.push(e.warning); } });
+    b.wipeAll();
+    data.events[0].title = 'Změněné';
+    sync.change('změna');
+    await sync.save();
+    assert.equal(sync.status, 'saved');
+    assert.equal(data.events.length, 20, 'nothing disappears from memory');
+    const events = await b.json('data/events.json');
+    assert.equal(events.events.length, 20, 'every event is written back');
+    assert.equal(events.events[0].title, 'Změněné');
+    assert.deepEqual((await b.json('data/people.json')).people.map((p) => p.id), ['petr', 'jana'], 'untouched files come back too');
+    assert.ok(await b.json('data/groups.json'));
+    assert.ok(await b.json('data/settings.json'));
+    assert.ok(warnings.some((w) => w.kind === 'recreated' && w.paths.includes('data/events.json')));
+    assert.ok(sync.warnings.length > 0, 'the UI can read the warning later');
+    const reloaded = await load(b.store);
+    assert.equal(reloaded.events.length, 20);
+    assert.equal(reloaded.people.length, 2);
+  });
+
+  test(`Sync (${name}): a file deleted by someone else between load and save is recreated, not emptied`, async () => {
+    const b = await make(manyEvents());
+    const data = await load(b.store);
+    const sync = new Sync(b.store, data, { delay: 1 });
+    await b.wipe('data/events.json');
+    data.events[3].title = 'Moje';
+    sync.change('změna');
+    await sync.save();
+    assert.equal(sync.status, 'saved');
+    assert.equal(data.events.length, 20);
+    const events = await b.json('data/events.json');
+    assert.equal(events.events.length, 20);
+    assert.equal(events.events[3].title, 'Moje');
+    assert.equal((await b.json('data/people.json')).people.length, 2);
+    assert.ok(sync.warnings.some((w) => w.kind === 'recreated'));
+  });
+
+  test(`Sync (${name}): a normal concurrent edit still merges, a single deletion by someone else stays deleted`, async () => {
+    const d = manyEvents();
+    const b = await make(d);
+    const data = await load(b.store);
+    const sync = new Sync(b.store, data, { delay: 1 });
+    const other = toEnvelope(normalize(d), 'data/events.json');
+    other.events = other.events.filter((e) => e.id !== 'e5');
+    other.events[0].note = 'jejich';
+    await b.set('data/events.json', other);
+    data.events[1].title = 'Moje';
+    sync.change('změna');
+    await sync.save();
+    assert.equal(sync.status, 'saved');
+    const events = (await b.json('data/events.json')).events;
+    assert.equal(events.length, 19);
+    assert.ok(!events.some((e) => e.id === 'e5'), 'their deletion survives');
+    assert.equal(events.find((e) => e.id === 'e0').note, 'jejich');
+    assert.equal(events.find((e) => e.id === 'e1').title, 'Moje');
+    assert.equal(data.events.length, 19);
+    assert.deepEqual(sync.warnings, []);
+  });
+
+  test(`Sync (${name}): a merge that would delete most of a collection keeps mine and warns`, async () => {
+    const d = manyEvents();
+    const b = await make(d);
+    const data = await load(b.store);
+    const sync = new Sync(b.store, data, { delay: 1 });
+    const other = toEnvelope(normalize(d), 'data/events.json');
+    other.events = other.events.slice(0, 3);       // 17 of 20 gone at once
+    other.events[0].note = 'jejich';
+    await b.set('data/events.json', other);
+    data.events[1].title = 'Moje';
+    sync.change('změna');
+    await sync.save();
+    assert.equal(sync.status, 'saved');
+    const events = (await b.json('data/events.json')).events;
+    assert.equal(events.length, 20, 'nothing is mass-deleted by sync');
+    assert.equal(events.find((e) => e.id === 'e0').note, 'jejich', 'their edit still merges');
+    assert.equal(events.find((e) => e.id === 'e1').title, 'Moje');
+    assert.ok(sync.warnings.some((w) => w.kind === 'massDeletion' && w.collections.includes('events')));
+  });
+}
+
+test('Sync: refresh never mass-deletes either, and a missing file is not read as empty', async () => {
+  const d = manyEvents();
+  const state = fakeGithub(filesOf(d));
+  const gh = newGithub();
+  const data = await load(gh);
+  const sync = new Sync(gh, data, { delay: 1 });
+  const other = state.json('data/events.json');
+  other.events = other.events.slice(0, 2);
+  state.set('data/events.json', other);
+  assert.equal(await sync.refresh(), true);
+  assert.equal(data.events.length, 20);
+  assert.ok(sync.warnings.some((w) => w.kind === 'massDeletion'));
+  delete state.files['data/people.json'];
+  await sync.refresh();
+  assert.equal(data.people.length, 2);
+});
+
+test('mergeSafe: genuine deletions pass, a mass deletion is undone and reported', async () => {
+  const { mergeSafe } = await import('../../docs/zvonec/lib/store/merge.js');
+  const base = toEnvelope(manyEvents(10), 'data/events.json');
+  const few = structuredClone(base);
+  few.events = few.events.filter((e) => e.id !== 'e2' && e.id !== 'e3');
+  let r = mergeSafe(base, base, few);
+  assert.deepEqual(r.kept, []);
+  assert.equal(r.merged.events.length, 8);
+  const most = structuredClone(base);
+  most.events = most.events.slice(0, 4);
+  most.places.push({ id: 'l1', name: 'Sál' });
+  r = mergeSafe(base, base, most);
+  assert.deepEqual(r.kept, ['events']);
+  assert.equal(r.merged.events.length, 10);
+  assert.deepEqual(r.merged.places.map((p) => p.id), ['l1']);
+  // a missing theirs (file gone) never deletes anything
+  r = mergeSafe(base, base, null);
+  assert.equal(r.merged.events.length, 10);
+  // small collections: deleting 2 of 3 is still a normal deletion
+  const small = toEnvelope(sample(), 'data/people.json');
+  small.people.push({ id: 'x', firstName: 'X', membership: { status: 'guest' } });
+  r = mergeSafe(small, small, { ...small, people: [small.people[0]] });
+  assert.equal(r.merged.people.length, 1);
+});
+
+for (const status of [409, 422, 404]) {
+  test(`GitHub: a PUT with the sha of a deleted file answered ${status} → re-read, recreate without sha, keep everything`, async () => {
+    const state = fakeGithub(filesOf(manyEvents()));
+    state.deletedStatus = status;
+    const gh = newGithub();
+    const data = await load(gh);
+    const sync = new Sync(gh, data, { delay: 1 });
+    delete state.files['data/events.json'];
+    data.events[2].title = 'Moje';
+    sync.change('změna');
+    await sync.save();
+    assert.equal(sync.status, 'saved');
+    const events = state.json('data/events.json').events;
+    assert.equal(events.length, 20);
+    assert.equal(events[2].title, 'Moje');
+    const puts = state.puts.filter((p) => p.path === 'data/events.json');
+    assert.deepEqual(puts.map((p) => !!p.sha), [true, false], 'stale sha refused, then created without sha');
+    assert.ok(sync.warnings.some((w) => w.kind === 'recreated' && w.paths.includes('data/events.json')));
+    // the plain store call surfaces it as Conflict too
+    await gh.read('data/people.json');
+    delete state.files['data/people.json'];
+    await assert.rejects(gh.write('data/people.json', {}, 'x'), Conflict);
+  });
+}
+
+test('GitHub: a 404 on PUT for a missing repo is still an error, not a conflict loop', async () => {
+  const state = fakeGithub(filesOf(sample()));
+  const gh = newGithub();
+  const data = await load(gh);
+  const sync = new Sync(gh, data, { delay: 1 });
+  globalThis.fetch = async () => new Response('{}', { status: 404 });     // repo gone / no access
+  data.people[0].phone = '1';
+  sync.change('x');
+  await sync.save();
+  assert.equal(sync.status, 'error');
+  assert.match(sync.error, /repo/);
+  assert.equal(state.writes.length, 0);
 });

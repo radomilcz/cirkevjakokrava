@@ -148,8 +148,12 @@ test('people: membership filters and counts', () => {
   assert.deepEqual(ids('former'), ['ota']);
   assert.deepEqual(ids('needsReview'), ['iva']);
   assert.equal(ids('all').length, d.people.length);
-  assert.deepEqual(people.filterCounts(d, { today: TODAY }),
-    { members: 4, nonMembers: 2, children: 2, former: 1, all: 7, needsReview: 1 });
+  assert.deepEqual(ids('attending'), ['adam', 'ema', 'iva', 'jana', 'petr', 'zuzana'], 'everybody who still comes');
+  assert.deepEqual([...ids('friends'), ...ids('guests')].sort(), ['adam', 'iva'], 'regulars (přátelé) and guests split the non-members');
+  const counts = people.filterCounts(d, { today: TODAY });
+  assert.deepEqual({ ...counts, friends: undefined, guests: undefined },
+    { attending: 6, members: 4, friends: undefined, guests: undefined, nonMembers: 2, children: 2, former: 1, all: 7, needsReview: 1 });
+  assert.equal(counts.friends + counts.guests, 2);
   assert.equal(people.statusOf({ id: 'x' }), 'guest', 'missing membership = guest');
 });
 
@@ -405,7 +409,7 @@ test('ics: valid structure, time zone, personal duties, folding', () => {
   const items = icsForPerson(d, 'petr', TODAY);
   assert.equal(items.length, 2);
   assert.match(items[0].name, /^Zvuk \+ Kafe · /);
-  assert.equal(items[0].description, 'Navrženo – potvrď to vedoucímu.');
+  assert.equal(items[0].description, 'Čeká na potvrzení – dej vedoucímu vědět, jestli můžeš.');
   assert.equal(items[0].uid, 'a-petr');
   const text = ics(d, items, 'Služby – Petr');
   assert.match(text, /^BEGIN:VCALENDAR\r\n/);

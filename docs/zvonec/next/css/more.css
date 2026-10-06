@@ -1,0 +1,178 @@
+/* ============================================================
+   Zvonec Next – Více and its pages (Můj účet, Šablony setkání, Formáty, Místa, Přístupy,
+   Nastavení sboru) and the sign-in pages (Přihlásit se, Založit Zvonec, Pozvánka).
+   Only what the kit leaves to the screen. Tokens only, no raw colours.
+   ============================================================ */
+
+/* ---------- the page frame ---------- */
+.more-bar-actions { display: inline-flex; gap: var(--space-2); }
+.more-page .screen-head .screen-head__lead { max-width: 60ch; }
+@media (min-width: 1200px) {
+  .more-page.screen--wide { max-width: 1240px; }
+  .more-page .split__aside > .detail { padding: var(--space-6); }
+}
+
+/* ---------- Více ---------- */
+.more-list { display: grid; }
+.more-heading {
+  margin: var(--space-6) 0 var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta);
+  font-weight: var(--weight-bold); color: var(--ink-2);
+}
+.more-me { min-height: 72px; }
+.more-me .row__title { font-size: var(--type-lead); line-height: var(--lh-lead); }
+.more-colours {
+  display: grid; gap: var(--space-2); margin-top: var(--space-3); padding: var(--space-3) 0 var(--space-2);
+  border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline);
+}
+.more-colours__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.more-colours__label { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
+.more-colours .palette-options { gap: 2px; }
+.more-colours .palette-options > button:not(.palette-auto) { min-width: 42px; }
+.more-colours .palette-options .palette-auto { padding: 0 12px; }
+.more-list .row > .icon:first-child, .acct .row > .icon:first-child { color: var(--ink-2); }
+.more-list .row:has(> .icon:first-child), .acct .row:has(> .icon:first-child) { --row-rule-start: calc(var(--space-3) + var(--icon-m) + var(--space-3)); }
+.more-list .row__trail .count { margin-right: var(--space-1); }
+
+/* ---------- Můj účet ---------- */
+.acct { display: grid; }
+.acct > .section { margin-top: var(--space-7); }
+.acct-who { display: flex; align-items: center; gap: var(--space-4); padding-bottom: var(--space-2); }
+.acct-who__text { display: grid; gap: 2px; min-width: 0; }
+.acct-who__name { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.acct--pane .acct-who__name { font-size: var(--type-body); line-height: var(--lh-body); }
+.acct > .callout { margin-top: var(--space-5); }
+.acct-switch { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+.acct-empty, .acct-note { margin-top: var(--space-2); }
+.acct-signout .row__title { color: var(--no-ink); }
+.acct-signout > .icon:first-child { color: var(--no-ink) !important; }
+
+/* a secret shown once: invite link, new password */
+.secret { display: grid; gap: var(--space-2); padding: var(--space-3) 0; border-top: 1px solid var(--hairline); }
+.secret__value { font-size: var(--type-meta); }
+
+/* a map frame (OpenStreetMap, allowed by the CSP) */
+
+/* pills */
+.pill--web { background: var(--count-bg); color: var(--ink); }
+.pill--soon { background: var(--act); color: var(--on-act); }
+
+/* ---------- Formáty ---------- */
+.fmt-min {
+  display: inline-grid; place-content: center; justify-items: center; flex: none;
+  width: var(--arch-w); height: var(--arch-w); border-radius: var(--shape-control); background: var(--tint); color: var(--ink);
+}
+.fmt-min > b { font-family: var(--font-title); font-weight: 900; font-size: 18px; line-height: 18px; }
+.fmt-min > span { font-size: 11px; line-height: 12px; font-weight: var(--weight-bold); color: var(--ink); }
+.row:has(> .fmt-min:first-child) { --row-rule-start: calc(var(--space-3) + var(--arch-w) + var(--space-3)); }
+.fmt-detail { display: grid; gap: var(--space-5); }
+.fmt-detail > .section { margin-top: var(--space-3); }
+.fmt-detail__head { align-items: flex-start; }
+.fmt-detail__head > div:nth-child(2) { flex: 1; min-width: 0; }
+.detail__head > .head-actions { margin-left: auto; grid-row: auto; }
+.fmt-text { display: grid; gap: var(--space-1); }
+.fmt-text > h3 { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.fmt-text > .text { max-width: 62ch; }
+.fmt-count { color: var(--ink-2); white-space: nowrap; }
+.fmt-usage { margin-top: var(--space-2); }
+.fmt-needs { display: grid; gap: var(--space-2); }
+.fmt-need { display: flex; align-items: center; gap: var(--space-3); }
+.fmt-need__name { flex: 1; min-width: 0; display: grid; font-weight: var(--weight-strong); }
+.fmt-need .stepper { padding: 2px; }
+
+/* ---------- Místa ---------- */
+.plc-room { padding-left: calc(var(--space-3) + var(--icon-m) + var(--space-3)); min-height: var(--row-h-single); }
+.plc-room .row__title { font-weight: var(--weight-medium); }
+.plc-room + .plc-room::before, .plc-row + .plc-room::before { left: calc(var(--space-3) + var(--icon-m) + var(--space-3)); }
+.plc-row:has(> .icon:first-child) { --row-rule-start: calc(var(--space-3) + var(--icon-m) + var(--space-3)); }
+.plc-row > .icon:first-child { color: var(--ink-2); }
+.plc-detail { display: grid; gap: var(--space-5); }
+.plc-detail > .section { margin-top: var(--space-3); }
+.plc-mark { display: inline-grid; place-items: center; flex: none; width: var(--arch-w); height: var(--arch-w); border-radius: var(--shape-control); background: var(--tint); color: var(--ink-2); }
+.plc-where { display: grid; gap: var(--space-2); }
+.plc-inherit { padding: var(--space-3) var(--space-4); border-radius: var(--shape-control); background: var(--tint); }
+.plc-own { gap: var(--space-5); }
+
+/* ---------- Šablony setkání ---------- */
+.tpl-kind {
+  display: inline-grid; place-items: center; flex: none; width: var(--arch-w); height: var(--arch-h); padding-top: 4px;
+  border-radius: var(--shape-arch); background: var(--hue-fill); color: var(--hue-ink);
+}
+.row:has(> .tpl-kind:first-child) { --row-rule-start: calc(var(--space-3) + var(--arch-w) + var(--space-3)); }
+.tpl-note { color: var(--ink-2); font-weight: var(--weight-regular); }
+.tpl-editor { display: grid; gap: 0 var(--space-8); }
+.tpl-right { display: grid; align-content: start; min-width: 0; }
+.tpl-editor .tpl-section { margin-top: var(--section-gap); min-width: 0; }
+.tpl-editor > .tpl-section:first-child { margin-top: 0; }
+.tpl-hint { margin: calc(-1 * var(--space-1)) 0 var(--space-4); }
+.tpl-places { display: grid; gap: var(--space-3); }
+.tpl-places__group { display: grid; gap: var(--space-1); }
+.tpl-places .chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 2px 0; }
+.tpl-needs { display: grid; gap: var(--space-4); }
+.tpl-total { font-weight: var(--weight-strong); }
+.tpl-team { display: grid; gap: var(--space-1); }
+.tpl-need { display: flex; align-items: center; gap: var(--space-3); min-height: 52px; padding-left: calc(32px + var(--space-3)); border-top: 1px solid var(--hairline); }
+.tpl-need__name { flex: 1; min-width: 0; display: grid; }
+.tpl-need .stepper { padding: 2px; }
+.tpl-outline { display: grid; gap: var(--space-3); }
+.tpl-time { flex: none; width: 52px; font-weight: var(--weight-strong); color: var(--ink-2); }
+.tpl-item { min-height: var(--row-h-single); }
+.tpl-sum { display: flex; align-items: center; gap: var(--space-3); }
+.tpl-sum[data-over="true"] { color: var(--wait-ink); }
+.tpl-outline__foot { gap: var(--space-4); }
+.tpl-image:not([hidden]) { overflow: hidden; border-radius: var(--shape-block); background: var(--tint); }
+.tpl-image > img { display: block; width: 100%; max-height: 240px; object-fit: cover; }
+.tpl-image-field { gap: var(--space-3); }
+@media (min-width: 1200px) {
+  .tpl-editor { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; align-items: start; }
+  #tpl-zaklad { grid-column: 1; grid-row: 1; }
+  .tpl-right { grid-column: 2; grid-row: 1 / span 3; }
+  .tpl-right > .tpl-section:first-child { margin-top: 0; }
+  #tpl-web { grid-column: 1; grid-row: 2; }
+  #tpl-rady { grid-column: 1; grid-row: 3; }
+}
+
+/* ---------- Přístupy ---------- */
+.acc-cols, .cfg-cols { display: grid; gap: 0 var(--space-8); }
+.acc-col, .cfg-col { display: grid; align-content: start; min-width: 0; }
+.acc-col > .section, .cfg-col > .section { margin-top: var(--section-gap); }
+.acc-cols > .acc-col:first-child > .section:first-child, .cfg-cols > .cfg-col:first-child > .section:first-child { margin-top: 0; }
+.acc-page .callout { margin-bottom: var(--space-5); }
+.acc-group { display: grid; margin-top: var(--space-3); }
+.acc-group__head { display: flex; align-items: baseline; gap: var(--space-2); padding: var(--space-2) 0 var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.acc-key { margin-bottom: var(--space-3); }
+@media (min-width: 1200px) {
+  .acc-cols, .cfg-cols { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+  .acc-cols > .acc-col > .section:first-child, .cfg-cols > .cfg-col > .section:first-child { margin-top: 0; }
+}
+
+/* ---------- Nastavení sboru ---------- */
+.cfg-group { display: grid; padding-top: var(--space-3); }
+.cfg-group + .cfg-group { margin-top: var(--space-5); }
+.cfg-group__head { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
+.cfg-group > .meta { margin-bottom: var(--space-2); }
+.cfg-rule { display: grid; gap: var(--space-2); padding: var(--space-3) 0; border-top: 1px solid var(--hairline); }
+.cfg-rule__text { display: grid; gap: 2px; }
+.cfg-rule__label { font-weight: var(--weight-strong); }
+.cfg-rule__control { display: flex; align-items: center; gap: var(--space-3); }
+.cfg-rule__unit { color: var(--ink-2); }
+.cfg-note { margin-top: var(--space-3); }
+@media (min-width: 600px) {
+  .cfg-rule { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-4); }
+  .cfg-rule__unit { min-width: 4.5em; }
+}
+
+/* ---------- sign in, setup, invite ---------- */
+.login-form { gap: var(--space-5); }
+.login-form > .callout { margin-bottom: var(--space-1); }
+.login-part { margin-top: var(--space-3); font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.login-form > .login-part:first-child { margin-top: 0; }
+.login-steps { display: grid; gap: var(--space-2); padding-left: 1.3em; color: var(--ink-2); font-size: var(--type-meta); line-height: var(--lh-meta); }
+.login-after { display: grid; justify-items: start; gap: var(--space-3); margin-top: var(--space-7); padding-top: var(--space-5); border-top: 1px solid var(--hairline); }
+.login-page .seg > button { white-space: nowrap; }
+@media (min-width: 960px) { .screen.login-page { padding-bottom: var(--space-6); } }   /* a form that fits does not scroll for its padding */
+.login-setup.screen--narrow { max-width: calc(560px + 2 * var(--gutter)); }
+body.is-public:has(.login-setup) .topbar--public { max-width: calc(560px + 2 * var(--gutter)); }
+@media (max-width: 420px) {
+  .login-page .seg { flex-direction: column; }
+}
+

@@ -1,0 +1,80 @@
+/* Nastavení (#nastaveni/…), Můj účet (#ucet) and the signed-out pages (sign in, first setup, invite)
+   – ui/settings.js, ui/account.js, ui/login.js. Semantic tokens only (css/tokens.css). */
+
+/* ---------- shared bits of cards ---------- */
+.card-text{margin:0 0 12px;font-size:var(--font-size-3);line-height:20px;color:var(--text-2);max-width:62ch}
+.card-text:last-child{margin-bottom:0}
+.card-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.quiet{color:var(--text-2)}
+.form-foot{display:flex;justify-content:flex-end;gap:8px;padding-top:4px}
+.form-grid.one{grid-template-columns:minmax(0,1fr)}
+
+/* ---------- Nastavení ---------- */
+.settings-body{display:flex;flex-direction:column;gap:16px;max-width:var(--w-list)}   /* one right edge for every tab */
+.settings-body .card-body.flush{border-top:1px solid var(--line-1)}
+.settings-body .card-head+.card-body.flush{padding-top:2px}
+.preview-place{font-size:var(--font-size-4);line-height:22px}
+.settings-preview .place-map{max-width:none;height:200px}
+
+/* Pravidla: each rule a row – the sentence and its hint left, the number right */
+.settings-form{display:flex;flex-direction:column;gap:16px}
+/* Uložit: always under the cards on the right, and it stays in reach at the bottom of the window */
+.settings-save{position:sticky;bottom:0;z-index:3;margin:0 -8px -8px;padding:12px 8px 16px;background:linear-gradient(to bottom,transparent,var(--surface-app) 40%)}
+.rule-rows{display:flex;flex-direction:column}
+.rule-row{display:flex;align-items:center;justify-content:space-between;gap:8px 24px;padding:14px 0}
+.rule-row+.rule-row{border-top:1px solid var(--line-1)}
+.rule-row:first-child{padding-top:4px}
+.rule-row:last-child{padding-bottom:2px}
+.rule-text{flex:1 1 16em;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rule-label{font-size:var(--font-size-4);line-height:22px;color:var(--text-1)}
+.rule-hint{font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.rule-control{flex:none;display:flex;align-items:center;gap:10px}
+.rule-unit{min-width:3.6em;font-size:var(--font-size-3);line-height:1;padding-top:var(--optical);color:var(--text-2)}
+@media (max-width:560px){.rule-row{flex-direction:column;align-items:flex-start}}
+
+/* a password or invite link shown once */
+.secret-rows{list-style:none;margin:0;padding:0;border-radius:var(--radius-4);background:var(--surface-sunken)}
+.secret-rows li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px}
+.secret-rows li+li{border-top:1px solid var(--line-1)}
+.secret-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.secret-label{font-size:var(--font-size-3);color:var(--text-2)}
+.secret{font-family:ui-monospace,Menlo,monospace;font-weight:400;font-size:var(--font-size-3);word-break:break-all;user-select:all}
+
+/* ---------- Můj účet ---------- */
+.account-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.account-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (max-width:900px){.account-grid{grid-template-columns:minmax(0,1fr)}}
+.account-page .card-body.flush{border-top:1px solid var(--line-1)}
+.account-page .card .facts{margin-bottom:12px}
+
+/* Dívat se jako: the prepared people as big choices */
+.viewers{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.viewer{
+  position:relative;display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:8px 12px;border:0;border-radius:var(--radius-control-3);
+  background:var(--surface-panel);box-shadow:inset 0 0 0 1px var(--line-2);font:inherit;color:var(--text-1);text-align:left;cursor:pointer;
+}
+.viewer:hover{background:var(--surface-hover)}
+.viewer[aria-pressed="true"]{background:var(--selected-bg);box-shadow:inset 0 0 0 1.5px var(--selected-line);color:var(--selected-fg)}
+.viewer[aria-pressed="true"]::after{content:"";position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--indicator)}
+.viewer-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.viewer-name{font-size:var(--font-size-3);line-height:18px;overflow-wrap:anywhere}
+.viewer-role{font-size:var(--font-size-2);line-height:16px;color:var(--text-2)}
+.viewer[aria-pressed="true"] .viewer-role{color:var(--selected-fg)}
+.view-as .disclosure-body{padding-bottom:4px}
+.view-as-form{grid-template-columns:minmax(0,1fr)}
+@media (max-width:420px){.viewers{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- signed-out pages: sign in, first setup, invite ---------- */
+.signin-page .page-body{display:flex;flex-direction:column;gap:16px}
+.signin-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.signin-grid{grid-template-columns:minmax(0,1fr)}}
+.form-submit{display:flex;padding-top:4px}
+.signin-submit{min-width:12em}
+@media (max-width:520px){.signin-submit{width:100%}}
+.demo-logins{margin:4px 0 0;padding:0 0 0 18px}
+.demo-logins li+li{margin-top:2px}
+.signin-note{margin:0;padding:0 4px;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
+.signin-note a{color:var(--text-accent);text-underline-offset:.2em;text-decoration-thickness:1px}
+.signin-steps .steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;font-size:var(--font-size-3);line-height:20px}
+.signin-card .form-grid .form-section-title{margin-top:8px}
+.signin-card .form-grid .form-section-title:first-child{margin-top:0}

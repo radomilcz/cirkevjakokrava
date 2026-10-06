@@ -97,3 +97,35 @@ export function merge(base, mine, theirs) {
   }
   return result;
 }
+
+/** A merge never drops this many of my records (or more) at once when that is over half a collection. */
+export const MASS_DELETION_MIN = 3;
+
+/**
+ * `merge` for sync, with two safety rules. Mass deletion only happens through an explicit action,
+ * never through sync:
+ * - `theirs` missing (the file is gone: storage cleared, deleted by someone else) is not "everything
+ *   was deleted" – the result is mine, unchanged, and `missing` is true (the caller writes it back);
+ * - when the merge would drop at least MASS_DELETION_MIN of my records and more than half of a
+ *   collection, the dropped records are kept (they go last) and the collection is listed in `kept`.
+ *   Smaller deletions by the other side merge as usual.
+ * Returns { merged, kept: [collection], missing }.
+ */
+export function mergeSafe(base, mine, theirs) {
+  mine = mine || {};
+  if (!theirs) return { merged: { ...mine }, kept: [], missing: true };
+  const merged = merge(base, mine, theirs);
+  const kept = [];
+  for (const k of Object.keys(mine)) {
+    const m = mine[k];
+    if (!Array.isArray(m) || !hasIds(m)) continue;
+    const result = Array.isArray(merged[k]) ? merged[k] : [];
+    const ids = new Set(result.map((x) => x.id));
+    const lost = m.filter((x) => !ids.has(x.id));
+    if (lost.length >= MASS_DELETION_MIN && lost.length * 2 > m.length) {
+      merged[k] = [...result, ...lost];
+      kept.push(k);
+    }
+  }
+  return { merged, kept, missing: false };
+}

@@ -13,6 +13,7 @@ import { readFileSync, appendFileSync, existsSync, statSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { fromFiles, FILE_PATHS } from '../docs/zvonec/lib/store/store.js';
 import { findConflicts, CODES } from '../docs/zvonec/lib/conflicts.js';
+import { validateData } from '../docs/zvonec/lib/validate.js';
 import { prettyDay, dayOf } from '../docs/zvonec/lib/time.js';
 
 const USAGE = 'Použití: node zvonec/check.mjs data [--today YYYY-MM-DD] [--markdown soubor.md]';
@@ -68,17 +69,22 @@ const line = (c) => {
 };
 
 const errorWord = (n) => (n === 1 ? 'chyba' : n >= 2 && n <= 4 ? 'chyby' : 'chyb');
-console.log(`Kolize k ${today}: ${errors.length} ${errorWord(errors.length)}, ${warnings.length} varování.`);
+console.log(`Upozornění k ${today}: ${errors.length} ${errorWord(errors.length)}, ${warnings.length} varování.`);
 for (const c of errors) console.log(`::error title=${CODES[c.code]}::${line(c)}`);
 for (const c of warnings) console.log(`::warning title=${CODES[c.code]}::${line(c)}`);
+
+// records that do not hold together – a warning each, they never fail the check
+const problems = validateData(data);
+for (const p of problems) console.log(`::warning title=Nesedí data::${p.text}`);
 
 const markdown = option('--markdown') || process.env.GITHUB_STEP_SUMMARY;
 if (markdown) {
   const text = [
-    `## Kolize k ${today}`,
+    `## Upozornění k ${today}`,
     errors.length || warnings.length ? '' : 'Nikdo nebučí. Rozpis sedí.',
     errors.length ? `### Chyby (${errors.length})\n${errors.map((c) => `- ${line(c)}`).join('\n')}` : '',
     warnings.length ? `### Pozor (${warnings.length})\n${warnings.map((c) => `- ${line(c)}`).join('\n')}` : '',
+    problems.length ? `### Nesedí data (${problems.length})\n${problems.map((p) => `- ${p.text}`).join('\n')}` : '',
   ].filter(Boolean).join('\n\n');
   appendFileSync(markdown, `${text}\n`);
 }

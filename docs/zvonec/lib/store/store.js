@@ -1,17 +1,27 @@
 // Where Zvonec data lives and how it gets saved.
 //
 // In memory the whole app works with one object:
-//   { people, households, groups, roles, groupMembers, eventTypes, events, formats, places,
+//   { people, households, groups, roles, groupMembers, eventTypes, events, series, formats, places,
 //     availability, servingLimits, settings }
 // In the data repo it is split into four files (see zvonec/ARCHITECTURE.md §2), each with its own
 // sha. A save writes only the files whose collections changed; a 409 on one file merges that file
 // per record id and tries again. Refresh lists `data/` once and reloads only files whose sha moved.
 
-import { merge } from './merge.js';
+import { merge, mergeSafe } from './merge.js';
 import { Conflict, GithubError } from './github.js';
 
 export const SCHEMA = 2;
 export const DATA_DIR = 'data';
+export const IMAGES_DIR = 'data/images';
+
+/** A safe image file name: no folders, no leading dot, a picture extension. */
+export const isImageName = (name) => typeof name === 'string' && /^[A-Za-z0-9][A-Za-z0-9._-]{0,80}\.(webp|jpe?g|png)$/.test(name);
+
+/** Repo path of an image by its file name (`event.image`, `eventType.image`). */
+export function imagePath(name) {
+  if (!isImageName(name)) throw new Error(`Neplatný název obrázku: ${name}`);
+  return `${IMAGES_DIR}/${name}`;
+}
 
 /** Collection → data file. */
 export const FILES = {
@@ -22,6 +32,7 @@ export const FILES = {
   groupMembers: 'data/groups.json',
   eventTypes: 'data/events.json',
   events: 'data/events.json',
+  series: 'data/events.json',
   formats: 'data/events.json',
   places: 'data/events.json',
   availability: 'data/events.json',
@@ -79,8 +90,16 @@ const RECORD_DEFAULTS = {
   roles: (r) => (Number.isInteger(r.count) ? r : { ...r, count: 1 }),
   eventTypes: (t) => (Array.isArray(t.placeIds) && Array.isArray(t.needs) ? t
     : { ...t, placeIds: list(t.placeIds), needs: list(t.needs) }),
-  events: (e) => (Array.isArray(e.placeIds) && Array.isArray(e.needs) && Array.isArray(e.assignments) ? e
-    : { ...e, placeIds: list(e.placeIds), needs: list(e.needs), assignments: list(e.assignments) }),
+  events: (e) => {
+    const old = 'publicNote' in e;      // before 2026-10 the text for visitors was `publicNote`
+    if (!old && Array.isArray(e.placeIds) && Array.isArray(e.needs) && Array.isArray(e.assignments)) return e;
+    const { publicNote, ...rest } = e;
+    return {
+      ...rest,
+      ...(old && publicNote && !rest.description ? { description: publicNote } : {}),
+      placeIds: list(e.placeIds), needs: list(e.needs), assignments: list(e.assignments),
+    };
+  },
 };
 
 /**
@@ -151,10 +170,82 @@ export async function saveAll(store, data, message = 'Zvonec: úprava') {
   }
 }
 
-/** Czech commit message from change notes: "Zvonec: Petr na Zvuk, … a 2 dalších". */
+// ---------- images (binary files under data/images/) ----------
+
+const MIME = { webp: 'image/webp', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' };
+const mimeOf = (name) => MIME[name.slice(name.lastIndexOf('.') + 1).toLowerCase()] || 'application/octet-stream';
+const urlCache = new WeakMap();      // store → Map(name → Promise<url>)
+const cacheOf = (store) => {
+  if (!urlCache.has(store)) urlCache.set(store, new Map());
+  return urlCache.get(store);
+};
+
+function urlFromBase64(store, name, base64) {
+  if (store.kind !== 'local' && typeof Blob === 'function' && typeof URL?.createObjectURL === 'function') {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    return URL.createObjectURL(new Blob([bytes], { type: mimeOf(name) }));
+  }
+  return `data:${mimeOf(name)};base64,${base64}`;
+}
+
+/**
+ * Save an image (base64, with or without the `data:…;base64,` prefix) under a new random name
+ * `i-xxxxxxxx.webp|jpg` and return the name. ext: 'webp' | 'jpg' (| 'jpeg').
+ */
+export async function saveImage(store, base64, ext = 'webp', message = 'Zvonec: obrázek k setkání') {
+  const extension = String(ext).toLowerCase().replace(/^\./, '').replace('jpeg', 'jpg');
+  if (extension !== 'webp' && extension !== 'jpg') throw new Error('Obrázek musí být WebP nebo JPEG.');
+  const plain = String(base64).replace(/^data:[^,]*,/, '').replace(/\s/g, '');
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const bytes = new Uint8Array(8);
+    if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(bytes);
+    else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    const name = `i-${Array.from(bytes, (b) => (b % 36).toString(36)).join('')}.${extension}`;
+    try {
+      await store.writeBinary(imagePath(name), plain, message, null);   // null = create, never overwrite
+    } catch (error) {
+      if (error instanceof Conflict) continue;                          // the name is taken – draw another
+      throw error;
+    }
+    cacheOf(store).set(name, Promise.resolve(urlFromBase64(store, name, plain)));
+    return name;
+  }
+  throw new Conflict('Nepodařilo se vybrat název obrázku.');
+}
+
+/**
+ * A URL the page can show: an object URL (GitHub) or a data URL (demo), cached in memory per store.
+ * Resolves to null when the image does not exist (not cached – it may be uploaded later).
+ */
+export function loadImageUrl(store, name) {
+  const cache = cacheOf(store);
+  if (cache.has(name)) return cache.get(name);
+  const promise = (async () => {
+    const file = await store.readBinary(imagePath(name));
+    if (!file) {
+      cache.delete(name);
+      return null;
+    }
+    return urlFromBase64(store, name, file.base64);
+  })();
+  cache.set(name, promise);
+  promise.catch(() => cache.delete(name));
+  return promise;
+}
+
+/** Delete an image from the repo and forget its URL. Missing file is fine. */
+export async function deleteImage(store, name, message = 'Zvonec: obrázek smazán') {
+  const cache = cacheOf(store);
+  const cached = cache.get(name);
+  cache.delete(name);
+  if (cached) cached.then((url) => { if (url?.startsWith('blob:')) URL.revokeObjectURL(url); }, () => {});
+  return store.remove(imagePath(name), message);
+}
+
+/** Czech commit message from change notes: "Zvonec: Petr na Zvuk, … a 2 další" / "a 5 dalších". */
 export function commitMessage(notes) {
   const shown = notes.slice(0, 3).join(', ') || 'úprava';
-  return `Zvonec: ${shown}${notes.length > 3 ? ` a ${notes.length - 3} dalších` : ''}`;
+  return `Zvonec: ${shown}${notes.length > 3 ? ` a ${notes.length - 3} ${notes.length - 3 <= 4 ? 'další' : 'dalších'}` : ''}`;
 }
 
 /**
@@ -165,6 +256,13 @@ export function commitMessage(notes) {
  * Status: 'saved' | 'pending' (changes wait for the timer) | 'saving' | 'error' | 'offline'.
  * `onChange` gets { status, error? } on every status change and { status, reloaded: true } after
  * data in memory were replaced by merged or refreshed data (re-render then).
+ *
+ * Sync never mass-deletes (see `mergeSafe`). When it refuses to, `onChange` gets { status, warning }
+ * and the warning stays in `sync.warnings`:
+ *   { kind: 'recreated', paths }               a data file was missing (storage cleared, file deleted)
+ *                                              and was written back from what the app has in memory
+ *   { kind: 'massDeletion', path, collections } a merge would have deleted most of a collection;
+ *                                              the records were kept
  */
 export class Sync {
   constructor(store, data, { onChange, delay = 1500, base } = {}) {
@@ -179,6 +277,14 @@ export class Sync {
     this.error = null;
     this.timer = null;
     this.running = null;
+    this.warnings = [];
+    this.missing = new Set();        // data files found missing during the current save
+  }
+
+  warn(warning) {
+    this.warnings.push(warning);
+    console.warn('Zvonec sync:', warning);
+    this.onChange({ status: this.status, warning });
   }
 
   setStatus(status, error = null) {
@@ -219,8 +325,10 @@ export class Sync {
     this.dirty = false;
     const snapshot = deepCopy(normalize(this.data));
     this.setStatus('saving');
+    this.missing.clear();
     try {
       for (const path of this.changedFiles(snapshot)) await this.saveFile(path, snapshot, message);
+      if (this.missing.size) await this.restoreMissing(snapshot, message);
       if (this.dirty) {
         this.setStatus('pending');
         clearTimeout(this.timer);
@@ -247,8 +355,15 @@ export class Sync {
       } catch (error) {
         if (!(error instanceof Conflict)) throw error;
         const fresh = await this.store.read(path);
-        const theirs = fileSlice(fresh?.json, path);
-        const merged = merge(fileSlice(this.base, path), mine, theirs);
+        if (!fresh) {
+          // the file is gone (storage cleared, deleted by someone else) – that does not mean every
+          // record was deleted: write mine back; `read` forgot the sha, so the next write creates it
+          this.missing.add(path);
+          continue;
+        }
+        const theirs = fileSlice(fresh.json, path);
+        const { merged, kept } = mergeSafe(fileSlice(this.base, path), mine, theirs);
+        if (kept.length) this.warn({ kind: 'massDeletion', path, collections: kept });
         Object.assign(snapshot, deepCopy(merged));
         delete snapshot.schema;
         Object.assign(this.base, deepCopy(theirs));
@@ -257,7 +372,34 @@ export class Sync {
         this.replaceCollections(merge(mine, fileSlice(this.data, path), merged));
       }
     }
-    throw new GithubError('Nepovedlo se to sloučit ani na třetí pokus.', 409);
+    throw new GithubError('Nepodařilo se to sloučit ani na třetí pokus.', 409);
+  }
+
+  /**
+   * A data file was missing during this save, so others may be gone too (the demo's storage was
+   * cleared): write back every data file that no longer exists, from what the app has in memory.
+   * Files that exist are left alone (their shas stay as they were, so a later save still merges).
+   */
+  async restoreMissing(snapshot, message) {
+    const paths = [...this.missing];
+    if (typeof this.store.list === 'function') {
+      const listing = await this.store.list(DATA_DIR);
+      const present = new Set(listing.map((e) => e.path || `${DATA_DIR}/${e.name}`));
+      for (const path of FILE_PATHS.filter((p) => !present.has(p))) {
+        const json = fileSlice(snapshot, path);
+        try {
+          await this.store.write(path, json, message, null);
+        } catch (error) {
+          if (error instanceof Conflict) continue;      // someone created it meanwhile – theirs stays
+          throw error;
+        }
+        Object.assign(this.base, deepCopy(json));
+        delete this.base.schema;
+        paths.push(path);
+      }
+    }
+    this.missing.clear();
+    this.warn({ kind: 'recreated', paths: [...new Set(paths)] });
   }
 
   /**
@@ -279,7 +421,9 @@ export class Sync {
       stale.forEach((path, i) => {
         const theirs = fileSlice(fresh[i]?.json, path);
         // changes made while we were fetching survive: three-way merge against the old base
-        update = { ...update, ...merge(fileSlice(this.base, path), fileSlice(this.data, path), theirs) };
+        const { merged, kept } = mergeSafe(fileSlice(this.base, path), fileSlice(this.data, path), theirs);
+        if (kept.length) this.warn({ kind: 'massDeletion', path, collections: kept });
+        update = { ...update, ...merged };
         Object.assign(this.base, deepCopy(theirs));
       });
       delete update.schema;

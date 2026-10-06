@@ -6,11 +6,14 @@ export const DELETED_NAME = 'Někdo smazaný';
 export const NO_NAME = 'Bez jména';
 export const CHILD_AGE = 15;
 
-/** Membership statuses as stored in data. */
+/** Membership statuses as stored in data. 'former' = the card is in the archive (see „archive“ below). */
 export const MEMBERSHIP_STATUSES = ['member', 'regular', 'guest', 'former'];
 
+/** The statuses a leader picks from; 'former' is set only by moving a card to the archive. */
+export const ACTIVE_STATUSES = ['member', 'regular', 'guest'];
+
 /** Registry filters in the order of the UI pills. Keys are stable, slugs are in the UI. */
-export const PEOPLE_FILTERS = ['members', 'nonMembers', 'children', 'former', 'all', 'needsReview'];
+export const PEOPLE_FILTERS = ['attending', 'members', 'friends', 'guests', 'children', 'former', 'all', 'needsReview', 'nonMembers'];
 
 const collator = new Intl.Collator('cs', { sensitivity: 'base' });
 
@@ -101,17 +104,20 @@ export function statusOf(person) {
 /**
  * Does the person belong under a registry filter?
  * ctx: { today: "YYYY-MM-DD", childAge?: number }.
- * members = member; nonMembers = regular + guest; children = derived from age (not former);
- * former = former; all = everyone; needsReview = card created quickly while planning.
+ * members = member; nonMembers = regular + guest; children = derived from age (not archived);
+ * former = the archive; all = everyone; needsReview = card created quickly while planning (not archived).
  */
 export function matchesFilter(person, filter, { today, childAge = CHILD_AGE } = {}) {
   const status = statusOf(person);
   switch (filter) {
+    case 'attending': return status !== 'former';
     case 'members': return status === 'member';
+    case 'friends': return status === 'regular';
+    case 'guests': return status === 'guest';
     case 'nonMembers': return status === 'regular' || status === 'guest';
     case 'children': return status !== 'former' && isChild(person, today, childAge);
     case 'former': return status === 'former';
-    case 'needsReview': return !!person.needsReview;
+    case 'needsReview': return !!person.needsReview && status !== 'former';
     case 'all': return true;
     default: return true;
   }
@@ -131,6 +137,62 @@ export function filterCounts(data, { today } = {}) {
     for (const f of PEOPLE_FILTERS) if (matchesFilter(p, f, { today, childAge })) counts[f]++;
   }
   return counts;
+}
+
+// ---------- archive ----------
+// The archive is the stored status 'former' (no migration: older data read the same).
+// membership.until = the day the card went to the archive; membership.previous = the status it had,
+// so „Vrátit z archivu“ can bring it back (older data without it come back as 'regular').
+
+/** Is the card in the archive? */
+export const isArchived = (person) => statusOf(person) === 'former';
+
+/** The day the card went to the archive ("YYYY-MM-DD") or null when unknown (older data). */
+export const archivedOn = (person) => (isArchived(person) && person.membership?.until) || null;
+
+/** How long a card waits in the archive before Zvonec suggests deleting it. */
+export const ARCHIVE_KEEP_YEARS = 1;
+
+/**
+ * Has the card been in the archive longer than a year on `today`? A card without the day
+ * (older data) counts as over: it has been „former“ since before the archive existed.
+ */
+export function archiveOverdue(person, today) {
+  if (!isArchived(person)) return false;
+  const since = archivedOn(person);
+  if (!since) return true;
+  return since < shiftYears(today, -ARCHIVE_KEEP_YEARS);
+}
+
+/** Cards in the archive, sorted by name. */
+export function archivedPeople(data) {
+  return sortPeople((data.people || []).filter(isArchived));
+}
+
+/** Cards in the archive longer than a year, sorted by name. */
+export function overdueArchive(data, { today } = {}) {
+  return archivedPeople(data).filter((p) => archiveOverdue(p, today));
+}
+
+/**
+ * The person a record (an assignment, a program item) points to. When the card was deleted, a record
+ * that kept the name (`personName`, see lib/archive.js) gives a stand-in
+ * { id, firstName, lastName?, deleted: true } (the kept name split at the first space, so fullName()
+ * gives it back), and old rosters and programs still say who served. null when there is nobody.
+ */
+export function personOrSnapshot(data, record) {
+  if (!record?.personId && !record?.personName) return null;
+  const person = record.personId ? personById(data, record.personId) : null;
+  if (person) return person;
+  return snapshotPerson(record.personId, record.personName);
+}
+
+/** The stand-in for a deleted card from its kept name, or null without a name. */
+export function snapshotPerson(id, name) {
+  const text = String(name || '').trim();
+  if (!text) return null;
+  const [firstName, ...rest] = text.split(/\s+/);
+  return { id: id || null, firstName, ...(rest.length ? { lastName: rest.join(' ') } : {}), deleted: true };
 }
 
 // ---------- households ----------
@@ -177,4 +239,101 @@ export function birthdaysBetween(data, from, to, { includeFormer = false } = {})
     }
   }
   return result.sort((a, b) => a.date.localeCompare(b.date) || comparePeople(a.person, b.person));
+}
+
+/**
+ * Birthdays month by month from the first day of today's month, `months` months long (default 12):
+ * [{ month: "YYYY-MM", items: [{ person, date, age, isToday, thisWeek, past }] }]. Months without
+ * a birthday are left out. thisWeek = in today's Monday–Sunday week; past = before today.
+ * Former members are left out.
+ */
+export function upcomingBirthdays(data, { today, months = 12 } = {}) {
+  const from = `${today.slice(0, 7)}-01`;
+  const to = shiftDay(shiftMonth(from, months), -1);
+  const monday = shiftDay(today, -weekdayOf(today));
+  const sunday = shiftDay(monday, 6);
+  const result = [];
+  for (const b of birthdaysBetween(data, from, to)) {
+    const month = b.date.slice(0, 7);
+    let bucket = result[result.length - 1];
+    if (!bucket || bucket.month !== month) result.push(bucket = { month, items: [] });
+    bucket.items.push({
+      ...b, isToday: b.date === today, thisWeek: b.date >= monday && b.date <= sunday, past: b.date < today,
+    });
+  }
+  return result;
+}
+
+// small date helpers – this module imports nothing (see the module boundary test)
+const pad2 = (n) => String(n).padStart(2, '0');
+const utc = (day) => { const [y, m, d] = day.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const fmt = (date) => `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
+function shiftDay(day, count) { const d = utc(day); d.setUTCDate(d.getUTCDate() + count); return fmt(d); }
+function shiftMonth(firstOfMonth, count) { const d = utc(firstOfMonth); return fmt(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + count, 1))); }
+const weekdayOf = (day) => (utc(day).getUTCDay() + 6) % 7;
+/** The same day `count` years later (29 February → 28 February in other years). */
+function shiftYears(day, count) {
+  const y = Number(day.slice(0, 4)) + count;
+  let md = day.slice(5, 10);
+  if (md === '02-29' && !isLeap(y)) md = '02-28';
+  return `${y}-${md}`;
+}
+
+// ---------- card completeness ----------
+
+/** What can be missing on a card. Keys are stable; the Czech words are for the UI („Chybí: …“). */
+export const MISSING_LABELS = {
+  review: 'karta založená narychlo',
+  lastName: 'příjmení',
+  contact: 'telefon nebo e-mail',
+  consent: 'souhlas se zpracováním údajů',
+  household: 'domácnost',
+};
+
+/**
+ * What is missing on a person's card (former members are never asked for anything):
+ *   review    – quickly created while planning (`needsReview`)
+ *   lastName  – no surname
+ *   contact   – an adult without phone and e-mail
+ *   consent   – a friend or guest whose card holds more than a name, without a consent date
+ *   household – a child without a household (contact goes through the parents)
+ * Returns the keys in that order; [] when the card is complete.
+ */
+export function missingData(person, { today, childAge = CHILD_AGE } = {}) {
+  if (!person || statusOf(person) === 'former') return [];
+  const result = [];
+  const child = today ? isChild(person, today, childAge) : false;
+  if (person.needsReview) result.push('review');
+  if (!person.lastName) result.push('lastName');
+  if (!child && !person.phone && !person.email) result.push('contact');
+  const status = statusOf(person);
+  const moreThanName = person.lastName || person.phone || person.email || person.birthDate;
+  if (!child && (status === 'regular' || status === 'guest') && moreThanName && !person.consentDate) result.push('consent');
+  if (child && !person.householdId) result.push('household');
+  return result;
+}
+
+/** People whose card misses something: [{ person, missing: [key] }], sorted by name. */
+export function peopleWithMissingData(data, { today } = {}) {
+  const childAge = childAgeOf(data.settings);
+  return sortPeople(data.people)
+    .map((person) => ({ person, missing: missingData(person, { today, childAge }) }))
+    .filter((x) => x.missing.length);
+}
+
+/**
+ * People grouped by household for the Domácnosti view:
+ * [{ household, members: [person] }] sorted by household name, members adults first (with `today`);
+ * then { household: null, members } with people who live on their own, when there are any.
+ * Former members are left out unless includeFormer.
+ */
+export function peopleByHousehold(data, { today, includeFormer = false } = {}) {
+  const keep = (p) => includeFormer || statusOf(p) !== 'former';
+  const result = sortHouseholds(data.households)
+    .map((household) => ({ household, members: householdMembers(data, household.id, { today }).filter(keep) }))
+    .filter((x) => x.members.length);
+  const known = new Set((data.households || []).map((h) => h.id));
+  const alone = sortPeople((data.people || []).filter((p) => keep(p) && (!p.householdId || !known.has(p.householdId))));
+  if (alone.length) result.push({ household: null, members: alone });
+  return result;
 }

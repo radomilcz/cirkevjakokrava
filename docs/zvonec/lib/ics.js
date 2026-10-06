@@ -68,7 +68,7 @@ export function icsForPerson(data, personId, fromDay) {
     const what = mine.map((a) => roles.get(a.roleId)?.name || 'služba').join(' + ');
     items.push({
       event, uid: `${event.id}-${personId}`, name: `${what} · ${event.title}`,
-      description: mine.some((a) => a.status === 'proposed') ? 'Navrženo – potvrď to vedoucímu.' : '',
+      description: mine.some((a) => a.status === 'proposed') ? 'Čeká na potvrzení – dej vedoucímu vědět, jestli můžeš.' : '',
     });
   }
   return items;

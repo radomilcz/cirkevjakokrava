@@ -1,456 +1,170 @@
-// #nastaveni, #nastaveni/<section> – church (''), event types (sablony), places (mista), formats
-// (formaty, readable by members), logins (prihlaseni), backup (zaloha), my account (ucet).
-// Members see only the formats (read-only) and their account.
+// #nastaveni/<sbor|pravidla|pristupy|zaloha> – the church (name, address, main place), the rules
+// (Břemeno defaults, when Zvonec rings, who is an adult), logins and invites (GitHub klíč: admin) and
+// backup. Leaders; the admin-only parts are marked. Šablony and Místa live in Jak se scházíme
+// (ui/templates.js, ui/places.js), Můj účet in ui/account.js.
+// openFormatInfo and formatWhyHow are re-exported for the event screens (older imports).
 
 import {
-  h, btn, plus, plural, pageHeader, rule, section, count, actions, note, tag, meta, emptyState,
-  toast, download, openDialog, closeDialog, confirmDialog, simpleDialog, formError, formErrorLine,
-  textField, textArea, selectField, choices, checkboxField, checkedValues, fieldGroup, filterLinks,
-  arrowButton, removeButton,
+  h, page, tabs, card, button, list, row, toast, download, plural, agree, confirmDialog, callout, placeMap, placeLine,
+  formError, formErrorLine, textField, selectField, rowIcon,
 } from './dom.js';
-import {
-  S, can, change, newId, replaceAll, actAs, EVENT_KIND_LABELS, ACCESS_LABELS,
-} from './state.js';
-import { accountSection, loginsSection, keySection, demoSection } from './login.js';
-import { EVENT_KINDS } from '../lib/events.js';
-import { formatById, formatNeeds } from '../lib/program.js';
-import { groupById, roleById } from '../lib/groups.js';
-import { fullName, sortPeople } from '../lib/people.js';
+import { S, can, change, replaceAll } from './state.js';
+import { loginsView, keyCard, createInvite } from './login.js';
 import { ics } from '../lib/ics.js';
 import { createDemo } from '../lib/demo.js';
+import { placeTree, resolvePlace, placeById } from '../lib/places.js';
+import { DEFAULT_LIMITS, DEFAULT_RULES } from '../lib/scheduling.js';
 import { emptyData, normalize, COLLECTIONS, SCHEMA } from '../lib/store/store.js';
-import { today, dayOf } from '../lib/time.js';
+import { today } from '../lib/time.js';
 
-const LEADER_PILLS = [
-  ['', 'Sbor'], ['sablony', 'Šablony'], ['mista', 'Místa'], ['formaty', 'Formáty'],
-  ['prihlaseni', 'Přihlášení'], ['zaloha', 'Záloha'], ['ucet', 'Můj účet'],
-];
-const MEMBER_PILLS = [['formaty', 'Formáty'], ['ucet', 'Můj účet']];
-const hrefOf = (slug) => (slug ? `#nastaveni/${slug}` : '#nastaveni');
-const collator = new Intl.Collator('cs', { sensitivity: 'base' });
-const byName = (a, b) => collator.compare(a.name || '', b.name || '');
-const clone = (x) => JSON.parse(JSON.stringify(x));
-/** "09:30" → "9.30" */
-const prettyClock = (hhmm) => (hhmm ? hhmm.replace(/^0(\d)/, '$1').replace(':', '.') : '');
-const toInt = (value, fallback) => (value === '' || !Number.isFinite(Number(value)) ? fallback : Math.round(Number(value)));
+export { openFormatInfo, formatWhyHow } from './formats.js';
 
-/** `section` = slug from #nastaveni/<section>, '' for the church settings (members: their account). */
-export function renderSettings(section) {
-  const leader = can('leader');
-  const pills = leader ? LEADER_PILLS : MEMBER_PILLS;
-  let slug = pills.some(([s]) => s === section) ? section : pills[0][0];
-  if (!leader && section !== 'formaty') slug = 'ucet';
-  const body = {
-    '': churchSection,
-    sablony: eventTypesSection,
-    mista: placesSection,
-    formaty: formatsSection,
-    prihlaseni: loginSection,
-    zaloha: backupSection,
-    ucet: myAccountSection,
-  }[slug];
-  return [
-    pageHeader('za plotem', 'Nastavení', null, { smaller: true }),
-    h('div', { class: 'settings-nav' }, filterLinks(pills.map(([s, text]) => [hrefOf(s), text]), hrefOf(slug), { label: 'Části nastavení' })),
-    rule(),
-    body(),
-  ];
+const PARTS = [['sbor', 'Sbor', 'building'], ['pravidla', 'Pravidla', 'scale'], ['pristupy', 'Přístupy', 'log-in'], ['zaloha', 'Záloha', 'download']];
+const hrefOf = (part) => `#nastaveni/${part}`;
+
+/** `part` = the slug after #nastaveni/ ('' = sbor). Old slugs of moved sections fall back to Sbor. */
+export function renderSettings(part = '') {
+  const known = part === 'prihlaseni' ? 'pristupy' : part;   // the tab's old slug
+  const slug = PARTS.some(([p]) => p === known) ? known : 'sbor';
+  const { body, actions, lead } = { sbor: churchPart, pravidla: rulesPart, pristupy: loginsPart, zaloha: backupPart }[slug]();
+  return page({
+    title: 'Nastavení',
+    lead,
+    width: 'list',
+    actions,
+    tabs: tabs(PARTS.map(([id, text, iconName]) => ({ id, label: text, icon: iconName })), slug, hrefOf),
+    body: h('div', { class: ['settings-body', `settings-${slug}`] }, body),
+  });
 }
+
+/** A form's foot: the error line and Uložit – under the cards, on the right edge, sticky at the bottom
+ * of the window (the same place on every tab of Nastavení). */
+const formFoot = (text = 'Uložit') => [formErrorLine('', { full: true }), h('div', { class: 'form-foot settings-save full' }, button(text, { variant: 'solid', type: 'submit' }))];
 
 // ---------- Sbor ----------
 
-function churchSection() {
+/** Buildings and stand-alone places for „Hlavní místo“ (rooms are inside a building). */
+function mainPlaceOptions() {
+  return [['', 'nevybráno'], ...placeTree(S.data).map(({ place, rooms }) => [place.id, rooms.length ? `${place.name} (${rooms.map((r) => r.name).join(', ')})` : place.name])];
+}
+
+function churchPart() {
   const s = S.data.settings;
-  const number = (name, label, value, hint, min = 0, max = 99) => textField(name, label, value, { type: 'number', attr: { min, max, inputmode: 'numeric' }, hint });
-  const form = h('form', { class: 'form-grid', novalidate: true },
-    textField('churchName', 'Název sboru', s.churchName),
-    textField('address', 'Adresa', s.address, { hint: 'Jde do kalendáře v telefonu.' }),
-    h('h3', { class: 'eyebrow spaced full' }, 'Kolik služeb je moc'),
-    number('maxPerMonth', 'Nejvíc služeb za měsíc', s.defaults.maxPerMonth, 'Platí pro každého, kdo nemá na své kartě jiné číslo.', 1),
-    number('maxConsecutiveWeeks', 'Nejvíc nedělí po sobě', s.defaults.maxConsecutiveWeeks, 'I kráva potřebuje volnou neděli na pastvě.', 1),
-    h('h3', { class: 'eyebrow spaced full' }, 'Kdy Zvonec bučí'),
-    number('essentialDaysBefore', 'Chybí role „bez toho to nejde“ (dní předem)', s.rules.essentialDaysBefore, 'Tolik dní před setkáním je prázdná nezbytná role chyba. Předtím jen upozornění.'),
-    number('unconfirmedDaysBefore', 'Někdo nepotvrdil (dní předem)', s.rules.unconfirmedDaysBefore, 'Od kdy hlídat služby, které nikdo nepotvrdil.'),
-    number('childAge', 'Dítě je mladší než (let)', s.rules.childAge, 'Děti nemůžou do služeb jen pro dospělé a nepočítají se mezi dospělé u dětí.', 1, 25),
-    formErrorLine('', { full: true }),
-    h('div', { class: 'full' }, h('button', { type: 'submit', class: 'btn primary small' }, 'Uložit')));
+  const main = s.mainPlaceId ? placeById(S.data, s.mainPlaceId) : null;
+  const resolved = main ? resolvePlace(S.data, main) : null;
+  const fields = h('div', { class: 'form-grid' },
+    textField('churchName', 'Název sboru', s.churchName, { full: true, hint: 'Ukáže se v hlavičce veřejného programu a v kalendářích.' }),
+    selectField('mainPlaceId', 'Hlavní místo', mainPlaceOptions(), s.mainPlaceId || '', { full: true, hint: 'Kde se obvykle scházíme. Nová setkání ho dostanou předvyplněné.' }),
+    textField('address', 'Adresa', s.address, { full: true, hint: 'Jedním řádkem. Ukáže se na webu v „Kde nás najdete“ a v kalendáři u setkání.', attr: { placeholder: resolved?.address ? `např. ${resolved.address}` : 'např. Ulice 1, Město' } }));
+  const form = h('form', { class: 'settings-form', novalidate: true });
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const f = form.elements;
-    const values = {};
-    for (const key of ['maxPerMonth', 'maxConsecutiveWeeks', 'essentialDaysBefore', 'unconfirmedDaysBefore', 'childAge']) {
-      const n = Number(f[key].value);
-      if (f[key].value === '' || !Number.isInteger(n) || n < Number(f[key].min)) {
-        formError(form, 'Čísla musí být celá a ne záporná.');
-        f[key].focus();
-        return;
-      }
-      values[key] = n;
-    }
     const target = S.data.settings;
-    target.churchName = f.churchName.value.trim() || 'Církev jako kráva';
-    const address = f.address.value.trim();
-    if (address) target.address = address;
-    else delete target.address;
-    target.defaults = { ...target.defaults, maxPerMonth: values.maxPerMonth, maxConsecutiveWeeks: values.maxConsecutiveWeeks };
-    target.rules = { ...target.rules, essentialDaysBefore: values.essentialDaysBefore, unconfirmedDaysBefore: values.unconfirmedDaysBefore, childAge: values.childAge };
+    const name = f.churchName.value.trim();
+    if (!name) { formError(form, 'Doplň název sboru.'); f.churchName.focus(); return; }
+    target.churchName = name;
+    const address = f.address.value.trim() || resolvePlace(S.data, placeById(S.data, f.mainPlaceId.value) || {}).address || '';
+    if (address) target.address = address; else delete target.address;
+    if (f.mainPlaceId.value) target.mainPlaceId = f.mainPlaceId.value; else delete target.mainPlaceId;
     formError(form, null);
     change('nastavení sboru');
     toast('Uloženo.');
   });
-  return section('Sbor', form);
+  const mapPlace = resolved && Number.isFinite(resolved.lat) ? resolved : null;
+  form.append(card({ title: 'Název a místo', body: fields }), resolved ? card({
+        title: 'Kde nás najdete',
+        cls: 'settings-preview',
+        body: [h('p', { class: 'card-text' }, 'Takhle to uvidí návštěvníci na konci veřejného programu.'),
+          h('div', { class: 'preview-place' }, placeLine({ ...resolved, name: resolved.building ? `${resolved.building}` : resolved.name, address: s.address || resolved.address })),
+          mapPlace ? placeMap(mapPlace) : null],
+        footer: button('Otevřít veřejnou část', { variant: 'ghost', size: 's', href: '#program', iconEnd: 'chevron-right' }),
+      }) : '', ...formFoot());
+  return { body: form };
 }
 
-// ---------- shared editors (event types, formats) ----------
+// ---------- Pravidla ----------
 
-/** Roles of active teams, grouped: [{ group, roles }] (plus roles already in `keep` from elsewhere). */
-function rolesByTeam(keep = []) {
-  const teams = S.data.groups.filter((g) => g.kind === 'team' && !g.archived).sort(byName);
-  const result = teams.map((group) => ({ group, roles: S.data.roles.filter((r) => r.groupId === group.id) })).filter((x) => x.roles.length);
-  const shown = new Set(result.flatMap((x) => x.roles.map((r) => r.id)));
-  const rest = keep.map((id) => roleById(S.data, id)).filter((r) => r && !shown.has(r.id));
-  if (rest.length) result.push({ group: { name: 'Jiné' }, roles: rest });
-  return result;
-}
-
-/** Needs editor: a number per role. `needs` is a working copy, edited in place. */
-function needsEditor(needs, label) {
-  const list = h('ul', { class: 'skills needs-editor' });
-  for (const { group, roles } of rolesByTeam(needs.map((n) => n.roleId))) {
-    list.append(h('li', { class: 'team-heading' }, group.name));
-    for (const role of roles) {
-      const need = needs.find((n) => n.roleId === role.id);
-      list.append(h('li', {},
-        h('span', {}, role.name),
-        h('input', {
-          type: 'number', min: 0, max: 20, value: need?.count || 0, class: 'count-input', 'aria-label': `${role.name}: počet lidí`,
-          oninput: (e) => {
-            const n = Math.max(0, Math.round(Number(e.target.value)) || 0);
-            const existing = needs.find((x) => x.roleId === role.id);
-            if (existing) existing.count = n;
-            else needs.push({ roleId: role.id, count: n });
-          },
-        })));
-    }
-  }
-  return h('div', { class: 'field full' }, h('span', {}, label),
-    list.children.length ? list : h('small', {}, 'Nejdřív přidej týmy a jejich role (Skupiny).'));
-}
-
-const cleanNeeds = (needs) => needs.filter((n) => n.count > 0).map(({ roleId, count: c }) => ({ roleId, count: c }));
-
-/** Program editor for an event type: rows of format + minutes. `program` is edited in place. */
-function programEditor(program, minutesInput) {
-  const wrap = h('div', { class: 'field full' });
-  const formats = S.data.formats.slice();
-  const totalLine = h('p', { class: 'note' });
-  const updateTotal = () => {
-    const sum = program.reduce((s, item) => s + (Number(item.minutes) || 0), 0);
-    const length = Number(minutesInput.value) || 0;
-    totalLine.textContent = program.length
-      ? `Osnova má ${sum} min${length ? ` z ${length}` : ''}.${length && sum > length ? ' Přetéká – zkrať ji, nebo prodluž setkání.' : ''}`
-      : '';
-  };
-  minutesInput.addEventListener('input', updateTotal);
-  const redraw = () => {
-    wrap.replaceChildren(
-      h('span', {}, 'Osnova (každé nové setkání podle šablony ji dostane)'),
-      program.length ? h('ol', { class: 'program program-editor' }, program.map((item, i) => h('li', {},
-        h('span', { class: 'when' }, `${i + 1}.`),
-        h('select', {
-          'aria-label': 'Formát',
-          onchange: (e) => { item.formatId = e.target.value; item.minutes = formatById(S.data, item.formatId)?.minutes ?? item.minutes; redraw(); },
-        }, formatById(S.data, item.formatId) ? null : h('option', { value: item.formatId, selected: true }, 'smazaný formát'),
-        formats.map((f) => h('option', { value: f.id, selected: f.id === item.formatId }, f.name))),
-        h('input', {
-          type: 'number', min: 0, max: 600, value: item.minutes, class: 'count-input', 'aria-label': 'Minut',
-          oninput: (e) => { item.minutes = Math.max(0, Math.round(Number(e.target.value)) || 0); updateTotal(); },
-        }),
-        h('span', { class: 'move' },
-          arrowButton('up', 'Výš', () => { [program[i - 1], program[i]] = [program[i], program[i - 1]]; redraw(); }, i === 0),
-          arrowButton('down', 'Níž', () => { [program[i + 1], program[i]] = [program[i], program[i + 1]]; redraw(); }, i === program.length - 1),
-          removeButton('Odebrat', () => { program.splice(i, 1); redraw(); }))))) : null,
-      formats.length
-        ? h('div', { class: 'tags add-format' }, formats.map((f) => h('button', {
-          type: 'button', class: 'tag', onclick: () => { program.push({ formatId: f.id, minutes: f.minutes ?? 10 }); redraw(); },
-        }, `+ ${f.name}`)))
-        : h('small', {}, 'Nejdřív přidej formáty (Nastavení → Formáty).'),
-      totalLine);
-    updateTotal();
-  };
-  redraw();
-  return wrap;
-}
-
-// ---------- Šablony (event types) ----------
-
-function eventTypesSection() {
-  const types = S.data.eventTypes.slice().sort(byName);
-  return section(['Šablony', count('předvyplní nové setkání')],
-    types.length ? h('ul', { class: 'list' }, types.map((t) => h('li', {}, h('button', { type: 'button', class: 'row', onclick: () => eventTypeDialog(t) },
-      h('span', { class: 'name' }, t.name, h('small', {}, [
-        EVENT_KIND_LABELS[t.kind] || t.kind, prettyClock(t.startTime), `${t.minutes} min`,
-        (t.program || []).length ? `osnova ${plural(t.program.length, 'bod', 'body', 'bodů')}` : null,
-      ].filter(Boolean).join(' · '))),
-      h('span', { class: 'tags' }, (t.needs || []).map((n) => tag(`${roleById(S.data, n.roleId)?.name || '?'}${n.count > 1 ? ` ${n.count}×` : ''}`, 'quiet'))),
-      h('span', { class: 'right' }, groupById(S.data, t.groupId)?.name || ''))))) : note('Zatím žádná šablona. Šablona předvyplní nové setkání: čas, místo, koho je potřeba a osnovu.'),
-    actions(btn(plus('Přidat šablonu'), () => eventTypeDialog(), 'primary small')));
-}
-
-function eventTypeDialog(type) {
-  const needs = clone(type?.needs || []);
-  const program = clone(type?.program || []);
-  const groups = S.data.groups.filter((g) => !g.archived || g.id === type?.groupId).sort(byName);
-  const minutesField = textField('minutes', 'Délka (min)', type?.minutes || 120, { type: 'number', attr: { min: 5, max: 1440 } });
-  simpleDialog({
-    eyebrow: type ? 'upravit šablonu' : 'nová šablona',
-    title: type ? type.name : 'Přidat šablonu',
-    fields: [
-      textField('name', 'Název', type?.name, { full: true, attr: { autofocus: true, placeholder: 'Setkání na pastvě' } }),
-      selectField('kind', 'Druh', EVENT_KINDS.map((k) => [k, EVENT_KIND_LABELS[k]]), type?.kind || 'service'),
-      selectField('groupId', 'Čí to je', [['', '— celého sboru —'], ...groups.map((g) => [g.id, g.name])], type?.groupId || '', { hint: 'Třeba zkouška chval nebo skupinka.' }),
-      textField('startTime', 'Začátek', type?.startTime || '10:00', { type: 'time' }),
-      minutesField,
-      S.data.places.length ? fieldGroup('Kde', choices('placeIds', S.data.places.map((p) => [p.id, p.name]), type?.placeIds || [])) : null,
-      needsEditor(needs, 'Koho to potřebuje (počet lidí na roli)'),
-      programEditor(program, minutesField.querySelector('input')),
-    ],
-    save: (f, form) => {
-      const name = f.name.value.trim();
-      if (!name) return 'Doplň název.';
-      if (!/^\d{1,2}:\d{2}$/.test(f.startTime.value)) return 'Doplň začátek.';
-      const values = {
-        name, kind: f.kind.value, startTime: f.startTime.value.padStart(5, '0'),
-        minutes: Math.max(5, toInt(f.minutes.value, 60)),
-        placeIds: checkedValues(form, 'placeIds'),
-        needs: cleanNeeds(needs),
-        program: program.filter((item) => formatById(S.data, item.formatId)).map(({ formatId, minutes }) => ({ formatId, minutes })),
-      };
-      let target = type ? S.data.eventTypes.find((x) => x.id === type.id) : null;
-      if (type && !target) return 'Šablonu mezitím někdo smazal.';
-      if (!target) {
-        target = { id: newId('t') };
-        S.data.eventTypes.push(target);
-      }
-      Object.assign(target, values);
-      if (!values.program.length) delete target.program;
-      if (f.groupId.value) target.groupId = f.groupId.value;
-      else delete target.groupId;
-      change(`šablona ${name}`);
-      return null;
-    },
-    remove: type ? () => confirmDialog(`Smazat šablonu ${type.name}?`, 'Setkání, která už podle ní vznikla, zůstanou.', () => {
-      S.data.eventTypes = S.data.eventTypes.filter((x) => x.id !== type.id);
-      for (const e of S.data.events) if (e.typeId === type.id) delete e.typeId;
-      change(`smazaná šablona ${type.name}`);
-    }) : null,
+/** One rule: the sentence and its hint on the left, a number with − / + and its unit on the right. */
+function ruleRow({ key, label, hint, value, min, max, units }) {
+  const id = `rule-${key}`;
+  const unit = h('span', { class: 'rule-unit' }, agree(Number(value), ...units));
+  const input = h('input', {
+    type: 'number', id, name: key, value, min, max, inputmode: 'numeric', 'aria-describedby': `${id}-hint`,
+    oninput: (e) => { unit.textContent = agree(Math.round(Number(e.target.value)), ...units); },
   });
+  return h('div', { class: 'rule-row' },
+    h('div', { class: 'rule-text' }, h('label', { for: id, class: 'rule-label' }, label), h('small', { class: 'rule-hint', id: `${id}-hint` }, hint)),
+    h('div', { class: 'rule-control' }, input, unit));
 }
 
-// ---------- Místa ----------
+const DAYS = ['den', 'dny', 'dní'];
 
-function placesSection() {
-  const places = S.data.places.slice().sort(byName);
-  return section('Místa',
-    note('Když jsou dvě setkání naráz na stejném místě, Zvonec to hlásí. Kromě míst, kde se víc věcí vejde.'),
-    places.length ? h('ul', { class: 'list' }, places.map((p) => h('li', {}, h('button', { type: 'button', class: 'row', onclick: () => placeDialog(p) },
-      h('span', { class: 'name' }, p.name),
-      h('span', { class: 'tags' }, p.shared ? tag('víc věcí naráz nevadí', 'quiet') : null),
-      h('span', { class: 'right' }, ''))))) : null,
-    actions(btn(plus('Přidat místo'), () => placeDialog(), 'primary small')));
-}
-
-function placeDialog(place) {
-  simpleDialog({
-    eyebrow: place ? 'upravit místo' : 'nové místo',
-    title: place ? place.name : 'Přidat místo',
-    wide: false,
-    fields: [
-      textField('name', 'Název', place?.name, { full: true, attr: { autofocus: true, placeholder: 'Sál' } }),
-      checkboxField('shared', 'Tady se vejde víc věcí naráz (kuchyňka, venku). Dvě setkání ve stejnou dobu nebudou chyba.', !!place?.shared),
-    ],
-    save: (f, form) => {
-      const name = f.name.value.trim();
-      if (!name) return 'Doplň název.';
-      const shared = checkedValues(form, 'shared').length > 0;
-      if (place) {
-        const target = S.data.places.find((x) => x.id === place.id);
-        if (!target) return 'Místo mezitím někdo smazal.';
-        Object.assign(target, { name, shared });
-      } else {
-        S.data.places.push({ id: newId('l'), name, shared });
-      }
-      change(`místo ${name}`);
-      return null;
+function rulesPart() {
+  const s = S.data.settings;
+  const d = { ...DEFAULT_LIMITS, ...(s.defaults || {}) };
+  const r = { ...DEFAULT_RULES, ...(s.rules || {}) };
+  const groups = [
+    {
+      title: 'Břemeno', hint: 'Platí pro každého, kdo nemá na své kartě jiná čísla.',
+      rules: [
+        { key: 'maxPerMonth', where: 'defaults', label: 'Nejvíc služeb za měsíc', hint: 'Zkoušky se nepočítají.', value: d.maxPerMonth, min: 1, max: 31, units: ['služba', 'služby', 'služeb'] },
+        { key: 'maxConsecutiveWeeks', where: 'defaults', label: 'Nejvíc nedělí po sobě', hint: 'I kráva potřebuje volnou neděli na pastvě.', value: d.maxConsecutiveWeeks, min: 1, max: 52, units: ['neděle', 'neděle', 'nedělí'] },
+      ],
     },
-    remove: place ? () => {
-      const used = S.data.events.filter((e) => (e.placeIds || []).includes(place.id) && dayOf(e.end) >= today()).length;
-      confirmDialog(`Smazat místo ${place.name}?`, used ? `Je u ${plural(used, 'budoucího setkání', 'budoucích setkání', 'budoucích setkání')}. Odtamtud zmizí.` : '', () => {
-        S.data.places = S.data.places.filter((x) => x.id !== place.id);
-        for (const e of S.data.events) e.placeIds = (e.placeIds || []).filter((x) => x !== place.id);
-        for (const t of S.data.eventTypes) t.placeIds = (t.placeIds || []).filter((x) => x !== place.id);
-        change(`smazané místo ${place.name}`);
-      });
-    } : null,
-  });
-}
-
-// ---------- Formáty ----------
-
-/** „Proč to děláme“ and „Jak to probíhá“ as two paragraphs (null when the format has neither). */
-export function formatWhyHow(format, { withLink = true } = {}) {
-  if (!format || !(format.why || format.how || (withLink && format.link))) return null;
-  return h('div', { class: 'why-how' },
-    format.why ? h('div', {}, h('p', { class: 'subhead' }, 'Proč to děláme'), h('p', { class: 'text' }, format.why)) : null,
-    format.how ? h('div', {}, h('p', { class: 'subhead' }, 'Jak to probíhá'), h('p', { class: 'text' }, format.how)) : null,
-    withLink && format.link ? h('p', {}, h('a', { href: format.link, target: '_blank', rel: 'noopener' }, format.link.replace(/^https?:\/\//, ''))) : null);
-}
-
-function leadText(format) {
-  const role = roleById(S.data, format.leadRoleId);
-  return role ? `vede ten, kdo má na setkání roli ${role.name}` : 'kdo vede, vybereš v osnově u bodu';
-}
-
-function needsText(format) {
-  const needs = formatNeeds(format).filter((n) => n.roleId !== format.leadRoleId || n.count > 1);
-  return needs.map((n) => `${roleById(S.data, n.roleId)?.name || '?'}${n.count > 1 ? ` ${n.count}×` : ''}`).join(', ');
-}
-
-/** The Proč / Jak dialog of a format – the event and program screens open it from a program item. */
-export function openFormatInfo(formatId) {
-  const format = formatById(S.data, formatId);
-  if (!format) { toast('Tenhle formát už neexistuje.'); return; }
-  const role = roleById(S.data, format.leadRoleId);
-  openDialog(h('div', { class: 'inner' },
-    h('p', { class: 'eyebrow' }, 'formát'),
-    h('h2', {}, format.name),
-    meta([`${format.minutes ?? 0} min`, role ? ['vede', `ten, kdo má roli ${role.name}`] : null, needsText(format) ? ['potřebuje', needsText(format)] : null]),
-    formatWhyHow(format) || note('Popis zatím chybí.'),
-    actions([
-      can('leader') ? btn('Upravit', () => formatDialog(format), 'left plain') : null,
-      btn('Zavřít', closeDialog, 'primary'),
-    ])));
-}
-
-function formatsSection() {
-  const leader = can('leader');
-  const now = today();
-  const planned = (id) => S.data.events.filter((e) => !e.cancelled && dayOf(e.start) >= now && (e.program || []).some((i) => i.formatId === id)).length;
-  const formats = S.data.formats;
-  return section(['Formáty', count('kostky osnovy')],
-    note('Z formátů se skládá osnova setkání. U každého je napsané, proč ho děláme a jak probíhá.'),
-    leader ? actions(btn(plus('Přidat formát'), () => formatDialog(), 'primary small')) : null,
-    formats.length
-      ? h('div', { class: 'formats spaced' }, formats.map((f) => {
-        const needs = needsText(f);
-        const used = planned(f.id);
-        return h('article', { class: 'format-card' },
-          h('div', { class: 'format-head' }, h('h2', {}, f.name), leader ? btn('Upravit', () => formatDialog(f), 'mini') : null),
-          h('p', { class: 'format-meta' }, [`${f.minutes ?? 0} min`, leadText(f), needs ? `potřebuje ${needs}` : '', leader && used ? `naplánovaný ${used}×` : ''].filter(Boolean).join(' · ')),
-          formatWhyHow(f) || note(leader ? 'Zatím tu chybí, proč to děláme a jak to probíhá. Doplníš přes Upravit.' : 'Popis zatím chybí.'));
-      }))
-      : emptyState('Zatím žádný formát.', 'Začni třeba kázáním, chválami nebo Otázkami na tělo.', leader ? btn('Přidat formát', () => formatDialog(), 'primary') : null));
-}
-
-function formatDialog(format) {
-  if (!can('leader')) return;
-  const needs = clone(format?.needs || []);
-  const teams = rolesByTeam(format?.leadRoleId ? [format.leadRoleId] : []);
-  simpleDialog({
-    eyebrow: format ? 'upravit formát' : 'nový formát',
-    title: format ? format.name : 'Přidat formát',
-    fields: [
-      textField('name', 'Název', format?.name, { attr: { autofocus: true, placeholder: 'Otázky na tělo' } }),
-      textField('minutes', 'Kolik minut obvykle', format?.minutes ?? 10, { type: 'number', attr: { min: 0, max: 600 } }),
-      h('label', { class: 'field full' }, h('span', {}, 'Kdo to vede'),
-        h('select', { name: 'leadRoleId' },
-          h('option', { value: '', selected: !format?.leadRoleId }, '— nikdo, vyberu v osnově u bodu —'),
-          teams.map(({ group, roles }) => h('optgroup', { label: group.name },
-            roles.map((r) => h('option', { value: r.id, selected: r.id === format?.leadRoleId }, `ten, kdo má na setkání roli ${r.name}`)))))),
-      textArea('why', 'Proč to děláme', format?.why, { attr: { rows: 3, placeholder: 'Proč to na setkání máme? Co si z toho lidi odnesou?' } }),
-      textArea('how', 'Jak to probíhá', format?.how, { attr: { rows: 4, placeholder: 'Co přesně se děje, kdo co dělá, na co nezapomenout.' } }),
-      textField('link', 'Odkaz (nepovinný)', format?.link, { full: true, type: 'url', attr: { placeholder: 'https://otazky.cirkevjakokrava.cz' } }),
-      needsEditor(needs, 'Koho formát navíc potřebuje (počet lidí na roli)'),
-    ],
-    save: (f) => {
-      const name = f.name.value.trim();
-      if (!name) return 'Doplň název.';
-      const link = f.link.value.trim();
-      if (link && !/^https?:\/\//i.test(link)) return 'Odkaz má začínat https://';
-      const values = {
-        name, minutes: Math.max(0, toInt(f.minutes.value, 10)),
-        leadRoleId: f.leadRoleId.value, why: f.why.value.trim(), how: f.how.value.trim(), link, needs: cleanNeeds(needs),
-      };
-      let target = format ? formatById(S.data, format.id) : null;
-      if (format && !target) return 'Formát mezitím někdo smazal.';
-      if (!target) {
-        target = { id: newId('f') };
-        S.data.formats.push(target);
-      }
-      for (const [key, value] of Object.entries(values)) {
-        if (Array.isArray(value) ? value.length : value !== '') target[key] = value;
-        else delete target[key];
-      }
-      change(`formát ${name}`);
-      return null;
+    {
+      title: 'Kdy Zvonec bučí', hint: 'Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.',
+      rules: [
+        { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role je chyba', hint: 'Ve dvojnásobném předstihu ji Zvonec hlásí zatím jen jako upozornění. Nezbytná je role, bez které to nepůjde.', value: r.essentialDaysBefore, min: 0, max: 60, units: DAYS },
+        { key: 'openDaysBefore', where: 'rules', label: 'Ostatní prázdná místa', hint: 'Upozornění, že ještě někdo chybí.', value: r.openDaysBefore, min: 0, max: 60, units: DAYS },
+        { key: 'unconfirmedDaysBefore', where: 'rules', label: 'Nepotvrzená služba', hint: 'Upozornění, že někdo ještě neřekl, jestli může. Ukáže se i v Přehledu.', value: r.unconfirmedDaysBefore, min: 0, max: 60, units: DAYS },
+      ],
     },
-    remove: format ? () => {
-      const used = S.data.events.filter((e) => (e.program || []).some((i) => i.formatId === format.id)).length;
-      const inTypes = S.data.eventTypes.filter((t) => (t.program || []).some((i) => i.formatId === format.id)).length;
-      const where = [used ? plural(used, 'setkání', 'setkání', 'setkání') : '', inTypes ? plural(inTypes, 'šablona', 'šablony', 'šablon') : ''].filter(Boolean).join(' a ');
-      confirmDialog(`Smazat formát ${format.name}?`, where ? `Je v osnově (${where}) – zmizí i odtamtud.` : '', () => {
-        S.data.formats = S.data.formats.filter((x) => x.id !== format.id);
-        for (const e of S.data.events) if (e.program) e.program = e.program.filter((i) => i.formatId !== format.id);
-        for (const t of S.data.eventTypes) {
-          if (!t.program) continue;
-          t.program = t.program.filter((i) => i.formatId !== format.id);
-          if (!t.program.length) delete t.program;
-        }
-        change(`smazaný formát ${format.name}`);
-      });
-    } : null,
-  });
-}
-
-// ---------- Přihlášení ----------
-
-function loginSection() {
-  if (S.mode !== 'live') {
-    return [
-      section('Přihlášení', note('V ukázce se nikdo nepřihlašuje. V ostrém Zvonci tady uvidíš, kdo má přihlášení, a pošleš pozvánku novým lidem.')),
-      demoViewAs(),
-    ];
-  }
-  return [loginsSection(), can('admin') ? keySection() : null];
-}
-
-/** Demo only: look at the app as someone else (actAs). */
-function demoViewAs() {
-  if (S.mode !== 'demo') return null;
-  const people = sortPeople(S.data.people.filter((p) => p.membership?.status !== 'former'));
-  const form = h('form', { class: 'form-grid', novalidate: true },
-    selectField('personId', 'Kdo', [['', '— nikdo konkrétní —'], ...people.map((p) => [p.id, fullName(p)])], S.me.personId || ''),
-    selectField('access', 'Co smí', ['member', 'leader', 'admin'].map((a) => [a, ACCESS_LABELS[a]]), S.me.access),
-    h('div', { class: 'full' }, h('button', { type: 'submit', class: 'btn small' }, 'Dívat se')));
+    {
+      title: 'Děti', hint: null,
+      rules: [
+        { key: 'childAge', where: 'rules', label: 'Dospělý je od', hint: 'Mladší jsou pro Zvonec děti. Když slouží tam, kde mají být jen dospělí, Zvonec hlásí chybu.', value: r.childAge, min: 1, max: 25, units: ['roku', 'let', 'let'] },
+      ],
+    },
+  ];
+  const all = groups.flatMap((g) => g.rules);
+  const form = h('form', { class: 'rules-form settings-form', novalidate: true },
+    groups.map((g) => card({
+      title: g.title,
+      body: [g.hint ? h('p', { class: 'card-text' }, g.hint) : null, h('div', { class: 'rule-rows' }, g.rules.map(ruleRow))],
+    })),
+    formFoot());
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const personId = form.elements.personId.value;
-    const access = form.elements.access.value;
-    if (access !== 'admin' && !personId) { toast('Vyber, za koho se chceš dívat.'); return; }
-    actAs(personId, access);
-    toast(access === 'admin' && !personId ? 'Zase vidíš všechno.' : `Díváš se jako ${fullName(S.data.people.find((p) => p.id === personId))} (${ACCESS_LABELS[access]}).`);
+    const f = form.elements;
+    const values = {};
+    for (const rule of all) {
+      const n = Number(f[rule.key].value);
+      if (f[rule.key].value === '' || !Number.isInteger(n) || n < rule.min || n > rule.max) {
+        formError(form, `${rule.label}: zapiš celé číslo od ${rule.min} do ${rule.max}.`);
+        f[rule.key].focus();
+        return;
+      }
+      values[rule.key] = n;
+    }
+    const target = S.data.settings;
+    target.defaults = { ...target.defaults };
+    target.rules = { ...target.rules };
+    for (const rule of all) target[rule.where][rule.key] = values[rule.key];
+    formError(form, null);
+    change('pravidla');
+    toast('Uloženo.', 'Upozornění se přepočítala.');
   });
-  return section('Dívat se jako',
-    note('Vyzkoušej, co vidí člen nebo vedoucí. Člen nemá Nastavení v menu – zpátky se dostaneš tlačítkem „Zpátky jako správce“ na stránce Moje.'),
-    form,
-    S.me.personId || S.me.access !== 'admin' ? actions(btn('Zpátky jako správce', () => actAs(null, 'admin'), 'small plain')) : null);
+  return { body: form };
 }
 
-// ---------- Můj účet ----------
+// ---------- Přístupy ----------
 
-function myAccountSection() {
-  if (S.mode === 'live') return accountSection();
-  return [demoSection(), demoViewAs()];
+function loginsPart() {
+  return {
+    actions: button('Pozvat nového člověka', { variant: 'solid', icon: 'user-plus', onclick: () => createInvite(null) }),
+    body: [...loginsView(), can('admin') ? keyCard() : null],
+  };
 }
 
 // ---------- Záloha ----------
@@ -465,8 +179,9 @@ export function readBackup(json) {
   return normalize(json);
 }
 
-function backupSection() {
+function backupPart() {
   const live = S.mode === 'live';
+  const admin = can('admin');
   const file = h('input', { type: 'file', accept: 'application/json,.json', hidden: true, class: 'backup-file' });
   file.addEventListener('change', async () => {
     const chosen = file.files[0];
@@ -474,11 +189,11 @@ function backupSection() {
     if (!chosen) return;
     let data;
     try { data = readBackup(JSON.parse(await chosen.text())); } catch { data = null; }
-    if (data === 'old') { toast('Tohle je záloha starého Zvonce.', 'Tu nahrát neumím. Pošli ji správci.', { duration: 7000 }); return; }
-    if (!data) { toast('Tohle není záloha Zvonce.', 'Soubor se nedá přečíst.'); return; }
-    const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'skupina', 'skupiny', 'skupin'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
+    if (data === 'old') { toast('Tohle je záloha starého Zvonce.', 'Tu nahrát neumím. Pošli ji správci.', { duration: 7000, tone: 'error' }); return; }
+    if (!data) { toast('Tohle není záloha Zvonce.', 'Soubor nejde přečíst.', { tone: 'error' }); return; }
+    const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'tým', 'týmy', 'týmů'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
     confirmDialog('Nahradit všechna data souborem?',
-      `V souboru je ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše. ${live ? 'Na GitHubu zůstane stará verze v historii.' : ''}`,
+      `V souboru je ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Na GitHubu zůstane stará verze v historii.' : ''}`,
       () => {
         replaceAll(data, `nahraná záloha ${chosen.name}`);
         toast('Nahráno.', chosen.name);
@@ -492,28 +207,36 @@ function backupSection() {
     const items = S.data.events.filter((e) => !e.cancelled).map((event) => ({ event }));
     download('zvonec.ics', ics(S.data, items, S.data.settings.churchName || 'Zvonec'), 'text/calendar');
   };
-  return [
-    section('Záloha a přenos',
-      note(`Všechna data jako jeden soubor. Hodí se na zálohu, nebo když chceš data přenést do ostrého Zvonce.${live ? ' Přihlášení v záloze nejsou.' : ''}`),
-      actions([
-        btn('Stáhnout zálohu (.json)', backup, 'small'),
-        btn('Nahrát ze souboru', () => file.click(), 'small'),
-        file,
-      ])),
-    section('Kalendář',
-      note('Všechna setkání jako jeden soubor do kalendáře v telefonu nebo v počítači. Svoje služby si každý stáhne v Moje.'),
-      actions(btn('Celý kalendář (.ics)', calendar, 'small'))),
-    live ? null : section('Ukázka',
-      note('Ukázka žije jen v tomhle prohlížeči. Můžeš ji vrátit do původního stavu, nebo začít úplně načisto.'),
-      actions([
-        btn('Začít ukázku znovu', () => confirmDialog('Začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
-          replaceAll(createDemo(today()), 'nová ukázka');
-          toast('Ukázka je zpátky.');
-        }, { buttonLabel: 'Začít znovu' }), 'small'),
-        btn('Začít načisto', () => confirmDialog('Začít s prázdným Zvoncem?', 'Ukázka zmizí. Hodí se, když si chceš Zvonec vyzkoušet naostro, ale jen v prohlížeči.', () => {
-          replaceAll(emptyData(), 'prázdný Zvonec');
-          toast('Je to prázdné.', 'Začni třeba v Lidech nebo ve Skupinách.');
-        }, { buttonLabel: 'Vyprázdnit' }), 'small plain'),
-      ])),
+  const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
+  const action = (text, onclick, iconName) => button(text, { variant: 'surface', size: 's', icon: iconName, onclick });
+  // what replaces or wipes data is red (and always asks first)
+  const danger = (text, onclick, iconName) => button(text, { variant: 'danger', size: 's', icon: iconName, onclick });
+  const rows = [
+    { lead: rowIcon('download'), title: 'Stáhnout zálohu', meta: `Všechno v jednom souboru: ${counts}, bez obrázků${live ? ' a přístupů' : ''}.`, trail: action('Stáhnout', backup) },
+    admin ? { lead: rowIcon('upload'), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [danger('Nahrát', () => file.click()), file] } : null,
+    { lead: rowIcon('calendar'), title: 'Celý kalendář do telefonu', meta: 'Všechna setkání v jednom souboru .ics. Svoje služby si každý stáhne v Mém účtu.', trail: action('Stáhnout', calendar) },
+  ].filter(Boolean);
+  const demoRows = [
+    {
+      lead: rowIcon('refresh'), title: 'Začít ukázku znovu', meta: 'Vrátí ukázku do původního stavu, tvoje změny zmizí.',
+      trail: danger('Začít znovu', () => confirmDialog('Začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
+        replaceAll(createDemo(today()), 'nová ukázka');
+        toast('Ukázka je zpátky.');
+      }, { buttonLabel: 'Začít znovu', danger: true })),
+    },
+    {
+      lead: rowIcon('trash'), title: 'Začít načisto', meta: 'Ukázka zmizí a Zvonec bude prázdný.',
+      trail: danger('Vyprázdnit', () => confirmDialog('Začít s prázdným Zvoncem?', 'Ukázka zmizí.', () => {
+        replaceAll(emptyData(), 'prázdný Zvonec');
+        toast('Je to prázdné.', 'Začni třeba v Lidech nebo v Týmech.');
+      }, { buttonLabel: 'Vyprázdnit', danger: true })),
+    },
   ];
+  return {
+    body: [
+      card({ title: 'Data', body: list(rows, (r) => row(r), { label: 'Záloha' }), flush: true }),
+      live ? callout('Každá změna se ukládá do soukromého repa na GitHubu i s historií. Záloha je pro jistotu navíc.', { tone: 'info' })
+        : card({ title: 'Ukázka', body: list(demoRows, (r) => row(r), { label: 'Ukázka' }), flush: true }),
+    ],
+  };
 }
