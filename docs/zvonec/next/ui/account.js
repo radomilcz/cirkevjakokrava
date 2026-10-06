@@ -48,7 +48,7 @@ function directorySwitch(person) {
 
 function calendarSection() {
   return section({
-    title: 'Stáhnout do kalendáře',
+    title: 'Kalendář v telefonu',
     body: [calendarExportRows(), h('p', { class: 'meta acct-note' }, CALENDAR_EXPORT_NOTE)],
   });
 }
@@ -68,8 +68,8 @@ export function passwordSheet() {
   const pass = textInput({ name: 'password', type: 'password', autocomplete: 'new-password' });
   const again = textInput({ name: 'password2', type: 'password', autocomplete: 'new-password' });
   formSheet({
-    title: 'Změnit heslo',
-    submitLabel: 'Změnit heslo',
+    title: 'Nové heslo',
+    submitLabel: 'Změň heslo',
     body: [
       field({ label: 'Přihlašovací jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
       field({ label: 'Nové heslo', control: pass, hint: 'Aspoň 8 znaků.' }),
@@ -129,7 +129,7 @@ export function viewAsSheet() {
     });
   };
   sheet = openSheet({
-    title: 'Dívat se jako',
+    title: 'Očima druhých',
     subtitle: 'Vyzkoušej, co vidí člen, vedoucí nebo správce. Nic se tím nemění.',
     body: [
       list(viewers.map(([level, p]) => row({
@@ -140,7 +140,7 @@ export function viewAsSheet() {
       h('div', { class: 'field' },
         h('span', { class: 'field__label' }, 'Někdo jiný s oprávněním'),
         segmented([{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }], access, (v) => { access = v; }, { label: 'Oprávnění' })),
-      button('Vybrat člověka', { icon: 'search', block: true, onclick: others }),
+      button('Vyber člověka', { icon: 'search', block: true, onclick: others }),
       rowLink('Správce bez karty v Lidech', { onclick: () => pick(null, 'admin') }),
     ],
   });
@@ -156,8 +156,8 @@ function viewAsRow() {
       title: `Díváš se jako ${person ? fullName(person) : 'správce bez karty'}`,
       meta: ACCESS_LABELS[S.me?.access] || '',
       onclick: viewAsSheet,
-      trail: h('span', { class: 'link' }, 'Změnit'),
-      label: 'Dívat se jako někdo jiný',
+      trail: h('span', { class: 'link' }, 'Změň'),
+      label: 'Podívej se očima někoho jiného',
     })], { label: 'Ukázka' }),
   });
 }
@@ -177,7 +177,7 @@ export function accountBody({ pane = false } = {}) {
       h('p', { class: 'meta' }, role ? `Oprávnění: ${role}` : '')));
   const contact = person ? section({
     title: 'Můj kontakt',
-    action: button('Upravit', { variant: 'quiet', size: 's', onclick: () => contactSheet(person) }),
+    action: button('Uprav', { variant: 'quiet', size: 's', onclick: () => contactSheet(person) }),
     body: [
       facts([
         { icon: 'phone', text: person.phone || 'telefon nevyplněný' },
@@ -194,9 +194,9 @@ export function accountBody({ pane = false } = {}) {
   const access = section({
     title: 'Přihlášení',
     body: list([
-      live ? row({ lead: icon('key'), title: 'Změnit heslo', single: true, chevron: true, onclick: passwordSheet }) : null,
+      live ? row({ lead: icon('key'), title: 'Změň heslo', single: true, chevron: true, onclick: passwordSheet }) : null,
       row({
-        lead: icon('log-out'), title: 'Odhlásit se', single: !live, meta: live ? 'Na cizím počítači se odhlas vždycky.' : 'V ukázce se pak přihlásíš jako někdo jiný.',
+        lead: icon('log-out'), title: 'Odhlas se', single: !live, meta: live ? 'Na cizím počítači se odhlas vždycky.' : 'V ukázce se pak přihlásíš jako někdo jiný.',
         onclick: live ? () => logout() : demoSignOut, cls: 'acct-signout',
       }),
     ].filter(Boolean), { label: 'Přihlášení' }),

@@ -89,7 +89,7 @@ async function copy(value) {
 export function secretSheet({ title, text, rows, note }) {
   const rowEls = rows.map((r) => {
     const out = h('input', { class: 'input secret__value', readonly: true, value: r.value, 'aria-label': r.label, onfocus: (e) => e.target.select() });
-    const copyBtn = button(r.copyLabel || 'Zkopírovat', {
+    const copyBtn = button(r.copyLabel || 'Zkopíruj', {
       icon: 'copy', size: 's',
       onclick: async (e) => {
         const ok = await copy(r.value);
@@ -99,7 +99,7 @@ export function secretSheet({ title, text, rows, note }) {
       },
     });
     const shareBtn = r.share && navigator.share
-      ? button('Poslat', { variant: 'primary', size: 's', icon: 'share', onclick: () => navigator.share({ title, text: r.shareText || '', url: r.value }).catch(() => {}) })
+      ? button('Pošli', { variant: 'primary', size: 's', icon: 'share', onclick: () => navigator.share({ title, text: r.shareText || '', url: r.value }).catch(() => {}) })
       : null;
     return h('div', { class: 'secret' },
       h('span', { class: 'field__label' }, r.label),
@@ -110,7 +110,7 @@ export function secretSheet({ title, text, rows, note }) {
   sheet = openSheet({
     title,
     body: [text ? h('p', { class: 'text' }, text) : null, ...rowEls, note ? h('p', { class: 'meta' }, note) : null],
-    foot: button('Zavřít', { variant: 'quiet', block: true, onclick: () => sheet.close() }),
+    foot: button('Zavři', { variant: 'quiet', block: true, onclick: () => sheet.close() }),
     initialFocus: '.secret .btn',
   });
   return sheet;

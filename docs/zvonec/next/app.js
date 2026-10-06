@@ -383,7 +383,7 @@ function showSaveStatus({ status, error }) {
     saveLine.dataset.tone = 'no';
     saveLine.replaceChildren(
       h('span', {}, status === 'offline' ? 'Chybí připojení k internetu. Změny uložím, až bude zpátky.' : 'Neuloženo.'),
-      h('button', { type: 'button', class: 'btn btn--s', onclick: () => S.sync.save() }, 'Zkusit znovu'));
+      h('button', { type: 'button', class: 'btn btn--s', onclick: () => S.sync.save() }, 'Zkus to znovu'));
     saveLine.hidden = false;
   } else if (status === 'saving' || status === 'pending') {
     savingTimer = setTimeout(() => {

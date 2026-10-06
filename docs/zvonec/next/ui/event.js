@@ -29,12 +29,12 @@ export function eventMenu(event) {
   if (!can('leader')) return null;
   const series = seriesFor(S.data, event);
   return menu([
-    { label: 'Upravit setkání', icon: 'pencil', onclick: () => openEditEvent(event.id) },
+    { label: 'Uprav setkání', icon: 'pencil', onclick: () => openEditEvent(event.id) },
     { label: 'Kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
-    series?.step ? { label: 'Prodloužit řadu', icon: 'layers', onclick: () => openExtendSeries(event.id) } : null,
+    series?.step ? { label: 'Prodluž řadu', icon: 'layers', onclick: () => openExtendSeries(event.id) } : null,
     '-',
-    { label: event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', icon: event.cancelled ? 'undo' : 'x', onclick: () => cancelOrRestore(event.id) },
-    { label: 'Smazat setkání', icon: 'trash', danger: true, onclick: () => deleteEventFlow(event.id) },
+    { label: event.cancelled ? 'Obnov setkání' : 'Zruš setkání', icon: event.cancelled ? 'undo' : 'x', onclick: () => cancelOrRestore(event.id) },
+    { label: 'Smaž setkání', icon: 'trash', danger: true, onclick: () => deleteEventFlow(event.id) },
   ].filter(Boolean), { label: 'Další možnosti setkání' });
 }
 
@@ -66,9 +66,9 @@ function eventWarnings(event, conflicts) {
   if (!items.length) return null;
   return h('div', { class: 'stack ev-warnings' }, items.map((c) => {
     let action = null;
-    if (c.code === 'K15' || c.code === 'K16') action = button('Otevřít osnovu', { size: 's', href: `#setkani/${event.id}/osnova` });
-    else if (c.code === 'K14') action = button('Odebrat všechny', { size: 's', onclick: () => removeAll(event.id) });
-    else if (c.code === 'K9') action = button('Upravit setkání', { size: 's', onclick: () => openEditEvent(event.id) });
+    if (c.code === 'K15' || c.code === 'K16') action = button('Otevři osnovu', { size: 's', href: `#setkani/${event.id}/osnova` });
+    else if (c.code === 'K14') action = button('Odeber všechny', { size: 's', onclick: () => removeAll(event.id) });
+    else if (c.code === 'K9') action = button('Uprav setkání', { size: 's', onclick: () => openEditEvent(event.id) });
     const tone = c.severity === 'error' ? 'no' : c.severity === 'warning' ? 'wait' : 'info';
     return callout({ tone, title: { no: 'Chyba', wait: 'Pozor', info: c.code === 'K14' ? 'Dej jim vědět' : 'Pro informaci' }[tone], text: c.text, actions: action });
   }));
@@ -99,7 +99,7 @@ function youCard(event) {
           button('Můžu', { variant: blocked ? 'tint' : 'primary', onclick: () => answer(event.id, assignment.id, 'confirmed') }),
           button('Nemůžu', { variant: blocked ? 'primary' : 'tint', onclick: () => answer(event.id, assignment.id, 'declined') }))
         : h('div', { class: 'ev-you__state' }, statusNote(assignment.status),
-          past ? null : link('Změnit odpověď', { onclick: () => openMyAnswer(event.id, assignment.id) })))));
+          past ? null : link('Změň odpověď', { onclick: () => openMyAnswer(event.id, assignment.id) })))));
 }
 
 function whoServes(event, conflicts) {
@@ -110,14 +110,14 @@ function whoServes(event, conflicts) {
   const action = h('div', { class: 'cluster ev-who__tools' },
     f.needed ? fill(f.filled, f.needed, { words: words || null }) : null,
     leader ? menu([
-      { label: 'Obsadit jako minule', icon: 'undo', onclick: () => sameAsLast(event.id) },
+      { label: 'Obsaď jako minule', icon: 'undo', onclick: () => sameAsLast(event.id) },
       { label: 'Kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
     ], { label: 'Další možnosti – Kdo slouží' }) : null);
   const body = teams.length
     ? [
       teams.map((t) => teamBlock(event, t, conflicts)),
       leader && f.missing && !event.cancelled && dayOf(event.end) >= today()
-        ? h('div', { class: 'ev-who__fill' }, button('Doplnit volná místa', { icon: 'people', onclick: () => fillOpenSlots([event.id]) })) : null,
+        ? h('div', { class: 'ev-who__fill' }, button('Doplň volná místa', { icon: 'people', onclick: () => fillOpenSlots([event.id]) })) : null,
     ]
     : h('p', { class: 'meta ev-none' }, 'Na tohle setkání zatím nikoho nepotřebujeme.',
       leader ? [' ', link('Kolik lidí je potřeba', { onclick: () => openNeedsSheet(event.id) })] : null);
@@ -131,7 +131,7 @@ function osnovaPreview(event) {
     if (!can('leader')) return null;
     return section({
       title: 'Osnova',
-      body: h('div', { class: 'ev-osnova-empty' }, h('p', { class: 'meta' }, 'Osnova je zatím prázdná.'), button('Složit osnovu', { icon: 'plus', href })),
+      body: h('div', { class: 'ev-osnova-empty' }, h('p', { class: 'meta' }, 'Osnova je zatím prázdná.'), button('Slož osnovu', { icon: 'plus', href })),
     });
   }
   const minutes = programDuration(event);
@@ -177,7 +177,7 @@ function publish(eventId, on) {
     });
   };
   const ask = (description) => askSeries(e, (following) => apply(following, description), {
-    title: on ? 'Ukázat na webu i další setkání?' : 'Schovat z webu i další setkání?',
+    title: on ? 'Chceš ukázat na webu i další setkání?' : 'Chceš schovat z webu i další setkání?',
     onCancel: () => render(),
   });
   if (on && !String(e.description || '').trim()) {
@@ -185,9 +185,9 @@ function publish(eventId, on) {
     const form = h('form', { class: 'form', novalidate: true },
       field({ label: 'Popis pro web', optional: true, hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', control: textArea({ name: 'description', rows: 3, placeholder: 'Co lidi čeká? Pár vět pro návštěvníky webu.' }) }));
     const sheet = openSheet({
-      title: 'Ukázat na webu',
+      title: 'Setkání na webu',
       body: form,
-      foot: button('Ukázat na webu', { variant: 'primary', size: 'l', block: true, onclick: () => form.requestSubmit() }),
+      foot: button('Ukaž na webu', { variant: 'primary', size: 'l', block: true, onclick: () => form.requestSubmit() }),
       onClose: () => { if (!decided) render(); },
     });
     form.addEventListener('submit', (ev) => {
@@ -214,7 +214,7 @@ function aboutSection(event) {
     cls: 'ev-about',
     body: [
       description ? h('p', { class: 'text ev-text' }, description)
-        : leader ? h('p', { class: 'meta' }, 'Popis pro web zatím chybí. ', link('Doplnit popis', { onclick: () => openEditEvent(event.id) })) : null,
+        : leader ? h('p', { class: 'meta' }, 'Popis pro web zatím chybí. ', link('Doplň popis', { onclick: () => openEditEvent(event.id) })) : null,
       note ? h('div', { class: 'ev-note' }, h('p', { class: 'field__label' }, 'Pro tým'), h('p', { class: 'text' }, note)) : null,
       main ? h('div', { class: 'ev-place' }, mapFrame(main),
         h('p', { class: 'meta' }, [placeText(event), main.address].filter(Boolean).join(SEP)),
@@ -270,7 +270,7 @@ export function eventBody(event, { pane = false } = {}) {
 
 /** The detail pane next to Kalendář (≥ 1200 px). */
 export function eventPane(event, closeHref) {
-  return detailPane({ body: h('div', { class: 'ev ev--pane' }, eventBody(event, { pane: true })), closeHref, label: 'Zavřít setkání' });
+  return detailPane({ body: h('div', { class: 'ev ev--pane' }, eventBody(event, { pane: true })), closeHref, label: 'Zavři setkání' });
 }
 
 export function notFound() {
@@ -279,7 +279,7 @@ export function notFound() {
     head: { title: 'Setkání' },
     body: empty({
       icon: 'calendar', title: 'Tohle setkání tu není.', text: 'Možná ho někdo smazal nebo je odkaz starý.',
-      action: button('Otevřít kalendář', { variant: 'quiet', href: '#kalendar' }),
+      action: button('Otevři kalendář', { variant: 'quiet', href: '#kalendar' }),
     }),
   });
 }

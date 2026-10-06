@@ -104,7 +104,7 @@ function publicBar({ back } = {}) {
     cls: 'topbar--public',
     brand: !back,
     back,
-    actions: S.me ? null : button('Přihlásit se', { variant: 'primary', size: 's', href: '#prihlaseni', icon: 'log-in' }),
+    actions: S.me ? null : button('Přihlas se', { variant: 'primary', size: 's', href: '#prihlaseni', icon: 'log-in' }),
   });
 }
 
@@ -138,7 +138,7 @@ function nextBlock(event, d) {
       mapPlace ? mapLink(mapPlace) : null,
       event.description ? h('p', { class: 'text pub-next__desc' }, event.description) : null,
       h('div', { class: 'cluster pub-actions' },
-        button('Stáhnout do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }),
+        button('Stáhni do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }),
         button('Podrobnosti', { href: `#pastva/${event.id}`, iconEnd: 'chevron-right' }))));
 }
 
@@ -180,7 +180,7 @@ function weeksBlock(events, first) {
     cls: 'pub-weeks',
     body: [
       groups.slice(0, cut).map(week),
-      later.length ? disclosure(later.map(week), { label: laterCount === 1 ? 'Ukázat další setkání' : `Ukázat ${laterCount < 5 ? 'další' : 'dalších'} ${laterCount} setkání` }) : null,
+      later.length ? disclosure(later.map(week), { label: laterCount === 1 ? 'Ukaž další setkání' : `Ukaž ${laterCount < 5 ? 'další' : 'dalších'} ${laterCount} setkání` }) : null,
     ],
   });
 }
@@ -240,7 +240,7 @@ export function renderProgram(id) {
     return screen({
       topbar: publicBar(), head, cls: 'pub-page',
       body: failed
-        ? empty({ icon: 'calendar', text: 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.', action: button('Zkusit znovu', { variant: 'primary', onclick: retry }) })
+        ? empty({ icon: 'calendar', text: 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.', action: button('Zkus to znovu', { variant: 'primary', onclick: retry }) })
         : skeleton({ rows: 4 }),
     });
   }
@@ -272,7 +272,7 @@ function renderPublicEvent(id) {
       body: loading ? skeleton({ rows: 2 }) : empty({
         icon: 'calendar', title: 'Tohle setkání tu není.',
         text: d ? 'Už proběhlo, nebo ho někdo přestal ukazovat na webu.' : 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.',
-        action: d ? button('Zpátky na Pastvu', { href: '#pastva' }) : button('Zkusit znovu', { variant: 'primary', onclick: retry }),
+        action: d ? button('Zpátky na Pastvu', { href: '#pastva' }) : button('Zkus to znovu', { variant: 'primary', onclick: retry }),
       }),
     });
   }
@@ -291,7 +291,7 @@ function renderPublicEvent(id) {
           picture(event, 'pub-photo--wide'),
           event.description ? h('p', { class: 'text pub-event__desc' }, event.description) : h('p', { class: 'meta' }, 'Víc jsme o tomhle setkání zatím nenapsali.'),
           event.cancelled ? null : h('div', { class: 'cluster pub-actions' },
-            button('Stáhnout do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }))),
+            button('Stáhni do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }))),
         h('aside', { class: 'pub-event__facts' },
           h('h2', { class: 'pub-facts__head' }, 'Kdy a kde'),
           h('p', { class: 'fact' }, icon('clock', { size: 's' }), h('span', {}, cap(whenText(event)), statePill(event) ? [' ', statePill(event)] : null)),

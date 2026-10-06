@@ -30,7 +30,7 @@ export function blockoutSheet(person, record = null) {
   return formSheet({
     title: self ? 'Kdy nemůžu' : 'Kdy nemůže',
     subtitle: self ? 'Zvonec tě na ty dny nebude navrhovat.' : personName(person),
-    submitLabel: record ? 'Uložit' : 'Přidat',
+    submitLabel: record ? 'Ulož' : 'Přidej',
     body: [
       h('div', { class: 'form__row form__row--pair' }, field({ label: 'Od', control: from }), field({ label: 'Do', control: to })),
       field({ label: 'Důvod', control: reason, optional: true, hint: self ? 'Uvidí ho jen vedoucí.' : 'Uvidí ho jen vedoucí a ten, koho se týká.' }),
@@ -94,8 +94,8 @@ export function blockoutRow(person, v) {
     title: words,
     meta: joinMeta([seesReason(person) ? v.reason : null, running ? 'právě teď' : v.from === v.to ? 'jeden den' : null]) || null,
     onclick: editable ? () => blockoutSheet(person, v) : null,
-    label: editable ? `Změnit: ${words}${v.reason && seesReason(person) ? `, ${v.reason}` : ''}` : null,
-    trail: editable ? iconButton('trash', `Smazat: ${words}`, { onclick: () => deleteBlockout(person, v) }) : null,
+    label: editable ? `Změň: ${words}${v.reason && seesReason(person) ? `, ${v.reason}` : ''}` : null,
+    trail: editable ? iconButton('trash', `Smaž: ${words}`, { onclick: () => deleteBlockout(person, v) }) : null,
   });
 }
 
@@ -114,7 +114,7 @@ export function blockoutSection(person, { cls } = {}) {
     title,
     count: records.length || null,
     cls,
-    action: editable ? button('Přidat', { size: 's', icon: 'plus', onclick: () => blockoutSheet(person), label: self ? 'Přidat, kdy nemůžu' : `Přidat, kdy ${displayName(person)} nemůže` }) : null,
+    action: editable ? button('Přidej', { size: 's', icon: 'plus', onclick: () => blockoutSheet(person), label: self ? 'Přidej, kdy nemůžeš' : `Přidej, kdy ${displayName(person)} nemůže` }) : null,
     body: records.length ? list(records.map((v) => blockoutRow(person, v)), { label: title })
       : quiet(self ? 'Když víš, že nemůžeš, zapiš to. Zvonec tě na ty dny nebude navrhovat.' : 'Nic zapsaného.'),
   });

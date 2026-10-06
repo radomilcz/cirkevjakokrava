@@ -44,6 +44,6 @@ export function waitingSheet(event, waiting) {
       href: d.person ? `#osoba/${d.person.id}` : undefined,
       phone: d.person?.phone || null,
     })), { label: 'Čeká na potvrzení' }),
-    foot: button('Otevřít setkání', { variant: 'quiet', block: true, href: `#setkani/${event.id}`, iconEnd: 'chevron-right' }),
+    foot: button('Otevři setkání', { variant: 'quiet', block: true, href: `#setkani/${event.id}`, iconEnd: 'chevron-right' }),
   });
 }

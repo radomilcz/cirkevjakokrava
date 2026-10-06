@@ -119,10 +119,10 @@ export function archivedText(person) {
   return day ? `v archivu od ${fullDate(day)}` : 'v archivu';
 }
 
-/** „5 karet je v archivu déle než rok. Smazat je?“ (1 karta je … Smazat ji? · 3 karty jsou … Smazat je?) */
+/** „5 karet je v archivu déle než rok. Chceš je smazat?“ (1 karta je … Chceš ji smazat? · 3 karty jsou … Chceš je smazat?) */
 export function overdueQuestion(n) {
   const verb = n >= 2 && n <= 4 ? 'jsou' : 'je';
-  return `${plural(n, 'karta', 'karty', 'karet')} ${verb} v archivu déle než rok. Smazat ${n === 1 ? 'ji' : 'je'}?`;
+  return `${plural(n, 'karta', 'karty', 'karet')} ${verb} v archivu déle než rok. Chceš ${n === 1 ? 'ji' : 'je'} smazat?`;
 }
 
 /** „Chybí příjmení a telefon nebo e-mail.“ */
@@ -200,9 +200,9 @@ export const activeGroups = () => (S.data.groups || []).filter((g) => !g.archive
 
 /** Words per group kind. */
 export const GROUP_WORDS = {
-  team: { kind: 'tým', kinds: 'Týmy', add: 'Přidat do týmu', remove: 'Odebrat z týmu', leads: 'vede tým', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede tým', in: 'v týmu' },
-  community: { kind: 'skupinka', kinds: 'Skupinky', add: 'Přidat do skupinky', remove: 'Odebrat ze skupinky', leads: 'vede skupinku', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede skupinku', in: 've skupince' },
-  leadership: { kind: 'vedení', kinds: 'Vedení', add: 'Přidat do vedení', remove: 'Odebrat z vedení', leads: 'předsedá', lead1: 'předsedá', leadN: 'předsedají', leadSwitch: 'Předsedá', in: 've vedení' },
+  team: { kind: 'tým', kinds: 'Týmy', add: 'Přidej do týmu', addWho: 'Koho přidáš do týmu', remove: 'Odeber z týmu', leads: 'vede tým', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede tým', in: 'v týmu' },
+  community: { kind: 'skupinka', kinds: 'Skupinky', add: 'Přidej do skupinky', addWho: 'Koho přidáš do skupinky', remove: 'Odeber ze skupinky', leads: 'vede skupinku', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede skupinku', in: 've skupince' },
+  leadership: { kind: 'vedení', kinds: 'Vedení', add: 'Přidej do vedení', addWho: 'Koho přidáš do vedení', remove: 'Odeber z vedení', leads: 'předsedá', lead1: 'předsedá', leadN: 'předsedají', leadSwitch: 'Předsedá', in: 've vedení' },
 };
 export const groupWords = (group) => GROUP_WORDS[group?.kind] || GROUP_WORDS.community;
 export const KIND_CHOICES = [{ value: 'team', label: 'Tým' }, { value: 'community', label: 'Skupinka' }, { value: 'leadership', label: 'Vedení' }];
@@ -261,7 +261,7 @@ export const outOf = (n) => `${[2, 3, 4, 7, 12, 13, 14, 17].includes(n) ? 'ze' :
 
 /** A sheet that only says something (no form). */
 export function infoSheet({ title, text, actions }) {
-  return openSheet({ title, body: h('p', { class: 'text' }, text), foot: actions || button('Zavřít', { variant: 'quiet', block: true, onclick: (e) => e.target.closest('.sheet')?.querySelector('.sheet__head .icon-btn')?.click() }) });
+  return openSheet({ title, body: h('p', { class: 'text' }, text), foot: actions || button('Zavři', { variant: 'quiet', block: true, onclick: (e) => e.target.closest('.sheet')?.querySelector('.sheet__head .icon-btn')?.click() }) });
 }
 
 export { agree };

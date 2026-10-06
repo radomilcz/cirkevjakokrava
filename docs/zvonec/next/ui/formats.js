@@ -84,7 +84,7 @@ export function renderFormats(id) {
     lead: isSplit() ? null : 'Z čeho se skládá osnova setkání.',
     body,
     wide: isSplit(),
-    primary: leader ? { label: 'Přidat formát', icon: 'plus', onclick: add } : null,
+    primary: leader ? { label: 'Přidej formát', icon: 'plus', onclick: add } : null,
     cls: 'fmt-page',
   });
 }
@@ -94,9 +94,9 @@ export function renderFormats(id) {
 function formatMenu(format) {
   if (!can('leader')) return null;
   return [
-    { label: 'Upravit formát', icon: 'pencil', onclick: () => formatSheet(format) },
+    { label: 'Uprav formát', icon: 'pencil', onclick: () => formatSheet(format) },
     '-',
-    { label: 'Smazat formát', icon: 'trash', danger: true, onclick: () => deleteFormat(format) },
+    { label: 'Smaž formát', icon: 'trash', danger: true, onclick: () => deleteFormat(format) },
   ];
 }
 
@@ -127,7 +127,7 @@ function formatDetail(format, { pane = false } = {}) {
     pane ? h('div', { class: 'detail__head fmt-detail__head' },
       minutesMark(format.minutes),
       h('div', {}, titleEl(format.name, { small: true, tag: 'h2' }), h('p', { class: 'meta' }, leadText(format))),
-      formatMenu(format) ? h('div', { class: 'head-actions' }, button('Upravit', { size: 's', icon: 'pencil', onclick: () => formatSheet(format) })) : null) : null,
+      formatMenu(format) ? h('div', { class: 'head-actions' }, button('Uprav', { size: 's', icon: 'pencil', onclick: () => formatSheet(format) })) : null) : null,
     textBlock('Proč to děláme', format.why),
     textBlock('Jak to probíhá', format.how),
     missing ? h('p', { class: 'meta fmt-missing' }, leader ? 'Vysvětlení tu zatím chybí. Napiš, proč to děláme a jak to probíhá – pomůže to každému, kdo to povede poprvé.' : 'Vysvětlení sem vedoucí ještě doplní.') : null,
@@ -182,9 +182,9 @@ function needsEditor(needs) {
     const taken = new Set(needs.map((n) => n.roleId));
     const free = rolesByTeam().map(({ group, roles }) => ({ group, roles: roles.filter((r) => !taken.has(r.id)) })).filter((t) => t.roles.length);
     const add = free.length ? h('span', { class: 'select' }, h('select', {
-      class: 'input', 'aria-label': 'Přidat roli',
+      class: 'input', 'aria-label': 'Přidej roli',
       onchange: (e) => { if (e.target.value) { needs.push({ roleId: e.target.value, count: 1 }); draw(); wrap.querySelector('select')?.focus(); } },
-    }, h('option', { value: '' }, 'Přidat roli…'),
+    }, h('option', { value: '' }, 'Přidej roli…'),
     free.map(({ group, roles }) => h('optgroup', { label: group.name }, roles.map((r) => h('option', { value: r.id }, r.name))))), icon('chevron-down', { size: 's' })) : null;
     wrap.replaceChildren(
       ...needs.map((need, i) => {
@@ -192,7 +192,7 @@ function needsEditor(needs) {
         return h('div', { class: 'fmt-need' },
           h('span', { class: 'fmt-need__name' }, role?.name || 'Smazaná role', h('span', { class: 'caption' }, groupById(S.data, role?.groupId)?.name || '')),
           stepper({ value: need.count || 1, min: 1, max: 20, label: role?.name || 'Role', onChange: (v) => { need.count = v; } }),
-          iconButton('x', `Odebrat: ${role?.name || 'roli'}`, { onclick: () => { needs.splice(i, 1); draw(); } }));
+          iconButton('x', `Odeber: ${role?.name || 'roli'}`, { onclick: () => { needs.splice(i, 1); draw(); } }));
       }),
       add || h('span'));
   };
@@ -210,8 +210,8 @@ export function formatSheet(format) {
   const linkInput = textInput({ name: 'link', type: 'url', value: format?.link || '', placeholder: 'např. https://…', inputmode: 'url' });
   let isPublic = !!format?.public;
   const sheet = formSheet({
-    title: format ? 'Upravit formát' : 'Přidat formát',
-    submitLabel: format ? 'Uložit' : 'Přidat formát',
+    title: format ? 'Úprava formátu' : 'Nový formát',
+    submitLabel: format ? 'Ulož' : 'Přidej formát',
     wide: true,
     body: [
       field({ label: 'Název', control: name }),
@@ -257,9 +257,9 @@ function deleteFormat(format) {
   const all = S.data.events.filter((e) => (e.program || []).some((i) => i.formatId === format.id)).length;
   const where = [all ? plural(all, 'setkání', 'setkání', 'setkání') : '', types.length ? plural(types.length, 'šablony', 'šablon', 'šablon') : ''].filter(Boolean);
   confirmSheet({
-    title: `Smazat formát ${format.name}?`,
+    title: `Chceš smazat formát ${format.name}?`,
     text: where.length ? `Zmizí z osnovy ${where.join(' a ')}.` : 'Není v žádné osnově.',
-    confirmLabel: 'Smazat formát',
+    confirmLabel: 'Smaž formát',
     onConfirm: () => {
       S.data.formats = S.data.formats.filter((x) => x.id !== format.id);
       for (const e of S.data.events) if (e.program) e.program = e.program.filter((i) => i.formatId !== format.id);
@@ -286,7 +286,7 @@ export function formatInfoSheet(formatId) {
       format.why ? h('section', { class: 'fmt-text' }, h('h3', {}, 'Proč to děláme'), h('p', { class: 'text' }, format.why)) : null,
       format.how ? h('section', { class: 'fmt-text' }, h('h3', {}, 'Jak to probíhá'), h('p', { class: 'text' }, format.how)) : null,
       !format.why && !format.how ? h('p', { class: 'meta' }, 'Vysvětlení tu zatím chybí.') : null,
-      link('Otevřít formát', { href: `#formaty/${format.id}`, iconEnd: 'chevron-right' }),
+      link('Otevři formát', { href: `#formaty/${format.id}`, iconEnd: 'chevron-right' }),
     ],
   });
 }

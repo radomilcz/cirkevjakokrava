@@ -52,7 +52,7 @@ function liveLogin() {
   const password = passwordBox.input;
   let remember = true;
   const error = errorLine();
-  const submit = button('Přihlásit se', { variant: 'primary', size: 'l', block: true, type: 'submit' });
+  const submit = button('Přihlas se', { variant: 'primary', size: 'l', block: true, type: 'submit' });
   const form = h('form', { class: 'form login-form', novalidate: true },
     S.signInMessage ? callout({ tone: 'wait', text: S.signInMessage }) : null,
     field({ label: 'Jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
@@ -68,7 +68,7 @@ function liveLogin() {
     if (!password.value) { fieldError(password, 'Doplň heslo.'); return; }
     busy(submit, true, 'Ověřuju…');
     const result = await signIn(S.logins, name.value, password.value);
-    busy(submit, false, 'Přihlásit se');
+    busy(submit, false, 'Přihlas se');
     if (!result || result.record.access === 'invite') {
       error.show('Jméno nebo heslo nesedí. Jestli ti vedoucí přístup vytvořil právě teď, počkej pár minut.');
       return;
@@ -79,7 +79,7 @@ function liveLogin() {
   requestAnimationFrame(() => name.focus({ preventScroll: true }));
   return screen({
     topbar: bar(),
-    head: { overline: 'Zvonec', title: 'Přihlásit se', lead: 'Uvidíš rozpis, svoje služby a lidi.' },
+    head: { overline: 'Zvonec', title: 'Přihlášení', lead: 'Uvidíš rozpis, svoje služby a lidi.' },
     cls: 'screen--narrow login-page',
     body: [
       form,
@@ -100,7 +100,7 @@ function demoLogin() {
   };
   return screen({
     topbar: bar(),
-    head: { overline: 'Ukázka', title: 'Přihlásit se', lead: 'Tohle je ukázka. Přihlas se jako:' },
+    head: { overline: 'Ukázka', title: 'Přihlášení', lead: 'Tohle je ukázka. Přihlas se jako:' },
     cls: 'screen--narrow login-page',
     body: [
       list(viewers.map((v) => row({
@@ -108,7 +108,7 @@ function demoLogin() {
       })), { label: 'Lidé z ukázky' }),
       h('div', { class: 'login-after' },
         h('p', { class: 'meta' }, 'Chceš Zvonec pro svůj sbor?'),
-        button('Založit Zvonec', { variant: 'quiet', href: '#prihlaseni/zalozit', icon: 'plus' })),
+        button('Založ Zvonec', { variant: 'quiet', href: '#prihlaseni/zalozit', icon: 'plus' })),
     ],
   });
 }
@@ -129,7 +129,7 @@ function renderSetup() {
   const pass = passBox.input;
   for (const input of [token, owner, repoName]) input.spellcheck = false;
   const error = errorLine();
-  const submit = button('Založit Zvonec', { variant: 'primary', size: 'l', block: true, type: 'submit' });
+  const submit = button('Založ Zvonec', { variant: 'primary', size: 'l', block: true, type: 'submit' });
   const step = (...content) => h('li', {}, content);
   const form = h('form', { class: 'form login-form', novalidate: true },
     h('h2', { class: 'login-part' }, 'Datové repo'),
@@ -138,7 +138,7 @@ function renderSetup() {
       step('Na GitHubu otevři Settings › Developer settings › Fine-grained tokens › Generate new token.'),
       step('Repository access: Only select repositories, jen datové repo.'),
       step('Permissions › Repository › Contents: Read and write. Nic víc. Platnost klidně rok.'),
-      step('Klíč vlož sem. Zvonec ho schová pod hesla, nikdo další ho znát nemusí.')), { label: 'Jak získat klíč' }),
+      step('Klíč vlož sem. Zvonec ho schová pod hesla, nikdo další ho znát nemusí.')), { label: 'Jak získáš klíč' }),
     h('div', { class: 'form__row' }, field({ label: 'Vlastník repa', control: owner }), field({ label: 'Repo', control: repoName })),
     h('h2', { class: 'login-part' }, 'První správce'),
     h('div', { class: 'form__row' }, field({ label: 'Tvoje jméno', control: first }), field({ label: 'Příjmení', control: last })),
@@ -183,13 +183,13 @@ function renderSetup() {
       await signedIn(result);
       toast('Zvonec je založený. Ostatní se přihlásí za pár minut.', { duration: 9000 });
     } catch (err) {
-      busy(submit, false, 'Založit Zvonec');
+      busy(submit, false, 'Založ Zvonec');
       error.show(`Nepodařilo se. ${err.message || err}`);
     }
   });
   return screen({
     topbar: bar(),
-    head: { title: 'Založit Zvonec', lead: 'Zvonec tu zatím nikdo nepoužívá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.' },
+    head: { title: 'Založení Zvonce', lead: 'Zvonec tu zatím nikdo nepoužívá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.' },
     cls: 'screen--narrow login-page login-setup',
     body: form,
   });
@@ -233,8 +233,8 @@ export function renderInvite(code = '') {
       : empty({
         icon: 'alert', title: 'Pozvánka nefunguje.', text: invite.message,
         action: invite.status === 'failed'
-          ? button('Zkusit znovu', { variant: 'primary', onclick: () => { invite = null; render(); } })
-          : button('Přihlásit se', { href: '#prihlaseni', icon: 'log-in' }),
+          ? button('Zkus to znovu', { variant: 'primary', onclick: () => { invite = null; render(); } })
+          : button('Přihlas se', { href: '#prihlaseni', icon: 'log-in' }),
       }),
   });
 }
@@ -266,7 +266,7 @@ function registration({ demo = false, result, store, data }) {
     checked: consent, onChange: (on) => { consent = on; },
   });
   const error = errorLine();
-  const submit = button('Přidat se', { variant: 'primary', size: 'l', block: true, type: 'submit' });
+  const submit = button('Přidej se', { variant: 'primary', size: 'l', block: true, type: 'submit' });
   const form = h('form', { class: 'form login-form', novalidate: true },
     demo ? callout({ tone: 'info', text: 'Tohle je ukázka. Takhle vypadá stránka, kterou otevře pozvaný člověk.' }) : null,
     h('div', { class: 'form__row' }, field({ label: 'Jméno', control: first }), field({ label: 'Příjmení', control: last })),
@@ -330,7 +330,7 @@ function registration({ demo = false, result, store, data }) {
       await signedIn(fresh);
       toast(`${welcome(firstName, { end: '!' })} Příště se přihlásíš jménem a heslem.`, { duration: 8000 });
     } catch (err) {
-      busy(submit, false, 'Přidat se');
+      busy(submit, false, 'Přidej se');
       error.show(`Nepodařilo se. ${err.message || err}`);
     }
   });
