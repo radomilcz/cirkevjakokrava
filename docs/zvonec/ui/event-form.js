@@ -453,7 +453,8 @@ export function needsDialog(eventId) {
   const form = h('form', { method: 'dialog', novalidate: true, class: 'dialog-form needs-form' },
     h('div', { class: 'dialog-head' },
       h('h2', { class: 'dialog-title' }, 'Kolik lidí je potřeba'),
-      h('p', { class: 'dialog-sub' }, `${metaJoin([event.title, prettyDay(event.start)])}. Role, které chce osnova (třeba Večeře Páně), přidá Zvonec sám.`)),
+      h('p', { class: 'dialog-sub' }, metaJoin([event.title, prettyDay(event.start)])),
+      h('p', { class: 'dialog-sub' }, 'Když má bod osnovy vlastní službu (třeba Večeře Páně), Zvonec ji přidá sám.')),
     h('div', { class: 'dialog-body' }, body, sum,
       following ? h('div', { class: 'form-grid needs-scope' },
         segmentedField('scope', 'Platí pro', [['one', 'Jen tohle setkání'], ['following', capitalFirst(andFollowing(following))]], 'one', { full: true })) : null,
@@ -463,7 +464,7 @@ export function needsDialog(eventId) {
   const total = () => {
     let people = 0; let roles = 0;
     form.querySelectorAll('input[type=number]').forEach((i) => { const n = Math.max(0, Number(i.value) || 0); people += n; roles += n ? 1 : 0; });
-    sum.textContent = people ? `Celkem ${plural(people, 'člověk', 'lidé', 'lidí')} ${inNumber(roles)} ${plural(roles, 'roli', 'rolích', 'rolích')}.` : 'Nikdo – jen ti, koho chce osnova.';
+    sum.textContent = people ? `Celkem ${plural(people, 'člověk', 'lidé', 'lidí')} ${inNumber(roles)} ${plural(roles, 'roli', 'rolích', 'rolích')}.` : 'Nikdo navíc – jen služby z osnovy.';
   };
   form.addEventListener('input', total);
   form.addEventListener('change', total);
