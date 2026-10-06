@@ -119,7 +119,7 @@ function headButton({ label, icon: iconName = 'plus', onclick, href }) {
  *   formFoot({ label: 'Přidat šablonu', text: 'Šablona ještě není uložená.', always: true, onSave })   a new record
  * label: the primary button · text: the line beside it · onDiscard: adds „Zahodit změny“ · always: never hidden.
  */
-export function formFoot({ label = 'Uložit', text = 'Máš neuložené změny.', onSave, onDiscard, discardLabel = 'Zahodit změny', always = false } = {}) {
+export function formFoot({ label = 'Ulož', text = 'Máš neuložené změny.', onSave, onDiscard, discardLabel = 'Zahoď změny', always = false } = {}) {
   const words = h('p', { class: 'form-foot__text', role: 'status' }, text);
   const save = h('button', { type: 'button', class: 'btn btn--primary form-foot__save', dataset: { primary: '' }, onclick: () => onSave?.() }, icon('check', { size: 's' }), label);
   const discard = onDiscard ? h('button', { type: 'button', class: 'btn btn--quiet form-foot__discard', onclick: () => onDiscard() }, discardLabel) : null;
@@ -149,7 +149,7 @@ export function splitView({ list, detail, label = 'Podrobnosti' } = {}) {
  * The detail pane of a split view: a card with a close button (Esc closes it too – the shell calls
  * the close action of an open pane). closeHref: where ✕ goes (the list's URL).
  */
-export function detailPane({ body, closeHref, onClose, label = 'Zavřít' } = {}) {
+export function detailPane({ body, closeHref, onClose, label = 'Zavři' } = {}) {
   const close = closeHref ? h('a', { class: 'icon-btn detail__close', href: closeHref, 'aria-label': label, title: label, dataset: { paneClose: '' } }, icon('x'))
     : onClose ? iconButton('x', label, { onclick: onClose, cls: 'detail__close', dataset: { paneClose: '' } }) : null;
   return card([close, body], { cls: 'detail' });

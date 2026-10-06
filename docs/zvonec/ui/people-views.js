@@ -94,8 +94,8 @@ export function renderPeoplePage(parts = []) {
   const usesSearch = usesFilter || view === 'domacnosti';
   const search = usesSearch ? searchField({
     value: S.filters.peopleSearch,
-    placeholder: view === 'domacnosti' ? 'Hledat domácnost nebo jméno' : leader ? 'Hledat jméno, telefon, e-mail' : 'Hledat jméno',
-    label: 'Hledat v Lidech',
+    placeholder: view === 'domacnosti' ? 'Hledej domácnost nebo jméno' : leader ? 'Hledej jméno, telefon, e-mail' : 'Hledej jméno',
+    label: 'Hledej v Lidech',
     cls: 'people-search',
     oninput: (e) => { S.filters.peopleSearch = e.target.value; draw(); },
   }) : null;
@@ -107,7 +107,7 @@ export function renderPeoplePage(parts = []) {
       .map(([s, key, label]) => [`#lide/${view}${s ? `/${s}` : ''}`, label, counts[key]]);
     bar = toolbar(search, h('div', { class: 'people-filters' }, chipLinks(options, `#lide/${view}${filter[0] ? `/${filter[0]}` : ''}`, { label: 'Koho ukázat' })));
   } else if (usesSearch) {
-    bar = toolbar(search, view === 'domacnosti' && leader ? [spacer(), button('Přidat domácnost', { variant: 'surface', icon: 'plus', onclick: () => householdDialog(null) })] : null);
+    bar = toolbar(search, view === 'domacnosti' && leader ? [spacer(), button('Přidej domácnost', { variant: 'surface', icon: 'plus', onclick: () => householdDialog(null) })] : null);
   } else if (view === 'bremeno') {
     bar = loadToolbar(ctx, arg);
   }
@@ -117,8 +117,8 @@ export function renderPeoplePage(parts = []) {
     title: 'Lidé',
     lead: leader ? null : 'Telefon a e-mail uvidíš u těch, kdo je ukazují ostatním.',
     actions: leader ? [
-      button('Pozvat', { variant: 'surface', icon: 'send', onclick: () => createInvite(null), title: 'Pozvánka: nový člověk si údaje i heslo vyplní sám' }),
-      button('Přidat člověka', { variant: 'solid', icon: 'plus', onclick: () => addPersonDialog() }),
+      button('Pozvi', { variant: 'surface', icon: 'send', onclick: () => createInvite(null), title: 'Pozvánka: nový člověk si údaje i heslo vyplní sám' }),
+      button('Přidej člověka', { variant: 'solid', icon: 'plus', onclick: () => addPersonDialog() }),
     ] : null,
     tabs: tabs(viewsFor().map(([id, label, ic]) => ({ id, label, icon: ic })), view, hrefFor),
     toolbar: bar,
@@ -145,7 +145,7 @@ function noMatch(ctx) {
   if (ctx.filter[1] === 'missing') return emptyState({ icon: 'check', title: 'Všechny karty jsou doplněné.' });
   if (!S.data.people.length) {
     return emptyState({ icon: 'users', title: 'Zatím tu nikdo není.', text: 'Přidej první lidi, nebo jim pošli pozvánku a údaje si vyplní sami.',
-      action: ctx.leader ? button('Přidat člověka', { variant: 'solid', icon: 'plus', onclick: () => addPersonDialog() }) : null });
+      action: ctx.leader ? button('Přidej člověka', { variant: 'solid', icon: 'plus', onclick: () => addPersonDialog() }) : null });
   }
   return emptyState({ icon: 'users', title: 'Tady nikdo není.' });
 }
@@ -192,14 +192,14 @@ function personRow(p, leader) {
   });
 }
 
-/** A quiet line under a list: „71 lidí · Zkopírovat e-maily“. */
+/** A quiet line under a list: „71 lidí · Zkopíruj e-maily“. */
 function listFoot(people, { leader, csv = false } = {}) {
   if (!people.length) return null;
   const mails = people.filter((p) => p.email && seesContact(p)).length;
   return h('p', { class: 'people-foot' },
     h('span', {}, peopleCount(people.length)),
-    leader && mails ? button('Zkopírovat e-maily', { variant: 'ghost', size: 's', icon: 'copy', onclick: () => copyEmails(people) }) : null,
-    leader && csv ? button('Stáhnout jako CSV', { variant: 'ghost', size: 's', icon: 'download', onclick: () => downloadCsv(people) }) : null);
+    leader && mails ? button('Zkopíruj e-maily', { variant: 'ghost', size: 's', icon: 'copy', onclick: () => copyEmails(people) }) : null,
+    leader && csv ? button('Stáhni jako CSV', { variant: 'ghost', size: 's', icon: 'download', onclick: () => downloadCsv(people) }) : null);
 }
 
 const letterOf = (p) => [...(p.lastName || p.firstName || '?')][0].toLocaleUpperCase('cs');
@@ -300,9 +300,9 @@ function tabulka(ctx) {
       rowHref: (p) => `#osoba/${p.id}`,
       rowClass: (p) => [isFormer(p) && 'row-quiet', p.id === myId() && 'row-mine'].filter(Boolean).join(' ') || null,
       bulk: (ids, clear) => [
-        button('Zkopírovat e-maily', { variant: 'surface', size: 's', icon: 'copy', onclick: () => copyEmails(chosen()) }),
-        button('Přidat do skupiny', { variant: 'surface', size: 's', icon: 'users', onclick: () => bulkGroupDialog(chosen(), () => { selected.clear(); }) }),
-        button('Stáhnout jako CSV', { variant: 'surface', size: 's', icon: 'download', onclick: () => downloadCsv(chosen()) }),
+        button('Zkopíruj e-maily', { variant: 'surface', size: 's', icon: 'copy', onclick: () => copyEmails(chosen()) }),
+        button('Přidej do skupiny', { variant: 'surface', size: 's', icon: 'users', onclick: () => bulkGroupDialog(chosen(), () => { selected.clear(); }) }),
+        button('Stáhni jako CSV', { variant: 'surface', size: 's', icon: 'download', onclick: () => downloadCsv(chosen()) }),
       ],
     }),
     listFoot(people, { leader: true, csv: true }),
@@ -336,7 +336,7 @@ function domacnosti(ctx) {
   if (!groups.length) {
     return q ? emptyState({ icon: 'search', title: 'Žádná taková domácnost.', text: 'Hledám v názvu, adrese i ve jménech.' })
       : emptyState({ icon: 'home', title: 'Zatím tu není žádná domácnost.', text: 'Domácnost tvoří lidé, kteří spolu bydlí. Víš pak, komu volat kvůli dětem.',
-        action: leader ? button('Přidat domácnost', { variant: 'solid', icon: 'plus', onclick: () => householdDialog(null) }) : null });
+        action: leader ? button('Přidej domácnost', { variant: 'solid', icon: 'plus', onclick: () => householdDialog(null) }) : null });
   }
   // people without a household are not a household: a compact list after the cards, not a giant card
   const loose = groups.find((g) => !g.household);
@@ -428,7 +428,7 @@ function archiveLink() {
 
 let archiveSearch = '';
 
-/** #lide/archiv (leaders): the cards in the archive – since when, „Vrátit z archivu“, „Smazat kartu“. */
+/** #lide/archiv (leaders): the cards in the archive – since when, „Vrať z archivu“, „Smaž kartu“. */
 function renderArchive() {
   const canonical = `#lide/${ARCHIVE_SLUG}`;
   if (location.hash !== canonical) history.replaceState(history.state, '', canonical);
@@ -442,8 +442,8 @@ function renderArchive() {
     meta: metaJoin([archivedText(p), archiveOverdue(p, day) ? h('span', { class: 'meta-missing' }, 'déle než rok') : null]),
     href: `#osoba/${p.id}`,
     trail: h('span', { class: 'archive-actions' },
-      button('Vrátit z archivu', { variant: 'surface', size: 's', icon: 'undo', onclick: () => restoreFromArchive(p) }),
-      p.id !== myId() ? button('Smazat kartu', { variant: 'ghost', size: 's', icon: 'trash', onclick: () => deletePerson(p) }) : null),
+      button('Vrať z archivu', { variant: 'surface', size: 's', icon: 'undo', onclick: () => restoreFromArchive(p) }),
+      p.id !== myId() ? button('Smaž kartu', { variant: 'ghost', size: 's', icon: 'trash', onclick: () => deletePerson(p) }) : null),
   });
   const draw = () => {
     const shown = all.filter((p) => matchesQuery(p, archiveSearch));
@@ -460,7 +460,7 @@ function renderArchive() {
     back: ['Lidé', '#lide'],
     lead: 'Lidé, kteří k nám už nechodí. Neukazují se v seznamech, kontaktech ani v návrzích do služeb, ve starých rozpisech zůstávají.',
     toolbar: all.length ? toolbar(searchField({
-      value: archiveSearch, placeholder: 'Hledat v archivu', label: 'Hledat v archivu', cls: 'people-search',
+      value: archiveSearch, placeholder: 'Hledej v archivu', label: 'Hledej v archivu', cls: 'people-search',
       oninput: (e) => { archiveSearch = e.target.value; draw(); },
     })) : null,
     width: 'list',
@@ -469,7 +469,7 @@ function renderArchive() {
       overdue.length ? callout(overdueQuestion(overdue.length), {
         tone: 'info',
         icon: 'archive',
-        action: button(`Smazat ${plural(overdue.length, 'kartu', 'karty', 'karet')}`, { variant: 'surface', size: 's', icon: 'trash', onclick: () => deleteOverdueDialog(overdue) }),
+        action: button(`Smaž ${plural(overdue.length, 'kartu', 'karty', 'karet')}`, { variant: 'surface', size: 's', icon: 'trash', onclick: () => deleteOverdueDialog(overdue) }),
       }) : null,
       body,
     ],

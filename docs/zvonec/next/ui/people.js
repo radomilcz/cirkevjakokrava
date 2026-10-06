@@ -66,13 +66,13 @@ export function sectionTab(current, actions) {
 function listMenu(people) {
   if (!can('leader')) return null;
   return menu([
-    !isDesktop() ? { label: state.picking ? 'Přestat vybírat' : 'Vybrat lidi', icon: 'check', onclick: () => { state.picking = !state.picking; state.picked.clear(); render(); } } : null,
+    !isDesktop() ? { label: state.picking ? 'Přestaň vybírat' : 'Vyber lidi', icon: 'check', onclick: () => { state.picking = !state.picking; state.picked.clear(); render(); } } : null,
     { label: 'Narozeniny', icon: 'cake', href: '#lide/narozeniny' },
-    { label: 'Pozvat nového člověka', icon: 'log-in', onclick: () => inviteSheet(null) },
-    { label: 'Přidat domácnost', icon: 'home', onclick: () => householdSheet(null) },
+    { label: 'Pozvi nového člověka', icon: 'log-in', onclick: () => inviteSheet(null) },
+    { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) },
     '-',
-    { label: 'Zkopírovat e-maily', icon: 'copy', onclick: () => copyEmails(people()) },
-    { label: 'Stáhnout všechny jako CSV', icon: 'download', onclick: () => downloadCsv(sortPeople(S.data.people.filter((p) => !isFormer(p)))) },
+    { label: 'Zkopíruj e-maily', icon: 'copy', onclick: () => copyEmails(people()) },
+    { label: 'Stáhni všechny jako CSV', icon: 'download', onclick: () => downloadCsv(sortPeople(S.data.people.filter((p) => !isFormer(p)))) },
   ].filter(Boolean), { title: 'Lidé' });
 }
 
@@ -195,10 +195,10 @@ function listBody(slug, { openId } = {}) {
     if (q) {
       out.push(empty({
         icon: 'search', title: 'Nikdo takový tu není.', text: 'Zkus jiné jméno nebo telefon. Diakritiku psát nemusíš.',
-        action: leader ? button(`Přidat člověka „${q}“`, { icon: 'user-plus', onclick: () => addFromQuery(q) }) : null,
+        action: leader ? button(`Přidej člověka „${q}“`, { icon: 'user-plus', onclick: () => addFromQuery(q) }) : null,
       }));
     } else if (!S.data.people.length) {
-      out.push(empty({ icon: 'people', title: 'Zatím tu nikdo není.', text: 'Přidej první lidi, nebo jim pošli pozvánku a údaje si vyplní sami.', action: leader ? button('Přidat člověka', { variant: 'primary', icon: 'user-plus', onclick: () => addPersonSheet() }) : null }));
+      out.push(empty({ icon: 'people', title: 'Zatím tu nikdo není.', text: 'Přidej první lidi, nebo jim pošli pozvánku a údaje si vyplní sami.', action: leader ? button('Přidej člověka', { variant: 'primary', icon: 'user-plus', onclick: () => addPersonSheet() }) : null }));
     } else if (filterKeyOf(slug) === 'missing') {
       out.push(empty({ icon: 'check', title: 'Všechny karty jsou doplněné.' }));
     } else {
@@ -243,7 +243,7 @@ function addFromQuery(q) {
 function tools(slug, redraw) {
   const leader = can('leader');
   const search = searchField({
-    placeholder: leader ? 'Hledat jméno, telefon, e-mail' : 'Hledat jméno nebo domácnost', value: state.query, label: 'Hledat v Lidech',
+    placeholder: leader ? 'Hledej jméno, telefon, e-mail' : 'Hledej jméno nebo domácnost', value: state.query, label: 'Hledej v Lidech',
     onInput: (v) => { state.query = v; state.sortTouched = false; redraw(); },
   });
   let chipRow = null;
@@ -254,7 +254,7 @@ function tools(slug, redraw) {
     chipRow = chips(options, slug || 'vsichni', (v) => {
       state.slug = v === 'vsichni' ? '' : v;
       navigate(listHref());
-    }, { label: 'Koho ukázat' });
+    }, { label: 'Filtr' });
   }
   return h('div', { class: 'sticky-tools people-tools' }, search, chipRow);
 }
@@ -287,9 +287,9 @@ function bulkBar({ dock = false } = {}) {
   const done = () => { state.picked.clear(); state.picking = false; };
   const count = n ? plural(n, 'vybraný člověk', 'vybraní lidé', 'vybraných lidí') : 'Klepnutím vyber lidi.';
   const actions = [
-    button(dock ? 'Zkopírovat e\u2011maily' : 'Zkopírovat e-maily', { size: 's', icon: 'copy', disabled: !n, onclick: () => copyEmails(pickedPeople()) }),
-    button('Přidat do skupiny', { size: 's', icon: 'teams', disabled: !n, onclick: () => bulkGroupSheet(pickedPeople(), done) }),
-    button('Stáhnout CSV', { size: 's', icon: 'download', disabled: !n, onclick: () => downloadCsv(pickedPeople()) }),
+    button(dock ? 'Zkopíruj e\u2011maily' : 'Zkopíruj e-maily', { size: 's', icon: 'copy', disabled: !n, onclick: () => copyEmails(pickedPeople()) }),
+    button('Přidej do skupiny', { size: 's', icon: 'teams', disabled: !n, onclick: () => bulkGroupSheet(pickedPeople(), done) }),
+    button('Stáhni CSV', { size: 's', icon: 'download', disabled: !n, onclick: () => downloadCsv(pickedPeople()) }),
   ];
   if (dock) {
     return h('div', { class: 'dock people-bulk people-bulk--dock', role: 'region', 'aria-label': 'Vybraní lidé' },
@@ -299,7 +299,7 @@ function bulkBar({ dock = false } = {}) {
   return h('div', { class: 'people-bulk', role: 'region', 'aria-label': 'Vybraní lidé' },
     h('p', { class: 'people-bulk__count' }, count),
     h('div', { class: 'people-bulk__actions' }, actions,
-      button('Zrušit výběr', { size: 's', variant: 'quiet', onclick: () => { state.picked.clear(); render(); } })));
+      button('Zruš výběr', { size: 's', variant: 'quiet', onclick: () => { state.picked.clear(); render(); } })));
 }
 
 function downloadCsv(people) {
@@ -362,7 +362,7 @@ function tableBody(slug, { openId, compact = false } = {}) {
   const allOn = sorted.length > 0 && sorted.every((p) => state.picked.has(p.id));
   const check = (on, label, onchange) => h('input', { type: 'checkbox', class: 'table-check', checked: on, 'aria-label': label, onchange });
   const head = h('tr', {},
-    leader ? h('th', { class: 'col-pick', scope: 'col' }, check(allOn, 'Vybrat všechny', (e) => { for (const p of sorted) { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); } render(); })) : null,
+    leader ? h('th', { class: 'col-pick', scope: 'col' }, check(allOn, 'Vyber všechny', (e) => { for (const p of sorted) { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); } render(); })) : null,
     columns.map((c) => {
       const active = c.key === col.key;
       return sortHead(c.label, {
@@ -399,7 +399,7 @@ function tableBody(slug, { openId, compact = false } = {}) {
   };
   const rows = sorted.map((p) => {
     const tr = h('tr', { dataset: { former: isFormer(p) ? '' : null, picked: state.picked.has(p.id) ? '' : null, open: p.id === openId ? '' : null }, 'aria-current': p.id === openId ? 'true' : null },
-      leader ? h('td', { class: 'col-pick' }, check(state.picked.has(p.id), `Vybrat – ${personName(p)}`, (e) => { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); render(); })) : null,
+      leader ? h('td', { class: 'col-pick' }, check(state.picked.has(p.id), `Vyber: ${personName(p)}`, (e) => { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); render(); })) : null,
       columns.map((c) => { const td = cell(c, p); td.classList.add(`col-${c.key}`); return td; }));
     tr.addEventListener('click', (e) => { if (!e.target.closest('a, button, input')) openFromTable(p.id); });
     return tr;
@@ -443,7 +443,7 @@ export function renderPeople(parts = []) {
       box,
       state.picking && !table ? bulkBar({ dock: true }) : null,
     ],
-    primary: leader && !state.picking ? { label: 'Přidat člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
+    primary: leader && !state.picking ? { label: 'Přidej člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
     wide: isDesktop(),
     cls: ['people-screen', table && 'people-screen--table', state.picking && 'people-screen--picking'].filter(Boolean).join(' '),
   });
@@ -476,7 +476,7 @@ export function renderPerson([id] = []) {
     const redraw = () => box.replaceChildren(...tableBody(state.slug, { openId: id, compact: true }).filter(Boolean));
     redraw();
     const card = person ? personCard(person, { pane: true }) : missingPerson();
-    const pane = detailPane({ body: [person ? h('div', { class: 'pane-menu' }, personMenu(person)) : null, card], closeHref: listHref(), label: 'Zavřít kartu' });
+    const pane = detailPane({ body: [person ? h('div', { class: 'pane-menu' }, personMenu(person)) : null, card], closeHref: listHref(), label: 'Zavři kartu' });
     const t = sectionTab('lide', listMenu(() => everyoneShown(state.slug)));
     return screen({
       tab: t.tab,
@@ -488,7 +488,7 @@ export function renderPerson([id] = []) {
           label: 'Karta člověka',
         }),
       ],
-      primary: leader ? { label: 'Přidat člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
+      primary: leader ? { label: 'Přidej člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
       wide: true,
       cls: 'people-screen people-screen--table people-screen--split',
     });
@@ -515,8 +515,8 @@ function renderArchive() {
     href: `#osoba/${p.id}`,
     // the buttons straight in the trail: the row's name stays the link, each button its own tap target
     trail: [
-      button('Vrátit z archivu', { size: 's', icon: 'undo', label: `Vrátit z archivu – ${personName(p)}`, onclick: () => restoreFromArchive(p) }),
-      p.id !== myId() ? button('Smazat kartu', { size: 's', variant: 'quiet', icon: 'trash', label: `Smazat kartu – ${personName(p)}`, onclick: () => deletePerson(p) }) : null,
+      button('Vrať z archivu', { size: 's', icon: 'undo', label: `Vrať z archivu – ${personName(p)}`, onclick: () => restoreFromArchive(p) }),
+      p.id !== myId() ? button('Smaž kartu', { size: 's', variant: 'quiet', icon: 'trash', label: `Smaž kartu – ${personName(p)}`, onclick: () => deletePerson(p) }) : null,
     ].filter(Boolean),
   });
   const redraw = () => {
@@ -535,10 +535,10 @@ function renderArchive() {
     body: [
       overdue.length ? callout({
         tone: 'info', icon: 'archive', text: overdueQuestion(overdue.length),
-        actions: button(`Smazat ${plural(overdue.length, 'kartu', 'karty', 'karet')}`, { size: 's', icon: 'trash', onclick: () => deleteOverdueSheet(overdue) }),
+        actions: button(`Smaž ${plural(overdue.length, 'kartu', 'karty', 'karet')}`, { size: 's', icon: 'trash', onclick: () => deleteOverdueSheet(overdue) }),
       }) : null,
       all.length ? h('div', { class: 'sticky-tools people-tools' }, searchField({
-        placeholder: 'Hledat v archivu', value: archive.query, label: 'Hledat v archivu',
+        placeholder: 'Hledej v archivu', value: archive.query, label: 'Hledej v archivu',
         onInput: (v) => { archive.query = v; redraw(); },
       })) : null,
       box,

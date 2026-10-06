@@ -37,9 +37,9 @@ export function renderSettings(part = '') {
   });
 }
 
-/** A form's foot: the error line and Uložit – under the cards, on the right edge, sticky at the bottom
+/** A form's foot: the error line and Ulož – under the cards, on the right edge, sticky at the bottom
  * of the window (the same place on every tab of Nastavení). */
-const formFoot = (text = 'Uložit') => [formErrorLine('', { full: true }), h('div', { class: 'form-foot settings-save full' }, button(text, { variant: 'solid', type: 'submit' }))];
+const formFoot = (text = 'Ulož') => [formErrorLine('', { full: true }), h('div', { class: 'form-foot settings-save full' }, button(text, { variant: 'solid', type: 'submit' }))];
 
 // ---------- Sbor ----------
 
@@ -78,7 +78,7 @@ function churchPart() {
         body: [h('p', { class: 'card-text' }, 'Takhle to uvidí návštěvníci na konci Pastvy.'),
           h('div', { class: 'preview-place' }, placeLine({ ...resolved, name: resolved.building ? `${resolved.building}` : resolved.name, address: s.address || resolved.address })),
           mapPlace ? placeMap(mapPlace) : null],
-        footer: button('Otevřít veřejnou část', { variant: 'ghost', size: 's', href: '#pastva', iconEnd: 'chevron-right' }),
+        footer: button('Otevři veřejnou část', { variant: 'ghost', size: 's', href: '#pastva', iconEnd: 'chevron-right' }),
       }) : '', ...formFoot());
   return { body: form };
 }
@@ -162,7 +162,7 @@ function rulesPart() {
 
 function loginsPart() {
   return {
-    actions: button('Pozvat nového člověka', { variant: 'solid', icon: 'user-plus', onclick: () => createInvite(null) }),
+    actions: button('Pozvi nového člověka', { variant: 'solid', icon: 'user-plus', onclick: () => createInvite(null) }),
     body: [...loginsView(), can('admin') ? keyCard() : null],
   };
 }
@@ -192,12 +192,12 @@ function backupPart() {
     if (data === 'old') { toast('Tohle je záloha starého Zvonce.', 'Tu nahrát neumím. Pošli ji správci.', { duration: 7000, tone: 'error' }); return; }
     if (!data) { toast('Tohle není záloha Zvonce.', 'Soubor nejde přečíst.', { tone: 'error' }); return; }
     const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'tým', 'týmy', 'týmů'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
-    confirmDialog('Nahradit všechna data souborem?',
+    confirmDialog('Chceš nahradit všechna data souborem?',
       `V souboru je ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Na GitHubu zůstane stará verze v historii.' : ''}`,
       () => {
         replaceAll(data, `nahraná záloha ${chosen.name}`);
         toast('Nahráno.', chosen.name);
-      }, { buttonLabel: 'Nahradit' });
+      }, { buttonLabel: 'Nahraď' });
   });
   const backup = () => {
     const json = { schema: SCHEMA, ...normalize(S.data) };
@@ -212,24 +212,24 @@ function backupPart() {
   // what replaces or wipes data is red (and always asks first)
   const danger = (text, onclick, iconName) => button(text, { variant: 'danger', size: 's', icon: iconName, onclick });
   const rows = [
-    { lead: rowIcon('download'), title: 'Stáhnout zálohu', meta: `Všechno v jednom souboru: ${counts}, bez obrázků${live ? ' a přístupů' : ''}.`, trail: action('Stáhnout', backup) },
-    admin ? { lead: rowIcon('upload'), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [danger('Nahrát', () => file.click()), file] } : null,
-    { lead: rowIcon('calendar'), title: 'Celý kalendář do telefonu', meta: 'Všechna setkání v jednom souboru .ics. Svoje služby si každý stáhne v Mém účtu.', trail: action('Stáhnout', calendar) },
+    { lead: rowIcon('download'), title: 'Záloha', meta: `Všechno v jednom souboru: ${counts}, bez obrázků${live ? ' a přístupů' : ''}.`, trail: action('Stáhni', backup) },
+    admin ? { lead: rowIcon('upload'), title: 'Obnova ze zálohy', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [danger('Nahraj', () => file.click()), file] } : null,
+    { lead: rowIcon('calendar'), title: 'Celý kalendář do telefonu', meta: 'Všechna setkání v jednom souboru .ics. Svoje služby si každý stáhne v Mém účtu.', trail: action('Stáhni', calendar) },
   ].filter(Boolean);
   const demoRows = [
     {
-      lead: rowIcon('refresh'), title: 'Začít ukázku znovu', meta: 'Vrátí ukázku do původního stavu, tvoje změny zmizí.',
-      trail: danger('Začít znovu', () => confirmDialog('Začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
+      lead: rowIcon('refresh'), title: 'Ukázka od začátku', meta: 'Vrátí ukázku do původního stavu, tvoje změny zmizí.',
+      trail: danger('Začni znovu', () => confirmDialog('Chceš začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
         replaceAll(createDemo(today()), 'nová ukázka');
         toast('Ukázka je zpátky.');
-      }, { buttonLabel: 'Začít znovu', danger: true })),
+      }, { buttonLabel: 'Začni znovu', danger: true })),
     },
     {
-      lead: rowIcon('trash'), title: 'Začít načisto', meta: 'Ukázka zmizí a Zvonec bude prázdný.',
-      trail: danger('Vyprázdnit', () => confirmDialog('Začít s prázdným Zvoncem?', 'Ukázka zmizí.', () => {
+      lead: rowIcon('trash'), title: 'Prázdný Zvonec', meta: 'Ukázka zmizí a Zvonec bude prázdný.',
+      trail: danger('Vyprázdni', () => confirmDialog('Chceš začít s prázdným Zvoncem?', 'Ukázka zmizí.', () => {
         replaceAll(emptyData(), 'prázdný Zvonec');
         toast('Je to prázdné.', 'Začni třeba v Lidech nebo v Týmech.');
-      }, { buttonLabel: 'Vyprázdnit', danger: true })),
+      }, { buttonLabel: 'Vyprázdni', danger: true })),
     },
   ];
   return {

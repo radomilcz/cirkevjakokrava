@@ -150,7 +150,7 @@ const NAV_MEMBER = [
 const NAV_PUBLIC = [
   ['pastva', 'Pastva', 'calendar', '#pastva'],
   ['jak-se-schazime', 'Jak se scházíme', 'layers', '#jak-se-schazime'],
-  ['prihlaseni', 'Přihlásit se', 'log-in', '#prihlaseni'],
+  ['prihlaseni', 'Přihlas se', 'log-in', '#prihlaseni'],
 ];
 
 const signedIn = () => !!S.me;
@@ -230,6 +230,8 @@ const navItem = ([id, label, iconName, href], extra = null) => h('li', {},
 
 /** Labels of the nav ids, for the quiet section label of a page (data-context). */
 const NAV_LABELS = Object.fromEntries([...NAV_LEADER, ...NAV_MEMBER, ...NAV_PUBLIC].filter(Array.isArray).map(([id, label]) => [id, label]));
+// a section's name where its menu item is an action (the label above a title is a noun, never „Přihlas se“)
+const SECTION_NAMES = { ...NAV_LABELS, prihlaseni: 'Přihlášení' };
 
 function updateShell(route, section, parts) {
   const isPublic = !signedIn() || route.access === 'public';
@@ -265,13 +267,13 @@ function updateShell(route, section, parts) {
       : ['verejne', 'Veřejná část', 'globe', '#pastva'];
   foot.replaceChildren(...nodes(footItem ? h('ul', { class: 'nav-list' }, navItem(footItem)) : null));
 
-  // the header's right side: who is signed in (→ Můj účet), or Přihlásit se
+  // the header's right side: who is signed in (→ Můj účet), or Přihlas se
   const account = document.querySelector('.account');
   const person = signedIn() ? personById(S.data || {}, myId()) : null;
   if (!signedIn()) {
     account.replaceChildren(h('a', {
       class: 'btn btn-solid btn-s signin', href: '#prihlaseni', 'aria-current': active === 'prihlaseni' ? 'page' : null,
-    }, icon('log-in'), 'Přihlásit se'));
+    }, icon('log-in'), 'Přihlas se'));
   } else {
     const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
     const role = ACCESS_LABELS[S.me.access] || '';
@@ -379,7 +381,7 @@ function renderApp({ toTop = false } = {}) {
   // the quiet section label above the title (the hero head): only where it says more than the title
   const head = content.querySelector('.page-head');
   const title = content.querySelector('.page-title')?.textContent?.trim();
-  const context = NAV_LABELS[active] || (section === 'ucet' ? 'Můj účet' : '');
+  const context = SECTION_NAMES[active] || (section === 'ucet' ? 'Můj účet' : '');
   const same = (a, b) => (a || '').toLocaleLowerCase('cs') === (b || '').toLocaleLowerCase('cs');
   if (head && head.dataset.context === undefined) head.dataset.context = context && !same(context, title) ? context : '';
   main.replaceChildren(content);
@@ -412,7 +414,7 @@ window.addEventListener('hashchange', () => {
 
 /**
  * Quiet unless it matters: „Ukládám…“ while saving, nothing once saved; a failed save stays on screen
- * with „Zkusit znovu“.
+ * with „Zkus to znovu“.
  */
 function showSaveStatus({ status, error }) {
   const failed = status === 'error' || status === 'offline';
@@ -422,7 +424,7 @@ function showSaveStatus({ status, error }) {
     el.title = failed && error ? error : '';   // the technical detail for whoever helps, not in the sentence
     if (failed) {
       const text = status === 'offline' ? 'Spojení vypadlo. Změny mám schované.' : 'Neuloženo.';
-      el.replaceChildren(h('span', { class: 'save-status-text' }, text), button('Zkusit znovu', { variant: 'soft', size: 's', onclick: () => S.sync.save() }));
+      el.replaceChildren(h('span', { class: 'save-status-text' }, text), button('Zkus to znovu', { variant: 'soft', size: 's', onclick: () => S.sync.save() }));
     } else {
       el.textContent = status === 'saving' || status === 'pending' ? 'Ukládám…' : '';
     }
@@ -539,7 +541,7 @@ async function boot() {
   }
   S.mode = 'demo';
   // the demo starts as an admin who is also in Lidé (Radim), so Přehled shows the personal blocks too;
-  // „Dívat se jako“ (Můj účet) switches to a leader, a member or an admin without a card
+  // „Jak to vidí ostatní“ (Můj účet) switches to a leader, a member or an admin without a card
   S.me = { login: null, priv: null, github: null, personId: DEMO_VIEWERS.admin, access: 'admin' };
   const store = new LocalStore({ key: DEMO_KEY });
   if (!store.hasData()) await saveAll(store, createDemo(today()), 'Zvonec: ukázka');

@@ -1,5 +1,5 @@
 // Kalendář – Seznam: the month as an agenda, grouped by week, every event with its cover.
-// In the current month what is over hides behind „Ukázat, co už bylo (4)“.
+// In the current month what is over hides behind „Ukaž, co už bylo (4)“.
 
 import { h, groupedList, button, emptyState, agree, SEP } from './dom.js';
 import { S, render } from './state.js';
@@ -31,7 +31,7 @@ export function listView(ctx) {
   }));
 
   const pastToggle = past.length ? h('div', { class: 'agenda-past' },
-    button(showPast ? 'Skrýt, co už bylo' : `Ukázat, co už bylo (${past.length})`, {
+    button(showPast ? 'Skryj, co už bylo' : `Ukaž, co už bylo (${past.length})`, {
       variant: 'ghost', size: 's', icon: showPast ? 'chevron-up' : 'chevron-down',
       onclick: () => { S.filters.calPast = !showPast; render(); },
     })) : null;
@@ -39,7 +39,7 @@ export function listView(ctx) {
   if (!events.length) {
     return activeFilterCount(ctx.filters) ? filteredEmpty() : emptyState({
       icon: 'calendar', title: 'Tenhle měsíc tu ještě nic není.',
-      action: ctx.leader ? button('Přidat setkání', { variant: 'solid', icon: 'plus', onclick: () => ctx.add() }) : null,
+      action: ctx.leader ? button('Přidej setkání', { variant: 'solid', icon: 'plus', onclick: () => ctx.add() }) : null,
     });
   }
   return h('div', { class: 'agenda' },

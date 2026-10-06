@@ -59,7 +59,7 @@ function groupList({ openId } = {}) {
   if (!active.length && !archived.length) {
     return empty({
       icon: 'teams', title: 'Zatím tu není žádná skupina.', text: 'Tým má role, třeba Zvuk nebo Zpěv, a z nich se skládá rozpis.',
-      action: can('leader') ? button('Přidat skupinu', { variant: 'primary', icon: 'plus', onclick: () => groupSheet() }) : null,
+      action: can('leader') ? button('Přidej skupinu', { variant: 'primary', icon: 'plus', onclick: () => groupSheet() }) : null,
     });
   }
   return [
@@ -101,7 +101,7 @@ export function renderGroups() {
   return screen({
     tab: t.tab,
     body: [t.switcher, h('div', { class: 'groups-list' }, desktop ? groupCards() : groupList())],
-    primary: leader ? { label: 'Přidat skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
+    primary: leader ? { label: 'Přidej skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
     wide: desktop,
     cls: 'groups-screen',
   });
@@ -120,7 +120,7 @@ function pickPerson(group) {
   const people = S.data.people.filter((p) => !inside.has(p.id) && statusOf(p) !== 'former').sort(comparePeople);
   const words = groupWords(group);
   peoplePicker({
-    title: `${words.add} ${group.name}`,
+    title: `${words.addWho} ${group.name}?`,
     meta: plural(people.length, 'člověk k výběru', 'lidé k výběru', 'lidí k výběru'),
     pools: [{ id: 'all', label: 'Všichni lidé', items: people.map((p) => ({ person: p, meta: joinMeta(S.data.groupMembers.filter((m) => m.personId === p.id).map((m) => groupById(S.data, m.groupId)?.name).filter(Boolean).slice(0, 2)) || null })) }],
     everyone: people,
@@ -163,20 +163,20 @@ function matrix(group) {
         h('span', { class: ['skill-matrix__count', trained <= 1 && 'is-scarce'] }, trained ? (trained === 1 ? 'umí to jen 1' : `umí to ${trained}`) : 'nikdo to neumí')))),
     rows: rows.map(({ m, p }) => h('tr', {},
       h('th', { scope: 'row', class: 'skill-matrix__who' },
-        h('button', { type: 'button', class: 'skill-matrix__person', onclick: () => memberSheet(group, p.id), 'aria-label': `${personName(p)} – upravit` },
+        h('button', { type: 'button', class: 'skill-matrix__person', onclick: () => memberSheet(group, p.id), 'aria-label': `${personName(p)} – uprav` },
           avatar(p, { size: 's', me: p.id === myId() }), h('span', { class: 'skill-matrix__name' }, personName(p)), m.leader ? pill(groupWords(group).leads) : null)),
       roles.map(({ role }) => {
         const level = levelOf(p, role);
         return h('td', {}, h('button', {
           type: 'button', class: 'skill-cell', dataset: { level: level || 'none' },
-          'aria-label': `${personName(p)}, ${role.name}: ${SKILL_WORDS[level]}. Změnit.`,
+          'aria-label': `${personName(p)}, ${role.name}: ${SKILL_WORDS[level]}. Změň.`,
           onclick: () => cycleSkill(p, role),
         }, level === 'trained' ? [icon('check', { size: 's' }), 'umí'] : level === 'learning' ? 'učí se' : h('span', { 'aria-hidden': 'true' }, '–')));
       }))),
   });
 }
 
-const PEOPLE_SHOWN = 6;   // the list of a big team: six rows, then „Ukázat všech 19“
+const PEOPLE_SHOWN = 6;   // the list of a big team: six rows, then „Ukaž všech 19“
 const openGroups = new Set();   // groups whose whole list is open (kept while the app runs)
 
 function peopleSection(group) {
@@ -191,7 +191,7 @@ function peopleSection(group) {
     const cut = !openGroups.has(group.id) && all.length > PEOPLE_SHOWN + 2;
     rows = list(cut ? all.slice(0, PEOPLE_SHOWN) : all, { label: 'Lidé' });
     if (cut) {
-      more = rowLink(`Ukázat všech ${all.length}`, {
+      more = rowLink(`Ukaž všech ${all.length}`, {
         icon: 'chevron-down',
         onclick: (e) => {
           openGroups.add(group.id);
@@ -223,9 +223,9 @@ function rolesSection(group) {
     note: trained <= 1 ? note(trained ? 'Umí to jen 1' : 'Nikdo to neumí', { tone: 'wait', icon: 'alert' }) : null,
     trail: [
       leader ? menu([
-        { label: 'Upravit roli', icon: 'pencil', onclick: () => roleSheet(group, role) },
+        { label: 'Uprav roli', icon: 'pencil', onclick: () => roleSheet(group, role) },
         '-',
-        { label: 'Smazat roli', icon: 'trash', danger: true, onclick: () => deleteRole(role) },
+        { label: 'Smaž roli', icon: 'trash', danger: true, onclick: () => deleteRole(role) },
       ], { label: `Další možnosti – ${role.name}`, title: role.name }) : null,
     ],
     onclick: leader ? () => roleSheet(group, role) : null,
@@ -233,7 +233,7 @@ function rolesSection(group) {
   return section({
     title: 'Role', count: roles.length || null, id: 'role', cls: 'group-section',
     body: [rows.length ? list(rows, { label: 'Role' }) : quiet('Tým zatím nemá žádnou roli. Bez rolí se z něj nesloží rozpis.'),
-      leader ? slot('Přidat roli', () => roleSheet(group)) : null],
+      leader ? slot('Přidej roli', () => roleSheet(group)) : null],
   });
 }
 
@@ -282,10 +282,10 @@ function eventsSection(group) {
 function groupMenu(group) {
   if (!can('leader')) return null;
   return menu([
-    { label: 'Upravit skupinu', icon: 'pencil', onclick: () => groupSheet(group) },
-    { label: group.archived ? 'Vrátit z archivu' : 'Dát do archivu', icon: 'layers', onclick: () => toggleArchive(group) },
+    { label: 'Uprav skupinu', icon: 'pencil', onclick: () => groupSheet(group) },
+    { label: group.archived ? 'Vrať z archivu' : 'Přesuň do archivu', icon: 'layers', onclick: () => toggleArchive(group) },
     '-',
-    { label: 'Smazat skupinu', icon: 'trash', danger: true, onclick: () => deleteGroup(group) },
+    { label: 'Smaž skupinu', icon: 'trash', danger: true, onclick: () => deleteGroup(group) },
   ], { title: group.name });
 }
 
@@ -318,10 +318,10 @@ export function renderGroup([id] = []) {
       tab: t.tab,
       body: [t.switcher, splitView({
         list: [h('h2', { class: 'visually-hidden' }, 'Skupiny'), h('div', { class: 'groups-list', onclick: keepListPlace }, groupList({ openId: id }))],
-        detail: detailPane({ body: group ? [h('div', { class: 'pane-menu' }, groupMenu(group)), groupBody(group, { pane: true })] : missing({ heading: false }), closeHref: '#lide/skupiny', label: 'Zavřít skupinu' }),
+        detail: detailPane({ body: group ? [h('div', { class: 'pane-menu' }, groupMenu(group)), groupBody(group, { pane: true })] : missing({ heading: false }), closeHref: '#lide/skupiny', label: 'Zavři skupinu' }),
         label: group?.name || 'Skupina',
       })],
-      primary: can('leader') ? { label: 'Přidat skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
+      primary: can('leader') ? { label: 'Přidej skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
       wide: true,
       cls: 'groups-screen groups-screen--split',
     });

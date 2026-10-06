@@ -64,7 +64,7 @@ export function renderTemplates() {
     title: 'Šablony setkání',
     root: true,
     lead: 'Nové setkání ze šablony dostane čas, místo, role i osnovu.',
-    primary: { label: 'Přidat šablonu', icon: 'plus', onclick: add },
+    primary: { label: 'Přidej šablonu', icon: 'plus', onclick: add },
     cls: 'tpl-page',
     body: types.length
       ? list(types.map((t) => {
@@ -116,7 +116,7 @@ if (typeof window !== 'undefined') {
   document.addEventListener('zvonec:navigate', () => {
     if (!draft || !isDirty() || location.hash === `#sablona/${draft.id}`) return;
     const back = `#sablona/${draft.id}`;
-    toast(`Šablona ${draft.value.name ? `„${draft.value.name}“ ` : ''}má neuložené změny.`, { icon: 'info', actionLabel: 'Otevřít', action: () => navigate(back), duration: 8000 });
+    toast(`Šablona ${draft.value.name ? `„${draft.value.name}“ ` : ''}má neuložené změny.`, { icon: 'info', actionLabel: 'Otevři', action: () => navigate(back), duration: 8000 });
   });
 }
 
@@ -142,7 +142,7 @@ export function renderTemplate(id = 'nova') {
   const discard = () => { draft = freshDraft(d.id); drafts.set(d.id, draft); render(); toast('Změny zahozené.'); };
   // the save foot shows only while something is unsaved (a new template: always, until it is added)
   const foot = isNew
-    ? formFoot({ label: 'Přidat šablonu', text: 'Šablona zatím není uložená.', always: true, onSave: () => saveTemplate(d) })
+    ? formFoot({ label: 'Přidej šablonu', text: 'Šablona zatím není uložená.', always: true, onSave: () => saveTemplate(d) })
     : formFoot({ onSave: () => saveTemplate(d), onDiscard: discard });
   const markDirty = () => foot.update(isDirty());
   markDirty();
@@ -155,7 +155,7 @@ export function renderTemplate(id = 'nova') {
   drawOutline();
 
   const menuItems = [
-    type ? { label: 'Smazat šablonu', icon: 'trash', danger: true, onclick: () => deleteTemplate(type) } : null,
+    type ? { label: 'Smaž šablonu', icon: 'trash', danger: true, onclick: () => deleteTemplate(type) } : null,
   ].filter(Boolean);
 
   const sec = (key, title, hint, content) => h('section', { class: 'section tpl-section', id: `tpl-${key}`, 'aria-labelledby': `tpl-${key}-h` },
@@ -324,13 +324,13 @@ function outlineSection(d, redraw) {
       title: nameOf,
       meta: joinMeta([`${item.minutes ?? 0} min`, roleById(S.data, format?.leadRoleId)?.name ? `vede ${roleById(S.data, format.leadRoleId).name}` : null]),
       onclick: () => itemSheet(d, i, redraw),
-      label: `Upravit: ${nameOf}`,
+      label: `Uprav: ${nameOf}`,
       cls: 'tpl-item',
       trail: menu([
-      { label: 'Posunout výš', disabled: i === 0, onclick: () => move(i - 1) },
-      { label: 'Posunout níž', disabled: i === v.program.length - 1, onclick: () => move(i + 1) },
+      { label: 'Posuň výš', disabled: i === 0, onclick: () => move(i - 1) },
+      { label: 'Posuň níž', disabled: i === v.program.length - 1, onclick: () => move(i + 1) },
       '-',
-      { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => { v.program.splice(i, 1); redraw(); } },
+      { label: 'Odeber z osnovy', icon: 'trash', danger: true, onclick: () => { v.program.splice(i, 1); redraw(); } },
       ], { label: `Další možnosti – ${nameOf}`, title: nameOf }),
     });
   });
@@ -345,7 +345,7 @@ function outlineSection(d, redraw) {
     summary,
     items.length ? list(items, { label: 'Osnova' }) : h('p', { class: 'meta' }, 'Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.'),
     h('div', { class: 'cluster tpl-outline__foot' },
-      button('Přidat bod', { icon: 'plus', onclick: () => addItemSheet(d, redraw) }),
+      button('Přidej bod', { icon: 'plus', onclick: () => addItemSheet(d, redraw) }),
       h('a', { class: 'link', href: '#formaty' }, 'Co je který formát', icon('chevron-right', { size: 's' }))));
 }
 
@@ -353,7 +353,7 @@ function addItemSheet(d, redraw) {
   const formats = S.data.formats.slice().sort(byName);
   let sheet;
   sheet = openSheet({
-    title: 'Přidat bod do osnovy',
+    title: 'Nový bod osnovy',
     subtitle: 'Přidá se na konec. Pak ho posuneš, kam patří.',
     body: formats.length
       ? list(formats.map((f) => row({
@@ -445,8 +445,8 @@ function webSection(d, dirty) {
   const has = () => !!img.pending || (!!v.image && !img.removed);
   const draw = async () => {
     buttons.replaceChildren(...[
-      button(has() ? 'Vybrat jiný obrázek' : 'Nahrát obrázek', { size: 's', icon: 'image', onclick: () => file.click() }),
-      has() ? button('Odebrat obrázek', { size: 's', variant: 'quiet', onclick: () => { img.pending = null; img.removed = true; draw(); dirty(); } }) : null,
+      button(has() ? 'Vyber jiný obrázek' : 'Nahraj obrázek', { size: 's', icon: 'image', onclick: () => file.click() }),
+      has() ? button('Odeber obrázek', { size: 's', variant: 'quiet', onclick: () => { img.pending = null; img.removed = true; draw(); dirty(); } }) : null,
     ].filter(Boolean));
     message.textContent = has() ? 'Větší obrázek Zvonec zmenší.' : 'Bez obrázku ukáže web jen název, den a místo.';
     if (img.pending) { preview.replaceChildren(h('img', { src: img.pending.dataUrl, alt: '' })); preview.hidden = false; return; }
@@ -472,7 +472,7 @@ function webSection(d, dirty) {
   draw();
   return h('div', { class: 'form' },
     switchRow({
-      label: 'Nová setkání ukazovat na webu', hint: 'Název, čas, místo, obrázek a popis uvidí každý na Pastvě.', checked: !!v.public,
+      label: 'Ukazuj nová setkání na webu', hint: 'Název, čas, místo, obrázek a popis uvidí každý na Pastvě.', checked: !!v.public,
       onChange: (on) => { if (on) v.public = true; else delete v.public; dirty(); },
     }),
     field({ label: 'Popis', optional: true, control: textArea({ name: 'description', value: v.description || '', rows: 4, placeholder: 'např. Chvály, slovo a kafe. Přijď, jak jsi.', onInput: (t) => { if (t.trim()) v.description = t.trim(); else delete v.description; dirty(); } }), hint: 'Předvyplní se u nových setkání.' }),
@@ -495,7 +495,7 @@ function seriesSection(d) {
       title: seriesSummary(s, { today: now }),
       meta: joinMeta([`${shortDate(s.from, { weekday: false, year: true })} – ${s.until ? shortDate(s.until, { weekday: false, year: true }) : '…'}`,
         ended ? 'skončila' : ahead ? `ještě ${plural(ahead, 'setkání', 'setkání', 'setkání')}` : 'nic dalšího v plánu']),
-      trail: s.step ? button('Prodloužit', { size: 's', onclick: () => extendSeriesSheet(s) }) : null,
+      trail: s.step ? button('Prodluž', { size: 's', onclick: () => extendSeriesSheet(s) }) : null,
       wrap: true,
     });
   }), { label: 'Řady' });
@@ -562,9 +562,9 @@ async function saveTemplate(d) {
 function deleteTemplate(type) {
   const n = S.data.events.filter((e) => e.typeId === type.id).length;
   confirmSheet({
-    title: `Smazat šablonu ${type.name}?`,
+    title: `Chceš smazat šablonu ${type.name}?`,
     text: n ? `Setkání, která z ní už vznikla (${n}), zůstanou, jak jsou.` : 'Žádné setkání z ní zatím nevzniklo.',
-    confirmLabel: 'Smazat šablonu',
+    confirmLabel: 'Smaž šablonu',
     onConfirm: () => {
       S.data.eventTypes = S.data.eventTypes.filter((x) => x.id !== type.id);
       for (const e of S.data.events) if (e.typeId === type.id) delete e.typeId;

@@ -355,7 +355,7 @@ export function calendarExportRows({ onDone } = {}) {
   return list([
     me ? row({ lead: icon('user'), title: 'Moje služby', meta: 'Jen setkání, kde sloužíš', onclick: run(() => downloadDuties(me)), trail: icon('download', { size: 's' }) }) : null,
     row({ lead: icon('calendar'), title: 'Celý kalendář', meta: 'Všechna setkání', onclick: run(downloadCalendar), trail: icon('download', { size: 's' }) }),
-  ].filter(Boolean), { label: 'Stáhnout do kalendáře' });
+  ].filter(Boolean), { label: 'Kalendář v telefonu' });
 }
 
 export const CALENDAR_EXPORT_NOTE = 'Stáhne se soubor .ics, telefon ho přidá do kalendáře. Když se rozpis změní, stáhni ho znovu.';
@@ -364,7 +364,7 @@ export const CALENDAR_EXPORT_NOTE = 'Stáhne se soubor .ics, telefon ho přidá 
 export function openCalendarExport() {
   let sheet;
   sheet = openSheet({
-    title: 'Stáhnout do kalendáře',
+    title: 'Kalendář v telefonu',
     body: [h('p', { class: 'meta' }, CALENDAR_EXPORT_NOTE), calendarExportRows({ onDone: () => sheet.close() })],
   });
 }

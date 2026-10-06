@@ -188,8 +188,8 @@ export function stepper({ name, value = 0, min = 0, max = 99, step = 1, onChange
     plus.disabled = v >= max;
     onChange?.(v);
   };
-  const minus = iconButton('minus', `Ubrat – ${label}`, { onclick: () => set(Number(input.value) - step) });
-  const plus = iconButton('plus', `Přidat – ${label}`, { onclick: () => set(Number(input.value) + step) });
+  const minus = iconButton('minus', `Uber – ${label}`, { onclick: () => set(Number(input.value) - step) });
+  const plus = iconButton('plus', `Přidej – ${label}`, { onclick: () => set(Number(input.value) + step) });
   input.addEventListener('change', () => set(parseInt(input.value, 10)));
   input.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowUp') { e.preventDefault(); set(Number(input.value) + step); }
@@ -200,7 +200,7 @@ export function stepper({ name, value = 0, min = 0, max = 99, step = 1, onChange
   return h('span', { class: 'stepper', role: 'group', 'aria-label': label }, minus, input, plus);
 }
 
-/** Yes / no as a sentence with a switch („Pamatovat si mě na tomhle zařízení“). FormData gets name='on' or nothing. */
+/** Yes / no as a sentence with a switch („Pamatuj si mě na tomhle zařízení“). FormData gets name='on' or nothing. */
 export function switchRow({ label, hint, checked = false, onChange, name, disabled } = {}) {
   const textId = uid('sw');
   const hidden = name ? h('input', { type: 'hidden', name, value: checked ? 'on' : '', disabled: !checked }) : null;
@@ -215,11 +215,11 @@ export function switchRow({ label, hint, checked = false, onChange, name, disabl
   return row;
 }
 
-/** The search field („Hledat jméno, telefon, e-mail“). `/` focuses it (the shell's shortcut). */
-export function searchField({ placeholder = 'Hledat', value = '', onInput, label = 'Hledat', name = 'q' } = {}) {
+/** The search field („Hledej jméno, telefon, e-mail“). `/` focuses it (the shell's shortcut). */
+export function searchField({ placeholder = 'Hledej', value = '', onInput, label = 'Hledej', name = 'q' } = {}) {
   const input = h('input', { class: 'input', type: 'search', name, value, placeholder, autocomplete: 'off', enterkeyhint: 'search' });
   // our own ✕ in the palette's ink (the browser's own clear button is a blue of its own)
-  const clear = h('button', { type: 'button', class: 'icon-btn search__clear', 'aria-label': 'Smazat hledání', title: 'Smazat hledání', hidden: !value }, icon('x', { size: 's' }));
+  const clear = h('button', { type: 'button', class: 'icon-btn search__clear', 'aria-label': 'Smaž hledání', title: 'Smaž hledání', hidden: !value }, icon('x', { size: 's' }));
   input.addEventListener('input', (e) => { clear.hidden = !input.value; onInput?.(input.value, e); });
   clear.addEventListener('click', (e) => {
     e.preventDefault();
@@ -236,7 +236,7 @@ export function searchField({ placeholder = 'Hledat', value = '', onInput, label
  */
 export function passwordInput({ name = 'password', autocomplete = 'current-password', value = '' } = {}) {
   const input = h('input', { class: 'input', type: 'password', name, value, autocomplete, spellcheck: false, autocapitalize: 'off' });
-  const eye = h('button', { type: 'button', class: 'icon-btn password__eye', 'aria-pressed': 'false', 'aria-label': 'Ukázat heslo', title: 'Ukázat heslo' }, icon('eye', { size: 's' }));
+  const eye = h('button', { type: 'button', class: 'icon-btn password__eye', 'aria-pressed': 'false', 'aria-label': 'Ukaž heslo', title: 'Ukaž heslo' }, icon('eye', { size: 's' }));
   eye.addEventListener('click', () => {
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
@@ -308,14 +308,14 @@ export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone
     if (!rows.length) {
       rows.push(h('p', { class: 'meta picker__none' }, q ? 'Nikdo takový tu není.' : 'Tady nikdo není.'));
     }
-    if (q && onAdd) rows.push(button(`Přidat „${q}“ a vybrat`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close(); onAdd(q); } }));
+    if (q && onAdd) rows.push(button(`Přidej „${q}“ a vyber`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close(); onAdd(q); } }));
     results.replaceChildren(...rows);
   };
-  const search = searchField({ placeholder: searchPlaceholder, label: 'Hledat člověka', onInput: (v) => { query = v; draw(); } });
+  const search = searchField({ placeholder: searchPlaceholder, label: 'Hledej člověka', onInput: (v) => { query = v; draw(); } });
   search.querySelector('input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); results.querySelector('.picker__row')?.click(); }
   });
-  const poolChips = pools.length > 1 ? chips(pools.map((p) => ({ value: p.id, label: p.label })), current, (v) => { current = v; draw(); }, { label: 'Koho ukázat' }) : null;
+  const poolChips = pools.length > 1 ? chips(pools.map((p) => ({ value: p.id, label: p.label })), current, (v) => { current = v; draw(); }, { label: 'Z koho vybíráš' }) : null;
   sheet = openSheet({
     title,
     subtitle: metaText,

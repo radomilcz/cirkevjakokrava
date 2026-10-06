@@ -9,6 +9,7 @@
 - **Everything people read is in Czech**: UI text, URL slugs people see or share (`#kalendar`,
   `#pozvanka/…`), downloaded file names, commit messages the app itself writes into the data repo,
   user guides (`zvonec/README.md`), website content in `src/obsah/`.
+- Zvonec speaks in one kind voice in tykání: actions (buttons, menu items, action links, aria-labels of icon buttons) are imperative 2nd person singular („Přidej setkání“, „Ulož“, „Přihlas se“); page, section and dialog titles are nouns, never infinitives („Přihlášení“, „Nové setkání“).
 - Czech text must be natural Czech (check with the `kontrola-cestiny` skill), no calques.
 
 ## Zvonec (`docs/zvonec/`, `zvonec/`)

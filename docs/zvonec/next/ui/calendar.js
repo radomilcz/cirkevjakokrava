@@ -78,8 +78,8 @@ export function openFilters(view) {
       !roster && S.me?.personId ? switchRow({ label: 'Jen moje služby', checked: mine, onChange: (on) => { mine = on; } }) : null,
     ],
     foot: [
-      button('Ukázat', { variant: 'primary', size: 'l', block: true, onclick: () => applyAndClose(roster ? { kinds } : { kinds, teams, mine }) }),
-      filterCount(view) ? button('Zrušit filtry', { variant: 'quiet', block: true, onclick: () => applyAndClose(roster ? { kinds: [] } : { kinds: [], teams: [], mine: false }) }) : null,
+      button('Ukaž', { variant: 'primary', size: 'l', block: true, onclick: () => applyAndClose(roster ? { kinds } : { kinds, teams, mine }) }),
+      filterCount(view) ? button('Zruš filtry', { variant: 'quiet', block: true, onclick: () => applyAndClose(roster ? { kinds: [] } : { kinds: [], teams: [], mine: false }) }) : null,
     ],
   });
 }
@@ -175,11 +175,11 @@ function seznam({ month, openId }) {
   const events = all.filter((e) => dayOf(e.start) >= start && passes(e, p));
   const hiddenPast = current && !listState.past && all.some((e) => dayOf(e.start) < start && passes(e, p));
   const nextMonth = shiftMonth(lastMonth, 1);
-  const more = button(`Ukázat i ${monthLabel(nextMonth).split(' ')[0].toLocaleLowerCase('cs')}`, {
+  const more = button(`Ukaž i ${monthLabel(nextMonth).split(' ')[0].toLocaleLowerCase('cs')}`, {
     variant: 'quiet', block: true, iconEnd: 'chevron-down', cls: 'cal-more',
     onclick: () => { listState.extra += 1; render(); },
   });
-  const pastLink = hiddenPast ? h('div', { class: 'cal-past' }, link('Ukázat, co už bylo', { icon: 'chevron-left', onclick: () => { listState.past = true; render(); } })) : null;
+  const pastLink = hiddenPast ? h('div', { class: 'cal-past' }, link('Ukaž, co už bylo', { icon: 'chevron-left', onclick: () => { listState.past = true; render(); } })) : null;
   let body;
   if (!events.length) body = emptyFor(month, p);
   else body = agendaOf(events, openId);
@@ -188,10 +188,10 @@ function seznam({ month, openId }) {
 
 function emptyFor(month, p, { day } = {}) {
   const filtered = p.kinds.length || p.teams.length || p.mine;
-  if (filtered) return empty({ icon: 'sliders', title: 'S tímhle filtrem tu nic není.', action: button('Zrušit filtry', { variant: 'quiet', onclick: () => clearFilters('seznam') }) });
+  if (filtered) return empty({ icon: 'sliders', title: 'S tímhle filtrem tu nic není.', action: button('Zruš filtry', { variant: 'quiet', onclick: () => clearFilters('seznam') }) });
   return empty({
     icon: 'calendar', title: 'Tenhle měsíc tu nic není.',
-    action: can('leader') ? button('Přidat setkání', { icon: 'plus', variant: 'quiet', onclick: () => openAddEvent({ day: day || `${month}-01` }) }) : null,
+    action: can('leader') ? button('Přidej setkání', { icon: 'plus', variant: 'quiet', onclick: () => openAddEvent({ day: day || `${month}-01` }) }) : null,
   });
 }
 
@@ -232,7 +232,7 @@ function monthPhone({ month, day }) {
           ? agenda([agendaDay({ day: chosen, today: chosen === today(), label: dayLabel(chosen), events: list.map((e) => eventItem(e)) })])
           : h('div', { class: 'cal-day__none' }, dateArch(chosen, { today: chosen === today(), quiet: true }),
             quiet('Tento den nic není.'),
-            can('leader') ? button('Přidat setkání', { size: 's', icon: 'plus', onclick: () => openAddEvent({ day: chosen }) }) : null)),
+            can('leader') ? button('Přidej setkání', { size: 's', icon: 'plus', onclick: () => openAddEvent({ day: chosen }) }) : null)),
     ],
     chosen,
   };
@@ -252,7 +252,7 @@ function monthDesktop({ month, day, openId }) {
       h('div', { class: 'cal-cell__head' },
         h('span', { class: 'cal-cell__num arch-shape', 'aria-hidden': 'true' }, String(num)),
         h('span', { class: 'visually-hidden' }, new Date(`${d}T12:00`).toLocaleDateString('cs', { weekday: 'long', day: 'numeric', month: 'numeric' })),
-        leader ? h('button', { type: 'button', class: 'cal-cell__add', 'aria-label': `Přidat setkání ${num}. ${Number(d.slice(5, 7))}.`, title: 'Přidat setkání', onclick: () => openAddEvent({ day: d }) }, icon('plus', { size: 's' })) : null),
+        leader ? h('button', { type: 'button', class: 'cal-cell__add', 'aria-label': `Přidej setkání ${num}. ${Number(d.slice(5, 7))}.`, title: 'Přidej setkání', onclick: () => openAddEvent({ day: d }) }, icon('plus', { size: 's' })) : null),
       shown.map((e) => {
         const mine = myDuties(e).some((x) => x.assignment.status !== 'declined');
         const severity = eventSeverity(e);
@@ -307,7 +307,7 @@ export function renderCalendar(parts = [], { openId } = {}) {
 
   let content;
   let primary = null;
-  let menuItems = [{ label: 'Stáhnout do kalendáře', icon: 'download', onclick: openCalendarExport }];
+  let menuItems = [{ label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport }];
   const toToday = showsToday ? null : () => navigate(hrefOf(view, view === 'mesic' ? todayDay : todayDay.slice(0, 7), view === 'rozpis' ? extra : null));
   // „Dnes“: next to the period on a desktop; on a phone in the brand row (the period row has no room)
   const bar = toolbar(view, periodPart, { month, onMonth: go, onToday: isDesktop() ? toToday : null });
@@ -323,11 +323,11 @@ export function renderCalendar(parts = [], { openId } = {}) {
     content = pane
       ? h('div', { class: 'cal-split' }, h('div', { class: 'cal-split__main' }, bar, m.body), h('aside', { class: 'cal-split__aside', 'aria-label': 'Setkání' }, pane))
       : [bar, m.body];
-    if (leader) primary = { label: 'Přidat setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ day: day && day >= todayDay ? day : null }) };
+    if (leader) primary = { label: 'Přidej setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ day: day && day >= todayDay ? day : null }) };
   } else if (view === 'mesic') {
     const m = monthPhone({ month, day });
     content = [bar, m.body];
-    if (leader) primary = { label: 'Přidat setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ day: m.chosen >= todayDay ? m.chosen : null }) };
+    if (leader) primary = { label: 'Přidej setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ day: m.chosen >= todayDay ? m.chosen : null }) };
   } else {
     const s = seznam({ month, openId: opened?.id });
     let chosen = opened;
@@ -340,7 +340,7 @@ export function renderCalendar(parts = [], { openId } = {}) {
       const item = content.querySelector?.(`a.event[href="#setkani/${chosen.id}"]`);
       item?.setAttribute('data-open', '');
     }
-    if (leader) primary = { label: 'Přidat setkání', icon: 'calendar-plus', onclick: () => openAddEvent() };
+    if (leader) primary = { label: 'Přidej setkání', icon: 'calendar-plus', onclick: () => openAddEvent() };
   }
 
   // the one head of the four tabs (layout.js screen({ tab })): „Kalendář“ is the h1, the period sits in the bar

@@ -454,7 +454,7 @@ export function row({
 export function personRow(person, { meta: metaText, note: noteNode, href, onclick, phone, trail, selected, open, me = false, status: st } = {}) {
   const name = person ? fullName(person) : DELETED_NAME;
   const nick = person?.nickname && person.nickname !== person.firstName && person.nickname !== name ? person.nickname : null;
-  const call = phone ? h('a', { class: 'icon-btn icon-btn--tint', href: `tel:${String(phone).replace(/\s+/g, '')}`, 'aria-label': `Zavolat – ${name}`, title: `Zavolat – ${name}` }, icon('phone', { size: 's' })) : null;
+  const call = phone ? h('a', { class: 'icon-btn icon-btn--tint', href: `tel:${String(phone).replace(/\s+/g, '')}`, 'aria-label': `Zavolej – ${name}`, title: `Zavolej – ${name}` }, icon('phone', { size: 's' })) : null;
   return row({
     lead: avatar(person, { me, status: st }), title: name, nick, meta: metaText, note: noteNode, href, onclick,
     trail: [trail, call], selected, open, declined: st === 'declined',
@@ -474,7 +474,7 @@ export function mapUrl(place) {
 }
 
 /** „Otevřít v mapě ↗“ – the one wording and look everywhere; opens Mapy.cz in a new tab. null without an address. */
-export const mapLink = (place, { label = 'Otevřít v mapě' } = {}) => (canMap(place)
+export const mapLink = (place, { label = 'Otevři v mapě' } = {}) => (canMap(place)
   ? h('a', { class: 'link map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, icon('pin', { size: 's' }), label, icon('external', { size: 's' }))
   : null);
 
@@ -605,7 +605,7 @@ export function teamHead(group, { words, action } = {}) {
 export function dutyRow({ role, person, name, status: st, me = false, onclick, href, empty: emptySlot, warn, short = false } = {}) {
   let who;
   if (emptySlot) {
-    who = h('span', { class: 'duty__who' }, slot(emptySlot.label || 'Doplnit', emptySlot.onclick, { aria: emptySlot.aria || `Doplnit: ${role}` }), h('span', { class: 'caption' }, 'chybí'));
+    who = h('span', { class: 'duty__who' }, slot(emptySlot.label || 'Doplň', emptySlot.onclick, { aria: emptySlot.aria || `Doplň: ${role}` }), h('span', { class: 'caption' }, 'chybí'));
   } else {
     const key = STATUS_KEY[st];
     const parts = [

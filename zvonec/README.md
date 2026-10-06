@@ -48,27 +48,27 @@ Na počítači je vlevo sloupec s menu: nahoře název církve, pod ním položk
 (vede na Můj účet) a terč s barvami. Na telefonu je nahoře lišta s názvem a tlačítkem **Menu** – v něm
 najdeš totéž. Vedoucí vidí v menu všechno, člen jen Přehled, Kalendář, Lidé a Jak se scházíme. Kdo není
 přihlášený, vidí jen **Pastvu** a **Jak se scházíme** – setkání a formáty, které vedoucí zveřejnili –
-a tlačítko **Přihlásit se**.
+a tlačítko **Přihlas se**.
 
-Každá obrazovka má nahoře název, vpravo hlavní tlačítko (třeba **Přidat setkání**) a pod názvem záložky
+Každá obrazovka má nahoře název, vpravo hlavní tlačítko (třeba **Přidej setkání**) a pod názvem záložky
 s pohledy.
 
 | obrazovka | co tam je |
 | --- | --- |
-| **Přehled** | úvod pro všechny: co čeká na tvoji odpověď (Potvrdit / Nemůžu), tvoje služby na osm týdnů dopředu (i do kalendáře v telefonu, .ics), příští neděle, tento týden, kdy nemůžeš, tvoje skupiny. Vedoucí navíc vidí, co nesedí, volná místa na příští tři týdny, služby čekající na potvrzení a karty lidí k doplnění; správce ještě pozvánky, které čekají, a přístupy bez karty |
+| **Přehled** | úvod pro všechny: co čeká na tvoji odpověď (Potvrď / Nemůžu), tvoje služby na osm týdnů dopředu (i do kalendáře v telefonu, .ics), příští neděle, tento týden, kdy nemůžeš, tvoje skupiny. Vedoucí navíc vidí, co nesedí, volná místa na příští tři týdny, služby čekající na potvrzení a karty lidí k doplnění; správce ještě pozvánky, které čekají, a přístupy bez karty |
 | **Kalendář** | jedna stránka a čtyři pohledy: **Měsíc** (mřížka, na telefonu malá mřížka a pod ní seznam vybraného dne), **Týden** (hodiny na ose, na telefonu tři dny), **Seznam** (po týdnech, s obrázky) a **Rozpis**. Nad nimi šipky ‹ ›, **Dnes** a filtry: **Účel** (Nedělní setkání, Zkouška, Skupinka, Akce), **Tým** a **Jen moje služby**. Pohled si Zvonec pamatuje |
 | **Rozpis** | tabulka měsíce: řádky jsou setkání, sloupce role po týmech. Vedoucí klikne do buňky, vybere člověka a hotovo; člen vidí tabulku jen ke čtení se svými službami zvýrazněnými. Tisk na A4 na šířku – bez telefonů |
-| **Setkání** | detail s obrázkem a třemi záložkami. **Přehled**: popis, poznámka pro tým, kdo slouží, začátek osnovy, mapa, upozornění a po skončení kolik lidí přišlo (jen počet, ne kdo). **Kdo slouží**: služby po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout lidi“, „Obsadit jako minule“, „Kolik lidí je potřeba“, stavy čeká na potvrzení → potvrzeno → nemůže, výjimka u upozornění. **Osnova**: viz níže |
-| **Přidat setkání** | ve dvou krocích: nejdřív **Podle čeho?** (šablona, nebo „Bez šablony“), pak název, kdy, kde a pro koho; zbytek (obrázek, popis, zveřejnění, poznámka pro tým) je v **Dalších možnostech**. Opakování: každý týden, každých 14 dní, každý měsíc ve stejný den v týdnu (třeba každou první neděli). Hotovou řadu prodloužíš v detailu setkání (**Prodloužit řadu**). Při úpravě řady se Zvonec zeptá, jestli jen tohle setkání, nebo i další |
-| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…). Časy se dopočítají, vedoucí bodů se doplní podle rolí, body jdou přetahovat, je tu „Převzít minulou osnovu“ a součet proti délce setkání. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
+| **Setkání** | detail s obrázkem a třemi záložkami. **Přehled**: popis, poznámka pro tým, kdo slouží, začátek osnovy, mapa, upozornění a po skončení kolik lidí přišlo (jen počet, ne kdo). **Kdo slouží**: služby po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhni lidi“, „Obsaď jako minule“, „Kolik lidí je potřeba“, stavy čeká na potvrzení → potvrzeno → nemůže, výjimka u upozornění. **Osnova**: viz níže |
+| **Nové setkání** | tlačítko „Přidej setkání“, ve dvou krocích: nejdřív **Podle čeho?** (šablona, nebo „Bez šablony“), pak název, kdy, kde a pro koho; zbytek (obrázek, popis, zveřejnění, poznámka pro tým) je v **Dalších možnostech**. Opakování: každý týden, každých 14 dní, každý měsíc ve stejný den v týdnu (třeba každou první neděli). Hotovou řadu prodloužíš v detailu setkání (**Prodluž řadu**). Při úpravě řady se Zvonec zeptá, jestli jen tohle setkání, nebo i další |
+| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…). Časy se dopočítají, vedoucí bodů se doplní podle rolí, body jdou přetahovat, je tu „Převezmi minulou osnovu“ a součet proti délce setkání. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhni lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
 | **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně. Pohledy **Podle setkání** a **Podle lidí**, filtr chyba / pozor / info. Rovnou tu jde vybrat jiného člověka nebo napsat „Vím o tom“ |
 | **Lidé** | pohledy **Seznam**, **Tabulka** (třídění, sloupce, hromadné akce: zkopírovat e-maily, přidat do skupiny, stáhnout jako CSV; na počítači výchozí), **Domácnosti**, **Podle skupin**, **Narozeniny** a **Břemeno** (kolik služeb má kdo tenhle měsíc proti tomu, kolik jich zvládne). Filtry Všichni · Členové · Přátelé · Hosté · Děti (a Chybí údaje, když nějaké chybí), hledání podle jména, telefonu i e-mailu. Karta člověka: vlevo osobní údaje, vpravo skupiny, služby, kdy nemůže, břemeno a upozornění; každý blok upravíš zvlášť. Člen má Seznam, Domácnosti a Podle skupin |
-| **Archiv** | kdo k nám přestal chodit, nepatří do seznamu, ale do archivu. Na kartě člověka zvol v nabídce ⋯ **Přesunout do archivu** (nebo dole v Členství). Člověk pak zmizí ze seznamů, kontaktů, výběru lidí i návrhů do služeb, jeho budoucí služby se uvolní a přestane vést skupiny. Ve starých rozpisech a osnovách zůstane. Archiv najdeš úplně dole v Lidech pod odkazem **Archiv (počet)**; u každého uvidíš, odkdy tam je, a tlačítka **Vrátit z archivu** (karta dostane zpátky dřívější členství, a když ho Zvonec nezná, bude přítel; týmy a dovednosti zůstávají) a **Smazat kartu**. Po roce v archivu se Zvonec zeptá, jestli karty nesmazat. Archiv vidí jen vedoucí. Starý odkaz na filtr „Už nechodí“ otevře archiv |
+| **Archiv** | kdo k nám přestal chodit, nepatří do seznamu, ale do archivu. Na kartě člověka zvol v nabídce ⋯ **Přesuň do archivu** (nebo dole v Členství). Člověk pak zmizí ze seznamů, kontaktů, výběru lidí i návrhů do služeb, jeho budoucí služby se uvolní a přestane vést skupiny. Ve starých rozpisech a osnovách zůstane. Archiv najdeš úplně dole v Lidech pod odkazem **Archiv (počet)**; u každého uvidíš, odkdy tam je, a tlačítka **Vrať z archivu** (karta dostane zpátky dřívější členství, a když ho Zvonec nezná, bude přítel; týmy a dovednosti zůstávají) a **Smaž kartu**. Po roce v archivu se Zvonec zeptá, jestli karty nesmazat. Archiv vidí jen vedoucí. Starý odkaz na filtr „Už nechodí“ otevře archiv |
 | **Týmy a skupinky** | **Týmy**, **Skupinky**, **Vedení** a **Kdo co umí** (tabulka lidé × role: nic / učí se / umí, vedoucí klikem přepíná; u role je vidět, kolik lidí ji umí). V týmu záložky **Lidé**, **Role**, **Kdo co umí** a **Setkání**. Role: kolik lidí, „Bez toho to nepůjde“, jen pro dospělé, u dětí, jen část setkání, které role zvládne jeden člověk naráz. Starý tým jde dát do archivu |
 | **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: u každého proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
 | **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
-| **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, barvy, změna hesla, odhlášení. V ukázce i „Dívat se jako“ |
-| **Pastva**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: nejbližší setkání s obrázkem, časem, místem a mapou, pak další týdny a „Kde nás najdeš“; u každého setkání je tlačítko „Stáhnout do kalendáře“ (.ics). Dál zveřejněné formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
+| **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, barvy, změna hesla, odhlášení. V ukázce i „Jak to vidí ostatní“ |
+| **Pastva**, **Jak se scházíme** | veřejná část pro ty, kdo nejsou přihlášení: nejbližší setkání s obrázkem, časem, místem a mapou, pak další týdny a „Kde nás najdeš“; u každého setkání je tlačítko „Stáhni do kalendáře“ (.ics). Dál zveřejněné formáty. V ukázce ji otevře „Veřejná část“ dole v menu |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
 Celý tým · Všichni lidé**, hledání vždycky prochází všechny lidi. Když nikdo takový není,
@@ -77,7 +77,7 @@ v Lidech pod „Chybí údaje“, ať ji někdo doplní.
 
 **Formuláře** ukazují nejvýš zhruba sedm polí. Co se hodí jen občas, je schované pod **Další možnosti**
 a Zvonec si pamatuje, jestli byly otevřené. Dlouhé věci (třeba šablona) mají vlastní stránku
-s tlačítkem **Uložit**.
+s tlačítkem **Ulož**.
 
 **Stavy** poznáš podle tvaru, barvy i slova: zelené plné kolečko s fajfkou je potvrzeno, přerušovaný
 oranžový kroužek s hodinkami čeká na potvrzení, červené ✕ je nemůže (jméno je navíc přeškrtnuté).
@@ -153,8 +153,8 @@ zvonec/check.mjs ◀── bere si kód ─────────────�
 - **Kdo se může přihlásit, má klíč.** Na to, co kdo vidí, dohlíží aplikace, ne GitHub. Technicky zdatný člen by
   se k datům dostal i mimo aplikaci. Přihlásit se proto můžou jen lidé, kterým sbor věří, a do Zvonce
   nepatří žádné pastorační, zdravotní ani finanční poznámky. Klíč jde kdykoli vyměnit.
-- **Pozvánka = registrace online.** Vedoucí vytvoří pozvánku (Nastavení → Přístupy → Pozvat nového
-  člověka, nebo v Lidech tlačítkem Pozvat). Odkaz platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno,
+- **Pozvánka = registrace online.** Vedoucí vytvoří pozvánku (Nastavení → Přístupy → Pozvi nového
+  člověka, nebo v Lidech tlačítkem Pozvi). Odkaz platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno,
   kontakt, s čím pomůže, vlastní heslo, zaškrtne **souhlas** a je v Lidech jako host. Role, se kterými
   chce pomáhat, dostane jako „učí se“. Vedoucí to pak upraví.
 - **Ukládání:** změny se sbírají a po chvilce odejdou jako commit („Zvonec: Petr na Zvuk, …“). Každý
@@ -164,7 +164,7 @@ zvonec/check.mjs ◀── bere si kód ─────────────�
 - **Nový a zrušený přístup** začne platit za pár minut – až workflow `web.yml` znovu vystaví web s novým
   `access.json`.
 - **Ukázka:** když vedle aplikace `access.json` neleží (manifest.cirkevjakokrava.cz/zvonec/), běží aplikace
-  jako ukázka v prohlížeči s vymyšlenými lidmi. V Mém účtu se přes „Dívat se jako“ podíváš očima kohokoli z ukázky –
+  jako ukázka v prohlížeči s vymyšlenými lidmi. V Mém účtu se přes „Jak to vidí ostatní“ podíváš očima kohokoli z ukázky –
   hodí se na školení vedoucích i na vyzkoušení pohledu člena.
 - **Kontrola v Actions:** `zvonec/check.mjs` pustí stejná pravidla nad složkou `data/`. Když najde chybu
   u setkání, které ještě nebylo, běh zčervená a GitHub pošle e-mail.
@@ -219,7 +219,7 @@ Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (
    Pak Actions → Web → *Run workflow*.
 4. **GitHub klíč:** Settings → Developer settings → Fine-grained tokens → Generate new token,
    *Only select repositories* → datové repo, Permissions → Repository → **Contents: Read and write**. Nic víc.
-5. Otevřít https://zvonec.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Založit Zvonec**:
+5. Otevřít https://zvonec.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Nový Zvonec**:
    vložit klíč, svoje jméno a heslo. Jako základ jde vzít ukázku (skupiny, role, formáty, šablony, místa –
    bez lidí).
 6. V Lidech přidat lidi (nebo rozeslat pozvánky), v Týmech a skupinkách je zařadit do týmů a v Kalendáři ze šablony

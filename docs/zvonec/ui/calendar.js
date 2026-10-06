@@ -66,8 +66,8 @@ export function renderCalendar(parts = []) {
   return page({
     title: 'Kalendář',
     actions: [
-      view === 'rozpis' ? button('Vytisknout', { variant: 'surface', icon: 'print', onclick: () => window.print(), title: 'Na bílý papír, na šířku' }) : null,
-      leader ? button('Přidat setkání', { variant: 'solid', icon: 'plus', onclick: () => ctx.add() }) : null,
+      view === 'rozpis' ? button('Vytiskni', { variant: 'surface', icon: 'print', onclick: () => window.print(), title: 'Na bílý papír, na šířku' }) : null,
+      leader ? button('Přidej setkání', { variant: 'solid', icon: 'plus', onclick: () => ctx.add() }) : null,
     ],
     tabs: tabs(CAL_VIEWS.map(([v, label, iconName]) => ({ id: v, label, icon: iconName })), view, (v) => calendarHref(v, anchor), { label: 'Pohled' }),
     toolbar: toolbar(ctx),
@@ -157,7 +157,7 @@ function toolbar(ctx) {
     myId() ? switchField('calMine', 'Jen moje služby', ctx.filters.mine, {
       full: false, onchange: (e) => { S.filters.calMine = e.target.checked; render(); },
     }) : null,
-    count ? button('Zrušit filtry', { variant: 'ghost', size: 's', icon: 'x', cls: 'cal-clear', onclick: clearFilters }) : null);
+    count ? button('Zruš filtry', { variant: 'ghost', size: 's', icon: 'x', cls: 'cal-clear', onclick: clearFilters }) : null);
   const open = !!S.filters.calFiltersOpen;
   const toggle = button('Filtry', {
     variant: count ? 'soft' : 'surface', size: 's', icon: 'filter', cls: 'cal-filter-toggle',

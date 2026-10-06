@@ -51,11 +51,11 @@ function moreList({ open } = {}) {
   const invites = waitingInvites();
 
   const resetDemo = () => confirmSheet({
-    title: 'Začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začít znovu',
+    title: 'Chceš začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začni znovu',
     onConfirm: () => { replaceAll(createDemo(today()), 'nová ukázka'); toast('Ukázka je zpátky.'); },
   });
   const emptyDemo = () => confirmSheet({
-    title: 'Začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Zpátky ji vrátíš tlačítkem „Začít ukázku znovu“.', confirmLabel: 'Vyprázdnit',
+    title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Zpátky ji vrátíš tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
     onConfirm: () => { replaceAll(emptyData(), 'prázdný Zvonec'); toast('Je to prázdné.'); },
   });
 
@@ -76,9 +76,9 @@ function moreList({ open } = {}) {
     ].filter(Boolean), { label: 'Sbor' }),
     demo ? heading('Ukázka') : null,
     demo ? list([
-      row({ lead: icon('user'), title: 'Dívat se jako', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: viewAsSheet, chevron: true }),
-      row({ lead: icon('undo'), title: 'Začít ukázku znovu', single: true, onclick: resetDemo }),
-      row({ lead: icon('trash'), title: 'Začít načisto', single: true, onclick: emptyDemo }),
+      row({ lead: icon('user'), title: 'Podívej se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: viewAsSheet, chevron: true }),
+      row({ lead: icon('undo'), title: 'Začni ukázku znovu', single: true, onclick: resetDemo }),
+      row({ lead: icon('trash'), title: 'Začni načisto', single: true, onclick: emptyDemo }),
     ], { label: 'Ukázka' }) : null);
 }
 

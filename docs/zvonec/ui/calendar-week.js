@@ -3,18 +3,19 @@
 // clash K9 shows its mark); events over midnight or several days sit in the band on top. A line
 // shows the time now. Phone: three days, paged by three.
 
-import { h, icon, severityIcon, fillRing, button, emptyState, SEP } from './dom.js';
-import { S, SEVERITY_LABELS } from './state.js';
+import { h, button, emptyState, SEP } from './dom.js';
+import { S } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, dayOf, prettyDay, prettyDayLong, prettyTime, today, weekday, DAYS } from '../lib/time.js';
 import {
-  capital, eventWarning, fillOf, filteredEmpty, isMultiDay, kindHue, kindLabel, mondayOf, myRoles, passesFilters, placeNames,
+  capital, eventMarks, filteredEmpty, isMultiDay, kindHue, kindLabel, mondayOf, myRoles, passesFilters, placeNames,
   timeText, activeFilterCount,
 } from './calendar-shared.js';
 
 const HOUR = 52;            // px per hour
 const FIRST = 7;            // default first hour
 const LAST = 23;            // default last hour (exclusive end of the grid)
+const SHORT = 45;           // minutes: a block this short shows time + title only, its marks as one dot
 
 const minuteOf = (dateTime) => Number(dateTime.slice(11, 13)) * 60 + Number(dateTime.slice(14, 16));
 /** Minutes from midnight of the event's day to its end (24 * 60 for an end at 0.00 the next day). */
@@ -49,22 +50,6 @@ function packColumns(events) {
   return placed;
 }
 
-/** Marks in a block: mine, warning (leaders), people missing (leaders). */
-function blockMarks(event, leader) {
-  const out = [];
-  if (myRoles(event).length && !event.cancelled) out.push(h('span', { class: 'cal-mark cal-mark-mine', title: 'Tady sloužíš' }, icon('user'), h('span', { class: 'visually-hidden' }, 'tady sloužíš')));
-  if (leader && !event.cancelled) {
-    const warning = eventWarning(event);
-    const fill = fillOf(event);
-    if (warning) out.push(h('span', { class: ['cal-mark', `cal-mark-${warning}`], title: SEVERITY_LABELS[warning] }, severityIcon(warning), h('span', { class: 'visually-hidden' }, SEVERITY_LABELS[warning])));
-    if (fill.state) {
-      out.push(h('span', { class: ['cal-mark', 'cal-mark-fill', `fill-state-${fill.state}`], title: `Obsazeno ${fill.filled} z ${fill.needed}` },
-        fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, text: false, size: 13, label: `obsazeno ${fill.filled} z ${fill.needed}` })));
-    }
-  }
-  return out.length ? h('span', { class: 'cal-marks' }, out) : null;
-}
-
 export function weekView(ctx) {
   const { phone, leader } = ctx;
   const count = phone ? 3 : 7;
@@ -85,14 +70,15 @@ export function weekView(ctx) {
   last = Math.min(24, last);
   const top = (minute) => ((minute - first * 60) / 60) * HOUR;
 
-  // ----- head: weekday and day number; leaders get „+“ -----
+  // ----- head: weekday and day number in the middle; leaders get a compact „+“ in the top-right corner
+  // (its own grid column, so it never sits on the day) -----
   const head = h('div', { class: 'week-head' },
     h('div', { class: 'week-gutter' }),
     days.map((day) => h('div', { class: ['week-day-head', day === now && 'today', weekday(day) >= 5 && 'weekend'] },
-      h('a', { class: 'week-day-link', href: `#kalendar/mesic/${day}`, 'aria-label': capital(prettyDayLong(day)), title: 'Ukázat v měsíci' },
+      h('a', { class: 'week-day-link', href: `#kalendar/mesic/${day}`, 'aria-label': capital(prettyDayLong(day)), title: 'Ukaž v měsíci' },
         h('span', { class: 'week-dow' }, DAYS[weekday(day)]),
         h('span', { class: 'week-num' }, String(Number(day.slice(8))))),
-      leader ? button(null, { variant: 'ghost', size: 's', icon: 'plus', label: `Přidat setkání na ${prettyDay(day)}`, cls: 'week-day-add', onclick: () => ctx.add(day) }) : null)));
+      leader ? button(null, { variant: 'ghost', size: 's', icon: 'plus', label: `Přidej setkání na ${prettyDay(day)}`, cls: 'week-day-add', onclick: () => ctx.add(day) }) : null)));
 
   // ----- band: over midnight / several days -----
   let band = null;
@@ -112,13 +98,14 @@ export function weekView(ctx) {
     band = h('div', { class: 'week-band' },
       h('div', { class: 'week-gutter week-band-label' }, h('span', {}, 'Přes noc')),
       h('div', { class: 'week-band-bars' }, bars.map((b) => {
+        const { el: marks, words } = eventMarks(b.event, { leader });
         const el = h('a', {
           href: `#setkani/${b.event.id}`,
-          class: ['cal-bar', `c-${kindHue(b.event.kind)}`, b.cutStart && 'cut-start', b.cutEnd && 'cut-end', myRoles(b.event).length && 'mine', b.event.cancelled && 'cancelled'],
-          title: `${b.event.title}${SEP}${timeText(b.event)}`,
-          'aria-label': [b.event.title, timeText(b.event), kindLabel(b.event.kind)].join(', '),
+          class: ['cal-bar', `c-${kindHue(b.event.kind)}`, b.cutStart && 'cut-start', b.cutEnd && 'cut-end', myRoles(b.event).length && 'mine', b.event.cancelled && 'cancelled', marks && 'has-marks'],
+          title: [b.event.title, timeText(b.event), ...words].join(SEP),
+          'aria-label': [b.event.title, timeText(b.event), kindLabel(b.event.kind), ...words].join(', '),
         }, h('span', { class: 'cal-chip-text' }, h('span', { class: 'cal-chip-time' }, `${prettyDay(b.event.start)} ${prettyTime(b.event.start)}`), ' ', h('span', { class: 'cal-chip-title' }, b.event.title)),
-        blockMarks(b.event, leader));
+        marks);
         el.style.gridColumn = `${b.from + 1} / ${b.to + 2}`;
         el.style.gridRow = String(b.lane + 1);
         return el;
@@ -138,19 +125,22 @@ export function weekView(ctx) {
       placed.map((p) => {
         const e = p.event;
         const minutes = p.endMin - p.startMin;
-        const short = minutes < 50;
+        const short = minutes <= SHORT;
         const places = placeNames(e);
+        const { el: marks, words } = eventMarks(e, { leader });
+        // the block is a size container: css/calendar.css measures it and puts the marks top-right (wide),
+        // in their own row at the bottom (tall) or folds them into one dot (no room) – never over the text
         const block = h('a', {
           href: `#setkani/${e.id}`,
           class: ['week-event', `c-${kindHue(e.kind)}`, short && 'short', myRoles(e).length && !e.cancelled && 'mine', e.cancelled && 'cancelled',
-            dayOf(e.end) < now && 'past', p.cols > 1 && 'side'],
-          title: [e.title, timeText(e), places, e.cancelled ? 'zrušeno' : null].filter(Boolean).join(SEP),
-          'aria-label': [e.title, timeText(e), places, kindLabel(e.kind), e.cancelled ? 'zrušeno' : null].filter(Boolean).join(', '),
+            dayOf(e.end) < now && 'past', p.cols > 1 && 'side', marks && 'has-marks', marks && `marks-${marks.dataset.n}`],
+          title: [e.title, timeText(e), places, e.cancelled ? 'zrušeno' : null, ...words].filter(Boolean).join(SEP),
+          'aria-label': [e.title, timeText(e), places, kindLabel(e.kind), e.cancelled ? 'zrušeno' : null, ...words].filter(Boolean).join(', '),
         },
         h('span', { class: 'week-event-time' }, prettyTime(e.start), h('span', { class: 'week-event-end' }, `–${prettyTime(e.end)}`)),
         h('span', { class: 'week-event-title' }, e.title),
         !short && places ? h('span', { class: 'week-event-place' }, places) : null,
-        blockMarks(e, leader));
+        marks);
         block.style.top = `${top(p.startMin) + 1}px`;
         block.style.height = `${Math.max(22, (minutes / 60) * HOUR - 3)}px`;
         // overlapping events cascade: each later one a step to the right, all of them ~85 % wide, so

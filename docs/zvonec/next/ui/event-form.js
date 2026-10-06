@@ -106,14 +106,14 @@ function imageField(state, previewEvent) {
   const input = h('input', { type: 'file', accept: 'image/*', class: 'visually-hidden', tabindex: -1 });
   const preview = h('div', { class: 'ev-image__preview' });
   const problem = h('p', { class: 'field__error', hidden: true }, icon('x', { size: 's' }), h('span'));
-  const pick = button('Nahrát obrázek', { size: 's', icon: 'image', onclick: () => input.click() });
-  const remove = button('Odebrat obrázek', { size: 's', variant: 'quiet', onclick: () => { state.current = null; state.pending = null; draw(); } });
+  const pick = button('Nahraj obrázek', { size: 's', icon: 'image', onclick: () => input.click() });
+  const remove = button('Odeber obrázek', { size: 's', variant: 'quiet', onclick: () => { state.current = null; state.pending = null; draw(); } });
   const hint = h('p', { class: 'field__hint' });
   function draw() {
     const ev = previewEvent();
     const own = state.current && state.current !== state.typeImage ? state.current : null;
     preview.replaceChildren(state.pending ? cover(ev, { url: state.pending.data }) : cover({ ...ev, image: state.current || state.typeImage || undefined, typeId: undefined }));
-    pick.lastChild.textContent = state.pending || state.current || state.typeImage ? 'Vyměnit obrázek' : 'Nahrát obrázek';
+    pick.lastChild.textContent = state.pending || state.current || state.typeImage ? 'Vyměň obrázek' : 'Nahraj obrázek';
     remove.hidden = !(state.pending || own);
     hint.textContent = state.pending || own ? 'Uloží se spolu se setkáním.' : state.typeImage ? 'Obrázek je ze šablony.' : 'Bez obrázku Zvonec nakreslí obálku v barvách sboru.';
   }
@@ -211,7 +211,7 @@ function fieldsFor(base, { adding, image, moreOpen }) {
   const visible = [
     field({ label: 'Název setkání', control: textInput({ name: 'title', value: base.title || '', placeholder: 'např. Výlet na Javorník', onInput: () => image?.redraw() }) }),
     when,
-    adding ? segmentedField({ name: 'repeat', label: 'Opakovat', options: REPEAT_OPTIONS, value: '', onChange: (v) => { repeat = v; repaintRule(); } }) : null,
+    adding ? segmentedField({ name: 'repeat', label: 'Opakování', options: REPEAT_OPTIONS, value: '', onChange: (v) => { repeat = v; repaintRule(); } }) : null,
     untilField, adding ? rule : null,
     chipsField({ name: 'places', label: 'Kde', options: placeOptions(), value: base.placeIds || [], multiple: true }),
     adding ? null : field({ label: 'Popis pro web', optional: true, control: textArea({ name: 'description', value: base.description || '', rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' }) }),
@@ -221,7 +221,7 @@ function fieldsFor(base, { adding, image, moreOpen }) {
     field({ label: 'Pro koho', hint: 'Čí je to setkání – třeba zkouška chval nebo skupinka.', control: selectInput({ name: 'groupId', options: groupOptions(), value: base.groupId || '' }) }),
     adding ? field({ label: 'Popis pro web', optional: true, control: textArea({ name: 'description', value: base.description || '', rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' }) }) : null,
     image?.element,
-    switchRow({ name: 'public', label: 'Ukázat na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: base.public === true }),
+    switchRow({ name: 'public', label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: base.public === true }),
     field({ label: 'Pro tým', optional: true, hint: 'Tuhle poznámku na webu nikdo neuvidí.', control: textArea({ name: 'note', value: base.note || '', rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }) }),
   ];
   return {
@@ -261,10 +261,10 @@ function openEventForm({ type, day: chosenDay }) {
   const preview = () => ({ id: 'new', kind: form?.elements.kind?.value || base.kind, title: form?.elements.title.value || base.title || 'Nové setkání', start: base.start });
   const picture = imageField(image, preview);
   const parts = fieldsFor(base, { adding: true, image: picture, moreOpen: false });
-  const back = link('Vybrat jinou šablonu', { icon: 'chevron-left', onclick: () => { sheetRef.close({ restore: false }); openAddEvent({ day: chosenDay }); } });
+  const back = link('Vyber jinou šablonu', { icon: 'chevron-left', onclick: () => { sheetRef.close({ restore: false }); openAddEvent({ day: chosenDay }); } });
   const sheetRef = formSheet({
     title: type ? type.name : 'Nové setkání',
-    submitLabel: 'Přidat setkání',
+    submitLabel: 'Přidej setkání',
     body: [back, ...parts.nodes],
     onSubmit: async (f) => {
       const when = readWhen(f);
@@ -310,7 +310,7 @@ export function openEditEvent(eventId) {
   const moreOpen = !!(event.note || event.groupId);
   const parts = fieldsFor(event, { adding: false, image: picture, moreOpen });
   const sheetRef = formSheet({
-    title: 'Upravit setkání',
+    title: 'Úprava setkání',
     body: [h('p', { class: 'meta' }, [event.title, shortDate(event.start)].join(SEP)), ...parts.nodes],
     onSubmit: async (f) => {
       const when = readWhen(f);
@@ -363,9 +363,9 @@ export function extendSeriesSheet(series) {
   };
   const initial = addMonths(lastDay > today() ? lastDay : today(), 3);
   formSheet({
-    title: 'Prodloužit řadu',
+    title: 'Prodloužení řady',
     subtitle: `${seriesSummary(series, { today: today() })}${SEP}poslední ${shortDate(lastDay)}`,
-    submitLabel: 'Prodloužit řadu',
+    submitLabel: 'Prodluž řadu',
     body: [
       field({ label: 'Do kdy', control: dateInput({ name: 'until', value: initial, min: lastDay, label: 'Do kdy', onChange: paint }) }),
       words,
@@ -406,7 +406,7 @@ export function cancelOrRestore(eventId) {
         change('vráceno: zrušení');
       },
     });
-  }, { title: cancelling ? 'Zrušit i další setkání v řadě?' : 'Obnovit i další setkání v řadě?' });
+  }, { title: cancelling ? 'Chceš zrušit i další setkání v řadě?' : 'Chceš obnovit i další setkání v řadě?' });
 }
 
 export function deleteEventFlow(eventId) {
@@ -424,17 +424,17 @@ export function deleteEventFlow(eventId) {
     if (location.hash.startsWith(`#setkani/${eventId}`)) navigate(back);
   };
   if (!following) {
-    confirmSheet({ title: 'Smazat setkání?', text: `${event.title}, ${shortDate(event.start)}. Zmizí i s tím, kdo slouží, a s osnovou. Vrátit to nepůjde.`, confirmLabel: 'Smazat setkání', onConfirm: () => remove(false) });
+    confirmSheet({ title: 'Chceš smazat setkání?', text: `${event.title} (${shortDate(event.start)}) zmizí i s tím, kdo slouží, a s osnovou. Vrátit to nepůjde.`, confirmLabel: 'Smaž setkání', onConfirm: () => remove(false) });
     return;
   }
   let sheet;
   sheet = openSheet({
-    title: 'Smazat setkání?',
-    body: h('p', { class: 'text' }, `${event.title}, ${shortDate(event.start)}. Zmizí i s tím, kdo slouží, a s osnovou. Vrátit to nepůjde.`),
+    title: 'Chceš smazat setkání?',
+    body: h('p', { class: 'text' }, `${event.title} (${shortDate(event.start)}) zmizí i s tím, kdo slouží, a s osnovou. Vrátit to nepůjde.`),
     foot: [
-      button('Smazat jen tohle setkání', { variant: 'danger', size: 'l', block: true, onclick: () => { sheet.close(); remove(false); } }),
-      button(`Smazat i ${following} ${following === 1 ? 'další' : following <= 4 ? 'další' : 'dalších'}`, { variant: 'danger', size: 'l', block: true, onclick: () => { sheet.close(); remove(true); } }),
-      button('Nechat být', { variant: 'quiet', block: true, onclick: () => sheet.close() }),
+      button('Smaž jen tohle setkání', { variant: 'danger', size: 'l', block: true, onclick: () => { sheet.close(); remove(false); } }),
+      button(`Smaž i ${following} ${following === 1 ? 'další' : following <= 4 ? 'další' : 'dalších'}`, { variant: 'danger', size: 'l', block: true, onclick: () => { sheet.close(); remove(true); } }),
+      button('Nech to být', { variant: 'quiet', block: true, onclick: () => sheet.close() }),
     ],
   });
 }

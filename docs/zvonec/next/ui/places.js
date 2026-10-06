@@ -90,7 +90,7 @@ export function renderPlaces() {
     lead: isSplit() ? null : 'Kde se scházíme. Místnost zdědí adresu i mapu po budově.',
     body,
     wide: isSplit(),
-    primary: leader ? { label: 'Přidat místo', icon: 'plus', onclick: add } : null,
+    primary: leader ? { label: 'Přidej místo', icon: 'plus', onclick: add } : null,
     cls: 'plc-page',
   });
 }
@@ -100,10 +100,10 @@ export function renderPlaces() {
 function placeMenu(raw) {
   if (!can('leader')) return null;
   return [
-    { label: 'Upravit místo', icon: 'pencil', onclick: () => placeSheet(raw) },
-    !raw.partOf ? { label: 'Přidat místnost', icon: 'plus', onclick: () => placeSheet(null, { partOf: raw.id }) } : null,
+    { label: 'Uprav místo', icon: 'pencil', onclick: () => placeSheet(raw) },
+    !raw.partOf ? { label: 'Přidej místnost', icon: 'plus', onclick: () => placeSheet(null, { partOf: raw.id }) } : null,
     '-',
-    { label: 'Smazat místo', icon: 'trash', danger: true, onclick: () => deletePlace(raw) },
+    { label: 'Smaž místo', icon: 'trash', danger: true, onclick: () => deletePlace(raw) },
   ].filter(Boolean);
 }
 
@@ -120,7 +120,7 @@ function placeDetail(raw, { pane = false } = {}) {
     pane ? h('div', { class: 'detail__head' },
       h('span', { class: 'plc-mark', 'aria-hidden': 'true' }, icon(rooms.length ? 'home' : 'pin')),
       h('div', {}, titleEl(raw.name, { small: true, tag: 'h2' }), h('p', { class: 'meta' }, building ? `místnost v budově ${building.name}` : main ? 'hlavní místo sboru' : place.address || 'bez adresy')),
-      leader ? h('div', { class: 'head-actions' }, button('Upravit', { size: 's', icon: 'pencil', onclick: () => placeSheet(raw) })) : null) : null,
+      leader ? h('div', { class: 'head-actions' }, button('Uprav', { size: 's', icon: 'pencil', onclick: () => placeSheet(raw) })) : null) : null,
     h('div', { class: 'plc-where' },
       h('p', { class: 'text' }, place.address ? place.address : 'Adresa tu zatím není.', building && !raw.address && place.address ? h('span', { class: 'meta' }, ' (po budově)') : null),
       h('div', { class: 'cluster' },
@@ -132,7 +132,7 @@ function placeDetail(raw, { pane = false } = {}) {
     rooms.length || (leader && !building) ? section({
       title: 'Místnosti',
       count: rooms.length || null,
-      action: leader && !building ? button('Přidat místnost', { size: 's', icon: 'plus', onclick: () => placeSheet(null, { partOf: raw.id }) }) : null,
+      action: leader && !building ? button('Přidej místnost', { size: 's', icon: 'plus', onclick: () => placeSheet(null, { partOf: raw.id }) }) : null,
       body: rooms.length
         ? list(rooms.map((r) => row({ title: r.name, meta: joinMeta([r.shared ? 'víc věcí naráz' : null, `${eventsWord(upcomingAt(r.id).length)} před námi`]), href: `#misto/${r.id}`, chevron: true })), { label: 'Místnosti' })
         : h('p', { class: 'meta' }, 'Má budova sál a menší místnosti? Přidej je a Zvonec pohlídá, aby se setkání nepotkala.'),
@@ -156,7 +156,7 @@ export function renderPlace(id) {
     const leader = can('leader');
     return morePage({
       title: 'Místa', root: true, wide: true, cls: 'plc-page',
-      primary: leader ? { label: 'Přidat místo', icon: 'plus', onclick: () => placeSheet() } : null,
+      primary: leader ? { label: 'Přidej místo', icon: 'plus', onclick: () => placeSheet() } : null,
       body: splitView({ list: placeRows(raw.id), detail: detailPane({ body: placeDetail(raw, { pane: true }), closeHref: '#mista' }), label: 'Místo' }),
     });
   }
@@ -190,7 +190,7 @@ export function placeSheet(place, { partOf: presetPartOf = '' } = {}) {
   const address = textInput({ name: 'address', value: place?.address || '', placeholder: 'např. Dlouhá 21, Nový Jičín', autocomplete: 'off' });
   const coords = textInput({ name: 'coords', value: coordsText(place), placeholder: 'např. 49.594, 18.010', inputmode: 'decimal', autocomplete: 'off' });
   let shared = !!place?.shared;
-  const find = h('a', { class: 'link', target: '_blank', rel: 'noopener noreferrer' }, 'Najít na Mapy.cz', icon('external', { size: 's' }));
+  const find = h('a', { class: 'link', target: '_blank', rel: 'noopener noreferrer' }, 'Najdi na Mapy.cz', icon('external', { size: 's' }));
   const updateFind = () => { find.href = mapUrl({ address: address.value.trim(), name: name.value.trim() }); };
   address.addEventListener('input', updateFind);
   name.addEventListener('input', updateFind);
@@ -218,8 +218,8 @@ export function placeSheet(place, { partOf: presetPartOf = '' } = {}) {
   if (ownRooms.length) partOfField?.querySelector('select')?.setAttribute('disabled', '');
   sync();
   formSheet({
-    title: place ? 'Upravit místo' : partOf ? 'Přidat místnost' : 'Přidat místo',
-    submitLabel: place ? 'Uložit' : partOf ? 'Přidat místnost' : 'Přidat místo',
+    title: place ? 'Úprava místa' : partOf ? 'Nová místnost' : 'Nové místo',
+    submitLabel: place ? 'Ulož' : partOf ? 'Přidej místnost' : 'Přidej místo',
     body: [
       field({ label: 'Název', control: name }),
       partOfField,
@@ -270,9 +270,9 @@ function deletePlace(place) {
   }
   const past = S.data.events.filter((e) => (e.placeIds || []).includes(place.id)).length;
   confirmSheet({
-    title: `Smazat místo ${place.name}?`,
+    title: `Chceš smazat místo ${place.name}?`,
     text: past ? 'Zmizí i z údajů setkání, která už proběhla.' : 'Nikde ho nepoužíváme.',
-    confirmLabel: 'Smazat místo',
+    confirmLabel: 'Smaž místo',
     onConfirm: () => {
       S.data.places = S.data.places.filter((x) => x.id !== place.id);
       for (const e of S.data.events) e.placeIds = (e.placeIds || []).filter((x) => x !== place.id);

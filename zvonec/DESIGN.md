@@ -31,7 +31,10 @@ same change.
    Progress bars have one colour meaning: accent = progress, amber = over a limit / warning, red = error.
 6. **Semantics first.** Screens and the kit emit one semantic DOM; the look lives in tokens and the kit
    CSS (§2–3). No raw colours or font names in module CSS; radii come from tokens.
-7. **Czech** is natural and plain (CLAUDE.md, `kontrola-cestiny`). Buttons are a verb (+ object).
+7. **Czech** is natural and plain (CLAUDE.md, `kontrola-cestiny`). The app speaks in one kind voice in tykání: actions (buttons, menu items,
+   action links, aria-labels of icon buttons) are imperative 2nd person singular („Přidej setkání“, „Ulož“,
+   „Přihlas se“, „Zkus to znovu“); page, section and dialog titles are nouns, never infinitives
+   („Přihlášení“, „Nové setkání“, „Úprava místa“); a confirmation asks „Chceš smazat …?“.
    „Může se přihlásit“, never „má přihlášení“.
 8. **Keyboard and screen reader:** real buttons and links, a label on every field, a visible focus ring
    (2 px `--focus`), Esc closes dialogs and menus, `aria-current` / `aria-pressed` / `aria-selected`
@@ -141,7 +144,7 @@ column on every tab (Kdo co umí scrolls sideways inside it).
 
 ```
 header.appbar     brand „církev jako kráva“ + „Zvonec“ · save status (only while saving / on error) ·
-                  colour picker (bullseye) · me (avatar + name → Můj účet) | „Přihlásit se“
+                  colour picker (bullseye) · me (avatar + name → Můj účet) | „Přihlas se“
                   (desktop: the brand sits at the top of the sidebar, the picker and the person at its foot)
 div.app-body
   aside.sidebar   nav (icon + label, count on Upozornění) · at the bottom „Veřejná část“ / „Zpátky do Zvonce“
@@ -179,18 +182,18 @@ Sidebar in order of frequency; slugs are what people see and share.
 | Setkání | `#setkani/<id>[/sluzby\|/osnova]` | **Přehled · Kdo slouží · Osnova** | edit | read, answer own duty |
 | **Upozornění** | `#upozorneni[/lide]` | **Podle setkání · Podle lidí**; Závažnost, Kdy | yes | – |
 | **Lidé** | `#lide/<pohled>/<filtr>` | **Seznam · Tabulka · Domácnosti · Podle skupin · Narozeniny · Břemeno**; filters Všichni · Členové · Přátelé · Hosté · Děti (+ Chybí údaje); a quiet „Archiv (n)“ at the end of the list | all six | Seznam · Domácnosti · Podle skupin |
-| Archiv | `#lide/archiv` (old `…/nechodi` opens it) | cards in the archive: „v archivu od …“, Vrátit z archivu, Smazat kartu; after a year „<n> karet je v archivu déle než rok. Smazat je?“ | yes | – |
-| Karta člověka | `#osoba/<id>`, `#domacnost/<id>` | per-section editing; „Přesunout do archivu“ in ⋯ (and under Členství, field „Stav“) | edit | reduced card (never an archived one) |
+| Archiv | `#lide/archiv` (old `…/nechodi` opens it) | cards in the archive: „v archivu od …“, Vrať z archivu, Smaž kartu; after a year „<n> karet je v archivu déle než rok. Chceš je smazat?“ | yes | – |
+| Karta člověka | `#osoba/<id>`, `#domacnost/<id>` | per-section editing; „Přesuň do archivu“ in ⋯ (and under Členství, field „Stav“) | edit | reduced card (never an archived one) |
 | **Týmy a skupinky** | `#tymy/<tymy\|skupinky\|vedeni\|umi>` | **Týmy · Skupinky · Vedení · Kdo co umí** (matrix) | yes | – |
 | Tým | `#tym/<id>/<lide\|role\|umi\|setkani>` | skupinka and vedení: Lidé · Setkání only | edit | – |
 | **Jak se scházíme** | `#sablony`, `#formaty[/<id>]`, `#mista` | **Šablony · Formáty · Místa**; full-page editors `#sablona/<id>`, `#misto/<id>` | edit | Formáty · Místa read |
-| **Nastavení** | `#nastaveni/<sbor\|pravidla\|pristupy\|zaloha>` | **Sbor · Pravidla · Přístupy · Záloha** (GitHub klíč and „Nahrát zálohu“: admin) | yes | – |
-| **Můj účet** | `#ucet` | contact, kdy nemůžu, .ics, Barvy, heslo, odhlásit; demo „Dívat se jako“ | yes | yes |
+| **Nastavení** | `#nastaveni/<sbor\|pravidla\|pristupy\|zaloha>` | **Sbor · Pravidla · Přístupy · Záloha** (GitHub klíč and „Obnova ze zálohy“: admin) | yes | – |
+| **Můj účet** | `#ucet` | contact, kdy nemůžu, .ics, Barvy, heslo, odhlášení; demo „Jak to vidí ostatní“ | yes | yes |
 | **Veřejná část** | `#pastva[/<id>]`, `#jak-se-schazime` | Pastva (hero, weeks, „Kde nás najdeš“), one event, published formats | everyone | everyone |
 
 Navigation per role: leader **Přehled · Kalendář · Upozornění · Lidé · Týmy a skupinky · Jak se
 scházíme · Nastavení**; member **Přehled · Kalendář · Lidé · Jak se scházíme**; visitor **Pastva · Jak se
-scházíme · Přihlásit se**. Rozpis is a Kalendář view (the planning surface: a cell opens the picker in
+scházíme · Přihlas se**. Rozpis is a Kalendář view (the planning surface: a cell opens the picker in
 place), not a module. Each module is complete on its own: list → detail → create / edit / delete,
 with no detour through another module. Old slugs redirect (list in ARCHITECTURE.md §5).
 
@@ -205,11 +208,11 @@ with no detour through another module. Old slugs redirect (list in ARCHITECTURE.
 - Single choice of ≤ 4 options: segmented control; more: select or combobox. Yes / no: **switch with a
   sentence label**, never a checkbox paragraph. Several entities: chips with a check mark and fill.
 - **Dialog ≤ 560 px** for ≤ 2 sections (wide 760 for two text areas). Anything with a list inside (needs,
-  osnova, rooms) is a **page** with a section nav and a sticky „Uložit“, not a dialog.
+  osnova, rooms) is a **page** with a section nav and a sticky „Ulož“, not a dialog.
 - Validation inline, in Czech, with the ✕ symbol; never only a red border. Fields are 40 px with a
   border plus a lighter fill plus a label.
 - A series question („Jen tohle setkání / I N dalších“) is asked **on save**, as two buttons.
-- Footer: destructive action soft red on the left, „Zrušit“ ghost and „Uložit“ solid on the right.
+- Footer: destructive action soft red on the left, „Zruš“ ghost and „Ulož“ solid on the right.
 
 ## 8. Public vs. signed-in
 
@@ -227,11 +230,11 @@ with no detour through another module. Old slugs redirect (list in ARCHITECTURE.
 - The public site is built from `public.json`, written by the data-repo workflow from published,
   upcoming items only (`lib/public.js`, pure, tested; no person data at all). Rooms are resolved to
   `{ name, building?, address?, lat?, lon? }`.
-- A visitor sees Pastva, Jak se scházíme and „Přihlásit se“; the sign-in form is a page, not the site.
+- A visitor sees Pastva, Jak se scházíme and „Přihlas se“; the sign-in form is a page, not the site.
   Demo mode shows the same public pages built from demo data („Veřejná část“ in the sidebar).
 - Every event has a picture, title, date, time and description: uploaded `event.image`, else the
   template's, else a **generated cover** (palette, imprint, title in Narrow Black; one template or
-  series = one composition). Places show address and „Otevřít v mapě“ and, with coordinates, an
+  series = one composition). Places show address and „Otevři v mapě“ and, with coordinates, an
   OpenStreetMap iframe.
 
 ## 9. Components (the kit: `ui/kit.js`, `ui/icons.js`, re-exported by `ui/dom.js`)
@@ -261,7 +264,7 @@ Screens import only from `ui/dom.js`. The specimen `#kit` renders every piece in
 ## 10. Done means
 
 - Every flow of every module works in demo and in live mode (mocked GitHub) for admin, leader, member
-  (via „Dívat se jako“) and signed out.
+  (via „Jak to vidí ostatní“) and signed out.
 - Screens checked at 1440 × 900 and 390 × 844, light and dark; nothing stretched or
   tiny, no horizontal scroll, zero console errors.
 - Contrast holds in every mode; focus is visible; everything works by keyboard.

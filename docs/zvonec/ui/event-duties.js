@@ -64,7 +64,7 @@ export function removeAssignment(eventId, assignmentId) {
   const role = roleById(S.data, a.roleId)?.name || 'služba';
   change(`odebráno: ${nameOf(a)} (${role})`);
   toast(`Odebráno: ${nameOf(a)}.`, '', {
-    actionLabel: 'Vrátit',
+    actionLabel: 'Vrať',
     action: () => { const again = fresh(eventId); if (again) { again.assignments.push(a); change(`vráceno: ${nameOf(a)} (${role})`); } },
   });
 }
@@ -78,7 +78,7 @@ export function pickFor(eventId, roleId, assignmentId, { anchor } = {}) {
   // not offered: who is on the role already, and the person being replaced (even when they said no)
   const exclude = (event.assignments || []).filter((a) => a.roleId === roleId && (a.status !== 'declined' || a.id === assignmentId)).map((a) => a.personId);
   openPicker({
-    title: replacing ? `Vyměnit: ${nameOf(replacing)}` : `Kdo na ${role?.name || 'službu'}?`,
+    title: replacing ? `Výměna: ${nameOf(replacing)}` : `Kdo na ${role?.name || 'službu'}?`,
     eventId,
     roleId,
     scope: 'skilled',
@@ -103,7 +103,7 @@ export function pickFor(eventId, roleId, assignmentId, { anchor } = {}) {
       const team = role && groupById(S.data, role.groupId);
       if (team && !memberRecord(S.data, team.id, personId)) {
         toast(`${name} není v týmu ${team.name}.`, 'Bude to dělat častěji?', {
-          actionLabel: 'Přidat do týmu',
+          actionLabel: 'Přidej do týmu',
           action: () => { setSkill(S.data, personId, role.id, 'trained'); change(`${name} do týmu ${team.name}`); },
           duration: 9000,
         });
@@ -116,12 +116,12 @@ export function pickFor(eventId, roleId, assignmentId, { anchor } = {}) {
 export function assignmentMenu(eventId, assignment, { problem, onOverride, anchor } = {}) {
   const s = assignment.status;
   return [
-    s !== 'confirmed' ? ['Potvrdit', () => setStatus(eventId, assignment.id, 'confirmed'), { icon: 'check' }] : null,
+    s !== 'confirmed' ? ['Potvrď', () => setStatus(eventId, assignment.id, 'confirmed'), { icon: 'check' }] : null,
     s !== 'proposed' ? ['Čeká na potvrzení', () => setStatus(eventId, assignment.id, 'proposed'), { icon: 'clock' }] : null,
     s !== 'declined' ? ['Nemůže', () => setStatus(eventId, assignment.id, 'declined'), { icon: 'x' }] : null,
-    ['Vybrat jiného', () => pickFor(eventId, assignment.roleId, assignment.id, { anchor }), { icon: 'refresh' }],
-    (problem?.overridable || assignment.override) && onOverride ? [assignment.override ? 'Upravit důvod' : 'Vím o tom', onOverride, { icon: 'info' }] : null,
-    ['Otevřít kartu', () => { location.hash = `#osoba/${assignment.personId}`; }, { icon: 'user' }],
-    ['Odebrat', () => removeAssignment(eventId, assignment.id), { danger: true, icon: 'trash' }],
+    ['Vyber jiného', () => pickFor(eventId, assignment.roleId, assignment.id, { anchor }), { icon: 'refresh' }],
+    (problem?.overridable || assignment.override) && onOverride ? [assignment.override ? 'Uprav důvod' : 'Vím o tom', onOverride, { icon: 'info' }] : null,
+    ['Otevři kartu', () => { location.hash = `#osoba/${assignment.personId}`; }, { icon: 'user' }],
+    ['Odeber', () => removeAssignment(eventId, assignment.id), { danger: true, icon: 'trash' }],
   ].filter(Boolean);
 }

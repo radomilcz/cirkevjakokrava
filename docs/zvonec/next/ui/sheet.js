@@ -1,5 +1,5 @@
 // Zvonec Next – the kit, part 2: layers. Bottom sheets (centred dialogs from 960 px), the ⋯ menu
-// (a sheet of actions on a phone, a popover on desktop), toasts with „Vrátit“, the one confirmation
+// (a sheet of actions on a phone, a popover on desktop), toasts with „Vrať“, the one confirmation
 // for what cannot be undone, and a form sheet. Focus is trapped in the top layer (the rest is inert),
 // Esc closes it, focus returns to where it came from; a sheet can be swiped down by its grabber.
 
@@ -59,16 +59,16 @@ export function closeLayers() {
 
 /**
  * A bottom sheet (phone) / centred dialog (≥ 960 px).
- *   const s = openSheet({ title: 'Kdy nemůžu', body: [...], foot: button('Uložit', { variant: 'primary', block: true }) })
+ *   const s = openSheet({ title: 'Kdy nemůžu', body: [...], foot: button('Ulož', { variant: 'primary', block: true }) })
  *   s.close()
  * Options: title (h2, also the accessible name), subtitle (a meta line under it), body (nodes), foot (sticky bottom – the primary action
  * across the full width), wide (760 px dialog for two text areas), label (name when there is no title),
  * onClose(), initialFocus (element or selector; default: the first field, else the close button),
- * autofocus (false: no field takes the focus by itself – formSheet does that for „Uložit“ sheets),
- * closeLabel ('Zavřít').
+ * autofocus (false: no field takes the focus by itself – formSheet does that for „Ulož“ sheets),
+ * closeLabel ('Zavři').
  * Returns { el, body, foot, close, setBody(nodes), setFoot(nodes) }.
  */
-export function openSheet({ title, subtitle, body, foot, wide = false, label, onClose, initialFocus, autofocus = true, closeLabel = 'Zavřít', cls } = {}) {
+export function openSheet({ title, subtitle, body, foot, wide = false, label, onClose, initialFocus, autofocus = true, closeLabel = 'Zavři', cls } = {}) {
   const returnTo = document.activeElement;
   const titleId = title ? uid('sheet') : null;
   const bodyEl = h('div', { class: 'sheet__body' }, body);
@@ -150,12 +150,12 @@ function swipeToClose(el, handles, close) {
 
 /**
  * A sheet with a form: fields in the body, the primary button across the bottom.
- *   formSheet({ title: 'Kdy nemůže', subtitle: 'Jana Nováková', body: [field…], submitLabel: 'Uložit', onSubmit: (form, values) => … })
+ *   formSheet({ title: 'Kdy nemůže', subtitle: 'Jana Nováková', body: [field…], submitLabel: 'Ulož', onSubmit: (form, values) => … })
  * onSubmit returns nothing to close, or a Czech sentence to keep the sheet open and show it as an error
  * (the button is never disabled – it says what is missing). Also returns a promise: awaited.
  * `values` = FormData as an object (checkboxes / switches: use form.elements or the control's own state).
  */
-export function formSheet({ title, subtitle, body, submitLabel = 'Uložit', onSubmit, wide, secondary, cls, autofocus = submitLabel !== 'Uložit' } = {}) {
+export function formSheet({ title, subtitle, body, submitLabel = 'Ulož', onSubmit, wide, secondary, cls, autofocus = submitLabel !== 'Ulož' } = {}) {
   const formId = uid('form');
   const error = h('p', { class: 'field__error form-error', role: 'alert', hidden: true }, icon('x', { size: 's' }), h('span'));
   const form = h('form', { id: formId, class: 'form', novalidate: true }, body);
@@ -177,16 +177,16 @@ export function formSheet({ title, subtitle, body, submitLabel = 'Uložit', onSu
 
 /**
  * The one confirmation (only for what cannot be undone: smazat, nahrát zálohu, zrušit přístup, vyměnit klíč).
- *   confirmSheet({ title: 'Smazat setkání?', text: 'Zmizí i se službami.', confirmLabel: 'Smazat setkání', onConfirm })
+ *   confirmSheet({ title: 'Chceš smazat setkání?', text: 'Zmizí i se službami.', confirmLabel: 'Smaž setkání', onConfirm })
  */
-export function confirmSheet({ title, text, confirmLabel = 'Smazat', danger = true, onConfirm } = {}) {
+export function confirmSheet({ title, text, confirmLabel = 'Smaž', danger = true, onConfirm } = {}) {
   let sheet;
   sheet = openSheet({
     title,
     body: text ? h('p', { class: 'text' }, text) : null,
     foot: [
       button(confirmLabel, { variant: danger ? 'danger' : 'primary', size: 'l', block: true, onclick: () => { sheet.close(); onConfirm?.(); } }),
-      button('Nechat být', { variant: 'quiet', block: true, onclick: () => sheet.close() }),
+      button('Nech to být', { variant: 'quiet', block: true, onclick: () => sheet.close() }),
     ],
   });
   return sheet;
@@ -197,7 +197,7 @@ export function confirmSheet({ title, text, confirmLabel = 'Smazat', danger = tr
 /**
  * The ⋯ menu of a screen or an object. items: [{ label, icon?, onclick?, href?, danger? } | '-'].
  * Phone: a sheet of actions (thumb reach). Desktop: a popover under the button.
- *   menu([{ label: 'Upravit setkání', icon: 'pencil', onclick }, '-', { label: 'Smazat setkání', danger: true, onclick }])
+ *   menu([{ label: 'Uprav setkání', icon: 'pencil', onclick }, '-', { label: 'Smaž setkání', danger: true, onclick }])
  */
 export function menu(items, { label = 'Další možnosti', icon: iconName = 'more', title } = {}) {
   const menuId = uid('menu');
@@ -274,10 +274,10 @@ function toastRoot() {
 }
 
 /**
- * One line, an optional „Vrátit“, 6 s, never more than two at once.
+ * One line, an optional „Vrať“, 6 s, never more than two at once.
  *   toast('Díky, počítáme s tebou.', { action: undo })
  */
-export function toast(words, { action, actionLabel = 'Vrátit', duration = 6000, icon: iconName = 'check' } = {}) {
+export function toast(words, { action, actionLabel = 'Vrať', duration = 6000, icon: iconName = 'check' } = {}) {
   const root = toastRoot();
   while (root.children.length >= 2) root.firstElementChild.remove();
   let timer = 0;
@@ -286,7 +286,7 @@ export function toast(words, { action, actionLabel = 'Vrátit', duration = 6000,
     iconName ? icon(iconName, { size: 's' }) : null,
     h('span', {}, words),
     action ? h('button', { type: 'button', class: 'btn btn--s', onclick: () => { done(); action(); } }, actionLabel) : null,
-    h('button', { type: 'button', class: 'icon-btn toast__close', 'aria-label': 'Zavřít', onclick: done }, icon('x', { size: 's' })));
+    h('button', { type: 'button', class: 'icon-btn toast__close', 'aria-label': 'Zavři', onclick: done }, icon('x', { size: 's' })));
   root.append(el);
   timer = setTimeout(done, duration);
   el.addEventListener('pointerenter', () => clearTimeout(timer));

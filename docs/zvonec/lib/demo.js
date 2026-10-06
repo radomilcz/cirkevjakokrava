@@ -439,7 +439,7 @@ const EVENT_TYPES = [
   }],
 ];
 
-/** Suggested people for the demo's „Dívat se očima někoho jiného“: an admin, a team leader, a member. */
+/** Suggested people for the demo's „Jak to vidí ostatní“: an admin, a team leader, a member. */
 export const DEMO_VIEWERS = { admin: personId('radim'), leader: personId('martina'), member: personId('jana') };
 
 // ---------- building ----------

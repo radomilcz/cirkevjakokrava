@@ -1,7 +1,7 @@
 // The public part: what a visitor who is not signed in sees (DESIGN §4, §4b). Only published data
 // from publicData() (lib/public.js shape) – never S.data directly, so nothing private can slip in.
 // #pastva – the next event as a hero, then the weeks, „Kde nás najdeš“ at the end ·
-// #pastva/<id> – one public event (shareable, „Stáhnout do kalendáře“) · #jak-se-schazime – published formats.
+// #pastva/<id> – one public event (shareable, „Stáhni do kalendáře“) · #jak-se-schazime – published formats.
 
 import {
   h, page, card, button, badge, andJoin, emptyState, eventCover, coverKey, placeLine, placeMap, mapUrl, callout, icon, plural, download, MONTHS_SHORT, SEP,
@@ -117,7 +117,7 @@ function downloadEvent(event, data) {
   download(`${slug || 'setkani'}-${dayOf(event.start)}.ics`, ics(calendarData, [item], data?.churchName || FALLBACK_NAME), 'text/calendar');
 }
 
-const calendarButton = (event, data, variant = 'surface') => button('Stáhnout do kalendáře', { variant, icon: 'calendar-plus', onclick: () => downloadEvent(event, data) });
+const calendarButton = (event, data, variant = 'surface') => button('Stáhni do kalendáře', { variant, icon: 'calendar-plus', onclick: () => downloadEvent(event, data) });
 
 // ---------- #pastva ----------
 
@@ -176,7 +176,7 @@ function whereWeAre(data) {
       h('h2', { class: 'pub-where-title' }, 'Kde nás najdeš'),
       h('p', { class: 'pub-where-name' }, home?.building || name),
       data.address ? h('p', { class: 'pub-where-address' }, data.address) : null,
-      data.address ? h('p', {}, h('a', { class: 'place-map-link', href: mapUrl(home || { address: data.address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě')) : null,
+      data.address ? h('p', {}, h('a', { class: 'place-map-link', href: mapUrl(home || { address: data.address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevři v mapě')) : null,
       updated ? h('p', { class: 'pub-where-updated' }, updated) : null),
     home ? h('div', { class: 'pub-where-map' }, placeMap(home)) : null);
 }

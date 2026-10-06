@@ -196,10 +196,10 @@ export function openDutySheet(eventId, assignmentId) {
       field({ label: 'Odpověď', hint: 'Když odpověď víš osobně, zapiš ji tady.', control: segmented(STATUS_OPTIONS, now.status, (v) => { answer(eventId, assignmentId, v, { quiet: true }); draw(); }, { label: 'Stav služby' }) }),
       warnings.length ? h('div', { class: 'duty-sheet__warn' }, warnings.map((c) => warningFor(c, { eventId, assignment: now, onDone: () => sheet.close() }))) : null,
       h('div', { class: 'duty-sheet__actions' },
-        button('Vybrat jiného', { icon: 'people', block: true, onclick: () => { sheet.close(); pickFor(eventId, now.roleId, assignmentId); } }),
-        phone ? button('Zavolat', { icon: 'phone', block: true, href: `tel:${String(phone).replace(/\s+/g, '')}` }) : null,
-        person && !person.deleted ? button('Otevřít kartu', { icon: 'user', block: true, href: `#osoba/${person.id}` }) : null,
-        button('Odebrat ze služby', { variant: 'danger', icon: 'trash', block: true, onclick: () => { sheet.close(); removeDuty(eventId, assignmentId); } })),
+        button('Vyber jiného', { icon: 'people', block: true, onclick: () => { sheet.close(); pickFor(eventId, now.roleId, assignmentId); } }),
+        phone ? button('Zavolej', { icon: 'phone', block: true, href: `tel:${String(phone).replace(/\s+/g, '')}` }) : null,
+        person && !person.deleted ? button('Otevři kartu', { icon: 'user', block: true, href: `#osoba/${person.id}` }) : null,
+        button('Odeber ze služby', { variant: 'danger', icon: 'trash', block: true, onclick: () => { sheet.close(); removeDuty(eventId, assignmentId); } })),
     ]);
   };
   sheet = openSheet({ title: roleName(a.roleId), subtitle: [dayWords(e), e.title].join(SEP), body: [], cls: 'duty-sheet' });
@@ -225,7 +225,7 @@ export function openMyAnswer(eventId, assignmentId) {
   sheet = openSheet({
     title: `${roleName(a.roleId)}${SEP}${e.title}`,
     subtitle: joinMeta([whenText(e), placeText(e)]),
-    body: [now, blocked ? h('p', { class: 'answer-clash' }, blockoutNote(blocked)) : null, here ? null : link('Otevřít setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
+    body: [now, blocked ? h('p', { class: 'answer-clash' }, blockoutNote(blocked)) : null, here ? null : link('Otevři setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
     foot: e.cancelled || past ? null : buttonRow(
       button('Můžu', { variant: blocked ? 'tint' : 'primary', size: 'l', onclick: () => pick('confirmed') }),
       button('Nemůžu', { variant: blocked ? 'primary' : 'tint', size: 'l', onclick: () => pick('declined') })),
@@ -258,7 +258,7 @@ export function openOverride(conflict) {
   if (!target) return;
   const existing = target.assignment.override;
   formSheet({
-    title: existing ? 'Upravit důvod' : 'Vím o tom',
+    title: existing ? 'Důvod' : 'Vím o tom',
     body: [
       h('p', { class: 'meta' }, conflict.text),
       field({ label: 'Proč to půjde', hint: 'Zvonec to pak přestane hlásit jako chybu.', control: textInput({ name: 'reason', value: existing?.reason || '', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
@@ -296,10 +296,10 @@ export function warningFor(conflict, { eventId, assignment, onDone, text, extra 
   const canReplace = assignment && assignment.personId === conflict.personId && dayOf(fresh(eventId)?.end || '') >= today();
   const overridable = (conflict.assignmentIds || []).length && (conflict.severity === 'error' || excused);
   const actions = excused ? [
-    button('Upravit důvod', { size: 's', onclick: done(() => openOverride(conflict)) }),
-    button('Přece jen to hlídat', { size: 's', variant: 'quiet', onclick: done(() => clearOverride(conflict)) }),
+    button('Uprav důvod', { size: 's', onclick: done(() => openOverride(conflict)) }),
+    button('Přece jen to hlídej', { size: 's', variant: 'quiet', onclick: done(() => clearOverride(conflict)) }),
   ] : [
-    canReplace ? button('Vybrat jiného', { size: 's', onclick: done(() => pickFor(eventId, assignment.roleId, assignment.id)) }) : null,
+    canReplace ? button('Vyber jiného', { size: 's', onclick: done(() => pickFor(eventId, assignment.roleId, assignment.id)) }) : null,
     overridable ? button('Vím o tom', { size: 's', variant: 'quiet', onclick: done(() => openOverride(conflict)) }) : null,
   ].filter(Boolean);
   if (extra) actions.push(extra);
@@ -322,7 +322,7 @@ export function slotRow(event, slot, conflicts, { short = false, warnings: showW
   const leader = can('leader');
   const a = slot.assignment;
   if (!a) {
-    if (leader && !event.cancelled) return dutyRow({ role: slot.role.name, empty: { onclick: () => pickFor(event.id, slot.role.id), label: 'Doplnit', aria: `Doplnit: ${slot.role.name}` } });
+    if (leader && !event.cancelled) return dutyRow({ role: slot.role.name, empty: { onclick: () => pickFor(event.id, slot.role.id), label: 'Doplň', aria: `Doplň: ${slot.role.name}` } });
     return h('div', { class: 'duty' }, h('span', { class: 'duty__role' }, slot.role.name), h('span', { class: 'duty__who' }, sev('error', 'chybí')));
   }
   const me = a.personId === myId();
@@ -420,7 +420,7 @@ function allFilled(eventIds, teams) {
   const elsewhere = teams ? emptySlots(S.data, eventIds, null).reduce((n, x) => n + x.n, 0) : 0;
   if (!elsewhere) { toast('Všechna místa jsou obsazená.', { icon: 'check' }); return; }
   toast(`Tady je všechno obsazené. V jiných týmech zbývá obsadit ${plural(elsewhere, 'místo', 'místa', 'míst')}.`, {
-    icon: 'info', actionLabel: 'Ukázat', action: () => openEmptySlots(eventIds, { teams: null }), duration: 9000,
+    icon: 'info', actionLabel: 'Ukaž', action: () => openEmptySlots(eventIds, { teams: null }), duration: 9000,
   });
 }
 
@@ -454,8 +454,8 @@ export function openEmptySlots(eventIds, { teams = null, nobody = false, written
       list.map((x) => h('div', { class: 'plan-row plan-row--empty' },
         h('span', { class: 'plan-row__role' }, roleName(x.roleId)),
         h('span', { class: 'plan-row__who' }, sev('error', x.n > 1 ? `chybí ${x.n}` : 'chybí')),
-        button('Vybrat', {
-          size: 's', label: `Vybrat: ${roleName(x.roleId)}, ${shortDate(event.start)}`,
+        button('Vyber', {
+          size: 's', label: `Vyber: ${roleName(x.roleId)}, ${shortDate(event.start)}`,
           onclick: () => { sheet.close({ restore: false }); pickFor(eventId, x.roleId, null, { onPicked: again }); },
         }))));
   });
@@ -463,7 +463,7 @@ export function openEmptySlots(eventIds, { teams = null, nobody = false, written
   if (written) {
     body.unshift(h('div', { class: 'plan-done', role: 'status' }, icon('check', { size: 's' }),
       h('span', {}, `Zapsáno: ${written.n} ${agree(written.n, 'služba', 'služby', 'služeb')}. Čekají na potvrzení.`),
-      button('Vrátit', { size: 's', variant: 'quiet', onclick: () => { sheet.close(); written.undo(); toast('Vráceno.', { icon: 'undo' }); } })));
+      button('Vrať', { size: 's', variant: 'quiet', onclick: () => { sheet.close(); written.undo(); toast('Vráceno.', { icon: 'undo' }); } })));
   }
   const places = plural(missing, 'místo', 'místa', 'míst');
   sheet = openSheet({
@@ -501,7 +501,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   const submit = button('', { variant: 'primary', size: 'l', block: true });
   const paint = () => {
     const n = chosen().length;
-    submit.lastChild.textContent = n ? `Zapsat ${sluzbyAcc(n)}` : 'Nic nezapisovat';
+    submit.lastChild.textContent = n ? `Zapiš ${sluzbyAcc(n)}` : 'Nic nezapisuj';
   };
   const body = groups.map((g) => {
     const event = fresh(g.eventId);
@@ -578,7 +578,7 @@ export const andFollowing = (n) => (n === 1 ? 'I to další' : `I ${n} ${n <= 4 
  * The series question (two buttons): „Jen tohle setkání“ / „I 11 dalších“. Without following events
  * it calls onAnswer(false) right away.
  */
-export function askSeries(event, onAnswer, { title = 'Změnit i další setkání v řadě?', text, onCancel } = {}) {
+export function askSeries(event, onAnswer, { title = 'Chceš změnit i další setkání v řadě?', text, onCancel } = {}) {
   const following = followingInSeries(S.data, event).length;
   if (!following) { onAnswer(false); return; }
   let answered = false;

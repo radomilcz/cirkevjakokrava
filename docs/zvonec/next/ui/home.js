@@ -30,9 +30,9 @@ import { blockoutSection } from './blockouts.js';
 import { viewAsSheet } from './account.js';
 import { waitingInvites } from './access.js';
 
-const ANSWERS_SHOWN = 3;      // Odpověz: the first three as cards, then „Ukázat další 2“ (short rows)
+const ANSWERS_SHOWN = 3;      // Odpověz: the first three as cards, then „Ukaž další 2“ (short rows)
 const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four events, then „Celý rozpis“
-const MINE_SHOWN = 5;         // Tvoje služby: five rows, then „Ukázat další 3“
+const MINE_SHOWN = 5;         // Tvoje služby: five rows, then „Ukaž další 3“
 const WEEK_SHOWN = 3;         // Tento týden
 const NEED_DAYS = 21;
 const MINE_WEEKS = 8;
@@ -47,7 +47,7 @@ const cap = (s) => s.charAt(0).toLocaleUpperCase('cs') + s.slice(1);
 const todayLine = () => cap(prettyDayLong(today()).replace(/ \d{4}$/, ''));
 
 /** „Ukázat další 2“ · „Ukázat dalších 5“ · „Ukázat další“ */
-const showMore = (n) => (n === 1 ? 'Ukázat další' : n <= 4 ? `Ukázat další ${n}` : `Ukázat dalších ${n}`);
+const showMore = (n) => (n === 1 ? 'Ukaž další' : n <= 4 ? `Ukaž další ${n}` : `Ukaž dalších ${n}`);
 
 // ---------- Odpověz ----------
 
@@ -206,7 +206,7 @@ function needItem({ event, slots, waiting, errors, filled, needed }) {
     dataset: { event: event.id },
     summary: [
       missing ? ['error', `chybí ${missing}`] : null,
-      waiting.length ? ['warning', waitWords, { onclick: () => waitingSheet(event, waiting), label: `${waitWords} na potvrzení – ukázat koho` }] : null,
+      waiting.length ? ['warning', waitWords, { onclick: () => waitingSheet(event, waiting), label: `${waitWords} na potvrzení – ukaž koho` }] : null,
       errors ? ['error', `${errors} ${agree(errors, 'chyba', 'chyby', 'chyb')}`, { href: `#setkani/${event.id}/sluzby` }] : null,
     ].filter(Boolean),
     filled,
@@ -214,7 +214,7 @@ function needItem({ event, slots, waiting, errors, filled, needed }) {
     slots: slots.map((s) => ({
       label: s.missing > 1 ? `${s.missing}× ${s.role.name}` : s.role.name,
       onclick: () => pickFor(event.id, s.roleId),
-      aria: `Doplnit: ${s.role.name}, ${event.title} ${shortDate(event.start)}`,
+      aria: `Doplň: ${s.role.name}, ${event.title} ${shortDate(event.start)}`,
     })),
   });
 }
@@ -239,7 +239,7 @@ function needBlock() {
   const scopeChips = teams ? chips([
     { value: 'mine', label: teams.length === 1 ? `Můj tým: ${teams[0].name}` : 'Moje týmy' },
     { value: 'all', label: 'Všechny týmy' },
-  ], scope, choose, { label: 'Čí služby ukázat' }) : null;
+  ], scope, choose, { label: 'Čí služby' }) : null;
   const body = items.length
     ? [list(items.slice(0, NEEDS_SHOWN).map(needItem), { inset: false, cls: 'home-need__list' })]
     : [quiet(scoped ? 'V tvých týmech je na příští tři týdny všechno obsazené a potvrzené.' : 'Na příští tři týdny je všechno obsazené.', { icon: 'check' })];
@@ -275,7 +275,7 @@ function mineBlock(me) {
     declined: assignment.status === 'declined' && !event.cancelled,
     onclick: () => openMyAnswer(event.id, assignment.id),
     chevron: true,
-    label: `${roleName(assignment.roleId)}, ${event.title} ${shortDate(event.start)} – změnit odpověď`,
+    label: `${roleName(assignment.roleId)}, ${event.title} ${shortDate(event.start)} – změň odpověď`,
   }));
   const el = section({
     title: 'Tvoje služby',
@@ -284,7 +284,7 @@ function mineBlock(me) {
       rows.length ? list(rows, { label: 'Tvoje služby' }) : quiet(waitingCount
         ? 'Všechny tvoje služby čekají nahoře na odpověď.' : 'Teď žádnou službu nemáš.'),
       rest > 0 ? rowLink(showMore(rest), { onclick: () => { open.mine = true; rerender(el, () => mineBlock(me), `.home-mine .row:nth-child(${MINE_SHOWN + 1})`); } }) : null,
-      rowLink('Stáhnout do kalendáře', { icon: 'download', onclick: () => downloadDuties(me) }),
+      rowLink('Stáhni do kalendáře', { icon: 'download', onclick: () => downloadDuties(me) }),
     ],
   });
   return el;
@@ -375,7 +375,7 @@ function demoBanner(me) {
   return h('div', { class: 'home-demo', role: 'note' },
     icon('user', { size: 's' }),
     h('span', { class: 'home-demo__text' }, 'Díváš se jako ', h('strong', {}, who), me ? ` (${ACCESS_LABELS[S.me.access]})` : null),
-    link('Změnit', { onclick: viewAsSheet, label: 'Dívat se jako někdo jiný' }));
+    link('Změň', { onclick: viewAsSheet, label: 'Podívej se očima někoho jiného' }));
 }
 
 // ---------- the screen ----------

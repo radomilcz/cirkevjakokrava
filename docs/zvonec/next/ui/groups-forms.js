@@ -79,8 +79,8 @@ const KIND_HINTS = {
 export function groupSheet(group = null, { kind = 'team' } = {}) {
   const hint = h('p', { class: 'field__hint' }, KIND_HINTS[kind]);
   const sheet = formSheet({
-    title: group ? 'Upravit skupinu' : 'Přidat skupinu',
-    submitLabel: group ? 'Uložit' : 'Přidat skupinu',
+    title: group ? 'Úprava skupiny' : 'Nová skupina',
+    submitLabel: group ? 'Ulož' : 'Přidej skupinu',
     body: [
       group ? null : h('div', { class: 'field' },
         segmentedField({ name: 'kind', label: 'Druh skupiny', value: kind, options: KIND_CHOICES, onChange: (v) => { hint.textContent = KIND_HINTS[v]; } }), hint),
@@ -133,9 +133,9 @@ export function deleteGroup(group) {
     use.all ? `V rozpisu ${agree(use.all, 'zmizí', 'zmizí', 'zmizí')} ${plural(use.all, 'služba', 'služby', 'služeb')}. Když chceš historii nechat, dej skupinu radši do archivu.` : '',
   ].filter(Boolean).join(' ') || 'Nikdo v ní není, nic dalšího nezmizí.';
   confirmSheet({
-    title: `Smazat ${group.name}?`,
+    title: `Chceš smazat ${group.name}?`,
     text,
-    confirmLabel: 'Smazat skupinu',
+    confirmLabel: 'Smaž skupinu',
     onConfirm: () => {
       const g = groupById(S.data, group.id);
       if (!g) return;
@@ -173,7 +173,7 @@ export function memberSheet(group, personId, { fresh = false } = {}) {
   sheet = formSheet({
     subtitle: group.name,
     title: personName(person),
-    submitLabel: 'Uložit',
+    submitLabel: 'Ulož',
     body: [
       fresh && group.kind === 'team' ? h('p', { class: 'meta' }, `Je ${words.in} ${group.name}. Co tu umí?`) : null,
       skillRows,
@@ -262,8 +262,8 @@ export function roleSheet(group, role = null) {
   const anyMore = !!(role && (role.adultsOnly || role.childcare || role.window || partners.length));
   const sheet = formSheet({
     subtitle: role ? joinMeta([role.name, group.name]) : group.name,
-    title: role ? 'Upravit roli' : 'Přidat roli',
-    submitLabel: role ? 'Uložit' : 'Přidat roli',
+    title: role ? 'Úprava role' : 'Nová role',
+    submitLabel: role ? 'Ulož' : 'Přidej roli',
     body: [
       field({ label: 'Název', control: textInput({ name: 'name', value: role?.name || '', autocomplete: 'off', placeholder: 'např. Kamera' }) }),
       field({ label: 'Kolik lidí', hint: 'Na jedno setkání.', control: stepper({ name: 'count', value: role?.count || 1, min: 1, max: 10, label: 'Kolik lidí' }) }),
@@ -309,9 +309,9 @@ export function roleSheet(group, role = null) {
 export function deleteRole(role) {
   const use = assignmentUse([role.id]);
   confirmSheet({
-    title: `Smazat roli ${role.name}?`,
+    title: `Chceš smazat roli ${role.name}?`,
     text: [use.all ? `Z rozpisu ${agree(use.all, 'zmizí', 'zmizí', 'zmizí')} ${plural(use.all, 'služba', 'služby', 'služeb')}.` : '', 'Zmizí i ze šablon, formátů a z toho, kdo co umí.'].filter(Boolean).join(' '),
-    confirmLabel: 'Smazat roli',
+    confirmLabel: 'Smaž roli',
     onConfirm: () => {
       deleteRoles([role.id]);
       change(`smazaná role ${role.name}`);

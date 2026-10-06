@@ -1,6 +1,6 @@
 // #upozorneni[/lide] – what does not fit in the schedule: views Podle setkání · Podle lidí, filters
-// Závažnost (chyba · pozor · info) and Kdy. Inline: „Vybrat jiného“ (the picker for that duty), „Vím o
-// tom“ (an override with a reason), „Otevřít setkání“. Also the warning rows and the override dialog
+// Závažnost (chyba · pozor · info) and Kdy. Inline: „Vyber jiného“ (the picker for that duty), „Vím o
+// tom“ (an override with a reason), „Otevři setkání“. Also the warning rows and the override dialog
 // the event detail, the person card and Přehled use.
 
 import {
@@ -43,7 +43,7 @@ function overrideTarget(conflict) {
   return found.find((x) => x.assignment.override) || found.find((x) => x.event.id === conflict.eventId) || found[0] || null;
 }
 
-/** The duty „Vybrat jiného“ replaces: the person's assignment at the conflict's own event (not cancelled, upcoming). */
+/** The duty „Vyber jiného“ replaces: the person's assignment at the conflict's own event (not cancelled, upcoming). */
 function replaceTarget(conflict) {
   if (!conflict.personId) return null;
   const found = assignmentsOf(conflict).filter((x) => x.assignment.personId === conflict.personId && !x.event.cancelled);
@@ -56,13 +56,13 @@ const eventWhen = (event) => `${prettyDay(event.start)} ${prettyTime(event.start
 /** Fill or change a duty through the shared picker (event-duties.js pickFor): `assignmentId` replaces that person. */
 export const pickPerson = (eventId, roleId, assignmentId = null) => pickFor(eventId, roleId, assignmentId);
 
-/** The inline actions of one warning: Vybrat jiného · Vím o tom / Upravit důvod. */
+/** The inline actions of one warning: Vyber jiného · Vím o tom / Uprav důvod. */
 function rowActions(conflict, { overrideButton = true, replaceButton = true } = {}) {
   const swap = replaceButton ? replaceTarget(conflict) : null;
   const overridable = overrideButton && canOverride(conflict);
   return [
-    swap ? button('Vybrat jiného', { variant: 'soft', size: 's', onclick: () => pickPerson(swap.event.id, swap.assignment.roleId, swap.assignment.id) }) : null,
-    overridable ? button(conflict.overrideNote ? 'Upravit důvod' : 'Vím o tom', {
+    swap ? button('Vyber jiného', { variant: 'soft', size: 's', onclick: () => pickPerson(swap.event.id, swap.assignment.roleId, swap.assignment.id) }) : null,
+    overridable ? button(conflict.overrideNote ? 'Uprav důvod' : 'Vím o tom', {
       variant: 'soft', size: 's', title: conflict.overrideNote ? 'Proč to půjde' : 'Vím o tom, půjde to i tak',
       onclick: () => { const t = overrideTarget(conflict); if (t) overrideDialog(t.assignment.id); },
     }) : null,
@@ -73,7 +73,7 @@ function rowActions(conflict, { overrideButton = true, replaceButton = true } = 
  * One warning as a list row: severity mark, the sentence, a meta line (word · kind of problem · the
  * event · the reason of an override), the inline actions on the right. The whole row opens the event.
  * `href` – where the row leads (default the conflict's event; null = nowhere, e.g. on that event's page).
- * `withEvent` – say which event it is. `overrideButton` – offer „Vím o tom“. `replaceButton` – „Vybrat jiného“.
+ * `withEvent` – say which event it is. `overrideButton` – offer „Vím o tom“. `replaceButton` – „Vyber jiného“.
  */
 export function conflictRow(conflict, { href, withEvent = true, overrideButton = true, replaceButton = true } = {}) {
   const event = eventById(S.data, conflict.eventId);
@@ -123,7 +123,7 @@ export function overrideDialog(assignmentId) {
         textField('reason', 'Proč to půjde', existing?.reason || '', { full: true, attr: { autofocus: true, placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 } })),
     ],
     saveLabel: 'Je to v pořádku',
-    removeLabel: 'Přece jen to hlídat',
+    removeLabel: 'Přece jen to hlídej',
     remove: existing ? () => {
       const fresh = findAssignment(S.data, assignmentId);
       if (fresh) delete fresh.assignment.override;
@@ -185,7 +185,7 @@ function eventCard(group) {
       h('h2', { class: ['conflict-card-title', event.cancelled && 'struck'] }, h('a', { href: `#setkani/${event.id}` }, event.title)),
       h('p', { class: 'conflict-card-meta' }, metaJoin([prettyTime(event.start), event.cancelled ? cancelledBadge() : null]))),
     severityCounts(items),
-    button('Otevřít setkání', { variant: 'surface', size: 's', href: `#setkani/${event.id}`, iconEnd: 'chevron-right', cls: 'conflict-open' }));
+    button('Otevři setkání', { variant: 'surface', size: 's', href: `#setkani/${event.id}`, iconEnd: 'chevron-right', cls: 'conflict-open' }));
   return h('section', { class: 'card conflict-card', 'aria-label': `${event.title} ${prettyDay(event.start)}` },
     head, h('div', { class: 'card-body flush' }, conflictList(items, { withEvent: false, hrefOf: () => null })));
 }
@@ -225,7 +225,7 @@ export function renderConflicts(parts = []) {
   const hidden = SEVERITIES.filter((s) => !f.conflictSeverities.includes(s) && countOf(s)).map((s) => SEVERITY_CHIPS[s].toLowerCase());
   const nothing = !inScope.length
     ? emptyState({ icon: 'check', title: 'Všechno sedí.', text: f.conflictScope === 'all' ? 'Nikdo nebučí.' : `Od ${prettyDay(today())} nikdo nebučí.` })
-    : emptyState({ icon: 'filter', title: 'Tady nic není.', text: `Zkus zapnout i upozornění typu ${andJoin(hidden)}.`, action: button('Ukázat všechno', { variant: 'surface', onclick: () => { f.conflictSeverities = [...SEVERITIES]; render(); } }) });
+    : emptyState({ icon: 'filter', title: 'Tady nic není.', text: `Zkus zapnout i upozornění typu ${andJoin(hidden)}.`, action: button('Ukaž všechno', { variant: 'surface', onclick: () => { f.conflictSeverities = [...SEVERITIES]; render(); } }) });
 
   return page({
     title: 'Upozornění',

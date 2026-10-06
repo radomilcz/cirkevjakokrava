@@ -54,7 +54,7 @@ export async function createInvite(person, { replace } = {}) {
     secretSheet({
       title: person ? `Pozvánka: ${fullName(person)}` : 'Pozvánka',
       text: 'Kdo odkaz otevře, vyplní svoje údaje, zvolí si heslo a dá souhlas. Pak uvidí rozpis a svoje služby.',
-      rows: [{ label: 'Odkaz', value: `${appUrl()}#pozvanka/${code}`, share: true, copyLabel: 'Zkopírovat odkaz', shareText: 'Pozvánka do Zvonce' }],
+      rows: [{ label: 'Odkaz', value: `${appUrl()}#pozvanka/${code}`, share: true, copyLabel: 'Zkopíruj odkaz', shareText: 'Pozvánka do Zvonce' }],
       note: `Pošli ho jen tomu člověku, ne do skupinového chatu. Platí ${INVITE_VALID_DAYS} dní a začne fungovat za pár minut.`,
     });
   } catch (error) { toast(`Pozvánku se nepodařilo vytvořit. ${error.message}`, { icon: 'alert' }); }
@@ -67,9 +67,9 @@ export async function createInvite(person, { replace } = {}) {
  */
 export function inviteSheet(person = null) {
   return formSheet({
-    title: 'Pozvat do Zvonce',
+    title: 'Pozvánka do Zvonce',
     subtitle: person ? personName(person) : null,
-    submitLabel: 'Vytvořit pozvánku',
+    submitLabel: 'Vytvoř pozvánku',
     body: [
       h('p', { class: 'text' }, person
         ? `${personName(person)} dostane odkaz. Zvolí si heslo a přihlásí se jako člen.`
@@ -99,8 +99,8 @@ export function loginSheet(person) {
     ? [{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }]
     : [{ value: 'member', label: 'člen' }];
   formSheet({
-    title: existing ? 'Změnit heslo nebo oprávnění' : 'Vytvořit přístup',
-    submitLabel: 'Vytvořit heslo',
+    title: existing ? 'Heslo a oprávnění' : 'Nový přístup',
+    submitLabel: 'Vytvoř heslo',
     body: [
       h('p', { class: 'meta' }, `${personName(person)}. ${existing ? 'Staré heslo přestane platit. ' : ''}Heslo vymyslí Zvonec a ukáže ti ho jen jednou.`),
       field({ label: 'Přihlašovací jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
@@ -136,9 +136,9 @@ export function revokeLogin(login) {
   const invite = login.access === 'invite';
   const person = personById(S.data, login.personId);
   confirmSheet({
-    title: invite ? 'Zrušit pozvánku?' : `Zrušit přístup${person ? ` pro ${fullName(person)}` : ''}?`,
+    title: invite ? 'Chceš zrušit pozvánku?' : `Chceš zrušit přístup${person ? ` pro ${fullName(person)}` : ''}?`,
     text: invite ? 'Odkaz přestane fungovat za pár minut.' : 'Za pár minut se už nepřihlásí. Karta v Lidech zůstane.',
-    confirmLabel: invite ? 'Zrušit pozvánku' : 'Zrušit přístup',
+    confirmLabel: invite ? 'Zruš pozvánku' : 'Zruš přístup',
     onConfirm: async () => {
       try {
         await updateLogins((logins) => { const i = logins.findIndex((x) => x.id === login.id); if (i >= 0) logins.splice(i, 1); }, `zrušeno: ${ACCESS_LABELS[login.access] || login.access}`);
@@ -155,8 +155,8 @@ function keySheet() {
   if (S.mode !== 'live') { demoOnly('Ukázka žádný GitHub klíč nemá.'); return; }
   const token = textInput({ name: 'token', type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' });
   formSheet({
-    title: 'Vyměnit klíč',
-    submitLabel: 'Vyměnit klíč',
+    title: 'Výměna klíče',
+    submitLabel: 'Vyměň klíč',
     body: [
       h('p', { class: 'text' }, 'Nový klíč dostanou všichni najednou a nikdo nemusí měnit heslo. Starý klíč na GitHubu zruš až za pár minut.'),
       field({ label: 'Nový GitHub klíč', control: token, hint: 'Jen k datovému repu, Contents: Read and write.' }),
@@ -192,9 +192,9 @@ function rowMenu(login) {
   const person = personById(S.data, login.personId);
   const invite = login.access === 'invite';
   return menu([
-    invite ? { label: 'Poslat znovu', icon: 'share', onclick: () => createInvite(person, { replace: login }) } : null,
-    !invite && person ? { label: 'Změnit heslo nebo oprávnění', icon: 'key', onclick: () => loginSheet(person) } : null,
-    { label: invite ? 'Zrušit pozvánku' : 'Zrušit přístup', icon: 'x', danger: true, onclick: () => revokeLogin(login) },
+    invite ? { label: 'Pošli znovu', icon: 'share', onclick: () => createInvite(person, { replace: login }) } : null,
+    !invite && person ? { label: 'Změň heslo nebo oprávnění', icon: 'key', onclick: () => loginSheet(person) } : null,
+    { label: invite ? 'Zruš pozvánku' : 'Zruš přístup', icon: 'x', danger: true, onclick: () => revokeLogin(login) },
   ].filter(Boolean), { label: `Další možnosti – ${person ? fullName(person) : invite ? 'pozvánka' : 'přístup'}` });
 }
 
@@ -264,7 +264,7 @@ export function renderAccess() {
       h('p', { class: 'meta acc-key' }, live
         ? `Zvonec ukládá data do ${S.me.github?.owner}/${S.me.github?.repo} jedním klíčem. Každý, kdo se může přihlásit, ho má schovaný pod svým heslem.`
         : 'V ostrém Zvonci tady správce vymění GitHub klíč všem najednou. Ukázka žádný klíč nemá.'),
-      button('Vyměnit klíč', { icon: 'key', onclick: keySheet }),
+      button('Vyměň klíč', { icon: 'key', onclick: keySheet }),
     ],
   }) : null;
 
@@ -272,7 +272,7 @@ export function renderAccess() {
     title: 'Přístupy',
     root: true,
     lead: 'Každá změna začne platit za pár minut.',
-    primary: { label: 'Pozvat nového člověka', icon: 'user-plus', onclick: invite },
+    primary: { label: 'Pozvi nového člověka', icon: 'user-plus', onclick: invite },
     wide: isSplit(),
     cls: 'acc-page',
     body: [

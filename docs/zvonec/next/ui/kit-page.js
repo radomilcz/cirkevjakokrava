@@ -34,7 +34,7 @@ export function renderKit() {
     onClose: () => demoNote('Panel by se zavřel.'),
     body: [
       h('div', { class: 'detail__head' }, avatar(P[1], { size: 'l' }), h('div', {}, title('Martin Dvořák', { small: true, tag: 'h3' }), meta('člen · Technika, vede tým'))),
-      h('div', { class: 'cluster' }, button('Zavolat', { icon: 'phone' }), button('Napsat SMS', { variant: 'quiet', icon: 'message' }), button('Napsat e-mail', { variant: 'quiet', icon: 'mail' })),
+      h('div', { class: 'cluster' }, button('Zavolej', { icon: 'phone' }), button('Napiš SMS', { variant: 'quiet', icon: 'message' }), button('Napiš e-mail', { variant: 'quiet', icon: 'mail' })),
       facts([{ icon: 'phone', text: '731 204 118', href: 'tel:731204118' }, { icon: 'mail', text: 'martin@example.cz' }, { icon: 'home', text: 'Domácnost · Dvořákovi' }]),
       section({ title: 'Služby', body: list([
         eventRow({ day: sunday, title: 'Světla · Setkání na pastvě', note: statusNote('confirmed'), href: '#kit' }),
@@ -44,7 +44,7 @@ export function renderKit() {
   }) : null;
 
   return screen({
-    topbar: topBar({ back: { href: '#vice', label: 'Více' }, actions: [menu([{ label: 'Ukázat toast', icon: 'info', onclick: () => demoNote('Takhle vypadá toast.') }, '-', { label: 'Smazat (ukázka)', icon: 'trash', danger: true, onclick: () => demoNote('Nic se nesmazalo.') }])] }),
+    topbar: topBar({ back: { href: '#vice', label: 'Více' }, actions: [menu([{ label: 'Ukaž toast', icon: 'info', onclick: () => demoNote('Takhle vypadá toast.') }, '-', { label: 'Smaž (ukázka)', icon: 'trash', danger: true, onclick: () => demoNote('Nic se nesmazalo.') }])] }),
     head: { overline: 'Pro vedoucí, není v menu', title: 'Kit', lead: 'Všechny součástky Zvonce Next. Kreslí je stejný kód jako aplikaci.' },
     wide: true,
     primary: { label: 'Hlavní akce', icon: 'plus', onclick: () => demoNote('Hlavní akce obrazovky.') },
@@ -54,23 +54,23 @@ export function renderKit() {
         plate('Písmo',
           brand(), title('Domů', { tag: 'p' }), lead('Co je potřeba'), text('Běžný text – 17/24 na telefonu, 16/22 na počítači.'),
           meta('Druhý řádek, nápověda, popisky – 15/20.'), caption('Popisek 13/16'), indexLetter('Č'),
-          h('div', { class: 'cluster' }, link('Další 1', { href: '#kit', iconEnd: 'chevron-right' }), rowLink('Celý rozpis', { href: '#kit' }), rowLink('Stáhnout do kalendáře', { href: '#kit', icon: 'download' }))),
+          h('div', { class: 'cluster' }, link('Další 1', { href: '#kit', iconEnd: 'chevron-right' }), rowLink('Celý rozpis', { href: '#kit' }), rowLink('Stáhni do kalendáře', { href: '#kit', icon: 'download' }))),
 
         plate('Tlačítka',
-          h('div', { class: 'cluster' }, button('Uložit', { variant: 'primary' }), button('Nemůžu'), button('Dnes', { variant: 'quiet' }), button('Smazat setkání', { variant: 'danger' })),
-          h('div', { class: 'cluster' }, button('Přidat', { size: 's', icon: 'plus' }), button('Filtr', { variant: 'quiet', icon: 'sliders' }), button('Zapsat 3 služby', { variant: 'primary', size: 'l' }), button('Nejde', { disabled: true })),
+          h('div', { class: 'cluster' }, button('Ulož', { variant: 'primary' }), button('Nemůžu'), button('Dnes', { variant: 'quiet' }), button('Smaž setkání', { variant: 'danger' })),
+          h('div', { class: 'cluster' }, button('Přidej', { size: 's', icon: 'plus' }), button('Filtr', { variant: 'quiet', icon: 'sliders' }), button('Zapiš 3 služby', { variant: 'primary', size: 'l' }), button('Nejde', { disabled: true })),
           buttonRow(button('Můžu', { variant: 'primary' }), button('Nemůžu')),
-          button('Doplnit volná místa', { block: true, icon: 'user-plus' }),
-          h('div', { class: 'cluster' }, iconButton('more', 'Další možnosti'), iconButton('phone', 'Zavolat', { variant: 'tint' }), iconButton('plus', 'Přidat', { variant: 'act' }), iconButton('x', 'Zavřít')),
-          h('div', { class: 'kit-fab' }, fab({ label: 'Přidat setkání', icon: 'calendar-plus', onclick: () => demoNote('Přidat setkání') }))),
+          button('Doplň volná místa', { block: true, icon: 'user-plus' }),
+          h('div', { class: 'cluster' }, iconButton('more', 'Další možnosti'), iconButton('phone', 'Zavolej', { variant: 'tint' }), iconButton('plus', 'Přidej', { variant: 'act' }), iconButton('x', 'Zavři')),
+          h('div', { class: 'kit-fab' }, fab({ label: 'Přidej setkání', icon: 'calendar-plus', onclick: () => demoNote('Přidej setkání') }))),
 
         plate('Volba',
           segmented(['Seznam', 'Měsíc', 'Rozpis'], 'Seznam', () => {}, { label: 'Pohled' }),
           chips([{ value: 'all', label: 'Všichni', n: 86 }, { value: 'm', label: 'Členové', n: 52 }, { value: 'f', label: 'Přátelé', n: 18 }, { value: 'g', label: 'Hosté', n: 9 }, { value: 'c', label: 'Děti', n: 7 }], 'all', () => {}, { label: 'Filtr' }),
           chips([{ value: 'service', label: 'Nedělní setkání' }, { value: 'rehearsal', label: 'Zkouška' }, { value: 'smallGroup', label: 'Skupinka' }, { value: 'event', label: 'Akce' }], ['service'], () => {}, { multiple: true, label: 'Účel' }),
-          h('div', { class: 'cluster' }, chip('Moje týmy', { iconEnd: 'chevron-down' }), slot('Klávesy', () => demoNote('Výběr člověka')), slot('Doplnit', () => {})),
+          h('div', { class: 'cluster' }, chip('Moje týmy', { iconEnd: 'chevron-down' }), slot('Klávesy', () => demoNote('Výběr člověka')), slot('Doplň', () => {})),
           switchRow({ label: 'Jen moje služby', checked: true }),
-          switchRow({ label: 'Ukázat na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.' })),
+          switchRow({ label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.' })),
 
         plate('Lidé a skupiny',
           h('div', { class: 'cluster' }, avatar(P[0], { size: 's' }), avatar(P[1]), avatar(P[4], { size: 'l' }), avatar(P[3], { me: true }), avatar(P[6], { status: 'declined' }), teamMark(TEAM), teamMark(TEAM2, { size: 's' }), avatars(P.slice(0, 6))),
@@ -90,10 +90,10 @@ export function renderKit() {
           sub('Upozornění a obsazenost'),
           h('div', { class: 'cluster' }, sev('error', 'chybí 2'), sev('warning', '3 čekají'), sev('info', 'Vím o tom')),
           h('div', { class: 'cluster' }, fill(10, 15), fill(6, 6), fill(0, 4)),
-          callout({ tone: 'wait', title: 'Osnova je o 10 minut delší než setkání.', text: 'Zkrať některý bod nebo prodluž setkání.', actions: button('Otevřít osnovu', { size: 's' }) }),
+          callout({ tone: 'wait', title: 'Osnova je o 10 minut delší než setkání.', text: 'Zkrať některý bod nebo prodluž setkání.', actions: button('Otevři osnovu', { size: 's' }) }),
           callout({ tone: 'no', title: 'Neuloženo.', text: 'Změny mám schované, zkusím to znovu.' }),
-          callout({ tone: 'info', title: 'Karta vznikla narychlo při plánování.', actions: button('Doplnit údaje', { size: 's' }) }),
-          warningRow({ severity: 'error', text: `Barbora Horáková nemůže (dovolená) – U dětí, ${shortDate(sunday)}`, actions: [button('Vybrat jiného', { size: 's' }), button('Vím o tom', { size: 's', variant: 'quiet' })] })),
+          callout({ tone: 'info', title: 'Karta vznikla narychlo při plánování.', actions: button('Doplň údaje', { size: 's' }) }),
+          warningRow({ severity: 'error', text: `Barbora Horáková nemůže (dovolená) – U dětí, ${shortDate(sunday)}`, actions: [button('Vyber jiného', { size: 's' }), button('Vím o tom', { size: 's', variant: 'quiet' })] })),
 
         plate('Domů',
           feature({
@@ -104,10 +104,10 @@ export function renderKit() {
               answerItem({ day: day(21), title: 'Zvuk · Zkouška chval', meta: '18.00–20.00 · Monta, sál', done: { status: 'confirmed' }, label: 'Zvuk, Zkouška chval' }),
               answerItem({ day: day(28), title: 'Zvuk · Setkání na pastvě', meta: '10.00–12.00 · Monta, sál', compact: true, label: 'Zvuk, Setkání na pastvě', onYes: () => {}, onNo: () => {} }),
             ],
-            more: { link: 'Ukázat další 2', icon: 'chevron-down', href: '#kit' },
+            more: { link: 'Ukaž další 2', icon: 'chevron-down', href: '#kit' },
           }),
           section({ title: 'Co je potřeba', action: chip('Moje týmy', { iconEnd: 'chevron-down' }), body: [
-            needRow({ day: sunday, title: 'Setkání na pastvě', href: '#kit', summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick: () => demoNote('Kdo čeká – s tlačítkem Zavolat.'), label: '3 čekají na potvrzení – ukázat koho' }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick: () => {} }, { label: 'Projekce', onclick: () => {} }] }),
+            needRow({ day: sunday, title: 'Setkání na pastvě', href: '#kit', summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick: () => demoNote('Kdo čeká – s tlačítkem Zavolej.'), label: '3 čekají na potvrzení – ukaž koho' }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick: () => {} }, { label: 'Projekce', onclick: () => {} }] }),
             needRow({ day: day(4), title: 'Zkouška chval', href: '#kit', summary: [['warning', '1 čeká']], filled: 5, total: 6 }),
             rowLink('Celý rozpis', { href: '#kit' }),
           ] })),
@@ -130,7 +130,7 @@ export function renderKit() {
           teamHead(TEAM, { words: '3 z 4' }),
           dutyRow({ role: 'Zvuk', person: P[1], status: 'confirmed', onclick: () => demoNote('Služba') }),
           dutyRow({ role: 'Projekce', person: P[7], status: 'proposed', me: true, onclick: () => demoNote('Moje odpověď') }),
-          dutyRow({ role: 'Světla', person: P[6], status: 'declined', onclick: () => {}, warn: warningRow({ severity: 'error', text: 'nemůže (dovolená)', actions: [button('Vybrat jiného', { size: 's' })] }) }),
+          dutyRow({ role: 'Světla', person: P[6], status: 'declined', onclick: () => {}, warn: warningRow({ severity: 'error', text: 'nemůže (dovolená)', actions: [button('Vyber jiného', { size: 's' })] }) }),
           dutyRow({ role: 'Klávesy', empty: { onclick: () => openPicker() } }),
           teamHead(TEAM2, { words: 'všichni potvrdili' })),
 
@@ -146,11 +146,11 @@ export function renderKit() {
               field({ label: 'Od – do', control: timeRange({ from: '10:00', to: '12:00' }) })),
             field({ label: 'Začátek', hint: 'Napiš třeba 930.', control: timeInput({ name: 'start', value: '09:30' }) }),
             field({ label: 'Kolik lidí', control: stepper({ name: 'count', value: 2, min: 1, max: 9, label: 'Kolik lidí' }) }),
-            segmentedField({ name: 'repeat', label: 'Opakovat', options: [{ value: '', label: 'Ne' }, { value: 'weekly', label: 'Týdně' }, { value: 'biweekly', label: 'Po 14 dnech' }, { value: 'monthly', label: 'Měsíčně' }], value: '' }),
+            segmentedField({ name: 'repeat', label: 'Opakování', options: [{ value: '', label: 'Ne' }, { value: 'weekly', label: 'Týdně' }, { value: 'biweekly', label: 'Po 14 dnech' }, { value: 'monthly', label: 'Měsíčně' }], value: '' }),
             chipsField({ name: 'where', label: 'Kde', options: [{ value: 'a', label: 'Monta' }, { value: 'b', label: 'Sál' }, { value: 'c', label: 'Malá místnost' }], value: ['b'], multiple: true }),
-            searchField({ placeholder: 'Hledat jméno, telefon, e-mail', value: 'Jana' }),
+            searchField({ placeholder: 'Hledej jméno, telefon, e-mail', value: 'Jana' }),
             field({ label: 'Heslo', hint: 'Aspoň 8 znaků.', control: passwordInput({ name: 'kit-password', autocomplete: 'off' }) }),
-            disclosure([field({ label: 'Pro tým', control: textInput({ name: 'note', placeholder: 'např. klíče má Martin' }) }), switchRow({ label: 'Ukázat na webu', name: 'public' })])),
+            disclosure([field({ label: 'Pro tým', control: textInput({ name: 'note', placeholder: 'např. klíče má Martin' }) }), switchRow({ label: 'Ukaž na webu', name: 'public' })])),
           h('p', { class: 'kit-sub' }, 'Uložení stránky s formulářem (jen když je co uložit)'),
           h('div', { class: 'kit-foot' }, formFoot({ always: true, onSave: () => demoNote('Uloženo.'), onDiscard: () => demoNote('Změny zahozené.') }))),
 
@@ -159,15 +159,15 @@ export function renderKit() {
           h('div', { class: 'cluster' },
             button('Výběr člověka', { onclick: () => openPicker() }),
             button('Formulář', { onclick: () => openForm() }),
-            button('Široký dialog', { onclick: () => openSheet({ title: 'Upravit formát', wide: true, body: [field({ label: 'Proč to děláme', control: textArea({ name: 'why' }) }), field({ label: 'Jak to probíhá', control: textArea({ name: 'how' }) })], foot: button('Uložit', { variant: 'primary', size: 'l', block: true }) }) }),
-            button('Potvrzení', { variant: 'danger', onclick: () => confirmSheet({ title: 'Smazat setkání?', text: 'Zmizí i se službami a osnovou. Vrátit to nepůjde.', confirmLabel: 'Smazat setkání', onConfirm: () => demoNote('Nic se nesmazalo, je to ukázka.') }) }),
-            button('Toast s Vrátit', { onclick: () => toast('Ondřej Černý: Zvuk · čeká na potvrzení', { action: () => demoNote('Vráceno.') }) }),
-            menu([{ label: 'Upravit setkání', icon: 'pencil', onclick: () => demoNote('Upravit') }, { label: 'Prodloužit řadu', icon: 'calendar-plus', onclick: () => {} }, { label: 'Vytisknout', icon: 'printer', onclick: () => {} }, '-', { label: 'Zrušit setkání', icon: 'x', onclick: () => {} }, { label: 'Smazat setkání', icon: 'trash', danger: true, onclick: () => {} }]))),
+            button('Široký dialog', { onclick: () => openSheet({ title: 'Úprava formátu', wide: true, body: [field({ label: 'Proč to děláme', control: textArea({ name: 'why' }) }), field({ label: 'Jak to probíhá', control: textArea({ name: 'how' }) })], foot: button('Ulož', { variant: 'primary', size: 'l', block: true }) }) }),
+            button('Potvrzení', { variant: 'danger', onclick: () => confirmSheet({ title: 'Chceš smazat setkání?', text: 'Zmizí i se službami a osnovou. Vrátit to nepůjde.', confirmLabel: 'Smaž setkání', onConfirm: () => demoNote('Nic se nesmazalo, je to ukázka.') }) }),
+            button('Toast s Vrať', { onclick: () => toast('Ondřej Černý: Zvuk · čeká na potvrzení', { action: () => demoNote('Vráceno.') }) }),
+            menu([{ label: 'Uprav setkání', icon: 'pencil', onclick: () => demoNote('Upravit') }, { label: 'Prodluž řadu', icon: 'calendar-plus', onclick: () => {} }, { label: 'Vytiskni', icon: 'printer', onclick: () => {} }, '-', { label: 'Zruš setkání', icon: 'x', onclick: () => {} }, { label: 'Smaž setkání', icon: 'trash', danger: true, onclick: () => {} }]))),
 
         plate('Řádky s ⋯ a tabulka',
           list([
-            row({ title: 'Úvodní slovo', meta: '10 min · vede Kazatel', onclick: () => demoNote('Upravit bod'), trail: menu([{ label: 'Posunout níž', onclick: () => {} }, '-', { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => demoNote('Odebráno.') }], { label: 'Další možnosti – Úvodní slovo', title: 'Úvodní slovo' }) }),
-            personRow(P[4], { meta: 'vedoucí · Chvály', href: '#kit', trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => {} }], { label: 'Další možnosti – Alžběta Svobodová' }) }),
+            row({ title: 'Úvodní slovo', meta: '10 min · vede Kazatel', onclick: () => demoNote('Upravit bod'), trail: menu([{ label: 'Posuň níž', onclick: () => {} }, '-', { label: 'Odeber z osnovy', icon: 'trash', danger: true, onclick: () => demoNote('Odebráno.') }], { label: 'Další možnosti – Úvodní slovo', title: 'Úvodní slovo' }) }),
+            personRow(P[4], { meta: 'vedoucí · Chvály', href: '#kit', trail: menu([{ label: 'Odeber z domácnosti', icon: 'x', danger: true, onclick: () => {} }], { label: 'Další možnosti – Alžběta Svobodová' }) }),
           ]),
           table({
             label: 'Ukázka tabulky',
@@ -179,7 +179,7 @@ export function renderKit() {
         plate('Prázdno a načítání',
           quiet('Teď žádnou službu nemáš.'),
           quiet('Na příští tři týdny je všechno obsazené.', { icon: 'check' }),
-          empty({ icon: 'calendar', title: 'Tenhle měsíc tu nic není.', text: 'Přidej první setkání, nebo se podívej na další měsíc.', action: button('Přidat setkání', { variant: 'primary', icon: 'plus' }) }),
+          empty({ icon: 'calendar', title: 'Tenhle měsíc tu nic není.', text: 'Přidej první setkání, nebo se podívej na další měsíc.', action: button('Přidej setkání', { variant: 'primary', icon: 'plus' }) }),
           skeleton({ rows: 2 })),
 
         plate('Ikony',
@@ -219,7 +219,7 @@ function openPicker() {
 function openForm() {
   formSheet({
     title: 'Kdy nemůžu',
-    submitLabel: 'Uložit',
+    submitLabel: 'Ulož',
     body: [
       h('div', { class: 'form__row' }, field({ label: 'Od', control: dateInput({ name: 'from', label: 'Od' }) }), field({ label: 'Do', control: dateInput({ name: 'to', label: 'Do' }) })),
       field({ label: 'Důvod', hint: 'Uvidí ho jen vedoucí.', control: textInput({ name: 'reason', placeholder: 'např. dovolená, směna' }) }),

@@ -201,11 +201,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 @media (max-width:459.98px){
   .app-name{display:none}
 }
-/* signed out on a phone the header holds the brand, „Přihlásit se“ and the menu: no room for the word „Menu“
-   (the button keeps its accessible name) */
+/* on a phone the header holds the brand, the menu and (signed out) „Přihlas se“: no room for the word „Menu“,
+   above all with a larger system font (the button keeps its accessible name) */
 @media (max-width:459.98px){
-  body.signed-out .menu-toggle-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  body.signed-out .menu-toggle{width:var(--control-2);padding:0}
+  .menu-toggle-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .menu-toggle{width:var(--control-2);padding:0;flex:none}
+  .brand{font-size:clamp(14px,4.2vw,17px)}
 }
 @media (max-width:459.98px){
   .appbar .save-status{max-width:40vw}

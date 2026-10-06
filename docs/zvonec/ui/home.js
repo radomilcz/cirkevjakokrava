@@ -24,7 +24,7 @@ import { today, addDays, dayOf, weekday, prettyDay, prettyTime, timeOf } from '.
 
 const ROWS = 5;
 
-// The calendar module (event covers with photos, „Přidat setkání“) is loaded on the side: Přehled must
+// The calendar module (event covers with photos, „Přidej setkání“) is loaded on the side: Přehled must
 // work even while that module is being changed.
 let calendarUi = {};
 import('./calendar.js').then((m) => { calendarUi = m; }, () => {});
@@ -72,8 +72,8 @@ function answer(person, eventId, assignmentId, status, { quiet = false } = {}) {
   change(`${personName(person)} ${what} ${role} ${prettyDay(event.start, false)}`);
   if (quiet) return;
   const undo = () => answer(person, eventId, assignmentId, before, { quiet: true });
-  if (status === 'confirmed') toast('Díky, počítáme s tebou.', metaJoin([role, prettyDay(event.start)]), { action: undo, actionLabel: 'Vrátit' });
-  else toast('Dobře, vedoucí uvidí, že nemůžeš.', metaJoin([role, prettyDay(event.start)]), { action: undo, actionLabel: 'Vrátit' });
+  if (status === 'confirmed') toast('Díky, počítáme s tebou.', metaJoin([role, prettyDay(event.start)]), { action: undo, actionLabel: 'Vrať' });
+  else toast('Dobře, vedoucí uvidí, že nemůžeš.', metaJoin([role, prettyDay(event.start)]), { action: undo, actionLabel: 'Vrať' });
 }
 
 // Čeká na tvou odpověď
@@ -94,7 +94,7 @@ function waitingBlock(person) {
         title: role,
         meta: rowMeta(event),
         trail: h('span', { class: 'answer-buttons' },
-          button('Potvrdit', { variant: 'surface', size: 's', icon: 'check', cls: 'answer-yes', onclick: () => answer(person, event.id, assignment.id, 'confirmed'), label: `Potvrdit: ${label}` }),
+          button('Potvrď', { variant: 'surface', size: 's', icon: 'check', cls: 'answer-yes', onclick: () => answer(person, event.id, assignment.id, 'confirmed'), label: `Potvrď: ${label}` }),
           button('Nemůžu', { variant: 'ghost', size: 's', onclick: () => answer(person, event.id, assignment.id, 'declined'), label: `Nemůžu: ${label}` })),
         href: `#setkani/${event.id}`,
         cls: 'answer-row',
@@ -109,7 +109,7 @@ function dutiesBlock(person) {
   const until = addDays(today(), WEEKS_AHEAD * 7);
   const duties = upcomingDuties(S.data, person.id, { from: today(), to: until })
     .filter(({ assignment, event }) => assignment.status !== 'proposed' || event.cancelled);
-  const download = iconButton('download', 'Stáhnout do kalendáře', { size: 's', onclick: () => downloadDuties(person) });
+  const download = iconButton('download', 'Stáhni do kalendáře', { size: 's', onclick: () => downloadDuties(person) });
   if (!duties.length) return block({ key: 'duties', title: 'Tvoje služby', empty: `Na příštích ${WEEKS_AHEAD} týdnů nemáš žádnou potvrzenou službu.` });
   return block({
     key: 'duties', title: 'Tvoje služby', count: duties.length,
@@ -185,7 +185,7 @@ function nextSundayBlock() {
     slots.length ? h('div', { class: 'next-slots' },
         h('span', { class: 'label' }, 'Chybí'),
         h('div', { class: 'next-slot-list' }, slots.map(({ role, missing }) => (leader
-          ? button([role.name, missing > 1 ? h('span', { class: 'slot-n' }, `× ${missing}`) : null], { variant: 'surface', size: 's', icon: 'plus', cls: 'slot-btn', label: `Vybrat: ${role.name}`, onclick: () => pickPerson(next.id, role.id) })
+          ? button([role.name, missing > 1 ? h('span', { class: 'slot-n' }, `× ${missing}`) : null], { variant: 'surface', size: 's', icon: 'plus', cls: 'slot-btn', label: `Vyber: ${role.name}`, onclick: () => pickPerson(next.id, role.id) })
           : badge(missing > 1 ? `${role.name} × ${missing}` : role.name, { tone: 'warning' }))))) : null);
   return block({
     key: 'sunday',
@@ -193,8 +193,8 @@ function nextSundayBlock() {
     body,
     flush: false,
     footer: [
-      leader && slots.length ? button('Navrhnout lidi', { variant: 'soft', size: 's', icon: 'users', onclick: propose }) : null,
-      button('Otevřít setkání', { variant: 'ghost', size: 's', href: `#setkani/${next.id}`, iconEnd: 'chevron-right', cls: 'push-end' }),
+      leader && slots.length ? button('Navrhni lidi', { variant: 'soft', size: 's', icon: 'users', onclick: propose }) : null,
+      button('Otevři setkání', { variant: 'ghost', size: 's', href: `#setkani/${next.id}`, iconEnd: 'chevron-right', cls: 'push-end' }),
     ],
   });
 }
@@ -223,7 +223,7 @@ function openSlotsBlock() {
       lead: dateBlock(dayOf(s.event.start), { today: isToday(s.event) }),
       title: [s.role?.name || 'Smazaná role', s.missing > 1 ? h('span', { class: 'title-n' }, ` × ${s.missing}`) : null],
       meta: [rowMeta(s.event), s.essential ? [SEP, h('span', { class: 'essential' }, 'nezbytná')] : null],
-      trail: s.role ? button('Vybrat', { variant: 'surface', size: 's', onclick: () => pickPerson(s.event.id, s.roleId), label: `Vybrat: ${s.role.name}, ${s.event.title} ${prettyDay(s.event.start)}` }) : null,
+      trail: s.role ? button('Vyber', { variant: 'surface', size: 's', onclick: () => pickPerson(s.event.id, s.roleId), label: `Vyber: ${s.role.name}, ${s.event.title} ${prettyDay(s.event.start)}` }) : null,
       href: `#setkani/${s.event.id}`,
       tone: s.essential && s.daysUntil <= 7 ? 'error' : null,
     }), { label: 'Volná místa' }),
@@ -247,7 +247,7 @@ function unconfirmedBlock() {
       title: personName(d.person),
       meta: metaJoin([d.role?.name || 'Služba', `${prettyDay(d.event.start)} ${prettyTime(d.event.start)}`, d.event.title]),
       trail: d.person.phone
-        ? button(null, { variant: 'surface', size: 's', icon: 'phone', href: tel(d.person.phone), label: `Zavolat: ${personName(d.person)}, ${d.person.phone}`, title: d.person.phone })
+        ? button(null, { variant: 'surface', size: 's', icon: 'phone', href: tel(d.person.phone), label: `Zavolej: ${personName(d.person)}, ${d.person.phone}`, title: d.person.phone })
         : null,
       href: `#setkani/${d.event.id}`,
     }), { label: 'Čeká na potvrzení' }),
@@ -283,11 +283,11 @@ function blockoutsBlock(person) {
   const records = myBlockouts(person);
   const add = () => availabilityDialog(person);
   if (!records.length) {
-    return block({ key: 'blockouts', title: 'Kdy nemůžu', empty: 'Když víš, že nemůžeš, zapiš to. Zvonec tě na ty dny nebude nabízet.', emptyAction: button('Přidat', { variant: 'ghost', size: 's', icon: 'plus', onclick: add, cls: 'inline-add' }) });
+    return block({ key: 'blockouts', title: 'Kdy nemůžu', empty: 'Když víš, že nemůžeš, zapiš to. Zvonec tě na ty dny nebude nabízet.', emptyAction: button('Přidej', { variant: 'ghost', size: 's', icon: 'plus', onclick: add, cls: 'inline-add' }) });
   }
   return block({
     key: 'blockouts', title: 'Kdy nemůžu', count: records.length,
-    actions: button('Přidat', { variant: 'ghost', size: 's', icon: 'plus', onclick: add }),
+    actions: button('Přidej', { variant: 'ghost', size: 's', icon: 'plus', onclick: add }),
     all: records.length > ROWS ? ['Všechno', '#ucet'] : null,
     body: list(records.slice(0, ROWS), (v) => blockoutRow(person, v), { label: 'Kdy nemůžu' }),
   });
@@ -368,7 +368,7 @@ function demoNote(person) {
   const who = person ? `${personName(person)} (${ACCESS_LABELS[S.me.access]})` : 'správce bez karty v Lidech';
   return callout(['Ukázka. Díváš se jako ', h('strong', {}, who), '.'], {
     tone: 'neutral', icon: 'eye',
-    action: button('Dívat se jako…', { variant: 'ghost', size: 's', href: '#ucet', iconEnd: 'chevron-right' }),
+    action: button('Podívej se očima někoho jiného', { variant: 'ghost', size: 's', href: '#ucet', iconEnd: 'chevron-right' }),
   });
 }
 
@@ -420,7 +420,7 @@ export function renderHome() {
     title: 'Přehled',
     width: 'wide',
     cls: 'home-page',
-    actions: leader ? button('Přidat setkání', {
+    actions: leader ? button('Přidej setkání', {
       variant: 'solid', icon: 'plus',
       onclick: () => (typeof add === 'function' ? add({ day: today() }) : (location.hash = '#kalendar')),
     }) : null,

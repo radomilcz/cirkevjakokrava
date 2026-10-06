@@ -52,7 +52,7 @@ function openAddPoint(eventId) {
     sheet.close();
     formSheet({
       title: 'Vlastní bod',
-      submitLabel: 'Přidat bod',
+      submitLabel: 'Přidej bod',
       body: [
         field({ label: 'Název bodu', control: textInput({ name: 'title', placeholder: 'např. Slovo na cestu' }) }),
         field({ label: 'Kolik minut', control: stepper({ name: 'minutes', value: 10, min: 0, max: 240, step: 5, label: 'Kolik minut' }) }),
@@ -72,7 +72,7 @@ function openAddPoint(eventId) {
     });
   };
   sheet = openSheet({
-    title: 'Přidat bod',
+    title: 'Nový bod',
     body: list([
       ...formats.map((f) => row({
         title: f.name,
@@ -98,7 +98,7 @@ function openPoint(eventId, itemId) {
     reset.hidden = !personId;
   };
   const reset = link(role ? 'Podle role' : 'Nikdo', { onclick: () => { personId = ''; paintWho(); } });
-  const choose = button('Vybrat', {
+  const choose = button('Vyber', {
     size: 's', onclick: () => {
       const all = (S.data.people || []).filter((p) => p.membership?.status !== 'former');
       const pools = [];
@@ -264,33 +264,33 @@ export function renderProgram(id) {
     ];
     const missing = !leaders.length && needsLeader;
     return h('li', { class: 'osnova__item', dataset: { missing: missing ? '' : null } },
-      leader ? h('button', { type: 'button', class: 'osnova__grip icon-btn', 'aria-label': `Přesunout: ${itemName(S.data, item)} (šipkami nahoru a dolů)`, title: 'Přesunout', dataset: { item: item.id } }, icon('grip', { size: 's' })) : null,
-      leader ? h('button', { type: 'button', class: 'osnova__open', onclick: () => openPoint(id, item.id), 'aria-label': `Upravit: ${itemName(S.data, item)}` }, body) : h('div', { class: 'osnova__open' }, body),
+      leader ? h('button', { type: 'button', class: 'osnova__grip icon-btn', 'aria-label': `Přesuň: ${itemName(S.data, item)} (šipkami nahoru a dolů)`, title: 'Přesuň', dataset: { item: item.id } }, icon('grip', { size: 's' })) : null,
+      leader ? h('button', { type: 'button', class: 'osnova__open', onclick: () => openPoint(id, item.id), 'aria-label': `Uprav: ${itemName(S.data, item)}` }, body) : h('div', { class: 'osnova__open' }, body),
       leader ? menu([
-        { label: 'Upravit bod', icon: 'pencil', onclick: () => openPoint(id, item.id) },
-        index > 0 ? { label: 'Posunout výš', onclick: () => move(id, item.id, -1) } : null,
-        index < items.length - 1 ? { label: 'Posunout níž', onclick: () => move(id, item.id, 1) } : null,
+        { label: 'Uprav bod', icon: 'pencil', onclick: () => openPoint(id, item.id) },
+        index > 0 ? { label: 'Posuň výš', onclick: () => move(id, item.id, -1) } : null,
+        index < items.length - 1 ? { label: 'Posuň níž', onclick: () => move(id, item.id, 1) } : null,
         '-',
-        { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => removePoint(id, item.id) },
+        { label: 'Odeber z osnovy', icon: 'trash', danger: true, onclick: () => removePoint(id, item.id) },
       ].filter(Boolean), { label: `Další možnosti – ${itemName(S.data, item)}` }) : null);
   });
   const listEl = h('ol', { class: ['osnova', !leader && 'osnova--read'], 'aria-label': 'Osnova' }, points);
   if (leader) enableReorder(listEl, id);
 
   const body = items.length
-    ? [sum, listEl, leader ? h('button', { type: 'button', class: 'slot osnova-add', onclick: () => openAddPoint(id) }, icon('plus', { size: 's' }), 'Přidat bod') : null]
+    ? [sum, listEl, leader ? h('button', { type: 'button', class: 'slot osnova-add', onclick: () => openAddPoint(id) }, icon('plus', { size: 's' }), 'Přidej bod') : null]
     : empty({
       icon: 'list', title: 'Osnova je zatím prázdná.',
       text: leader ? 'Slož ji z formátů, časy se dopočítají samy.' : 'Osnovu ještě nikdo nesložil.',
-      action: leader ? h('div', { class: 'cluster osnova-empty-actions' }, button('Přidat bod', { variant: 'primary', icon: 'plus', onclick: () => openAddPoint(id) }), button('Převzít minulou osnovu', { variant: 'quiet', onclick: () => takePrevious(id) })) : null,
+      action: leader ? h('div', { class: 'cluster osnova-empty-actions' }, button('Přidej bod', { variant: 'primary', icon: 'plus', onclick: () => openAddPoint(id) }), button('Převezmi minulou osnovu', { variant: 'quiet', onclick: () => takePrevious(id) })) : null,
     });
 
   return screen({
     topbar: topBar({
       back: { href: `#setkani/${id}`, label: 'Setkání' },
       actions: menu([
-        { label: 'Vytisknout', icon: 'printer', onclick: printProgram },
-        leader ? { label: 'Převzít minulou osnovu', icon: 'copy', onclick: () => takePrevious(id) } : null,
+        { label: 'Vytiskni', icon: 'printer', onclick: printProgram },
+        leader ? { label: 'Převezmi minulou osnovu', icon: 'copy', onclick: () => takePrevious(id) } : null,
       ].filter(Boolean), { label: 'Další možnosti osnovy' }),
     }),
     head: { overline: [event.title, shortDate(event.start), clock(event.start)].join(SEP), title: 'Osnova' },

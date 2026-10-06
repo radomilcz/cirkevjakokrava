@@ -132,7 +132,7 @@ function openTeamSheet(team, needs) {
   const leader = can('leader');
   let sheet;
   sheet = openSheet({
-    title: 'Který tým ukázat',
+    title: 'Tým',
     body: list(teamOptions().map((o) => row({
       lead: o.group ? teamMark(o.group) : h('span', { class: 'roster-team-all', 'aria-hidden': 'true' }, icon('people')),
       title: o.label,
@@ -149,7 +149,7 @@ function teamChip(team, needs) {
   const o = teamOptions().find((x) => x.value === team);
   const el = chip(o.label, { iconEnd: 'chevron-down', cls: 'roster-team-chip', onclick: () => openTeamSheet(team, needs) });
   el.setAttribute('aria-haspopup', 'dialog');
-  el.setAttribute('aria-label', `Tým: ${o.label}. Vybrat jiný tým`);
+  el.setAttribute('aria-label', `Tým: ${o.label}. Vyber jiný tým`);
   if (o.group) el.prepend(teamMark(o.group, { size: 's' }));
   return el;
 }
@@ -211,7 +211,7 @@ function elsewhereLine(event, teamIds) {
   if (!others.length) return null;
   return h('p', { class: 'meta roster-card__elsewhere' },
     sev('error', `chybí i jinde: ${others.map((x) => `${x.group.name} ${x.missing}`).join(', ')}`), ' ',
-    link('Ukázat všechny týmy', { onclick: () => chooseTeam(ALL_TEAMS) }));
+    link('Ukaž všechny týmy', { onclick: () => chooseTeam(ALL_TEAMS) }));
 }
 
 function rosterCard({ event, groups, conflicts, eventWarnings }, chipValue, teamIds, openId) {
@@ -227,7 +227,7 @@ function rosterCard({ event, groups, conflicts, eventWarnings }, chipValue, team
   eventWarnings.length ? h('div', { class: 'roster-card__warn' }, eventWarnings.map((c) => warningFor(c, { eventId: event.id }))) : null,
   groups.map((g) => teamBlock(event, g, conflicts, { fold, rows: g.slots.map((s) => slotRow(event, s, conflicts)) })),
   leader && f.missing && !event.cancelled && !isPast(event) && chipValue !== 'moje'
-    ? h('div', { class: 'roster-card__foot' }, button('Doplnit volná místa', { size: 's', icon: 'people', onclick: () => fillOpenSlots([event.id], { teams: teamIds }) })) : null);
+    ? h('div', { class: 'roster-card__foot' }, button('Doplň volná místa', { size: 's', icon: 'people', onclick: () => fillOpenSlots([event.id], { teams: teamIds }) })) : null);
 }
 
 // ---------- desktop: the tables ----------
@@ -254,7 +254,7 @@ function cellEntry(event, slot, conflicts, { narrow }) {
   const leader = can('leader');
   const a = slot.assignment;
   if (!a) {
-    if (leader && !event.cancelled && !isPast(event)) return h('button', { type: 'button', class: 'slot roster-slot-empty', 'aria-label': `Doplnit: ${slot.role.name}, ${shortDate(event.start)}`, onclick: () => pickFor(event.id, slot.role.id) }, icon('plus', { size: 's' }), 'Doplnit');
+    if (leader && !event.cancelled && !isPast(event)) return h('button', { type: 'button', class: 'slot roster-slot-empty', 'aria-label': `Doplň: ${slot.role.name}, ${shortDate(event.start)}`, onclick: () => pickFor(event.id, slot.role.id) }, icon('plus', { size: 's' }), 'Doplň');
     return h('span', { class: 'roster-missing' }, sev('error', 'chybí'));
   }
   const key = STATUS_KEY[a.status] || 'waiting';
@@ -337,7 +337,7 @@ function teamSummary(event, group, slots, conflicts) {
   }
   const text = [`${f.filled} z ${f.needed}`, ...words.map((w) => w.textContent)].join(', ');
   return h('button', {
-    type: 'button', class: 'roster-sum', 'aria-label': `${group.name}: ${text}. Ukázat tým`, title: `Ukázat tým ${group.name}`,
+    type: 'button', class: 'roster-sum', 'aria-label': `${group.name}: ${text}. Ukaž tým`, title: `Ukaž tým ${group.name}`,
     onclick: () => chooseTeam(group.id),
   },
   h('span', { class: 'roster-sum__fill' }, fillRing(f.filled, f.needed), h('span', { class: 'num' }, `${f.filled} z ${f.needed}`)),
@@ -435,7 +435,7 @@ function printRoster(month) {
 
 export function rosterMenuItems(month) {
   return [
-    { label: 'Vytisknout', icon: 'printer', onclick: () => printRoster(month) },
+    { label: 'Vytiskni', icon: 'printer', onclick: () => printRoster(month) },
     can('leader') ? { label: 'Břemeno', icon: 'people', onclick: () => { location.hash = `#kalendar/rozpis/${month}/bremeno`; } } : null,
   ].filter(Boolean);
 }
@@ -473,7 +473,7 @@ export function rosterView({ month, extra, openId, closeHref, toolbar }) {
   const panelId = 'roster-panel';
 
   const statusChips = options.map(([v, label]) => chip(label, { pressed: chipNow === v, onclick: () => pick(v) }));
-  const chipRow = h('div', { class: 'chips roster-chips', role: 'group', 'aria-label': 'Co ukázat' }, desktop ? null : teamChip(team, needs), statusChips);
+  const chipRow = h('div', { class: 'chips roster-chips', role: 'group', 'aria-label': 'Filtr' }, desktop ? null : teamChip(team, needs), statusChips);
   const edge = () => chipRow.toggleAttribute('data-more-right', chipRow.scrollLeft < chipRow.scrollWidth - chipRow.clientWidth - 1);
   chipRow.addEventListener('scroll', edge, { passive: true });
   requestAnimationFrame(() => {     // the chosen chip in view (the row scrolls sideways on a phone)
@@ -483,7 +483,7 @@ export function rosterView({ month, extra, openId, closeHref, toolbar }) {
   });
 
   const { items, hiddenPast } = rosterData(month, chipNow, team, { fromDay });
-  const pastLink = hiddenPast ? h('div', { class: 'cal-past roster-past' }, link('Ukázat, co už bylo', { icon: 'chevron-left', onclick: () => { pastState.on = true; render(); } })) : null;
+  const pastLink = hiddenPast ? h('div', { class: 'cal-past roster-past' }, link('Ukaž, co už bylo', { icon: 'chevron-left', onclick: () => { pastState.on = true; render(); } })) : null;
 
   let content;
   if (!items.length) {
@@ -492,7 +492,7 @@ export function rosterView({ month, extra, openId, closeHref, toolbar }) {
     content = empty({
       icon: iconName, title,
       text: chipNow === 'vse' && leader && !teamIds ? 'Kdo kde slouží, nastavíš u setkání v „Kolik lidí je potřeba“.' : hiddenPast ? 'Co už bylo, ukáže odkaz nahoře.' : null,
-      action: otherTeams ? button('Ukázat všechny týmy', { variant: 'quiet', onclick: () => chooseTeam(ALL_TEAMS) }) : null,
+      action: otherTeams ? button('Ukaž všechny týmy', { variant: 'quiet', onclick: () => chooseTeam(ALL_TEAMS) }) : null,
     });
   } else if (desktop && chipNow === 'vse' && !teamIds) {
     content = overviewTable(items, { openId });
@@ -507,7 +507,7 @@ export function rosterView({ month, extra, openId, closeHref, toolbar }) {
   let aside = null;
   if (opened && isSplit()) aside = h('aside', { class: 'cal-split__aside roster-aside', 'aria-label': 'Setkání' }, eventPane(opened, closeHref));
   else if (extra === 'bremeno' && leader) {
-    if (isSplit()) aside = h('aside', { class: 'cal-split__aside roster-aside', 'aria-label': 'Břemeno' }, detailPane({ body: h('div', { class: 'load-pane' }, h('h2', { class: 'title title--s' }, 'Břemeno'), loadBody(month)), closeHref: base, label: 'Zavřít Břemeno' }));
+    if (isSplit()) aside = h('aside', { class: 'cal-split__aside roster-aside', 'aria-label': 'Břemeno' }, detailPane({ body: h('div', { class: 'load-pane' }, h('h2', { class: 'title title--s' }, 'Břemeno'), loadBody(month)), closeHref: base, label: 'Zavři Břemeno' }));
     else queueMicrotask(() => openLoadSheet(month));
   }
 
@@ -518,6 +518,6 @@ export function rosterView({ month, extra, openId, closeHref, toolbar }) {
   const fillable = monthEvents(month).filter((e) => !e.cancelled && !isPast(e) && (!teamIds || fillOfTeams(e, teamIds).needed)).map((e) => e.id);
   return {
     body,
-    primary: leader && fillable.length ? { label: 'Doplnit volná místa', icon: 'people', onclick: () => fillOpenSlots(fillable, { teams: teamIds }) } : null,
+    primary: leader && fillable.length ? { label: 'Doplň volná místa', icon: 'people', onclick: () => fillOpenSlots(fillable, { teams: teamIds }) } : null,
   };
 }

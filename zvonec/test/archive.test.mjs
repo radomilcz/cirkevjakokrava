@@ -104,7 +104,7 @@ test('archive: archived cards are left out of lists, groups, pickers, birthdays 
   assert.deepEqual(groupsOf(d, 'petr').map((g) => g.id), ['tech'], 'the card itself still knows the team');
 });
 
-test('archive: „Vrátit z archivu“ brings back the status before, else přítel', () => {
+test('archive: „Vrať z archivu“ brings back the status before, else přítel', () => {
   const d = data();
   archivePerson(d, 'petr', { today: TODAY, now: NOW });
   restorePerson(d, 'petr');

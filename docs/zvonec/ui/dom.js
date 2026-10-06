@@ -62,7 +62,7 @@ export const textButton = (text, onclick, extra = {}) => h('button', { type: 'bu
 /** A link. Pass cls 'btn …' to make it look like a button, 'back' for the back link. */
 export const link = (text, href, cls = '', extra = {}) => h('a', { href, class: cls || null, ...extra }, text);
 
-/** Button label with a leading plus: btn(plus('Přidat setkání'), …). */
+/** Button label with a leading plus: btn(plus('Přidej setkání'), …). */
 export const plus = (text) => [icon('plus', { cls: 'plus' }), text];
 
 /** Small × button (remove a row). */
@@ -78,7 +78,7 @@ const isOptions = (x) => !!x && typeof x === 'object' && !Array.isArray(x) && !(
 /**
  * A block of a page with an h2 (Narrow Black, uppercase, 20 px), an optional count next to it and quiet
  * actions on the right of the heading. Children follow; the options object may be left out.
- *   section('Členové', { count: 12, actions: btn(plus('Přidat'), add, 'small') }, list(…))
+ *   section('Členové', { count: 12, actions: btn(plus('Přidej'), add, 'small') }, list(…))
  *   section('Kontakt', facts(…))
  * `title` may be text or nodes (older screens still pass [text, count(…), btn(…)]); null = no heading.
  * @param {any} title
@@ -158,7 +158,7 @@ export const printHeader = (eyebrow) => h('div', { class: 'print-header' },
  * Nothing here yet – in a panel: an icon in a soft circle, an optional title, one sentence and, when
  * it helps, the page's primary action. Two call forms:
  *   emptyState({ icon: 'map-pin', title: 'Zatím tu nejsou žádná místa.', text: '…', action: button(…) })
- *   emptyState('Zatím tu není žádný tým.', btn(plus('Přidat tým'), add, 'primary'))   (older screens)
+ *   emptyState('Zatím tu není žádný tým.', btn(plus('Přidej tým'), add, 'primary'))   (older screens)
  * `compact`: no icon, less padding (inside a card or a dialog). `bare`: no panel around it.
  * @param {string|{icon?: string, title?: any, text?: any, action?: any, compact?: boolean, bare?: boolean, cls?: string}} options
  * @param {Node} [action]
@@ -201,7 +201,7 @@ export function list(items, renderRow, { empty, cls, label } = {}) {
 /**
  * A group label inside a list (Narrow, uppercase) with an optional quiet action on the right. Return it
  * from list()'s renderRow, or use groupedList().
- *   listGroup('Chvály', btn(plus('Přidat'), add, 'mini plain'))
+ *   listGroup('Chvály', btn(plus('Přidej'), add, 'mini plain'))
  */
 export const listGroup = (label, action) => h('li', { class: 'list-group' }, h('span', { class: 'label' }, label), action || null);
 
@@ -374,9 +374,9 @@ export function statusBadge(status, options) {
 
 /**
  * A person on a duty: avatar, FULL name, status symbol and word. For the person themselves (`mine`)
- * a proposed duty gets „Potvrdit“ / „Nemůžu“ (onAnswer('confirmed' | 'declined')). A leader
- * (`canEdit`) gets a small ⋯ menu instead of many inline controls: Vyměnit (onEdit), the other
- * statuses (onStatus), Vím o tom / Upravit důvod (onOverride), Odebrat (onRemove) – only those passed.
+ * a proposed duty gets „Potvrď“ / „Nemůžu“ (onAnswer('confirmed' | 'declined')). A leader
+ * (`canEdit`) gets a small ⋯ menu instead of many inline controls: Vyměň (onEdit), the other
+ * statuses (onStatus), Vím o tom / Uprav důvod (onOverride), Odeber (onRemove) – only those passed.
  * `tone` 'error' | 'warning' marks a conflict on this assignment (dot before the name, `title` = why).
  * @param {{ assignment: {status: string}, person: object|null, mine?: boolean, canEdit?: boolean,
  *   onAnswer?: Function, onEdit?: Function, onRemove?: Function, onStatus?: Function,
@@ -387,11 +387,11 @@ export function assignee({ assignment, person, mine = false, canEdit = false, on
   const status = assignment?.status || 'proposed';
   const name = personName(person);
   const menuItems = canEdit ? [
-    onEdit ? ['Vyměnit', onEdit] : null,
+    onEdit ? ['Vyměň', onEdit] : null,
     ...(onStatus ? ['confirmed', 'proposed', 'declined'].filter((s) => s !== status)
-      .map((s) => [s === 'confirmed' ? 'Potvrdit' : s === 'declined' ? 'Označit, že nemůže' : 'Označit jako nepotvrzené', () => onStatus(s)]) : []),
+      .map((s) => [s === 'confirmed' ? 'Potvrď' : s === 'declined' ? 'Označ, že nemůže' : 'Označ jako nepotvrzené', () => onStatus(s)]) : []),
     onOverride ? [overrideLabel || 'Vím o tom', onOverride] : null,
-    onRemove ? ['Odebrat', onRemove, { danger: true }] : null,
+    onRemove ? ['Odeber', onRemove, { danger: true }] : null,
   ].filter(Boolean) : [];
   const answer = mine && status === 'proposed' && onAnswer;
   return h('div', { class: ['assignee', `status-${status}`, mine && 'mine', tone && `tone-${tone}`], title: title || null },
@@ -400,7 +400,7 @@ export function assignee({ assignment, person, mine = false, canEdit = false, on
       href && !canEdit ? h('a', { class: 'assignee-name', href }, name) : h('span', { class: 'assignee-name' }, name),
       statusBadge(status, person)),
     answer ? h('span', { class: 'assignee-answer' },
-      h('button', { type: 'button', class: 'btn btn-solid btn-s', onclick: () => onAnswer('confirmed') }, icon('check'), 'Potvrdit'),
+      h('button', { type: 'button', class: 'btn btn-solid btn-s', onclick: () => onAnswer('confirmed') }, icon('check'), 'Potvrď'),
       h('button', { type: 'button', class: 'btn btn-soft btn-s', onclick: () => onAnswer('declined') }, 'Nemůžu')) : null,
     menuItems.length ? menuButton(menuItems, { label: `Možnosti: ${name}` }) : null);
 }
@@ -478,9 +478,9 @@ export function groupPlaces(places) {
 }
 
 /**
- * A place in one line: name, address (when there is one) and „Otevřít v mapě“ (mapy.cz, new tab).
+ * A place in one line: name, address (when there is one) and „Otevři v mapě“ (mapy.cz, new tab).
  * An array of places: places at one address share the line („Sál a Malá místnost · Sokolovská 12 ·
- * Otevřít v mapě“); several addresses give one line each. The „·“ never starts a wrapped line.
+ * Otevři v mapě“); several addresses give one line each. The „·“ never starts a wrapped line.
  *   placeLine({ name: 'Sál', address: 'Komenského 5, Nový Jičín' })
  *   placeLine(placesOf(event))
  */
@@ -491,7 +491,7 @@ export function placeLine(places) {
     return h('span', { class: 'place-line' }, metaJoin([
       h('span', { class: 'place-name' }, andJoin(names)),
       address ? h('span', { class: 'place-address' }, address) : null,
-      canMap({ ...place, address }) ? h('a', { class: 'place-map-link', href: mapUrl({ ...place, address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě') : null,
+      canMap({ ...place, address }) ? h('a', { class: 'place-map-link', href: mapUrl({ ...place, address }), target: '_blank', rel: 'noopener noreferrer' }, 'Otevři v mapě') : null,
     ]));
   };
   return groups.length === 1 ? line(groups[0]) : h('span', { class: 'place-lines' }, groups.map(line));
@@ -529,8 +529,8 @@ export function filterButtons(options, value, onPick, { label } = {}) {
 
 /**
  * A toast at the bottom: one line (+ an optional detail line), one action.
- *   toast('Uloženo.') · toast('Smazáno.', 'Petr Novák', { action: undo, actionLabel: 'Vrátit' })
- *   toast('Nepodařilo se uložit.', 'GitHub neodpovídá.', { tone: 'error', action: retry, actionLabel: 'Zkusit znovu' })
+ *   toast('Uloženo.') · toast('Smazáno.', 'Petr Novák', { action: undo, actionLabel: 'Vrať' })
+ *   toast('Nepodařilo se uložit.', 'GitHub neodpovídá.', { tone: 'error', action: retry, actionLabel: 'Zkus to znovu' })
  * tone: 'ok' (green ✓, default), 'error' (red ✕ + red edge, stays 8 s), 'info' (no symbol).
  */
 export function toast(title, text = '', { action, actionLabel, duration, tone = 'ok' } = {}) {
@@ -556,7 +556,7 @@ export function download(name, content, type) {
 }
 
 /** Copy to the clipboard; the button label tells how it went. */
-export function copyButton(value, label = 'Kopírovat') {
+export function copyButton(value, label = 'Zkopíruj') {
   return btn(label, async (e) => {
     const b = e.currentTarget;
     try { await navigator.clipboard.writeText(value); b.textContent = 'Zkopírováno'; } catch { b.textContent = 'Označ a zkopíruj ručně'; }
@@ -608,18 +608,18 @@ export function closeDialog() {
 }
 
 /**
- * Ask before doing something: confirmDialog('Smazat Petra?', 'Zmizí i ze služeb.', () => …).
+ * Ask before doing something: confirmDialog('Chceš smazat Petra?', 'Zmizí i ze služeb.', () => …).
  * `extra` is put between the text and the buttons (e.g. radio choices); onYes gets the form.
- * `danger` (default: the label starts with Smazat / Odebrat / Zrušit) makes the button red.
+ * `danger` (default: the label starts with Smaž / Odeber / Zruš) makes the button red.
  */
-export function confirmDialog(title, text, onYes, { buttonLabel = 'Smazat', extra, danger = /^(Smazat|Odebrat|Zrušit)/.test(buttonLabel) } = {}) {
+export function confirmDialog(title, text, onYes, { buttonLabel = 'Smaž', extra, danger = /^(Smaž|Odeber|Zruš)/.test(buttonLabel) } = {}) {
   const form = h('form', { method: 'dialog', class: 'dialog-form' },
     h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, title),
       text ? h('p', { class: 'dialog-sub' }, text) : null),
     extra ? h('div', { class: 'dialog-body' }, extra) : null,
     h('div', { class: 'dialog-foot actions' },
       h('span', { class: 'dialog-foot-space' }),
-      h('button', { type: 'button', class: 'btn btn-ghost', onclick: closeDialog }, 'Nechat být'),
+      h('button', { type: 'button', class: 'btn btn-ghost', onclick: closeDialog }, 'Nech to být'),
       h('button', { type: 'submit', class: ['btn', danger ? 'btn-danger-solid' : 'btn-solid'] }, buttonLabel)));
   form.addEventListener('submit', (e) => { e.preventDefault(); closeDialog(); onYes(form); });
   openDialog(form);
@@ -642,7 +642,7 @@ export const formErrorLine = (text = '', { full = false } = {}) => h('p', { clas
  * @param {{ title: any, sub?: any, body: any, save: Function, remove?: Function, removeLabel?: string,
  *   saveLabel?: string, cancelLabel?: string, wide?: boolean, extra?: any, cls?: string }} options
  */
-export function dialogForm({ title, sub, body, save, remove, removeLabel = 'Smazat', saveLabel = 'Uložit', cancelLabel = 'Zrušit', wide = false, extra, cls }) {
+export function dialogForm({ title, sub, body, save, remove, removeLabel = 'Smaž', saveLabel = 'Ulož', cancelLabel = 'Zruš', wide = false, extra, cls }) {
   const submit = h('button', { type: 'submit', class: 'btn btn-solid' }, saveLabel);
   const form = h('form', { method: 'dialog', novalidate: true, class: ['dialog-form', cls] },
     h('div', { class: 'dialog-head' },
@@ -707,7 +707,7 @@ export function choices(name, options, selected = [], type = 'checkbox') {
 
 /**
  * Checkbox with a sentence (consent, longer options). Spans the full grid row. `hint` = a muted line
- * under the sentence (checkboxField('public', 'Zveřejnit na webu', true, 'yes', { hint: 'Uvidí každý.' })).
+ * under the sentence (checkboxField('public', 'Zveřejni na webu', true, 'yes', { hint: 'Uvidí každý.' })).
  */
 export function checkboxField(name, text, checked = false, value = 'yes', { hint } = {}) {
   return h('label', { class: ['check-row', 'full', hint && 'with-hint'] },

@@ -129,9 +129,9 @@ function backupSection() {
     if (!data) { toast('Tohle není záloha Zvonce.', { icon: 'alert' }); return; }
     const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'skupina', 'skupiny', 'skupin'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
     confirmSheet({
-      title: 'Nahradit všechna data zálohou?',
+      title: 'Chceš nahradit všechna data zálohou?',
       text: `V souboru je ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii repa.' : ''}`,
-      confirmLabel: 'Nahrát zálohu',
+      confirmLabel: 'Nahraj zálohu',
       onConfirm: () => { replaceAll(data, `nahraná záloha ${chosen.name}`); draft = null; toast('Záloha je nahraná.'); },
     });
   });
@@ -144,8 +144,8 @@ function backupSection() {
     title: 'Záloha',
     body: [
       list([
-        row({ lead: icon('download'), title: 'Stáhnout zálohu', meta: `Všechno v jednom souboru: ${counts}${live ? ', bez přístupů' : ''}.`, onclick: backup, wrap: true }),
-        can('admin') ? row({ lead: icon('undo'), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru.', onclick: () => file.click(), wrap: true }) : null,
+        row({ lead: icon('download'), title: 'Stáhni zálohu', meta: `Všechno v jednom souboru: ${counts}${live ? ', bez přístupů' : ''}.`, onclick: backup, wrap: true }),
+        can('admin') ? row({ lead: icon('undo'), title: 'Nahraj zálohu', meta: 'Nahradí všechna data tím, co je v souboru.', onclick: () => file.click(), wrap: true }) : null,
       ].filter(Boolean), { label: 'Záloha' }),
       file,
       live ? h('p', { class: 'meta cfg-note' }, 'Každá změna se ukládá do soukromého repa na GitHubu i s historií. Záloha je pro jistotu navíc.') : null,

@@ -37,13 +37,13 @@ const coordsText = (place) => (place && place.lat != null && place.lon != null ?
 
 /**
  * Coordinates as text with a live OpenStreetMap preview under it (after a short pause in typing) and a
- * link „Najít na Mapy.cz“ (searches the address typed in `addressInput`, when given). Kit candidate.
+ * link „Najdi na Mapy.cz“ (searches the address typed in `addressInput`, when given). Kit candidate.
  */
 export function coordsField(name, value, { addressInput, nameInput } = {}) {
   const input = h('input', { type: 'text', name, value: value || '', placeholder: 'např. 49.59, 18.01', spellcheck: false, autocomplete: 'off', inputmode: 'decimal' });
   const preview = h('div', { class: 'coords-preview' });
   const message = h('small', { class: 'field-hint coords-message', 'aria-live': 'polite' });
-  const find = h('a', { class: 'text-link coords-find', target: '_blank', rel: 'noopener noreferrer' }, 'Najít na Mapy.cz', icon('external', { cls: 'link-icon' }));
+  const find = h('a', { class: 'text-link coords-find', target: '_blank', rel: 'noopener noreferrer' }, 'Najdi na Mapy.cz', icon('external', { cls: 'link-icon' }));
   const updateFind = () => {
     const q = addressInput?.value.trim() || nameInput?.value.trim() || '';
     find.href = q ? `https://mapy.cz/zakladni?q=${encodeURIComponent(q)}` : 'https://mapy.cz/zakladni';
@@ -101,14 +101,14 @@ export function renderPlaces() {
     title: LIBRARY_TITLE,
     lead: 'Kde se scházíme. Místnost zdědí adresu i mapu po své budově.',
     tabs: libraryTabs('mista'),
-    actions: leader ? button('Přidat místo', { variant: 'solid', icon: 'plus', onclick: add }) : null,
+    actions: leader ? button('Přidej místo', { variant: 'solid', icon: 'plus', onclick: add }) : null,
     width: 'list',
     cls: 'library-page places-page',
     body: tree.length
       ? h('div', { class: 'place-cards' }, tree.map(({ place, rooms }) => placeCard(place, rooms, leader)))
       : emptyState({
         icon: 'map-pin', title: 'Zatím tu nejsou žádná místa.', text: 'Místa se pak nabízejí u každého setkání a Zvonec hlídá, aby se dvě setkání nepotkala v jedné místnosti.',
-        action: leader ? button('Přidat místo', { variant: 'solid', icon: 'plus', onclick: add }) : null,
+        action: leader ? button('Přidej místo', { variant: 'solid', icon: 'plus', onclick: add }) : null,
       }),
   });
 }
@@ -127,7 +127,7 @@ function placeCard(place, rooms, leader) {
       h('h2', { class: 'place-card-title' }, h('a', { href: `#misto/${place.id}` }, place.name)),
       h('p', { class: 'place-card-address' }, metaJoin([
         place.address || (map ? null : 'bez adresy'),
-        canMap(place) ? h('a', { class: 'place-map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě') : null,
+        canMap(place) ? h('a', { class: 'place-map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Otevři v mapě') : null,
       ].filter(Boolean))),
       badges.length || count ? h('p', { class: 'place-card-badges' }, badges, count && !rooms.length ? h('span', { class: 'place-card-count' }, eventsWord(count)) : null) : null));
   const roomList = rooms.length ? h('ul', { class: 'place-rooms', 'aria-label': `Místnosti: ${place.name}` }, rooms.map((r) => {
@@ -143,7 +143,7 @@ function placeCard(place, rooms, leader) {
     h('div', { class: 'place-card-main' }, head,
       roomList,
       leader && rooms.length ? h('div', { class: 'place-card-foot' },
-        button('Přidat místnost', { variant: 'add', onclick: () => placeDialog(null, { partOf: place.id }) })) : null),
+        button('Přidej místnost', { variant: 'add', onclick: () => placeDialog(null, { partOf: place.id }) })) : null),
     map ? h('div', { class: 'place-card-map' }, map) : null);
 }
 
@@ -178,7 +178,7 @@ export function renderPlace(id) {
       place.address ? metaItem('map-pin', place.address) : null,
       main ? metaItem('home', 'hlavní místo sboru') : null,
     ].filter(Boolean),
-    actions: leader ? button('Upravit', { variant: 'surface', icon: 'pencil', onclick: () => placeDialog(raw) }) : null,
+    actions: leader ? button('Uprav', { variant: 'surface', icon: 'pencil', onclick: () => placeDialog(raw) }) : null,
     width: 'list',
     cls: 'place-page',
     body: h('div', { class: 'place-layout' },
@@ -186,7 +186,7 @@ export function renderPlace(id) {
         map ? h('div', { class: 'place-map-large' }, map) : null,
         rooms.length || (leader && !building) ? h('section', { class: 'section' },
           h('div', { class: 'section-head' }, h('h2', {}, 'Místnosti', rooms.length ? [' ', h('span', { class: 'n' }, String(rooms.length))] : null),
-            leader ? h('div', { class: 'section-actions' }, button('Přidat místnost', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => placeDialog(null, { partOf: raw.id }) })) : null),
+            leader ? h('div', { class: 'section-actions' }, button('Přidej místnost', { variant: 'ghost', size: 's', icon: 'plus', onclick: () => placeDialog(null, { partOf: raw.id }) })) : null),
           list(rooms, (r) => row({
             title: r.name,
             meta: metaJoin([r.shared ? 'víc věcí naráz' : null, upcomingAt(r.id).length ? eventsWord(upcomingAt(r.id).length) : 'nic v plánu']),
@@ -209,7 +209,7 @@ export function renderPlace(id) {
             ['Souřadnice', coordsText(place) || 'nejsou'],
             ['Víc věcí naráz', raw.shared ? 'ano' : 'ne'],
           ]),
-          footer: canMap(place) ? h('a', { class: 'place-map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Otevřít v mapě') : null,
+          footer: canMap(place) ? h('a', { class: 'place-map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, 'Otevři v mapě') : null,
         }),
         templates.length ? card({
           title: 'Šablony',
@@ -256,14 +256,14 @@ export function placeDialog(place, { partOf: presetPartOf = '' } = {}) {
       : `Smazat ho teď nejde: je zapsané u ${plural(used.length, 'nadcházejícího setkání', 'nadcházejících setkání', 'nadcházejících setkání')} (nejbližší ${prettyDay(used[0].start)} ${used[0].title || ''}). Nejdřív u nich vyber jiné místo, nebo počkej, až proběhnou.`)
     : '';
   formDialog({
-    title: place ? 'Upravit místo' : partOf ? 'Nová místnost' : 'Nové místo',
+    title: place ? 'Úprava místa' : partOf ? 'Nová místnost' : 'Nové místo',
     sub: place?.name || (partOf ? placeById(S.data, partOf)?.name : null),
     sections: [
       { cols: 1, fields: [nameField, buildings.length ? partOfField : null, own, inherit] },
       { cols: 1, fields: [switchField('shared', 'Vejde se tu víc věcí naráz', !!place?.shared, { hint: 'Dvě setkání ve stejnou dobu tu nebudou chyba. Třeba kuchyňka nebo zahrada.' })] },
       blocked ? h('p', { class: 'dialog-note' }, icon('info'), h('span', {}, blocked)) : null,
     ].filter(Boolean),
-    saveLabel: place ? 'Uložit' : 'Přidat',
+    saveLabel: place ? 'Ulož' : 'Přidej',
     remove: place && !blocked ? () => deletePlace(place) : null,
     save: (f) => {
       const name = f.name.value.trim();
@@ -296,7 +296,7 @@ export function placeDialog(place, { partOf: presetPartOf = '' } = {}) {
 
 function deletePlace(place) {
   const past = S.data.events.filter((e) => (e.placeIds || []).includes(place.id)).length;
-  confirmDialog(`Smazat místo ${place.name}?`, past ? 'Zmizí i z údajů setkání, která už proběhla.' : 'Nikde ho nepoužíváme.', () => {
+  confirmDialog(`Chceš smazat místo ${place.name}?`, past ? 'Zmizí i z údajů setkání, která už proběhla.' : 'Nikde ho nepoužíváme.', () => {
     const building = place.partOf;
     S.data.places = S.data.places.filter((x) => x.id !== place.id);
     for (const e of S.data.events) e.placeIds = (e.placeIds || []).filter((x) => x !== place.id);

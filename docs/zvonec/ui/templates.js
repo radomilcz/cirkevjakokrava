@@ -1,10 +1,10 @@
 // Jak se scházíme › Šablony: #sablony (cards) and #sablona/<id> (#sablona/nova for a new one) – the
-// full-page editor of a template (structure.md §4.3): a section nav on the left with a sticky „Uložit“,
+// full-page editor of a template (structure.md §4.3): a section nav on the left with a sticky „Ulož“,
 // sections Základ · Na webu · Kdo je potřeba · Osnova · Řady. A template pre-fills a new event: time,
 // place, picture, description, who is needed and the osnova. Leaders only (the router keeps members out).
 //
 // The editor works on a draft (a copy of the template) that survives re-renders of the page (a save
-// elsewhere, „Prodloužit“); nothing is written until „Uložit“.
+// elsewhere, „Prodluž“); nothing is written until „Ulož“.
 //
 // Data: eventType { id, name, kind, groupId?, weekday? (0 = Monday … 6 = Sunday, NEW, optional – which
 // day the template's events usually fall on), startTime, minutes, placeIds, image?, description?,
@@ -150,12 +150,12 @@ export function renderTemplates() {
     title: LIBRARY_TITLE,
     lead: 'Šablona předvyplní nové setkání: čas, místo, obrázek, kdo je potřeba a osnovu.',
     tabs: libraryTabs('sablony'),
-    actions: button('Přidat šablonu', { variant: 'solid', icon: 'plus', onclick: add }),
+    actions: button('Přidej šablonu', { variant: 'solid', icon: 'plus', onclick: add }),
     width: 'list',
     cls: 'library-page templates-page',
     body: types.length
       ? h('ul', { class: 'template-grid', 'aria-label': 'Šablony' }, types.map((t) => h('li', {}, templateCard(t))))
-      : emptyState({ icon: 'template', title: 'Zatím tu není žádná šablona.', text: 'Začni tou nejčastější – třeba nedělním setkáním.', action: button('Přidat šablonu', { variant: 'solid', icon: 'plus', onclick: add }) }),
+      : emptyState({ icon: 'template', title: 'Zatím tu není žádná šablona.', text: 'Začni tou nejčastější – třeba nedělním setkáním.', action: button('Přidej šablonu', { variant: 'solid', icon: 'plus', onclick: add }) }),
   });
 }
 
@@ -235,11 +235,11 @@ function editorPage(d) {
   const status = h('p', { class: 'save-note', 'aria-live': 'polite' });
   const saveButtons = [];
   const saveButton = () => {
-    const b = button(isNew ? 'Přidat šablonu' : 'Uložit', { variant: 'solid', icon: 'check', type: 'submit', cls: 'template-save-btn' });
+    const b = button(isNew ? 'Přidej šablonu' : 'Ulož', { variant: 'solid', icon: 'check', type: 'submit', cls: 'template-save-btn' });
     saveButtons.push(b);
     return b;
   };
-  const discard = button('Zahodit změny', { variant: 'ghost', size: 's', onclick: () => { draft = freshDraft(d.id); render(); }, cls: 'template-discard' });
+  const discard = button('Zahoď změny', { variant: 'ghost', size: 's', onclick: () => { draft = freshDraft(d.id); render(); }, cls: 'template-discard' });
   const updateStatus = () => {
     const dirty = isDirty();
     status.textContent = dirty ? 'Máš neuložené změny.' : isNew ? 'Zatím neuloženo.' : 'Všechno je uložené.';
@@ -266,10 +266,10 @@ function editorPage(d) {
     sectionCard('web', 'Na webu', 'Co uvidí návštěvníci u veřejného setkání na Pastvě.', web.node),
     sectionCard('lide', 'Kdo je potřeba', 'Kolik lidí z kterého týmu potřebuje každé nové setkání.', people),
     sectionCard('osnova', 'Osnova', 'Z čeho se setkání skládá. Každé nové setkání dostane kopii, kterou pak můžeš upravit.', outline),
-    sectionCard('rady', 'Řady', 'Opakovaná setkání z téhle šablony. Řadu založíš v kalendáři přes „Přidat setkání“.', seriesSection(d)),
+    sectionCard('rady', 'Řady', 'Opakovaná setkání z téhle šablony. Řadu založíš v kalendáři přes „Přidej setkání“.', seriesSection(d)),
     errorLine,
     type ? h('div', { class: 'template-danger' },
-      button('Smazat šablonu', { variant: 'danger', icon: 'trash', onclick: () => deleteTemplate(type) }),
+      button('Smaž šablonu', { variant: 'danger', icon: 'trash', onclick: () => deleteTemplate(type) }),
       h('span', { class: 'template-danger-note' }, 'Setkání, která už podle ní vznikla, zůstanou.')) : null,
     h('div', { class: 'template-savebar' }, status.cloneNode(), saveButton()));
 
@@ -425,8 +425,8 @@ function webSection(d) {
   };
   const drawButtons = () => {
     buttons.replaceChildren(...[
-      button(hasImage() ? 'Vybrat jiný obrázek' : 'Nahrát obrázek', { variant: 'surface', size: 's', icon: 'upload', onclick: () => file.click() }),
-      hasImage() ? button('Odebrat obrázek', { variant: 'ghost', size: 's', onclick: () => { state.pending = null; state.removed = true; draw(); notify(); } }) : null,
+      button(hasImage() ? 'Vyber jiný obrázek' : 'Nahraj obrázek', { variant: 'surface', size: 's', icon: 'upload', onclick: () => file.click() }),
+      hasImage() ? button('Odeber obrázek', { variant: 'ghost', size: 's', onclick: () => { state.pending = null; state.removed = true; draw(); notify(); } }) : null,
     ].filter(Boolean));
     message.textContent = hasImage() ? 'Větší obrázek Zvonec zmenší na 1600 px.' : IMAGE_NONE_HINT;
   };
@@ -451,7 +451,7 @@ function webSection(d) {
     h('div', { class: 'web-fields form-grid one' },
       field('Obrázek', h('div', { class: 'tpl-image-tools' }, buttons, message, file), { full: true, group: true }),
       textArea('description', 'Popis', v.description, { attr: { rows: 5, placeholder: 'např. Chvály, slovo a kafe. Přijď, jak jsi.' }, hint: 'Předvyplní se u nových setkání. Čtou ho lidé u setkání i na webu.' }),
-      publishField('public', 'Zveřejňovat nová setkání z téhle šablony', 'Název, čas, místo, obrázek a popis uvidí každý na webu. Jména lidí nikdy.', v.public)),
+      publishField('public', 'Zveřejňuj nová setkání z téhle šablony', 'Název, čas, místo, obrázek a popis uvidí každý na webu. Jména lidí nikdy.', v.public)),
     h('figure', { class: 'web-preview', 'aria-label': 'Náhled na webu' },
       h('figcaption', { class: 'label' }, 'Takhle to uvidí návštěvníci webu'),
       h('div', { class: 'web-preview-card card' }, preview,
@@ -568,7 +568,7 @@ function outlineSection(d, { onProgram }) {
       const time = h('span', { class: 'outline-time' });
       times.push(time);
       return h('li', { class: 'outline-item' },
-        dragHandle(d.keys[i], `Přesunout: ${format?.name || 'bod'}`),
+        dragHandle(d.keys[i], `Přesuň: ${format?.name || 'bod'}`),
         time,
         h('span', { class: 'outline-name' },
           h('select', {
@@ -588,7 +588,7 @@ function outlineSection(d, { onProgram }) {
             oninput: (e) => { item.minutes = Math.max(0, Math.round(Number(e.target.value)) || 0); drawTimes(); onProgram(); },
           }),
           h('span', { class: 'outline-unit' }, 'min')),
-        removeButton(`Odebrat: ${format?.name || 'bod'}`, () => { v.program.splice(i, 1); d.keys.splice(i, 1); draw(); onProgram(); }));
+        removeButton(`Odeber: ${format?.name || 'bod'}`, () => { v.program.splice(i, 1); d.keys.splice(i, 1); draw(); onProgram(); }));
     }));
     drawTimes();
   };
@@ -597,7 +597,7 @@ function outlineSection(d, { onProgram }) {
   });
   draw();
   const add = formats.length ? h('select', {
-    class: 'outline-add', 'aria-label': 'Přidat bod',
+    class: 'outline-add', 'aria-label': 'Přidej bod',
     onchange: (e) => {
       const f = formatById(S.data, e.target.value);
       if (!f) return;
@@ -606,7 +606,7 @@ function outlineSection(d, { onProgram }) {
       draw();
       onProgram();
     },
-  }, h('option', { value: '' }, 'Přidat bod…'), formats.map((f) => h('option', { value: f.id }, metaJoin([f.name, `${f.minutes ?? 0} min`])))) : null;
+  }, h('option', { value: '' }, 'Přidej bod…'), formats.map((f) => h('option', { value: f.id }, metaJoin([f.name, `${f.minutes ?? 0} min`])))) : null;
   wrap.append(summary, listEl, h('div', { class: 'outline-foot' },
     add ? h('span', { class: 'outline-add-field' }, add) : h('p', { class: 'note' }, 'Nejdřív přidej formáty.'),
     h('a', { class: 'text-link outline-formats', href: '#formaty' }, 'Co je který formát')));
@@ -621,7 +621,7 @@ function seriesSection(d) {
   if (d.id === 'nova') return h('p', { class: 'note' }, 'Řady se ukážou, až šablonu uložíš a v kalendáři podle ní založíš opakované setkání.');
   const records = seriesOfType(S.data, d.id);
   if (!records.length) {
-    return emptyState({ icon: 'refresh', compact: true, text: 'Z téhle šablony zatím nevznikla žádná řada.', action: button('Otevřít kalendář', { href: '#kalendar', variant: 'surface', size: 's', icon: 'calendar' }) });
+    return emptyState({ icon: 'refresh', compact: true, text: 'Z téhle šablony zatím nevznikla žádná řada.', action: button('Otevři kalendář', { href: '#kalendar', variant: 'surface', size: 's', icon: 'calendar' }) });
   }
   const now = today();
   return list(records, (s) => {
@@ -633,7 +633,7 @@ function seriesSection(d) {
       title: seriesSummary(s, { today: now }),
       meta: [`${prettyDay(s.from, false)}${s.from.slice(0, 4) !== (s.until || '').slice(0, 4) ? ` ${s.from.slice(0, 4)}` : ''} – ${s.until ? `${prettyDay(s.until, false)} ${s.until.slice(0, 4)}` : '…'}`,
         ended ? 'skončila' : ahead ? `ještě ${plural(ahead, 'setkání', 'setkání', 'setkání')}` : 'nic dalšího v plánu'].join(SEP),
-      trail: s.step ? button('Prodloužit', { variant: 'surface', size: 's', icon: 'calendar-plus', onclick: () => extendDialog(s) }) : null,
+      trail: s.step ? button('Prodluž', { variant: 'surface', size: 's', icon: 'calendar-plus', onclick: () => extendDialog(s) }) : null,
       cls: 'series-row',
     });
   }, { cls: 'series-list', label: 'Řady' });
@@ -654,10 +654,10 @@ function extendDialog(series) {
     line.textContent = n > 0 ? `${agree(n, 'Přibude', 'Přibudou')} ${n === 1 ? 'jedno' : n} setkání. ${agree(n, 'Zkopíruje', 'Zkopírují', 'Zkopírují')} se z posledního, bez lidí.` : 'Vyber den po konci řady.';
   };
   const form = formDialog({
-    title: 'Prodloužit řadu',
+    title: 'Prodloužení řady',
     sub: seriesSummary(series, { today: now }),
     sections: [{ cols: 1, fields: [dateField('until', 'Do kdy', proposal, { min: series.until || now }), line] }],
-    saveLabel: 'Prodloužit',
+    saveLabel: 'Prodluž',
     save: (f) => {
       const until = f.until.value;
       if (!until) return 'Vyber den.';
@@ -726,7 +726,7 @@ async function saveTemplate(d) {
 
 function deleteTemplate(type) {
   const count = S.data.events.filter((e) => e.typeId === type.id).length;
-  confirmDialog(`Smazat šablonu ${type.name}?`, count ? `Setkání, která z ní už vznikla (${count}), zůstanou, jak jsou.` : 'Žádné setkání z ní zatím nevzniklo.', () => {
+  confirmDialog(`Chceš smazat šablonu ${type.name}?`, count ? `Setkání, která z ní už vznikla (${count}), zůstanou, jak jsou.` : 'Žádné setkání z ní zatím nevzniklo.', () => {
     S.data.eventTypes = S.data.eventTypes.filter((x) => x.id !== type.id);
     for (const e of S.data.events) if (e.typeId === type.id) delete e.typeId;
     for (const s of S.data.series || []) if (s.typeId === type.id) delete s.typeId;

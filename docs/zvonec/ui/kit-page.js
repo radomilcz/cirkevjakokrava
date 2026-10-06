@@ -44,13 +44,13 @@ const noop = () => {};
 function buttonsBlock() {
   const line = (name, ...items) => [h('span', { class: 'kit-key' }, name), ...items, h('span')];
   return h('div', { class: 'kit-buttons' },
-    line('solid', button('Přidat', { variant: 'solid', size: 's', icon: 'plus' }), button('Přidat setkání', { variant: 'solid', icon: 'plus' }), button('Přihlásit se', { variant: 'solid', size: 'l' })),
-    line('soft', button('Nemůžu', { size: 's' }), button('Domácnosti'), button('Zrušit', { size: 'l' })),
-    line('surface', button('Tisk', { variant: 'surface', size: 's', icon: 'print' }), button('Upravit', { variant: 'surface', icon: 'pencil' }), button('Stáhnout', { variant: 'surface', size: 'l', icon: 'download' })),
-    line('ghost', button('Přidat', { variant: 'ghost', size: 's', icon: 'plus' }), button('Zrušit', { variant: 'ghost' }), h('span', { class: 'kit-row' }, iconButton('more', 'Další možnosti'), iconButton('chevron-left', 'Předchozí'), iconButton('x', 'Zavřít', { size: 's' }))),
-    line('danger', button('Odebrat', { variant: 'danger', size: 's' }), button('Smazat setkání', { variant: 'danger-solid' }), button('Smazat', { variant: 'danger', size: 'l', icon: 'trash' })),
-    line('disabled', button('Uložit', { variant: 'solid', size: 's', disabled: true }), button('Upravit', { variant: 'surface', disabled: true }), button('Přidat', { variant: 'ghost', disabled: true })),
-    h('span', { class: 'kit-key' }, 'add'), h('span', { class: 'kit-wide' }, button('Přidat bod', { variant: 'add' })));
+    line('solid', button('Přidej', { variant: 'solid', size: 's', icon: 'plus' }), button('Přidej setkání', { variant: 'solid', icon: 'plus' }), button('Přihlas se', { variant: 'solid', size: 'l' })),
+    line('soft', button('Nemůžu', { size: 's' }), button('Domácnosti'), button('Zruš', { size: 'l' })),
+    line('surface', button('Vytiskni', { variant: 'surface', size: 's', icon: 'print' }), button('Uprav', { variant: 'surface', icon: 'pencil' }), button('Stáhni', { variant: 'surface', size: 'l', icon: 'download' })),
+    line('ghost', button('Přidej', { variant: 'ghost', size: 's', icon: 'plus' }), button('Zruš', { variant: 'ghost' }), h('span', { class: 'kit-row' }, iconButton('more', 'Další možnosti'), iconButton('chevron-left', 'Předchozí'), iconButton('x', 'Zavři', { size: 's' }))),
+    line('danger', button('Odeber', { variant: 'danger', size: 's' }), button('Smaž setkání', { variant: 'danger-solid' }), button('Smaž', { variant: 'danger', size: 'l', icon: 'trash' })),
+    line('disabled', button('Ulož', { variant: 'solid', size: 's', disabled: true }), button('Uprav', { variant: 'surface', disabled: true }), button('Přidej', { variant: 'ghost', disabled: true })),
+    h('span', { class: 'kit-key' }, 'add'), h('span', { class: 'kit-wide' }, button('Přidej bod', { variant: 'add' })));
 }
 
 function statusBlock() {
@@ -63,7 +63,7 @@ function statusBlock() {
     rowWrap(severityMark('error'), severityMark('warning'), severityMark('info'), severityMark('error', { variant: 'inline' }), severityMark('warning', { variant: 'inline' }),
       severityWord('error'), severityWord('warning'), severityCounts([{ severity: 'error' }, { severity: 'warning' }, { severity: 'warning' }]),
       h('span', { class: 'status' }, statusIcon('progress'), 'probíhá'), rowIcon('download'), rowIcon(4, { tone: 'warn' })),
-    callout(['Na neděli 18. 10. chybí zvukař. ', h('a', { href: '#kit', class: 'link' }, 'Najít náhradu')], { tone: 'warning' }),
+    callout(['Na neděli 18. 10. chybí zvukař. ', h('a', { href: '#kit', class: 'link' }, 'Najdi náhradu')], { tone: 'warning' }),
     callout('Toto setkání uvidí i lidé bez přihlášení.', { tone: 'info', icon: 'globe' }));
 }
 
@@ -98,13 +98,13 @@ function formsBlock(theme) {
     timeRange('Čas', [n('kit-from'), '10:00'], [n('kit-to'), '11:30']),
     timeField(n('kit-start'), 'Začátek', '9:30'),
     personPicker({ name: n('kit-person'), label: 'Kdo', people: ps, value: ps[0]?.id, meta: () => 'umí to' }),
-    field('Hledat', searchField({ placeholder: 'Jméno, tým, role…' })),
+    field('Hledej', searchField({ placeholder: 'Jméno, tým, role…' })),
     numberField(n('kit-max'), 'Nejvíc služeb za měsíc', 4, { min: 1, max: 9, unit: 'služby' }),
     segmentedField(n('kit-membership'), 'Členství', [['member', 'Člen'], ['regular', 'Přítel'], ['guest', 'Host']], 'member'),
     textArea(n('kit-desc'), 'Popis pro veřejnost', 'Nedělní setkání s dětským programem.', { hint: 'Uvidí ho i lidé bez přihlášení.' }),
     chipsField(n('kit-places'), 'Místo', [['l1', 'Sál'], ['l2', 'Malá místnost'], ['l3', 'Kuchyňka'], ['l4', 'Zahrada']], ['l1', 'l2']),
-    switchField(n('kit-public'), 'Zveřejnit na webu', true, { hint: 'Název, čas, místo a popis uvidí každý. Jména ne.' }),
-    switchField(n('kit-repeat'), 'Opakovat každý týden', false),
+    switchField(n('kit-public'), 'Zveřejni na webu', true, { hint: 'Název, čas, místo a popis uvidí každý. Jména ne.' }),
+    switchField(n('kit-repeat'), 'Opakuj každý týden', false),
     checkboxField(n('kit-phone'), 'Telefon a e-mail smí vidět i ostatní', true),
     h('div', { class: 'full kit-row' }, h('label', { class: 'check-row' }, h('input', { type: 'radio', name: n('kit-r'), checked: true }), h('span', { class: 'caption' }, 'Člen')),
       h('label', { class: 'check-row' }, h('input', { type: 'radio', name: n('kit-r') }), h('span', { class: 'caption' }, 'Přítel'))),
@@ -118,11 +118,11 @@ function listBlock() {
     { lead: dateBlock('2026-10-14'), title: 'Skupinka u Fialových', meta: metaJoin(['19.00', 'Fialovi']), trail: statusBadge('confirmed', { word: 'všichni potvrdili' }), href: '#kit' },
     'group',
     { lead: groupMark({ id: 'g-worship', name: 'Chvály' }), title: 'Chvály', meta: '8 lidí\u00a0· 4 role', trail: avatarStack(ps.slice(0, 4), { size: 'xs' }), href: '#kit', tone: 'selected' },
-    { lead: avatar(ps[0], { size: 'm' }), title: 'Veronika Fialová (tady jsi ty)', meta: 'členka\u00a0· Chvály', trail: menuButton([['Upravit', noop, { icon: 'pencil' }], ['Odebrat', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti' }), href: '#kit', tone: 'mine' },
+    { lead: avatar(ps[0], { size: 'm' }), title: 'Veronika Fialová (tady jsi ty)', meta: 'členka\u00a0· Chvály', trail: menuButton([['Uprav', noop, { icon: 'pencil' }], ['Odeber', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti' }), href: '#kit', tone: 'mine' },
     { lead: avatar(ps[3], { size: 'm' }), title: 'Ondřej Černý', meta: 'už nechodí', tone: 'quiet' },
     { lead: kindMark('event', { size: 'l' }), title: 'Stavění stanu', meta: 'zrušeno', tone: 'cancelled', href: '#kit' },
     { lead: kindMark('service', { size: 'l' }), title: 'Prázdná nezbytná role', meta: 'chyba (červená značka)', tone: 'error', href: '#kit' },
-  ], (r) => (r === 'group' ? listGroup('Týmy', button('Přidat', { variant: 'ghost', size: 's', icon: 'plus' })) : row(r)), { label: 'Ukázkový seznam' });
+  ], (r) => (r === 'group' ? listGroup('Týmy', button('Přidej', { variant: 'ghost', size: 's', icon: 'plus' })) : row(r)), { label: 'Ukázkový seznam' });
 }
 
 function tableBlock() {
@@ -138,7 +138,7 @@ function tableBlock() {
       { key: 'status', label: 'Ne 11. 10.', sortable: false, cls: 'today', render: (p) => (p.duty === 'missing' ? statusCell('missing', 'chybí') : statusCell(p.duty, p.firstName)) },
     ],
     rows, sort: { key: 'name', dir: 'asc' }, selectable: true, selected: rows.slice(0, 2).map((r) => r.id),
-    bulk: () => [button('Zkopírovat e-maily', { variant: 'surface', size: 's', icon: 'copy' }), button('Stáhnout jako CSV', { variant: 'surface', size: 's', icon: 'download' })],
+    bulk: () => [button('Zkopíruj e-maily', { variant: 'surface', size: 's', icon: 'copy' }), button('Stáhni jako CSV', { variant: 'surface', size: 's', icon: 'download' })],
   });
 }
 
@@ -156,7 +156,7 @@ function marksBlock() {
 function surfacesBlock() {
   return h('div', { class: 'kit-cards' },
     card({ title: 'Lidé', count: 4, body: h('p', { class: 'note' }, 'Karta s počtem u nadpisu: card({ title, count }).') }),
-    card({ title: 'Kdy a kde', actions: button('Upravit', { variant: 'ghost', size: 's', icon: 'pencil' }), body: facts([['Začátek', '10.00'], ['Konec', '11.30'], ['Místo', ['Sál\u00a0· ', h('a', { href: '#kit' }, 'Otevřít v mapě')]], ['Šablona', 'Nedělní setkání']]) }),
+    card({ title: 'Kdy a kde', actions: button('Uprav', { variant: 'ghost', size: 's', icon: 'pencil' }), body: facts([['Začátek', '10.00'], ['Konec', '11.30'], ['Místo', ['Sál\u00a0· ', h('a', { href: '#kit' }, 'Otevři v mapě')]], ['Šablona', 'Nedělní setkání']]) }),
     card({
       title: 'Obsazení',
       body: stack(
@@ -170,18 +170,18 @@ function surfacesBlock() {
 
 function feedbackBlock() {
   return stack(
-    emptyState({ icon: 'map-pin', title: 'Zatím tu nejsou žádná místa.', text: 'Místa se pak nabízejí u každého setkání.', action: button('Přidat místo', { variant: 'solid', icon: 'plus' }) }),
+    emptyState({ icon: 'map-pin', title: 'Zatím tu nejsou žádná místa.', text: 'Místa se pak nabízejí u každého setkání.', action: button('Přidej místo', { variant: 'solid', icon: 'plus' }) }),
     emptyState({ text: 'Nikdo takový.', compact: true }),
-    h('div', { class: 'toast toast-ok kit-static' }, statusIcon('confirmed'), h('span', { class: 'toast-text' }, h('strong', {}, 'Uloženo.')), button('Vrátit', { variant: 'ghost', size: 's' })),
-    h('div', { class: 'toast toast-error kit-static' }, statusIcon('declined'), h('span', { class: 'toast-text' }, h('strong', {}, 'Nepodařilo se uložit.'), h('small', {}, 'GitHub neodpovídá. Změny držím v prohlížeči.')), button('Zkusit znovu', { size: 's' })),
-    rowWrap(button('Ukázat toast', { variant: 'surface', size: 's', onclick: () => toast('Uloženo.', '', { action: noop, actionLabel: 'Vrátit' }) }),
-      button('Ukázat chybu', { variant: 'surface', size: 's', onclick: () => toast('Nepodařilo se uložit.', 'GitHub neodpovídá.', { tone: 'error', action: noop, actionLabel: 'Zkusit znovu' }) })));
+    h('div', { class: 'toast toast-ok kit-static' }, statusIcon('confirmed'), h('span', { class: 'toast-text' }, h('strong', {}, 'Uloženo.')), button('Vrať', { variant: 'ghost', size: 's' })),
+    h('div', { class: 'toast toast-error kit-static' }, statusIcon('declined'), h('span', { class: 'toast-text' }, h('strong', {}, 'Nepodařilo se uložit.'), h('small', {}, 'GitHub neodpovídá. Změny držím v prohlížeči.')), button('Zkus to znovu', { size: 's' })),
+    rowWrap(button('Ukaž toast', { variant: 'surface', size: 's', onclick: () => toast('Uloženo.', '', { action: noop, actionLabel: 'Vrať' }) }),
+      button('Ukaž chybu', { variant: 'surface', size: 's', onclick: () => toast('Nepodařilo se uložit.', 'GitHub neodpovídá.', { tone: 'error', action: noop, actionLabel: 'Zkus to znovu' }) })));
 }
 
 function openDemoDialog() {
   const ps = people();
   formDialog({
-    title: 'Přidat člověka',
+    title: 'Nový člověk',
     sections: [
       { title: 'Jméno', fields: [textField('firstName', 'Jméno', ''), textField('lastName', 'Příjmení', '')] },
       { title: 'Členství', fields: [segmentedField('membership', 'Členství', [['member', 'Člen'], ['regular', 'Přítel'], ['guest', 'Host']], 'member', { full: true })] },
@@ -190,7 +190,7 @@ function openDemoDialog() {
     ],
     more: { key: 'kit-person', fields: [textField('nickname', 'Přezdívka', ''), dateField('since', 'Chodí od', ''), textArea('note', 'Poznámka', '', { hint: 'Nic o zdraví, penězích ani pastoraci.' })] },
     save: (els) => (els.firstName.value.trim() ? null : 'Doplň aspoň jméno.'),
-    remove: noop, removeLabel: 'Smazat z Lidí',
+    remove: noop, removeLabel: 'Smaž z Lidí',
   });
 }
 
@@ -199,20 +199,20 @@ function dialogBlock() {
     h('div', { class: 'kit-dialog-frame' },
       h('div', { class: 'dialog-preview' },
         h('div', { class: 'dialog-form' },
-          h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, 'Upravit službu'), h('p', { class: 'dialog-sub' }, 'Setkání na pastvě\u00a0· Ne 11. 10.')),
+          h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, 'Úprava služby'), h('p', { class: 'dialog-sub' }, 'Setkání na pastvě\u00a0· Ne 11. 10.')),
           h('div', { class: 'dialog-body' },
             formSection('Kdo a co', [personPicker({ name: 'kit-who', label: 'Kdo', people: people(), value: people()[3]?.id, full: true }), selectField('kit-role', 'Role', [['r', 'Zvuk'], ['p', 'Projekce']], 'r', { full: true })], { cols: 1 }),
-            disclosure('Další možnosti', [formSection(null, [switchField('kit-notify', 'Poslat upozornění', true)], { cols: 1 })])),
-          h('div', { class: 'dialog-foot' }, button('Odebrat', { variant: 'danger' }), h('span', { class: 'dialog-foot-space' }), button('Zrušit', { variant: 'ghost' }), button('Uložit', { variant: 'solid' }))))),
-    rowWrap(button('Otevřít dialog „Přidat člověka“', { variant: 'surface', icon: 'user-plus', onclick: openDemoDialog })));
+            disclosure('Další možnosti', [formSection(null, [switchField('kit-notify', 'Pošli upozornění', true)], { cols: 1 })])),
+          h('div', { class: 'dialog-foot' }, button('Odeber', { variant: 'danger' }), h('span', { class: 'dialog-foot-space' }), button('Zruš', { variant: 'ghost' }), button('Ulož', { variant: 'solid' }))))),
+    rowWrap(button('Otevři dialog „Nový člověk“', { variant: 'surface', icon: 'user-plus', onclick: openDemoDialog })));
 }
 
 function navBlock() {
   return stack(
     toolbar(dateNav({ label: 'Říjen 2026', onPrev: noop, onNext: noop, onToday: noop, isCurrent: true }), spacer(),
       viewSwitch([['mesic', 'Měsíc'], ['tyden', 'Týden'], ['seznam', 'Seznam'], ['rozpis', 'Rozpis']], 'mesic', { onPick: noop })),
-    toolbar(searchField({ placeholder: 'Hledat jméno, telefon, e-mail' }), filterButtons([['all', 'Všechno'], ['error', 'Chyby'], ['warning', 'Pozor']], 'all', noop, { label: 'Závažnost' })),
-    rowWrap(menuButton([['Upravit', noop, { icon: 'pencil' }], ['Stáhnout do kalendáře', noop, { icon: 'download' }], ['Smazat', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti setkání' }), h('span', { class: 'note' }, '← menu ⋯ (Esc zavře, šipky posouvají)')));
+    toolbar(searchField({ placeholder: 'Hledej jméno, telefon, e-mail' }), filterButtons([['all', 'Všechno'], ['error', 'Chyby'], ['warning', 'Pozor']], 'all', noop, { label: 'Závažnost' })),
+    rowWrap(menuButton([['Uprav', noop, { icon: 'pencil' }], ['Stáhni do kalendáře', noop, { icon: 'download' }], ['Smaž', noop, { danger: true, icon: 'trash' }]], { label: 'Možnosti setkání' }), h('span', { class: 'note' }, '← menu ⋯ (Esc zavře, šipky posouvají)')));
 }
 
 function typeBlock() {
@@ -245,11 +245,11 @@ export function renderKit(tab = '') {
     title: 'Kit',
     lead: 'Všechny součástky Zvonce na jednom místě, ve světlém i tmavém režimu. Stavíme z nich každou obrazovku.',
     width: 'wide',
-    actions: [button('Otevřít dialog', { variant: 'surface', icon: 'layers', onclick: openDemoDialog }), button('Přidat setkání', { variant: 'solid', icon: 'plus' })],
+    actions: [button('Otevři dialog', { variant: 'surface', icon: 'layers', onclick: openDemoDialog }), button('Přidej setkání', { variant: 'solid', icon: 'plus' })],
     tabs: tabs([['kit', 'Součástky'], ['ikony', 'Ikony', ICON_NAMES.length]], iconsOnly ? 'ikony' : 'kit', (v) => (v === 'kit' ? '#kit' : `#kit/${v}`)),
     body: iconsOnly ? spec('Ikony', 'Čárové ikony 24 × 24, tah 1,75, barva z textu.', iconsBlock) : [
       spec('Typografie', 'Titulek 32 Narrow, sekce 20 Narrow, úvodní věta 17, text 15, popisky 14, štítky 12 Narrow.', typeBlock),
-      spec('Tlačítka – varianta × velikost', 'solid jen jedno na pohled\u00a0· soft výchozí vedlejší\u00a0· surface „Upravit“, „Tisk“\u00a0· ghost v nástrojích a řádcích\u00a0· danger jen v úpravách. Velikosti 28 / 36 / 44.', buttonsBlock),
+      spec('Tlačítka – varianta × velikost', 'solid jen jedno na pohled\u00a0· soft výchozí vedlejší\u00a0· surface „Uprav“, „Vytiskni“\u00a0· ghost v nástrojích a řádcích\u00a0· danger jen v úpravách. Velikosti 28 / 36 / 44.', buttonsBlock),
       spec('Stav a odznaky', 'Stav = symbol + barva + slovo. Čeká na potvrzení je pilulka (chce pozornost), potvrzeno a nemůže jsou klidné.', statusBlock),
       spec('Výběr – přepínač pohledů, záložky, filtry, menu', 'Vybrané = růžová výplň + značka (pruh, podtržení, palec, ✓) + růžový text.', choosingBlock),
       spec('Formulář', null, formsBlock),
@@ -259,7 +259,7 @@ export function renderKit(tab = '') {
       spec('Karty, panely, průběh', null, surfacesBlock),
       spec('Obálky setkání', null, coversBlock),
       spec('Prázdný stav, toast', null, feedbackBlock),
-      spec('Dialog', 'Sekce, „Další možnosti“, mazání vlevo, Zrušit + Uložit vpravo.', dialogBlock),
+      spec('Dialog', 'Sekce, „Další možnosti“, mazání vlevo, Zruš + Ulož vpravo.', dialogBlock),
       spec('Navigace v čase, nástroje, menu', null, navBlock),
       spec('Ikony', 'Čárové ikony 24 × 24, tah 1,75, barva z textu.', iconsBlock),
     ],

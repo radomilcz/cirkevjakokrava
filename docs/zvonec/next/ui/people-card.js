@@ -34,7 +34,7 @@ import { warningFor, openMyAnswer } from './event-duties.js';
 import { downloadDuties } from './calendar-shared.js';
 
 const DUTIES_SHOWN = 5;
-const editAction = (onclick, label = 'Upravit') => button(label, { variant: 'quiet', size: 's', onclick });
+const editAction = (onclick, label = 'Uprav') => button(label, { variant: 'quiet', size: 's', onclick });
 
 // ---------- the ⋯ of a card ----------
 
@@ -43,14 +43,14 @@ export function personMenu(person) {
   const leader = can('leader');
   const self = person.id === myId();
   const items = [
-    leader ? { label: 'Upravit jméno a údaje', icon: 'pencil', onclick: () => detailsSheet(person) } : null,
-    leader ? { label: 'Přidat do skupiny', icon: 'teams', onclick: () => personGroupSheet(person) } : null,
-    leader && !isFormer(person) && !accessOf(person.id).login ? { label: 'Pozvat do Zvonce', icon: 'log-in', onclick: () => inviteSheet(person) } : null,
-    leader || self ? { label: 'Stáhnout do kalendáře', icon: 'download', onclick: () => downloadDuties(person) } : null,
+    leader ? { label: 'Uprav jméno a údaje', icon: 'pencil', onclick: () => detailsSheet(person) } : null,
+    leader ? { label: 'Přidej do skupiny', icon: 'teams', onclick: () => personGroupSheet(person) } : null,
+    leader && !isFormer(person) && !accessOf(person.id).login ? { label: 'Pozvi do Zvonce', icon: 'log-in', onclick: () => inviteSheet(person) } : null,
+    leader || self ? { label: 'Stáhni do kalendáře', icon: 'download', onclick: () => downloadDuties(person) } : null,
     leader && !self ? '-' : null,
-    leader && !self && !isFormer(person) ? { label: 'Přesunout do archivu', icon: 'archive', onclick: () => archiveSheet(person) } : null,
-    leader && isFormer(person) ? { label: 'Vrátit z archivu', icon: 'undo', onclick: () => restoreFromArchive(person) } : null,
-    leader && !self ? { label: 'Smazat kartu', icon: 'trash', danger: true, onclick: () => deletePerson(person) } : null,
+    leader && !self && !isFormer(person) ? { label: 'Přesuň do archivu', icon: 'archive', onclick: () => archiveSheet(person) } : null,
+    leader && isFormer(person) ? { label: 'Vrať z archivu', icon: 'undo', onclick: () => restoreFromArchive(person) } : null,
+    leader && !self ? { label: 'Smaž kartu', icon: 'trash', danger: true, onclick: () => deletePerson(person) } : null,
   ].filter(Boolean);
   return items.length ? menu(items, { label: 'Další možnosti', title: personName(person) }) : null;
 }
@@ -75,9 +75,9 @@ function headMeta(person) {
 function reach(person) {
   if (person.id === myId() || !seesContact(person)) return null;
   const buttons = [
-    person.phone ? button('Zavolat', { icon: 'phone', href: telHref(person.phone), label: `Zavolat – ${fullName(person)}` }) : null,
-    person.phone ? button('SMS', { icon: 'message', href: smsHref(person.phone), label: `Napsat SMS – ${fullName(person)}` }) : null,
-    person.email ? button('E-mail', { icon: 'mail', href: mailHref(person.email), label: `Napsat e-mail – ${fullName(person)}` }) : null,
+    person.phone ? button('Zavolej', { icon: 'phone', href: telHref(person.phone), label: `Zavolej – ${fullName(person)}` }) : null,
+    person.phone ? button('SMS', { icon: 'message', href: smsHref(person.phone), label: `Napiš SMS – ${fullName(person)}` }) : null,
+    person.email ? button('E-mail', { icon: 'mail', href: mailHref(person.email), label: `Napiš e-mail – ${fullName(person)}` }) : null,
   ].filter(Boolean);
   return buttons.length ? h('div', { class: 'person-reach', dataset: { n: buttons.length } }, buttons) : null;
 }
@@ -100,8 +100,8 @@ function archiveCallout(person) {
     title: capital(archivedText(person)),
     text: 'Karta se neukazuje v seznamech, kontaktech ani v návrzích do služeb. Ve starých rozpisech zůstává.',
     actions: [
-      button('Vrátit z archivu', { size: 's', icon: 'undo', onclick: () => restoreFromArchive(person) }),
-      person.id !== myId() ? button('Smazat kartu', { size: 's', variant: 'quiet', icon: 'trash', onclick: () => deletePerson(person) }) : null,
+      button('Vrať z archivu', { size: 's', icon: 'undo', onclick: () => restoreFromArchive(person) }),
+      person.id !== myId() ? button('Smaž kartu', { size: 's', variant: 'quiet', icon: 'trash', onclick: () => deletePerson(person) }) : null,
     ],
   });
 }
@@ -121,7 +121,7 @@ function missingCallout(person) {
     title: person.needsReview ? 'Karta vznikla narychlo při plánování.' : 'Chybí údaje',
     text: rest || null,
     actions: [
-      button('Doplnit údaje', { size: 's', onclick: open }),
+      button('Doplň údaje', { size: 's', onclick: open }),
       person.needsReview ? button('Nic nechybí', { size: 's', variant: 'quiet', onclick: () => {
         const p = S.data.people.find((x) => x.id === person.id);
         if (!p) return;
@@ -175,7 +175,7 @@ function householdSection(person) {
     return section({
       title: 'Domácnost', cls: 'person-section',
       body: [quiet(self ? 'Nepatříš k žádné domácnosti.' : 'Nepatří k žádné domácnosti.'),
-        slot('Přidat do domácnosti', () => householdChooseSheet(person))],
+        slot('Přidej do domácnosti', () => householdChooseSheet(person))],
     });
   }
   const others = householdMembers(S.data, household.id, { today: today() }).filter((p) => p.id !== person.id && !isFormer(p));
@@ -224,7 +224,7 @@ function groupsSection(person) {
       meta: h('span', { class: 'person-group-meta' }, member?.leader ? h('b', {}, words.leads) : words.kind, pills),
       wrap: true,
       href: `#tym/${g.id}`,
-      trail: leader ? button('Upravit', { variant: 'quiet', size: 's', label: `Upravit – ${g.name}`, onclick: () => memberSheet(g, person.id) }) : null,
+      trail: leader ? button('Uprav', { variant: 'quiet', size: 's', label: `Uprav – ${g.name}`, onclick: () => memberSheet(g, person.id) }) : null,
       chevron: !leader,
     });
   });
@@ -235,7 +235,7 @@ function groupsSection(person) {
     title: self ? 'Moje skupiny' : 'Skupiny', cls: 'person-section',
     body: [
       rows.length ? list(rows, { label: 'Skupiny' }) : quiet('Není v žádném týmu ani skupince.'),
-      leader ? slot('Přidat do skupiny', () => personGroupSheet(person)) : null,
+      leader ? slot('Přidej do skupiny', () => personGroupSheet(person)) : null,
     ],
   });
 }
@@ -263,14 +263,14 @@ function dutiesSection(person) {
       ...(self ? { onclick: () => openMyAnswer(event.id, assignment.id), chevron: true } : { href: `#setkani/${event.id}` }),
     });
   });
-  const limitWords = limits.paused ? 'Má pauzu – teď nenavrhovat do služeb.'
+  const limitWords = limits.paused ? 'Má pauzu, do služeb se teď nenavrhuje.'
     : `Nejvíc ${plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')} za měsíc · ${plural(limits.maxConsecutiveWeeks, 'neděle', 'neděle', 'nedělí')} po sobě`;
   return section({
     title: self ? 'Moje služby' : 'Služby', cls: 'person-section',
     action: (leader || self) && serves ? h('span', { class: 'meta' }, `${count} ${outOf(limits.maxPerMonth)} tento měsíc`) : null,
     body: [
       rows.length ? list(rows, { label: 'Nejbližší služby' }) : quiet(self ? 'Teď žádnou službu nemáš.' : 'Teď žádnou službu nemá.'),
-      all.length > shown.length ? rowLink(`Ukázat ${agree(all.length - shown.length, 'další', 'další', 'dalších')} ${all.length - shown.length} v Rozpisu`, { href: '#kalendar/rozpis' }) : null,
+      all.length > shown.length ? rowLink(`Ukaž ${agree(all.length - shown.length, 'další', 'další', 'dalších')} ${all.length - shown.length} v Rozpisu`, { href: '#kalendar/rozpis' }) : null,
       last ? quiet(`Naposledy: ${dayMonth(dayOf(last.event.start))}`) : null,
       leader && serves ? h('div', { class: 'person-limits' }, h('p', { class: 'meta' }, limitWords), editAction(() => limitsSheet(person), 'Kolik toho zvládne')) : null,
     ],
@@ -293,7 +293,7 @@ function warningsSection(person) {
       return warningFor(c, {
         eventId: c.eventId,
         text: joinMeta([c.text, when && !c.text.includes(prettyDay(event.start)) ? when : null]),
-        extra: event ? button('Otevřít setkání', { size: 's', href: `#setkani/${event.id}` }) : null,
+        extra: event ? button('Otevři setkání', { size: 's', href: `#setkani/${event.id}` }) : null,
       });
     })),
   });
@@ -324,7 +324,7 @@ function detailsSection(person) {
       ]),
       needsConsent && !person.consentDate ? h('div', { class: 'person-consent' },
         h('p', { class: 'meta' }, 'Souhlas se zpracováním údajů chybí.'),
-        button('Zapsat souhlas', { size: 's', onclick: () => consentSheet(person) })) : null,
+        button('Zapiš souhlas', { size: 's', onclick: () => consentSheet(person) })) : null,
     ],
   });
 }
@@ -342,7 +342,7 @@ function accessSection(person) {
     body: [
       h('p', { class: 'person-access' }, icon(login ? 'log-in' : invite ? 'mail' : 'lock', { size: 's' }), words),
       h('div', { class: 'cluster' },
-        !login && !isFormer(person) ? button(invite ? 'Poslat novou pozvánku' : 'Pozvat do Zvonce', { size: 's', icon: 'log-in', onclick: () => inviteSheet(person) }) : null,
+        !login && !isFormer(person) ? button(invite ? 'Pošli novou pozvánku' : 'Pozvi do Zvonce', { size: 's', icon: 'log-in', onclick: () => inviteSheet(person) }) : null,
         link('Přístupy', { href: '#pristupy', iconEnd: 'chevron-right' })),
     ],
   });
@@ -392,9 +392,9 @@ export function householdBody(household) {
         members.length ? list(members.map((p) => personRow(p, {
           meta: isKid(p) ? kidText(p) : MEMBERSHIP_WORDS[statusOf(p)],
           href: `#osoba/${p.id}`, me: p.id === myId(),
-          trail: menu([{ label: 'Odebrat z domácnosti', icon: 'x', danger: true, onclick: () => removeFromHousehold(p, household) }], { label: `Další možnosti – ${personName(p)}`, title: personName(p) }),
+          trail: menu([{ label: 'Odeber z domácnosti', icon: 'x', danger: true, onclick: () => removeFromHousehold(p, household) }], { label: `Další možnosti – ${personName(p)}`, title: personName(p) }),
         })), { label: 'Kdo tu bydlí' }) : quiet('Nikdo tu nebydlí.'),
-        slot('Přidat do domácnosti', () => addToHouseholdSheet(household)),
+        slot('Přidej do domácnosti', () => addToHouseholdSheet(household)),
       ],
     }),
   ];
@@ -402,9 +402,9 @@ export function householdBody(household) {
 
 export function householdMenu(household) {
   return menu([
-    { label: 'Upravit domácnost', icon: 'pencil', onclick: () => householdSheet(household) },
+    { label: 'Uprav domácnost', icon: 'pencil', onclick: () => householdSheet(household) },
     '-',
-    { label: 'Smazat domácnost', icon: 'trash', danger: true, onclick: () => deleteHousehold(household) },
+    { label: 'Smaž domácnost', icon: 'trash', danger: true, onclick: () => deleteHousehold(household) },
   ], { title: household.name });
 }
 

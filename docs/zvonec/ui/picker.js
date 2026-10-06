@@ -54,7 +54,7 @@ const joinParts = (parts) => parts.filter(Boolean).flatMap((p, i) => (i ? [h('sp
  * Open the picker. onPick(personIds) is called after it closed.
  * - eventId + roleId: candidates ranked by lib/scheduling with reasons; chips switch the scope.
  * - otherwise the registry alphabetically (members of groupId first).
- * - exclude: ids not to offer (already there). multiple: tick several, then „Vybrat“.
+ * - exclude: ids not to offer (already there). multiple: tick several, then „Vyber“.
  * - allowCreate: „Nový člověk“ for a name nobody has; with roleId/groupId it can join the team.
  * - anchor: an element – on a wide screen the picker opens as a popover right there.
  * - eyebrow: the line above the title (default: the event's day and title, or the group).
@@ -153,8 +153,8 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     const { firstName, lastName } = splitName(q);
     const similar = similarPeople(q).filter((p) => !excluded.has(p.id));
     const joinText = role
-      ? `Přidat do týmu ${group?.name || ''} (${role.name}: ${SKILL_LABELS.learning})`
-      : group ? `Přidat i do: ${group.name}` : null;
+      ? `Přidej do týmu ${group?.name || ''} (${role.name}: ${SKILL_LABELS.learning})`
+      : group ? `Přidej i do: ${group.name}` : null;
     const form = h('form', { class: 'form-grid pp-quick', novalidate: true },
       similar.length ? h('div', { class: 'pp-similar full' },
         h('p', { class: 'note' }, 'Není to někdo z nich?'),
@@ -170,7 +170,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       formErrorLine('', { full: true }),
       h('div', { class: 'full pp-quick-actions' },
         button('Zpět na seznam', { variant: 'ghost', size: 's', icon: 'chevron-left', onclick: () => { state.creating = false; paint(); search.focus(); } }),
-        button('Přidat a vybrat', { variant: 'solid', size: 's', type: 'submit' })));
+        button('Přidej a vyber', { variant: 'solid', size: 's', type: 'submit' })));
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const f = form.elements;
@@ -187,7 +187,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
       }
       close();
       change(`nový člověk ${displayName(person)}`);
-      toast(`${fullName(person)} je v Lidech.`, 'Doplň údaje.', { action: () => navigate(`#osoba/${person.id}`), actionLabel: 'Otevřít kartu', duration: 6000 });
+      toast(`${fullName(person)} je v Lidech.`, 'Doplň údaje.', { action: () => navigate(`#osoba/${person.id}`), actionLabel: 'Otevři kartu', duration: 6000 });
       onPick([...selected, person.id]);
     });
     return form;
@@ -198,7 +198,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
   const scopeHolder = h('div', { class: 'pp-scope' });
   const listHolder = h('div', { class: 'pp-results' });
   const footer = h('div', { class: ['pp-foot', !(anchor && popoverFits()) && ['dialog-foot', 'actions']] });
-  const searchBox = searchField({ placeholder: 'Hledat ve všech lidech', label: 'Hledat ve všech lidech', cls: 'pp-search' });
+  const searchBox = searchField({ placeholder: 'Hledej ve všech lidech', label: 'Hledej ve všech lidech', cls: 'pp-search' });
   const search = searchBox.querySelector('input');
   search.addEventListener('input', () => { state.query = search.value; state.creating = false; state.active = 0; paint(); });
 
@@ -225,8 +225,8 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
   function paintFooter() {
     footer.replaceChildren(...nodes([
       h('span', { class: 'pp-foot-space' }),
-      button(multiple ? 'Zrušit' : 'Zavřít', { variant: 'ghost', onclick: close }),
-      multiple && !state.creating ? button(selected.size ? `Vybrat (${selected.size})` : 'Vybrat', { variant: 'solid', disabled: !selected.size, onclick: () => finish([...selected]) }) : null]));
+      button(multiple ? 'Zruš' : 'Zavři', { variant: 'ghost', onclick: close }),
+      multiple && !state.creating ? button(selected.size ? `Vyber (${selected.size})` : 'Vyber', { variant: 'solid', disabled: !selected.size, onclick: () => finish([...selected]) }) : null]));
     footer.hidden = asPopover && !multiple;
   }
 
@@ -272,7 +272,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
     h('div', { class: 'pp-head-text' },
       h('h2', { class: asPopover ? 'pp-title' : 'dialog-title' }, heading),
       eyebrow ? h('p', { class: asPopover ? 'pp-sub' : 'dialog-sub' }, eyebrow) : null),
-    asPopover ? button(null, { variant: 'ghost', size: 's', icon: 'x', label: 'Zavřít', onclick: close }) : null);
+    asPopover ? button(null, { variant: 'ghost', size: 's', icon: 'x', label: 'Zavři', onclick: close }) : null);
   if (asPopover) {
     pop = anchoredPopover(anchor, [head, h('div', { class: 'pp-tools' }, scopeHolder, searchBox), listHolder, footer], { label: heading, cls: 'people-picker picker-pop' });
     search.focus({ preventScroll: true });

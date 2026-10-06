@@ -21,10 +21,10 @@ const VARIANTS = { solid: 'btn-solid', primary: 'btn-solid', soft: 'btn-soft', s
 
 /**
  * A button (or a link that looks like one with `href`). Rounded rectangle; one `solid` per view.
- *   button('Přidat setkání', { variant: 'solid', icon: 'plus', onclick: add })
- *   button('Tisk', { variant: 'surface', size: 's', icon: 'print', onclick: print })
- *   button('Upravit', { href: '#osoba/p1/upravit', variant: 'surface', icon: 'pencil' })
- *   button('Přidat bod', { variant: 'add', onclick: add })   – the last row of a list that adds to it (full width, ＋)
+ *   button('Přidej setkání', { variant: 'solid', icon: 'plus', onclick: add })
+ *   button('Vytiskni', { variant: 'surface', size: 's', icon: 'print', onclick: print })
+ *   button('Uprav', { href: '#osoba/p1/upravit', variant: 'surface', icon: 'pencil' })
+ *   button('Přidej bod', { variant: 'add', onclick: add })   – the last row of a list that adds to it (full width, ＋)
  * @param {any} text  null/'' for an icon-only button (then pass `label`)
  * @param {{ variant?: 'solid'|'soft'|'surface'|'outline'|'ghost'|'danger'|'danger-solid'|'add', size?: 's'|'m'|'l',
  *   icon?: string, iconEnd?: string, onclick?: Function, href?: string, type?: string, disabled?: boolean,
@@ -205,7 +205,7 @@ export function chipLinks(options, currentHref, { label } = {}) {
 /**
  * A card: panel surface, radius 14, soft shadow. Head (Narrow label + actions), body, foot.
  *   card({ title: 'Kdy a kde', body: facts([...]) })
- *   card({ title: 'Chvály', actions: button('Přidat', { variant: 'ghost', size: 's', icon: 'plus' }), body: list(…), flush: true })
+ *   card({ title: 'Chvály', actions: button('Přidej', { variant: 'ghost', size: 's', icon: 'plus' }), body: list(…), flush: true })
  * `href`: the whole card is a link (hover lifts it). `flush`: no padding in the body (lists, tables).
  * `count`: a small count pill after the title („Lidé 4“), `countTone: 'warn'` = amber.
  * @param {{ title?: any, count?: number, countTone?: 'warn', actions?: any, body?: any, footer?: any, href?: string, flush?: boolean, cls?: string,
@@ -225,7 +225,7 @@ export function card({ title, count, countTone, actions, body, footer, href, flu
 
 /**
  * The lead of a row that is not a person, a date or a cover: an icon or a number in a small soft square
- * (Karty k doplnění 4, Stáhnout zálohu ⤓). tone 'warn' = amber.
+ * (Karty k doplnění 4, Záloha ⤓). tone 'warn' = amber.
  *   rowIcon('download') · rowIcon(4, { tone: 'warn' })
  */
 export function rowIcon(content, { tone } = {}) {
@@ -312,7 +312,7 @@ function compareValues(a, b) {
  *       { key: 'age', label: 'Věk', align: 'end', sortValue: (p) => age(p) },
  *     ],
  *     rows: people, sort: { key: 'name', dir: 'asc' }, selectable: true,
- *     bulk: (ids, clear) => [button('Zkopírovat e-maily', { size: 's', icon: 'copy', onclick: () => copy(ids) })],
+ *     bulk: (ids, clear) => [button('Zkopíruj e-maily', { size: 's', icon: 'copy', onclick: () => copy(ids) })],
  *     rowHref: (p) => `#osoba/${p.id}`, empty: 'Nikdo takový.',
  *   })
  * Columns without `render` show row[key]; `sortable: false` turns sorting off for one column.
@@ -354,7 +354,7 @@ export function table({ columns, rows, rowKey = (r) => r.id, sort = null, onSort
       h('span', { class: 'bulk-count' }, `Vybráno ${count}`),
       h('div', { class: 'bulk-actions' }, nodes(bulk ? bulk([...picked], clear) : [])),
       h('span', { class: 'bulk-space' }),
-      button('Zrušit výběr', { variant: 'ghost', size: 's', onclick: clear }));
+      button('Zruš výběr', { variant: 'ghost', size: 's', onclick: clear }));
   }
 
   function draw() {
@@ -363,7 +363,7 @@ export function table({ columns, rows, rowKey = (r) => r.id, sort = null, onSort
     const someOn = all.some((id) => picked.has(id));
     const headCells = [];
     if (selectable) {
-      const box = h('input', { type: 'checkbox', 'aria-label': 'Vybrat všechny', checked: allOn,
+      const box = h('input', { type: 'checkbox', 'aria-label': 'Vyber všechny', checked: allOn,
         onchange: () => { if (allOn) all.forEach((id) => picked.delete(id)); else all.forEach((id) => picked.add(id)); draw(); onSelect?.([...picked]); } });
       box.indeterminate = someOn && !allOn;
       headCells.push(h('th', { class: 'col-check', scope: 'col' }, box));
@@ -385,7 +385,7 @@ export function table({ columns, rows, rowKey = (r) => r.id, sort = null, onSort
       const on = picked.has(id);
       const cells = [];
       if (selectable) {
-        cells.push(h('td', { class: 'col-check' }, h('input', { type: 'checkbox', checked: on, 'aria-label': 'Vybrat řádek',
+        cells.push(h('td', { class: 'col-check' }, h('input', { type: 'checkbox', checked: on, 'aria-label': 'Vyber řádek',
           onchange: () => { if (on) picked.delete(id); else picked.add(id); draw(); onSelect?.([...picked]); } })));
       }
       for (const col of columns) {
@@ -446,9 +446,9 @@ export function disclosure(text, children, { open = false, key, cls } = {}) {
 
 /**
  * A form in the dialog, built from sections, with „Další možnosti“ and the standard foot
- * (destructive action left in soft red; Zrušit ghost + Uložit solid right).
+ * (destructive action left in soft red; Zruš ghost + Ulož solid right).
  *   formDialog({
- *     title: 'Přidat člověka',
+ *     title: 'Nový člověk',
  *     sections: [
  *       { title: 'Jméno', fields: [textField('firstName', 'Jméno', ''), textField('lastName', 'Příjmení', '')] },
  *       { title: 'Členství', fields: [segmentedField('membership', 'Členství', [...], 'member')] },
@@ -481,7 +481,7 @@ export function infoDialog({ title, sub, body, actions, wide = false } = {}) {
     h('div', { class: 'dialog-head' }, h('h2', { class: 'dialog-title' }, title), sub ? h('p', { class: 'dialog-sub' }, sub) : null),
     h('div', { class: 'dialog-body' }, body),
     h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }),
-      foot.length ? foot : button('Zavřít', { variant: 'soft', onclick: () => document.getElementById('dialog')?.close() })));
+      foot.length ? foot : button('Zavři', { variant: 'soft', onclick: () => document.getElementById('dialog')?.close() })));
   return openDialog(content, { wide });
 }
 
@@ -503,7 +503,7 @@ export function field(text, control, { hint, error, full = false, group = false,
 /**
  * Yes / no as a switch with a sentence (not a checkbox paragraph). It submits like a checkbox
  * (`value` when on). role=switch for screen readers.
- *   switchField('public', 'Zveřejnit na webu', event.public, { hint: 'Název, čas a místo uvidí každý. Jména ne.' })
+ *   switchField('public', 'Zveřejni na webu', event.public, { hint: 'Název, čas a místo uvidí každý. Jména ne.' })
  */
 export function switchField(name, text, checked = false, { hint, value = 'yes', onchange, full = true, disabled = false } = {}) {
   return h('label', { class: ['switch-row', full && 'full'] },
@@ -579,7 +579,7 @@ export function timeInput(name, value = '', { label, required = false } = {}) {
     text.dispatchEvent(new Event('input', { bubbles: true }));
     text.dispatchEvent(new Event('change', { bubbles: true }));
   };
-  const toggle = h('button', { type: 'button', class: 'time-btn', 'aria-label': label ? `Vybrat čas: ${label}` : 'Vybrat čas', 'aria-haspopup': 'listbox', tabindex: '-1' }, icon('clock'));
+  const toggle = h('button', { type: 'button', class: 'time-btn', 'aria-label': label ? `Vyber čas: ${label}` : 'Vyber čas', 'aria-haspopup': 'listbox', tabindex: '-1' }, icon('clock'));
   const openList = () => {
     if (popoverOpenAt(wrap)) { closePopover(); return; }
     const current = hidden.value || '';
@@ -626,8 +626,8 @@ export function numberField(name, text, value, { min, max, step, hint, unit, ful
     unit ? h('span', { class: 'number-unit' }, unit) : null), { hint, full });
 }
 
-/** A search box with the magnifier: searchField({ value, placeholder: 'Hledat jméno, telefon, e-mail', oninput }). */
-export function searchField({ name = 'q', value = '', placeholder = 'Hledat', label = 'Hledat', oninput, cls } = {}) {
+/** A search box with the magnifier: searchField({ value, placeholder: 'Hledej jméno, telefon, e-mail', oninput }). */
+export function searchField({ name = 'q', value = '', placeholder = 'Hledej', label = 'Hledej', oninput, cls } = {}) {
   return h('label', { class: ['search-field', cls] },
     icon('search'),
     h('input', { type: 'search', name, value, placeholder, 'aria-label': label, autocomplete: 'off', oninput: oninput || null }));
@@ -636,7 +636,7 @@ export function searchField({ name = 'q', value = '', placeholder = 'Hledat', la
 /**
  * Place the list of a combobox (.combo-list inside .combo) where it fits: under the field, or above it
  * when the window's edge or – in a dialog – the dialog's buttons leave too little room. It never covers
- * Uložit / Zrušit. Call after the list is shown and filled.
+ * Ulož / Zruš. Call after the list is shown and filled.
  */
 export function fitComboList(listEl, fieldEl) {
   const r = fieldEl.getBoundingClientRect();
@@ -674,7 +674,7 @@ export function personPicker({ name = 'personId', label: text, people = [], valu
     type: 'text', class: 'combo-input', role: 'combobox', autocomplete: 'off', 'aria-autocomplete': 'list',
     'aria-expanded': 'false', 'aria-controls': listId, placeholder, value: chosen ? personName(chosen) : '',
   });
-  const clear = clearable ? h('button', { type: 'button', class: 'btn btn-ghost btn-s btn-icon combo-clear', 'aria-label': 'Vymazat', title: 'Vymazat', hidden: !chosen }, icon('x')) : null;
+  const clear = clearable ? h('button', { type: 'button', class: 'btn btn-ghost btn-s btn-icon combo-clear', 'aria-label': 'Vymaž', title: 'Vymaž', hidden: !chosen }, icon('x')) : null;
   const listEl = h('ul', { class: 'combo-list', id: listId, role: 'listbox', hidden: true, 'aria-label': text });
   const box = h('span', { class: 'combo' }, h('span', { class: 'combo-field' }, lead, input, clear, icon('chevron-down', { cls: 'combo-chevron' })), listEl, hidden);
 
@@ -745,7 +745,7 @@ export function personPicker({ name = 'personId', label: text, people = [], valu
  * someone already chosen who is not among them (a former member); `meta(person)` = the quiet line.
  *   peopleField({ name: 'leaders', label: 'Kdo to vede', people, value: ['p1'] })
  */
-export function peopleField({ name, label: text, people, value = [], hint, meta, personOf, placeholder = 'Přidat dalšího – napiš jméno', full = true }) {
+export function peopleField({ name, label: text, people, value = [], hint, meta, personOf, placeholder = 'Přidej dalšího – napiš jméno', full = true }) {
   const chosen = [...value];
   const find = (id) => people.find((p) => p.id === id) || personOf?.(id) || null;
   const holder = h('div', { class: 'people-field' });
@@ -761,7 +761,7 @@ export function peopleField({ name, label: text, people, value = [], hint, meta,
         const person = find(id);
         return h('li', { class: 'people-chip' },
           avatar(person, { size: 'xs' }), h('span', { class: 'people-chip-name' }, personName(person)),
-          iconButton('x', `Odebrat: ${personName(person)}`, { size: 's', cls: 'people-chip-x', onclick: () => { chosen.splice(chosen.indexOf(id), 1); redraw(true); } }),
+          iconButton('x', `Odeber: ${personName(person)}`, { size: 's', cls: 'people-chip-x', onclick: () => { chosen.splice(chosen.indexOf(id), 1); redraw(true); } }),
           h('input', { type: 'hidden', name, value: id }));
       })) : null,
       combo]));
@@ -885,7 +885,7 @@ export function popMenu(anchor, items, { label = 'Možnosti', align = 'start', o
  * The ⋯ (kebab) button with a small menu for secondary actions (leader actions in lists).
  * items: [[label, onclick, { danger, icon }?], …]. The menu opens below the button (above near the bottom
  * of the window), closes on Escape, on a click elsewhere and after a choice. Arrow keys move.
- *   menuButton([['Upravit', edit], ['Odebrat', remove, { danger: true }]], { label: 'Možnosti: Petr' })
+ *   menuButton([['Uprav', edit], ['Odeber', remove, { danger: true }]], { label: 'Možnosti: Petr' })
  */
 export function menuButton(items, { label = 'Další možnosti', size = 'm', icon: iconName = 'more' } = {}) {
   const btn = h('button', {
@@ -982,7 +982,7 @@ const WIDTHS = { text: 'w-text', list: 'w-list', form: 'w-form', wide: 'w-wide' 
 
 /**
  * A whole page (the DOM contract of BUILD.md): back link · title · lead · actions · tabs · toolbar · body.
- *   page({ title: 'Lidé', actions: button('Přidat člověka', { variant: 'solid', icon: 'plus', onclick: add }),
+ *   page({ title: 'Lidé', actions: button('Přidej člověka', { variant: 'solid', icon: 'plus', onclick: add }),
  *     tabs: tabs(VIEWS, view, (v) => `#lide/${v}`), toolbar: toolbar(searchField(…), chips(…)),
  *     width: 'list', body: [...] })
  * width: 'wide' (default, the whole stage) | 'list' (780) | 'form' (640) | 'text' (780) – head and body share it.
