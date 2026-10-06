@@ -53,7 +53,7 @@ function churchPart() {
   const main = s.mainPlaceId ? placeById(S.data, s.mainPlaceId) : null;
   const resolved = main ? resolvePlace(S.data, main) : null;
   const fields = h('div', { class: 'form-grid' },
-    textField('churchName', 'Název sboru', s.churchName, { full: true, hint: 'Ukáže se v hlavičce veřejného programu a v kalendářích.' }),
+    textField('churchName', 'Název sboru', s.churchName, { full: true, hint: 'Ukáže se v hlavičce Pastvy a v kalendářích.' }),
     selectField('mainPlaceId', 'Hlavní místo', mainPlaceOptions(), s.mainPlaceId || '', { full: true, hint: 'Kde se obvykle scházíme. Nová setkání ho dostanou předvyplněné.' }),
     textField('address', 'Adresa', s.address, { full: true, hint: 'Jedním řádkem. Ukáže se na webu v „Kde nás najdeš“ a v kalendáři u setkání.', attr: { placeholder: resolved?.address ? `např. ${resolved.address}` : 'např. Ulice 1, Město' } }));
   const form = h('form', { class: 'settings-form', novalidate: true });
@@ -75,10 +75,10 @@ function churchPart() {
   form.append(card({ title: 'Název a místo', body: fields }), resolved ? card({
         title: 'Kde nás najdeš',
         cls: 'settings-preview',
-        body: [h('p', { class: 'card-text' }, 'Takhle to uvidí návštěvníci na konci veřejného programu.'),
+        body: [h('p', { class: 'card-text' }, 'Takhle to uvidí návštěvníci na konci Pastvy.'),
           h('div', { class: 'preview-place' }, placeLine({ ...resolved, name: resolved.building ? `${resolved.building}` : resolved.name, address: s.address || resolved.address })),
           mapPlace ? placeMap(mapPlace) : null],
-        footer: button('Otevřít veřejnou část', { variant: 'ghost', size: 's', href: '#program', iconEnd: 'chevron-right' }),
+        footer: button('Otevřít veřejnou část', { variant: 'ghost', size: 's', href: '#pastva', iconEnd: 'chevron-right' }),
       }) : '', ...formFoot());
   return { body: form };
 }

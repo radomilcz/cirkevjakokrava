@@ -89,7 +89,7 @@ const PEOPLE_ROUTES = {
 
 // ROUTES:more – Více (#vice) and its pages: Můj účet (#ucet), Šablony setkání (#sablony, #sablona/<id|nova>),
 // Formáty (#formaty[/<id>]), Místa (#mista, #misto/<id>), Přístupy (#pristupy), Nastavení sboru
-// (#nastaveni), and the public Program (#program[/<id>], anchor „jak-se-schazime“).
+// (#nastaveni), and the public Pastva (#pastva[/<id>], anchor „jak-se-schazime“).
 const MORE_ROUTES = {
   vice: { render: () => renderMore(), access: 'member' },
   // ≥ 1200 px Můj účet sits beside the Více list (#vice); below it is its own page
@@ -101,7 +101,7 @@ const MORE_ROUTES = {
   misto: { render: ([id]) => renderPlace(id), access: 'member', nav: 'mista' },
   pristupy: { render: () => renderAccess(), access: 'leader' },
   nastaveni: { render: () => renderSettings(), access: 'leader' },
-  program: { render: ([id]) => renderProgram(id), access: 'public', nav: null },
+  pastva: { render: ([id]) => renderProgram(id), access: 'public', nav: null },
 };
 // ROUTES:more end
 
@@ -139,7 +139,8 @@ const REDIRECTS = [
   [/^nastaveni\/(?:sbor|pravidla|zaloha)$/, () => 'nastaveni'],
   [/^nastaveni\/(formaty|sablony|mista)$/, (m) => m[1]],
   [/^nastaveni\/ucet$/, () => 'ucet'],
-  [/^jak-se-schazime$/, () => ['program', 'jak-se-schazime']],
+  [/^program(\/.*)?$/, (m) => `pastva${m[1] || ''}`],   // the public page used to be „Program“; links people shared
+  [/^jak-se-schazime$/, () => ['pastva', 'jak-se-schazime']],
 ];
 
 // ---------- navigation ----------
@@ -161,7 +162,7 @@ const RAIL_MORE = [
 const TAB_OF = { sablony: 'vice', formaty: 'vice', mista: 'vice', pristupy: 'vice', nastaveni: 'vice', ucet: 'vice' };
 
 const signedIn = () => !!S.me;
-const homeSection = () => (signedIn() ? 'domu' : S.logins.length || S.mode === 'demo' ? 'program' : 'prihlaseni');
+const homeSection = () => (signedIn() ? 'domu' : S.logins.length || S.mode === 'demo' ? 'pastva' : 'prihlaseni');
 
 function allowedFor(access, parts) {
   const level = typeof access === 'function' ? access(parts) : access;
@@ -445,7 +446,7 @@ async function startLive(result) {
   const wanted = S.afterSignIn;
   S.afterSignIn = null;
   if (wanted) history.replaceState(null, '', `#${wanted}`);
-  else if (/^#(prihlaseni|pozvanka\/|program|jak-se-schazime)/.test(location.hash)) history.replaceState(null, '', '#');
+  else if (/^#(prihlaseni|pozvanka\/|pastva|program|jak-se-schazime)/.test(location.hash)) history.replaceState(null, '', '#');
   useStore(store, data || emptyData());
   if (can('leader')) refreshLogins();
 }

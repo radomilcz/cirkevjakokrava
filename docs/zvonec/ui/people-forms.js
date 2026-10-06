@@ -693,7 +693,7 @@ export function householdDialog(original) {
     title: original ? original.name : 'Přidat domácnost',
     saveLabel: original ? 'Uložit' : 'Přidat',
     fields: [
-      textField('name', 'Název', original?.name, { full: true, hint: 'Jak jim říkáte: Novákovi, Byt na Zborovské…', attr: { required: true, placeholder: 'např. Svobodovi', autocomplete: 'off' } }),
+      textField('name', 'Název', original?.name, { full: true, hint: 'Jak jim říkáš: Novákovi, Byt na Zborovské…', attr: { required: true, placeholder: 'např. Svobodovi', autocomplete: 'off' } }),
       textField('address', 'Adresa', original?.address, { full: true, hint: 'Vidí ji jen vedoucí a lidé z domácnosti.', attr: { autocomplete: 'off', placeholder: 'např. Dlouhá 21, Nový Jičín' } }),
     ],
     remove: original ? () => deleteHousehold(original) : null,

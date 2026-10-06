@@ -72,7 +72,7 @@ function moreList({ open } = {}) {
     list([
       leader ? pageRow('key', 'Přístupy', '#pristupy', { n: invites }) : null,
       leader ? pageRow('sliders', 'Nastavení sboru', '#nastaveni') : null,
-      pageRow('globe', 'Veřejný web', '#program', { meta: 'Program, jak ho vidí návštěvníci' }),
+      pageRow('globe', 'Veřejný web', '#pastva', { meta: 'Pastva, jak ji vidí návštěvníci' }),
     ].filter(Boolean), { label: 'Sbor' }),
     demo ? heading('Ukázka') : null,
     demo ? list([

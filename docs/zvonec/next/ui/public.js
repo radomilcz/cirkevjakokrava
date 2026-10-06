@@ -1,6 +1,6 @@
-// Zvonec Next – the public part (#program, #program/<id>): what a visitor who is not signed in sees.
+// Zvonec Next – the public part (#pastva, #pastva/<id>): what a visitor who is not signed in sees.
 // Only publicData() – the lib/public.js shape (published events and formats, church name and address) –
-// never S.data, so no person data can slip in. Program: Nejbližší setkání, Co nás čeká (by week), Co na
+// never S.data, so no person data can slip in. Pastva: Nejbližší setkání, Co nás čeká (by week), Co na
 // setkání děláme (published formats → a sheet; anchor „jak-se-schazime“), Kde nás najdeš. One event:
 // when, where with the map, the description, „Stáhnout do kalendáře“ (.ics).
 
@@ -110,7 +110,7 @@ function publicBar({ back } = {}) {
 
 const whereLine = (places) => (places.length ? h('p', { class: 'fact pub-where' }, icon('pin', { size: 's' }), h('span', {}, places.map((p) => p.name).join(', '))) : null);
 
-// ---------- #program ----------
+// ---------- #pastva ----------
 
 /** Monday of the week the day is in. */
 const weekStart = (day) => addDays(day, -weekday(day));
@@ -132,14 +132,14 @@ function nextBlock(event, d) {
       h('div', { class: 'pub-next__head' },
         dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
         h('div', {},
-          h('h2', { class: 'pub-next__title', id: 'pub-next-title' }, h('a', { href: `#program/${event.id}` }, event.title)),
+          h('h2', { class: 'pub-next__title', id: 'pub-next-title' }, h('a', { href: `#pastva/${event.id}` }, event.title)),
           h('p', { class: 'meta' }, cap(whenText(event))))),
       whereLine(places),
       mapPlace ? mapLink(mapPlace) : null,
       event.description ? h('p', { class: 'text pub-next__desc' }, event.description) : null,
       h('div', { class: 'cluster pub-actions' },
         button('Stáhnout do kalendáře', { variant: 'primary', icon: 'calendar-plus', onclick: () => downloadEvent(event, d) }),
-        button('Podrobnosti', { href: `#program/${event.id}`, iconEnd: 'chevron-right' }))));
+        button('Podrobnosti', { href: `#pastva/${event.id}`, iconEnd: 'chevron-right' }))));
 }
 
 function eventItem(event) {
@@ -150,7 +150,7 @@ function eventItem(event) {
     title: event.title,
     meta: joinMeta([multiDay(event) ? `do ${new Date(`${dayOf(event.end)}T12:00`).getDate()}. ${new Date(`${dayOf(event.end)}T12:00`).getMonth() + 1}.` : hours(event), places.map((p) => p.name).join(', ')]),
     trail: statePill(event),
-    href: `#program/${event.id}`,
+    href: `#pastva/${event.id}`,
     declined: !!event.cancelled,
   });
 }
@@ -217,7 +217,7 @@ function formatsBlock(d) {
 function findUsBlock(d) {
   const places = (d.events || []).flatMap((e) => e.places || []);
   const home = d.address ? places.find((p) => p.address === d.address && hasCoords(p)) : null;
-  const updated = /^\d{4}-\d{2}-\d{2}$/.test(d.generated || '') ? `Program jsme naposledy upravili ${longDay(d.generated).replace(/^\S+ /, '')}.` : null;
+  const updated = /^\d{4}-\d{2}-\d{2}$/.test(d.generated || '') ? `Pastvu jsme naposledy upravili ${longDay(d.generated).replace(/^\S+ /, '')}.` : null;
   if (!d.address && !home) return updated ? h('p', { class: 'meta pub-updated' }, updated) : null;
   return section({
     title: 'Kde nás najdeš',
@@ -234,13 +234,13 @@ function findUsBlock(d) {
 export function renderProgram(id) {
   if (id) return renderPublicEvent(id);
   const d = data();
-  const head = { overline: d?.churchName || FALLBACK_NAME, title: 'Program', lead: 'Kdy a kde se potkáváme. Přijď, jak jsi.' };
+  const head = { overline: d?.churchName || FALLBACK_NAME, title: 'Pastva', lead: 'Kdy a kde se potkáváme. Přijď, jak jsi.' };
   if (!d) {
     const failed = S.mode !== 'live' || load === 'failed';
     return screen({
       topbar: publicBar(), head, cls: 'pub-page',
       body: failed
-        ? empty({ icon: 'calendar', text: 'Program se nepodařilo načíst. Zkus to za chvíli znovu.', action: button('Zkusit znovu', { variant: 'primary', onclick: retry }) })
+        ? empty({ icon: 'calendar', text: 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.', action: button('Zkusit znovu', { variant: 'primary', onclick: retry }) })
         : skeleton({ rows: 4 }),
     });
   }
@@ -259,11 +259,11 @@ export function renderProgram(id) {
   });
 }
 
-// ---------- #program/<id> ----------
+// ---------- #pastva/<id> ----------
 
 function renderPublicEvent(id) {
   const d = data();
-  const back = { href: '#program', label: 'Program' };
+  const back = { href: '#pastva', label: 'Pastva' };
   const event = (d?.events || []).find((e) => e.id === id);
   if (!event) {
     const loading = !d && S.mode === 'live' && load !== 'failed';
@@ -271,8 +271,8 @@ function renderPublicEvent(id) {
       topbar: publicBar({ back }), head: { title: 'Setkání' }, cls: 'pub-page',
       body: loading ? skeleton({ rows: 2 }) : empty({
         icon: 'calendar', title: 'Tohle setkání tu není.',
-        text: d ? 'Už proběhlo, nebo ho někdo přestal ukazovat na webu.' : 'Program se nepodařilo načíst. Zkus to za chvíli znovu.',
-        action: d ? button('Celý program', { href: '#program' }) : button('Zkusit znovu', { variant: 'primary', onclick: retry }),
+        text: d ? 'Už proběhlo, nebo ho někdo přestal ukazovat na webu.' : 'Pastvu se nepodařilo načíst. Zkus to za chvíli znovu.',
+        action: d ? button('Zpátky na Pastvu', { href: '#pastva' }) : button('Zkusit znovu', { variant: 'primary', onclick: retry }),
       }),
     });
   }
@@ -285,7 +285,7 @@ function renderPublicEvent(id) {
       h('div', { class: 'pub-event__head' },
         dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
         h('div', {}, h('p', { class: 'overline' }, d.churchName || FALLBACK_NAME), titleEl(event.title))),
-      event.cancelled ? callout({ tone: 'no', title: 'Tohle setkání je zrušené.', text: 'Mrkni do Programu, co chystáme dál.' }) : null,
+      event.cancelled ? callout({ tone: 'no', title: 'Tohle setkání je zrušené.', text: 'Mrkni na Pastvu, co chystáme dál.' }) : null,
       h('div', { class: 'pub-event__grid' },
         h('div', { class: 'pub-event__main' },
           picture(event, 'pub-photo--wide'),

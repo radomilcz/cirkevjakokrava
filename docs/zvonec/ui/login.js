@@ -72,7 +72,7 @@ export function renderLogin(message) {
     lead: 'Uvidíš rozpis, svoje služby a lidi.',
     body: [
       card({ body: form, cls: 'signin-card' }),
-      h('p', { class: 'signin-note' }, 'Ještě se přihlásit nemůžeš? Požádej vedoucího o pozvánku. Program a setkání najdeš i bez přihlášení v ', h('a', { href: '#program' }, 'Programu'), '.'),
+      h('p', { class: 'signin-note' }, 'Ještě se přihlásit nemůžeš? Požádej vedoucího o pozvánku. Kdy a kde se potkáváme, najdeš i bez přihlášení na ', h('a', { href: '#pastva' }, 'Pastvě'), '.'),
     ],
   });
 }

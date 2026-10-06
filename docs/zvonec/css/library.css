@@ -62,7 +62,7 @@
 .template-savebar{display:none}
 .template-page .number-unit{font-size:var(--font-size-3);color:var(--text-2);white-space:nowrap;padding-top:var(--optical)}
 
-/* Na webu: fields left, how the card looks on Program right */
+/* Na webu: fields left, how the card looks on Pastva right */
 .web-layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;align-items:start}
 .tpl-image-tools{display:flex;flex-direction:column;gap:6px}
 .tpl-image-buttons{display:flex;flex-wrap:wrap;gap:8px}

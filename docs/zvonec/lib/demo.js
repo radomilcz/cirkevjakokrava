@@ -435,7 +435,7 @@ const EVENT_TYPES = [
   ['t-prayer', 'Modlitební večer', 'event', 1, '19:00', 90, ['l-small'], { groupId: 'g-prayer' }],
   ['t-garden', 'Zahradní slavnost', 'event', 6, '14:00', 240, ['l-garden'], {
     public: true, needs: GARDEN_NEEDS,
-    description: 'Přijďte s celou rodinou. Na zahradě u Kučerů bude gril, pití i hry pro děti. Přineste něco dobrého na společný stůl.',
+    description: 'Přijď s celou rodinou. Na zahradě u Kučerů bude gril, pití i hry pro děti. Přines něco dobrého na společný stůl.',
   }],
 ];
 
@@ -627,7 +627,7 @@ export function createDemo(today = localToday()) {
   };
   const tent = oneOff({
     title: 'Stavění stanu na zahradní slavnost', kind: 'event', day: n0, startTime: '08:00', minutes: 150, placeIds: ['l-garden'],
-    note: 'Sraz na zahradě u Kučerů. Vezměte si pracovní rukavice.', needs: needs([['r-sound', 1]]),
+    note: 'Sraz na zahradě u Kučerů. Vezmi si pracovní rukavice.', needs: needs([['r-sound', 1]]),
   });
   oneOff({ typeId: 't-garden', day: n0 });
   const evening = oneOff({
@@ -648,7 +648,7 @@ export function createDemo(today = localToday()) {
     title: 'Křest u řeky', kind: 'event', day: addDays(sunday(3), -1), startTime: '15:00', minutes: 90, placeIds: ['l-river'],
     public: true, program: ['f-welcome', 'f-worship', 'f-baptism', 'f-prayer'],
     needs: needs([['r-lead', 1], ['r-wlead', 1], ['r-sermon', 1], ['r-guitar', 1], ['r-photo', 1]]),
-    description: 'Na břehu Jičínky pokřtíme ty, kdo se rozhodli jít za Ježíšem. Přijďte je podpořit. Vezměte si deku, u vody bývá chladno.',
+    description: 'Na břehu Jičínky pokřtíme ty, kdo se rozhodli jít za Ježíšem. Přijď je podpořit. Vezmi si deku, u vody bývá chladno.',
   });
   oneOff({
     title: 'Noc v modlitebně', kind: 'event', day: addDays(sunday(4), -1), startTime: '20:00', minutes: 600, placeIds: ['l-hall'],

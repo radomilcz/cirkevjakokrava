@@ -223,12 +223,12 @@ test('deleteImage: removes the file with a Czech message and forgets the cached 
 
 test('normalize: the old event.publicNote becomes description, an existing description wins', () => {
   const { events } = normalize({ events: [
-    { id: 'e1', start: 'x', end: 'y', publicNote: 'Vítejte.' },
+    { id: 'e1', start: 'x', end: 'y', publicNote: 'Vítej.' },
     { id: 'e2', start: 'x', end: 'y', publicNote: 'Staré', description: 'Nové' },
     { id: 'e3', start: 'x', end: 'y', publicNote: '' },
     { id: 'e4', start: 'x', end: 'y', placeIds: [], needs: [], assignments: [], description: 'Beze změny', note: 'Interní' },
   ] });
-  assert.equal(events[0].description, 'Vítejte.');
+  assert.equal(events[0].description, 'Vítej.');
   assert.ok(!('publicNote' in events[0]));
   assert.equal(events[1].description, 'Nové');
   assert.ok(!('publicNote' in events[2]) && !('description' in events[2]));

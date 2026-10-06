@@ -66,7 +66,7 @@ function churchSection(v, dirty) {
   return section({
     title: 'Sbor',
     body: h('div', { class: 'form' },
-      field({ label: 'Název sboru', control: name, hint: 'Ukáže se v Programu a v kalendářích.' }),
+      field({ label: 'Název sboru', control: name, hint: 'Ukáže se na Pastvě a v kalendářích.' }),
       field({
         label: 'Hlavní místo',
         control: selectInput({
@@ -76,7 +76,7 @@ function churchSection(v, dirty) {
         }),
         hint: 'Kde se obvykle scházíme. Nové šablony ho dostanou předvyplněné.',
       }),
-      field({ label: 'Adresa', control: address, hint: 'Jedním řádkem. Ukáže se v Programu v „Kde nás najdeš“.' })),
+      field({ label: 'Adresa', control: address, hint: 'Jedním řádkem. Ukáže se na Pastvě v „Kde nás najdeš“.' })),
   });
 }
 
