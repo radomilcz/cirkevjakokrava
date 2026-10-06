@@ -93,14 +93,40 @@ export function monthGrid(month) {
 }
 
 /**
+ * The monthly rule of a day: its weekday (Monday = 0) and which one in the month it is –
+ * nth 1–4, or -1 when it is the last such weekday of its month (a 4th that is also the last counts
+ * as the last). { weekday, nth }
+ */
+export function monthlyRule(day) {
+  const d = parseDate(day);
+  const date = d.getDate();
+  const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  return { weekday: weekday(day), nth: date + 7 > daysInMonth ? -1 : Math.ceil(date / 7) };
+}
+
+/** The day of a monthly rule `count` months after `day` (same nth weekday, or the last one). "YYYY-MM-DD" */
+export function addMonthsSameWeekday(day, count) {
+  const { weekday: wd, nth } = monthlyRule(dayOf(day));
+  const d = parseDate(dayOf(day));
+  const first = new Date(d.getFullYear(), d.getMonth() + count, 1);
+  const daysInMonth = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  const firstMatch = 1 + ((wd - ((first.getDay() + 6) % 7) + 7) % 7);
+  let date = firstMatch + 7 * ((nth === -1 ? 5 : nth) - 1);
+  while (date > daysInMonth) date -= 7;
+  return formatDay(new Date(first.getFullYear(), first.getMonth(), date));
+}
+
+/**
  * Occurrences of a repeating event. step: weekly | biweekly | monthly.
+ * monthly keeps the weekday: the same nth weekday of every month („every first Sunday“), or the
+ * last one when the start is the last such weekday of its month.
  * Includes the first one, at most `limit`, none after `lastDay`. Returns [{start, end}].
  */
 export function recurrences(start, end, step, lastDay, limit = 120) {
   const length = minutesBetween(start, end);
   const result = [];
   for (let i = 0; i < limit; i++) {
-    const s = step === 'monthly' ? addMonths(start, i)
+    const s = step === 'monthly' ? `${addMonthsSameWeekday(start, i)}T${timeOf(start)}`
       : addDays(start, i * (step === 'biweekly' ? 14 : 7));
     if (dayOf(s) > lastDay) break;
     result.push({ start: s, end: addMinutes(s, length) });

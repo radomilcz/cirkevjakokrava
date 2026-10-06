@@ -49,13 +49,19 @@ function firstOfMonth(day, count = 0) {
   return formatDay(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + count, 1)));
 }
 
-/** The same day of the month `count` months later (31 Jan + 1 = 28 Feb), as lib/time.js addMonths. */
-function addMonthsDay(day, count) {
+/**
+ * The same nth weekday `count` months later („every first Tuesday“), or the last such weekday when
+ * `day` is the last one of its month – as lib/time.js addMonthsSameWeekday.
+ */
+function addMonthsSameWeekday(day, count) {
   const d = parseDay(day);
-  const target = d.getUTCDate();
+  const daysIn = (y, m) => new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  const nth = d.getUTCDate() + 7 > daysIn(d.getUTCFullYear(), d.getUTCMonth()) ? 5 : Math.ceil(d.getUTCDate() / 7);
   const first = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + count, 1));
-  const last = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
-  first.setUTCDate(Math.min(target, last));
+  const max = daysIn(first.getUTCFullYear(), first.getUTCMonth());
+  let date = 1 + ((weekday(day) - weekday(formatDay(first)) + 7) % 7) + 7 * (nth - 1);
+  while (date > max) date -= 7;
+  first.setUTCDate(date);
   return formatDay(first);
 }
 
@@ -575,7 +581,7 @@ export function createDemo(today = localToday()) {
   const addSeries = (seriesId, step, from, fields) => {
     const days = [];
     for (let i = 0; i < 60; i++) {
-      const day = step === 'monthly' ? addMonthsDay(from, i) : addDays(from, i * (step === 'biweekly' ? 14 : 7));
+      const day = step === 'monthly' ? addMonthsSameWeekday(from, i) : addDays(from, i * (step === 'biweekly' ? 14 : 7));
       if (day > windowEnd) break;
       days.push(day);
     }

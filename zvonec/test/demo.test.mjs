@@ -407,7 +407,10 @@ test('demo content: events, series, the special ones and headcounts', () => {
     const rule = recurrences(`${s.from}T10:00`, `${s.from}T11:00`, s.step, s.until).map((x) => x.start.slice(0, 10));
     assert.deepEqual(list.map((e) => e.start.slice(0, 10)), rule, `${s.id} follows its rule`);
     assert.ok(seriesSummary(s).startsWith('Každ'));
+    if (s.step === 'monthly') assert.equal(new Set(list.map((e) => new Date(`${e.start.slice(0, 10)}T12:00Z`).getUTCDay())).size, 1, `${s.id} keeps its weekday`);
   }
+  assert.match(seriesSummary(d.series.find((s) => s.id === 's-prayer')), /^Každé první úterý v měsíci do /);
+  assert.match(seriesSummary(d.series.find((s) => s.id === 's-elders')), /^Každý druhý čtvrtek v měsíci do /);
   assert.ok(d.series.some((s) => !s.typeId), 'a series without a template');
   assert.equal(seriesSummary(d.series.find((s) => s.typeId === 't-sunday')).split(' do ')[0], 'Každou neděli');
 

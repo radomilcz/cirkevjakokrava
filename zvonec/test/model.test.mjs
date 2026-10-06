@@ -19,6 +19,7 @@ import { missingData, peopleWithMissingData, peopleByHousehold, upcomingBirthday
 import { skillMatrix } from '../../docs/zvonec/lib/groups.js';
 import { servingLoad, openSlots, unconfirmedDuties } from '../../docs/zvonec/lib/scheduling.js';
 import { findConflicts } from '../../docs/zvonec/lib/conflicts.js';
+import { monthlyRule, addMonthsSameWeekday, recurrences } from '../../docs/zvonec/lib/time.js';
 import { validateData } from '../../docs/zvonec/lib/validate.js';
 import { buildPublic } from '../../docs/zvonec/lib/public.js';
 import { FILES, emptyData, toFiles, fromFiles } from '../../docs/zvonec/lib/store/store.js';
@@ -147,7 +148,13 @@ test('series: summary in Czech', () => {
   assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-08' }), 'Každý čtvrtek');
   assert.equal(seriesSummary({ step: 'biweekly', from: '2026-10-07', until: '2026-12-16' }), 'Každou druhou středu do 16. 12.');
   assert.equal(seriesSummary({ step: 'biweekly', from: '2026-10-09' }), 'Každý druhý pátek');
-  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-07', until: '2027-03-07' }), 'Každého 7. v měsíci do 7. 3.');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-04', until: '2027-06-06' }), 'Každou první neděli v měsíci do 6. 6.');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-13' }), 'Každé druhé úterý v měsíci');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-15' }), 'Každý třetí čtvrtek v měsíci');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-12-23' }), 'Každou čtvrtou středu v měsíci');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-25' }), 'Každou poslední neděli v měsíci', 'the 4th that is also the last');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-30' }), 'Každý poslední pátek v měsíci');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-11-30' }), 'Každé poslední pondělí v měsíci');
   assert.equal(seriesSummary(null), '');
   assert.equal(seriesCount('2026-10-04T10:00', 'weekly', '2026-10-25'), 4);
   assert.equal(seriesCount('2026-10-04T10:00', '', '2026-10-25'), 1);
@@ -184,11 +191,26 @@ test('series: extendSeries from the template when no event is left; monthly and 
   const newId = counter();
   d.series = [{ id: 's1', typeId: 't-sun', step: 'monthly', from: '2026-01-31', until: '2026-01-31' }];
   const added = extendSeries(d, 's1', '2026-04-30', { newId });
-  assert.deepEqual(added.map((e) => e.start), ['2026-01-31T10:00', '2026-02-28T10:00', '2026-03-31T10:00', '2026-04-30T10:00']);
+  // 31 January 2026 is the last Saturday of the month – the series stays on the last Saturday
+  assert.deepEqual(added.map((e) => e.start), ['2026-01-31T10:00', '2026-02-28T10:00', '2026-03-28T10:00', '2026-04-25T10:00']);
   assert.ok(added.every((e) => e.typeId === 't-sun' && e.title === 'Setkání na pastvě'));
   d.series.push({ id: 's2', step: 'biweekly', from: '2026-10-07', until: '2026-10-07' });
   d.events.push(ev('w1', '2026-10-07T19:00', '2026-10-07T21:00', { seriesId: 's2', kind: 'smallGroup' }));
   assert.deepEqual(extendSeries(d, 's2', '2026-11-05', { newId }).map((e) => e.start.slice(0, 10)), ['2026-10-21', '2026-11-04']);
+});
+
+test('time: a monthly rule keeps its weekday – the nth one, or the last one', () => {
+  assert.deepEqual(monthlyRule('2026-10-04'), { weekday: 6, nth: 1 });
+  assert.deepEqual(monthlyRule('2026-10-25'), { weekday: 6, nth: -1 }, 'the 4th Sunday is also the last');
+  assert.deepEqual(monthlyRule('2026-10-22'), { weekday: 3, nth: 4 }, 'a 4th Thursday before the 29th');
+  assert.deepEqual(['2026-10-04', '2026-11-01', '2026-12-06', '2027-01-03', '2027-02-07'],
+    recurrences('2026-10-04T10:00', '2026-10-04T12:00', 'monthly', '2027-02-28').map((x) => x.start.slice(0, 10)), 'every first Sunday');
+  assert.deepEqual(recurrences('2026-10-25T10:00', '2026-10-25T12:00', 'monthly', '2027-01-31').map((x) => x.start.slice(0, 10)),
+    ['2026-10-25', '2026-11-29', '2026-12-27', '2027-01-31'], 'every last Sunday, also when a month has five');
+  assert.deepEqual(recurrences('2026-10-22T19:00', '2026-10-22T21:00', 'monthly', '2026-12-31').map((x) => x.start),
+    ['2026-10-22T19:00', '2026-11-26T19:00', '2026-12-24T19:00'], 'the 4th Thursday stays the 4th, time kept');
+  assert.equal(addMonthsSameWeekday('2026-10-13', 4), '2027-02-09');
+  assert.equal(seriesCount('2026-10-04T10:00', 'monthly', '2027-06-30'), 9);
 });
 
 test('series: seriesFor infers the rule of older data without a record', () => {
@@ -199,6 +221,12 @@ test('series: seriesFor infers the rule of older data without a record', () => {
   d.events[2].start = '2026-11-05T19:00';
   assert.equal(seriesFor(d, 'old').step, null, 'irregular gaps fit no rule');
   assert.equal(seriesFor(d, ev('x', '2026-10-07T19:00', '2026-10-07T20:00')), null);
+  // older monthly data on the same date of the month: still readable, the rule is unknown
+  const old = ['2026-07-07', '2026-08-07', '2026-09-07'].map((day, i) => ev(`m${i}`, `${day}T19:00`, `${day}T20:00`, { seriesId: 'same-date' }));
+  const legacy = seriesFor({ ...d, events: old }, 'same-date');
+  assert.deepEqual([legacy.step, legacy.from, legacy.until], [null, '2026-07-07', '2026-09-07']);
+  assert.equal(seriesSummary(legacy), 'Opakuje se do 7. 9.');
+  assert.deepEqual(extendSeries({ ...d, events: old }, 'same-date', '2026-12-31', { newId: counter() }), []);
   // extending stores a record for the first time
   d.events[2].start = '2026-11-04T19:00';
   extendSeries(d, 'old', '2026-11-18', { newId: counter() });

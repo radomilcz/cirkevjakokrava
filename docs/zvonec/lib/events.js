@@ -9,7 +9,7 @@
 //   neděli do 28. 6.“ and extend the series later. Older data have seriesIds without a record –
 //   seriesFor() infers the rule from the events then.
 
-import { addDays, addMinutes, addMonths, dayOf, timeOf, minutesBetween, recurrences, weekday, prettyDay } from './time.js';
+import { addDays, addMinutes, addMonthsSameWeekday, monthlyRule, dayOf, timeOf, minutesBetween, recurrences, weekday, prettyDay } from './time.js';
 import { copyProgram, mergeNeeds, programNeeds } from './program.js';
 
 export const EVENT_KINDS = ['service', 'rehearsal', 'smallGroup', 'event'];
@@ -167,7 +167,8 @@ export function seriesOfType(data, typeId) {
 /**
  * The series record of an event (or of a series id). Without a stored record (older data) the rule
  * is inferred from the events: { id, typeId?, step, from, until, inferred: true }; step is null
- * when the gaps between the events fit no rule. Null when the event is not in a series.
+ * when the gaps between the events fit no rule (also older monthly series kept on the same date
+ * of the month – they stay readable, they just cannot be extended). Null when the event is not in a series.
  */
 export function seriesFor(data, eventOrId) {
   const id = typeof eventOrId === 'string' ? eventOrId : eventOrId?.seriesId;
@@ -186,7 +187,7 @@ export function seriesFor(data, eventOrId) {
 
 /** The i-th day of a rule counted from its first day. */
 function nextDay(first, step, i) {
-  if (step === 'monthly') return addMonths(first, i);
+  if (step === 'monthly') return addMonthsSameWeekday(first, i);
   return addDays(first, i * (step === 'biweekly' ? 14 : 7));
 }
 
@@ -195,9 +196,22 @@ const EVERY_WEEKDAY = ['Každé pondělí', 'Každé úterý', 'Každou středu'
 const EVERY_OTHER_WEEKDAY = ['Každé druhé pondělí', 'Každé druhé úterý', 'Každou druhou středu', 'Každý druhý čtvrtek',
   'Každý druhý pátek', 'Každou druhou sobotu', 'Každou druhou neděli'];
 
+/** „Každou první neděli v měsíci“ – pronoun, ordinal and weekday agree in gender (accusative). */
+const ORDINALS = {
+  n: ['první', 'druhé', 'třetí', 'čtvrté'], f: ['první', 'druhou', 'třetí', 'čtvrtou'], m: ['první', 'druhý', 'třetí', 'čtvrtý'],
+};
+const WEEKDAY_ACC = [['n', 'Každé', 'pondělí'], ['n', 'Každé', 'úterý'], ['f', 'Každou', 'středu'], ['m', 'Každý', 'čtvrtek'],
+  ['m', 'Každý', 'pátek'], ['f', 'Každou', 'sobotu'], ['f', 'Každou', 'neděli']];
+function monthlyText(day) {
+  const { weekday: wd, nth } = monthlyRule(day);
+  const [gender, every, name] = WEEKDAY_ACC[wd];
+  return `${every} ${nth === -1 ? 'poslední' : ORDINALS[gender][nth - 1]} ${name} v měsíci`;
+}
+
 /**
  * The rule of a series in Czech: „Každou neděli do 28. 6.“, „Každou druhou středu do 16. 12.“,
- * „Každého 7. v měsíci do 7. 3.“. Without `until` the „do …“ part is left out. With `today`
+ * „Každou první neděli v měsíci do 28. 6.“, „Každý poslední pátek v měsíci“. Monthly series keep
+ * their weekday (see time.js monthlyRule). Without `until` the „do …“ part is left out. With `today`
  * ("YYYY-MM-DD") the year is added to `until` when it is not this year („do 28. 6. 2027“).
  */
 export function seriesSummary(series, { today } = {}) {
@@ -205,7 +219,7 @@ export function seriesSummary(series, { today } = {}) {
   const day = weekday(series.from);
   let rule;
   if (series.step === 'biweekly') rule = EVERY_OTHER_WEEKDAY[day];
-  else if (series.step === 'monthly') rule = `Každého ${Number(series.from.slice(8, 10))}. v měsíci`;
+  else if (series.step === 'monthly') rule = monthlyText(series.from);
   else if (series.step === 'weekly') rule = EVERY_WEEKDAY[day];
   else rule = 'Opakuje se';
   if (!series.until) return rule;
