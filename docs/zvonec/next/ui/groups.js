@@ -205,7 +205,7 @@ function peopleSection(group) {
   return section({
     title: useMatrix ? 'Kdo co umí' : 'Lidé', count: count || null, id: 'lide', cls: 'group-section',
     body: [
-      useMatrix ? [matrix(group), caption('Klepnutím na políčko změníš, co kdo umí: neumí → učí se → umí. Klepnutím na jméno nastavíš, kdo tým vede.')]
+      useMatrix ? [matrix(group), caption('Klepni na políčko a změníš, co kdo umí: neumí → učí se → umí. Klepni na jméno a nastavíš, kdo tým vede.')]
         : count ? [rows, more] : quiet('Zatím tu nikdo není.'),
       leader ? slot(words.add, () => pickPerson(group)) : null,
     ],
@@ -298,7 +298,7 @@ function groupBody(group, { pane = false } = {}) {
       teamMark(group, { size: 'l' }),
       h('div', { class: 'person-head__text' },
         titleEl(group.name, { small: pane, tag: pane ? 'h2' : 'h1' }),
-        h('p', { class: 'meta' }, joinMeta([words.kind.charAt(0).toLocaleUpperCase('cs') + words.kind.slice(1), leaders || 'zatím ho nikdo nevede', group.archived ? 'v archivu' : null])))),
+        h('p', { class: 'meta' }, joinMeta([words.kind.charAt(0).toLocaleUpperCase('cs') + words.kind.slice(1), leaders || 'zatím bez vedoucího', group.archived ? 'v archivu' : null])))),
     group.description ? h('p', { class: 'text group-page__about' }, group.description) : null,
     group.archived ? h('p', { class: 'meta' }, 'Skupina je v archivu. Do rozpisu se nenavrhuje, historie zůstala.') : null,
     rolesSection(group),
@@ -310,7 +310,7 @@ export function renderGroup([id] = []) {
   const group = groupById(S.data, id);
   const missing = ({ heading = true } = {}) => [heading ? h('h1', { class: 'visually-hidden' }, 'Skupina') : null, empty({
     icon: 'teams', title: 'Tahle skupina tu není.', text: 'Možná ji někdo smazal nebo je odkaz starý.',
-    action: button('Zpátky na skupiny', { variant: 'quiet', icon: 'chevron-left', href: '#lide/skupiny' }),
+    action: button('Vrať se na skupiny', { variant: 'quiet', icon: 'chevron-left', href: '#lide/skupiny' }),
   })];
   if (isSplit()) {
     const t = sectionTab('skupiny');

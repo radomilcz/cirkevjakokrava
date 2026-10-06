@@ -116,6 +116,6 @@ export function blockoutSection(person, { cls } = {}) {
     cls,
     action: editable ? button('Přidej', { size: 's', icon: 'plus', onclick: () => blockoutSheet(person), label: self ? 'Přidej, kdy nemůžeš' : `Přidej, kdy ${displayName(person)} nemůže` }) : null,
     body: records.length ? list(records.map((v) => blockoutRow(person, v)), { label: title })
-      : quiet(self ? 'Když víš, že nemůžeš, zapiš to. Zvonec tě na ty dny nebude navrhovat.' : 'Nic zapsaného.'),
+      : quiet(self ? 'Zapiš si dny, kdy nemůžeš. Zvonec tě na ně nebude navrhovat.' : 'Nic zapsaného.'),
   });
 }

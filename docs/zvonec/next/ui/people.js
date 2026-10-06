@@ -70,7 +70,7 @@ function listMenu(people) {
   if (!can('leader')) return null;
   return menu([
     !isDesktop() ? { label: state.picking ? 'Přestaň vybírat' : 'Vyber lidi', icon: 'check', onclick: () => { state.picking = !state.picking; state.picked.clear(); render(); } } : null,
-    { label: 'Narozeniny', icon: 'cake', href: '#lide/narozeniny' },
+    { label: 'Ukaž narozeniny', icon: 'cake', href: '#lide/narozeniny' },
     { label: 'Pozvi nového člověka', icon: 'log-in', onclick: () => inviteSheet(null) },
     { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) },
     '-',
@@ -205,7 +205,7 @@ function listBody(slug, { openId } = {}) {
     } else if (filterKeyOf(slug) === 'missing') {
       out.push(empty({ icon: 'check', title: 'Všechny karty jsou doplněné.' }));
     } else {
-      out.push(empty({ icon: 'people', title: 'Tady nikdo není.', text: 'S tímhle filtrem tu nic není.' }));
+      out.push(empty({ icon: 'people', title: 'Tady nikdo není.', text: 'Zkus jiný filtr.' }));
     }
     return out;
   }
@@ -288,7 +288,7 @@ function bulkBar({ dock = false } = {}) {
   const stop = () => { state.picked.clear(); state.picking = false; render(); };
   if (!n && !dock) return null;
   const done = () => { state.picked.clear(); state.picking = false; };
-  const count = n ? plural(n, 'vybraný člověk', 'vybraní lidé', 'vybraných lidí') : 'Klepnutím vyber lidi.';
+  const count = n ? plural(n, 'vybraný člověk', 'vybraní lidé', 'vybraných lidí') : 'Klepni na lidi, které chceš vybrat.';
   const actions = [
     button(dock ? 'Zkopíruj e\u2011maily' : 'Zkopíruj e-maily', { size: 's', icon: 'copy', disabled: !n, onclick: () => copyEmails(pickedPeople()) }),
     button('Přidej do skupiny', { size: 's', icon: 'teams', disabled: !n, onclick: () => bulkGroupSheet(pickedPeople(), done) }),
@@ -456,7 +456,7 @@ export function renderPeople(parts = []) {
 
 const missingPerson = () => empty({
   icon: 'user', title: 'Tenhle člověk tu není.', text: 'Možná ho někdo smazal nebo je odkaz starý.',
-  action: button('Zpátky na seznam', { variant: 'quiet', icon: 'chevron-left', href: '#lide' }),
+  action: button('Vrať se na seznam', { variant: 'quiet', icon: 'chevron-left', href: '#lide' }),
 });
 
 /** In the split list, a tap opens the card without jumping the list to the top. */
@@ -603,7 +603,7 @@ export function renderHousehold([id] = []) {
     topbar: topBar({ back: { href: listHref(), label: 'Lidé' }, actions: household ? householdMenu(household) : null }),
     body: household ? householdBody(household) : [h('h1', { class: 'visually-hidden' }, 'Domácnost'), empty({
       icon: 'home', title: 'Tahle domácnost tu není.', text: 'Možná ji někdo smazal.',
-      action: button('Zpátky na seznam', { variant: 'quiet', icon: 'chevron-left', href: '#lide' }),
+      action: button('Vrať se na seznam', { variant: 'quiet', icon: 'chevron-left', href: '#lide' }),
     })],
     cls: 'person-screen',
   });

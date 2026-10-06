@@ -358,9 +358,9 @@ export function callout({ tone = 'info', title: head, text: body, icon: iconName
  * One upozornění in place (§3.4): severity word · sentence, then its fix buttons.
  *   warningRow({ severity: 'error', text: 'Jana Nováková nemůže (dovolená) – U dětí, ne 18. 10.', actions: [...] })
  */
-export function warningRow({ severity = 'warning', text: sentence, actions } = {}) {
+export function warningRow({ severity = 'warning', word, text: sentence, actions } = {}) {
   return h('div', { class: 'warning' },
-    h('p', { class: 'warning__text' }, sev(severity), h('span', {}, sentence)),
+    h('p', { class: 'warning__text' }, sev(severity, word), h('span', {}, sentence)),
     actions ? h('div', { class: 'warning__actions cluster' }, actions) : null);
 }
 

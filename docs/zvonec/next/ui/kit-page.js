@@ -208,7 +208,7 @@ function openPicker() {
     { person: P[6], reasons: [{ text: 'nemůže – dovolená', solid: true }] },
   ];
   peoplePicker({
-    title: 'Kdo bude dělat Klávesy?', meta: 'ne 18. 10. · Setkání na pastvě',
+    title: 'Klávesy', meta: 'ne 18. 10. · Setkání na pastvě',
     pools: [{ id: 'skilled', label: 'Umí to', items: reasons.slice(0, 2) }, { id: 'team', label: 'Celý tým', items: reasons }, { id: 'all', label: 'Všichni lidé', items: P.map((person) => ({ person })) }],
     everyone: P,
     onPick: (p) => toast(`${p.firstName} ${p.lastName}: Klávesy · čeká na potvrzení`, { action: () => {} }),

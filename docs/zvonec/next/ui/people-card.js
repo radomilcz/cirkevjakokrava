@@ -122,7 +122,7 @@ function missingCallout(person) {
     text: rest || null,
     actions: [
       button('Doplň údaje', { size: 's', onclick: open }),
-      person.needsReview ? button('Nic nechybí', { size: 's', variant: 'quiet', onclick: () => {
+      person.needsReview ? button('Potvrď údaje', { size: 's', variant: 'quiet', onclick: () => {
         const p = S.data.people.find((x) => x.id === person.id);
         if (!p) return;
         delete p.needsReview;
@@ -272,7 +272,7 @@ function dutiesSection(person) {
       rows.length ? list(rows, { label: 'Nejbližší služby' }) : quiet(self ? 'Teď žádnou službu nemáš.' : 'Teď žádnou službu nemá.'),
       all.length > shown.length ? rowLink(`Ukaž ${agree(all.length - shown.length, 'další', 'další', 'dalších')} ${all.length - shown.length} v Rozpisu`, { href: '#kalendar/rozpis' }) : null,
       last ? quiet(`Naposledy: ${dayMonth(dayOf(last.event.start))}`) : null,
-      leader && serves ? h('div', { class: 'person-limits' }, h('p', { class: 'meta' }, limitWords), editAction(() => limitsSheet(person), 'Kolik toho zvládne')) : null,
+      leader && serves ? h('div', { class: 'person-limits' }, h('p', { class: 'meta' }, limitWords), editAction(() => limitsSheet(person), 'Nastav, kolik toho zvládne')) : null,
     ],
   });
 }

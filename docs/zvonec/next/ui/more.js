@@ -81,8 +81,8 @@ function demoTools({ viewAs = true } = {}) {
     onConfirm: () => { replaceAll(createDemo(today()), 'nová ukázka'); toast('Ukázka je zpátky.'); },
   });
   const emptyDemo = () => confirmSheet({
-    title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Zpátky ji vrátíš tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
-    onConfirm: () => { replaceAll(emptyData(), 'prázdný Zvonec'); toast('Je to prázdné.'); },
+    title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Vrátíš ji tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
+    onConfirm: () => { replaceAll(emptyData(), 'prázdný Zvonec'); toast('Zvonec je prázdný.'); },
   });
   return [
     heading('Ukázka'),

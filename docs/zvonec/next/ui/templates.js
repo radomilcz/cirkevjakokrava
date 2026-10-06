@@ -131,7 +131,7 @@ export function renderTemplate(id = 'nova') {
   if (!draft) {
     return morePage({
       title: 'Šablona', back,
-      body: empty({ icon: 'layers', title: 'Tahle šablona tu není.', text: 'Možná ji mezitím někdo smazal.', action: button('Zpátky na šablony', { href: '#sablony' }) }),
+      body: empty({ icon: 'layers', title: 'Tahle šablona tu není.', text: 'Možná ji mezitím někdo smazal.', action: button('Vrať se na šablony', { href: '#sablony' }) }),
     });
   }
   const d = draft;

@@ -30,7 +30,7 @@ export function eventMenu(event) {
   const series = seriesFor(S.data, event);
   return menu([
     { label: 'Uprav setkání', icon: 'pencil', onclick: () => openEditEvent(event.id) },
-    { label: 'Kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
+    { label: 'Uprav, kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
     series?.step ? { label: 'Prodluž řadu', icon: 'layers', onclick: () => openExtendSeries(event.id) } : null,
     '-',
     { label: event.cancelled ? 'Obnov setkání' : 'Zruš setkání', icon: event.cancelled ? 'undo' : 'x', onclick: () => cancelOrRestore(event.id) },
@@ -70,7 +70,7 @@ function eventWarnings(event, conflicts) {
     else if (c.code === 'K14') action = button('Odeber všechny', { size: 's', onclick: () => removeAll(event.id) });
     else if (c.code === 'K9') action = button('Uprav setkání', { size: 's', onclick: () => openEditEvent(event.id) });
     const tone = c.severity === 'error' ? 'no' : c.severity === 'warning' ? 'wait' : 'info';
-    return callout({ tone, title: { no: 'Chyba', wait: 'Pozor', info: c.code === 'K14' ? 'Dej jim vědět' : 'Pro informaci' }[tone], text: c.text, actions: action });
+    return callout({ tone, title: { no: 'Chyba', wait: 'Pozor', info: c.code === 'K14' ? 'Dej jim vědět' : 'Dobré vědět' }[tone], text: c.text, actions: action });
   }));
 }
 
@@ -90,9 +90,11 @@ function youCard(event) {
   if (!mine.length) return null;
   const past = dayOf(event.end) < today();
   const blocked = past ? null : blockoutOn(event, myId());
-  return h('section', { class: 'feature ev-you', 'aria-label': 'Tvoje služba' },
+  const head = mine.length > 1 ? 'Tvoje služby' : 'Tvoje služba';
+  return h('section', { class: 'feature ev-you', 'aria-label': head },
+    h('h2', { class: 'feature__head' }, head),
     mine.map(({ assignment, role }) => h('div', { class: 'ev-you__item' },
-      h('p', { class: 'lead' }, `Děláš ${role?.name || 'službu'}.`),
+      h('p', { class: 'lead' }, role?.name || 'Služba'),
       blocked && assignment.status !== 'declined' ? h('p', { class: 'ev-you__clash' }, blockoutNote(blocked)) : null,
       assignment.status === 'proposed' && !past
         ? buttonRow(     // the same pair as Domů › Odpověz; a clash with „Kdy nemůžu“ makes Nemůžu the solid one
@@ -111,7 +113,7 @@ function whoServes(event, conflicts) {
     f.needed ? fill(f.filled, f.needed, { words: words || null }) : null,
     leader ? menu([
       { label: 'Obsaď jako minule', icon: 'undo', onclick: () => sameAsLast(event.id) },
-      { label: 'Kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
+      { label: 'Uprav, kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
     ], { label: 'Další možnosti – Kdo slouží' }) : null);
   const body = teams.length
     ? [
@@ -120,7 +122,7 @@ function whoServes(event, conflicts) {
         ? h('div', { class: 'ev-who__fill' }, button('Doplň volná místa', { icon: 'people', onclick: () => fillOpenSlots([event.id]) })) : null,
     ]
     : h('p', { class: 'meta ev-none' }, 'Na tohle setkání zatím nikoho nepotřebujeme.',
-      leader ? [' ', link('Kolik lidí je potřeba', { onclick: () => openNeedsSheet(event.id) })] : null);
+      leader ? [' ', link('Uprav, kolik lidí je potřeba', { onclick: () => openNeedsSheet(event.id) })] : null);
   return section({ title: 'Kdo slouží', id: 'kdo-slouzi', action, body, cls: 'ev-who' });
 }
 
@@ -177,7 +179,7 @@ function publish(eventId, on) {
     });
   };
   const ask = (description) => askSeries(e, (following) => apply(following, description), {
-    title: on ? 'Chceš ukázat na webu i další setkání?' : 'Chceš schovat z webu i další setkání?',
+    title: on ? 'Chceš ukázat na webu i další setkání?' : 'Chceš stáhnout z webu i další setkání?',
     onCancel: () => render(),
   });
   if (on && !String(e.description || '').trim()) {

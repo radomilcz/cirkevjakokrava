@@ -102,7 +102,7 @@ export function loginSheet(person) {
     title: existing ? 'Heslo a oprávnění' : 'Nový přístup',
     submitLabel: 'Vytvoř heslo',
     body: [
-      h('p', { class: 'meta' }, `${personName(person)}. ${existing ? 'Staré heslo přestane platit. ' : ''}Heslo vymyslí Zvonec a ukáže ti ho jen jednou.`),
+      h('p', { class: 'meta' }, `${existing ? 'Staré heslo přestane platit. ' : ''}Nové heslo vymyslí Zvonec a ukáže ti ho jen jednou.`),
       field({ label: 'Přihlašovací jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
       segmentedField({ name: 'access', label: 'Oprávnění', options: levels, value: existing?.access && levels.some((l) => l.value === existing.access) ? existing.access : 'member', hint: 'Vedoucí plánuje a spravuje přístupy. Správce k tomu může vyměnit GitHub klíč.' }),
     ],
@@ -125,7 +125,7 @@ export function loginSheet(person) {
           note: 'Zvonec si heslo nepamatuje. Po zavření ho už neuvidíš.',
         }));
         return undefined;
-      } catch (error) { return `Nepodařilo se. ${error.message}`; }
+      } catch (error) { return `Heslo se nepodařilo vytvořit. ${error.message}`; }
     },
   });
 }
@@ -136,7 +136,7 @@ export function revokeLogin(login) {
   const invite = login.access === 'invite';
   const person = personById(S.data, login.personId);
   confirmSheet({
-    title: invite ? 'Chceš zrušit pozvánku?' : `Chceš zrušit přístup${person ? ` pro ${fullName(person)}` : ''}?`,
+    title: invite ? 'Chceš zrušit pozvánku?' : 'Chceš zrušit přístup?',
     text: invite ? 'Odkaz přestane fungovat za pár minut.' : 'Za pár minut se už nepřihlásí. Karta v Lidech zůstane.',
     confirmLabel: invite ? 'Zruš pozvánku' : 'Zruš přístup',
     onConfirm: async () => {
@@ -144,7 +144,7 @@ export function revokeLogin(login) {
         await updateLogins((logins) => { const i = logins.findIndex((x) => x.id === login.id); if (i >= 0) logins.splice(i, 1); }, `zrušeno: ${ACCESS_LABELS[login.access] || login.access}`);
         render();
         toast(invite ? 'Pozvánka je zrušená.' : 'Přístup je zrušený.');
-      } catch (error) { toast(`Nepodařilo se. ${error.message}`, { icon: 'alert' }); }
+      } catch (error) { toast(`Přístup se nepodařilo zrušit. ${error.message}`, { icon: 'alert' }); }
     },
   });
 }
@@ -213,7 +213,7 @@ function inviteRow(login) {
 function orphanRow(login) {
   return row({
     lead: h('span', { class: 'avatar', 'aria-hidden': 'true' }, '?'),
-    title: 'Někdo smazaný',
+    title: 'Smazaná karta',
     meta: joinMeta([ACCESS_LABELS[login.access], `od ${dayWithYear(login.created)}`]),
     trail: rowMenu(login),
   });

@@ -546,6 +546,7 @@ a.event:hover { background: var(--wash); }
 .duty__who { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-3); min-width: 0; }
 .duty__who > .name { font-weight: var(--weight-strong); }
 .duty__warn { grid-column: 2; }
+.duty__tags { display: flex; flex-wrap: wrap; gap: 2px var(--space-3); font-size: var(--type-meta); line-height: var(--lh-meta); }
 
 /* key–value lines with an icon (time, place, phone) */
 .facts { display: grid; gap: var(--space-2); }

@@ -26,7 +26,7 @@ const RULES = [
   {
     title: 'Kdy Zvonec bučí', hint: 'Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.',
     rules: [
-      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Tolik dní předem je to chyba, dvakrát dřív zatím jen pozor.', min: 0, max: 60, units: ['den', 'dny', 'dní'] },
+      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Tolik dní předem je to chyba, ještě o tolik dřív jen pozor.', min: 0, max: 60, units: ['den', 'dny', 'dní'] },
       { key: 'openDaysBefore', where: 'rules', label: 'Ostatní prázdná místa', hint: 'Upozornění, že ještě někdo chybí.', min: 0, max: 60, units: ['den', 'dny', 'dní'] },
       { key: 'unconfirmedDaysBefore', where: 'rules', label: 'Nepotvrzená služba', hint: 'Někdo ještě neřekl, jestli může.', min: 0, max: 60, units: ['den', 'dny', 'dní'] },
     ],
@@ -34,7 +34,7 @@ const RULES = [
   {
     title: 'Děti', hint: null,
     rules: [
-      { key: 'childAge', where: 'rules', label: 'Dospělý je od', hint: 'Mladší jsou pro Zvonec děti. Kde mají sloužit jen dospělí, Zvonec hlásí chybu.', min: 1, max: 25, units: ['roku', 'let', 'let'] },
+      { key: 'childAge', where: 'rules', label: 'Dospělý je od', hint: 'Mladší jsou pro Zvonec děti. Když dítě dostane službu jen pro dospělé, Zvonec to ohlásí.', min: 1, max: 25, units: ['roku', 'let', 'let'] },
     ],
   },
 ];
@@ -125,12 +125,12 @@ function backupSection() {
     if (!chosen) return;
     let data;
     try { data = readBackup(JSON.parse(await chosen.text())); } catch { data = null; }
-    if (data === 'old') { toast('Tohle je záloha starého Zvonce. Tu nahrát neumím.', { icon: 'alert' }); return; }
+    if (data === 'old') { toast('Tohle je záloha starého Zvonce. Tu Zvonec nahrát neumí.', { icon: 'alert' }); return; }
     if (!data) { toast('Tohle není záloha Zvonce.', { icon: 'alert' }); return; }
     const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'skupina', 'skupiny', 'skupin'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
     confirmSheet({
       title: 'Chceš nahradit všechna data zálohou?',
-      text: `V souboru je ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii repa.' : ''}`,
+      text: `V souboru: ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii repa.' : ''}`,
       confirmLabel: 'Nahraj zálohu',
       onConfirm: () => { replaceAll(data, `nahraná záloha ${chosen.name}`); draft = null; toast('Záloha je nahraná.'); },
     });
