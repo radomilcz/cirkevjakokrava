@@ -177,7 +177,7 @@ export function accountBody({ pane = false } = {}) {
       h('p', { class: 'meta' }, role ? `Oprávnění: ${role}` : '')));
   const contact = person ? section({
     title: 'Můj kontakt',
-    action: button('Upravit', { size: 's', icon: 'pencil', onclick: () => contactSheet(person) }),
+    action: button('Upravit', { variant: 'quiet', size: 's', onclick: () => contactSheet(person) }),
     body: [
       facts([
         { icon: 'phone', text: person.phone || 'telefon nevyplněný' },
@@ -188,7 +188,7 @@ export function accountBody({ pane = false } = {}) {
     ],
   }) : callout({
     tone: 'info',
-    text: live ? 'Zvonec neví, která karta v Lidech je tvoje. Řekni správci, ať ji propojí s tvým přístupem.' : 'Teď se díváš jako správce bez karty v Lidech. Výš si vyber, čí očima se chceš dívat.',
+    text: live ? 'Zvonec neví, která karta v Lidech je tvoje. Řekni vedoucímu, ať ji propojí s tvým přístupem.' : 'Teď se díváš jako správce bez karty v Lidech. Výš si vyber, čí očima se chceš dívat.',
   });
 
   const access = section({

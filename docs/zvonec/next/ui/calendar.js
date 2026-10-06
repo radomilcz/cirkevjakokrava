@@ -1,13 +1,13 @@
 // Zvonec Next – Kalendář (#kalendar[/<seznam|mesic|rozpis>[/<YYYY-MM | YYYY-MM-DD>][/upozorneni | /bremeno]]).
-// Top bar: ‹ Říjen 2026 › (the h1), Dnes, ⋯. Under it Seznam · Měsíc · Rozpis and „Filtr“ (Účel, Tým,
+// Tab head „Kalendář“ (⋯), then ‹ Říjen 2026 ›, Dnes, Seznam · Měsíc · Rozpis and „Filtr“ (Účel, Tým,
 // Jen moje služby; remembered per viewer). Seznam: weeks with date arches (phone default); Měsíc: a compact
 // grid + the chosen day (phone) or the full grid with event chips (desktop default); Rozpis: roster.js.
 // ≥ 1200 px: Seznam | the event, Měsíc grid | the event (#setkani/<id> renders the calendar with the
-// event in the pane), Rozpis with the event as a drawer. ← → page the month.
+// event in the pane), Rozpis | the event (the same split). ← → page the month.
 // Routes for app.js: CALENDAR_ROUTES.
 
 import {
-  h, icon, screen, topBar, period, segmented, button, menu, agenda, agendaDay, agendaEvent, weekLabel, monthGrid,
+  h, icon, screen, period, segmented, button, menu, agenda, agendaDay, agendaEvent, weekLabel, monthGrid,
   dateArch, fillRing, sev, count, empty, chipsField, switchRow, openSheet, splitView, isSplit, isDesktop, monthLabel,
   shiftMonth, link, clock, SEP, quiet,
 } from './kit.js';
@@ -57,13 +57,15 @@ function filterCount(view) {
   return (p.kinds.length ? 1 : 0) + (p.teams.length ? 1 : 0) + (p.mine ? 1 : 0);
 }
 
-/** The Filtr sheet: Účel, Tým, Jen moje služby (Rozpis: its own team choice, „Jen moje“ is a chip there). */
+/**
+ * The Filtr sheet: Účel, Tým, Jen moje služby. Rozpis: only Účel – its one team filter („Tým“) and „Jen moje“
+ * sit in the Rozpis itself. „Zrušit filtry“ shows only while a filter is on.
+ */
 export function openFilters(view) {
   const p = prefs();
   const roster = view === 'rozpis';
   let kinds = [...p.kinds];
-  let teams = roster ? [...(p.rosterTeams ?? [])] : [...p.teams];
-  if (roster && p.rosterTeams === null) teams = [];
+  let teams = [...p.teams];
   let mine = p.mine;
   const teamOptions = teamsWithRoles().map(({ group }) => ({ value: group.id, label: group.name }));
   let sheet;
@@ -72,25 +74,32 @@ export function openFilters(view) {
     title: 'Filtr',
     body: [
       chipsField({ name: 'kinds', label: 'Účel', options: EVENT_KINDS.map((k) => ({ value: k, label: KIND_LABELS[k] })), value: kinds, multiple: true, onChange: (v) => { kinds = v; } }),
-      chipsField({ name: 'teams', label: 'Tým', hint: roster ? 'Rozpis ukáže jen sloupce těchhle týmů.' : 'Setkání, kde ten tým slouží.', options: teamOptions, value: teams, multiple: true, onChange: (v) => { teams = v; } }),
+      roster ? null : chipsField({ name: 'teams', label: 'Tým', hint: 'Setkání, kde ten tým slouží.', options: teamOptions, value: teams, multiple: true, onChange: (v) => { teams = v; } }),
       !roster && S.me?.personId ? switchRow({ label: 'Jen moje služby', checked: mine, onChange: (on) => { mine = on; } }) : null,
     ],
     foot: [
-      button('Ukázat', { variant: 'primary', size: 'l', block: true, onclick: () => applyAndClose(roster ? { kinds, rosterTeams: teams } : { kinds, teams, mine }) }),
-      button('Zrušit filtry', { variant: 'quiet', block: true, onclick: () => applyAndClose(roster ? { kinds: [], rosterTeams: [] } : { kinds: [], teams: [], mine: false }) }),
+      button('Ukázat', { variant: 'primary', size: 'l', block: true, onclick: () => applyAndClose(roster ? { kinds } : { kinds, teams, mine }) }),
+      filterCount(view) ? button('Zrušit filtry', { variant: 'quiet', block: true, onclick: () => applyAndClose(roster ? { kinds: [] } : { kinds: [], teams: [], mine: false }) }) : null,
     ],
   });
 }
 
 export function clearFilters(view) {
-  savePrefs(view === 'rozpis' ? { kinds: [], rosterTeams: [] } : { kinds: [], teams: [], mine: false });
+  savePrefs(view === 'rozpis' ? { kinds: [] } : { kinds: [], teams: [], mine: false });
   render();
 }
 
-function toolbar(view, periodPart) {
+/**
+ * The bar under the tab head „Kalendář“: ‹ Říjen 2026 › · Dnes (only when today is not shown) · Filtr, and
+ * Seznam · Měsíc · Rozpis. Phone: two rows (period, Dnes and Filtr; the view switch under them). Desktop: one row.
+ */
+function toolbar(view, periodPart, { month, onMonth, onToday }) {
   const n = filterCount(view);
   return h('div', { class: 'toolbar cal-toolbar' },
-    segmented(VIEWS.map(([value, label]) => ({ value, label })), view, (v) => { savePrefs({ view: v }); navigate(hrefOf(v, periodPart.slice(0, 7))); }, { label: 'Pohled' }),
+    h('div', { class: 'cal-period' },
+      period({ label: monthLabel(month), onPrev: () => onMonth(shiftMonth(month, -1)), onNext: () => onMonth(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc', heading: false }),
+      onToday ? button('Dnes', { variant: 'quiet', size: 's', onclick: onToday, cls: 'cal-today' }) : null),
+    segmented(VIEWS.map(([value, label]) => ({ value, label })), view, (v) => { savePrefs({ view: v }); navigate(hrefOf(v, periodPart.slice(0, 7))); }, { label: 'Pohled', cls: 'cal-views' }),
     button(['Filtr', n ? count(n, { label: `zapnuté filtry: ${n}` }) : null], { variant: 'quiet', icon: 'sliders', onclick: () => openFilters(view), cls: 'cal-filter' }));
 }
 
@@ -293,11 +302,15 @@ export function renderCalendar(parts = [], { openId } = {}) {
   const todayDay = today();
   const leader = can('leader');
   const closeHref = hrefOf(view, view === 'mesic' && opened ? dayOf(opened.start) : month, view === 'rozpis' ? extra : null);
+  // „Dnes“ has nothing to do when today is already shown (Měsíc on a phone: today is the chosen day)
+  const showsToday = month === todayDay.slice(0, 7) && (view !== 'mesic' || isDesktop() || !day || day === todayDay);
 
   let content;
   let primary = null;
   let menuItems = [{ label: 'Stáhnout do kalendáře', icon: 'download', onclick: openCalendarExport }];
-  const bar = toolbar(view, periodPart);
+  const toToday = showsToday ? null : () => navigate(hrefOf(view, view === 'mesic' ? todayDay : todayDay.slice(0, 7), view === 'rozpis' ? extra : null));
+  // „Dnes“: next to the period on a desktop; on a phone in the brand row (the period row has no room)
+  const bar = toolbar(view, periodPart, { month, onMonth: go, onToday: isDesktop() ? toToday : null });
 
   if (view === 'rozpis') {
     const r = rosterView({ month, extra, openId: opened?.id || null, closeHref, toolbar: bar });
@@ -330,14 +343,12 @@ export function renderCalendar(parts = [], { openId } = {}) {
     if (leader) primary = { label: 'Přidat setkání', icon: 'calendar-plus', onclick: () => openAddEvent() };
   }
 
+  // the one head of the four tabs (layout.js screen({ tab })): „Kalendář“ is the h1, the period sits in the bar
   const nodes = screen({
-    topbar: topBar({
-      center: period({ label: monthLabel(month), onPrev: () => go(shiftMonth(month, -1)), onNext: () => go(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc' }),
-      actions: [
-        button('Dnes', { variant: 'quiet', size: 's', onclick: () => navigate(hrefOf(view, view === 'mesic' ? todayDay : todayDay.slice(0, 7), view === 'rozpis' ? extra : null)) }),
-        menu(menuItems, { label: 'Další možnosti kalendáře' }),
-      ],
-    }),
+    tab: {
+      title: 'Kalendář',
+      actions: [!isDesktop() && toToday ? button('Dnes', { variant: 'quiet', size: 's', onclick: toToday }) : null, menu(menuItems, { label: 'Další možnosti kalendáře' })],
+    },
     body: paneLinks(h('div', { class: ['cal', `cal--${view}`] }, content)),
     primary,
     wide: true,
@@ -353,7 +364,7 @@ document.addEventListener('keydown', (e) => {
   if (e.target.closest?.('input, textarea, select, [contenteditable], [role="radiogroup"], [role="grid"] .day, .month')) return;
   const step = { ArrowLeft: 0, ArrowRight: 1 }[e.key];
   if (step == null) return;
-  const buttons = document.querySelectorAll('#view .topbar .period .icon-btn');
+  const buttons = document.querySelectorAll('#view .cal-period .period .icon-btn');
   if (buttons.length === 2) { e.preventDefault(); buttons[step].click(); }
 });
 

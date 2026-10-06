@@ -2,6 +2,10 @@
    Only layout of this module; every colour, type size and shape is a token (next-tokens.css). The kit
    components (row, list, chips, seg, card, sheet…) are used as they are. */
 
+/* ---------- the tab: Lidé | Skupiny under the title ---------- */
+.people-switch { margin-bottom: var(--space-2); }
+.people-switch > .seg { max-width: 360px; }
+
 /* ---------- the list ---------- */
 .people-tools { margin: 0 calc(-1 * var(--gutter)); padding-left: var(--gutter); padding-right: var(--gutter); }
 .people-screen .row-link { margin-top: var(--space-2); }
@@ -58,6 +62,14 @@
 .people-table th.col-phone { width: 120px; }
 .people-table th.col-email { width: 20%; }
 .people-table th.col-groups { width: 13%; }
+/* ≥ 1200 with a card open: the same table, narrowed to name · phone · groups, the open person marked */
+@media (min-width: 1200px) { .people-screen--split .split { grid-template-columns: minmax(0, 1fr) minmax(420px, 480px); } }
+.people-table.people-table--compact th.col-name { width: auto; }
+.people-table.people-table--compact th.col-phone { width: 132px; }
+.people-table.people-table--compact th.col-groups { width: 28%; }
+.people-table tbody tr[data-open] { background: var(--pick); }
+.people-table tbody tr[data-open] > :first-child { box-shadow: inset 3px 0 0 var(--mark); }
+.people-table tbody tr[data-open] .table-quiet { color: var(--ink); }
 .people-table th.col-birthday { width: 108px; }
 .people-table th.col-last { width: 140px; }
 .people-table:not(:has(.col-status)) th.col-name { width: 32%; }
@@ -74,7 +86,7 @@
 .table-more, .table-quiet { color: var(--ink-2); }
 .people-table td > .icon { margin-left: 6px; vertical-align: -4px; color: var(--ink-accent); }
 .people-table tr[data-former] .table-person__name { color: var(--ink-2); }
-.people-households { margin-bottom: var(--space-4); }
+.people-households { margin-top: var(--space-5); }
 
 /* ---------- split: the pane scrolls on its own, the list keeps its place ---------- */
 @media (min-width: 1200px) {

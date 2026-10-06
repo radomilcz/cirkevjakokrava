@@ -11,7 +11,7 @@ import {
 import { S, can, myId } from '../../ui/state.js';
 import { eventTypeById, needsOf, fillRatio, KIND_LABELS } from '../../lib/events.js';
 import { placesOf as resolvedPlaces } from '../../lib/places.js';
-import { roleById, groupById, ledBy } from '../../lib/groups.js';
+import { roleById, groupById, ledBy, memberRecord } from '../../lib/groups.js';
 import { fullName, displayName } from '../../lib/people.js';
 import { loadImageUrl } from '../../lib/store/store.js';
 import { ics, icsForPerson } from '../../lib/ics.js';
@@ -86,8 +86,11 @@ export function teamsWithRoles() {
     .filter((t) => t.roles.length);
 }
 
-/** Teams the viewer leads (team leaders: Rozpis opens on „Moje týmy“). */
+/** Teams the viewer leads (team leaders: Rozpis opens on their team). */
 export const myTeams = () => (myId() ? ledBy(S.data, myId()).filter((g) => g.kind === 'team' && !g.archived).map((g) => g.id) : []);
+
+/** Teams (with roles) the viewer is in – a member's Rozpis opens on their own team. */
+export const memberTeams = () => (myId() ? teamsWithRoles().filter(({ group }) => memberRecord(S.data, group.id, myId())).map(({ group }) => group.id) : []);
 
 const STATUS_ORDER = { confirmed: 0, proposed: 1, declined: 2 };
 
@@ -124,6 +127,28 @@ export function slotsOf(event) {
     for (const gid of groups) take(groupById(S.data, gid) || { id: gid, name: 'Další' }, rest.filter((r) => r.groupId === gid));
   }
   return result;
+}
+
+/**
+ * How full the event is for some teams only (Rozpis with a team chosen): the same numbers as fillOf(),
+ * counted over the roles of `teamIds` (null = every role, the same as fillOf()).
+ */
+export function fillOfTeams(event, teamIds) {
+  if (!teamIds) return fillOf(event);
+  const inTeams = (roleId) => teamIds.includes(roleById(S.data, roleId)?.groupId);
+  let needed = 0;
+  let filled = 0;
+  for (const need of needsOf(S.data, event)) {
+    if (!inTeams(need.roleId)) continue;
+    const count = Math.max(0, Number(need.count) || 0);
+    const have = (event.assignments || []).filter((a) => a.roleId === need.roleId && a.personId && a.status !== 'declined').length;
+    needed += count;
+    filled += Math.min(count, have);
+  }
+  const mine = (event.assignments || []).filter((a) => inTeams(a.roleId));
+  const waiting = mine.filter((a) => a.status === 'proposed' && a.personId).length;
+  const confirmed = mine.filter((a) => a.status === 'confirmed').length;
+  return { filled, needed, missing: Math.max(0, needed - filled), waiting, confirmed, complete: filled >= needed };
 }
 
 /** How full: { filled, needed, missing, waiting, declined, confirmed, complete }. */
@@ -224,7 +249,7 @@ const PREFS_KEY = 'zvonec-next-calendar';
 export const VIEWS = [['seznam', 'Seznam'], ['mesic', 'Měsíc'], ['rozpis', 'Rozpis']];
 const viewerKey = () => `${myId() || 'x'}-${S.me?.access || ''}`;
 
-/** { view, kinds: [], teams: [], mine: false, rosterTeams: null | [] } */
+/** { view, kinds: [], teams: [], mine: false, rosterTeam: null | 'all' | <team id> } */
 export function prefs() {
   let all = {};
   try { all = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') || {}; } catch { all = {}; }
@@ -234,7 +259,7 @@ export function prefs() {
     kinds: Array.isArray(p.kinds) ? p.kinds : [],
     teams: Array.isArray(p.teams) ? p.teams : [],
     mine: !!p.mine && !!myId(),
-    rosterTeams: Array.isArray(p.rosterTeams) ? p.rosterTeams : null,
+    rosterTeam: typeof p.rosterTeam === 'string' ? p.rosterTeam : null,
   };
 }
 
@@ -249,11 +274,17 @@ export function savePrefs(patch) {
 /** The view to open: remembered, else Měsíc on a desktop and Seznam on a phone. */
 export const defaultView = () => prefs().view || (window.matchMedia('(min-width: 960px)').matches ? 'mesic' : 'seznam');
 
-/** Teams shown in Rozpis: remembered, else the teams I lead (team leaders), else all. */
-export function rosterTeams() {
-  const p = prefs();
-  if (p.rosterTeams) return p.rosterTeams;
-  return myTeams();
+export const ALL_TEAMS = 'all';
+
+/**
+ * The one team filter of Rozpis: 'all' or a team id. Remembered per viewer; else the first team I lead
+ * (team leaders plan their team), else the first team I serve in (members), else all teams.
+ */
+export function rosterTeam() {
+  const known = new Set(teamsWithRoles().map(({ group }) => group.id));
+  const saved = prefs().rosterTeam;
+  if (saved === ALL_TEAMS || known.has(saved)) return saved;
+  return myTeams().find((id) => known.has(id)) || memberTeams()[0] || ALL_TEAMS;
 }
 
 /** Is a team part of an event: its own, or one of its roles is needed or filled there? */

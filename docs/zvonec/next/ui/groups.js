@@ -1,8 +1,9 @@
 // Zvonec Next – Skupiny (#lide/skupiny) and Skupina (#tym/<id>).
 // The list: three headings Týmy · Skupinky · Vedení, my groups first with „ty“, the archive at the end.
-// Desktop ≥ 960: cards in columns; ≥ 1200 a group opens next to the list. The group: who leads, Lidé
-// (with what they can do – on desktop the „Kdo co umí“ matrix whose cells step neumí → učí se → umí),
-// Role (teams), Kde slouží / Setkání (six weeks). Members read names, leaders and the schedule only.
+// Desktop ≥ 960: cards in columns; ≥ 1200 a group opens next to the list. The group: who leads,
+// Role (teams, short – first, so a leader reaches them without scrolling past everyone), Lidé (with what they
+// can do – on desktop the „Kdo co umí“ matrix whose cells step neumí → učí se → umí; a big team shows six
+// rows and „Ukázat všech 19“), Kde slouží / Setkání (six weeks). Members read names, leaders and the schedule only.
 
 import {
   h, icon, screen, topBar, menu, list, row, personRow, teamMark, avatar, avatars, section, empty, button, iconButton, table,
@@ -16,7 +17,7 @@ import { needsOf } from '../../lib/events.js';
 import { placesOf } from '../../lib/places.js';
 import { today, addDays, dayOf, prettyTime } from '../../lib/time.js';
 import { groupWords, leadersLine, compareGroups, peopleCount, GROUP_WORDS } from './people-common.js';
-import { sectionBar, keepListPlace } from './people.js';
+import { sectionTab, keepListPlace } from './people.js';
 import { skillPills } from './people-card.js';
 import {
   groupSheet, toggleArchive, deleteGroup, memberSheet, addToGroup, cycleSkill, roleSheet, deleteRole, SKILL_WORDS,
@@ -96,9 +97,10 @@ function groupCards() {
 export function renderGroups() {
   const leader = can('leader');
   const desktop = isDesktop();
+  const t = sectionTab('skupiny');
   return screen({
-    topbar: sectionBar('skupiny'),
-    body: [h('h1', { class: 'visually-hidden' }, 'Skupiny'), h('div', { class: 'groups-list' }, desktop ? groupCards() : groupList())],
+    tab: t.tab,
+    body: [t.switcher, h('div', { class: 'groups-list' }, desktop ? groupCards() : groupList())],
     primary: leader ? { label: 'Přidat skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
     wide: desktop,
     cls: 'groups-screen',
@@ -174,16 +176,37 @@ function matrix(group) {
   });
 }
 
+const PEOPLE_SHOWN = 6;   // the list of a big team: six rows, then „Ukázat všech 19“
+const openGroups = new Set();   // groups whose whole list is open (kept while the app runs)
+
 function peopleSection(group) {
   const leader = can('leader');
   const words = groupWords(group);
   const count = members(group).length;
   const useMatrix = leader && group.kind === 'team' && isDesktop() && rolesOf(S.data, group.id).length && count;
+  let rows = null;
+  let more = null;
+  if (!useMatrix && count) {
+    const all = peopleRows(group);
+    const cut = !openGroups.has(group.id) && all.length > PEOPLE_SHOWN + 2;
+    rows = list(cut ? all.slice(0, PEOPLE_SHOWN) : all, { label: 'Lidé' });
+    if (cut) {
+      more = rowLink(`Ukázat všech ${all.length}`, {
+        icon: 'chevron-down',
+        onclick: (e) => {
+          openGroups.add(group.id);
+          rows.replaceChildren(...peopleRows(group));
+          rows.children[PEOPLE_SHOWN]?.focus?.({ preventScroll: true });
+          e.currentTarget.remove();
+        },
+      });
+    }
+  }
   return section({
     title: useMatrix ? 'Kdo co umí' : 'Lidé', count: count || null, id: 'lide', cls: 'group-section',
     body: [
       useMatrix ? [matrix(group), caption('Klepnutím na políčko změníš, co kdo umí: neumí → učí se → umí. Klepnutím na jméno nastavíš, kdo tým vede.')]
-        : count ? list(peopleRows(group), { label: 'Lidé' }) : quiet('Zatím tu nikdo není.'),
+        : count ? [rows, more] : quiet('Zatím tu nikdo není.'),
       leader ? slot(words.add, () => pickPerson(group)) : null,
     ],
   });
@@ -274,29 +297,30 @@ function groupBody(group, { pane = false } = {}) {
     h('div', { class: 'person-head' },
       teamMark(group, { size: 'l' }),
       h('div', { class: 'person-head__text' },
-        titleEl(group.name, { small: pane }),
+        titleEl(group.name, { small: pane, tag: pane ? 'h2' : 'h1' }),
         h('p', { class: 'meta' }, joinMeta([words.kind.charAt(0).toLocaleUpperCase('cs') + words.kind.slice(1), leaders || 'zatím ho nikdo nevede', group.archived ? 'v archivu' : null])))),
     group.description ? h('p', { class: 'text group-page__about' }, group.description) : null,
     group.archived ? h('p', { class: 'meta' }, 'Skupina je v archivu. Do rozpisu se nenavrhuje, historie zůstala.') : null,
-    peopleSection(group),
     rolesSection(group),
+    peopleSection(group),
     eventsSection(group));
 }
 
 export function renderGroup([id] = []) {
   const group = groupById(S.data, id);
-  const missing = () => [h('h1', { class: 'visually-hidden' }, 'Skupina'), empty({
+  const missing = ({ heading = true } = {}) => [heading ? h('h1', { class: 'visually-hidden' }, 'Skupina') : null, empty({
     icon: 'teams', title: 'Tahle skupina tu není.', text: 'Možná ji někdo smazal nebo je odkaz starý.',
     action: button('Zpátky na skupiny', { variant: 'quiet', icon: 'chevron-left', href: '#lide/skupiny' }),
   })];
   if (isSplit()) {
+    const t = sectionTab('skupiny');
     return screen({
-      topbar: sectionBar('skupiny'),
-      body: splitView({
+      tab: t.tab,
+      body: [t.switcher, splitView({
         list: [h('h2', { class: 'visually-hidden' }, 'Skupiny'), h('div', { class: 'groups-list', onclick: keepListPlace }, groupList({ openId: id }))],
-        detail: detailPane({ body: group ? [h('div', { class: 'pane-menu' }, groupMenu(group)), groupBody(group, { pane: true })] : missing(), closeHref: '#lide/skupiny', label: 'Zavřít skupinu' }),
+        detail: detailPane({ body: group ? [h('div', { class: 'pane-menu' }, groupMenu(group)), groupBody(group, { pane: true })] : missing({ heading: false }), closeHref: '#lide/skupiny', label: 'Zavřít skupinu' }),
         label: group?.name || 'Skupina',
-      }),
+      })],
       primary: can('leader') ? { label: 'Přidat skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
       wide: true,
       cls: 'groups-screen groups-screen--split',

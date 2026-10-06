@@ -251,7 +251,8 @@ function updateShell(route, section, parts) {
   const tab = TAB_OF[nav] || nav;
   for (const a of [...tabbarEl.querySelectorAll('[data-nav]'), ...railEl.querySelectorAll('[data-nav]')]) {
     const current = a.closest('.rail') && a.dataset.nav === nav ? true
-      : a.closest('.rail') && RAIL_MORE.some(([id]) => id === nav) && can('leader') ? false
+      // the Více pages light up themselves where the rail lists them (≥ 1200); the narrow rail lights Více
+      : a.closest('.rail') && RAIL_MORE.some(([id]) => id === nav) && can('leader') && isSplit() ? false
         : a.dataset.nav === tab && (a.closest('.tabbar') || !(nav === 'ucet' && a.dataset.nav === 'vice'));
     if (current) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }

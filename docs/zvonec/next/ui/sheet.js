@@ -64,10 +64,11 @@ export function closeLayers() {
  * Options: title (h2, also the accessible name), subtitle (a meta line under it), body (nodes), foot (sticky bottom – the primary action
  * across the full width), wide (760 px dialog for two text areas), label (name when there is no title),
  * onClose(), initialFocus (element or selector; default: the first field, else the close button),
+ * autofocus (false: no field takes the focus by itself – formSheet does that for „Uložit“ sheets),
  * closeLabel ('Zavřít').
  * Returns { el, body, foot, close, setBody(nodes), setFoot(nodes) }.
  */
-export function openSheet({ title, subtitle, body, foot, wide = false, label, onClose, initialFocus, closeLabel = 'Zavřít', cls } = {}) {
+export function openSheet({ title, subtitle, body, foot, wide = false, label, onClose, initialFocus, autofocus = true, closeLabel = 'Zavřít', cls } = {}) {
   const returnTo = document.activeElement;
   const titleId = title ? uid('sheet') : null;
   const bodyEl = h('div', { class: 'sheet__body' }, body);
@@ -101,8 +102,11 @@ export function openSheet({ title, subtitle, body, foot, wide = false, label, on
   stack.push(layer);
   syncInert();
   requestAnimationFrame(() => {
+    // an edit sheet (autofocus: false) starts on its close button: whoever opens it often came to flip a
+    // switch, and on a phone the keyboard would cover the sheet
+    const fieldFirst = autofocus;
     const target = typeof initialFocus === 'string' ? el.querySelector(initialFocus) : initialFocus
-      || el.querySelector('.sheet__body :is(input:not([type=hidden]), textarea, select)') || head.querySelector('.icon-btn');
+      || (fieldFirst ? el.querySelector('.sheet__body :is(input:not([type=hidden]), textarea, select)') : null) || head.querySelector('.icon-btn');
     target?.focus({ preventScroll: true });
   });
   return {
@@ -151,12 +155,12 @@ function swipeToClose(el, handles, close) {
  * (the button is never disabled – it says what is missing). Also returns a promise: awaited.
  * `values` = FormData as an object (checkboxes / switches: use form.elements or the control's own state).
  */
-export function formSheet({ title, subtitle, body, submitLabel = 'Uložit', onSubmit, wide, secondary, cls } = {}) {
+export function formSheet({ title, subtitle, body, submitLabel = 'Uložit', onSubmit, wide, secondary, cls, autofocus = submitLabel !== 'Uložit' } = {}) {
   const formId = uid('form');
   const error = h('p', { class: 'field__error form-error', role: 'alert', hidden: true }, icon('x', { size: 's' }), h('span'));
   const form = h('form', { id: formId, class: 'form', novalidate: true }, body);
   const submit = button(submitLabel, { variant: 'primary', size: 'l', block: true, type: 'submit', form: formId });
-  const sheet = openSheet({ title, subtitle, body: form, foot: [error, submit, secondary || null], wide, cls });
+  const sheet = openSheet({ title, subtitle, body: form, foot: [error, submit, secondary || null], wide, cls, autofocus });
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const values = Object.fromEntries(new FormData(form).entries());

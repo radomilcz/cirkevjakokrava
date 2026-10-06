@@ -184,7 +184,11 @@ a { color: inherit; text-decoration: none; }
   transition: background-color var(--dur-state) var(--ease), color var(--dur-state) var(--ease), box-shadow var(--dur-state) var(--ease);
 }
 .seg > button:hover { color: var(--ink); }
-.seg > button[aria-checked="true"] { background: var(--overlay); color: var(--ink); font-weight: var(--weight-bold); box-shadow: var(--lift-2); }
+.seg > button { position: relative; min-height: 38px; }
+.seg > button::after { content: ""; position: absolute; inset: -3px -1px; }   /* the whole 44 px track answers a tap */
+.seg > button[aria-checked="true"] { background: var(--overlay); color: var(--ink); font-weight: var(--weight-bold); box-shadow: inset 0 0 0 1px var(--edge), var(--lift-2); }
+/* dark palettes: the overlay is barely lighter than the track – the thumb takes the ink fill instead */
+:root[data-theme="dark"] .seg > button[aria-checked="true"] { background: var(--act); color: var(--on-act); box-shadow: none; }
 
 /* ---------- chips (filters, choices) ---------- */
 .chips { display: flex; gap: var(--space-2); overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter); scroll-padding: 0 var(--gutter); }
@@ -343,8 +347,8 @@ a.row:active, button.row:active { background: var(--press); }
 .callout[data-tone="wait"] { background: var(--wait-fill); color: var(--wait-body); }
 .callout[data-tone="wait"] > .icon { color: var(--wait-ink); }
 .callout[data-tone="no"] { background: var(--no-fill); color: var(--no-ink); }
-.callout[data-tone="info"] { background: var(--info-fill); color: var(--info-body); }
-.callout[data-tone="info"] > .icon { color: var(--info-ink); }
+.callout[data-tone="info"] { background: var(--tint); color: var(--ink); }   /* neutral: the accent tint read as an error */
+.callout[data-tone="info"] > .icon { color: var(--ink-2); }
 
 /* ---------- fields ---------- */
 .field { display: grid; gap: 6px; }
@@ -363,8 +367,12 @@ a.row:active, button.row:active { background: var(--press); }
 .input[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--no-ink); }
 textarea.input { min-height: 112px; padding: 14px var(--space-4); line-height: var(--lh-body); resize: vertical; }
 .search { position: relative; }
-.search > .icon { position: absolute; left: 14px; top: 50%; margin-top: -12px; color: var(--ink-2); pointer-events: none; }
-.search > .input { padding-left: 48px; }
+.search__field { display: block; }
+.search__field > .icon { position: absolute; left: 14px; top: 50%; margin-top: -12px; color: var(--ink-2); pointer-events: none; }
+.search .input { padding-left: 48px; padding-right: 48px; }
+.search .input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
+.search__clear { position: absolute; right: 4px; top: 50%; margin-top: calc(var(--hit) / -2); color: var(--ink-2); }
+.search__clear:hover { color: var(--ink); }
 
 /* switch – an on/off that applies at once */
 .switch {

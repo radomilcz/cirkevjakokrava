@@ -16,7 +16,7 @@ import { setSkill } from '../../lib/groups.js';
 import { today } from '../../lib/time.js';
 import {
   h, screen, topBar, field, textInput, switchRow, button, list, row, avatar, personName, icon, callout, toast,
-  segmentedField, chipsField, disclosure, fieldError, clearErrors, skeleton, empty, uid,
+  segmentedField, chipsField, disclosure, fieldError, clearErrors, skeleton, empty, uid, passwordInput, welcome,
 } from './kit.js';
 import { checkPassword } from './account.js';
 
@@ -48,14 +48,15 @@ export function renderLogin(part = '') {
 
 function liveLogin() {
   const name = textInput({ name: 'name', autocomplete: 'username', placeholder: 'např. Alžběta Svobodová' });
-  const password = textInput({ name: 'password', type: 'password', autocomplete: 'current-password' });
+  const passwordBox = passwordInput({ name: 'password', autocomplete: 'current-password' });
+  const password = passwordBox.input;
   let remember = true;
   const error = errorLine();
   const submit = button('Přihlásit se', { variant: 'primary', size: 'l', block: true, type: 'submit' });
   const form = h('form', { class: 'form login-form', novalidate: true },
     S.signInMessage ? callout({ tone: 'wait', text: S.signInMessage }) : null,
     field({ label: 'Jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
-    field({ label: 'Heslo', control: password }),
+    field({ label: 'Heslo', control: passwordBox }),
     switchRow({ label: REMEMBER, hint: 'Na cizím počítači to vypni.', checked: true, onChange: (on) => { remember = on; } }),
     error,
     submit);
@@ -95,7 +96,7 @@ function demoLogin() {
     S.me = { login: null, priv: null, github: null, personId: v.person.id, access: v.access };
     history.replaceState(null, '', '#domu');
     render({ toTop: true });
-    toast(`Vítej, ${v.person.nickname || v.person.firstName}.`);
+    toast(welcome(v.person.nickname || v.person.firstName));
   };
   return screen({
     topbar: bar(),
@@ -124,8 +125,8 @@ function renderSetup() {
   const repoName = textInput({ name: 'repo', value: repo.repo || '', autocomplete: 'off' });
   const first = textInput({ name: 'firstName', autocomplete: 'given-name' });
   const last = textInput({ name: 'lastName', autocomplete: 'family-name' });
-  const pass = textInput({ name: 'password', type: 'password', autocomplete: 'new-password' });
-  const again = textInput({ name: 'password2', type: 'password', autocomplete: 'new-password' });
+  const passBox = passwordInput({ name: 'password', autocomplete: 'new-password' });   // the eye shows it: no second field
+  const pass = passBox.input;
   for (const input of [token, owner, repoName]) input.spellcheck = false;
   const error = errorLine();
   const submit = button('Založit Zvonec', { variant: 'primary', size: 'l', block: true, type: 'submit' });
@@ -141,7 +142,7 @@ function renderSetup() {
     h('div', { class: 'form__row' }, field({ label: 'Vlastník repa', control: owner }), field({ label: 'Repo', control: repoName })),
     h('h2', { class: 'login-part' }, 'První správce'),
     h('div', { class: 'form__row' }, field({ label: 'Tvoje jméno', control: first }), field({ label: 'Příjmení', control: last })),
-    h('div', { class: 'form__row' }, field({ label: 'Heslo', control: pass, hint: 'Aspoň 8 znaků.' }), field({ label: 'Heslo ještě jednou', control: again })),
+    field({ label: 'Heslo', control: passBox, hint: 'Aspoň 8 znaků.' }),
     segmentedField({
       name: 'base', label: 'Základ', value: 'base',
       options: [{ value: 'base', label: 'Se základem z ukázky' }, { value: 'empty', label: 'Úplně načisto' }],
@@ -159,8 +160,8 @@ function renderSetup() {
     if (!owner.value.trim()) { fieldError(owner, 'Doplň vlastníka repa.'); return; }
     if (!repoName.value.trim()) { fieldError(repoName, 'Doplň název repa.'); return; }
     if (!firstName) { fieldError(first, 'Doplň svoje jméno.'); return; }
-    const problem = checkPassword(pass.value, again.value);
-    if (problem) { fieldError(problem.startsWith('Hesla') ? again : pass, problem); return; }
+    const problem = checkPassword(pass.value, pass.value);
+    if (problem) { fieldError(pass, problem); return; }
     const loginName = `${firstName} ${lastName}`.trim();
     const github = { token: token.value.trim(), owner: owner.value.trim(), repo: repoName.value.trim(), path: DATA_PATH, branch: 'main' };
     busy(submit, true, 'Zakládám…');
@@ -253,8 +254,8 @@ function registration({ demo = false, result, store, data }) {
   const last = textInput({ name: 'lastName', value: person.lastName || '', autocomplete: 'family-name' });
   const phone = textInput({ name: 'phone', type: 'tel', value: person.phone || '', autocomplete: 'tel', inputmode: 'tel' });
   const email = textInput({ name: 'email', type: 'email', value: person.email || '', autocomplete: 'email', inputmode: 'email' });
-  const pass = textInput({ name: 'password', type: 'password', autocomplete: 'new-password' });
-  const again = textInput({ name: 'password2', type: 'password', autocomplete: 'new-password' });
+  const passBox = passwordInput({ name: 'password', autocomplete: 'new-password' });   // the eye shows it: no second field
+  const pass = passBox.input;
   let consent = !!person.consentDate;
   let directory = !!person.showInDirectory;
   let remember = true;
@@ -270,7 +271,7 @@ function registration({ demo = false, result, store, data }) {
     demo ? callout({ tone: 'info', text: 'Tohle je ukázka. Takhle vypadá stránka, kterou otevře pozvaný člověk.' }) : null,
     h('div', { class: 'form__row' }, field({ label: 'Jméno', control: first }), field({ label: 'Příjmení', control: last })),
     h('div', { class: 'form__row' }, field({ label: 'Telefon', control: phone, optional: true }), field({ label: 'E-mail', control: email, optional: true })),
-    h('div', { class: 'form__row' }, field({ label: 'Heslo', control: pass, hint: 'Aspoň 8 znaků.' }), field({ label: 'Heslo ještě jednou', control: again })),
+    field({ label: 'Heslo', control: passBox, hint: 'Aspoň 8 znaků.' }),
     consentRow,
     disclosure([
       roles.length ? chipsField({
@@ -288,8 +289,8 @@ function registration({ demo = false, result, store, data }) {
     error.show('');
     const firstName = first.value.trim();
     if (!firstName) { fieldError(first, 'Doplň jméno.'); return; }
-    const problem = checkPassword(pass.value, again.value);
-    if (problem) { fieldError(problem.startsWith('Hesla') ? again : pass, problem); return; }
+    const problem = checkPassword(pass.value, pass.value);
+    if (problem) { fieldError(pass, problem); return; }
     if (!consent) { error.show('Bez souhlasu tě do rozpisu zapsat nemůžeme.'); consentRow.querySelector('.switch').focus(); return; }
     if (demo) { toast('V ukázce se nikdo nepřidává. Ostrý Zvonec by tě teď pustil dovnitř.', { icon: 'info' }); return; }
     busy(submit, true, 'Přidávám tě…');
@@ -327,7 +328,7 @@ function registration({ demo = false, result, store, data }) {
       rememberLogin(fresh, remember);
       invite = null;
       await signedIn(fresh);
-      toast(`Vítej, ${firstName}! Příště se přihlásíš jménem a heslem.`, { duration: 8000 });
+      toast(`${welcome(firstName, { end: '!' })} Příště se přihlásíš jménem a heslem.`, { duration: 8000 });
     } catch (err) {
       busy(submit, false, 'Přidat se');
       error.show(`Nepodařilo se. ${err.message || err}`);

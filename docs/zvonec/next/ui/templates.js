@@ -1,7 +1,7 @@
 // Zvonec Next – Šablony setkání (#sablony) and the template page (#sablona/<id>, #sablona/nova).
 // A template pre-fills a new event: name, Účel, day, time, place, who is needed, the osnova and what the
 // web shows. The page works on a draft that survives re-renders and navigation; nothing is written until
-// „Uložit“ (the main action). Sections: Základ · Kdo je potřeba · Osnova · Na webu · Řady. Leaders only.
+// „Uložit“ in the save foot, shown while something is unsaved. Sections: Základ · Kdo je potřeba · Osnova · Na webu · Řady. Leaders only.
 //
 // Data: eventType { id, name, kind, groupId?, weekday? (0 = Monday … 6 = Sunday), startTime, minutes,
 // placeIds, image?, description?, public?, needs: [{ roleId, count }], program?: [{ formatId, minutes }] }.
@@ -18,7 +18,7 @@ import { today, dayOf, weekday } from '../../lib/time.js';
 import {
   h, list, row, button, empty, pill, plural, toast, formSheet, confirmSheet, openSheet, field, textInput, textArea,
   selectInput, stepper, switchRow, disclosure, chips, chipsField, timeRange, teamHead, menu, icon, fillRing, clock,
-  joinMeta, KIND_HUES, shortDate, isSplit, fieldError, quiet,
+  joinMeta, KIND_HUES, shortDate, isSplit, fieldError, quiet, formFoot,
 } from './kit.js';
 import { morePage, byName, clone, durationText, clockPlus, minutesBetweenClocks } from './more-common.js';
 import { extendSeriesSheet } from './event-form.js';
@@ -139,12 +139,12 @@ export function renderTemplate(id = 'nova') {
   const isNew = d.id === 'nova';
   const type = isNew ? null : S.data.eventTypes.find((t) => t.id === d.id);
 
-  const status = h('p', { class: 'meta tpl-status', role: 'status' });
-  const markDirty = () => {
-    const dirty = isDirty();
-    status.textContent = dirty ? 'Máš neuložené změny.' : isNew ? 'Zatím neuloženo.' : 'Všechno je uložené.';
-    status.dataset.dirty = dirty ? 'true' : 'false';
-  };
+  const discard = () => { draft = freshDraft(d.id); drafts.set(d.id, draft); render(); toast('Změny zahozené.'); };
+  // the save foot shows only while something is unsaved (a new template: always, until it is added)
+  const foot = isNew
+    ? formFoot({ label: 'Přidat šablonu', text: 'Šablona zatím není uložená.', always: true, onSave: () => saveTemplate(d) })
+    : formFoot({ onSave: () => saveTemplate(d), onDiscard: discard });
+  const markDirty = () => foot.update(isDirty());
   markDirty();
 
   const needsHolder = h('div', { class: 'tpl-needs-holder' });
@@ -154,9 +154,7 @@ export function renderTemplate(id = 'nova') {
   drawNeeds();
   drawOutline();
 
-  const discard = () => { draft = freshDraft(d.id); drafts.set(d.id, draft); render(); toast('Změny zahozené.'); };
   const menuItems = [
-    isDirty() && !isNew ? { label: 'Zahodit změny', icon: 'undo', onclick: discard } : null,
     type ? { label: 'Smazat šablonu', icon: 'trash', danger: true, onclick: () => deleteTemplate(type) } : null,
   ].filter(Boolean);
 
@@ -178,11 +176,10 @@ export function renderTemplate(id = 'nova') {
     title: v.name || (isNew ? 'Nová šablona' : 'Bez názvu'),
     back,
     overline: KIND_LABELS[v.kind] || 'Šablona',
-    lead: status,
     menuItems,
     wide: isSplit(),
     body,
-    primary: { label: isNew ? 'Přidat šablonu' : 'Uložit', icon: 'check', onclick: () => saveTemplate(d) },
+    foot,
     cls: 'tpl-page tpl-edit',
   });
 }

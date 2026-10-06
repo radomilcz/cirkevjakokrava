@@ -43,15 +43,19 @@ document.addEventListener('zvonec:navigate', () => {
 const listHref = () => `#lide${state.slug ? `/${state.slug}` : ''}`;
 const MONTH_NAMES = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
 
-// ---------- the top bar of the section: Lidé | Skupiny ----------
+// ---------- the head of the tab: „Lidé“, its ⋯, and the switch Lidé | Skupiny under it ----------
 
-/** Segmented Lidé · Skupiny in the top bar (both screens of the tab), with an optional ⋯. */
-export function sectionBar(current, actions) {
-  return topBar({
-    center: segmented([{ value: 'lide', label: 'Lidé' }, { value: 'skupiny', label: 'Skupiny' }], current,
-      (v) => navigate(v === 'lide' ? listHref() : '#lide/skupiny'), { label: 'Lidé nebo skupiny', cls: 'seg--section' }),
-    actions,
-  });
+/**
+ * The tab head of both screens of Lidé (the one head pattern of the four tabs, see screen({ tab })) and
+ * the segmented Lidé · Skupiny that goes first in the body.
+ *   const t = sectionTab('lide', listMenu(…));  screen({ tab: t.tab, body: [t.switcher, …] })
+ */
+export function sectionTab(current, actions) {
+  return {
+    tab: { title: 'Lidé', actions },
+    switcher: h('div', { class: 'people-switch' }, segmented([{ value: 'lide', label: 'Lidé' }, { value: 'skupiny', label: 'Skupiny' }], current,
+      (v) => navigate(v === 'lide' ? listHref() : '#lide/skupiny'), { label: 'Lidé nebo skupiny', cls: 'seg--section' })),
+  };
 }
 
 function listMenu(people) {
@@ -71,17 +75,49 @@ function listMenu(people) {
 
 const filterKeyOf = (slug) => (FILTERS.find(([s]) => s === slug) || FILTERS[0])[1];
 
-/** People under the filter and the search: the search also finds households (their people come along). */
+/**
+ * How well a person matches the search, lower first: the first name (or nickname) itself → its start →
+ * the whole name's start → the surname's start → a word of the name → anything else (phone, e-mail, inside a word).
+ * „Jana“ → Jana Nováková before Janáček before Marie Janovská.
+ */
+export function matchRank(person, query) {
+  const q = fold(query);
+  const first = fold(person.firstName);
+  const nick = fold(person.nickname);
+  const last = fold(person.lastName);
+  const word = q.split(' ')[0];
+  if (first === q || nick === q) return 0;
+  if (first.startsWith(q) || nick.startsWith(q)) return 1;
+  if (`${first} ${last}`.startsWith(q) || `${nick} ${last}`.startsWith(q)) return 2;
+  if (last === q || last.startsWith(q) || `${last} ${first}`.startsWith(q)) return 3;
+  if (`${first} ${nick} ${last}`.split(' ').some((w) => w && w.startsWith(word))) return 4;
+  return 5;
+}
+
+/**
+ * People under the filter and the search. Searching: the people whose name (phone, e-mail) matches, best
+ * match first; then the households that match, with their people who did not match by name (`homePeople`).
+ */
 function shown(slug) {
   const leader = can('leader');
   const key = leader ? filterKeyOf(slug) : 'attending';
   const base = S.data.people.filter((p) => inFilter(p, key));
   const q = state.query.trim();
-  if (!q) return { people: sortPeople(base), households: [] };
+  if (!q) return { people: sortPeople(base), households: [], homePeople: [] };
   const households = householdsFound(q);
   const homeIds = new Set(households.map((x) => x.id));
-  return { people: sortPeople(base.filter((p) => matchesQuery(p, q) || homeIds.has(p.householdId))), households };
+  const order = new Map(sortPeople(base).map((p, i) => [p.id, i]));
+  const people = base.filter((p) => matchesQuery(p, q))
+    .map((p) => ({ p, r: matchRank(p, q) }))
+    .sort((a, b) => a.r - b.r || order.get(a.p.id) - order.get(b.p.id))
+    .map((x) => x.p);
+  const found = new Set(people.map((p) => p.id));
+  const homePeople = sortPeople(base.filter((p) => !found.has(p.id) && homeIds.has(p.householdId)));
+  return { people, households, homePeople };
 }
+
+/** Everyone the list shows (for Zkopírovat e-maily). */
+const everyoneShown = (slug) => { const x = shown(slug); return [...x.people, ...x.homePeople]; };
 
 /** Households whose name (or, for leaders, address) matches – shown above the people. */
 function householdsFound(q) {
@@ -136,15 +172,20 @@ function householdRow(x) {
 }
 
 /** The list itself: households found, then people A–Z (letters when not searching). */
+/** Searching: the households found and their people the name search did not catch – after the people. */
+function householdBlock(households, homePeople, { openId } = {}) {
+  if (!households.length) return [];
+  return [
+    h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'),
+    list([...households.map(householdRow), ...homePeople.map((p) => rowFor(p, { openId }))], { label: 'Domácnosti' }),
+  ];
+}
+
 function listBody(slug, { openId } = {}) {
-  const { people, households } = shown(slug);
+  const { people, households, homePeople } = shown(slug);
   const leader = can('leader');
   const q = state.query.trim();
   const out = [];
-  if (households.length) {
-    out.push(h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'), list(households.map(householdRow), { label: 'Domácnosti' }));
-    if (people.length) out.push(h('h2', { class: 'index-letter people-sub' }, 'Lidé'));
-  }
   if (!people.length && !households.length) {
     if (q) {
       out.push(empty({
@@ -173,7 +214,8 @@ function listBody(slug, { openId } = {}) {
   } else if (people.length) {
     out.push(list(people.map((p) => rowFor(p, { openId })), { label: 'Lidé' }));
   }
-  out.push(h('p', { class: 'people-foot meta' }, peopleCount(people.length)));
+  out.push(...householdBlock(households, homePeople, { openId }));
+  out.push(h('p', { class: 'people-foot meta' }, peopleCount(people.length + homePeople.length)));
   return out;
 }
 
@@ -189,7 +231,7 @@ function tools(slug, redraw) {
   const leader = can('leader');
   const search = searchField({
     placeholder: leader ? 'Hledat jméno, telefon, e-mail' : 'Hledat jméno nebo domácnost', value: state.query, label: 'Hledat v Lidech',
-    onInput: (v) => { state.query = v; redraw(); },
+    onInput: (v) => { state.query = v; state.sortTouched = false; redraw(); },
   });
   let chipRow = null;
   if (leader) {
@@ -277,19 +319,33 @@ const COLUMNS = [
   { key: 'last', label: 'Poslední služba', leader: true, wide: true },
 ];
 
-function tableBody(slug) {
-  const leader = can('leader');
-  const { people, households } = shown(slug);
+/** Open a person from the table: in the split the table stays where it is (no jump to the top). */
+function openFromTable(id) {
+  if (isSplit()) { history.pushState(null, '', `#osoba/${id}`); render(); } else navigate(`#osoba/${id}`);
+}
+
+/**
+ * The desktop table. compact (≥ 1200 with a card open beside it): the same table, narrowed to name, phone and
+ * groups, with the open person marked – so picking someone does not swap the table for another layout.
+ */
+function tableBody(slug, { openId, compact = false } = {}) {
+  const leader = can('leader') && !compact;   // compact: no selection column, no leader-only columns
+  const { people: found, households, homePeople } = shown(slug);
+  const people = [...found, ...homePeople];
   const lastDays = leader ? lastDutyDays(S.data, { today: today() }) : new Map();
-  const columns = COLUMNS.filter((c) => !c.leader || leader);
+  const columns = COLUMNS.filter((c) => (compact ? ['name', 'phone', 'groups'].includes(c.key) : !c.leader || leader));
   const col = columns.find((c) => c.key === state.sort.key) || columns[0];
   const value = col.key === 'last' ? (p) => lastDays.get(p.id) || '' : col.value;
   const collator = new Intl.Collator('cs', { sensitivity: 'base', numeric: true });
+  const q = state.query.trim();
+  const rank = new Map(q ? people.map((p) => [p.id, homePeople.includes(p) ? 9 : matchRank(p, q)]) : []);
+  // searching: the best match first (a click on a column sorts by it again)
   const sorted = people.slice().sort((a, b) => {
+    if (q && !state.sortTouched) return rank.get(a.id) - rank.get(b.id) || comparePeople(a, b);
     const r = col.compare ? col.compare(a, b) : typeof value(a) === 'number' ? value(a) - value(b) : collator.compare(String(value(a)), String(value(b)));
     return (r || comparePeople(a, b)) * state.sort.dir;
   });
-  if (!sorted.length && !households.length) return listBody(slug);
+  if (!sorted.length && !households.length) return listBody(slug, { openId });
   const allOn = sorted.length > 0 && sorted.every((p) => state.picked.has(p.id));
   const check = (on, label, onchange) => h('input', { type: 'checkbox', class: 'table-check', checked: on, 'aria-label': label, onchange });
   const head = h('tr', {},
@@ -298,14 +354,14 @@ function tableBody(slug) {
       const active = c.key === col.key;
       return sortHead(c.label, {
         active, dir: state.sort.dir, cls: `col-${c.key}`,
-        onSort: () => { state.sort = { key: c.key, dir: active ? -state.sort.dir : 1 }; write(SORT_KEY, JSON.stringify(state.sort)); render(); },
+        onSort: () => { state.sort = { key: c.key, dir: active ? -state.sort.dir : 1 }; state.sortTouched = true; write(SORT_KEY, JSON.stringify(state.sort)); render(); },
       });
     }));
   const cell = (c, p) => {
     const contact = seesContact(p);
     switch (c.key) {
       case 'name': {
-        const missing = leader ? missingOf(p) : [];
+        const missing = can('leader') ? missingOf(p) : [];
         return h('td', { class: 'col-name' }, h('a', { class: 'table-person', href: `#osoba/${p.id}` },
           avatar(p, { size: 's', me: p.id === myId() }), h('span', { class: 'table-person__name' }, personName(p))),
         missing.length ? h('span', { class: 'table-missing', title: `Chybí: ${missing.map((k) => MISSING_LABELS[k]).join(', ')}` }, icon('alert', { size: 's', label: `Chybí: ${missing.map((k) => MISSING_LABELS[k]).join(', ')}` })) : null);
@@ -329,16 +385,16 @@ function tableBody(slug) {
     }
   };
   const rows = sorted.map((p) => {
-    const tr = h('tr', { dataset: { former: isFormer(p) ? '' : null, picked: state.picked.has(p.id) ? '' : null } },
+    const tr = h('tr', { dataset: { former: isFormer(p) ? '' : null, picked: state.picked.has(p.id) ? '' : null, open: p.id === openId ? '' : null }, 'aria-current': p.id === openId ? 'true' : null },
       leader ? h('td', { class: 'col-pick' }, check(state.picked.has(p.id), `Vybrat – ${personName(p)}`, (e) => { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); render(); })) : null,
       columns.map((c) => { const td = cell(c, p); td.classList.add(`col-${c.key}`); return td; }));
-    tr.addEventListener('click', (e) => { if (!e.target.closest('a, button, input')) navigate(`#osoba/${p.id}`); });
+    tr.addEventListener('click', (e) => { if (!e.target.closest('a, button, input')) openFromTable(p.id); });
     return tr;
   });
   return [
-    households.length ? h('div', { class: 'people-households' }, h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'), list(households.map(householdRow), { label: 'Domácnosti' })) : null,
     leader ? bulkBar() : null,
-    sorted.length ? table({ label: 'Lidé – seřadíš je klepnutím na nadpis sloupce', head, rows, cls: 'people-table' }) : null,
+    sorted.length ? table({ label: 'Lidé – seřadíš je klepnutím na nadpis sloupce', head, rows, cls: ['people-table', compact && 'people-table--compact'] }) : null,
+    households.length ? h('div', { class: 'people-households' }, h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'), list(households.map(householdRow), { label: 'Domácnosti' })) : null,
     h('p', { class: 'people-foot meta' }, peopleCount(sorted.length)),
   ];
 }
@@ -359,13 +415,14 @@ export function renderPeople(parts = []) {
   const canonical = `#lide${slug ? `/${slug}` : ''}`;
   if (location.hash !== canonical) history.replaceState(history.state, '', canonical);
   const table = isDesktop() && !state.picking;
-  const box = h('div', { class: 'people-results' });
+  const box = h('div', { class: 'people-results', onclick: table ? keepListPlace : null });
   const redraw = () => box.replaceChildren(...(table ? tableBody(slug) : listBody(slug)).filter(Boolean));
   redraw();
+  const t = sectionTab('lide', listMenu(() => everyoneShown(slug)));
   return screen({
-    topbar: sectionBar('lide', listMenu(() => shown(slug).people)),
+    tab: t.tab,
     body: [
-      h('h1', { class: 'visually-hidden' }, 'Lidé'),
+      t.switcher,
       tools(slug, redraw),
       birthdayHint(),
       box,
@@ -399,23 +456,24 @@ export function renderPerson([id] = []) {
   const leader = can('leader');
   if (isSplit()) {
     const box = h('div', { class: 'people-results', onclick: keepListPlace });
-    const redraw = () => box.replaceChildren(...listBody(state.slug, { openId: id }).filter(Boolean));
+    const redraw = () => box.replaceChildren(...tableBody(state.slug, { openId: id, compact: true }).filter(Boolean));
     redraw();
     const card = person ? personCard(person, { pane: true }) : missingPerson();
     const pane = detailPane({ body: [person ? h('div', { class: 'pane-menu' }, personMenu(person)) : null, card], closeHref: listHref(), label: 'Zavřít kartu' });
+    const t = sectionTab('lide', listMenu(() => everyoneShown(state.slug)));
     return screen({
-      topbar: sectionBar('lide', listMenu(() => shown(state.slug).people)),
+      tab: t.tab,
       body: [
-        person ? null : h('h1', { class: 'visually-hidden' }, 'Lidé'),
+        t.switcher,
         splitView({
-          list: [h('h2', { class: 'visually-hidden' }, 'Lidé'), tools(state.slug, redraw), box],
+          list: [h('h2', { class: 'visually-hidden' }, 'Lidé'), tools(state.slug, redraw), birthdayHint(), box],
           detail: pane,
           label: 'Karta člověka',
         }),
       ],
       primary: leader ? { label: 'Přidat člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
       wide: true,
-      cls: 'people-screen people-screen--split',
+      cls: 'people-screen people-screen--table people-screen--split',
     });
   }
   return screen({

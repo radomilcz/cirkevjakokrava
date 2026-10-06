@@ -56,8 +56,8 @@ export function period({ label, onPrev, onNext, prevLabel = 'Předchozí měsíc
 // ---------- screen ----------
 
 /** The head of a screen: overline (date, context), the Agrandir title, actions on the right, a lead line. */
-export function screenHead({ overline, title, actions, lead } = {}) {
-  return h('div', { class: 'screen-head' },
+export function screenHead({ overline, title, actions, lead, tab = false } = {}) {
+  return h('div', { class: ['screen-head', tab && 'screen-head--tab'] },
     overline ? h('p', { class: 'overline' }, overline) : null,
     title ? h('h1', { class: 'title' }, title) : null,
     nodes(actions),
@@ -67,18 +67,70 @@ export function screenHead({ overline, title, actions, lead } = {}) {
 /**
  * A whole screen. Returns the nodes the shell mounts: [header.topbar, main.screen, .fab?].
  *   screen({
- *     topbar: topBar({ brand: true }) | { …topBar options },
- *     head: { overline: 'Úterý 13. října', title: 'Domů' },      (omit on screens whose top bar holds the title)
+ *     tab: { title: 'Lidé', overline, actions: [menu(...)], lead },   a tab root (Domů · Kalendář · Lidé · Více), see below
+ *     topbar: topBar({ back: … }) | { …topBar options },             other screens
+ *     head: { overline: 'Úterý 13. října', title: 'Nastavení sboru' },  (omit on screens whose body holds the h1)
  *     body: [...],
- *     primary: { label: 'Přidat setkání', icon: 'calendar-plus', onclick },   the main action
+ *     primary: { label: 'Přidat setkání', icon: 'calendar-plus', onclick: … },   the main action (FAB)
+ *     foot: formFoot({...}),                                       a form page: the sticky save foot instead of a FAB
  *     wide: true,                                                  up to 1280 px (split views, tables)
  *   })
+ *
+ * The one head of a tab root (`tab`), the same on all four tabs:
+ *   phone   – a brand row (the mark left, the tab's actions right: Dnes, ⋯) and under it the Agrandir title
+ *             (h1, „Domů“ · „Kalendář“ · „Lidé“ · „Více“) with its overline; the view controls (segmented,
+ *             period, search) follow in the body;
+ *   desktop – the rail carries the brand, so there is no top bar; the title row holds the h1 and, on its
+ *             right, the main action as a solid button followed by the tab's actions.
+ * Kalendář: the h1 is „Kalendář“; its period ‹ Říjen 2026 › moves into the body as period({ heading: false }).
  */
-export function screen({ topbar, head, body, primary, wide = false, cls, label } = {}) {
-  const bar = topbar instanceof Node ? topbar : topBar(topbar || { brand: true });
-  const main = h('main', { class: ['screen', wide && 'screen--wide', cls], id: 'main', tabIndex: -1, 'aria-label': label },
-    head ? screenHead(head) : null, body);
-  return [bar, main, primary ? fab(primary) : null];
+export function screen({ tab, topbar, head, body, primary, foot, wide = false, cls, label } = {}) {
+  let bar;
+  let headProps = head;
+  if (tab) {
+    const desk = isDesktop();
+    bar = topBar({ brand: true, actions: desk ? null : tab.actions, cls: 'topbar--tab' });
+    // desktop: the main action is the first button of the title row (ux.md §2.3), not a floating one
+    const main = desk && primary ? headButton(primary) : null;
+    const acts = desk ? nodes([main, tab.actions]) : [];
+    if (main) primary = null;
+    headProps = { overline: tab.overline, title: tab.title, lead: tab.lead, actions: acts.length ? h('div', { class: 'head-actions' }, acts) : null, tab: true };
+  } else {
+    bar = topbar instanceof Node ? topbar : topBar(topbar || { brand: true });
+  }
+  const main = h('main', { class: ['screen', wide && 'screen--wide', tab && 'screen--tab', foot && 'screen--form', cls], id: 'main', tabIndex: -1, 'aria-label': label },
+    headProps ? screenHead(headProps) : null, body, foot || null);
+  return [bar, main, primary && !foot ? fab(primary) : null];
+}
+
+/** The main action as a solid button of the title row (desktop tab roots). */
+function headButton({ label, icon: iconName = 'plus', onclick, href }) {
+  const inner = [icon(iconName, { size: 's' }), label];
+  return href
+    ? h('a', { class: 'btn btn--primary head-primary', href, dataset: { primary: '' } }, inner)
+    : h('button', { class: 'btn btn--primary head-primary', type: 'button', onclick, dataset: { primary: '' } }, inner);
+}
+
+/**
+ * The save foot of a form page (Šablona, Nastavení sboru, …): a full-width bar at the bottom (above the
+ * tab bar on a phone, sticky under the column on desktop) that shows only while something is unsaved –
+ * so the page never says „Všechno je uložené“ next to a save button, and nothing floats over the fields.
+ *   const foot = formFoot({ onSave, onDiscard })      foot.update(isDirty())  after every change
+ *   formFoot({ label: 'Přidat šablonu', text: 'Šablona ještě není uložená.', always: true, onSave })   a new record
+ * label: the primary button · text: the line beside it · onDiscard: adds „Zahodit změny“ · always: never hidden.
+ */
+export function formFoot({ label = 'Uložit', text = 'Máš neuložené změny.', onSave, onDiscard, discardLabel = 'Zahodit změny', always = false } = {}) {
+  const words = h('p', { class: 'form-foot__text', role: 'status' }, text);
+  const save = h('button', { type: 'button', class: 'btn btn--primary form-foot__save', dataset: { primary: '' }, onclick: () => onSave?.() }, icon('check', { size: 's' }), label);
+  const discard = onDiscard ? h('button', { type: 'button', class: 'btn btn--quiet form-foot__discard', onclick: () => onDiscard() }, discardLabel) : null;
+  const el = h('div', { class: 'form-foot', role: 'region', 'aria-label': 'Uložení', hidden: !always },
+    h('div', { class: 'form-foot__inner' }, words, h('div', { class: 'form-foot__actions' }, discard, save)));
+  el.update = (dirty, { text: next } = {}) => {
+    if (next) words.textContent = next;
+    const show = always || !!dirty;
+    el.hidden = !show;
+  };
+  return el;
 }
 
 /**

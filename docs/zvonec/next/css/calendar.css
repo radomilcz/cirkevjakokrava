@@ -6,7 +6,13 @@
 
 /* ---------- Kalendář: toolbar, agenda extras ---------- */
 .cal { min-width: 0; }
-.cal-toolbar { position: relative; margin: var(--space-1) 0 var(--space-2); }
+.cal-toolbar { position: relative; margin: 0 0 var(--space-2); }
+/* phone: ‹ Říjen 2026 › · Dnes · Filtr, then Seznam · Měsíc · Rozpis across the width */
+.cal-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2); }
+.cal-toolbar > .cal-views { grid-column: 1 / -1; grid-row: 2; }
+.cal-period { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.cal-period > .period { flex: 0 1 auto; margin-left: -10px; }
+.cal-period .period__label { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); white-space: nowrap; }
 .cal-filter { flex: none; }
 .cal-filter .count { background: var(--tint-2); }
 .cal-fill { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); }
@@ -17,6 +23,10 @@
 
 /* Měsíc on a phone: the compact grid, then the chosen day */
 .cal-grid-phone { margin: var(--space-2) 0 var(--space-1); }
+/* the shape grammar in the grid (kit candidate, kept local): my duty is a short ink bar under the numeral –
+   a circle means a person; a day cell is a 40 × 52 arch like the date block, not a squat one */
+.cal-grid-phone .month > .day { width: 40px; max-width: 40px; min-height: 52px; border-radius: 20px 20px 9px 9px; }
+.cal-grid-phone .day[data-mine] .day__num { box-shadow: none; border-radius: 0; background: linear-gradient(currentColor, currentColor) center bottom 1px / 16px 2px no-repeat; }
 .cal-day { border-top: 1px solid var(--hairline); margin-top: var(--space-3); }
 .cal-day__none { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-2) var(--space-4); align-items: center; padding: var(--space-4) 0; }
 .cal-day__none > .btn { grid-column: 2; justify-self: start; }
@@ -24,7 +34,7 @@
 /* Měsíc on a desktop: the full grid with event chips */
 .cal-month { margin-top: var(--space-3); }
 .cal-month__head { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
-.cal-month__head > span { padding: var(--space-2) var(--space-2); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-bold); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-2); }
+.cal-month__head > span { padding: var(--space-2) var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-medium); color: var(--ink-2); }
 .cal-month__body { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--hairline); border-left: 1px solid var(--hairline); }
 .cal-cell {
   position: relative; display: flex; flex-direction: column; gap: 3px; min-width: 0; min-height: 118px; padding: 6px 6px 8px;
@@ -48,18 +58,20 @@
 .cal-cell:hover .cal-cell__add, .cal-cell__add:focus-visible { opacity: 1; }
 .cal-cell__add:hover { background: var(--wash); color: var(--ink); }
 .cal-chip {
-  position: relative; display: flex; align-items: baseline; gap: 6px; min-width: 0; min-height: 26px; padding: 3px 6px 3px 8px;
-  border-radius: 7px; color: var(--ink); font-size: var(--type-caption); line-height: var(--lh-caption);
-  box-shadow: inset 3px 0 0 var(--hue-mark, var(--edge-control));
+  position: relative; display: flex; align-items: baseline; gap: 6px; min-width: 0; min-height: 26px; padding: 3px 6px 3px 10px;
+  border-radius: 0 7px 7px 0; color: var(--ink); font-size: var(--type-caption); line-height: var(--lh-caption);
   transition: background-color var(--dur-state) var(--ease);
 }
+/* the Účel hue as a straight 3 px bar (a rounded chip with a left border drew a „(“) */
+.cal-chip::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 3px; background: var(--hue-mark, var(--edge-control)); }
 .cal-chip:hover { background: var(--wash); }
 .cal-chip__time { flex: none; font-weight: var(--weight-strong); }
 .cal-chip__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cal-chip[data-mine] { background: var(--hue-fill); color: var(--hue-ink); font-weight: var(--weight-strong); }
 .cal-chip[data-cancelled] .cal-chip__title { text-decoration: line-through; }
 .cal-chip[data-cancelled] { color: var(--ink-2); }
-.cal-chip[data-open] { background: var(--pick); color: var(--ink); box-shadow: inset 3px 0 0 var(--mark); }
+.cal-chip[data-open] { background: var(--pick); color: var(--ink); }
+.cal-chip[data-open]::before { background: var(--mark); }
 .cal-chip__sev { flex: none; align-self: center; width: 8px; height: 8px; border-radius: 50%; }
 .cal-chip__sev[data-sev="error"] { background: var(--no-solid); }
 .cal-chip__sev[data-sev="warn"] { box-shadow: inset 0 0 0 2px var(--wait-ink); }
@@ -76,54 +88,91 @@
   .cal-split .cal-cell { min-height: 104px; }
   .cal--seznam .split { gap: var(--space-6); }
 }
-@media (min-width: 960px) {
-  .cal-toolbar > .seg { flex: 0 1 380px; }
-  .cal-screen .topbar .period { flex: 0 1 auto; }
-  .cal-screen .topbar .period + .btn { margin-left: auto; }
+@media (min-width: 960px) {      /* desktop: one row – the period left, the view switch and Filtr right */
+  .cal-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-3); }
+  .cal-toolbar > .cal-period { flex: 1 1 auto; }
+  .cal-toolbar > .cal-views { flex: 0 1 340px; min-width: 260px; }
+  /* inside a split (the 400 px list, the main column next to a pane) the phone's two rows */
+  :is(.split__list, .cal-split__main) > .cal-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  :is(.split__list, .cal-split__main) > .cal-toolbar > .cal-views { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
 }
 
 /* ---------- Rozpis ---------- */
 .roster-chips { margin-top: var(--space-1); margin-bottom: var(--space-3); align-items: center; }
-.roster-scope { margin: var(--space-2) 0 var(--space-1); }
-@media (min-width: 960px) { .roster-scope { max-width: 380px; } }
-.roster-note { margin: calc(-1 * var(--space-2)) 0 var(--space-3); }
-.roster-note .link { font-size: inherit; min-height: 0; }
+/* phone: the row scrolls sideways – the cut at the right edge is a soft fade, so it reads as „more“ */
+.roster-chips[data-more-right] { mask-image: linear-gradient(to right, var(--ink) calc(100% - 40px), transparent); }
+.roster-team-chip { gap: 6px; padding-left: 6px; font-weight: var(--weight-strong); }
+.roster-team-chip > .avatar { width: 24px; height: 24px; font-size: 10px; }
+.roster-team-all { display: inline-grid; place-items: center; width: var(--avatar-m); height: var(--avatar-m); border-radius: var(--shape-team); background: var(--tint); color: var(--ink); }
+.roster-past { margin: 0 0 var(--space-2); }
+.roster-panel { min-width: 0; }
+
+/* desktop: the teams as tabs (the one team filter) */
+.roster-tabs {
+  display: flex; gap: 2px; margin: var(--space-1) 0 var(--space-3); padding-bottom: 0; overflow-x: auto; scrollbar-width: none;
+  box-shadow: inset 0 -1px 0 var(--hairline);
+}
+.roster-tabs::-webkit-scrollbar { display: none; }
+.roster-tabs[data-more-right] { mask-image: linear-gradient(to right, var(--ink) calc(100% - 48px), transparent); }
+.roster-tab {
+  position: relative; display: inline-flex; align-items: center; gap: var(--space-2); flex: none; min-height: var(--hit); padding: 0 var(--space-3);
+  border: 0; border-radius: var(--shape-inner) var(--shape-inner) 0 0; background: none; color: var(--ink-2); font: inherit; font-weight: var(--weight-medium); cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease), color var(--dur-state) var(--ease);
+}
+.roster-tab:hover { background: var(--wash); color: var(--ink); }
+.roster-tab[aria-selected="true"] { color: var(--ink); font-weight: var(--weight-bold); box-shadow: inset 0 -3px 0 var(--mark); }
+.roster-tab:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.roster-tab__n {
+  display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--shape-pill);
+  background: var(--no-fill); color: var(--no-ink); font-size: var(--type-caption); font-weight: var(--weight-bold); font-feature-settings: var(--numerals);
+}
 
 .roster-cards { display: grid; }
 .roster-card { padding: var(--space-5) 0 var(--space-4); border-top: 1px solid var(--hairline); }
 .roster-card:first-child { border-top: 0; padding-top: var(--space-2); }
+.roster-card[data-open] { margin: 0 calc(-1 * var(--space-3)); padding-left: var(--space-3); padding-right: var(--space-3); border-radius: var(--shape-control); background: var(--pick); box-shadow: inset 3px 0 0 var(--mark); }
+.roster-card[data-open] :is(.meta, .arch__dow) { color: var(--ink); }
 .roster-card__head { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-4); align-items: start; }
 .roster-card__titles { display: grid; gap: 2px; min-width: 0; }
 .roster-card__title { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); color: var(--ink); }
 .roster-card__title:hover { text-decoration: underline; text-underline-offset: 3px; }
 .roster-card__titles > .fill, .roster-card__titles > .pill { margin-top: var(--space-1); justify-self: start; }
+.roster-card__elsewhere { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-2); margin: var(--space-2) 0 0 calc(var(--arch-w) + var(--space-4)); }
+.roster-card__elsewhere .link { font-size: inherit; min-height: 0; }
 .roster-card__warn { margin-top: var(--space-3); }
 .roster-card__foot { margin-top: var(--space-3); }
 .is-cancelled { text-decoration: line-through; text-decoration-thickness: 1.5px; }
-@media (min-width: 960px) {      /* Upozornění on a desktop: the cards in two columns */
-  .roster-cards { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); column-gap: var(--space-8); }
+@media (min-width: 960px) {      /* the status chips on a desktop: the cards in two columns */
+  .roster-cards { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); column-gap: var(--space-8); }
   .roster-card, .roster-card:first-child { border-top: 1px solid var(--hairline); padding-top: var(--space-5); }
 }
 
-/* the table: events × roles, grouped by team; sticky first column and header */
-.roster-wrap {
-  position: relative; max-width: 100%; max-height: calc(100dvh - var(--topbar-h) - 150px); overflow: auto; margin: 0; padding: 0;
-  border-top: 1px solid var(--hairline); scrollbar-width: thin; overscroll-behavior-x: contain;
+/* the table: events × roles of one team (or × teams in the overview). The frame keeps the right gutter
+   and draws the edge shadows; the wrap scrolls only sideways (the page scrolls up and down) and the head
+   is moved under the top bar by --head-y (measured in roster.js). */
+.roster-frame { position: relative; min-width: 0; border-top: 1px solid var(--hairline); }
+.roster-frame::after {
+  content: ""; position: absolute; z-index: 4; top: 0; right: 0; bottom: 0; width: 28px; pointer-events: none; opacity: 0;
+  background: linear-gradient(to left, color-mix(in srgb, var(--ink) 16%, transparent), transparent); transition: opacity var(--dur-state) var(--ease);
 }
+.roster-frame[data-more-right]::after { opacity: 1; }
+.roster-wrap { position: relative; max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 0; padding: 0; scrollbar-width: thin; overscroll-behavior-x: contain; }
 .roster-wrap:focus-visible { outline-offset: -2px; }
 .roster { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: var(--type-meta); line-height: var(--lh-meta); }
 .roster th, .roster td { padding: 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--hairline); }
 .roster tbody tr + tr > * { border-top: 0; }
-.roster thead th { position: sticky; z-index: 2; }
-.roster thead th:not(.roster__corner) { box-shadow: none; }
-.roster thead tr:first-child th { top: 0; height: 40px; }
-.roster thead tr:nth-child(2) th { top: 40px; }
-.roster__corner { left: 0; z-index: 3 !important; width: 248px; min-width: 248px; padding: var(--space-2) var(--space-3) !important; vertical-align: bottom !important; color: var(--ink-2); font-weight: var(--weight-medium); box-shadow: inset -1px 0 0 var(--hairline); }
+.roster thead th { position: relative; z-index: 2; transform: translateY(var(--head-y, 0px)); background: var(--ground); }
+.roster-frame[data-head-stuck] .roster thead tr:last-child th:not(.roster__corner) { box-shadow: inset 0 -1px 0 var(--edge), 0 8px 10px -8px color-mix(in srgb, var(--ink) 22%, transparent); }
+.roster thead tr:first-child th { height: 40px; }
+.roster__corner { position: sticky !important; left: 0; z-index: 3 !important; width: 216px; min-width: 216px; padding: var(--space-2) var(--space-3) !important; vertical-align: bottom !important; color: var(--ink-2); font-weight: var(--weight-medium); box-shadow: inset -1px 0 0 var(--hairline); }
 .roster__team { padding: var(--space-2) var(--space-3) 0 !important; vertical-align: bottom !important; font-weight: var(--weight-bold); white-space: nowrap; border-left: 1px solid var(--edge); border-bottom: 0 !important; }
-.roster__role { min-width: 128px; padding: 2px var(--space-3) var(--space-2) !important; color: var(--ink-2); font-weight: var(--weight-medium); white-space: nowrap; }
-.roster--narrow .roster__role { min-width: 116px; }
+.roster__role { min-width: 128px; padding: var(--space-2) var(--space-3) var(--space-2) !important; vertical-align: bottom !important; color: var(--ink-2); font-weight: var(--weight-medium); white-space: nowrap; }
+.roster--narrow .roster__role { min-width: 112px; }
+.roster__teamcol { min-width: 136px; }
+.roster__teamhead { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--ink); font-weight: var(--weight-strong); }
 .roster__first { border-left: 1px solid var(--edge); }
-.roster__event { position: sticky; left: 0; z-index: 1; background: var(--ground); box-shadow: inset -1px 0 0 var(--hairline); }
+.roster__event { position: sticky; left: 0; z-index: 1; background: var(--ground); box-shadow: inset -1px 0 0 var(--hairline); transition: box-shadow var(--dur-state) var(--ease); }
+.roster-frame[data-more-left] :is(.roster__event, .roster__corner) { box-shadow: inset -1px 0 0 var(--edge), 10px 0 12px -10px color-mix(in srgb, var(--ink) 30%, transparent); }
 .roster__event-in { display: grid; grid-template-columns: var(--arch-w) minmax(0, 1fr); gap: var(--space-3); align-items: start; padding: var(--space-3); }
 .roster__event-text { display: grid; gap: 2px; min-width: 0; }
 .roster__event-title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: anywhere; }
@@ -136,30 +185,56 @@
 .roster tbody tr:hover > :is(td, th) { background: var(--wash); }
 .roster tbody tr:hover > th.roster__event { background: var(--ground); }
 .roster tr[data-cancelled] .roster__cell { background: var(--tint); }
+/* the event open next to the table: pick tint and the 3 px ink bar (as a row in Seznam) */
+.roster tbody tr[data-open] > :is(td, th), .roster tbody tr[data-open]:hover > :is(td, th) { background: var(--pick); }
+.roster tbody tr[data-open] > th.roster__event { box-shadow: inset 3px 0 0 var(--mark), inset -1px 0 0 var(--hairline); }
+.roster tbody tr[data-open] :is(.meta, .arch__dow) { color: var(--ink); }   /* text-2 on the pick tint fell under 4.5 in Modrá a krém */
 .roster__entries { display: grid; gap: 4px; justify-items: start; }
 .roster-entry {
-  position: relative; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; min-height: 36px; padding: 4px 8px 4px 6px;
+  position: relative; display: inline-flex; align-items: flex-start; gap: 6px; max-width: 100%; min-height: 36px; padding: 6px 8px 6px 6px;
   border: 0; border-radius: var(--shape-inner); background: transparent; color: var(--ink); font: inherit; font-weight: var(--weight-strong); text-align: left; cursor: pointer;
 }
+.roster-entry > .sym { flex: none; margin-top: 2px; }
 .roster-entry::after { content: ""; position: absolute; inset: -4px 0; }
 .roster-entry:hover { background: var(--tint); }
 span.roster-entry { cursor: default; }
-.roster-entry__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.roster-entry__text { display: grid; }   /* min-width auto: a long surname widens the column, it is never cut */
+.roster-entry__name { overflow-wrap: normal; }   /* full names wrap between words, never inside one */
+.roster-entry__me { min-height: 20px; padding: 0 7px; vertical-align: 1px; }
+.roster-entry__words { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-2); font-size: var(--type-caption); line-height: var(--lh-caption); }
+.roster-entry__words .sev { font-size: inherit; line-height: inherit; gap: 4px; }
+.roster-entry__words .sev::before { width: 8px; height: 8px; }
+.roster-entry__word { font-weight: var(--weight-medium); }
+.roster-entry__word[data-status="waiting"] { color: var(--wait-ink); }
+.roster-entry__word[data-status="declined"] { color: var(--no-ink); }
 .roster-entry[data-me] { background: var(--pick); }
 .roster-entry[data-me] .pill { background: var(--overlay); }
-.roster-entry__sev { flex: none; width: 9px; height: 9px; border-radius: 50%; }
-.roster-entry__sev[data-sev="error"] { background: var(--no-solid); }
-.roster-entry__sev[data-sev="warn"] { box-shadow: inset 0 0 0 2px var(--wait-ink); }
+.roster-entry[data-me] .roster-entry__word[data-status] { color: var(--ink); }
 .roster-slot-empty { margin: 2px 0 2px 2px; }
 .roster-missing { display: inline-flex; padding: 8px; }
 
-/* the event (or Břemeno) as a drawer over the table (≥ 1200) */
-.roster-drawer {
-  position: fixed; z-index: 15; top: calc(var(--topbar-h) + var(--space-3)); right: var(--space-5); bottom: var(--space-5);
-  width: min(480px, calc(100vw - var(--rail-w) - 2 * var(--space-6))); overflow-y: auto; border-radius: var(--shape-block);
-  box-shadow: var(--lift-4); scrollbar-width: thin; background: var(--card);
+/* the overview (Všechny týmy): one team at one event */
+.roster-sum {
+  position: relative; display: grid; gap: 2px; justify-items: start; width: 100%; min-height: 44px; padding: 6px 8px;
+  border: 0; border-radius: var(--shape-inner); background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
 }
-.roster-drawer > .detail { min-height: 100%; box-shadow: none; }
+.roster-sum:hover { background: var(--tint); }
+.roster-sum__fill { display: inline-flex; align-items: center; gap: 6px; font-weight: var(--weight-strong); }
+.roster-sum__fill .ring { width: 20px; height: 20px; }
+.roster-sum__words { display: grid; gap: 0; justify-items: start; font-size: var(--type-caption); line-height: var(--lh-caption); }
+.roster-sum__words .sev { font-size: inherit; line-height: inherit; gap: 4px; }
+.roster-sum__words .sev::before { width: 8px; height: 8px; }
+.roster-sum__word { display: inline-flex; align-items: center; gap: 4px; font-weight: var(--weight-medium); color: var(--ink-2); }
+.roster-sum__word > .sym { width: 14px; height: 14px; }
+.roster-sum__word[data-status="waiting"] { color: var(--wait-ink); }
+.roster-sum__word[data-status="declined"] { color: var(--no-ink); }
+.roster-sum__word[data-status="confirmed"] { color: var(--ok-ink); }
+.roster tbody tr[data-open] .roster-sum__word { color: var(--ink); }
+
+/* Rozpis with the event (or Břemeno) open: the same split as Seznam and Měsíc */
+.roster-split .cal-split__main { min-width: 0; }
+.roster-aside > .detail { box-shadow: var(--lift-2); }
+.load-pane { display: grid; gap: var(--space-3); padding-right: var(--space-7); }
 
 /* Břemeno */
 .load-list .row__trail { gap: var(--space-3); }
@@ -239,9 +314,9 @@ span.roster-entry { cursor: default; }
 .ev-note .text { white-space: pre-line; }
 .ev-place { display: grid; gap: var(--space-2); justify-items: start; }
 .ev-count__grid { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-6); }
-.detail > .detail__close { z-index: 3; background: var(--overlay); box-shadow: var(--lift-2); }
-.detail > .detail__close:hover { background: var(--overlay); }
+.detail > .detail__close { z-index: 3; }
 .detail .ev-cover { margin-top: 0; }
+.ev--pane > .ev-head__top { margin: calc(-1 * var(--space-1)) 0 calc(-1 * var(--space-2)); }
 @media (min-width: 960px) {
   .ev-screen { max-width: calc(780px + var(--space-8) + var(--gutter)); }
   .ev-cover { max-height: 220px; }
@@ -271,13 +346,19 @@ span.roster-entry { cursor: default; }
 .plan-row__role { color: var(--ink-2); font-size: var(--type-meta); }
 .plan-row__who { font-weight: var(--weight-strong); }
 .plan-row[aria-checked="false"] .plan-row__who { text-decoration: line-through; color: var(--ink-2); }
+.plan-row--empty { grid-template-columns: minmax(80px, 140px) 1fr auto; cursor: default; }
+.plan-row--empty:hover { background: none; }
+.plan-left { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--shape-control); background: var(--tint); font-size: var(--type-meta); line-height: var(--lh-meta); }
+.answer-clash, .ev-you__clash { margin: 0; }
+.plan-done { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4); border-radius: var(--shape-control); background: var(--ok-fill); color: var(--ok-ink); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-medium); }
+.plan-done > span { flex: 1; min-width: 12em; }
 
 .needs-team { display: grid; gap: var(--space-2); }
 .needs-team > .team-head { margin-top: 0; }
 .needs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-4) var(--space-3); align-items: start; }
 .needs-field { align-content: start; }
 
-.ev-kind { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: var(--shape-control); background: var(--hue-fill, var(--tint)); color: var(--hue-ink, var(--ink)); }
+.ev-kind { display: grid; place-items: center; flex: none; width: 40px; height: 40px; color: var(--hue-ink, var(--ink)); }   /* a plain glyph: the rounded square means a team */
 .ev-rule { margin-top: calc(-1 * var(--space-3)); }
 .ev-image { display: grid; gap: var(--space-3); }
 .ev-image__preview .ev-cover { max-height: 140px; }
@@ -286,7 +367,7 @@ span.roster-entry { cursor: default; }
 .osnova-page { display: grid; gap: var(--space-4); }
 .osnova-sum { display: grid; gap: var(--space-2); }
 .osnova-sum__bar { position: relative; display: block; height: 8px; border-radius: var(--shape-pill); background: var(--tint-2); overflow: hidden; }
-.osnova-sum__fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--accent-solid); }
+.osnova-sum__fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--ok-solid); }   /* within the length: calm green; over it: amber */
 .osnova-sum[data-over] .osnova-sum__fill { background: var(--wait-solid); }
 .osnova-sum[data-over] .osnova-sum__text { color: var(--wait-ink); }
 .osnova-sum__text { font-size: var(--type-meta); line-height: var(--lh-meta); }
@@ -333,8 +414,15 @@ button.osnova__open:hover { background: var(--wash); }
   .print-sheet__title { margin-bottom: 4mm; font-family: var(--font-title); font-size: 18pt; }
   .print-sheet .roster-wrap { max-height: none; overflow: visible; }
   .print-sheet .roster { font-size: 8pt; line-height: 1.25; min-width: 0; width: 100%; }
-  .print-sheet .roster thead th { position: static; }
-  .print-sheet .roster__event { position: static; }
+  .print-sheet .roster thead th { position: static; transform: none; }
+  .print-sheet .roster__event, .print-sheet .roster__corner { position: static !important; box-shadow: none; }
+  .print-sheet .roster-frame::after { display: none; }
+  .print-sheet .roster-entry__words { font-size: 7pt; }
+  .print-sheet { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .print-sheet .sym { width: 10px; height: 10px; margin-top: 1px; }
+  .print-sheet .roster__event { min-width: 36mm; }
+  .print-sheet .roster__event-in { grid-template-columns: 28px minmax(0, 1fr); gap: 4px; padding: 3px; }
+  .print-sheet .roster__event-title { font-size: 8.5pt; line-height: 1.2; overflow-wrap: normal; }
   .print-sheet .roster__corner, .print-sheet .roster__role { min-width: 0; width: auto; }
   .print-sheet .roster-entry { min-height: 0; padding: 1px 2px; }
   .print-sheet .roster-entry::after { display: none; }

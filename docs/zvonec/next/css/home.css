@@ -6,7 +6,7 @@
 /* ---------- demo: „Díváš se jako … · Změnit“ ---------- */
 .home-demo {
   display: flex; align-items: center; gap: var(--space-2);
-  min-height: var(--hit); margin: 0 0 var(--space-1); padding: 0 var(--space-1) 0 var(--space-3);
+  min-height: var(--hit); padding: 0 var(--space-1) 0 var(--space-3);
   border: 1px solid var(--hairline); border-radius: var(--shape-pill);
   font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2);
 }
@@ -41,11 +41,8 @@
   border-radius: 50%; background: var(--tint); color: var(--ink);
 }
 
-/* ---------- desktop ---------- */
-@media (min-width: 960px) {
-  .home > .home-demo:first-child { margin-top: var(--space-6); }
-  .home > .home-demo + .screen-head { padding-top: var(--space-3); }
-}
+/* the demo line sits under the title, above the first block */
+.home > .home-demo { margin-bottom: var(--space-5); }
 @media (min-width: 1200px) {
   .home-cols { column-gap: var(--space-9); }
   .home-cols > .col-b { padding-top: 0; }

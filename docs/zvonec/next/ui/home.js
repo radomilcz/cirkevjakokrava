@@ -8,26 +8,28 @@
 //   Kdy nemůžu (all)       my ranges, Přidat (always shown)
 //   Lidé k doplnění (leader) · Pozvánky (leader, when some wait)
 // Desktop ≥ 1200: two columns – left „pro tebe“ (Odpověz, Tvoje služby, Kdy nemůžu), right „pro tým“
-// (Co je potřeba, Tento týden, Lidé k doplnění, Pozvánky). Demo: „Díváš se jako … · Změnit“ on top.
+// (Co je potřeba, Tento týden, Lidé k doplnění, Pozvánky). Demo: „Díváš se jako … · Změnit“ under
+// the title while looking through someone else's eyes.
 
 import {
-  h, screen, topBar, screenHead, feature, answerItem, section, list, row, eventRow, needRow, statusNote, pill, rowLink,
-  chips, callout, link, count, icon, joinMeta, shortDate, agree, plural, isSplit, quiet, personName, SEP,
+  h, screen, feature, answerItem, section, list, row, eventRow, needRow, statusNote, pill, rowLink,
+  chips, callout, link, count, icon, shortDate, agree, plural, isSplit, quiet, personName, SEP,
 } from './kit.js';
 import { S, can, myId, ACCESS_LABELS } from '../../ui/state.js';
+import { DEMO_VIEWERS } from '../../lib/demo.js';
 import { upcomingDuties, eventsInRange, eventById, fillRatio, needsOf } from '../../lib/events.js';
 import { openSlots, unconfirmedDuties } from '../../lib/scheduling.js';
 import { personById, peopleWithMissingData, upcomingBirthdays } from '../../lib/people.js';
 import { roleById, ledBy } from '../../lib/groups.js';
 import { today, addDays, dayOf, weekday, prettyDayLong } from '../../lib/time.js';
 import { answer, waitingSheet, roleName, whenWhere } from './home-actions.js';
-import { pickFor, openMyAnswer } from './event-duties.js';
+import { pickFor, openMyAnswer, blockoutOn, blockoutNote } from './event-duties.js';
 import { downloadDuties } from './calendar-shared.js';
 import { blockoutSection } from './blockouts.js';
 import { viewAsSheet } from './account.js';
 import { waitingInvites } from './access.js';
 
-const ANSWERS_SHOWN = 3;      // Odpověz: the first three, then „Ukázat další 2“
+const ANSWERS_SHOWN = 3;      // Odpověz: the first three as cards, then „Ukázat další 2“ (short rows)
 const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four events, then „Celý rozpis“
 const MINE_SHOWN = 5;         // Tvoje služby: five rows, then „Ukázat další 3“
 const WEEK_SHOWN = 3;         // Tento týden
@@ -48,33 +50,74 @@ const showMore = (n) => (n === 1 ? 'Ukázat další' : n <= 4 ? `Ukázat další
 
 // ---------- Odpověz ----------
 
+// Just answered: the card stays where it was for a moment with its status in place of the buttons (a quick
+// second tap lands on nothing), then folds away; taps wait until the next card has settled.
+const DONE_MS = 1400;
+const FOLD_MS = 260;
+const SETTLE_MS = 400;
+const answered = new Map();   // assignmentId → when
+
+function answerNow(me, event, assignment, status) {
+  answered.set(assignment.id, Date.now());
+  answer(event.id, assignment.id, status);
+  setTimeout(() => fold(me, assignment.id), DONE_MS);
+}
+
+/** Fold the answered card away, then draw Odpověz again without it. */
+function fold(me, assignmentId) {
+  const block = document.querySelector('.home-answer');
+  const item = block?.querySelector(`.feature__item[data-assignment="${assignmentId}"][data-done]`);
+  const finish = () => {
+    answered.delete(assignmentId);
+    const el = document.querySelector('.home-answer');
+    if (!el) return;
+    rerender(el, () => answerBlock(me), null);
+    const fresh = document.querySelector('.home-answer');
+    if (fresh) { fresh.setAttribute('data-settling', ''); setTimeout(() => fresh.removeAttribute('data-settling'), SETTLE_MS); }
+  };
+  if (!item) { finish(); return; }
+  block.setAttribute('data-settling', '');
+  item.style.height = `${item.offsetHeight}px`;   // CSSOM: the fold starts from the real height
+  void item.offsetHeight;
+  item.setAttribute('data-leaving', '');
+  setTimeout(finish, FOLD_MS);
+}
+
 function answerBlock(me) {
-  const waiting = upcomingDuties(S.data, me.id, { from: today(), includeDeclined: false, includeCancelled: false })
-    .filter(({ assignment }) => assignment.status === 'proposed');
-  if (!waiting.length) return null;
-  const shown = open.answers ? waiting : waiting.slice(0, ANSWERS_SHOWN);
-  const rest = waiting.slice(shown.length);
-  const items = shown.map(({ event, assignment }) => {
+  const all = upcomingDuties(S.data, me.id, { from: today(), includeDeclined: true, includeCancelled: false })
+    .filter(({ assignment }) => assignment.status === 'proposed' || (answered.has(assignment.id) && Date.now() - answered.get(assignment.id) < DONE_MS + FOLD_MS + 200));
+  const waitingCount = all.filter(({ assignment }) => assignment.status === 'proposed').length;
+  if (!all.length) return null;
+  const shown = open.answers ? all : all.slice(0, ANSWERS_SHOWN);
+  const rest = all.length - shown.length;
+  const items = shown.map(({ event, assignment }, i) => {
     const role = roleName(assignment.roleId);
+    const off = blockoutOn(event, me.id);   // my Kdy nemůžu that covers the day (the shared clash line)
+    const done = assignment.status !== 'proposed'
+      ? { status: assignment.status, word: assignment.status === 'confirmed' ? 'potvrzeno' : 'nemůžeš' } : null;
     return answerItem({
       day: dayOf(event.start),
       today: isToday(event),
       title: h('a', { href: `#setkani/${event.id}`, class: 'home-answer__link' }, `${role}${SEP}${event.title}`),
       meta: whenWhere(event),
+      note: off && !done ? blockoutNote(off) : null,
+      prefer: off ? 'no' : 'yes',
+      compact: i >= ANSWERS_SHOWN,
+      done,
+      dataset: { assignment: assignment.id },
       label: `${role}, ${event.title} ${shortDate(event.start)}`,
-      onYes: () => answer(event.id, assignment.id, 'confirmed'),
-      onNo: () => answer(event.id, assignment.id, 'declined'),
+      onYes: () => answerNow(me, event, assignment, 'confirmed'),
+      onNo: () => answerNow(me, event, assignment, 'declined'),
     });
   });
-  const next = rest[0];
   const el = feature({
     title: 'Odpověz',
-    count: waiting.length,
+    count: waitingCount || null,
     items,
-    more: rest.length ? {
-      text: joinMeta([roleName(next.assignment.roleId), shortDate(next.event.start)]),
-      link: showMore(rest.length),
-      onclick: () => { open.answers = true; rerender(el, () => answerBlock(me), '.feature__item:nth-of-type(' + (ANSWERS_SHOWN + 1) + ') .btn--primary'); },
+    more: rest ? {
+      link: showMore(rest),
+      icon: 'chevron-down',
+      onclick: () => { open.answers = true; rerender(el, () => answerBlock(me), `.feature__item:nth-of-type(${ANSWERS_SHOWN + 1}) .btn`); },
     } : null,
   });
   el.classList.add('home-answer');
@@ -86,7 +129,7 @@ function rerender(el, build, focusSelector) {
   const fresh = build();
   if (!fresh) { el.remove(); return; }
   el.replaceWith(fresh);
-  fresh.querySelector(focusSelector)?.focus({ preventScroll: true });
+  if (focusSelector) fresh.querySelector(focusSelector)?.focus({ preventScroll: true });
 }
 
 // ---------- Co je potřeba (leaders) ----------
@@ -177,17 +220,25 @@ function needItem({ event, slots, waiting, errors, filled, needed }) {
 
 function needBlock() {
   const teams = myTeams();
-  const scope = teams ? (S.filters.homeTeams || 'mine') : 'all';
+  // a správce plans for everyone: all teams first; a team leader starts with his own
+  const scope = teams ? (S.filters.homeTeams || (can('admin') ? 'all' : 'mine')) : 'all';
   const scoped = scope === 'mine' && teams;
   const items = needsFor(scoped ? teams.map((g) => g.id) : null);
-  const scopeChips = teams ? chips([
-    { value: 'mine', label: teams.length === 1 ? `Můj tým: ${teams[0].name}` : 'Moje týmy' },
-    { value: 'all', label: 'Všechny týmy' },
-  ], scope, (v) => {
+  const choose = (v) => {
     S.filters.homeTeams = v;
     const el = document.querySelector('.home-need');
     if (el) rerender(el, needBlock, '.home-need .chip[aria-pressed="true"]');
-  }, { label: 'Čí služby ukázat' }) : null;
+  };
+  // narrowed to my teams: one quiet line when the other teams miss people
+  const missingIn = (xs) => xs.reduce((n, x) => n + x.slots.reduce((m, sl) => m + sl.missing, 0), 0);
+  const elsewhere = scoped ? missingIn(needsFor(null)) - missingIn(items) : 0;
+  const otherLine = elsewhere > 0
+    ? rowLink(`V ostatních týmech ${agree(elsewhere, 'chybí', 'chybějí', 'chybí')} ${plural(elsewhere, 'člověk', 'lidé', 'lidí')}`, { onclick: () => choose('all') })
+    : null;
+  const scopeChips = teams ? chips([
+    { value: 'mine', label: teams.length === 1 ? `Můj tým: ${teams[0].name}` : 'Moje týmy' },
+    { value: 'all', label: 'Všechny týmy' },
+  ], scope, choose, { label: 'Čí služby ukázat' }) : null;
   const body = items.length
     ? [list(items.slice(0, NEEDS_SHOWN).map(needItem), { inset: false, cls: 'home-need__list' })]
     : [quiet(scoped ? 'V tvých týmech je na příští tři týdny všechno obsazené a potvrzené.' : 'Na příští tři týdny je všechno obsazené.', { icon: 'check' })];
@@ -199,6 +250,7 @@ function needBlock() {
     body: [
       scopeChips ? h('div', { class: 'home-need__scope' }, scopeChips) : null,
       ...body,
+      otherLine,
       rowLink(hidden > 0 ? `Celý rozpis (ještě ${plural(hidden, 'setkání', 'setkání', 'setkání')})` : 'Celý rozpis', { href: '#kalendar/rozpis' }),
     ],
   });
@@ -312,8 +364,10 @@ function invitesBlock() {
 
 // ---------- demo banner ----------
 
+/** Demo, looking through someone else's eyes than the demo's own správce: „Díváš se jako … · Změnit“. */
 function demoBanner(me) {
   if (S.mode !== 'demo') return null;
+  if (S.me?.personId === DEMO_VIEWERS.admin && S.me?.access === 'admin') return null;   // as yourself: Více › Ukázka
   const who = me ? personName(me) : 'správce bez karty';
   return h('div', { class: 'home-demo', role: 'note' },
     icon('user', { size: 's' }),
@@ -332,7 +386,7 @@ export function renderHome() {
   const noCard = !me ? callout({
     tone: 'info',
     title: 'Zvonec neví, která karta je tvoje.',
-    text: leader ? 'Bez ní tu nevidíš svoje služby. Propoj ji ve Více › Přístupy.' : 'Řekni správci, ať ji propojí s tvým přístupem.',
+    text: leader ? 'Bez ní tu nevidíš svoje služby. Propoj ji ve Více › Přístupy.' : 'Řekni vedoucímu, ať ji propojí s tvým přístupem.',
   }) : null;
 
   const answers = me ? answerBlock(me) : null;
@@ -351,9 +405,9 @@ export function renderHome() {
     : h('div', { class: 'home-col' }, noCard, answers, need, mine, week, off, people, invites);
 
   return screen({
-    topbar: topBar({ brand: true }),
+    tab: { title: 'Domů', overline: todayLine() },
     wide: two,
     cls: 'home',
-    body: [demoBanner(me), screenHead({ overline: todayLine(), title: 'Domů' }), content],
+    body: [demoBanner(me), content],
   });
 }

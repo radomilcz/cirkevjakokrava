@@ -7,11 +7,11 @@
 
 import {
   h, icon, avatar, teamMark, title as titleEl, section, facts, list, row, personRow, eventRow, statusNote, note, pill,
-  button, iconButton, rowLink, link, callout, menu, joinMeta, plural, agree, slot, caption, meta as metaEl,
+  button, rowLink, link, callout, menu, joinMeta, plural, agree, slot, caption, meta as metaEl,
   personName, quiet, mapLink,
 } from './kit.js';
 import { S, can, myId, change, isUpcoming } from '../../ui/state.js';
-import { householdById, householdMembers, age, statusOf, displayName } from '../../lib/people.js';
+import { householdById, householdMembers, age, statusOf, displayName, fullName } from '../../lib/people.js';
 import { memberRecord } from '../../lib/groups.js';
 import { upcomingDuties, lastDuty, eventById } from '../../lib/events.js';
 import { roleById } from '../../lib/groups.js';
@@ -68,13 +68,13 @@ function headMeta(person) {
   ]);
 }
 
-/** Zavolat · Napsat SMS · Napsat e-mail (only what exists and may be seen; never on your own card). */
+/** Zavolat · SMS · E-mail (only what exists and may be seen; never on your own card). */
 function reach(person) {
   if (person.id === myId() || !seesContact(person)) return null;
   const buttons = [
-    person.phone ? button('Zavolat', { icon: 'phone', href: telHref(person.phone) }) : null,
-    person.phone ? button('Napsat SMS', { icon: 'message', href: smsHref(person.phone) }) : null,
-    person.email ? button('Napsat e-mail', { icon: 'mail', href: mailHref(person.email) }) : null,
+    person.phone ? button('Zavolat', { icon: 'phone', href: telHref(person.phone), label: `Zavolat – ${fullName(person)}` }) : null,
+    person.phone ? button('SMS', { icon: 'message', href: smsHref(person.phone), label: `Napsat SMS – ${fullName(person)}` }) : null,
+    person.email ? button('E-mail', { icon: 'mail', href: mailHref(person.email), label: `Napsat e-mail – ${fullName(person)}` }) : null,
   ].filter(Boolean);
   return buttons.length ? h('div', { class: 'person-reach', dataset: { n: buttons.length } }, buttons) : null;
 }
@@ -84,7 +84,7 @@ function head(person, { pane }) {
   return h('div', { class: 'person-head' },
     avatar(person, { size: 'l', me: self }),
     h('div', { class: 'person-head__text' },
-      titleEl(personName(person), { small: pane }),
+      titleEl(personName(person), { small: pane, tag: pane ? 'h2' : 'h1' }),
       h('p', { class: 'meta' }, headMeta(person) || null, self ? [headMeta(person) ? ' · ' : '', pill('ty')] : null)));
 }
 
@@ -164,7 +164,7 @@ function householdSection(person) {
   const address = household.address && (leader || self) ? household.address : null;
   return section({
     title: 'Domácnost', cls: 'person-section',
-    action: leader ? editAction(() => householdChooseSheet(person), 'Změnit') : null,
+    action: leader ? editAction(() => householdChooseSheet(person)) : null,
     body: [
       list([
         row({
@@ -206,7 +206,7 @@ function groupsSection(person) {
       meta: h('span', { class: 'person-group-meta' }, member?.leader ? h('b', {}, words.leads) : words.kind, pills),
       wrap: true,
       href: `#tym/${g.id}`,
-      trail: leader ? iconButton('pencil', `Upravit – ${g.name}`, { onclick: () => memberSheet(g, person.id) }) : null,
+      trail: leader ? button('Upravit', { variant: 'quiet', size: 's', label: `Upravit – ${g.name}`, onclick: () => memberSheet(g, person.id) }) : null,
       chevron: !leader,
     });
   });

@@ -106,13 +106,13 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
     h('div', { class: 'form__row' },
       field({ label: 'Telefon', optional: true, control: textInput({ name: 'phone', type: 'tel', inputmode: 'tel', autocomplete: 'off', placeholder: 'např. 603 000 000' }) }),
       field({ label: 'E-mail', optional: true, control: textInput({ name: 'email', type: 'email', inputmode: 'email', autocomplete: 'off', placeholder: 'např. jmeno@email.cz' }) })),
-    segmentedField({ name: 'status', label: 'Ve sboru', value: 'member', options: MEMBERSHIP_CHOICES.slice(0, 3), onChange: () => update() }),
+    segmentedField({ name: 'status', label: 'Ve sboru', value: 'guest', options: MEMBERSHIP_CHOICES.slice(0, 3), onChange: () => update() }),   // most quick adds are hosts
     consentBox,
     disclosure([
       field({ label: 'Přezdívka', optional: true, hint: 'Ukáže se v závorce za jménem.', control: textInput({ name: 'nickname', autocomplete: 'off', placeholder: 'např. Bětka' }) }),
       field({ label: 'Narození', optional: true, hint: 'Třeba 8. 6. 1984, stačí i rok.', control: textInput({ name: 'birthDate', inputmode: 'numeric', autocomplete: 'off', placeholder: 'např. 8. 6. 1984' }) }),
       field({ label: 'Domácnost', optional: true, hint: 'Lidé, kteří spolu bydlí.', control: household }),
-      switchRow({ label: 'Telefon a e-mail smí vidět i ostatní ve sboru', hint: 'Jinak je vidí jen vedoucí.', name: 'showInDirectory' }),
+      switchRow({ label: 'Telefon a e-mail smí vidět i ostatní ve sboru', hint: 'Jinak je uvidí jen vedoucí.', name: 'showInDirectory' }),
       field({ label: 'Poznámka', optional: true, hint: 'Krátce. Nic o zdraví, penězích ani pastoraci.', control: textArea({ name: 'note', rows: 2 }) }),
       field({ label: 'Ve sboru od', optional: true, control: dateInput({ name: 'since', label: 'Ve sboru od' }) }),
     ], { open: !!householdId }),
@@ -126,7 +126,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
       const v = (n) => String(ctl(f, n)?.value || '').trim();
       const first = v('firstName');
       if (!first) { fieldError(ctl(f, 'firstName'), 'Doplň jméno.'); return false; }
-      const status = v('status') || 'member';
+      const status = v('status') || 'guest';
       const consentOn = on(f, 'consent');
       const restricted = status === 'guest' && !consentOn;
       const birthDate = restricted ? '' : parseBirth(v('birthDate'));
@@ -287,7 +287,7 @@ export function contactSheet(person) {
       kid || restricted ? null : [
         field({ label: 'Telefon', optional: true, control: textInput({ name: 'phone', type: 'tel', inputmode: 'tel', value: person.phone || '', autocomplete: self ? 'tel' : 'off', placeholder: 'např. 603 000 000' }) }),
         field({ label: 'E-mail', optional: true, control: textInput({ name: 'email', type: 'email', inputmode: 'email', value: person.email || '', autocomplete: self ? 'email' : 'off', placeholder: 'např. jmeno@email.cz' }) }),
-        switchRow({ label: 'Telefon a e-mail smí vidět i ostatní ve sboru', hint: 'Jinak je vidí jen vedoucí.', name: 'showInDirectory', checked: !!person.showInDirectory }),
+        switchRow({ label: 'Telefon a e-mail smí vidět i ostatní ve sboru', hint: 'Jinak je uvidí jen vedoucí.', name: 'showInDirectory', checked: !!person.showInDirectory }),
         self ? field({ label: 'Přezdívka', optional: true, hint: 'Ukáže se v závorce za jménem.', control: textInput({ name: 'nickname', value: person.nickname || '', autocomplete: 'off', placeholder: 'např. Bětka' }) }) : null,
       ],
     ],

@@ -79,7 +79,29 @@ body:has(.fab) .screen { padding-bottom: calc(var(--tabbar-h) + env(safe-area-in
 .rail__bottom > .rail__foot { flex: 1; min-width: 0; margin-top: 0; padding: var(--space-2) var(--space-3); }
 .rail__foot[aria-current="page"] { background: var(--ground); }
 .rail__person { display: grid; min-width: 0; }
-.rail__name { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rail__name {   /* two lines before it gives up („Martina Dvořáková“ fits) */
+  font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink);
+  overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere;
+}
+/* the waiting invites are counted once: on Přístupy when the Více pages are listed, else on Více */
+@media (min-width: 1200px) { .rail:has(.rail__sub) .rail__item:not(.rail__item--sub) > [data-badge="vice"] { display: none; } }
+
+/* 960–1199: a narrow rail – icons with their label under them (the tab bar's look), the Více pages live in Více */
+@media (min-width: 960px) and (max-width: 1199.98px) {
+  :root { --rail-w: 88px; }
+  .rail { align-items: stretch; padding: var(--space-4) var(--space-2); gap: var(--space-1); }
+  .rail__brand { padding: var(--space-1) 0 var(--space-5); text-align: center; }
+  .rail__brand > .brand { display: inline-block; width: min-content; font-size: 13px; line-height: 15px; white-space: normal; text-align: left; }
+  .rail__item { flex-direction: column; justify-content: center; gap: 4px; min-height: 60px; padding: 6px 2px; text-align: center; }
+  .rail__item > .rail__label { flex: none; font-size: var(--type-caption); line-height: var(--lh-caption); }
+  .rail__item[aria-current="page"]::before { left: -8px; }
+  .rail__item .tab__badge { position: absolute; top: 4px; left: calc(50% + 6px); margin: 0; }
+  .rail__sub { display: none; }
+  .rail__bottom { flex-direction: column; gap: var(--space-2); }
+  .rail__bottom > .rail__foot { flex: none; justify-content: center; padding: var(--space-2) 0; }
+  .rail__person { display: none; }
+  .palette-menu { left: 0; right: auto; }
+}
 
 /* ---------- the screen on desktop: aligned to the rail, generous but tight ---------- */
 @media (min-width: 960px) {
@@ -88,6 +110,43 @@ body:has(.fab) .screen { padding-bottom: calc(var(--tabbar-h) + env(safe-area-in
   body.has-rail #view .screen--wide { padding-left: var(--space-8); padding-right: var(--space-7); }
   body.has-rail #view .topbar { padding-left: calc(var(--space-8) - 10px); }
   .screen--narrow { max-width: calc(480px + 2 * var(--gutter)); }
+}
+
+/* ---------- the head of a screen ---------- */
+/* actions beside the title (a page's ⋯ and buttons; on a desktop tab root also the main action) */
+.head-actions { grid-column: 2; grid-row: 2; align-self: end; display: flex; align-items: center; gap: var(--space-2); }
+.screen-head > .head-actions:only-child, .screen-head > .title + .head-actions { grid-row: auto; }
+.head-primary { flex: none; }
+/* a tab root (Domů · Kalendář · Lidé · Více): the brand row on a phone, then the Agrandir title */
+.screen-head--tab { padding: var(--space-1) 0 var(--space-4); }
+.topbar--tab > .brand { flex: 1; }
+@media (min-width: 960px) {
+  .screen > .screen-head--tab:first-child { padding-top: var(--space-7); padding-bottom: var(--space-5); }
+  /* no top bar on a desktop tab root: what sticks, sticks to the top edge */
+  .screen--tab { --topbar-h: 0px; }
+}
+
+/* ---------- the save foot of a form page (formFoot()) – only while something is unsaved ---------- */
+.form-foot {
+  position: fixed; z-index: 25; left: 0; right: 0; bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding: var(--space-3) var(--gutter); background: var(--overlay); box-shadow: 0 -1px 0 var(--hairline), var(--lift-3);
+  animation: nx-rise var(--dur-sheet) var(--ease);
+}
+.form-foot__inner { display: grid; gap: var(--space-2); max-width: var(--measure); margin: 0 auto; }
+.form-foot__text { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--wait-ink); }
+.form-foot__actions { display: flex; gap: var(--space-2); }
+.form-foot__save { flex: 1; }
+html[data-keyboard] .form-foot { bottom: 0; }
+/* room under the last field while the foot is up */
+.screen--form:has(> .form-foot:not([hidden])) { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 132px); }
+@media (min-width: 960px) {
+  .form-foot {
+    position: sticky; bottom: 0; left: auto; right: auto; margin: var(--space-7) calc(-1 * var(--space-5)) 0;
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5); border-radius: var(--shape-block) var(--shape-block) 0 0;
+  }
+  .form-foot__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); max-width: none; }
+  .form-foot__save { flex: none; }
+  .screen--form:has(> .form-foot:not([hidden])) { padding-bottom: 0; }
 }
 
 /* ---------- narrow pages (sign-in, invite) ---------- */
@@ -102,7 +161,7 @@ body:has(.fab) .screen { padding-bottom: calc(var(--tabbar-h) + env(safe-area-in
 button.row__body.row__stretch { border: 0; background: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
 .row__title--wrap { white-space: normal; }
 button.row:disabled { color: var(--ink-3); cursor: not-allowed; }
-.row-link--button { border: 0; background: none; padding: 0; font: inherit; font-size: var(--type-meta); cursor: pointer; }
+.row-link--button { border: 0; background: none; padding: 0; font: inherit; font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink-accent); text-align: left; cursor: pointer; }
 .row > .icon:first-child { color: var(--ink-2); }
 .fact__link { color: inherit; text-decoration: underline; text-decoration-color: var(--edge-control); text-underline-offset: 3px; }
 .need__title { color: inherit; }
@@ -121,6 +180,27 @@ button.row:disabled { color: var(--ink-3); cursor: not-allowed; }
 .event--button { width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
 button.event--button:hover { background: var(--wash); }
 .fill { flex-wrap: nowrap; white-space: nowrap; }
+/* Odpověz (answerItem): the arch stands out from the feature fill; short rows from the 4th answer on and on desktop */
+.feature .arch { background: var(--overlay); box-shadow: inset 0 0 0 1px var(--edge); }
+.feature .arch[data-today] { background: var(--act); box-shadow: none; }
+.feature__item .row__note { margin-top: 2px; }
+.feature__done { grid-column: 1 / -1; display: flex; align-items: center; min-height: var(--control-m); margin: 0; }
+.feature__item--compact { gap: var(--space-2) var(--space-4); }
+.feature__item--compact > .btn-row, .feature__item--compact > .feature__done { grid-column: 2; }
+.feature__item--compact > .btn-row { justify-self: end; grid-auto-columns: auto; }
+.feature__item--compact > .feature__done { min-height: var(--control-s); }
+/* just answered: the card folds away (height set by the script), and taps wait until the next one settles */
+.feature__item[data-leaving] {
+  height: 0 !important; padding-top: 0 !important; opacity: 0; overflow: hidden; border-top-color: transparent !important;
+  transition: height 260ms var(--ease), padding-top 260ms var(--ease), opacity 180ms var(--ease);
+}
+.feature[data-settling] .feature__item { pointer-events: none; }
+@media (min-width: 960px) {
+  .feature__item { grid-template-columns: var(--arch-w) minmax(0, 1fr) auto; }
+  .feature__item > .btn-row, .feature__item > .feature__done { grid-column: 3; }
+  .feature__item > .btn-row { grid-auto-columns: auto; }
+  .feature__item > .btn-row > .btn { min-height: var(--control-s); padding: 0 14px; font-size: var(--type-meta); border-radius: 12px; }
+}
 button.feature__more { width: 100%; border: 0; border-top: 1px solid var(--hairline); background: none; padding-left: 0; padding-right: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; }
 .pill--no { background: var(--no-fill); color: var(--no-ink); }
 
@@ -143,8 +223,16 @@ a.duty__who { padding: 6px 8px; margin: -6px -8px; border-radius: var(--shape-in
 .day[data-mine] .day__num { box-shadow: inset 0 0 0 1.5px currentColor; }
 
 /* a place on a map (mapFrame(), mapLink()) */
-.map { width: 100%; overflow: hidden; border-radius: var(--shape-block); box-shadow: 0 0 0 1px var(--edge); background: var(--tint); }
-.map > iframe { display: block; width: 100%; height: 200px; border: 0; }
+.map { position: relative; width: 100%; min-height: 200px; overflow: hidden; border-radius: var(--shape-block); box-shadow: 0 0 0 1px var(--edge); background: var(--tint); }
+.map > iframe { position: relative; display: block; width: 100%; height: 200px; border: 0; transition: opacity var(--dur-state) var(--ease); }
+.map[data-loading] > iframe { opacity: 0; pointer-events: none; }
+.map__fallback {   /* under the frame: the address and the way to a map, while it loads or when it cannot */
+  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--space-1);
+  padding: var(--space-4); text-align: center; color: var(--ink);
+}
+.map__fallback > .icon { color: var(--ink-2); }
+.map__address { font-size: var(--type-meta); line-height: var(--lh-meta); }
+.map:not([data-loading]) > .map__fallback { visibility: hidden; }
 .map-link { align-self: flex-start; }
 
 /* a section with nothing (quiet()) */
@@ -199,6 +287,8 @@ th[aria-sort] .th-sort { color: var(--ink); }
 .sheet__spacer { flex: 1; }
 .sheet__titles { flex: 1; min-width: 0; padding: var(--space-3) 0; }
 .sheet__titles > h2 { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
+.sheet__titles:has(> .meta) { padding-bottom: var(--space-4); }   /* the subtitle gets air before the first field */
+.sheet__body { padding-top: 4px; }
 .sheet--dragging { animation: none; }
 .sheet:not(.sheet--dragging) { transition: transform var(--dur-sheet) var(--ease); }
 .sheet__foot { grid-auto-flow: row; }
@@ -242,6 +332,10 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .field__error > span { flex: 1; }
 .field--chips .chips { margin: 0; padding: 2px 0; flex-wrap: wrap; overflow: visible; }
 
+.password { position: relative; display: block; }
+.password > .input { padding-right: 52px; }
+.password__eye { position: absolute; right: 4px; top: 50%; margin-top: calc(var(--hit) / -2); color: var(--ink-2); }
+.password__eye[aria-pressed="true"] { color: var(--ink); }
 .select { position: relative; display: block; }
 .select > .input { padding-right: 48px; cursor: pointer; }
 .select > .icon { position: absolute; right: 16px; top: 50%; margin-top: -10px; color: var(--ink-2); pointer-events: none; }
@@ -343,6 +437,7 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .kit-plate__title { font-family: var(--font-title); font-weight: 900; font-size: 24px; line-height: 28px; letter-spacing: var(--tracking-title); }
 .kit-sub { font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-bold); color: var(--ink-2); }
 .kit-fab { display: flex; justify-content: flex-end; }
+.kit-foot > .form-foot { position: static; margin: 0; border-radius: var(--shape-block); animation: none; }
 .kit-fab .fab { position: static; box-shadow: var(--lift-2); }
 .kit-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: var(--space-1); }
 .kit-icon { display: grid; justify-items: center; gap: 4px; padding: var(--space-2) 0; font-size: 11px; line-height: 14px; color: var(--ink-2); text-align: center; overflow-wrap: anywhere; }

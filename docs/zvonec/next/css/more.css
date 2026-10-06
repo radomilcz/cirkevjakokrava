@@ -5,8 +5,6 @@
    ============================================================ */
 
 /* ---------- the page frame ---------- */
-.head-actions { grid-column: 2; grid-row: 2; align-self: end; display: flex; align-items: center; gap: var(--space-2); }
-.screen-head > .head-actions:only-child, .screen-head > .title + .head-actions { grid-row: auto; }
 .more-bar-actions { display: inline-flex; gap: var(--space-2); }
 .more-page .screen-head .screen-head__lead { max-width: 60ch; }
 @media (min-width: 1200px) {
@@ -26,8 +24,11 @@
   display: grid; gap: var(--space-2); margin-top: var(--space-3); padding: var(--space-3) 0 var(--space-2);
   border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline);
 }
+.more-colours__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
 .more-colours__label { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
-.more-colours .palette-options { margin-left: -6px; }
+.more-colours .palette-options { gap: 2px; }
+.more-colours .palette-options > button:not(.palette-auto) { min-width: 42px; }
+.more-colours .palette-options .palette-auto { padding: 0 12px; }
 .more-list .row > .icon:first-child, .acct .row > .icon:first-child { color: var(--ink-2); }
 .more-list .row:has(> .icon:first-child), .acct .row:has(> .icon:first-child) { --row-rule-start: calc(var(--space-3) + var(--icon-m) + var(--space-3)); }
 .more-list .row__trail .count { margin-right: var(--space-1); }
@@ -98,8 +99,6 @@
 }
 .row:has(> .tpl-kind:first-child) { --row-rule-start: calc(var(--space-3) + var(--arch-w) + var(--space-3)); }
 .tpl-note { color: var(--ink-2); font-weight: var(--weight-regular); }
-.tpl-status { margin-top: var(--space-1); }
-.tpl-status[data-dirty="true"] { color: var(--wait-ink); font-weight: var(--weight-strong); }
 .tpl-editor { display: grid; gap: 0 var(--space-8); }
 .tpl-right { display: grid; align-content: start; min-width: 0; }
 .tpl-editor .tpl-section { margin-top: var(--section-gap); min-width: 0; }
@@ -147,8 +146,6 @@
 }
 
 /* ---------- Nastavení sboru ---------- */
-.cfg-status { margin-top: var(--space-1); }
-.cfg-status[data-dirty="true"] { color: var(--wait-ink); font-weight: var(--weight-strong); }
 .cfg-group { display: grid; padding-top: var(--space-3); }
 .cfg-group + .cfg-group { margin-top: var(--space-5); }
 .cfg-group__head { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
@@ -172,6 +169,7 @@
 .login-steps { display: grid; gap: var(--space-2); padding-left: 1.3em; color: var(--ink-2); font-size: var(--type-meta); line-height: var(--lh-meta); }
 .login-after { display: grid; justify-items: start; gap: var(--space-3); margin-top: var(--space-7); padding-top: var(--space-5); border-top: 1px solid var(--hairline); }
 .login-page .seg > button { white-space: nowrap; }
+@media (min-width: 960px) { .screen.login-page { padding-bottom: var(--space-6); } }   /* a form that fits does not scroll for its padding */
 .login-setup.screen--narrow { max-width: calc(560px + 2 * var(--gutter)); }
 body.is-public:has(.login-setup) .topbar--public { max-width: calc(560px + 2 * var(--gutter)); }
 @media (max-width: 420px) {

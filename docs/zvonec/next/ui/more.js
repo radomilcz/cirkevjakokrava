@@ -9,7 +9,7 @@ import { emptyData } from '../../lib/store/store.js';
 import { today } from '../../lib/time.js';
 import {
   h, list, row, avatar, personName, icon, count, toast, confirmSheet, splitView, detailPane, isSplit, paletteChoices,
-  screen, topBar, agree,
+  screen, agree,
 } from './kit.js';
 import { accountBody, viewAsSheet } from './account.js';
 import { waitingInvites } from './access.js';
@@ -20,6 +20,20 @@ const pageRow = (iconName, label, href, { open, n, meta } = {}) => row({
   lead: icon(iconName), title: label, meta, href, single: !meta, open,
   trail: [n ? count(n, { label: `${n} ${agree(n, 'pozvánka čeká', 'pozvánky čekají', 'pozvánek čeká')}` }) : null, icon('chevron-right', { size: 's' })],
 });
+
+/** Barvy: the bullseyes inline, with the name of the current palette beside the label. */
+function coloursRow() {
+  const api = window.zvonecAppearance;
+  const name = h('span', { class: 'more-colours__name meta', 'aria-live': 'polite' });
+  const show = () => { name.textContent = api?.palettes?.find((p) => p.id === api.palette())?.label || 'Podle zařízení'; };
+  show();
+  const choices = paletteChoices();
+  choices.addEventListener('click', () => requestAnimationFrame(show));
+  choices.addEventListener('keydown', () => requestAnimationFrame(show));
+  return h('div', { class: 'more-colours' },
+    h('div', { class: 'more-colours__head' }, h('span', { class: 'more-colours__label', id: 'more-colours-label' }, 'Barvy'), name),
+    choices);
+}
 
 /** The list of Více. `open`: which page shows in the detail pane (≥ 1200 px). */
 function moreList({ open } = {}) {
@@ -33,7 +47,7 @@ function moreList({ open } = {}) {
     meta: ['Můj účet', role].filter(Boolean).join(' · '),
     href: '#ucet', chevron: true, open: open === 'ucet', cls: 'more-me',
   });
-  const colours = h('div', { class: 'more-colours' }, h('span', { class: 'more-colours__label', id: 'more-colours-label' }, 'Barvy'), paletteChoices());
+  const colours = coloursRow();
   const invites = waitingInvites();
 
   const resetDemo = () => confirmSheet({
@@ -72,8 +86,7 @@ function moreList({ open } = {}) {
 export function renderMore() {
   const split = isSplit();
   return screen({
-    topbar: topBar({ brand: true }),
-    head: { title: 'Více' },
+    tab: { title: 'Více' },
     wide: split,
     cls: 'more-page more-root',
     body: split

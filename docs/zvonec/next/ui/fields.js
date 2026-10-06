@@ -217,8 +217,35 @@ export function switchRow({ label, hint, checked = false, onChange, name, disabl
 
 /** The search field („Hledat jméno, telefon, e-mail“). `/` focuses it (the shell's shortcut). */
 export function searchField({ placeholder = 'Hledat', value = '', onInput, label = 'Hledat', name = 'q' } = {}) {
-  const input = h('input', { class: 'input', type: 'search', name, value, placeholder, autocomplete: 'off', enterkeyhint: 'search', oninput: onInput ? (e) => onInput(e.target.value, e) : null });
-  return h('label', { class: 'search' }, icon('search'), h('span', { class: 'visually-hidden' }, label), input);
+  const input = h('input', { class: 'input', type: 'search', name, value, placeholder, autocomplete: 'off', enterkeyhint: 'search' });
+  // our own ✕ in the palette's ink (the browser's own clear button is a blue of its own)
+  const clear = h('button', { type: 'button', class: 'icon-btn search__clear', 'aria-label': 'Smazat hledání', title: 'Smazat hledání', hidden: !value }, icon('x', { size: 's' }));
+  input.addEventListener('input', (e) => { clear.hidden = !input.value; onInput?.(input.value, e); });
+  clear.addEventListener('click', (e) => {
+    e.preventDefault();
+    input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.focus();
+  });
+  return h('div', { class: 'search' }, h('label', { class: 'search__field' }, icon('search'), h('span', { class: 'visually-hidden' }, label), input), clear);
+}
+
+/**
+ * A password with an eye that shows it (instead of typing it twice – easier for older eyes).
+ *   passwordInput({ name: 'password', autocomplete: 'new-password' }) → the wrapper; .input is the <input>
+ */
+export function passwordInput({ name = 'password', autocomplete = 'current-password', value = '' } = {}) {
+  const input = h('input', { class: 'input', type: 'password', name, value, autocomplete, spellcheck: false, autocapitalize: 'off' });
+  const eye = h('button', { type: 'button', class: 'icon-btn password__eye', 'aria-pressed': 'false', 'aria-label': 'Ukázat heslo', title: 'Ukázat heslo' }, icon('eye', { size: 's' }));
+  eye.addEventListener('click', () => {
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    eye.setAttribute('aria-pressed', String(show));
+    eye.replaceChildren(icon(show ? 'eye-off' : 'eye', { size: 's' }));
+  });
+  const wrap = h('span', { class: 'password' }, input, eye);
+  wrap.input = input;
+  return wrap;
 }
 
 /** Segmented choice as a form field (hidden input `name`). */

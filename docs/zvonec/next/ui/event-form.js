@@ -181,19 +181,31 @@ function fieldsFor(base, { adding, image, moreOpen }) {
     field({ label: 'Čas', control: timeRange({ from: timeOf(base.start), to: timeOf(base.end), fromName: 'from', toName: 'to' }) }));
   let repeat = '';
   const rule = h('p', { class: 'meta ev-rule', 'aria-live': 'polite', hidden: true });
-  const untilField = adding ? field({ label: 'Do kdy', control: dateInput({ name: 'until', value: addMonths(day, 3), label: 'Do kdy se to opakuje', onChange: () => repaintRule() }) }) : null;
+  // Do kdy always shows the day of the last meeting, so it agrees with the rule line under it („Každé úterý
+  // do 5. 1. 2027“): three months ahead snapped back to the rule, and a picked day snapped the same way.
+  let untilPicked = false;
+  const untilInput = adding ? dateInput({ name: 'until', value: addMonths(day, 3), label: 'Do kdy se to opakuje', onChange: () => { untilPicked = true; repaintRule(); } }) : null;
+  const untilField = adding ? field({ label: 'Do kdy', control: untilInput }) : null;
   if (untilField) untilField.hidden = true;
   let form;
+  const occurrences = (from, until) => (until && until >= from ? recurrences(`${from}T10:00`, `${from}T11:00`, repeat, until) : []);
   function repaintRule() {
     if (!adding || !form) return;
     untilField.hidden = !repeat;
     rule.hidden = !repeat;
     if (!repeat) return;
     const from = form.elements.day.value || day;
-    const until = form.elements.until.value;
-    const times = until && until >= from ? recurrences(`${from}T10:00`, `${from}T11:00`, repeat, until) : [];
+    let until = untilPicked ? form.elements.until.value : addMonths(from, 3);
+    let times = occurrences(from, until);
+    if (times.length) {
+      until = dayOf(times[times.length - 1].start);
+      untilInput.setValue(until);
+    } else if (!untilPicked) {
+      untilInput.setValue(until);
+    }
+    times = occurrences(from, until);
     rule.textContent = times.length
-      ? `${seriesSummary({ step: repeat, from, until: dayOf(times[times.length - 1].start) }, { today: today() })}${SEP}${setkani(times.length)}`
+      ? `${seriesSummary({ step: repeat, from, until }, { today: today() })}${SEP}${setkani(times.length)}`
       : 'Vyber den po prvním setkání.';
   }
   const visible = [
@@ -251,7 +263,7 @@ function openEventForm({ type, day: chosenDay }) {
   const parts = fieldsFor(base, { adding: true, image: picture, moreOpen: false });
   const back = link('Vybrat jinou šablonu', { icon: 'chevron-left', onclick: () => { sheetRef.close({ restore: false }); openAddEvent({ day: chosenDay }); } });
   const sheetRef = formSheet({
-    title: type ? type.name : 'Něco jiného',
+    title: type ? type.name : 'Nové setkání',
     submitLabel: 'Přidat setkání',
     body: [back, ...parts.nodes],
     onSubmit: async (f) => {

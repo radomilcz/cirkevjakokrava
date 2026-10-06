@@ -478,16 +478,25 @@ export const mapLink = (place, { label = 'Otevřít v mapě' } = {}) => (canMap(
   ? h('a', { class: 'link map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, icon('pin', { size: 's' }), label, icon('external', { size: 's' }))
   : null);
 
-/** A small OpenStreetMap with a pin (only with coordinates). */
+/**
+ * A small OpenStreetMap with a pin (only with coordinates). Until the frame has loaded – and offline, where it
+ * never will – the box shows the address and „Otevřít v mapě“ instead of an empty grey field.
+ */
 export function mapFrame(place, { title } = {}) {
   if (!hasCoords(place)) return null;
   const lat = Number(place.lat);
   const lon = Number(place.lon);
   const bbox = [lon - 0.006, lat - 0.0035, lon + 0.006, lat + 0.0035].map((n) => n.toFixed(5)).join(',');
-  return h('div', { class: 'map' }, h('iframe', {
+  const fallback = h('div', { class: 'map__fallback' },
+    icon('pin'), h('span', { class: 'map__address' }, place.address || place.name || ''), mapLink(place));
+  const online = typeof navigator === 'undefined' || navigator.onLine !== false;
+  const frame = online ? h('iframe', {
     src: `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`,
     title: title || `Mapa: ${place.name || 'místo'}`, loading: 'lazy', referrerpolicy: 'no-referrer',
-  }));
+  }) : null;
+  const box = h('div', { class: 'map', dataset: { loading: '' } }, fallback, frame);
+  frame?.addEventListener('load', () => box.removeAttribute('data-loading'));
+  return box;
 }
 
 // ---------- tables (desktop: Lidé, Kdo co umí, Rozpis) ----------
@@ -613,7 +622,7 @@ export function dutyRow({ role, person, name, status: st, me = false, onclick, h
 
 /**
  * The one lifted block of a screen (Domů › Odpověz).
- *   feature({ title: 'Odpověz', count: 2, items: [answerItem(...)], more: { text: 'Projekce · ne 1. 11.', link: 'Další 1', href } })
+ *   feature({ title: 'Odpověz', count: 2, items: [answerItem(...)], more: { link: 'Ukázat další 2', onclick, icon } })
  */
 export function feature({ title: head, count: n, items, more } = {}) {
   const hid = uid('feat');
@@ -621,17 +630,31 @@ export function feature({ title: head, count: n, items, more } = {}) {
     h('h2', { class: 'feature__head', id: hid }, head, n ? count(n) : null),
     items,
     more ? h(more.href ? 'a' : 'button', { class: 'feature__more', href: more.href, type: more.href ? null : 'button', onclick: more.onclick },
-      h('span', { class: 'meta' }, more.text), h('span', { class: 'link' }, more.link, icon('chevron-right', { size: 's' }))) : null);
+      more.text ? h('span', { class: 'meta' }, more.text) : null, h('span', { class: 'link' }, more.link, icon(more.icon || 'chevron-right', { size: 's' }))) : null);
 }
 
-/** One duty to answer, with Můžu (solid) and Nemůžu. */
-export function answerItem({ day, today: isToday, title: head, meta: metaText, onYes, onNo, yesLabel = 'Můžu', noLabel = 'Nemůžu', label } = {}) {
-  return h('div', { class: 'feature__item' },
+/**
+ * One duty to answer, with Můžu (solid) and Nemůžu.
+ *   answerItem({ day, title, meta, onYes, onNo, label })
+ * note: a line under the meta (a clash with my Kdy nemůžu: note('Ten den máš zapsáno: dovolená', { tone: 'wait' }));
+ * prefer: 'no' makes Nemůžu the solid button (Můžu stays, same place); compact: one short row with small buttons
+ * (the 4th answer on, and every answer on desktop); done: { status, word } – just answered: the buttons give
+ * way to the status line, the card keeps its height, so a second tap lands on nothing.
+ */
+export function answerItem({
+  day, today: isToday, title: head, meta: metaText, note: noteNode, onYes, onNo, yesLabel = 'Můžu', noLabel = 'Nemůžu', label,
+  prefer = 'yes', compact = false, done, dataset,
+} = {}) {
+  const size = compact ? 's' : 'm';
+  const action = done
+    ? h('p', { class: 'feature__done', role: 'status' }, statusNote(done.status, { word: done.word }))
+    : buttonRow(
+      button(yesLabel, { variant: prefer === 'no' ? 'tint' : 'primary', size, onclick: onYes, label: label ? `${yesLabel}: ${label}` : null }),
+      button(noLabel, { variant: prefer === 'no' ? 'primary' : 'tint', size, onclick: onNo, label: label ? `${noLabel}: ${label}` : null }));
+  return h('div', { class: ['feature__item', compact && 'feature__item--compact'], dataset: { ...(dataset || {}), done: done ? '' : null } },
     dateArch(day, { today: isToday }),
-    h('div', { class: 'row__body' }, h('span', { class: 'row__title row__title--wrap' }, head), metaText ? h('span', { class: 'row__meta' }, metaText) : null),
-    buttonRow(
-      button(yesLabel, { variant: 'primary', onclick: onYes, label: label ? `${yesLabel}: ${label}` : null }),
-      button(noLabel, { onclick: onNo, label: label ? `${noLabel}: ${label}` : null })));
+    h('div', { class: 'row__body' }, h('span', { class: 'row__title row__title--wrap' }, head), metaText ? h('span', { class: 'row__meta' }, metaText) : null, noteNode || null),
+    action);
 }
 
 // ---------- week strip & month grid ----------

@@ -1,16 +1,16 @@
 // Zvonec Next – Nastavení sboru (#nastaveni, leaders): one page, three sections. Sbor (name, address,
 // main place) and Pravidla (Břemeno defaults, Kdy Zvonec bučí, who is an adult) are saved together by
-// the main action „Uložit“; Záloha acts at once (download for leaders; upload replaces everything –
+// „Uložit“ in the save foot (shown while something is unsaved); Záloha (last, rare) acts at once (download for leaders; upload replaces everything –
 // admins only, asks first).
 
-import { S, can, change, replaceAll } from '../../ui/state.js';
+import { S, can, change, replaceAll, render } from '../../ui/state.js';
 import { placeTree, placeById, resolvePlace } from '../../lib/places.js';
 import { DEFAULT_LIMITS, DEFAULT_RULES } from '../../lib/scheduling.js';
 import { normalize, COLLECTIONS, SCHEMA } from '../../lib/store/store.js';
 import { today } from '../../lib/time.js';
 import {
   h, list, row, section, agree, plural, toast, confirmSheet, field, textInput, selectInput, stepper, icon, isSplit,
-  fieldError, clearErrors, download,
+  fieldError, clearErrors, download, formFoot,
 } from './kit.js';
 import { morePage } from './more-common.js';
 
@@ -158,12 +158,9 @@ function backupSection() {
 export function renderSettings() {
   if (!draft || draft.key !== JSON.stringify(S.data.settings || {})) draft = freshDraft();
   const v = draft.values;
-  const status = h('p', { class: 'meta cfg-status', role: 'status' });
-  const dirty = () => {
-    const on = isDirty();
-    status.textContent = on ? 'Máš neuložené změny.' : 'Všechno je uložené.';
-    status.dataset.dirty = String(on);
-  };
+  const discard = () => { draft = null; render(); toast('Změny zahozené.'); };
+  const foot = formFoot({ onSave: () => save(), onDiscard: discard });
+  const dirty = () => foot.update(isDirty());
   dirty();
   const save = () => {
     clearErrors(document.getElementById('main'));
@@ -184,12 +181,11 @@ export function renderSettings() {
   return morePage({
     title: 'Nastavení sboru',
     root: true,
-    lead: status,
-    primary: { label: 'Uložit', icon: 'check', onclick: save },
+    foot,
     wide: isSplit(),
     cls: 'cfg-page',
     body: h('div', { class: 'cfg-cols' },
-      h('div', { class: 'cfg-col' }, churchSection(v, dirty), backupSection()),
-      h('div', { class: 'cfg-col' }, rulesSection(v, dirty))),
+      h('div', { class: 'cfg-col' }, churchSection(v, dirty)),
+      h('div', { class: 'cfg-col' }, rulesSection(v, dirty), backupSection())),
   });
 }

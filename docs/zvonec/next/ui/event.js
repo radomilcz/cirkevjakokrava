@@ -17,7 +17,9 @@ import {
   cover, whenText, placeText, placesOf, openPlaceSheet, slotsOf, fillOf, waitingWords,
   missingWords, myDuties, eventConflicts, eventLevelWarnings, backHref, nameOf,
 } from './calendar-shared.js';
-import { teamBlock, answer, openMyAnswer, fillOpenSlots, sameAsLast, openNeedsSheet, askSeries, warningFor, andFollowing } from './event-duties.js';
+import {
+  teamBlock, answer, openMyAnswer, fillOpenSlots, sameAsLast, openNeedsSheet, askSeries, warningFor, andFollowing, blockoutOn, blockoutNote,
+} from './event-duties.js';
 import { openEditEvent, openExtendSeries, cancelOrRestore, deleteEventFlow } from './event-form.js';
 
 const roleName = (id) => (S.data.roles || []).find((r) => r.id === id)?.name || 'službu';
@@ -38,15 +40,18 @@ export function eventMenu(event) {
 
 // ---------- parts ----------
 
-function head(event, { pane }) {
-  const places = placesOf(event);
-  const series = seriesFor(S.data, event);
-  const pills = h('div', { class: 'cluster ev-pills' },
+function pillsOf(event) {
+  return h('div', { class: 'cluster ev-pills' },
     kindTag(event.kind),
     event.public === true ? pill('na webu') : null,
     event.cancelled ? pill('zrušeno', { cls: 'pill--cancelled' }) : null);
+}
+
+function head(event, { pane }) {
+  const places = placesOf(event);
+  const series = seriesFor(S.data, event);
   return h('div', { class: 'ev-head' },
-    pane ? h('div', { class: 'ev-head__top' }, pills, eventMenu(event)) : pills,
+    pane ? null : pillsOf(event),
     h(pane ? 'h2' : 'h1', { class: ['title', pane && 'title--s', event.cancelled && 'is-cancelled'] }, event.title),
     h('div', { class: 'facts' },
       h('p', { class: 'fact' }, icon('clock', { size: 's' }), h('span', {}, whenText(event))),
@@ -84,13 +89,15 @@ function youCard(event) {
   const mine = myDuties(event);
   if (!mine.length) return null;
   const past = dayOf(event.end) < today();
+  const blocked = past ? null : blockoutOn(event, myId());
   return h('section', { class: 'feature ev-you', 'aria-label': 'Tvoje služba' },
     mine.map(({ assignment, role }) => h('div', { class: 'ev-you__item' },
       h('p', { class: 'lead' }, `Děláš ${role?.name || 'službu'}.`),
+      blocked && assignment.status !== 'declined' ? h('p', { class: 'ev-you__clash' }, blockoutNote(blocked)) : null,
       assignment.status === 'proposed' && !past
-        ? buttonRow(
-          button('Můžu', { variant: 'primary', onclick: () => answer(event.id, assignment.id, 'confirmed') }),
-          button('Nemůžu', { variant: 'quiet', onclick: () => answer(event.id, assignment.id, 'declined') }))
+        ? buttonRow(     // the same pair as Domů › Odpověz; a clash with „Kdy nemůžu“ makes Nemůžu the solid one
+          button('Můžu', { variant: blocked ? 'tint' : 'primary', onclick: () => answer(event.id, assignment.id, 'confirmed') }),
+          button('Nemůžu', { variant: blocked ? 'primary' : 'tint', onclick: () => answer(event.id, assignment.id, 'declined') }))
         : h('div', { class: 'ev-you__state' }, statusNote(assignment.status),
           past ? null : link('Změnit odpověď', { onclick: () => openMyAnswer(event.id, assignment.id) })))));
 }
@@ -248,6 +255,8 @@ function attendanceSection(event) {
 export function eventBody(event, { pane = false } = {}) {
   const conflicts = eventConflicts(event.id);
   return [
+    // in the pane the pills and ⋯ come first, on one row with the pane's ✕ – nothing lies on the picture
+    pane ? h('div', { class: 'ev-head__top' }, pillsOf(event), eventMenu(event)) : null,
     cover(event, { cls: pane ? 'ev-cover--pane' : null }),
     head(event, { pane }),
     eventWarnings(event, conflicts),

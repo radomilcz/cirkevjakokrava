@@ -10,7 +10,7 @@ import {
   skeleton, indexLetter, field, textInput, textArea, selectInput, dateInput, timeInput, timeRange, stepper,
   switchRow, searchField, segmentedField, chipsField, disclosure, peoplePicker, openSheet, formSheet, confirmSheet,
   menu, toast, fieldError, splitView, detailPane, isSplit, icon, ICONS, isoDay, shortDate, period, row, table, sortHead,
-  quiet, mapLink,
+  quiet, mapLink, passwordInput, formFoot,
 } from './kit.js';
 
 const P = [
@@ -98,8 +98,13 @@ export function renderKit() {
         plate('Domů',
           feature({
             title: 'Odpověz', count: 2,
-            items: answerItem({ day: sunday, title: 'Zvuk · Setkání na pastvě', meta: '10.00–12.00 · Monta, sál', label: 'Zvuk, Setkání na pastvě', onYes: () => toast('Díky, počítáme s tebou.', { action: () => {} }), onNo: () => toast('Vedoucí uvidí, že nemůžeš.', { action: () => {} }) }),
-            more: { text: `Projekce · ${shortDate(day(14))}`, link: 'Ukázat další 1', href: '#kit' },
+            items: [
+              answerItem({ day: sunday, title: 'Zvuk · Setkání na pastvě', meta: '10.00–12.00 · Monta, sál', label: 'Zvuk, Setkání na pastvě', onYes: () => toast('Díky, počítáme s tebou.', { action: () => {} }), onNo: () => toast('Vedoucí uvidí, že nemůžeš.', { action: () => {} }) }),
+              answerItem({ day: day(14), title: 'Projekce · Setkání na pastvě', meta: '10.00–12.00 · Monta, sál', note: note('Ten den máš zapsáno: dovolená', { tone: 'wait', icon: 'alert' }), prefer: 'no', label: 'Projekce, Setkání na pastvě', onYes: () => {}, onNo: () => {} }),
+              answerItem({ day: day(21), title: 'Zvuk · Zkouška chval', meta: '18.00–20.00 · Monta, sál', done: { status: 'confirmed' }, label: 'Zvuk, Zkouška chval' }),
+              answerItem({ day: day(28), title: 'Zvuk · Setkání na pastvě', meta: '10.00–12.00 · Monta, sál', compact: true, label: 'Zvuk, Setkání na pastvě', onYes: () => {}, onNo: () => {} }),
+            ],
+            more: { link: 'Ukázat další 2', icon: 'chevron-down', href: '#kit' },
           }),
           section({ title: 'Co je potřeba', action: chip('Moje týmy', { iconEnd: 'chevron-down' }), body: [
             needRow({ day: sunday, title: 'Setkání na pastvě', href: '#kit', summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick: () => demoNote('Kdo čeká – s tlačítkem Zavolat.'), label: '3 čekají na potvrzení – ukázat koho' }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick: () => {} }, { label: 'Projekce', onclick: () => {} }] }),
@@ -143,8 +148,11 @@ export function renderKit() {
             field({ label: 'Kolik lidí', control: stepper({ name: 'count', value: 2, min: 1, max: 9, label: 'Kolik lidí' }) }),
             segmentedField({ name: 'repeat', label: 'Opakovat', options: [{ value: '', label: 'Ne' }, { value: 'weekly', label: 'Týdně' }, { value: 'biweekly', label: 'Po 14 dnech' }, { value: 'monthly', label: 'Měsíčně' }], value: '' }),
             chipsField({ name: 'where', label: 'Kde', options: [{ value: 'a', label: 'Monta' }, { value: 'b', label: 'Sál' }, { value: 'c', label: 'Malá místnost' }], value: ['b'], multiple: true }),
-            searchField({ placeholder: 'Hledat jméno, telefon, e-mail' }),
-            disclosure([field({ label: 'Pro tým', control: textInput({ name: 'note', placeholder: 'např. klíče má Martin' }) }), switchRow({ label: 'Ukázat na webu', name: 'public' })]))),
+            searchField({ placeholder: 'Hledat jméno, telefon, e-mail', value: 'Jana' }),
+            field({ label: 'Heslo', hint: 'Aspoň 8 znaků.', control: passwordInput({ name: 'kit-password', autocomplete: 'off' }) }),
+            disclosure([field({ label: 'Pro tým', control: textInput({ name: 'note', placeholder: 'např. klíče má Martin' }) }), switchRow({ label: 'Ukázat na webu', name: 'public' })])),
+          h('p', { class: 'kit-sub' }, 'Uložení stránky s formulářem (jen když je co uložit)'),
+          h('div', { class: 'kit-foot' }, formFoot({ always: true, onSave: () => demoNote('Uloženo.'), onDiscard: () => demoNote('Změny zahozené.') }))),
 
         plate('Vrstvy',
           text('Na telefonu vyjedou zespodu a dají se stáhnout dolů, na počítači se otevřou uprostřed. Esc je zavře a Tab z nich neuteče.'),

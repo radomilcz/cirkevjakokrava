@@ -1,22 +1,24 @@
 // Zvonec Next – who serves: everything a slot can do, shared by Setkání, the detail pane and Rozpis.
 //   pickFor()          Výběr člověka for an empty slot or „Vybrat jiného“ (ranked by lib/scheduling)
 //   openDutySheet()    Služba (leader taps a filled slot): status, Vybrat jiného, Zavolat, Otevřít kartu, Odebrat
-//   openMyAnswer()     Moje odpověď (my own slot): Můžu / Nemůžu
+//   openMyAnswer()     Moje odpověď (my own slot): Můžu / Nemůžu (a clash with my „Kdy nemůžu“ is said there)
+//   blockoutOn(), blockoutNote()   that clash, for every answer card (Setkání › Ty, Domů › Odpověz)
 //   answer()           a duty answered in one tap (Ty card, Domů) – toast with Vrátit
 //   warningFor()       one upozornění in place with „Vybrat jiného“ / „Vím o tom“ (§3.4)
-//   fillOpenSlots()    „Doplnit volná místa“ for one event or a whole month – review sheet, then „Zapsat N služeb“
+//   fillOpenSlots()    „Doplnit volná místa“ for one event or a whole month (optionally one team) – review sheet,
+//                      „Zapsat N služeb“, then the places nobody was found for, each with „Vybrat“ (never a dead end)
 //   sameAsLast(), openNeedsSheet(), askSeries()
 // Reversible things happen at once and offer „Vrátit“; nothing here asks „Opravdu?“.
 
 import {
   h, icon, button, buttonRow, segmented, statusNote, warningRow, dutyRow, teamHead, statusSymbol, openSheet, formSheet,
   toast, sev, field, textInput, stepper, disclosure, peoplePicker, avatar, personName, agree, shortDate, plural, dateArch,
-  link, joinMeta, SEP, STATUS_WORDS,
+  link, joinMeta, note, SEP, STATUS_WORDS,
 } from './kit.js';
 import { S, can, myId, change, newId, render } from '../../ui/state.js';
 import { eventById, needsOf, missingCount, followingInSeries, updateSeries } from '../../lib/events.js';
 import { programNeeds } from '../../lib/program.js';
-import { candidates, proposeRemaining, sameAsLastTime, previousEvent, limitsOf } from '../../lib/scheduling.js';
+import { candidates, sameAsLastTime, previousEvent, limitsOf, unavailability } from '../../lib/scheduling.js';
 import { roleById, memberRecord, setSkill, removeMember } from '../../lib/groups.js';
 import { fullName, sortPeople, statusOf } from '../../lib/people.js';
 import { today, dayOf } from '../../lib/time.js';
@@ -72,7 +74,7 @@ const reasonsOf = (c, roleId) => {
  * everyone who still comes, „Přidat „…“ a vybrat“ for a new name (a quick card: host, to be completed,
  * learning the role). The pick waits for an answer; the toast offers „Vrátit“.
  */
-export function pickFor(eventId, roleId, assignmentId = null) {
+export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {}) {
   const event = fresh(eventId);
   if (!event || !can('leader')) return;
   const role = roleById(S.data, roleId);
@@ -87,8 +89,8 @@ export function pickFor(eventId, roleId, assignmentId = null) {
     pools,
     pool: pools[0].items.length ? 'skilled' : 'team',
     everyone: sortPeople((S.data.people || []).filter((p) => !taken.has(p.id) && statusOf(p) !== 'former')),
-    onPick: (person) => assign(eventId, roleId, person.id, assignmentId),
-    onAdd: (name) => addAndAssign(eventId, roleId, name, assignmentId),
+    onPick: (person) => { assign(eventId, roleId, person.id, assignmentId); onPicked?.(); },
+    onAdd: (name) => { addAndAssign(eventId, roleId, name, assignmentId); onPicked?.(); },
   });
 }
 
@@ -216,17 +218,27 @@ export function openMyAnswer(eventId, assignmentId) {
   const pick = (status) => { sheet.close(); answer(eventId, assignmentId, status); };
   const past = dayOf(e.end || e.start) < today();
   const here = location.hash.startsWith(`#setkani/${e.id}`);
+  const blocked = !e.cancelled && !past && a.status !== 'declined' ? blockoutOn(e, a.personId) : null;
   const now = e.cancelled
     ? h('p', { class: 'text' }, 'Setkání je zrušené. Nic odpovídat nemusíš.')
     : h('p', { class: 'answer-now' }, h('span', { class: 'meta' }, 'Teď:'), ' ', statusNote(a.status, { word: a.status === 'declined' ? 'nemůžeš' : undefined }));
   sheet = openSheet({
     title: `${roleName(a.roleId)}${SEP}${e.title}`,
     subtitle: joinMeta([whenText(e), placeText(e)]),
-    body: [now, here ? null : link('Otevřít setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
+    body: [now, blocked ? h('p', { class: 'answer-clash' }, blockoutNote(blocked)) : null, here ? null : link('Otevřít setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
     foot: e.cancelled || past ? null : buttonRow(
-      button('Můžu', { variant: 'primary', size: 'l', onclick: () => pick('confirmed') }),
-      button('Nemůžu', { size: 'l', onclick: () => pick('declined') })),
+      button('Můžu', { variant: blocked ? 'tint' : 'primary', size: 'l', onclick: () => pick('confirmed') }),
+      button('Nemůžu', { variant: blocked ? 'primary' : 'tint', size: 'l', onclick: () => pick('declined') })),
   });
+}
+
+/** My (or someone's) „Kdy nemůžu“ record that covers the event, or null. */
+export const blockoutOn = (event, personId) => (event && personId ? unavailability(S.data, personId, { start: event.start, end: event.end }) || null : null);
+
+/** „Ten den máš zapsáno: dovolená“ – the clash line of an answer card (pass blockoutOn()'s record). */
+export function blockoutNote(record) {
+  const reason = String(record?.reason || record?.note || '').trim();
+  return note(reason ? `Ten den máš zapsáno: ${reason}` : 'Ten den máš zapsáno, že nemůžeš.', { tone: 'wait', icon: 'alert' });
 }
 
 // ---------- warnings in place ----------
@@ -360,24 +372,129 @@ export function teamBlock(event, { group, slots }, conflicts, { fold = true, sho
 // ---------- Doplnit volná místa ----------
 
 const sluzbyAcc = (n) => `${n} ${agree(n, 'službu', 'služby', 'služeb')}`;
+const inTeams = (roleId, teams) => !teams || teams.includes(roleById(S.data, roleId)?.groupId);
+
+/**
+ * Zvonec's proposals for the empty slots of one event on `data` (a draft): skilled people with no obstacle,
+ * like lib proposeRemaining, but only for the roles of `teams` (null = every team). Mutates `data`.
+ */
+function proposeFor(data, eventId, teams) {
+  const event = eventById(data, eventId);
+  if (!event || event.cancelled) return [];
+  event.assignments = event.assignments || [];
+  const added = [];
+  for (const need of needsOf(data, event)) {
+    if (!inTeams(need.roleId, teams)) continue;
+    const count = Number(need.count) || 0;
+    let have = event.assignments.filter((a) => a.roleId === need.roleId && a.status !== 'declined').length;
+    while (have < count) {
+      const who = candidates(data, eventId, need.roleId, { today: today(), scope: 'skilled', includeInactive: false })
+        .find((c) => !c.hardCount && !c.softCount && !c.learning);
+      if (!who) break;
+      const assignment = { id: newId('a'), roleId: need.roleId, personId: who.person.id, status: 'proposed' };
+      event.assignments.push(assignment);
+      added.push(assignment);
+      have++;
+    }
+  }
+  return added;
+}
+
+/** The empty slots of these events on `data`: [{ eventId, roleId, n }] (future, not cancelled, `teams` only). */
+function emptySlots(data, eventIds, teams) {
+  const out = [];
+  for (const id of eventIds) {
+    const e = eventById(data, id);
+    if (!e || e.cancelled || dayOf(e.end) < today()) continue;
+    for (const need of needsOf(data, e)) {
+      if (!inTeams(need.roleId, teams) || !roleById(S.data, need.roleId)) continue;
+      const n = missingCount(data, e, need.roleId);
+      if (n > 0) out.push({ eventId: id, roleId: need.roleId, n });
+    }
+  }
+  return out;
+}
+
+/** Nothing is empty in the shown teams – but say so when another team still lacks people, one tap to them. */
+function allFilled(eventIds, teams) {
+  const elsewhere = teams ? emptySlots(S.data, eventIds, null).reduce((n, x) => n + x.n, 0) : 0;
+  if (!elsewhere) { toast('Všechna místa jsou obsazená.', { icon: 'check' }); return; }
+  toast(`Tady je všechno obsazené. V jiných týmech zbývá obsadit ${plural(elsewhere, 'místo', 'místa', 'míst')}.`, {
+    icon: 'info', actionLabel: 'Ukázat', action: () => openEmptySlots(eventIds, { teams: null }), duration: 9000,
+  });
+}
+
+/** An event's head inside the planning sheets: date arch, title, day and time. */
+function planHead(event) {
+  return h('div', { class: 'plan-group__head' }, dateArch(dayOf(event.start)),
+    h('div', {}, h('p', { class: 'row__title' }, event.title), h('p', { class: 'meta' }, whenText(event))));
+}
+
+/**
+ * „Ještě chybí“: the places Zvonec found nobody for, each with „Vybrat“ (the picker with every pool). After a
+ * pick the list comes back with what is still empty, until nothing is – the leader is never left without a
+ * next step.
+ */
+export function openEmptySlots(eventIds, { teams = null, nobody = false, written = null } = {}) {
+  if (!can('leader')) return;
+  const slots = emptySlots(S.data, eventIds, teams);
+  if (!slots.length) {
+    allFilled(eventIds, teams);
+    return;
+  }
+  const missing = slots.reduce((n, x) => n + x.n, 0);
+  const byEvent = new Map();
+  for (const x of slots) { if (!byEvent.has(x.eventId)) byEvent.set(x.eventId, []); byEvent.get(x.eventId).push(x); }
+  let sheet;
+  const again = () => setTimeout(() => openEmptySlots(eventIds, { teams }), 0);
+  const body = [...byEvent].map(([eventId, list]) => {
+    const event = fresh(eventId);
+    return h('section', { class: 'plan-group', 'aria-label': `${event.title} ${shortDate(event.start)}` },
+      planHead(event),
+      list.map((x) => h('div', { class: 'plan-row plan-row--empty' },
+        h('span', { class: 'plan-row__role' }, roleName(x.roleId)),
+        h('span', { class: 'plan-row__who' }, sev('error', x.n > 1 ? `chybí ${x.n}` : 'chybí')),
+        button('Vybrat', {
+          size: 's', label: `Vybrat: ${roleName(x.roleId)}, ${shortDate(event.start)}`,
+          onclick: () => { sheet.close({ restore: false }); pickFor(eventId, x.roleId, null, { onPicked: again }); },
+        }))));
+  });
+  // what „Doplnit volná místa“ just wrote, with its Vrátit here (a toast would cover this sheet)
+  if (written) {
+    body.unshift(h('div', { class: 'plan-done', role: 'status' }, icon('check', { size: 's' }),
+      h('span', {}, `Zapsáno: ${written.n} ${agree(written.n, 'služba', 'služby', 'služeb')}. Čekají na potvrzení.`),
+      button('Vrátit', { size: 's', variant: 'quiet', onclick: () => { sheet.close(); written.undo(); toast('Vráceno.', { icon: 'undo' }); } })));
+  }
+  const places = plural(missing, 'místo', 'místa', 'míst');
+  sheet = openSheet({
+    title: nobody ? 'Zvonec nikoho volného nenašel' : `Zbývá obsadit ${places}`,
+    subtitle: `${nobody ? `Zbývá obsadit ${places}. ` : 'Zvonec pro ně nikoho volného nenašel. '}U každého místa vybereš z celého týmu nebo ze všech lidí.`,
+    body,
+    cls: 'plan-sheet',
+  });
+}
 
 /**
  * „Doplnit volná místa“: Zvonec proposes people for the empty slots of these events (skilled, no
- * obstacles), the leader unticks what they do not want, „Zapsat N služeb“ writes them as „čeká na potvrzení“.
+ * obstacles; `teams` limits it to their roles), the leader unticks what they do not want, „Zapsat N služeb“
+ * writes them as „čeká na potvrzení“. What stays empty is listed right after (openEmptySlots), each place
+ * with „Vybrat“; when Zvonec finds nobody at all, that list opens at once.
  */
-export function fillOpenSlots(eventIds) {
+export function fillOpenSlots(eventIds, { teams = null } = {}) {
   if (!can('leader')) return;
   const draft = structuredClone(S.data);
   const groups = [];
   for (const id of eventIds) {
     const e = eventById(draft, id);
     if (!e || e.cancelled || dayOf(e.end) < today()) continue;
-    const added = proposeRemaining(draft, id, () => newId('a'), { today: today() });
+    const added = proposeFor(draft, id, teams);
     if (added.length) groups.push({ eventId: id, items: added.map((a) => ({ assignment: a, on: true })) });
   }
   const total = groups.reduce((n, g) => n + g.items.length, 0);
+  const left = emptySlots(draft, eventIds, teams).reduce((n, x) => n + x.n, 0);
   if (!total) {
-    toast('Zvonec nikoho dalšího nenašel. Volná místa doplň ručně.', { icon: 'info' });
+    if (left) openEmptySlots(eventIds, { teams, nobody: true });
+    else allFilled(eventIds, teams);
     return;
   }
   const chosen = () => groups.flatMap((g) => g.items.filter((i) => i.on).map((i) => ({ eventId: g.eventId, assignment: i.assignment })));
@@ -389,7 +506,7 @@ export function fillOpenSlots(eventIds) {
   const body = groups.map((g) => {
     const event = fresh(g.eventId);
     return h('section', { class: 'plan-group', 'aria-label': `${event.title} ${shortDate(event.start)}` },
-      h('div', { class: 'plan-group__head' }, dateArch(dayOf(event.start)), h('div', {}, h('p', { class: 'row__title' }, event.title), h('p', { class: 'meta' }, shortDate(event.start)))),
+      planHead(event),
       g.items.map((item) => {
         const box = h('button', { type: 'button', class: 'plan-row', role: 'checkbox', 'aria-checked': 'true' },
           h('span', { class: 'plan-row__box', 'aria-hidden': 'true' }, icon('check', { size: 's' })),
@@ -399,11 +516,14 @@ export function fillOpenSlots(eventIds) {
         return box;
       }));
   });
+  if (left) {
+    body.push(h('p', { class: 'plan-left' }, sev('error', `chybí ${left}`), ' ',
+      left === 1 ? 'Pro jedno místo Zvonec nikoho nenašel – ukáže ti ho hned potom.' : `Pro ${plural(left, 'místo', 'místa', 'míst')} Zvonec nikoho nenašel – ukáže ti je hned potom.`));
+  }
   let sheet;
   submit.addEventListener('click', () => {
     const picked = chosen();
     sheet.close();
-    if (!picked.length) return;
     const written = [];
     for (const { eventId, assignment } of picked) {
       const e = fresh(eventId);
@@ -414,14 +534,16 @@ export function fillOpenSlots(eventIds) {
       e.assignments.push(record);
       written.push({ eventId, id: record.id });
     }
-    if (!written.length) { toast('Mezitím to někdo obsadil.', { icon: 'info' }); return; }
+    const leftAfter = () => emptySlots(S.data, eventIds, teams).length > 0;
+    if (!picked.length) { if (leftAfter()) setTimeout(() => openEmptySlots(eventIds, { teams }), 0); return; }
+    if (!written.length) { toast('Mezitím to někdo obsadil.', { icon: 'info' }); if (leftAfter()) setTimeout(() => openEmptySlots(eventIds, { teams }), 0); return; }
     change(`navrženo: ${written.length} ${agree(written.length, 'služba', 'služby', 'služeb')}`);
-    toast(`Zapsáno: ${written.length} ${agree(written.length, 'služba', 'služby', 'služeb')}. Všichni čekají na potvrzení.`, {
-      action: () => {
-        for (const w of written) { const e = fresh(w.eventId); if (e) e.assignments = (e.assignments || []).filter((x) => x.id !== w.id); }
-        change('vráceno: návrh služeb');
-      },
-    });
+    const undo = () => {
+      for (const w of written) { const e = fresh(w.eventId); if (e) e.assignments = (e.assignments || []).filter((x) => x.id !== w.id); }
+      change('vráceno: návrh služeb');
+    };
+    if (leftAfter()) { setTimeout(() => openEmptySlots(eventIds, { teams, written: { n: written.length, undo } }), 0); return; }
+    toast(`Zapsáno: ${written.length} ${agree(written.length, 'služba', 'služby', 'služeb')}. Všichni čekají na potvrzení.`, { action: undo });
   });
   sheet = openSheet({
     title: `Zvonec navrhuje ${sluzbyAcc(total)}`,

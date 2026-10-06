@@ -14,10 +14,10 @@ export const toMore = { href: '#vice', label: 'Více' };
 /**
  * A page of Více. Phone: top bar with ‹ back and the ⋯ menu; desktop (the rail is there): no back for
  * the top-level pages (`root`), the ⋯ menu and buttons sit in the head.
- *   morePage({ title, back, root, overline, lead, actions: [buttons], menuItems: [...], body, primary, wide })
+ *   morePage({ title, back, root, overline, lead, actions: [buttons], menuItems: [...], body, primary | foot, wide })
  */
 export function morePage({
-  title, back = toMore, root = false, overline, lead, actions, menuItems, body, primary, wide = false, cls, menuLabel,
+  title, back = toMore, root = false, overline, lead, actions, menuItems, body, primary, foot, wide = false, cls, menuLabel,
 } = {}) {
   const more = menuItems?.filter(Boolean).length ? menu(menuItems.filter(Boolean), { label: menuLabel || 'Další možnosti' }) : null;
   const desk = isDesktop();
@@ -30,6 +30,7 @@ export function morePage({
     head: { overline, title, lead, actions: headActions.length ? h('div', { class: 'head-actions' }, headActions) : null },
     body,
     primary,
+    foot,
     wide,
     cls: ['more-page', cls],
   });

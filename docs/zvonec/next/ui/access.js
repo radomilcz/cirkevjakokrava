@@ -104,7 +104,7 @@ export function loginSheet(person) {
     body: [
       h('p', { class: 'meta' }, `${personName(person)}. ${existing ? 'Staré heslo přestane platit. ' : ''}Heslo vymyslí Zvonec a ukáže ti ho jen jednou.`),
       field({ label: 'Přihlašovací jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
-      segmentedField({ name: 'access', label: 'Oprávnění', options: levels, value: existing?.access && levels.some((l) => l.value === existing.access) ? existing.access : 'member', hint: 'Vedoucí plánuje, správce navíc spravuje přístupy.' }),
+      segmentedField({ name: 'access', label: 'Oprávnění', options: levels, value: existing?.access && levels.some((l) => l.value === existing.access) ? existing.access : 'member', hint: 'Vedoucí plánuje a spravuje přístupy. Správce k tomu může vyměnit GitHub klíč.' }),
     ],
     onSubmit: async (form, values) => {
       clearErrors(form);
@@ -204,8 +204,8 @@ function inviteRow(login) {
   return row({
     lead: person ? avatar(person) : h('span', { class: 'avatar', 'aria-hidden': 'true' }, icon('user-plus', { size: 's' })),
     title: person ? fullName(person) : 'Nový člověk',
-    meta: expired ? `vypršela ${dayWithYear(login.expires)}` : `platí do ${dayWithYear(login.expires)}`,
-    note: expired ? h('span', { class: 'row__note', dataset: { tone: 'no' } }, icon('x', { size: 's' }), 'Vypršela') : null,
+    meta: expired ? null : `platí do ${dayWithYear(login.expires)}`,
+    note: expired ? h('span', { class: 'row__note', dataset: { tone: 'no' } }, icon('x', { size: 's' }), `Vypršela ${dayWithYear(login.expires)}`) : null,
     trail: rowMenu(login),
   });
 }
