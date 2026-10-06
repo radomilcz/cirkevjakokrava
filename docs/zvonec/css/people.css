@@ -1,6 +1,6 @@
 /* ============================================================
    Lidé – #lide/<pohled>/<filtr>, #osoba/<id>, #domacnost/<id> and the people dialogs
-   (ui/people*.js). Semantic tokens only (css/tokens.css), so it works in every look and theme;
+   (ui/people*.js). Semantic tokens only (css/tokens.css), so it works in both themes;
    categorical colour only through the kit's .c-<hue> variables.
    The last block hosts older rules of other modules that used to live here (groups, picker).
    ============================================================ */
@@ -28,7 +28,7 @@
 
 /* ---------- Seznam ---------- */
 .people-list{max-width:none}
-.people-list .list-group{min-height:34px;padding-top:var(--space-3);padding-bottom:var(--space-1)}
+.people-list .list-group{min-height:34px}
 .people-list>li.list-group:not(:first-child){border-top:1px solid var(--line-1)}
 .meta-missing{color:var(--warning-text)}
 /* contact and teams in the trail: two aligned columns on a wide screen */
@@ -50,7 +50,7 @@
 /* teams in the trail of a row: mark + name for two, +N; marks only on a phone */
 .team-tags{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0}
 .team-tag{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:14em;font-size:var(--font-size-3);line-height:1;color:var(--text-2)}
-.team-tag .group-mark{width:20px;height:20px;font-size:9px;border-radius:var(--radius-1);padding-top:var(--optical-n)}
+.team-tag .group-mark{width:20px;height:20px;font-size:9px;padding-top:var(--optical-n)}
 .team-tag-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-top:var(--optical)}
 .team-more{display:inline-flex;align-items:center;height:20px;padding:var(--optical) 7px 0;border-radius:var(--radius-full);background:var(--count-bg);color:var(--text-1);font-size:var(--font-size-1);line-height:1;font-variant-numeric:tabular-nums}
 @media (max-width:899.98px){
@@ -60,7 +60,6 @@
 
 /* ---------- Tabulka ---------- */
 .people-tabulka{container-type:inline-size}
-.people-table .table tbody :is(td,th){height:48px;padding-inline:10px}
 .people-table .table thead th:not([aria-sort]){padding-inline:10px}
 .people-table .table thead th[aria-sort]{padding-inline:2px}
 .people-table .th-sort{padding-inline:8px}
@@ -109,7 +108,7 @@
 .group-section-label{display:block;margin:0 0 var(--space-3) 2px}
 .group-card .household-icon{border-radius:var(--radius-4)}
 .household-title{min-width:0;flex:1 1 auto}
-.household-name{margin:0;font-family:var(--font-body);font-weight:400;font-size:var(--font-size-5);line-height:24px;color:var(--text-1);overflow-wrap:anywhere}
+.household-name{margin:0;font-family:var(--font-mark);font-weight:900;font-size:var(--font-size-5);line-height:22px;letter-spacing:.01em;color:var(--text-1);overflow-wrap:anywhere}
 .household-name a{color:inherit;text-decoration:none}
 .household-name a:hover{text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1px}
 .household-meta{margin:2px 0 0;font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
@@ -143,7 +142,7 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .birthday-tile-meta .icon{width:14px;height:14px;margin-top:-2px}
 .month-card{padding:var(--space-3) var(--space-3) var(--space-2)}
 .bday-month-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:2px 6px var(--space-2)}
-.bday-month-title{margin:0;font-family:var(--title-font);font-weight:900;text-transform:var(--title-transform);letter-spacing:var(--title-tracking);font-size:var(--font-size-5);line-height:22px;padding-top:2px}
+.bday-month-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:var(--font-size-4);line-height:20px;padding-top:2px}
 .birthday-rows{list-style:none;margin:0;padding:0}
 .birthday-row{display:grid;grid-template-columns:34px 24px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:40px;padding:4px 6px;border-radius:var(--radius-3)}
 .birthday-row+.birthday-row{box-shadow:0 -1px 0 var(--line-1)}
@@ -163,11 +162,18 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .birthday-row.is-past :is(.birthday-name,.birthday-day){color:var(--text-2)}
 .birthday-row.is-past .avatar{opacity:.6}
 
-/* ---------- Břemeno ---------- */
+/* ---------- Břemeno: dense rows, the name and its meta on one line on a wide screen ---------- */
 .load-list{max-width:none}
+.load-list .item{min-height:44px;padding-block:6px}
+.load-list .item-lead .avatar{width:32px;height:32px;font-size:12px}
+@media (min-width:720px){
+  .load-list .item-body{flex-direction:row;align-items:baseline;gap:12px}
+  .load-list .item-title{flex:none}
+  .load-list .item-meta{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
 .load-meter{display:inline-flex;align-items:center;gap:var(--space-3);width:300px}
 .load-track{flex:1 1 auto;display:flex;min-width:0}
-.load-track .progress{height:8px;min-width:0}
+.load-track .progress{min-width:0}
 .load-text{display:inline-flex;white-space:nowrap;align-items:center;justify-content:flex-end;gap:4px;min-width:7.2em;font-size:var(--font-size-3);font-variant-numeric:tabular-nums;color:var(--text-1);padding-top:2px}
 .load-text .severity-icon{width:14px;height:14px;margin-top:-2px}
 .load-over .load-text{color:var(--warning-text)}
@@ -178,10 +184,10 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .load-custom{display:inline-flex;align-items:center;gap:4px}
 .load-custom .icon{width:14px;height:14px;margin-top:-2px}
 @media (max-width:719.98px){
-  .load-list .item{flex-wrap:wrap;row-gap:var(--space-2)}
+  .load-list .item{flex-wrap:wrap}
   .load-list .item-body{flex:1 1 0}
   .load-list .item-chevron{order:2}
-  .load-list .item-trail{order:3;flex:1 0 100%;max-width:none;justify-content:flex-start;padding-left:calc(40px + var(--space-3))}
+  .load-list .item-trail{order:3;flex:1 0 100%;max-width:none;justify-content:flex-start;padding-left:calc(32px + 14px)}
   .load-meter{width:auto;flex:1 1 auto}
 }
 
@@ -270,14 +276,12 @@ a.household-link:hover{text-decoration:underline;text-underline-offset:.2em;text
 /* Upozornění */
 .warnings-card .card-title{display:inline-flex;align-items:center;gap:8px}
 .warnings-card .card-title .count{font-family:var(--font-body);font-weight:400;letter-spacing:0}
-.warning-rows .item-title{font-size:var(--font-size-3);line-height:20px}
 
 /* Břemeno */
 .load-big{display:flex;flex-direction:column;gap:10px;margin:0 0 var(--space-4)}
 .load-figure{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 6px;margin:0;font-size:var(--font-size-4);color:var(--text-2)}
 .load-figure strong{font-family:var(--font-mark);font-weight:900;font-size:var(--font-size-7);line-height:1;color:var(--text-1);letter-spacing:var(--tracking-mark)}
 .load-figure .badge{align-self:center;margin-left:4px}
-.load-big .progress{height:8px}
 .load-big.load-over .load-figure strong{color:var(--warning-text)}
 .load-card .callout{margin:0 0 var(--space-3)}
 

@@ -1,6 +1,6 @@
 /* An event (ui/event.js, ui/event-form.js, ui/program.js): the detail page with its tabs
    Přehled · Kdo slouží · Osnova, the add / edit dialogs, the osnova and its printed sheet.
-   Semantic tokens only (look „zvonec“ and „milnik“ share this file). */
+   Semantic tokens only. */
 
 /* ---------- head: cover, title, meta ---------- */
 .event-cover{margin:0 0 20px}
@@ -10,7 +10,7 @@
 .event-cover-strip{margin-bottom:16px}
 .event-cover-strip .cover-hero,.event-cover-strip .cover-hero.cover-plain{height:28px;aspect-ratio:auto;border-radius:var(--radius-4);padding:0}
 .event-cover-strip .cover-hero .cover-imprint{width:40%;right:-2%;top:-260%}
-.event-page .page-meta{gap:8px 18px;margin-top:12px}
+.event-page .page-meta{gap:8px 18px}
 .event-page .page-meta>span{min-width:0}
 .event-page .page-meta :is(.meta-when,.meta-kind,.meta-place){display:inline-flex;align-items:center;gap:6px;min-width:0}
 .event-page .page-meta .meta-place{align-items:baseline}
@@ -47,7 +47,6 @@
 .team-sum-counts .status{font-variant-numeric:tabular-nums}
 .status-missing{color:var(--waiting-fg)}
 .open-ring{display:inline-block;width:14px;height:14px;margin-top:calc(-1*var(--optical));border-radius:50%;box-shadow:inset 0 0 0 1.5px currentColor}
-.duties-card .card-body{padding-bottom:0}
 .program-preview{list-style:none;margin:0 -18px;padding:0}
 .program-preview li{display:grid;grid-template-columns:3.6em minmax(0,1fr) auto;align-items:baseline;gap:12px;padding:10px 18px;border-top:1px solid var(--line-1)}
 .program-preview li:first-child{border-top:0}
@@ -116,7 +115,6 @@
 .slot-pick.empty{color:var(--text-2);cursor:default}
 .slot-pick.empty:hover{background:none}
 .duty-more{font-size:var(--font-size-3);line-height:18px}
-.duty-more .text-btn{color:var(--text-2)}
 @media (hover:hover) and (pointer:fine){
   .duty .duty-more{opacity:0;transition:opacity .12s}
   .duty:hover .duty-more,.duty:focus-within .duty-more{opacity:1}
@@ -138,7 +136,6 @@
 .program-row .program-time{font-size:17px;min-width:3.2em}
 .program-meta{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 .program-who{display:flex;flex-wrap:wrap;gap:4px 14px}
-.program-who .person-line-name{font-size:var(--font-size-3)}
 .program-nobody{color:var(--waiting-fg)}
 .program-note{color:var(--text-2)}
 .program-how{white-space:pre-line;max-width:65ch}

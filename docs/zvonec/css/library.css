@@ -1,5 +1,5 @@
 /* Jak se scházíme › Šablony (ui/templates.js) and Místa (ui/places.js), plus the small helpers the
-   groups and library pages share. Semantic tokens only, so it works in every look. */
+   groups and library pages share. Semantic tokens only. */
 
 /* ---------- shared helpers ---------- */
 .text-link{color:var(--text-accent);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
@@ -34,16 +34,15 @@
 .template-card:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 /* ---------- Šablona: the editor ---------- */
-.template-editor{display:grid;grid-template-columns:200px minmax(0,1fr);gap:32px;align-items:start;max-width:1080px}
+.template-editor{display:grid;grid-template-columns:200px minmax(0,1fr);gap:32px;align-items:start}
 .template-side{position:sticky;top:calc(var(--appbar) + 24px);display:flex;flex-direction:column;gap:20px}
-.section-nav{display:flex;flex-direction:column;gap:2px}
+.section-nav{display:flex;flex-direction:column;gap:4px}
 .section-nav-item{
   position:relative;display:flex;align-items:center;height:var(--nav-item-height,36px);padding:var(--optical) 12px 0;border:0;border-radius:var(--radius-nav);
   background:none;color:var(--text-2);font:inherit;font-size:var(--font-size-4);text-align:left;cursor:pointer;
 }
 .section-nav-item:hover{background:var(--hover);color:var(--text-1)}
-.section-nav-item[aria-current="true"]{background:var(--selected-bg);color:var(--selected-fg)}
-.section-nav-item[aria-current="true"]::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--indicator)}
+.section-nav-item[aria-current="true"]{background:var(--soft-hover);color:var(--text-1)}
 .template-save{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding-top:16px;border-top:1px solid var(--line-1)}
 .template-save .btn{justify-content:center}
 .save-note{margin:0;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
@@ -53,7 +52,7 @@
 .template-form{display:flex;flex-direction:column;gap:20px;min-width:0}
 .template-section{scroll-margin-top:calc(var(--appbar) + 16px)}
 .template-section-head{padding:18px 22px 0}
-.template-section-title{margin:0;font-family:var(--title-font);font-weight:900;text-transform:var(--title-transform);letter-spacing:var(--title-tracking);font-size:var(--font-size-6);line-height:24px;padding-top:2px}
+.template-section-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:var(--font-size-5);line-height:22px;padding-top:2px}
 .template-section-hint{margin:4px 0 0;font-size:var(--font-size-3);line-height:20px;color:var(--text-2);max-width:var(--w-text)}
 .template-section-body{padding:16px 22px 22px}
 .template-section .empty-state{box-shadow:none;background:var(--surface-sunken)}
@@ -81,7 +80,7 @@
 .needs-editor{display:flex;flex-direction:column;gap:16px}
 .needs-total{margin:0;font-size:var(--font-size-4);color:var(--text-2)}
 .needs-total strong{font-weight:400;color:var(--text-1)}
-.tneeds-teams{display:flex;flex-direction:column;border-radius:var(--radius-4);background:var(--surface-sunken)}
+.tneeds-teams{display:flex;flex-direction:column;border-radius:12px;background:var(--surface-sunken)}
 .tneeds-team{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 16px;padding:12px 14px}
 .tneeds-team+.tneeds-team{border-top:1px solid var(--line-1)}
 .tneeds-team-head{display:flex;align-items:center;gap:8px;min-height:36px;font-size:var(--font-size-4)}
@@ -93,9 +92,9 @@
 .need-role.on .need-role-name{color:var(--selected-fg)}
 .need-role-program{display:block;font-size:12px;line-height:16px;color:var(--info-text)}   /* 12 px is the floor */
 .need-role .stepper{height:32px;background:var(--field-bg)}
-.need-role .stepper input[type="number"]{width:2.4em;height:28px}
-.needs-program{padding:12px 14px;border-radius:var(--radius-4);background:var(--info-bg)}
-.needs-program .label{margin:0 0 6px;color:var(--info-text)}
+.need-role .stepper input[type="number"]{width:2.4em}
+.needs-program{padding:12px 14px;border-radius:12px;background:var(--info-bg)}
+.needs-program .label{margin:0 0 6px}
 .needs-program ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;font-size:var(--font-size-3);line-height:20px}
 .needs-program li{display:contents}
 .needs-program-role{color:var(--text-1)}
@@ -110,8 +109,7 @@
 .outline-summary-text strong{font-weight:400;font-variant-numeric:tabular-nums}
 .outline-summary-note{font-size:var(--font-size-3);color:var(--text-2)}
 .outline-summary-note.over{color:var(--declined-fg)}
-.outline-summary .progress{height:8px}
-.outline-list{list-style:none;margin:0;padding:0;border-radius:var(--radius-4);background:var(--surface-sunken)}
+.outline-list{list-style:none;margin:0;padding:0;border-radius:12px;background:var(--surface-sunken)}
 .outline-list:empty{display:none}
 .outline-item{display:grid;grid-template-columns:28px 52px minmax(0,1fr) auto 32px;align-items:center;gap:8px;min-height:52px;padding:6px 8px 6px 6px;background:var(--surface-sunken);border-radius:var(--radius-4)}
 .outline-item+.outline-item{border-top:1px solid var(--line-1);border-radius:0}
@@ -140,7 +138,6 @@
   .section-nav{flex-direction:row;overflow-x:auto;scrollbar-width:none;gap:4px;margin:0 -4px;padding:0 4px}
   .section-nav::-webkit-scrollbar{display:none}
   .section-nav-item{flex:none;height:32px;border-radius:var(--radius-chip);font-size:var(--font-size-3);background:var(--hover)}
-  .section-nav-item[aria-current="true"]::before{display:none}
   .template-save{display:none}
   .template-savebar{
     position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -180,7 +177,7 @@
 .place-card-count{font-size:var(--font-size-3);color:var(--text-2)}
 .place-rooms{list-style:none;margin:0 20px;padding:0;border-top:1px solid var(--line-1)}
 .place-rooms>li+li{border-top:1px solid var(--line-1)}
-.place-rooms .item{padding-inline:4px 4px;min-height:52px}
+.place-rooms .item{min-height:52px}
 .place-card-foot{padding:8px 14px 12px;margin-top:auto}
 .place-card-map{position:relative;min-height:200px;background:var(--surface-sunken)}
 .place-card-map .place-map{position:absolute;inset:0;height:auto;max-width:none;margin:0;border-radius:0;box-shadow:none}

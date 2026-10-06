@@ -37,5 +37,5 @@
 .needs-field>.select,.needs-field>select{align-self:flex-start;width:auto;min-width:14em}
 
 /* „Zveřejnit na webu“: the switch with its hint in a quiet box */
-.publish-field{padding:12px 14px;border-radius:var(--radius-4);background:var(--info-bg)}
+.publish-field{padding:12px 14px;border-radius:12px;background:var(--info-bg)}
 .publish-field .caption small{color:var(--info-text)}

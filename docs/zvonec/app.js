@@ -370,7 +370,7 @@ function renderApp({ toTop = false } = {}) {
     console.error(error);
     content = page({ title: 'Jejda', width: 'list', body: emptyState({ icon: 'alert', title: 'Tohle se nepodařilo zobrazit.', text: 'Zkus stránku načíst znovu, a kdyby to nepomohlo, dej vědět správci.' }) });
   }
-  // the quiet section label above the title (look „milnik“): only where it says more than the title
+  // the quiet section label above the title (the hero head): only where it says more than the title
   const head = content.querySelector('.page-head');
   const title = content.querySelector('.page-title')?.textContent?.trim();
   const context = NAV_LABELS[active] || (section === 'ucet' ? 'Můj účet' : '');

@@ -11,8 +11,8 @@
 
 /* ---------- Nastavení ---------- */
 .settings-body{display:flex;flex-direction:column;gap:16px;max-width:var(--w-list)}   /* one right edge for every tab */
-.settings-body .card-head+.card-body{padding-top:2px}
 .settings-body .card-body.flush{border-top:1px solid var(--line-1)}
+.settings-body .card-head+.card-body.flush{padding-top:2px}
 .preview-place{font-size:var(--font-size-4);line-height:22px}
 .settings-preview .place-map{max-width:none;height:200px}
 
@@ -67,7 +67,6 @@
 
 /* ---------- signed-out pages: sign in, first setup, invite ---------- */
 .signin-page .page-body{display:flex;flex-direction:column;gap:16px}
-.signin-card .card-body{padding:22px 22px 20px}
 .signin-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:860px){.signin-grid{grid-template-columns:minmax(0,1fr)}}
 .form-submit{display:flex;padding-top:4px}

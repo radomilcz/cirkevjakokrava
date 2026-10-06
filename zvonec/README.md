@@ -9,16 +9,12 @@ v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další 
 ## Vzhled
 
 Zvonec je sourozenec [Otázek na tělo](https://otazky.cirkevjakokrava.cz): stejné písmo Agrandir, stejná
-paleta (hlína, růžová, krém), tykání. Vzhled si nastavíš v hlavičce v nabídce **Vzhled** (na telefonu je
-v menu), stejnou volbu najdeš i v Mém účtu:
+paleta (hlína, růžová, krém), tykání. V nabídce **Vzhled** si vybereš režim: **Podle zařízení** (výchozí),
+**Světlý** nebo **Tmavý**. Nabídku najdeš na počítači dole v levém sloupci vedle svého jména, na telefonu
+v menu; stejnou volbu máš i v Mém účtu.
 
-- **Režim:** Podle zařízení (výchozí) · Světlý · Tmavý.
-- **Vzhled:** **Zvonec** (výchozí – klidný pracovní nástroj na krémovém podkladu) nebo **Milníkovač**
-  (stejná data i stejné obrazovky, jen kulatější tlačítka, nadpisy psané normálně místo velkých písmen a jiné rozložení hlavičky stránky).
-
-Volbu si pamatuje prohlížeč, takže platí jen u tebe. Chceš někomu poslat odkaz rovnou v určitém vzhledu?
-Přidej do adresy před `#` třeba `?vzhled=milnik` (nebo `?vzhled=zvonec`) a případně `&rezim=tmavy` (`svetly`, `zarizeni`),
-tedy `…/zvonec/?vzhled=milnik&rezim=tmavy#kalendar`.
+Volbu si pamatuje prohlížeč, takže platí jen u tebe. Chceš někomu poslat odkaz rovnou v tmavém režimu?
+Přidej do adresy před `#` `?rezim=tmavy` (nebo `svetly`, `zarizeni`), tedy `…/zvonec/?rezim=tmavy#kalendar`.
 Tisk jde vždycky na bílý papír.
 
 ## Tři části: Lidé, Týmy a skupinky, Setkání
@@ -178,7 +174,7 @@ Přesný tvar záznamů je v [ARCHITECTURE.md](ARCHITECTURE.md). Smazaný člov�
 
 ```
 docs/zvonec/index.html, style.css, imprint.svg   kostra stránky (CSP: ven jen api.github.com a mapy OpenStreetMap), základ vzhledu, tisk A4
-docs/zvonec/css/          barvy a rozměry (tokens.css), druhý vzhled Milníkovač (look-milnik.css), styly jednotlivých částí
+docs/zvonec/css/          barvy a rozměry (tokens.css) a styly jednotlivých částí
 docs/zvonec/app.js        start (ukázka / naostro), přihlášení, adresy obrazovek, menu, stav ukládání
 docs/zvonec/lib/          logika bez obrazovek: lidé, místa, skupiny, setkání a řady, osnova, plánování, upozornění,
                           kontrola dat, přístupy, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
@@ -191,7 +187,7 @@ zvonec/test/              testy (node --test zvonec/test/*.test.mjs)
 zvonec/data-repo/         vzory workflow pro datové repo (web.yml, check.yml)
 ```
 
-Jak se přidává nová část nebo nový vzhled, je v [ARCHITECTURE.md](ARCHITECTURE.md), pravidla vzhledu
+Jak se přidává nová část, je v [ARCHITECTURE.md](ARCHITECTURE.md), pravidla vzhledu
 v [DESIGN.md](DESIGN.md).
 
 Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`build.py`) do

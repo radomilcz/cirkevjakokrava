@@ -24,17 +24,18 @@
 /* ---------- the weeks ---------- */
 .pub-weeks{display:flex;flex-direction:column;gap:28px}
 .pub-page .page-body>.pub-weeks{margin-top:40px}
-.pub-week-label{margin:0 0 10px;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--section-size);line-height:var(--line-height-6);letter-spacing:var(--tracking-mark)}
-.pub-list{list-style:none;margin:0;padding:0;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}
+.pub-week-label{margin:0 0 14px;padding-inline:4px;font-family:var(--font-mark);font-weight:900;font-size:var(--section-size);line-height:var(--line-height-6);letter-spacing:-.005em}
+.pub-list{list-style:none;margin:0;padding:0;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card);transition:box-shadow .2s}
+.pub-list:hover{box-shadow:var(--shadow-card-hover)}
 .pub-list>li+li{border-top:1px solid var(--line-1)}
 .pub-item{display:flex;align-items:center;gap:16px;padding:14px 16px 14px 18px;color:var(--text-1);text-decoration:none;border-radius:inherit}
 .pub-list>li:first-child>.pub-item{border-top-left-radius:var(--radius-card);border-top-right-radius:var(--radius-card)}
 .pub-list>li:last-child>.pub-item{border-bottom-left-radius:var(--radius-card);border-bottom-right-radius:var(--radius-card)}
-.pub-item:hover{background:var(--hover)}
+.pub-item:hover{background:var(--surface-sunken)}
 .pub-item:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 .pub-item-date{
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:none;width:52px;height:60px;padding-top:var(--optical-n);
-  border-radius:var(--radius-4);background:var(--hover);font-family:var(--font-mark);font-weight:900;line-height:1;text-transform:uppercase;
+  border-radius:12px;background:var(--soft);font-family:var(--font-mark);font-weight:900;line-height:1;text-transform:uppercase;
 }
 .pub-item-dow,.pub-item-month{font-size:10px;letter-spacing:.08em;color:var(--text-2)}
 .pub-item-day{font-size:22px;line-height:.85}
@@ -53,7 +54,7 @@
   .pub-item{gap:12px;padding:12px 12px 12px 14px}
   .pub-item-cover{display:none}
   .pub-item-date{width:46px;height:54px}
-  .pub-item-title{font-size:var(--font-size-4);line-height:22px}
+  .pub-item-title{line-height:22px}
 }
 
 /* „Další setkání“: the weeks after the first six, folded */
@@ -67,7 +68,7 @@
 @media (max-width:760px){.pub-where:has(.pub-where-map){grid-template-columns:minmax(0,1fr)}}
 .pub-where-text{display:flex;flex-direction:column;gap:6px;min-width:0}
 .pub-where-text p{margin:0;font-size:var(--font-size-4);line-height:22px}
-.pub-where-title{margin:0 0 6px;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--section-size);line-height:var(--line-height-6);letter-spacing:var(--tracking-mark)}
+.pub-where-title{margin:0 0 6px;font-family:var(--font-mark);font-weight:900;font-size:var(--section-size);line-height:var(--line-height-6);letter-spacing:-.005em}
 .pub-where-address{color:var(--text-2)}
 .pub-where-text .pub-where-updated{margin-top:auto;padding-top:12px;font-size:var(--font-size-3);color:var(--text-2)}
 .pub-where-map .place-map{margin:0;max-width:none;height:220px}
@@ -88,7 +89,7 @@
 .pub-formats>li{display:flex}
 .pub-format{flex:1;padding:20px 22px 22px}
 .pub-format-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin-bottom:14px}
-.pub-format-name{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--section-size);line-height:var(--line-height-6);letter-spacing:var(--tracking-mark);overflow-wrap:anywhere}
+.pub-format-name{margin:0;font-family:var(--font-mark);font-weight:900;font-size:var(--section-size);line-height:var(--line-height-6);letter-spacing:-.005em;overflow-wrap:anywhere}
 .pub-facts{margin:0;display:flex;flex-direction:column;gap:14px}
 .pub-facts dt{margin:0 0 4px}
 .pub-facts dd{margin:0;max-width:65ch;white-space:pre-line;overflow-wrap:anywhere;font-size:var(--font-size-4);line-height:24px}

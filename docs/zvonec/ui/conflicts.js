@@ -229,6 +229,7 @@ export function renderConflicts(parts = []) {
 
   return page({
     title: 'Upozornění',
+    compact: true,
     lead: 'Co v rozpisu nesedí. Oprav to rovnou tady, nebo napiš, proč to půjde i tak.',
     width: 'list',
     // the two tabs show the same warnings sorted another way: the count lives on the module (sidebar), not on a tab

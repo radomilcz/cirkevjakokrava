@@ -127,22 +127,19 @@ export function availabilityDialog(person, record = null) {
 // ---------- Vzhled ----------
 
 const THEMES = [['', 'Podle zařízení'], ['light', 'Světlý'], ['dark', 'Tmavý']];   // the same control as the header menu Vzhled: words, no icons
-const LOOKS = [['zvonec', 'Zvonec'], ['milnik', 'Milníkovač']];
 
 function appearanceCard() {
   const api = window.zvonecAppearance;
   if (!api) return null;
   const theme = segmentedField('theme', 'Režim', THEMES, api.theme() || '', { onchange: (e) => api.setTheme(e.target.value) });
-  const look = segmentedField('look', 'Vzhled', LOOKS, api.look() || 'zvonec', { onchange: (e) => api.setLook(e.target.value) });
   // the header menu may change it too – keep both in step
   const sync = () => {
     for (const input of theme.querySelectorAll('input')) input.checked = input.value === (api.theme() || '');
-    for (const input of look.querySelectorAll('input')) input.checked = input.value === (api.look() || 'zvonec');
   };
   document.addEventListener('zvonec:appearance', sync);
   return card({
     title: 'Vzhled',
-    body: [h('p', { class: 'card-text' }, 'Platí jen v tomhle prohlížeči. Totéž najdeš v hlavičce v nabídce Vzhled.'), h('div', { class: 'form-grid appearance-grid' }, theme, look)],
+    body: [h('p', { class: 'card-text' }, 'Platí jen v tomhle prohlížeči. Totéž najdeš v hlavičce v nabídce Vzhled.'), h('div', { class: 'form-grid appearance-grid' }, theme)],
   });
 }
 

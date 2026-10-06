@@ -6,19 +6,18 @@
 .cal-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px}
 .cal-toolbar-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
 .cal-toolbar .datenav{margin-left:-8px}
-.cal-toolbar .datenav-label{min-width:9.6em}
 .cal-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-width:0}
 .cal-filters .switch-row{padding:0;align-items:center;white-space:nowrap}
 .cal-filters .switch-row>input{margin-top:0}
 .cal-filters .switch-row .caption{font-size:var(--font-size-3)}
 .cal-filter-toggle{display:none}
 .cal-filter-toggle .count{margin:calc(-1*var(--optical)) -4px 0 2px}
-.kind-chip{height:var(--control-1);padding-inline:10px 12px;font-size:var(--font-size-3);gap:6px}
+.kind-chip{font-size:var(--font-size-3);gap:6px}
 .kind-chip .kind-mark{margin:calc(-1*var(--optical)) 0 0 -2px}
 .kind-chip .kind-mark .icon{width:15px;height:15px;margin:0}
 .kind-chip[aria-pressed="true"] .kind-mark{display:none}
 .toolbar-select{display:inline-flex;align-items:center;min-width:0}
-.toolbar-select :is(select,.select-btn){height:var(--control-1);padding:var(--optical) 12px 0 14px;font-size:var(--font-size-3);border-radius:var(--radius-chip);background-color:var(--surface-panel)}
+.toolbar-select :is(select,.select-btn){height:var(--control-1);padding:var(--optical) 12px 0 14px;font-size:var(--font-size-3);background-color:var(--surface-panel)}
 .toolbar-select select{padding-right:30px}
 .toolbar-select .select{min-width:10.5em}
 .toolbar-select.on :is(select,.select-btn){background-color:var(--selected-bg);color:var(--selected-fg);box-shadow:inset 0 0 0 1px var(--selected-line)}
@@ -28,7 +27,6 @@
   .cal-filter-toggle{display:inline-flex}
   .cal-filters{display:none;padding:12px;border-radius:var(--radius-card);background:var(--surface-panel);box-shadow:var(--shadow-card)}
   .cal-toolbar.filters-open .cal-filters{display:flex}
-  .cal-toolbar .datenav-label{min-width:0;font-size:var(--font-size-5)}
   .calendar-page .page-head .page-tabs .tab{padding-inline:8px}
 }
 
@@ -67,7 +65,7 @@
 .month-day.today .month-day-num{background:var(--primary-bg);color:var(--primary-fg)}
 .month-day.other .month-day-num{color:var(--text-3)}
 /* days of the next month are future: only their number is lighter, the chips stay full strength (only past chips fade) */
-.month-day-add{width:24px;height:24px;margin-right:-2px;color:var(--text-2);opacity:0;transition:opacity .12s}
+.month-day-add{height:24px;margin-right:-2px;color:var(--text-2);opacity:0;transition:opacity .12s}
 .month-day-add .icon{width:15px;height:15px}
 .month-day:hover .month-day-add,.month-day-add:focus-visible{opacity:1}
 @media (hover:none){.month-day-add{opacity:.7}}
@@ -133,7 +131,7 @@
   .month-daylist{display:block}
 }
 .month-daylist-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px;padding:0 2px}
-.month-daylist-title{margin:0;font-family:var(--title-font);font-weight:900;text-transform:var(--title-transform);font-size:var(--font-size-5);line-height:22px;letter-spacing:var(--title-tracking)}
+.month-daylist-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-3);line-height:20px;letter-spacing:.06em;padding-top:2px}
 
 /* ---------- Týden ---------- */
 .week{--week-gutter:58px;--days:7;background:var(--surface-panel);border-radius:var(--radius-card);box-shadow:var(--shadow-card);overflow:hidden}
@@ -147,7 +145,7 @@
 .week-num{display:grid;place-items:center;min-width:30px;height:30px;padding:var(--optical-n) 6px 0;border-radius:var(--radius-full);font-family:var(--font-mark);font-weight:900;font-size:17px;line-height:1}
 .week-day-head.today .week-num{background:var(--primary-bg);color:var(--primary-fg)}
 .week-day-head.today .week-dow{color:var(--text-accent)}
-.week-day-add{position:absolute;top:6px;right:6px;width:24px;height:24px;color:var(--text-2);opacity:0;transition:opacity .12s}
+.week-day-add{position:absolute;top:6px;right:6px;height:24px;color:var(--text-2);opacity:0;transition:opacity .12s}
 .week-day-add .icon{width:15px;height:15px}
 .week-day-head:hover .week-day-add,.week-day-add:focus-visible{opacity:1}
 @media (hover:none){.week-day-add{opacity:.7}}
@@ -210,13 +208,13 @@
 .fill-count{display:inline-flex;align-items:center;gap:6px;color:var(--text-2)}
 @media (max-width:520px){
   .event-row .cover-thumb{display:none}
-  .event-row .mine-badge{max-width:100%;white-space:normal;height:auto;min-height:24px;padding-block:3px}
+  .event-row .mine-badge{max-width:100%;white-space:normal}
 }
 
 /* ---------- the day popover (kit anchoredPopover) ---------- */
 .day-popover{width:380px;padding:10px 10px 12px}
 .day-pop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 6px 10px}
-.day-pop-title{margin:0;font-family:var(--title-font);font-weight:900;text-transform:var(--title-transform);font-size:var(--font-size-4);line-height:20px;letter-spacing:var(--title-tracking)}
+.day-pop-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-3);line-height:20px;letter-spacing:.06em;padding-top:2px}
 .day-pop-items{box-shadow:none;background:none;border-radius:0}
 .day-pop-items .item{padding:8px 10px;min-height:52px;border-radius:var(--radius-3)}
 .day-pop-items>li+li{border-top:0}

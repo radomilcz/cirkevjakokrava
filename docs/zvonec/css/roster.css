@@ -20,33 +20,31 @@
 .roster-table .team-start{box-shadow:inset 1px 0 0 var(--line-2)}
 .roster-corner{
   position:sticky;left:0;z-index:3;min-width:13em;vertical-align:bottom !important;padding-bottom:10px !important;
-  background:var(--surface-sunken);box-shadow:inset -1px 0 0 var(--line-2);
+  box-shadow:inset -1px 0 0 var(--line-2);
 }
-.roster-table thead th:not(.roster-corner){background:var(--surface-sunken)}
-.roster-table .roster-corner{background-color:var(--surface-panel);background-image:linear-gradient(var(--surface-sunken),var(--surface-sunken))}
+.roster-table .roster-corner{background:var(--surface-panel)}   /* the role names scroll under it */
 
 /* the first column: Účel bar, day and time, the title – sticks while the roles scroll */
 .roster-table tbody .roster-event{
   position:sticky;left:0;z-index:2;min-width:13em;max-width:17em;padding:0 !important;
   background:var(--surface-panel);box-shadow:inset -1px 0 0 var(--line-2);
 }
-.roster-event-link{display:flex;align-items:stretch;gap:10px;height:100%;min-height:52px;padding:8px 12px 8px 0;text-decoration:none;color:var(--text-1)}
+.roster-event-link{display:flex;align-items:stretch;gap:10px;height:100%;min-height:44px;padding:4px 12px 4px 0;text-decoration:none;color:var(--text-1)}
 .roster-event-link:hover .roster-day{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
-.roster-kind{flex:none;width:4px;border-radius:0 3px 3px 0;background:var(--c9)}
-.roster-event-text{display:flex;flex-direction:column;gap:2px;min-width:0;padding-left:4px}
+.roster-kind{flex:none;width:4px;margin:6px 0 6px 8px;border-radius:var(--radius-full);background:var(--c9)}   /* an inset pill */
+.roster-event-text{display:flex;flex-direction:column;justify-content:center;min-width:0;padding-left:4px}
 .roster-when{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
 .roster-day{font-size:var(--font-size-4)}
 .roster-time{font-size:var(--font-size-3);color:var(--text-2);font-variant-numeric:tabular-nums}
 .roster-title{font-size:var(--font-size-3);line-height:18px;color:var(--text-2);overflow-wrap:anywhere}
 .roster-table tbody tr.past .roster-event-text,.roster-table tbody tr.past .roster-cell-in{opacity:.62}
-.roster-table tbody tr.my-row .roster-event{box-shadow:inset -1px 0 0 var(--line-2),inset 3px 0 0 var(--indicator)}
 .roster-table tbody tr.cancelled .roster-day{text-decoration:line-through}
 .roster-table tbody tr.cancelled .roster-cell-in{opacity:.45}
 .roster-table tbody tr:hover :is(td,th){background:var(--surface-panel)}
 .roster-table tbody tr:hover td{background-image:linear-gradient(var(--hover),var(--hover))}
 
 /* a cell: people with their status symbol, „chybí“, a quiet „+“ for leaders */
-.roster-table tbody td.roster-cell{position:relative;min-width:11.5em;height:auto;padding:6px 8px;vertical-align:top}
+.roster-table tbody td.roster-cell{position:relative;min-width:11.5em;padding:4px 8px;vertical-align:top}
 .roster-cell.none{color:var(--text-3);vertical-align:middle}
 .roster-none{padding-left:6px}
 .roster-cell.mine-cell{background:var(--selected-bg)}
@@ -145,7 +143,7 @@ button.roster-missing:hover,button.roster-missing.pop-open{box-shadow:inset 0 0 
 .dialog:has(.people-picker){margin-block:min(12vh,96px) auto}
 .pp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .pp-head-text{display:flex;flex-direction:column;gap:4px;min-width:0}
-.pp-title{margin:0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-5);line-height:22px;letter-spacing:var(--tracking-mark)}
+.pp-title{margin:0;font-family:var(--font-mark);font-weight:900;font-size:var(--font-size-5);line-height:22px;letter-spacing:-.005em}
 .pp-sub{margin:0;font-size:var(--font-size-3);line-height:18px;color:var(--text-2)}
 .pp-tools{display:flex;flex-direction:column;gap:10px}
 .pp-scope:empty{display:none}

@@ -73,6 +73,7 @@ export function renderCalendar(parts = []) {
     toolbar: toolbar(ctx),
     body,
     width: 'wide',
+    compact: true,
     cls: ['calendar-page', `cal-view-${view}`],
   });
 }

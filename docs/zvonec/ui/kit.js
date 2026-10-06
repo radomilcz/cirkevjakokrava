@@ -985,15 +985,18 @@ const WIDTHS = { text: 'w-text', list: 'w-list', form: 'w-form', wide: 'w-wide' 
  *   page({ title: 'Lidé', actions: button('Přidat člověka', { variant: 'solid', icon: 'plus', onclick: add }),
  *     tabs: tabs(VIEWS, view, (v) => `#lide/${v}`), toolbar: toolbar(searchField(…), chips(…)),
  *     width: 'list', body: [...] })
- * width: 'wide' (default, the whole stage) | 'list' (960) | 'form' (640) | 'text' (72ch) – head and body share it.
+ * width: 'wide' (default, the whole stage) | 'list' (780) | 'form' (640) | 'text' (780) – head and body share it.
  * media: an avatar / team mark in front of the title. meta: a line of facts under the title (icons + text).
+ * compact: the low head of a working screen (Kalendář, Lidé, Upozornění, Týmy a skupinky): title and actions
+ *   on one line, the tabs right under them, no hero band. Without it: the hero head (Přehled, detail pages,
+ *   the public part).
  * @returns {HTMLElement} div.page
  */
-export function page({ title, lead, meta, back, media, actions, tabs: tabNav, toolbar: bar, body, width = 'wide', cls, context } = {}) {
+export function page({ title, lead, meta, back, media, actions, tabs: tabNav, toolbar: bar, body, width = 'wide', cls, context, compact = false } = {}) {
   const tools = nodes(actions || []);
   const backEl = Array.isArray(back) ? h('a', { class: 'back page-back', href: back[1] }, icon('chevron-left'), back[0]) : back || null;
   return h('div', { class: ['page', WIDTHS[width] || 'w-wide', cls] },
-    h('header', { class: ['page-head', media && 'with-media'], dataset: context ? { context } : undefined },
+    h('header', { class: ['page-head', media && 'with-media', compact && 'compact'], dataset: context ? { context } : undefined },
       backEl,
       h('div', { class: 'page-head-row' },
         media ? h('div', { class: 'page-head-media' }, media) : null,

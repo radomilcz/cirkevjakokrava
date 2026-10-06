@@ -167,7 +167,7 @@ function renderList() {
     lead: 'Formáty jsou části setkání, třeba chvály nebo kázání. Z nich se skládá osnova.',
     tabs: libraryTabs('formaty'),
     actions: leader ? button('Přidat formát', { variant: 'solid', icon: 'plus', onclick: add }) : null,
-    width: 'wide',   // Jak se scházíme: one width for Šablony · Formáty · Místa
+    width: 'list',   // Jak se scházíme: one width for Šablony · Formáty · Místa
     cls: 'library-page',
     body: list(formats, (f) => {
       const role = roleById(S.data, f.leadRoleId);

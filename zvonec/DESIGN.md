@@ -29,34 +29,29 @@ same change.
    track – green potvrzeno, amber (dashed when large) čeká – and its words say both: „14 z 15 · 3 čekají“.
    One „zrušeno“ everywhere: the gray pill with ⊘ (`cancelledBadge`) and the title struck through.
    Progress bars have one colour meaning: accent = progress, amber = over a limit / warning, red = error.
-6. **Semantics before looks.** Screens and the kit emit one semantic DOM; looks only override tokens
-   and a few structural rules (§2). No raw colours, font names or radius numbers in module CSS.
+6. **Semantics first.** Screens and the kit emit one semantic DOM; the look lives in tokens and the kit
+   CSS (§2–3). No raw colours or font names in module CSS; radii come from tokens.
 7. **Czech** is natural and plain (CLAUDE.md, `kontrola-cestiny`). Buttons are a verb (+ object).
    „Může se přihlásit“, never „má přihlášení“.
 8. **Keyboard and screen reader:** real buttons and links, a label on every field, a visible focus ring
    (2 px `--focus`), Esc closes dialogs and menus, `aria-current` / `aria-pressed` / `aria-selected`
    mirror what is shown as chosen.
 
-## 2. Two looks, one DOM
+## 2. One look
 
-| | look **Zvonec** (default) | look **Milníkovač** (`milnik`) |
-|---|---|---|
-| attribute | `<html data-look="zvonec">` | `<html data-look="milnik">` |
-| file | `css/tokens.css` (the base for every look; no `look-zvonec.css`) | `css/look-milnik.css`, loaded last |
-| character | tool on a cream stage, sheet inset in the chrome, rounded rectangles for controls, uppercase Narrow titles 32 px | the owner's prototype in our palette: pill controls and pill tabs, sentence-case Narrow titles 36 px, hero page head, wider sidebar (264 px), narrower lists (780 px) |
+Zvonec has one look: the owner's Milníkovač prototype in the cow's palette and fonts – the sidebar on the
+cream ground (brand at its top, the person and Vzhled at its foot), the stage a lighter window inset in it,
+pill controls and pill tabs, sentence-case titles in Agrandir Narrow Black, cards with a border and a soft
+shadow. Brand: clay `#3b2f2f`, pink `#e6acac`, cream `#f9e7dd`; Agrandir Regular, Agrandir Narrow Black,
+Agrandir Grand Heavy (the brand mark only).
 
-Both use the brand: clay `#3b2f2f`, pink `#e6acac`, cream `#f9e7dd`; Agrandir Regular, Agrandir Narrow
-Black, Agrandir Grand Heavy.
-
-- **Mode** (`data-theme="light|dark"`, absent = the device decides) and **look** are independent.
-  Both are chosen in the header menu „Vzhled“ (sections „Režim“: Podle zařízení · Světlý · Tmavý, and
-  „Vzhled“: Zvonec · Milníkovač), and again in Můj účet. They are remembered per browser
-  (`localStorage` `zvonec-theme`, `zvonec-look`; never part of the data).
-- A link may set them: `?vzhled=milnik|zvonec`, `?rezim=svetly|tmavy|zarizeni`; the choice is kept.
-- `ui/palette.js` is a classic script in `<head>`: it applies both attributes before the first paint,
-  exposes `window.zvonecAppearance` and fires `zvonec:appearance`.
-- A look may change tokens, the shell, tabs, buttons, badges, titles; it must not change structure,
-  copy or behaviour. Every feature works the same in both.
+- **Mode** (`data-theme="light|dark"` on `<html>`, absent = the device decides) is chosen in the header menu
+  „Vzhled“ (section „Režim“: Podle zařízení · Světlý · Tmavý) and again in Můj účet. It is remembered per
+  browser (`localStorage` `zvonec-theme`, never part of the data); a link may set it with
+  `?rezim=svetly|tmavy|zarizeni`. An old `?vzhled=` or stored `zvonec-look` is ignored.
+- `ui/palette.js` is a classic script in `<head>`: it applies the mode before the first paint, exposes
+  `window.zvonecAppearance` and fires `zvonec:appearance`. The menu is a list of settings (`CHOICES`), each a
+  radio group, so another setting (a brand palette) is one more group, not a new look.
 
 ## 3. Tokens and semantic rules
 
@@ -73,19 +68,19 @@ Components use only **semantic tokens**; raw scale steps only for categorical co
   disabled only) · `--text-accent`.
 - **Status:** `--confirmed-*` green, `--waiting-*` amber, `--declined-*` red, `--info-*` blue, each
   `-bg` / `-fg` / `-solid`.
-- **Role tokens a look overrides:** `--radius-control-1..3`, `--radius-nav|card|dialog|badge|chip|tab|
-  avatar|mark|stage`, `--shadow-*`, `--title-font|transform|size|line`, `--section-size`,
-  `--row-min-height`, `--nav-item-height`, `--control-1..3`, `--w-*`, `--sidebar`.
-- **Selected vs clickable.** *Selected* changes three channels at once: fill hue (neutral → rose
-  `--selected-bg`), a shape mark (indicator bar on nav and rows, underline on tabs, raised thumb on a
-  segmented control, ✓ on a filter chip, tick or dot in checkbox / radio), and text colour
-  (`--selected-fg`), plus the matching `aria-` attribute. *Clickable* is shown by a fill (buttons are
-  never an outline alone), a hover fill, the cursor and a chevron or ⋯ at the row end. Rose means
-  selection; the primary action is the ink of the mode (clay in light, pink in dark).
-- **Shape rule.** Rounded rectangles are things you act on (buttons, fields, segmented, nav items);
-  full pills are state and identity (badges, counts, filter chips, avatars, switch). Dashed lines are
-  reserved for „čeká“. Round = a person, rounded square = a team. (Look Milníkovač makes controls pills
-  too, but selection still uses the three channels.)
+- **Role tokens:** `--radius-control-1..3`, `--radius-field|nav|card|dialog|menu|badge|chip|avatar|mark|stage`,
+  `--shadow-card|card-hover|raised|popover|dialog|stage`, `--title-font|transform|size|line`, `--section-size`,
+  `--row-min-height`, `--nav-item-height`, `--control-1..3`, `--control-icon`, `--w-*`, `--sidebar`,
+  `--brand-h`, `--sidebar-foot-h`, `--hero-bg|line`, `--accent-solid`.
+- **Selected vs clickable.** *Selected* nav items, tabs, segments and filter chips take the ink fill of
+  the mode (clay in light, pink in dark) with the light text, plus a ✓ on a filter chip, a tick or dot in
+  checkbox / radio and the matching `aria-` attribute. Rose tints (`--selected-bg`) mark „mine“ (my duty,
+  my row in Rozpis, today) and selected table rows. *Clickable* is shown by a fill (buttons are never an
+  outline alone; a surface button inside a panel gets a soft fill), a hover fill, the cursor and a chevron
+  or ⋯ at the row end. The primary action is the same ink.
+- **Shape rule.** Controls, tabs, nav items, badges, chips, avatars and the switch are pills; fields are
+  rounded 12, cards and dialogs 16, small panels inside a card 12. Dashed lines mean „čeká“, an empty state
+  frame and the „add“ button at the end of a list. Round = a person, rounded square = a team.
 - **Categorical hues** (teams, Účel, avatars): rose, blue, green, plum, teal, amber through `.c-<hue>`
   classes that set `--c3/4/5/9/11/12` (CSP-safe, no inline styles). Účel: Nedělní setkání rose,
   Zkouška blue, Skupinka teal, Akce plum. An avatar's hue is a stable hash of the person id.
@@ -96,31 +91,40 @@ Components use only **semantic tokens**; raw scale steps only for categorical co
 
 | token | px | use |
 |---|---|---|
-| `--font-size-8` | 32 (36 in Milníkovač) | h1 page title, Narrow Black, uppercase (sentence case in Milníkovač) |
-| `-7` | 24 | h1 on a phone, big numbers |
-| `-6` | 20 | h2 section, dialog title (Narrow, uppercase) |
-| `-5` | 17 | lead sentence, size-3 controls |
-| `-4` | 15 | body, row titles, size-2 controls |
-| `-3` | 14 | meta, table cells, labels, hints (not inside pills) |
-| `-2` | 13 | badges, chips, size-1 controls |
-| `-1` | 12 | Narrow labels (tracking .08em), counts |
+| `--title-size` | 36 (28 in a compact head, 26 there on a phone) | h1 page title, Narrow Black, sentence case |
+| `-7` | 24 | big numbers |
+| `-6` | 20 | template and place card names |
+| `-5` | 17 | section titles (`--section-size`, sentence case), lead on the public pages, size-3 controls |
+| `-4` | 15 | body, size-2 controls; row titles are 16 Regular |
+| `-3` | 14 | meta, table cells, field labels, hints (not inside pills) |
+| `-2` | 13 | badges, chips, row meta, size-1 controls |
+| `-1` | 12 · 11 | Narrow labels (uppercase, tracking .08em), counts |
 
-Agrandir Regular for everything readable; Narrow Black for titles, labels and marks (initials, day
-numbers, times in chips); Grand Heavy for the brand only. Font sizes in controls are whole pixels that
+**Type roles.** Agrandir Regular for everything you read, **all row titles in lists included** (one calm
+weight). Agrandir Narrow Black in **sentence case** for page titles, section titles, dialog titles and the
+names of people, events, households and places used as headings. Agrandir Narrow Black **uppercase with a
+little tracking** for small labels: card titles and section labels inside cards and dialogs (`card-title`,
+`label`, `form-section-title`, the month cards of Narozeniny, the sections of the template editor), table
+heads, calendar weekday headers and day numbers, date blocks, the quiet label above a hero title, initials
+in avatars and team marks. Grand Heavy for the brand only. Font sizes in controls are whole pixels that
 Agrandir lays out without rounding (12, 13, 15, 16, 17); the optical centring (`--optical`) stays.
-Space: 4 · 8 · 12 · 16 · 24 · 32 · 40 · 48 · 64. Radius: 4 checkbox · 6 / 8 / 10 controls · 14 cards ·
-18 dialogs and stage. Control heights 28 / 36 / 44 (44 for anything tappable in a row on a phone).
-Widths: text 72ch, list 960, form 640, wide = the whole stage; dialogs 560 (wide 760).
+
+Space: 4 · 8 · 12 · 16 · 24 · 32 · 40 · 48 · 64. Radius: 6 checkbox · 12 fields and small panels · 16
+cards, dialogs and the stage · pills for everything you act on. Control heights 32 / 40 / 44, an icon
+button 36 (44 for anything tappable in a row on a phone). **Rows:** lists 58 (56 on a phone); the dense
+tables – Lidé › Tabulka, Rozpis, Kdo co umí, Břemeno – about 44, with tighter cells (6 × 12).
+Widths: text and list 780, form 640, wide 1240; dialogs 560 (wide 760).
 **Width belongs to the module, not the tab:** the page head (title + primary action) never moves when
-the tab changes. Kalendář, Lidé, Týmy a skupinky, Jak se scházíme, an event and a person are `wide`
-(narrower lists and forms inside stay left-aligned); Nastavení, Upozornění and Můj účet are `list`.
-Look Milníkovač centres its list modules (Týmy, Jak se scházíme) as one 780 px column on every tab.
+the tab changes. Kalendář, Lidé, an event and a person are `wide` (narrower lists and forms inside stay
+left-aligned); Týmy a skupinky, Jak se scházíme, Nastavení, Upozornění and Můj účet are one centred `list`
+column on every tab (Kdo co umí scrolls sideways inside it).
 
 ## 5. Layout and shell
 
 ```
 header.appbar     brand „církev jako kráva“ + „Zvonec“ · save status (only while saving / on error) ·
                   Vzhled menu · me (avatar + name → Můj účet) | „Přihlásit se“
+                  (desktop: the brand sits at the top of the sidebar, Vzhled and the person at its foot)
 div.app-body
   aside.sidebar   nav (icon + label, count on Upozornění) · at the bottom „Veřejná část“ / „Zpátky do Zvonce“
   main.stage      div.page > header.page-head (back link · h1 · lead · actions · tabs · toolbar) + div.page-body
@@ -129,7 +133,15 @@ dialog#dialog · div.toasts
 
 - **Page head:** title, optional lead, primary action top right, **views as tabs** under the title
   (`tabs`; sections of one object), a **toolbar** below (period navigator, filters, search).
-  `viewSwitch` (segmented) is for switching how one thing is shown inside a tab.
+  `viewSwitch` (segmented) is for switching how one thing is shown inside a tab. Two variants, chosen by
+  the module with `page({ compact })`, never by the route in CSS:
+  - **hero head** (default) – Přehled, detail pages (setkání, osoba, domácnost, tým, šablona, formát,
+    místo) and the public part: a tinted band from the stage top (`--hero-bg`), a quiet uppercase label
+    with the module name above the title, title 36, lead and meta, the tabs under the band;
+  - **compact head** (`compact: true`, `header.page-head.compact`) – the working screens: Kalendář (all
+    four views), Lidé (every view), Upozornění, Týmy a skupinky (lists and Kdo co umí): title 28 and
+    actions on one line, a lead as one small line, the tabs right under them, no band; about 116 px from
+    the stage top to the bottom of the tabs on a desktop (134 with a lead), so the work starts high.
 - **Phone (< 960 px):** the appbar has the brand and „Menu“; the sidebar becomes a sheet that also holds
   Vzhled and the person; tabs and filter chips scroll sideways in one row, the hidden edge fades and the
   chosen one is scrolled into view. Calendar and tables degrade on purpose: Měsíc is a compact grid with
@@ -175,7 +187,7 @@ with no detour through another module. Old slugs redirect (list in ARCHITECTURE.
   sentence label**, never a checkbox paragraph. Several entities: chips with a check mark and fill.
 - **Dialog ≤ 560 px** for ≤ 2 sections (wide 760 for two text areas). Anything with a list inside (needs,
   osnova, rooms) is a **page** with a section nav and a sticky „Uložit“, not a dialog.
-- Validation inline, in Czech, with the ✕ symbol; never only a red border. Fields are 36 px with a
+- Validation inline, in Czech, with the ✕ symbol; never only a red border. Fields are 40 px with a
   border plus a lighter fill plus a label.
 - A series question („Jen tohle setkání / I N dalších“) is asked **on save**, as two buttons.
 - Footer: destructive action soft red on the left, „Zrušit“ ghost and „Uložit“ solid on the right.
@@ -207,7 +219,7 @@ with no detour through another module. Old slugs redirect (list in ARCHITECTURE.
 
 Screens import only from `ui/dom.js`. The specimen `#kit` renders every piece in both modes.
 
-- **Page:** `page({ title, lead, meta, back, media, actions, tabs, toolbar, body, width })`, `tabs`,
+- **Page:** `page({ title, lead, meta, back, media, actions, tabs, toolbar, body, width, compact })`, `tabs`,
   `viewSwitch`, `toolbar`, `spacer`, `dateNav`, `searchField`, `chips`, `chipLinks`.
 - **Actions:** `button` (variants `solid` · `soft` · `surface` · `ghost` · `danger`; sizes s / m / l),
   `iconButton`, `menuButton` (kebab).
@@ -231,7 +243,7 @@ Screens import only from `ui/dom.js`. The specimen `#kit` renders every piece in
 
 - Every flow of every module works in demo and in live mode (mocked GitHub) for admin, leader, member
   (via „Dívat se jako“) and signed out.
-- Screens checked at 1440 × 900 and 390 × 844, light and dark, in **both looks**; nothing stretched or
+- Screens checked at 1440 × 900 and 390 × 844, light and dark; nothing stretched or
   tiny, no horizontal scroll, zero console errors.
 - Contrast holds in every mode; focus is visible; everything works by keyboard.
 - Public part shows only published data; tests prove `public.json` has no person data.

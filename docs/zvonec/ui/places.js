@@ -102,7 +102,7 @@ export function renderPlaces() {
     lead: 'Kde se scházíme. Místnost zdědí adresu i mapu po své budově.',
     tabs: libraryTabs('mista'),
     actions: leader ? button('Přidat místo', { variant: 'solid', icon: 'plus', onclick: add }) : null,
-    width: 'wide',
+    width: 'list',
     cls: 'library-page places-page',
     body: tree.length
       ? h('div', { class: 'place-cards' }, tree.map(({ place, rooms }) => placeCard(place, rooms, leader)))

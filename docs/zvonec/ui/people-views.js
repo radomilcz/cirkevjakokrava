@@ -117,6 +117,7 @@ export function renderPeoplePage(parts = []) {
     tabs: tabs(viewsFor().map(([id, label, ic]) => ({ id, label, icon: ic })), view, hrefFor),
     toolbar: bar,
     width: 'wide',
+    compact: true,
     cls: 'people-page',
     body,
   });

@@ -173,8 +173,8 @@ The sealed `gh` payload keeps its short keys (`t` token, `o` owner, `r` repo, `c
 `v` branch). PBKDF2 salt: `cirkevjakokrava-zvonec:login`.
 
 Browser storage keys (this browser only, never in the data): `zvonec-me` (remembered login),
-`zvonec-demo` (demo data), `zvonec-theme` and `zvonec-look` (mode and look, `ui/palette.js`; the old
-`zvonec-palette` is migrated once and removed), `zvonec-calendar-view` (last Kalendář view per viewer),
+`zvonec-demo` (demo data), `zvonec-theme` (the mode, `ui/palette.js`; the old `zvonec-palette` is migrated
+once and removed, a stale `zvonec-look` is removed), `zvonec-calendar-view` (last Kalendář view per viewer),
 `zvonec-people-view`, `zvonec-people-sort` (Lidé), `zvonec-more` (open „Další možnosti“ per form).
 
 ## 4. Code layout (`docs/zvonec/`, ES modules, no build, CSP unchanged)
@@ -182,9 +182,8 @@ Browser storage keys (this browser only, never in the data): `zvonec-me` (rememb
 ```
 index.html             the shell skeleton (appbar, sidebar, stage, dialog, toasts) and the CSS order
 style.css              base layer: fonts, base, shell, page, kit components, print (semantic tokens only)
-css/tokens.css         design tokens: scales, surfaces, text, lines, status, role tokens; light + dark.
-                       It is look „zvonec“ and the base of every look (all selectors in :where())
-css/look-milnik.css    look „milnik“: overrides tokens and a few structural rules (loaded last)
+css/tokens.css         design tokens: scales, surfaces, text, lines, status, role tokens; light + dark
+                       (all selectors in :where(), so any rule can override a token)
 css/<module>.css       one per module: people, calendar, events, roster, groups, formats, library, home,
                        settings, public – semantic tokens only, no raw colours, fonts or radius numbers
 imprint.svg
@@ -216,7 +215,8 @@ ui/kit.js              the kit: page, tabs, buttons, badges, list parts, table, 
 ui/dom.js              h(), older helpers, avatars, covers, place lines, dialogs; re-exports kit.js and icons.js –
                        screens import from here only
 ui/kit-page.js         #kit – the living specimen (leaders, not in the nav), every piece in light and dark
-ui/palette.js          mode and look (classic script in <head>, applies them before first paint, wires the Vzhled menu)
+ui/palette.js          the mode (classic script in <head>, applies it before first paint, wires the Vzhled menu;
+                       a setting = an entry in CHOICES + a radio group in index.html)
 ui/select.js, stepper.js, datepicker.js   enhancers: drop-downs, number − / +, date fields with our own calendar
 ui/sortable.js         drag-and-drop (mouse, touch, keyboard) for ordered lists
 ui/picker.js           shared people picker (event slots, group members, households), quick-add
@@ -309,7 +309,8 @@ object. See DESIGN.md §8.
 across the top; under it `aside.sidebar` (navigation per role, at the bottom „Veřejná část“ / „Zpátky do
 Zvonce“) and `main.stage` with one `div.page`. On a phone (< 960 px) the appbar shows the brand and „Menu“;
 the sidebar becomes a sheet and `app.js` moves the Vzhled menu and the person into it (`placeTools`). The
-page head gets `data-context` = the nav label of the section (a look may show it as a quiet label).
+hero page head gets `data-context` = the nav label of the section, shown as a quiet label above the title
+(not where it would repeat the title, not under a back link, not in a compact head).
 
 Navigation per role (`NAV_LEADER`, `NAV_MEMBER`, `NAV_PUBLIC` in app.js; `[id, label, icon, href]`):
 leader **Přehled · Kalendář · Upozornění (count) · Lidé · Týmy a skupinky · Jak se scházíme · Nastavení**;
@@ -365,9 +366,13 @@ redirects and the shell belong to the shell. A module edits only its own blocks.
 ### The kit
 
 `ui/kit.js` (re-exported by `ui/dom.js`, so screens import from `./dom.js` only) is the one set of
-components both looks style. A page is built with `page({ title, lead, actions, tabs, toolbar, body, width })`
-(DOM: `div.page > header.page-head + div.page-body`, widths `w-text` 72ch · `w-list` 960 · `w-form` 640 ·
-`w-wide`). The rest: `button` (variants solid · soft · surface · ghost · danger), `iconButton`, `badge`,
+components. A page is built with `page({ title, lead, actions, tabs, toolbar, body, width, compact })`
+(DOM: `div.page > header.page-head + div.page-body`, widths `w-text` 780 · `w-list` 780 · `w-form` 640 ·
+`w-wide` 1240). **Two heads**, chosen by the module, never by the route in CSS: the default is the hero head
+(a tinted band with the quiet label, title, actions, lead and meta, the tabs under it) for Přehled, detail
+pages and the public part; `compact: true` puts `header.page-head.compact` – title and actions on one line,
+the tabs right under them, no band (~116 px to the bottom of the tabs on a desktop) – on the working screens
+(Kalendář, Lidé, Upozornění, Týmy a skupinky). The rest: `button` (variants solid · soft · surface · ghost · danger), `iconButton`, `badge`,
 `countBadge`, `statusBadge`, `severityBadge`, `callout`, `tabs`, `viewSwitch`, `chips`, `chipLinks`, `card`,
 `panel`, `facts`, `list` / `row` / `groupedList`, `table`, `avatar`, `avatarStack`, `personLine`, `assignee`,
 `kindMark`, `groupMark`, `eventCover`, `placeLine`, `placeMap`, `emptyState`, `progressBar`, `fillRing`,
@@ -405,24 +410,21 @@ creates a minimal card (`guest`, `needsReview`), optionally adds the person to t
    and save for free) and into `validateData` if it has invariants.
 2. Screens in `ui/<name>.js` (split `<name>-*.js` when it grows): return `page()`; import from `./dom.js`
    only; text in Czech, code in English; DOM through `h()`, never `innerHTML`, no inline styles.
-3. Styles in `css/<name>.css` with semantic tokens only; add the `<link>` in `index.html` before
-   `css/look-milnik.css`. Check both looks and both modes.
+3. Styles in `css/<name>.css` with semantic tokens only; add the `<link>` in `index.html` after the other
+   module CSS. A working screen (a list or a planning surface people use daily) passes `compact: true` to
+   `page()`; a detail page keeps the hero head. Check both modes at 1440 and 390.
 4. Routes: a `// IMPORTS:` and a `// ROUTES:` block in app.js (slug in Czech, `access`, `menu`), a row in
    `NAV_LEADER` / `NAV_MEMBER` if it is a top-level module, redirects for any slug it replaces.
 5. Update DESIGN.md §6 (sitemap), this file, `zvonec/README.md` (what people find where) and the `#kit`
    specimen if you added a kit piece. `node --test zvonec/test/*.test.mjs` and `node --check` every file.
 
-### How to add a look
+### One look, two modes
 
-A look is `css/look-<name>.css` that overrides **tokens and a few structural rules** under
-`:root[data-look="<name>"]` (and `[data-theme="dark"]` / `prefers-color-scheme` variants); the DOM does not
-change. `css/tokens.css` is the base: every selector there is wrapped in `:where()` (zero specificity), so
-one attribute selector wins. Override the **role tokens** first (radii, shadows, title font and size,
-row and nav heights, control sizes, `--tab-style`, widths, selected / status fills), then restyle the shell,
-tabs, buttons and badges where tokens do not reach. Steps: add the file and its `<link>` after the module CSS
-in `index.html`; add the name to `LOOKS` in `ui/palette.js` and a button with `data-look-choice` in the
-Vzhled menu (index.html) and in `ui/account.js`; check every screen at 1440 and 390, light and dark; run
-the contrast check for any new colour pair. Never fork module CSS or screens per look.
+There is one look (the Milníkovač system in the cow's palette, DESIGN.md §2). `css/tokens.css` holds every
+token for light and dark; `style.css` and the module CSS use semantic tokens only. A new colour scheme (e.g. a
+brand palette) is a set of token overrides per `[data-…]` attribute on `<html>` plus a setting in
+`ui/palette.js` (`CHOICES`) and a radio group in the Vzhled menu (index.html) and in `ui/account.js`; never
+fork module CSS or screens. Run the contrast check for any new colour pair.
 
 ## 6. Who sees what
 

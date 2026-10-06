@@ -1,15 +1,14 @@
-// Appearance: theme (light / dark / the device decides) and look (Zvonec / Milníkovač).
-// <html data-theme="light|dark"> (absent = follow the device) and <html data-look="zvonec|milnik">.
-// Remembered in localStorage (zvonec-theme, zvonec-look); a link may set them too:
-// ?vzhled=milnik|zvonec and ?rezim=svetly|tmavy|zarizeni (for sharing a link – the choice is kept).
+// Appearance: the mode – light, dark, or the device decides.
+// <html data-theme="light|dark"> (absent = follow the device), remembered in localStorage (zvonec-theme);
+// a link may set it too: ?rezim=svetly|tmavy|zarizeni (for sharing a link – the choice is kept).
 // A classic script in <head> (not a module): it applies the choice before the first paint, so the page
-// does not flash, and then wires the header menu „Vzhled“ (static markup in index.html).
-// Other code (Můj účet) uses window.zvonecAppearance: { theme(), look(), setTheme(v), setLook(v) }
+// does not flash, and then wires the header menu „Vzhled“ (static markup in index.html: one radio group
+// per setting). Other code (Můj účet) uses window.zvonecAppearance: { theme(), setTheme(v), current() }
 // and listens for the 'zvonec:appearance' event on document.
+// Another setting (e.g. a palette) = a key in storage, an apply function, a getter and setter on the api,
+// an entry in CHOICES and a radio group in index.html whose buttons carry data-<name>-choice.
 (function () {
   var THEME_KEY = 'zvonec-theme';
-  var LOOK_KEY = 'zvonec-look';
-  var LOOKS = ['zvonec', 'milnik'];
   var THEMES = ['light', 'dark'];
   var root = document.documentElement;
 
@@ -18,31 +17,27 @@
     try { if (value) localStorage.setItem(key, value); else localStorage.removeItem(key); } catch (error) { /* works without storage, just not remembered */ }
   }
 
-  // the old colour palettes (before the redesign) become a theme once
+  // the old colour palettes (before the redesign) become a theme once; the old second look is gone
   var old = read('zvonec-palette');
   if (old) {
     var dark = { 'clay-pink': 1, 'blue-cream': 1, 'green-cream': 1, 'green-pink': 1 };
     if (!read(THEME_KEY)) write(THEME_KEY, dark[old] ? 'dark' : 'light');
     write('zvonec-palette', null);
   }
+  write('zvonec-look', null);
 
   function applyTheme(value) {
     if (THEMES.indexOf(value) >= 0) root.setAttribute('data-theme', value);
     else root.removeAttribute('data-theme');
   }
-  function applyLook(value) {
-    root.setAttribute('data-look', LOOKS.indexOf(value) >= 0 ? value : 'zvonec');
-  }
 
-  // a link may carry the choice: ?vzhled=milnik, ?rezim=tmavy
+  // a link may carry the choice: ?rezim=tmavy
   var query = {};
   try { query = Object.fromEntries(new URLSearchParams(location.search)); } catch (error) { /* old browser: no link choice */ }
-  var fromLinkTheme = { svetly: 'light', tmavy: 'dark', zarizeni: '' }[query.rezim];
-  if (fromLinkTheme !== undefined) write(THEME_KEY, fromLinkTheme);
-  if (LOOKS.indexOf(query.vzhled) >= 0) write(LOOK_KEY, query.vzhled === 'zvonec' ? '' : query.vzhled);
+  var fromLink = { svetly: 'light', tmavy: 'dark', zarizeni: '' }[query.rezim];
+  if (fromLink !== undefined) write(THEME_KEY, fromLink);
 
   applyTheme(read(THEME_KEY));
-  applyLook(read(LOOK_KEY));
 
   function syncThemeColor() {
     var meta = document.querySelector('meta[name="theme-color"]');
@@ -57,14 +52,16 @@
 
   var api = {
     theme: function () { return root.getAttribute('data-theme') || ''; },
-    look: function () { return root.getAttribute('data-look') || 'zvonec'; },
-    current: function () { return { theme: api.theme(), look: api.look() }; },
+    current: function () { return { theme: api.theme() }; },
     /** '' = the device decides, 'light', 'dark' */
     setTheme: function (value) { applyTheme(value); write(THEME_KEY, THEMES.indexOf(value) >= 0 ? value : ''); announce(); },
-    /** 'zvonec' | 'milnik' */
-    setLook: function (value) { applyLook(value); write(LOOK_KEY, value === 'milnik' ? value : ''); announce(); },
   };
   window.zvonecAppearance = api;
+
+  // the settings of the menu: the attribute its buttons carry → the current value and how to set it
+  var CHOICES = {
+    'data-theme-choice': { get: api.theme, set: api.setTheme },
+  };
 
   document.addEventListener('DOMContentLoaded', function () {
     syncThemeColor();
@@ -76,13 +73,17 @@
     if (!wrap) return;
     var toggle = wrap.querySelector('.look-toggle');
     var menu = wrap.querySelector('.look-menu');
-    var options = Array.prototype.slice.call(menu.querySelectorAll('[data-theme-choice], [data-look-choice]'));
+    var attrs = Object.keys(CHOICES);
+    var options = Array.prototype.slice.call(menu.querySelectorAll(attrs.map(function (a) { return '[' + a + ']'; }).join(', ')));
+    function choiceOf(option) {
+      for (var i = 0; i < attrs.length; i++) if (option.hasAttribute(attrs[i])) return { setting: CHOICES[attrs[i]], value: option.getAttribute(attrs[i]) };
+      return null;
+    }
 
     function mark() {
       options.forEach(function (option) {
-        var on = option.hasAttribute('data-theme-choice')
-          ? option.getAttribute('data-theme-choice') === api.theme()
-          : option.getAttribute('data-look-choice') === api.look();
+        var choice = choiceOf(option);
+        var on = choice.value === choice.setting.get();
         option.setAttribute('aria-checked', String(on));
         option.tabIndex = on ? 0 : -1;
       });
@@ -106,8 +107,8 @@
     });
     options.forEach(function (option) {
       option.addEventListener('click', function () {
-        if (option.hasAttribute('data-theme-choice')) api.setTheme(option.getAttribute('data-theme-choice'));
-        else api.setLook(option.getAttribute('data-look-choice'));
+        var choice = choiceOf(option);
+        choice.setting.set(choice.value);
         mark();
         option.focus();
       });

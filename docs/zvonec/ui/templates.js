@@ -151,7 +151,7 @@ export function renderTemplates() {
     lead: 'Šablona předvyplní nové setkání: čas, místo, obrázek, kdo je potřeba a osnovu.',
     tabs: libraryTabs('sablony'),
     actions: button('Přidat šablonu', { variant: 'solid', icon: 'plus', onclick: add }),
-    width: 'wide',
+    width: 'list',
     cls: 'library-page templates-page',
     body: types.length
       ? h('ul', { class: 'template-grid', 'aria-label': 'Šablony' }, types.map((t) => h('li', {}, templateCard(t))))

@@ -419,7 +419,7 @@ export function renderGroups(view = 'tymy', filter = '') {
     const teams = active.filter((g) => g.kind === 'team' && rolesOf(S.data, g.id).length).sort(byName);
     const chosen = teams.find((g) => g.id === filter) || null;
     return page({
-      title: 'Týmy a skupinky', width: 'wide', tabs: nav, cls: 'groups-page',
+      title: 'Týmy a skupinky', width: 'list', compact: true, tabs: nav, cls: 'groups-page',
       actions: button(KIND_ADD.team, { variant: 'solid', icon: 'plus', onclick: () => groupDialog(null, 'team') }),
       toolbar: toolbar(
         teams.length > 1 ? chipLinks([['#tymy/umi', 'Všechny týmy'], ...teams.map((g) => [`#tymy/umi/${g.id}`, g.name])],
@@ -432,7 +432,7 @@ export function renderGroups(view = 'tymy', filter = '') {
   const live = groups.filter((g) => !g.archived).sort(byName);
   const archived = groups.filter((g) => g.archived).sort(byName);
   return page({
-    title: 'Týmy a skupinky', width: 'wide', tabs: nav, cls: 'groups-page',
+    title: 'Týmy a skupinky', width: 'list', compact: true, tabs: nav, cls: 'groups-page',
     lead: current === 'tymy' ? 'Kdo slouží na setkáních a jaké role zastávají.' : current === 'skupinky' ? 'Lidé, kteří se spolu pravidelně scházejí.' : 'Kdo vede sbor.',
     actions: button(KIND_ADD[kind], { variant: 'solid', icon: 'plus', onclick: add }),
     body: [
@@ -618,7 +618,7 @@ export function renderGroup(id, tab = 'lide') {
     actions,
     tabs: nav,
     toolbar: bar,
-    width: 'wide',   // one width for every tab: the head and its buttons never move
+    width: 'list',   // one width for every tab: the head and its buttons never move
     cls: ['group-page', `group-tab-${current}`],
     body,
   });

@@ -1,5 +1,5 @@
 /* Přehled (#prehled) and Upozornění (#upozorneni) – ui/home.js, ui/conflicts.js.
-   Semantic tokens only (css/tokens.css), so every look can restyle it. */
+   Semantic tokens only (css/tokens.css). */
 
 /* ---------- Přehled: two columns of cards, one on a phone (priority order via `order`) ---------- */
 .home-page .page-body>.callout{max-width:none}
@@ -11,7 +11,7 @@
 }
 
 /* the head of a block: its title, a count, then the tools (Všechno on the right) */
-.home-block .card-head{min-height:52px;padding:14px 12px 10px 18px}
+.home-block .card-head{min-height:52px}
 .home-block .card-actions{margin:-4px 0}
 .home-all{color:var(--text-2)}
 .home-all:hover{color:var(--text-1)}
@@ -31,7 +31,7 @@
 .answer-buttons{display:inline-flex;gap:4px}
 .answer-yes .icon{color:var(--confirmed-solid)}
 @media (max-width:520px){
-  .answer-row{flex-wrap:wrap;row-gap:8px}
+  .answer-row{flex-wrap:wrap}
   .answer-row .item-body{flex:1 1 calc(100% - 100px)}
   .answer-row .item-trail{order:3;flex-basis:100%;max-width:none;justify-content:flex-start;padding-left:54px}
   .answer-row .item-chevron{order:2}
@@ -74,7 +74,7 @@
 .conflict-row .item-trail{gap:2px}
 /* „Vybrat jiného“, „Vím o tom“: soft buttons (a fill says it can be clicked, not the pink text alone) */
 @media (max-width:720px){
-  .conflict-row{flex-wrap:wrap;row-gap:4px}
+  .conflict-row{flex-wrap:wrap}
   .conflict-row .item-body{flex:1 1 calc(100% - 80px)}
   .conflict-row .item-chevron{order:2}
   .conflict-row .item-trail{order:3;flex-basis:100%;max-width:none;justify-content:flex-start;padding-left:36px;margin-left:-8px}
@@ -85,7 +85,7 @@
 .conflict-groups{display:flex;flex-direction:column;gap:16px;max-width:var(--w-list)}
 .conflict-card-head{display:flex;align-items:center;gap:12px;padding:14px 14px 12px 18px;min-width:0}
 .conflict-card-text{flex:1 1 auto;min-width:0}
-.conflict-card-title{margin:0;font-size:var(--font-size-4);line-height:22px;font-weight:400}
+.conflict-card-title{margin:0;font-family:var(--font-mark);font-weight:900;font-size:16px;line-height:20px;letter-spacing:.01em}
 .conflict-card-title a{color:var(--text-1);text-decoration:none}
 .conflict-card-title a:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
 .conflict-card-meta{margin:0;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
