@@ -270,6 +270,11 @@
   background:var(--surface-panel);box-shadow:inset 0 0 0 1px var(--line-control)}
 [data-look="milnik"] .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):not(.btn-add):hover{
   background:var(--surface-hover);box-shadow:inset 0 0 0 1px var(--line-hover)}
+/* inside a panel a surface button has a fill of its own (never a bare ring on the panel colour) */
+[data-look="milnik"] :is(.card,.items,.dialog,.popover,.callout,.table-wrap) .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):not(.btn-add):not(.menu-btn):not([aria-pressed="true"]){
+  background:var(--soft);box-shadow:none}
+[data-look="milnik"] :is(.card,.items,.dialog,.popover,.callout,.table-wrap) .btn:not(.btn-solid):not(.primary):not(.btn-soft):not(.btn-ghost):not(.plain):not(.btn-danger):not(.btn-danger-solid):not(.btn-add):not(.menu-btn):not([aria-pressed="true"]):hover{
+  background:var(--soft-hover);box-shadow:none}
 [data-look="milnik"] :is(.btn-solid,.btn.primary){background:var(--primary-bg);color:var(--primary-fg)}
 [data-look="milnik"] :is(.btn-solid,.btn.primary):hover{background:var(--primary-bg-hover)}
 [data-look="milnik"] .btn-soft{background:var(--soft)}
@@ -350,9 +355,9 @@
    ============================================================ */
 [data-look="milnik"] .item{padding:12px 20px;gap:14px}
 [data-look="milnik"] .item.opens:hover{background:var(--surface-sunken)}
-/* row titles that NAME something (a person, team, meeting – the lead is an avatar, mark, date or cover)
-   carry the weight like Milníkovač's semibold; sentence-long titles (Co nesedí) stay regular */
-[data-look="milnik"] .item:has(>.item-lead :is(.avatar,.group-mark,.date-block,.kind-mark,.cover)) .item-title{font-family:var(--milnik-display);font-weight:900;font-size:16px;line-height:20px;letter-spacing:.01em}
+/* every row title the same: Regular 16 px in the ink – one weight everywhere (Narrow Black on some rows
+   only shouted and made the meta lines wrap) */
+[data-look="milnik"] .item-title{font-size:16px;line-height:21px;color:var(--text-1)}
 [data-look="milnik"] .item-title :is(.badge,.status,.count,small,.n){font-family:var(--font-body);font-weight:400;letter-spacing:0}
 [data-look="milnik"] .item-meta{font-size:var(--font-size-2);line-height:18px}
 [data-look="milnik"] .item-chevron{color:var(--gray-8)}
@@ -377,7 +382,8 @@
 /* ============================================================
    PEOPLE – avatars as initials in ink circles (Milníkovač: no photos, no hues)
    ============================================================ */
-[data-look="milnik"] .avatar:not(.avatar-gone){background:var(--milnik-ink);color:var(--milnik-ink-fg)}
+/* avatars keep their categorical tint (lists stay scannable); only the signed-in person is ink */
+[data-look="milnik"] :is(.me .avatar,.avatar.mine){background:var(--milnik-ink);color:var(--milnik-ink-fg)}
 [data-look="milnik"] .avatar-more{background:var(--soft);color:var(--text-2)}
 [data-look="milnik"] .avatar-stack .avatar{box-shadow:0 0 0 2px var(--surface-panel)}
 [data-look="milnik"] .group-mark{border-radius:var(--radius-mark)}
@@ -396,7 +402,7 @@
 [data-look="milnik"] .toast-error{box-shadow:var(--shadow-popover),inset 0 0 0 1.5px var(--declined-solid)}
 [data-look="milnik"] .progress{height:6px;background:var(--hover)}
 /* untoned bars and rings in the accent (petrol's role); toned ones keep their status colour */
-[data-look="milnik"] :where(.progress-fill){background:var(--milnik-accent-soft)}
+[data-look="milnik"] .progress-accent .progress-fill{background:var(--milnik-accent-soft)}
 [data-look="milnik"] :where(.fill-ring-arc){stroke:var(--milnik-accent-soft)}
 
 /* ============================================================
@@ -409,7 +415,7 @@
 [data-look="milnik"] :is(.dialog-sub,.dialog .sub){font-size:var(--font-size-3);line-height:21px}
 /* the foot is sticky: the sunken tint is laid over the dialog colour, so what scrolls under it never shows through */
 [data-look="milnik"] :is(.dialog-foot,.dialog .actions){margin:4px -28px 0;padding:16px 28px 20px;background:linear-gradient(var(--surface-sunken),var(--surface-sunken)) var(--surface-overlay);border-top-color:var(--line-1)}
-[data-look="milnik"] .form-section-title{font-family:var(--milnik-display);font-weight:900;font-size:var(--font-size-3);letter-spacing:0}
+[data-look="milnik"] .form-section-title{font-family:var(--milnik-display);font-weight:900;font-size:var(--font-size-3);letter-spacing:0;text-transform:none}
 [data-look="milnik"] .form-section+.form-section{border-top-color:var(--line-1);padding-top:20px}
 [data-look="milnik"] .disclosure>summary{border-radius:var(--radius-full);padding:var(--optical) 12px 0 8px}
 [data-look="milnik"] .form-error{border-radius:12px}
@@ -457,7 +463,9 @@
 /* Šablony read at the same width as Formáty and Místa (the tabs no longer move the head); two covers a row */
 /* panels inside a card: rounded-xl, one step under the card's 16 */
 [data-look="milnik"] :is(.needs-program,.tneeds-teams,.switch-row.full,.outline-list,.household-address){border-radius:12px}
-[data-look="milnik"] .page.templates-page{--page-width:var(--w-list)}
+/* the content column of Milníkovač: list modules are one centred column on every tab (Kdo co umí scrolls
+   sideways inside it) – one width per module, like look zvonec */
+[data-look="milnik"] .page:is(.library-page,.groups-page,.group-page){--page-width:var(--w-list)}
 /* the template editor fills the page (its 1080 cap left the cards short of the head's right edge) */
 [data-look="milnik"] .template-editor{max-width:none}
 [data-look="milnik"] .section-nav{gap:4px}

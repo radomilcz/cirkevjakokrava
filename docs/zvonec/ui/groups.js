@@ -12,18 +12,18 @@ import {
   h, plural, andJoin, page, tabs, button, badge, list, row, groupedList, avatar, avatarStack, personName,
   personLine, groupMark, emptyState, toast, confirmDialog, closeDialog, formDialog, textField, textArea,
   segmentedField, switchField, numberField, personPicker, chipLinks, chipsField, menuButton, icon, dateBlock,
-  fillRing, checkedValues, link, selectField, statusIcon, metaJoin, kindMark, peopleField, agree, SEP,
+  fillRing, checkedValues, link, selectField, statusIcon, metaJoin, kindMark, peopleField, agree, toolbar, spacer, SEP,
 } from './dom.js';
-import { S, can, change, navigate, newId, SKILL_LABELS, GROUP_KIND_LABELS, MEMBERSHIP_LABELS } from './state.js';
+import { S, can, change, navigate, newId, render, SKILL_LABELS, GROUP_KIND_LABELS, MEMBERSHIP_LABELS } from './state.js';
 import {
   GROUP_KINDS, groupById, roleById, rolesOf, membersOf, leadersOf, memberRecord, addMember, removeMember, setLeader, setSkill,
   skillMatrix, groupsOf,
 } from '../lib/groups.js';
-import { personById, displayName, comparePeople, statusOf } from '../lib/people.js';
+import { personById, displayName, comparePeople, statusOf, sortPeople } from '../lib/people.js';
 import { needsOf } from '../lib/events.js';
 import { servingLoad } from '../lib/scheduling.js';
 import { placesOf } from '../lib/places.js';
-import { today, dayOf, addDays, monthOf, prettyTime, MONTHS_GENITIVE } from '../lib/time.js';
+import { today, dayOf, addDays, monthOf, prettyTime } from '../lib/time.js';
 
 // ---------- words ----------
 
@@ -50,8 +50,8 @@ const KIND_EMPTY = {
  * (before the names: „vede Jana“, „vedou Jana a Petr“), `leaders` (the list group label).
  */
 const KIND_WORDS = {
-  team: { people: 'Lidé v týmu', add: 'Přidat do týmu', leads: 'Vede tým', leadsMine: 'Vedu tým', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat z týmu', in: 'v týmu', leaders: 'Vedou tým', makeLeader: 'Svěřit vedení', unLeader: 'Odebrat roli vedoucího' },
-  community: { people: 'Lidé ve skupince', add: 'Přidat do skupinky', leads: 'Vede skupinku', leadsMine: 'Vedu skupinku', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat ze skupinky', in: 've skupince', leaders: 'Vedou skupinku', makeLeader: 'Svěřit vedení', unLeader: 'Odebrat roli vedoucího' },
+  team: { people: 'Lidé v týmu', add: 'Přidat do týmu', leads: 'Vede tým', leadsMine: 'Vedu tým', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat z týmu', in: 'v týmu', leaders: 'Vedou tým', makeLeader: 'Svěřit vedení', unLeader: 'Odebrat z vedoucích' },
+  community: { people: 'Lidé ve skupince', add: 'Přidat do skupinky', leads: 'Vede skupinku', leadsMine: 'Vedu skupinku', you: 'vedeš', lead1: 'vede', leadN: 'vedou', remove: 'Odebrat ze skupinky', in: 've skupince', leaders: 'Vedou skupinku', makeLeader: 'Svěřit vedení', unLeader: 'Odebrat z vedoucích' },
   leadership: { people: 'Lidé ve vedení', add: 'Přidat do vedení', leads: 'Předsedá vedení', leadsMine: 'Předsedám vedení', you: 'předsedáš', lead1: 'předsedá', leadN: 'předsedají', remove: 'Odebrat z vedení', in: 've vedení', leaders: 'Předsedá', makeLeader: 'Svěřit předsednictví', unLeader: 'Odebrat předsednictví' },
 };
 export const kindWords = (group) => KIND_WORDS[group?.kind] || KIND_WORDS.community;
@@ -257,8 +257,14 @@ function skillCountText({ trained, learning }) {
  * roles). Leaders click a cell: – → učí se → umí → –. Kit candidate.
  * @param {{ groupId?: string, editable?: boolean, withLoad?: boolean }} options
  */
-export function skillMatrixTable({ groupId, editable = can('leader'), withLoad = false } = {}) {
+export function skillMatrixTable({ groupId, editable = can('leader'), withLoad = false, everyone = false } = {}) {
   const matrix = skillMatrix(S.data, { groupId });
+  // „Ukázat všechny“: also people outside the team(s) – a click on a cell then adds them to the team
+  if (everyone) {
+    const shown = new Set(matrix.people.map((r) => r.person.id));
+    const others = sortPeople((S.data.people || []).filter((p) => !shown.has(p.id) && statusOf(p) !== 'former'));
+    matrix.people = [...matrix.people, ...others.map((person) => ({ person, levels: {}, outside: true }))];
+  }
   if (!matrix.roles.length) {
     return emptyState({
       icon: 'users', title: groupId ? 'Tým zatím nemá žádnou roli.' : 'Žádný tým zatím nemá role.',
@@ -279,6 +285,7 @@ export function skillMatrixTable({ groupId, editable = can('leader'), withLoad =
   }
   const multi = !groupId;
   const scroller = h('div', { class: 'skill-matrix-scroll', tabindex: '0', role: 'region', 'aria-label': 'Kdo co umí' });
+  if (matchMedia?.('(max-width: 640px)').matches) return skillCards(matrix, { editable, multi, scroller });
   const head = [];
   if (multi) {
     head.push(h('tr', { class: 'skill-teams' },
@@ -337,6 +344,47 @@ export function skillMatrixTable({ groupId, editable = can('leader'), withLoad =
       editable ? h('span', { class: 'skill-legend-hint' }, 'Klikni na políčko a změníš ho.') : null));
 }
 
+/**
+ * Kdo co umí on a phone: the matrix turned around – one row per person with the roles as chips
+ * („Zvuk ● · Projekce ◐“). All teams: only what the person can do; one team: every role of it, so a
+ * leader can tap one to change it (ne → učí se → umí).
+ */
+function skillCards(matrix, { editable, multi, scroller }) {
+  const rows = matrix.people.map(({ person, levels }) => {
+    const roles = matrix.roles.filter((r) => !multi || levels[r.role.id]);
+    const chipsEl = roles.map((r) => {
+      const level = levels[r.role.id] || '';
+      const key = `${person.id}|${r.role.id}`;
+      const content = [skillSymbol(level), h('span', {}, r.role.name)];
+      const word = level ? SKILL_LABELS[level] : 'ne';
+      return editable
+        ? h('button', { type: 'button', class: ['skill-chip', `lvl-${level || 'none'}`], 'data-key': key, 'aria-label': `${r.role.name}: ${word}. Změnit.`, onclick: () => cycleSkill(person, r.role, level, scroller, key) }, content)
+        : h('span', { class: ['skill-chip', `lvl-${level || 'none'}`], 'aria-label': `${r.role.name}: ${word}` }, content);
+    });
+    return h('li', { class: 'skill-card-row' },
+      personLine(person, { href: `#osoba/${person.id}`, size: 's' }),
+      h('div', { class: 'skill-chips' }, chipsEl.length ? chipsEl : h('span', { class: 'skill-none' }, 'zatím nic')));
+  });
+  scroller.classList.add('skill-cards-scroll');
+  scroller.append(h('ul', { class: 'skill-cards' }, rows));
+  if (matrixMemory) {
+    const key = matrixMemory.key;
+    matrixMemory = null;
+    requestAnimationFrame(() => scroller.querySelector(`[data-key="${CSS.escape(key)}"]`)?.focus({ preventScroll: true }));
+  }
+  return h('div', { class: 'skill-matrix-wrap' },
+    h('div', { class: 'skill-matrix-card card' }, scroller),
+    h('p', { class: 'skill-legend' },
+      h('span', {}, skillSymbol('trained'), 'umí'),
+      h('span', {}, skillSymbol('learning'), 'učí se'),
+      editable && multi ? h('span', { class: 'skill-legend-hint' }, 'Další roli přidáš, když nahoře vybereš tým.') : editable ? h('span', { class: 'skill-legend-hint' }, 'Klepni na roli a změníš ji.') : null));
+}
+
+/** „Ukázat všechny“: Kdo co umí shows the people of the team(s) unless this is on. */
+function everyoneSwitch() {
+  return switchField('matrixAll', 'Ukázat všechny lidi', !!S.filters.matrixAll, { full: false, onchange: (e) => { S.filters.matrixAll = e.target.checked; render(); } });
+}
+
 /** Locative of the months: „v říjnu“. */
 const MONTHS_LOCATIVE = ['lednu', 'únoru', 'březnu', 'dubnu', 'květnu', 'červnu', 'červenci', 'srpnu', 'září', 'říjnu', 'listopadu', 'prosinci'];
 
@@ -373,16 +421,18 @@ export function renderGroups(view = 'tymy', filter = '') {
     return page({
       title: 'Týmy a skupinky', width: 'wide', tabs: nav, cls: 'groups-page',
       actions: button(KIND_ADD.team, { variant: 'solid', icon: 'plus', onclick: () => groupDialog(null, 'team') }),
-      toolbar: teams.length > 1 ? chipLinks([['#tymy/umi', 'Všechny týmy'], ...teams.map((g) => [`#tymy/umi/${g.id}`, g.name])],
-        chosen ? `#tymy/umi/${chosen.id}` : '#tymy/umi', { label: 'Tým' }) : null,
-      body: skillMatrixTable({ groupId: chosen?.id }),
+      toolbar: toolbar(
+        teams.length > 1 ? chipLinks([['#tymy/umi', 'Všechny týmy'], ...teams.map((g) => [`#tymy/umi/${g.id}`, g.name])],
+          chosen ? `#tymy/umi/${chosen.id}` : '#tymy/umi', { label: 'Tým' }) : null,
+        spacer(), everyoneSwitch()),
+      body: skillMatrixTable({ groupId: chosen?.id, everyone: !!S.filters.matrixAll }),
     });
   }
   const groups = S.data.groups.filter((g) => g.kind === kind || (kind === 'community' && !GROUP_KINDS.includes(g.kind)));
   const live = groups.filter((g) => !g.archived).sort(byName);
   const archived = groups.filter((g) => g.archived).sort(byName);
   return page({
-    title: 'Týmy a skupinky', width: 'list', tabs: nav, cls: 'groups-page',
+    title: 'Týmy a skupinky', width: 'wide', tabs: nav, cls: 'groups-page',
     lead: current === 'tymy' ? 'Kdo slouží na setkáních a jaké role zastávají.' : current === 'skupinky' ? 'Lidé, kteří se spolu pravidelně scházejí.' : 'Kdo vede sbor.',
     actions: button(KIND_ADD[kind], { variant: 'solid', icon: 'plus', onclick: add }),
     body: [
@@ -409,7 +459,7 @@ function groupList(groups, { quiet = false } = {}) {
         h('span', { class: 'group-row-leaders' }, leaders.length ? leadersText(g.id) : 'zatím bez vedoucího'),
         roleNames.length ? h('span', { class: 'group-row-roles' }, roleNames.join(SEP)) : null),
       trail: h('span', { class: 'group-row-trail' },
-        people.length ? avatarStack(people, { max: 3, size: 's', label: `${peopleCount(people.length)}: ${people.map(personName).join(', ')}` }) : null,
+        people.length ? avatarStack(people.slice(0, 3), { max: 3, size: 's', label: `${peopleCount(people.length)}: ${people.map(personName).join(', ')}` }) : null,   // the count says how many: no „+8“ next to it
         h('span', { class: 'group-row-count' }, peopleCount(members.length))),
       href: `#tym/${g.id}`,
       tone: quiet ? 'quiet' : null,
@@ -439,7 +489,7 @@ function groupDialog(group, presetKind = 'team') {
       {
         cols: 1,
         fields: [
-          textField('name', 'Název', group?.name, { full: true, attr: { autofocus: true, placeholder: kind === 'team' ? 'Technika' : 'Skupinka u Nováků', autocomplete: 'off', required: true } }),
+          textField('name', 'Název', group?.name, { full: true, attr: { autofocus: true, placeholder: kind === 'team' ? 'např. Uvaděči' : 'např. Skupinka u Svobodů', autocomplete: 'off', required: true } }),
           kindField,
           textArea('description', 'Popis', group?.description, { attr: { rows: 3, placeholder: 'Co dělají a kdy se scházejí.' } }),
           peopleField({ name: 'leaders', label: 'Kdo to vede', people: activePeople(), value: leaders, meta: personMeta, personOf: (id) => personById(S.data, id), hint: 'Ukáže se u týmu, ať lidé vědí, za kým jít.' }),
@@ -554,7 +604,8 @@ export function renderGroup(id, tab = 'lide') {
     actions = [edit, button('Přidat roli', { variant: 'solid', icon: 'plus', onclick: () => roleDialog(group) })];
     body = rolesBody(group, roles);
   } else if (current === 'umi') {
-    body = skillMatrixTable({ groupId: group.id, withLoad: true });
+    bar = toolbar(spacer(), everyoneSwitch());
+    body = skillMatrixTable({ groupId: group.id, withLoad: true, everyone: !!S.filters.matrixAll });
   } else {
     body = eventsBody(group);
   }
@@ -567,7 +618,7 @@ export function renderGroup(id, tab = 'lide') {
     actions,
     tabs: nav,
     toolbar: bar,
-    width: current === 'umi' ? 'wide' : 'list',
+    width: 'wide',   // one width for every tab: the head and its buttons never move
     cls: ['group-page', `group-tab-${current}`],
     body,
   });
@@ -897,7 +948,7 @@ export function roleDialog(group, role) {
     sub: role ? metaJoin([role.name, group.name]) : group.name,
     sections: [{
       fields: [
-        textField('name', 'Název', role?.name, { full: true, attr: { autofocus: true, placeholder: 'Zvuk', autocomplete: 'off' } }),
+        textField('name', 'Název', role?.name, { full: true, attr: { autofocus: true, placeholder: 'např. Kamera', autocomplete: 'off' } }),
         numberField('count', 'Kolik lidí na setkání', role?.count || 1, { min: 1, max: 10, unit: 'na jedno setkání' }),
         switchField('essential', 'Bez toho to nepůjde', !!role?.essential, { hint: 'Prázdná role týden před setkáním je chyba.' }),
       ],
@@ -1015,14 +1066,10 @@ function teamEventItem(group, { event, needs, assignments }) {
       dateBlock(day, { today: day === today() }),
       h('span', { class: 'team-event-text' },
         h('span', { class: 'team-event-title' }, kindMark(event.kind || 'event', { size: 's' }), event.title || 'Setkání'),
-        h('span', { class: 'team-event-meta' }, metaJoin([`${dayLabel(day)} ${prettyTime(event.start)}`, places.join(', ')]))),
+        h('span', { class: 'team-event-meta' }, metaJoin([prettyTime(event.start), places.join(', ')]))),
       needed ? fillRing(filled, needed) : null,
       icon('chevron-right', { cls: 'team-event-chevron' })),
     duties.length ? h('ul', { class: 'team-duties' }, duties) : null);
 }
 
 const statusWord = (status) => ({ confirmed: 'potvrzeno', proposed: 'čeká na potvrzení', declined: 'nemůže' }[status] || '');
-const dayLabel = (day) => {
-  const d = new Date(`${day}T12:00`);
-  return `${['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'][d.getDay()]} ${d.getDate()}. ${MONTHS_GENITIVE[d.getMonth()]}`;
-};

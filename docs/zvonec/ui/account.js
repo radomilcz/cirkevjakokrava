@@ -41,7 +41,7 @@ export function contactDialog(person) {
       { fields: [
         textField('phone', 'Telefon', person.phone, { type: 'tel', attr: { autocomplete: 'tel' } }),
         textField('email', 'E-mail', person.email, { type: 'email', attr: { autocomplete: 'email' } }),
-        textField('nickname', 'Přezdívka', person.nickname, { full: true, hint: 'Ukáže se v závorce za jménem.', attr: { placeholder: 'Péťa', autocomplete: 'off' } }),
+        textField('nickname', 'Přezdívka', person.nickname, { full: true, hint: 'Ukáže se v závorce za jménem.', attr: { placeholder: 'např. Bětka', autocomplete: 'off' } }),
       ] },
       { title: 'Kdo kontakt uvidí', fields: [
         switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, { hint: 'Jinak je vidí jen vedoucí.' }),
@@ -94,7 +94,7 @@ export function availabilityDialog(person, record = null) {
     sections: [{ fields: [
       dateField('from', 'Od', record?.from || day, { required: true }),
       dateField('to', 'Do', record?.to || day, { required: true }),
-      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: 'Uvidí ho jen vedoucí.', attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80, autocomplete: 'off' } }),
+      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: 'Uvidí ho jen vedoucí.', attr: { placeholder: 'např. dovolená, směna, výlet', maxlength: 80, autocomplete: 'off' } }),
     ] }],
     remove: record ? () => {
       S.data.availability = S.data.availability.filter((x) => x.id !== record.id);
@@ -126,7 +126,7 @@ export function availabilityDialog(person, record = null) {
 
 // ---------- Vzhled ----------
 
-const THEMES = [['', 'Podle zařízení', 'monitor'], ['light', 'Světlý', 'sun'], ['dark', 'Tmavý', 'moon']];
+const THEMES = [['', 'Podle zařízení'], ['light', 'Světlý'], ['dark', 'Tmavý']];   // the same control as the header menu Vzhled: words, no icons
 const LOOKS = [['zvonec', 'Zvonec'], ['milnik', 'Milníkovač']];
 
 function appearanceCard() {

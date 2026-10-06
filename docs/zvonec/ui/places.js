@@ -40,7 +40,7 @@ const coordsText = (place) => (place && place.lat != null && place.lon != null ?
  * link „Najít na Mapy.cz“ (searches the address typed in `addressInput`, when given). Kit candidate.
  */
 export function coordsField(name, value, { addressInput, nameInput } = {}) {
-  const input = h('input', { type: 'text', name, value: value || '', placeholder: '49.594, 18.010', spellcheck: false, autocomplete: 'off', inputmode: 'decimal' });
+  const input = h('input', { type: 'text', name, value: value || '', placeholder: 'např. 49.59, 18.01', spellcheck: false, autocomplete: 'off', inputmode: 'decimal' });
   const preview = h('div', { class: 'coords-preview' });
   const message = h('small', { class: 'field-hint coords-message', 'aria-live': 'polite' });
   const find = h('a', { class: 'text-link coords-find', target: '_blank', rel: 'noopener noreferrer' }, 'Najít na Mapy.cz', icon('external', { cls: 'link-icon' }));
@@ -102,7 +102,7 @@ export function renderPlaces() {
     lead: 'Kde se scházíme. Místnost zdědí adresu i mapu po své budově.',
     tabs: libraryTabs('mista'),
     actions: leader ? button('Přidat místo', { variant: 'solid', icon: 'plus', onclick: add }) : null,
-    width: 'list',
+    width: 'wide',
     cls: 'library-page places-page',
     body: tree.length
       ? h('div', { class: 'place-cards' }, tree.map(({ place, rooms }) => placeCard(place, rooms, leader)))
@@ -197,7 +197,7 @@ export function renderPlace(id) {
           list(events.slice(0, 6), (e) => row({
             lead: dateBlock(dayOf(e.start), { today: dayOf(e.start) === today() }),
             title: e.title || 'Setkání',
-            meta: metaJoin([`${prettyDay(e.start)} ${prettyTime(e.start)}–${prettyTime(e.end)}`, roomNames(e) || kindWordOf(e)]),
+            meta: metaJoin([`${prettyTime(e.start)}–${prettyTime(e.end)}`, roomNames(e) || kindWordOf(e)]),
             href: `#setkani/${e.id}`,
           }), { empty: emptyState({ icon: 'calendar', compact: true, text: 'Tady teď nic v plánu není.' }) }),
           events.length > 6 ? h('p', { class: 'more-link' }, `A ještě ${eventsWord(events.length - 6)}.`) : null)),
@@ -229,8 +229,8 @@ export function placeDialog(place, { partOf: presetPartOf = '' } = {}) {
   const ownRooms = place ? roomsOf(S.data, place.id) : [];
   const buildings = S.data.places.filter((p) => !p.partOf && p.id !== place?.id).sort(byName);
   const partOf = place ? place.partOf || '' : presetPartOf;
-  const nameField = textField('name', 'Název', place?.name, { full: true, attr: { autofocus: true, placeholder: partOf ? 'Malá místnost' : 'Monta', autocomplete: 'off' } });
-  const addressField = textField('address', 'Adresa', place?.address, { full: true, attr: { placeholder: 'B. Martinů 1885/2, Nový Jičín', autocomplete: 'off' }, hint: 'Jedním řádkem. Ukáže se u setkání i na webu.' });
+  const nameField = textField('name', 'Název', place?.name, { full: true, attr: { autofocus: true, placeholder: partOf ? 'např. Klubovna' : 'např. Sokolovna', autocomplete: 'off' } });
+  const addressField = textField('address', 'Adresa', place?.address, { full: true, attr: { placeholder: 'např. Dlouhá 21, Nový Jičín', autocomplete: 'off' }, hint: 'Jedním řádkem. Ukáže se u setkání i na webu.' });
   const coords = coordsField('coords', coordsText(place), { addressInput: addressField.querySelector('input'), nameInput: nameField.querySelector('input') });
   const own = h('div', { class: 'place-own full' }, addressField, coords);
   const inherit = h('p', { class: 'place-inherit full' });

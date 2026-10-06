@@ -5,6 +5,7 @@
 import {
   h, row, dateBlock, eventCover, coverKey, andJoin, metaJoin, statusIcon, severityMark, icon, fillRing, kindMark,
   KIND_HUES, emptyState, button,
+  cancelledBadge,
 } from './dom.js';
 import { S, can, myId, render, EVENT_KIND_LABELS, SEVERITY_LABELS } from './state.js';
 import { eventTypeById, fillRatio, needsOf } from '../lib/events.js';
@@ -111,15 +112,24 @@ const FILL_WORDS = { confirmed: 'všichni potvrdili', proposed: 'někdo ještě 
 
 /** „◔ 8 z 12“ – the fill of an event as a ring with words (null when the event needs nobody). */
 export function fillCount(event, { ring = true } = {}) {
-  if (event.cancelled) return h('span', { class: 'fill-count cancelled' }, 'zrušeno');
+  if (event.cancelled) return cancelledBadge();
   const fill = fillOf(event);
   if (!fill.state) return null;
   const tone = fill.state === 'confirmed' ? 'confirmed' : 'waiting';
   const el = ring
-    ? fillRing(fill.filled, fill.needed, { tone, label: `Obsazeno ${fill.filled} z ${fill.needed}` })
+    ? fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, label: `Obsazeno ${fill.filled} z ${fill.needed}` })
     : h('span', {}, `${fill.filled} z ${fill.needed}`);
   return h('span', { class: ['fill-count', `fill-${fill.state}`], title: `Obsazeno ${fill.filled} z ${fill.needed}: ${FILL_WORDS[fill.state]}` },
     el, h('span', { class: 'visually-hidden' }, `, ${FILL_WORDS[fill.state]}`));
+}
+
+/** What the parts of the fill ring mean: ● potvrzeno · ◌ čeká · ○ chybí (legend items, `li`). */
+export function fillLegendItems() {
+  return [
+    h('li', {}, fillRing(1, 1, { confirmed: 1, text: false, size: 14, label: 'potvrzeno' }), 'potvrzeno'),
+    h('li', {}, fillRing(1, 1, { confirmed: 0, text: false, size: 14, label: 'čeká na potvrzení' }), 'čeká na potvrzení'),
+    h('li', {}, fillRing(0, 1, { confirmed: 0, text: false, size: 14, label: 'chybí' }), 'chybí'),
+  ];
 }
 
 /** The Účel of an event in Czech. */

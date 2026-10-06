@@ -39,6 +39,12 @@
 .row-contact-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row-teams{display:flex;justify-content:flex-start;width:clamp(10em,20vw,17em)}
 @media (max-width:1199.98px){.row-contact{display:none}}
+/* a wide screen: name · contact · teams as three columns that share the width (no empty gutter) */
+@media (min-width:1200px){
+  .people-list .item-body{flex:1.15 1 0}
+  .people-list .item-trail{flex:2 1 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+  .people-list .row-contact,.people-list .row-teams{width:auto;min-width:0}
+}
 @media (min-width:1200px){.people-list .meta-phone{display:none}}
 @media (max-width:899.98px){.row-teams{width:auto;justify-content:flex-end}}
 /* teams in the trail of a row: mark + name for two, +N; marks only on a phone */
@@ -61,15 +67,26 @@
 .name-cell{display:inline-flex;align-items:center;gap:8px;max-width:100%}
 .name-missing{display:inline-flex;color:var(--waiting-fg)}
 .name-missing .severity-icon{width:14px;height:14px}
-@container (max-width:1180px){.people-table .col-household{display:none}}
-@container (max-width:1000px){.people-table .col-last{display:none}}
-@container (max-width:860px){.people-table .col-groups{display:none}}
+/* fixed column widths: the space goes where the text is (names and e-mails), not to short dates */
+.people-table .table{table-layout:fixed}
+.people-table .table .col-check{width:44px}
+.people-table th.col-name{width:19%}
+.people-table th.col-status{width:9%}
+.people-table th.col-household{width:10%}
+.people-table th.col-phone{width:11%}
+.people-table th.col-email{width:18%}
+.people-table th.col-groups{width:11%}
+.people-table th.col-birthday{width:11%}
+.people-table th.col-last{width:11%}
+.people-table thead th{white-space:normal}
+.people-table .th-sort{height:auto;min-height:28px;text-align:left;line-height:13px;padding-block:calc(4px + var(--optical)) 4px}
+@container (max-width:1000px){.people-table .col-last{display:none}.people-table .table{table-layout:auto}}
+@container (max-width:860px){.people-table .col-groups,.people-table .col-household{display:none}}
 @container (max-width:760px){.people-table .col-birthday{display:none}}
 .people-table .col-name{min-width:10em}
-.people-table .col-name .person-line-name{max-width:11em}
+.people-table .col-name .person-line-name{white-space:normal;overflow:visible}
 .people-table .person-line.quiet .person-line-name{color:var(--text-2)}
-.people-table td.col-email{max-width:10.5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.people-table td.col-household,.people-table td.col-groups{max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.people-table td.col-email,.people-table td.col-household,.people-table td.col-groups{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cell-link{color:var(--text-1);text-decoration:none}
 .cell-link:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
 .cell-sub{color:var(--text-2)}
@@ -98,7 +115,10 @@
 .household-meta{margin:2px 0 0;font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
 .household-address{display:flex;align-items:flex-start;gap:6px;margin:var(--space-3) 0 0;font-size:var(--font-size-3);line-height:var(--line-height-3);color:var(--text-2)}
 .household-address .icon{flex:none;width:16px;height:16px;margin-top:2px}
-.household-card .household-address{padding:6px 10px;border-radius:var(--radius-3);background:var(--surface-sunken)}
+.household-card .household-address{margin-top:var(--space-2)}   /* a plain line with the pin – a filled box looked like a field */
+/* people without a household: a compact list in columns after the cards */
+.household-loose{margin-top:var(--space-6,32px)}
+.loose-rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));column-gap:var(--space-4);margin:0;padding:8px 18px;border-top:0}
 .mini-rows{list-style:none;margin:var(--space-3) 0 0;padding:var(--space-2) 0 0;border-top:1px solid var(--line-1);display:flex;flex-direction:column}
 .mini-row{display:flex;align-items:center;gap:10px;min-height:40px;padding:3px 0}
 .mini-text{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
@@ -113,7 +133,7 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .birthday-soon{margin:0 0 var(--space-5)}
 .birthday-soon>.label{display:block;margin:0 0 var(--space-2)}
 .birthday-soon-list{display:flex;flex-wrap:wrap;gap:var(--space-3)}
-.birthday-tile{display:flex;align-items:center;gap:var(--space-3);flex:0 1 260px;min-width:220px;padding:var(--space-3) var(--space-5) var(--space-3) var(--space-3);color:var(--text-1)}
+.birthday-tile{display:flex;align-items:center;gap:var(--space-3);flex:1 1 0;min-width:220px;padding:var(--space-3) var(--space-5) var(--space-3) var(--space-3);color:var(--text-1)}
 @media (max-width:719.98px){.birthday-tile{flex:1 1 100%}}
 .birthday-tile.is-today{background:var(--selected-bg);box-shadow:inset 0 0 0 1px var(--selected-line),var(--shadow-card)}
 .birthday-tile-text{display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -133,7 +153,10 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .birthday-name{font-size:var(--font-size-4);line-height:20px;color:var(--text-1);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .birthday-name:hover{text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1px}
 .birthday-age{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--font-size-3);color:var(--text-2);font-variant-numeric:tabular-nums}
-.birthday-row.is-week .birthday-name,.birthday-row.is-week .birthday-day{color:var(--text-accent)}
+.birthday-row.is-week .birthday-day{display:grid;place-items:center;min-width:28px;height:24px;border-radius:var(--radius-full);background:var(--selected-bg);color:var(--selected-fg);padding-top:var(--optical-n)}   /* this week: the day in a rose pill (red text read as an error) */
+.bday-missing-more{margin-top:var(--space-4);max-width:var(--w-list)}
+.bday-missing{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 16px;margin:0;padding:0 0 0 6px;list-style:none;font-size:var(--font-size-3);line-height:22px}
+.bday-missing a{color:var(--text-1)}
 .birthday-row.is-today{background:var(--selected-bg);box-shadow:none}
 .birthday-row.is-today+.birthday-row{box-shadow:none}
 .birthday-row.is-today :is(.birthday-name,.birthday-day,.birthday-age){color:var(--selected-fg)}
@@ -142,13 +165,13 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 
 /* ---------- Břemeno ---------- */
 .load-list{max-width:none}
-.load-meter{display:inline-flex;align-items:center;gap:var(--space-3);width:clamp(200px,28vw,380px)}
+.load-meter{display:inline-flex;align-items:center;gap:var(--space-3);width:300px}
 .load-track{flex:1 1 auto;display:flex;min-width:0}
 .load-track .progress{height:8px;min-width:0}
-.load-neutral .progress-fill{background:var(--text-2)}
-.load-text{display:inline-flex;white-space:nowrap;align-items:center;justify-content:flex-end;gap:4px;min-width:4.6em;font-size:var(--font-size-3);font-variant-numeric:tabular-nums;color:var(--text-1);padding-top:2px}
+.load-text{display:inline-flex;white-space:nowrap;align-items:center;justify-content:flex-end;gap:4px;min-width:7.2em;font-size:var(--font-size-3);font-variant-numeric:tabular-nums;color:var(--text-1);padding-top:2px}
 .load-text .severity-icon{width:14px;height:14px;margin-top:-2px}
-.load-danger .load-text{color:var(--declined-fg)}
+.load-over .load-text{color:var(--warning-text)}
+.load-over .load-text .severity-icon{color:var(--waiting-fg)}
 .load-sundays{display:inline-flex;align-items:center;gap:4px}
 .load-sundays.over{color:var(--warning-text)}
 .load-sundays .severity-icon{width:14px;height:14px;color:var(--waiting-fg);margin-top:-2px}
@@ -169,11 +192,6 @@ a.mini-name:hover{text-decoration:underline;text-underline-offset:.18em;text-dec
 .person-page .page-head-media .avatar-l{font-size:24px}
 .person-page .page-meta a{color:inherit;text-underline-offset:.2em;text-decoration-thickness:1px}
 .membership-mark{display:inline-flex;align-items:center;gap:6px;color:var(--text-1)}
-.membership-mark::before{content:"";width:8px;height:8px;border-radius:var(--radius-full);background:var(--text-2)}
-.membership-member::before{background:var(--confirmed-solid)}
-.membership-regular::before{background:var(--info-solid)}
-.membership-guest::before{background:var(--waiting-solid)}
-.membership-former::before{background:none;box-shadow:inset 0 0 0 1.5px var(--text-2)}
 .self-mark{color:var(--text-accent)}
 .callout-buttons{display:inline-flex;flex-wrap:wrap;gap:var(--space-2)}
 
@@ -260,7 +278,7 @@ a.household-link:hover{text-decoration:underline;text-underline-offset:.2em;text
 .load-figure strong{font-family:var(--font-mark);font-weight:900;font-size:var(--font-size-7);line-height:1;color:var(--text-1);letter-spacing:var(--tracking-mark)}
 .load-figure .badge{align-self:center;margin-left:4px}
 .load-big .progress{height:8px}
-.load-big.load-danger .load-figure strong{color:var(--declined-fg)}
+.load-big.load-over .load-figure strong{color:var(--warning-text)}
 .load-card .callout{margin:0 0 var(--space-3)}
 
 /* ---------- #domacnost/<id> ---------- */
@@ -284,3 +302,4 @@ a.household-link:hover{text-decoration:underline;text-underline-offset:.2em;text
 .skill-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2) var(--space-4);padding:var(--space-2) 0;border-top:1px solid var(--line-1)}
 .skill-row:last-child{border-bottom:1px solid var(--line-1)}
 .skill-role{min-width:0;overflow-wrap:anywhere;font-size:var(--font-size-4)}
+@media (min-width:720px){.birthday-tile{max-width:calc((100% - 2 * var(--space-3)) / 3)}}

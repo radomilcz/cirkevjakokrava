@@ -37,8 +37,9 @@ export function renderSettings(part = '') {
   });
 }
 
-/** A form's foot: the error line and Uložit. */
-const formFoot = (text = 'Uložit') => [formErrorLine('', { full: true }), h('div', { class: 'form-foot full' }, button(text, { variant: 'solid', type: 'submit' }))];
+/** A form's foot: the error line and Uložit – under the cards, on the right edge, sticky at the bottom
+ * of the window (the same place on every tab of Nastavení). */
+const formFoot = (text = 'Uložit') => [formErrorLine('', { full: true }), h('div', { class: 'form-foot settings-save full' }, button(text, { variant: 'solid', type: 'submit' }))];
 
 // ---------- Sbor ----------
 
@@ -51,11 +52,11 @@ function churchPart() {
   const s = S.data.settings;
   const main = s.mainPlaceId ? placeById(S.data, s.mainPlaceId) : null;
   const resolved = main ? resolvePlace(S.data, main) : null;
-  const form = h('form', { class: 'form-grid', novalidate: true },
+  const fields = h('div', { class: 'form-grid' },
     textField('churchName', 'Název sboru', s.churchName, { full: true, hint: 'Ukáže se v hlavičce veřejného programu a v kalendářích.' }),
     selectField('mainPlaceId', 'Hlavní místo', mainPlaceOptions(), s.mainPlaceId || '', { full: true, hint: 'Kde se obvykle scházíme. Nová setkání ho dostanou předvyplněné.' }),
-    textField('address', 'Adresa', s.address, { full: true, hint: 'Jedním řádkem. Ukáže se na webu v „Kde nás najdete“ a v kalendáři u setkání.', attr: { placeholder: resolved?.address || 'Ulice 1, Město' } }),
-    formFoot());
+    textField('address', 'Adresa', s.address, { full: true, hint: 'Jedním řádkem. Ukáže se na webu v „Kde nás najdete“ a v kalendáři u setkání.', attr: { placeholder: resolved?.address ? `např. ${resolved.address}` : 'např. Ulice 1, Město' } }));
+  const form = h('form', { class: 'settings-form', novalidate: true });
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const f = form.elements;
@@ -71,19 +72,15 @@ function churchPart() {
     toast('Uloženo.');
   });
   const mapPlace = resolved && Number.isFinite(resolved.lat) ? resolved : null;
-  return {
-    body: [
-      card({ title: 'Název a místo', body: form }),
-      resolved ? card({
+  form.append(card({ title: 'Název a místo', body: fields }), resolved ? card({
         title: 'Kde nás najdete',
         cls: 'settings-preview',
         body: [h('p', { class: 'card-text' }, 'Takhle to uvidí návštěvníci na konci veřejného programu.'),
           h('div', { class: 'preview-place' }, placeLine({ ...resolved, name: resolved.building ? `${resolved.building}` : resolved.name, address: s.address || resolved.address })),
           mapPlace ? placeMap(mapPlace) : null],
         footer: button('Otevřít veřejnou část', { variant: 'ghost', size: 's', href: '#program', iconEnd: 'chevron-right' }),
-      }) : null,
-    ],
-  };
+      }) : '', ...formFoot());
+  return { body: form };
 }
 
 // ---------- Pravidla ----------
@@ -131,12 +128,12 @@ function rulesPart() {
     },
   ];
   const all = groups.flatMap((g) => g.rules);
-  const form = h('form', { class: 'rules-form', novalidate: true },
+  const form = h('form', { class: 'rules-form settings-form', novalidate: true },
     groups.map((g) => card({
       title: g.title,
       body: [g.hint ? h('p', { class: 'card-text' }, g.hint) : null, h('div', { class: 'rule-rows' }, g.rules.map(ruleRow))],
     })),
-    h('div', { class: 'form-grid' }, formFoot()));
+    formFoot());
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const f = form.elements;
@@ -212,22 +209,24 @@ function backupPart() {
   };
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   const action = (text, onclick, iconName) => button(text, { variant: 'surface', size: 's', icon: iconName, onclick });
+  // what replaces or wipes data is red (and always asks first)
+  const danger = (text, onclick, iconName) => button(text, { variant: 'danger', size: 's', icon: iconName, onclick });
   const rows = [
     { lead: rowIcon('download'), title: 'Stáhnout zálohu', meta: `Všechno v jednom souboru: ${counts}, bez obrázků${live ? ' a přístupů' : ''}.`, trail: action('Stáhnout', backup) },
-    admin ? { lead: rowIcon('upload'), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [action('Nahrát', () => file.click()), file] } : null,
+    admin ? { lead: rowIcon('upload'), title: 'Nahrát zálohu', meta: 'Nahradí všechna data tím, co je v souboru. Jen správce.', trail: [danger('Nahrát', () => file.click()), file] } : null,
     { lead: rowIcon('calendar'), title: 'Celý kalendář do telefonu', meta: 'Všechna setkání v jednom souboru .ics. Svoje služby si každý stáhne v Mém účtu.', trail: action('Stáhnout', calendar) },
   ].filter(Boolean);
   const demoRows = [
     {
       lead: rowIcon('refresh'), title: 'Začít ukázku znovu', meta: 'Vrátí ukázku do původního stavu, tvoje změny zmizí.',
-      trail: action('Začít znovu', () => confirmDialog('Začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
+      trail: danger('Začít znovu', () => confirmDialog('Začít ukázku znovu?', 'Tvoje změny v ukázce zmizí.', () => {
         replaceAll(createDemo(today()), 'nová ukázka');
         toast('Ukázka je zpátky.');
-      }, { buttonLabel: 'Začít znovu' })),
+      }, { buttonLabel: 'Začít znovu', danger: true })),
     },
     {
       lead: rowIcon('trash'), title: 'Začít načisto', meta: 'Ukázka zmizí a Zvonec bude prázdný.',
-      trail: action('Vyprázdnit', () => confirmDialog('Začít s prázdným Zvoncem?', 'Ukázka zmizí.', () => {
+      trail: danger('Vyprázdnit', () => confirmDialog('Začít s prázdným Zvoncem?', 'Ukázka zmizí.', () => {
         replaceAll(emptyData(), 'prázdný Zvonec');
         toast('Je to prázdné.', 'Začni třeba v Lidech nebo v Týmech.');
       }, { buttonLabel: 'Vyprázdnit', danger: true })),

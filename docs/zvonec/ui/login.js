@@ -46,7 +46,7 @@ const submitButton = (text) => button(text, { variant: 'solid', size: 'l', type:
 /** The sign-in screen (live mode, nobody signed in). `message` shows as an error line. */
 export function renderLogin(message) {
   const form = h('form', { class: 'form-grid one login-form', novalidate: true },
-    textField('name', 'Jméno a příjmení', '', { full: true, attr: { autocomplete: 'username', autofocus: true, placeholder: 'Petr Novák' } }),
+    textField('name', 'Jméno a příjmení', '', { full: true, attr: { autocomplete: 'username', autofocus: true, placeholder: 'např. Alžběta Svobodová' } }),
     textField('password', 'Heslo', '', { full: true, type: 'password', attr: { autocomplete: 'current-password' } }),
     switchField('remember', REMEMBER_TEXT, true, { hint: REMEMBER_HINT }),
     formErrorLine(message || '', { full: true }),
@@ -73,6 +73,37 @@ export function renderLogin(message) {
     body: [
       card({ body: form, cls: 'signin-card' }),
       h('p', { class: 'signin-note' }, 'Ještě se přihlásit nemůžeš? Požádej vedoucího o pozvánku. Program a setkání najdeš i bez přihlášení v ', h('a', { href: '#program' }, 'Programu'), '.'),
+    ],
+  });
+}
+
+/**
+ * The sign-in screen of the demo: the same form as live, with a note which demo logins exist (any
+ * password works there). `viewers`: [{ name, access, personId }]; `onSignIn(viewer)` switches to them.
+ * Setting up a real Zvonec is behind a link under it.
+ */
+export function renderDemoLogin({ viewers, onSignIn }) {
+  const form = h('form', { class: 'form-grid one login-form', novalidate: true },
+    textField('name', 'Jméno a příjmení', '', { full: true, attr: { autocomplete: 'off', autofocus: true, placeholder: `např. ${viewers[0]?.name || ''}` } }),
+    textField('password', 'Heslo', '', { full: true, type: 'password', hint: 'V ukázce platí jakékoli heslo.', attr: { autocomplete: 'off' } }),
+    formErrorLine('', { full: true }),
+    h('div', { class: 'full form-submit' }, submitButton('Přihlásit se')));
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const wanted = foldName(form.elements.name.value);
+    const viewer = viewers.find((v) => foldName(v.name) === wanted);
+    if (!viewer) { formError(form, `Takový přístup v ukázce není. Zkus třeba ${viewers.map((v) => `„${v.name}“`).join(' nebo ')}.`); return; }
+    onSignIn(viewer);
+  });
+  return signedOutPage({
+    title: 'Přihlásit se',
+    lead: 'Uvidíš rozpis, svoje služby a lidi ze sboru.',
+    body: [
+      callout(h('ul', { class: 'demo-logins' }, viewers.map((v) => h('li', {},
+        h('button', { type: 'button', class: 'text-btn', onclick: () => { form.elements.name.value = v.name; form.elements.password.focus(); } }, v.name),
+        ` – ${v.access}`))), { tone: 'info', title: 'Tohle je ukázka. Přihlásit se můžeš jako:' }),
+      card({ body: form, cls: 'signin-card' }),
+      h('p', { class: 'signin-note' }, 'Chceš Zvonec pro svůj sbor? ', h('a', { href: '#prihlaseni/zalozit' }, 'Založit vlastní Zvonec'), '.'),
     ],
   });
 }

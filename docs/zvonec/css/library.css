@@ -91,7 +91,7 @@
 .need-role.on{box-shadow:inset 0 0 0 1.5px var(--selected-line);background:var(--selected-bg)}
 .need-role-name{display:flex;flex-direction:column;align-items:flex-start;padding-top:var(--optical);font-size:var(--font-size-3);line-height:16px;color:var(--text-2);white-space:nowrap}
 .need-role.on .need-role-name{color:var(--selected-fg)}
-.need-role-program{font-size:11px;line-height:14px;color:var(--info-text)}
+.need-role-program{display:block;font-size:12px;line-height:16px;color:var(--info-text)}   /* 12 px is the floor */
 .need-role .stepper{height:32px;background:var(--field-bg)}
 .need-role .stepper input[type="number"]{width:2.4em;height:28px}
 .needs-program{padding:12px 14px;border-radius:var(--radius-4);background:var(--info-bg)}
@@ -164,7 +164,7 @@
 }
 
 /* ---------- Místa ---------- */
-.place-cards{display:flex;flex-direction:column;gap:16px}
+.place-cards{display:flex;flex-direction:column;gap:16px;max-width:var(--w-list)}
 .place-card{display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden}
 .place-card.with-map{grid-template-columns:minmax(0,1fr) 300px}
 .place-card-main{display:flex;flex-direction:column;min-width:0}

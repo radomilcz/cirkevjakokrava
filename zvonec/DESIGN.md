@@ -17,14 +17,18 @@ same change.
 3. **Lists are the product.** Every collection uses the same `list` / `row`: leading (avatar, date
    block, team mark), title, one meta line, trailing (status, count, chevron). The whole row is
    clickable when it opens something. Lists sit in a panel, not as hairlines on the page. An empty
-   state is one sentence plus the primary action.
+   state is one sentence plus the primary action. A date block is always three lines (weekday · day ·
+   month), so a list may cross months, and the meta line never repeats the date.
 4. **Full names** wherever a person is assigned to something (duty, osnova item, team member, picker).
    Only the dense Rozpis table may shorten („Veronika F.“), never to a bare first name.
 5. **Status = symbol + colour + word**, never one of them alone and never outline style alone.
    `confirmed` filled circle with a tick, green, „potvrzeno“; `proposed` dashed ring with a clock,
    amber, „čeká na potvrzení“; `declined` ✕ in a ring, red, name struck through, „nemůže“. Warnings:
    `error` / `warning` / `info` have their own symbols and the words chyba / pozor / info. Symbols
-   are drawn (SVG), use `currentColor` and print in black.
+   are drawn (SVG), use `currentColor` and print in black. The fill ring has two arcs on the empty
+   track – green potvrzeno, amber (dashed when large) čeká – and its words say both: „14 z 15 · 3 čekají“.
+   One „zrušeno“ everywhere: the gray pill with ⊘ (`cancelledBadge`) and the title struck through.
+   Progress bars have one colour meaning: accent = progress, amber = over a limit / warning, red = error.
 6. **Semantics before looks.** Screens and the kit emit one semantic DOM; looks only override tokens
    and a few structural rules (§2). No raw colours, font names or radius numbers in module CSS.
 7. **Czech** is natural and plain (CLAUDE.md, `kontrola-cestiny`). Buttons are a verb (+ object).
@@ -107,6 +111,10 @@ Agrandir lays out without rounding (12, 13, 15, 16, 17); the optical centring (`
 Space: 4 · 8 · 12 · 16 · 24 · 32 · 40 · 48 · 64. Radius: 4 checkbox · 6 / 8 / 10 controls · 14 cards ·
 18 dialogs and stage. Control heights 28 / 36 / 44 (44 for anything tappable in a row on a phone).
 Widths: text 72ch, list 960, form 640, wide = the whole stage; dialogs 560 (wide 760).
+**Width belongs to the module, not the tab:** the page head (title + primary action) never moves when
+the tab changes. Kalendář, Lidé, Týmy a skupinky, Jak se scházíme, an event and a person are `wide`
+(narrower lists and forms inside stay left-aligned); Nastavení, Upozornění and Můj účet are `list`.
+Look Milníkovač centres its list modules (Týmy, Jak se scházíme) as one 780 px column on every tab.
 
 ## 5. Layout and shell
 
@@ -123,9 +131,11 @@ dialog#dialog · div.toasts
   (`tabs`; sections of one object), a **toolbar** below (period navigator, filters, search).
   `viewSwitch` (segmented) is for switching how one thing is shown inside a tab.
 - **Phone (< 960 px):** the appbar has the brand and „Menu“; the sidebar becomes a sheet that also holds
-  Vzhled and the person; tabs scroll sideways. Calendar and tables degrade on purpose: Měsíc is a compact
-  grid with a day list under it, Týden shows 3 days, Tabulka falls back to Seznam. No horizontal page
-  scroll except inside tables.
+  Vzhled and the person; tabs and filter chips scroll sideways in one row, the hidden edge fades and the
+  chosen one is scrolled into view. Calendar and tables degrade on purpose: Měsíc is a compact grid with
+  a day list under it, Týden shows 3 days, Rozpis becomes one card per event („Role · ✓ Jméno“),
+  Tabulka falls back to Seznam, Kdo co umí becomes a row of role chips per person. No horizontal page
+  scroll except inside tables. A dialog's foot is two even rows (the main action across the full width).
 - **Print:** no sidebar, no appbar, white paper. Osnova A4 portrait, Rozpis A4 landscape.
 
 ## 6. Modules and views (sitemap)
@@ -158,6 +168,9 @@ with no detour through another module. Old slugs redirect (list in ARCHITECTURE.
 - **At most ~7 visible controls.** The rest under **„Další možnosti“** (`disclosure`; remembers its
   state; opens by itself when something inside is set).
 - Sections with a small heading and a one-line hint only when needed. Labels above, hints below.
+- A time of day is always a 24-hour text field written the Czech way („10.00“, typing „930“ works) with a
+  list of quarter hours (`timeInput`, never `<input type=time>`); a date is always the Czech date button
+  with our calendar, on touch too. Placeholders start with „např.“ and never name a real entity.
 - Single choice of ≤ 4 options: segmented control; more: select or combobox. Yes / no: **switch with a
   sentence label**, never a checkbox paragraph. Several entities: chips with a check mark and fill.
 - **Dialog ≤ 560 px** for ≤ 2 sections (wide 760 for two text areas). Anything with a list inside (needs,
@@ -199,13 +212,15 @@ Screens import only from `ui/dom.js`. The specimen `#kit` renders every piece in
 - **Actions:** `button` (variants `solid` · `soft` · `surface` · `ghost` · `danger`; sizes s / m / l),
   `iconButton`, `menuButton` (kebab).
 - **Status:** `badge`, `countBadge`, `statusBadge`, `statusIcon`, `severityBadge`, `severityIcon`,
-  `callout`, `fillRing` / `progressBar` („12 z 14“), `toast`.
+  `cancelledBadge`, `meTag` („ty“), `callout`, `fillRing` (`{ confirmed }` = two arcs) / `progressBar`
+  („12 z 14“), `toast`.
 - **Containers:** `card`, `panel`, `facts`, `emptyState`, `list` / `row` / `groupedList`, `dateBlock`,
   `table` (sortable, selectable, bulk bar, `statusCell`).
 - **People and marks:** `avatar`, `avatarStack`, `personName`, `personLine`, `assignee`, `groupMark`,
   `kindMark`, `eventCover`, `placeLine`, `placeMap`, `metaJoin`.
 - **Forms:** `formDialog`, `infoDialog`, `formSection`, `disclosure`, `field`, `textField`, `textArea`,
-  `selectField`, `segmentedField`, `chipsField`, `switchField`, `dateField`, `timeRange`, `numberField`,
+  `selectField`, `segmentedField`, `chipsField`, `switchField`, `dateField`, `timeRange` / `timeField`
+  (`timeInput`), `numberField`,
   `personPicker`; modules may define kit candidates (`peopleField`, `placeChipsField`, `coordsField`,
   `skillMatrixTable`) until they are promoted.
 - Meta lines join their parts with „ · “ (`metaJoin`; the dot stays at the end of a wrapped line).

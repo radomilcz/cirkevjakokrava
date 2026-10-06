@@ -4,7 +4,8 @@
 // #program/<id> – one public event (shareable, „Stáhnout do kalendáře“) · #jak-se-schazime – published formats.
 
 import {
-  h, page, card, button, badge, andJoin, emptyState, eventCover, coverKey, placeLine, placeMap, mapUrl, callout, icon, plural, download, SEP,
+  h, page, card, button, badge, andJoin, emptyState, eventCover, coverKey, placeLine, placeMap, mapUrl, callout, icon, plural, download, MONTHS_SHORT, SEP,
+  cancelledBadge,
 } from './dom.js';
 import { S, publicData } from './state.js';
 import { ics } from '../lib/ics.js';
@@ -71,7 +72,7 @@ function soonWord(event) {
   return day === addDays(now, 1) ? 'Zítra' : null;
 }
 
-const stateBadge = (event) => (event.cancelled ? badge('zrušeno', { tone: 'danger' }) : soonWord(event) ? badge(soonWord(event), { tone: 'accent' }) : null);
+const stateBadge = (event) => (event.cancelled ? cancelledBadge() : soonWord(event) ? badge(soonWord(event), { tone: 'accent' }) : null);
 
 // ---------- pictures, places ----------
 
@@ -136,7 +137,7 @@ function hero(event, data) {
         event.description ? h('p', { class: 'pub-hero-desc' }, event.description) : null,
         h('div', { class: 'pub-actions' },
           calendarButton(event, data, 'solid'),
-          button('Podrobnosti', { variant: 'ghost', href: `#program/${event.id}`, iconEnd: 'chevron-right' }))),
+          button('Podrobnosti', { variant: 'surface', href: `#program/${event.id}`, iconEnd: 'chevron-right' }))),
       mapPlace ? h('div', { class: 'pub-hero-map' }, placeMap(mapPlace)) : null));
 }
 
@@ -149,11 +150,11 @@ function eventItem(event) {
       h('span', { class: 'pub-item-date', 'aria-hidden': 'true' },
         h('span', { class: 'pub-item-dow' }, DAYS_FULL[weekday(dayOf(event.start))].slice(0, 2)),
         h('span', { class: 'pub-item-day' }, String(d.getDate())),
-        h('span', { class: 'pub-item-month' }, MONTHS_GENITIVE[d.getMonth()].slice(0, 3))),
+        h('span', { class: 'pub-item-month' }, MONTHS_SHORT[d.getMonth()])),
       h('span', { class: 'pub-item-body' },
         h('span', { class: 'pub-item-title' }, h('span', { class: 'pub-item-name' }, event.title), stateBadge(event)),
         h('span', { class: 'pub-item-meta' }, [multiDay(event) ? whenText(event) : hours(event), ...places.map((p) => p.name)].join(SEP))),
-      h('span', { class: 'pub-item-cover' }, coverOf(event, 'card')),
+      h('span', { class: 'pub-item-cover' }, coverOf(event, 'card', { title: false })),   // the row has the title: the picture alone
       h('span', { class: 'pub-item-chevron', 'aria-hidden': 'true' }, icon('chevron-right'))));
 }
 

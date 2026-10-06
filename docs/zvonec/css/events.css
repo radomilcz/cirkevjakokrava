@@ -6,6 +6,10 @@
 .event-cover{margin:0 0 20px}
 .event-cover .cover-hero{max-height:220px}
 .event-cover .cover-hero.cover-plain{height:clamp(88px,10vw,140px)}
+/* Kdo slouží and Osnova: the same picture as a slim strip, so the page keeps its face without pushing the work down */
+.event-cover-strip{margin-bottom:16px}
+.event-cover-strip .cover-hero,.event-cover-strip .cover-hero.cover-plain{height:28px;aspect-ratio:auto;border-radius:var(--radius-4);padding:0}
+.event-cover-strip .cover-hero .cover-imprint{width:40%;right:-2%;top:-260%}
 .event-page .page-meta{gap:8px 18px;margin-top:12px}
 .event-page .page-meta>span{min-width:0}
 .event-page .page-meta :is(.meta-when,.meta-kind,.meta-place){display:inline-flex;align-items:center;gap:6px;min-width:0}
@@ -18,7 +22,7 @@
 .my-answers{display:flex;flex-direction:column;gap:8px;max-width:var(--w-list)}
 .my-answers .callout-title{font-size:var(--font-size-4)}
 .answer-buttons{display:flex;gap:6px}
-.event-page .page-body>.callout-danger{max-width:var(--w-list)}
+.event-page .page-body>.callout{max-width:var(--w-list)}
 
 /* ---------- Přehled ---------- */
 .event-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
@@ -34,7 +38,9 @@
 .fill-summary .fill-ring-text{color:var(--text-1)}
 .fill-words{color:var(--text-2);font-size:var(--font-size-3)}
 .team-sums{list-style:none;margin:0 -18px;padding:0}
-.team-sum{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;min-height:48px;padding:6px 18px;border-top:1px solid var(--line-1)}
+.team-sum{display:grid;grid-template-columns:minmax(8em,.8fr) minmax(0,1.6fr) auto;align-items:center;gap:12px;min-height:48px;padding:6px 18px;border-top:1px solid var(--line-1)}
+.team-sum-people{min-width:0;font-size:var(--font-size-3);line-height:18px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:620px){.team-sum{grid-template-columns:minmax(0,1fr) auto}.team-sum-people{grid-column:1/-1;grid-row:2;white-space:normal;padding-left:42px;margin-top:-6px}}
 .team-sum.mine{background:var(--selected-bg)}
 .team-sum-name{display:inline-flex;align-items:center;gap:10px;min-width:0;font-size:var(--font-size-4)}
 .team-sum-counts{display:inline-flex;align-items:center;justify-content:flex-end;gap:12px;min-width:7.5em}
@@ -54,7 +60,10 @@
 .warn-note{color:var(--text-2)}
 .warn-actions{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:2px}
 .warn-actions .text-btn{font-size:var(--font-size-3)}
+/* the accent bar takes the colour of the most serious warning inside (chyba red, pozor amber, info blue) */
 .warnings-card{box-shadow:var(--shadow-card),inset 3px 0 0 var(--waiting-solid)}
+.warnings-card.warnings-error{box-shadow:var(--shadow-card),inset 3px 0 0 var(--declined-solid)}
+.warnings-card.warnings-info{box-shadow:var(--shadow-card),inset 3px 0 0 var(--info-solid)}
 .place-card-line{margin:0;font-size:var(--font-size-3);line-height:20px}
 .place-card .place-map{height:200px;margin-top:12px;box-shadow:none;border-radius:var(--radius-4)}
 .series-rule{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:var(--font-size-3);line-height:20px}
@@ -66,25 +75,32 @@
 .attendance-split{font-size:var(--font-size-3);color:var(--text-2)}
 
 /* ---------- Kdo slouží ---------- */
-.tab-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:var(--w-list)}
-.tab-tools .switch-row{padding:0;align-items:center;margin-left:4px}
-.tab-tools .switch-row>input{margin-top:0}
-.tab-tools .switch-row .caption{font-size:var(--font-size-3)}
-.page-body>.tab-tools+*{margin-top:16px}
-.duties-summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;max-width:var(--w-list);font-size:var(--font-size-3);color:var(--text-2)}
-.duties-summary .fill-ring{font-size:var(--font-size-4)}
+/* the tools of a tab at the side (Kdo slouží, Osnova): full-width buttons under the summary */
+.side-tools{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.side-tools>.btn{justify-content:flex-start}
+.side-tools .switch-row{padding:4px 0 0}
+.side-tools .switch-row .caption{font-size:var(--font-size-3);line-height:20px}
+.duties-summary+.side-tools,.program-summary+.side-tools{margin-top:16px;padding-top:16px;border-top:1px solid var(--line-1)}
+.duties-summary{display:flex;flex-direction:column;gap:10px;font-size:var(--font-size-3);color:var(--text-2)}
+.duties-summary .fill-ring{font-size:var(--font-size-5);gap:10px}
 .duties-summary .fill-ring-text{color:var(--text-1)}
-.duties-summary .missing{color:var(--waiting-fg)}
-.duties-progress{flex:1 1 140px;max-width:240px;margin-left:auto}
-.duty-teams{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:var(--w-list)}
+.duties-words{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.duties-words li{display:flex;align-items:center;gap:8px;line-height:20px}
+.duties-words .status-icon{width:16px;height:16px;color:var(--confirmed-solid)}
+.duties-words .waiting .status-icon{color:var(--waiting-fg)}
+.duties-words .missing{color:var(--waiting-fg)}
+.duties-words .open-ring{width:16px;height:16px;margin:0}
+.duty-teams{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 .duty-team-title{display:inline-flex;align-items:center;gap:8px}
 .duty-team-title .group-mark{margin-top:-3px}
 .duty-team-count{font-family:var(--font-body);font-size:var(--font-size-3);color:var(--text-2);font-variant-numeric:tabular-nums;margin-right:8px}
 .duty-team-count.missing{color:var(--waiting-fg)}
 .duty-list{list-style:none;margin:0;padding:0}
-.duty{display:grid;grid-template-columns:11em minmax(0,1fr);gap:4px 16px;padding:8px 18px;border-top:1px solid var(--line-1)}
+.duty{display:grid;grid-template-columns:11em minmax(0,1fr);align-items:center;gap:4px 16px;padding:8px 18px;border-top:1px solid var(--line-1)}
 .duty.mine{background:var(--selected-bg)}
-.duty-head{display:flex;flex-direction:column;gap:2px;padding-top:12px;min-width:0}
+/* role over „1 z 1 · Přidat dalšího“ – two lines, centred against the people, so a row is never bottom-heavy */
+.duty-head{display:flex;flex-direction:column;gap:2px;min-width:0;align-self:center}
+.duty-sub{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px}
 .duty-role{font-size:var(--font-size-4);line-height:20px;overflow-wrap:anywhere}
 .duty-count{font-size:var(--font-size-3);line-height:18px;color:var(--text-2);font-variant-numeric:tabular-nums}
 .duty-count.missing{color:var(--waiting-fg)}
@@ -99,7 +115,7 @@
 .slot-pick>span:not(.slot-ring){padding-top:var(--optical)}
 .slot-pick.empty{color:var(--text-2);cursor:default}
 .slot-pick.empty:hover{background:none}
-.duty-more{margin-top:2px;font-size:var(--font-size-3);line-height:18px}
+.duty-more{font-size:var(--font-size-3);line-height:18px}
 .duty-more .text-btn{color:var(--text-2)}
 @media (hover:hover) and (pointer:fine){
   .duty .duty-more{opacity:0;transition:opacity .12s}
@@ -111,13 +127,12 @@
 }
 
 /* ---------- Osnova ---------- */
-.program-tab{display:flex;flex-direction:column;gap:16px;max-width:var(--w-list)}
-.program-summary{display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-radius:var(--radius-card);background:var(--surface-panel);box-shadow:var(--shadow-card)}
-.program-summary-text{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+.program-tab{display:flex;flex-direction:column;gap:16px}
+.program-summary{display:flex;flex-direction:column;gap:10px}
+.program-summary-text{display:flex;flex-direction:column;gap:2px}
 .program-total{font-size:var(--font-size-5);line-height:22px;font-variant-numeric:tabular-nums}
 .program-end{font-size:var(--font-size-3);color:var(--text-2)}
 .program-summary.over .program-end{color:var(--declined-fg)}
-.progress-neutral .progress-fill{background:var(--text-2)}
 .program-row .item-lead{gap:6px;min-width:5.4em}
 .program-row .drag-handle{position:relative;z-index:2;margin-left:-8px}
 .program-row .program-time{font-size:17px;min-width:3.2em}
@@ -149,7 +164,9 @@
 .template-kind .kind-mark{box-shadow:0 0 0 2px var(--surface-panel)}
 .template-text{display:flex;flex-direction:column;gap:2px;padding:10px 12px 12px}
 .template-name{font-size:var(--font-size-4);line-height:20px}
-.template-meta{font-size:var(--font-size-3);line-height:18px;color:var(--text-2)}
+.template-meta{font-size:var(--font-size-3);line-height:18px;color:var(--text-2);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;min-height:36px}   /* two lines, every tile the same height */
+.template-tiles>li{display:flex}
+.template-text{flex:1 1 auto}
 .template-blank .template-cover{display:grid;place-items:center;aspect-ratio:16/8;background:var(--surface-sunken);box-shadow:inset 0 -1px 0 var(--line-1)}
 .template-plus{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--surface-panel);box-shadow:inset 0 0 0 1px var(--line-control);color:var(--text-2)}
 .template-plus .icon{width:20px;height:20px}
@@ -184,10 +201,14 @@
 
 /* ---------- print: the osnova on A4 portrait, the event page without chrome ---------- */
 @media print{
-  .event-cover,.event-side,.my-answers,.tab-tools,.slot-pick,.duty-more,.drag-handle,.event-page .page-meta .badge,.event-page .place-map-link{display:none !important}
+  .event-cover,.event-side,.my-answers,.side-tools,.slot-pick,.duty-more,.drag-handle,.event-page .page-meta .badge,.event-page .place-map-link{display:none !important}
   .event-grid{display:block}
   .event-tab-osnova .page{page:osnova}
   .event-tab-osnova .page-meta{font-size:11pt}
+  .event-side.program-side{display:block !important;margin-top:4mm}
+  .program-side .card{box-shadow:none;background:none}
+  .program-side .card-head{display:none}
+  .program-side .card-body{padding:0}
   .program-summary{box-shadow:none;padding:0;background:none}
   .program-summary .progress{display:none}
   .program-tab .items{box-shadow:none;max-width:none}
@@ -198,3 +219,5 @@
   .program-how{font-size:9pt}
 }
 @page osnova{size:A4 portrait;margin:14mm}
+/* one column (phone, tablet): on Kdo slouží and Osnova the summary and tools come first */
+@media (max-width:1099.98px){.event-tab-sluzby .event-side,.event-tab-osnova .event-side{order:-1}}

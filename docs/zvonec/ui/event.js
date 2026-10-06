@@ -8,7 +8,7 @@
 import {
   h, page, tabs, button, icon, badge, callout, card, emptyState, fillRing, progressBar, statusIcon, severityMark,
   placeLine, placeMap, kindMark, groupMark, assignee, download, plural, agree, menuButton, textButton, SEP,
-  dialogForm, numberField, toast, avatarStack,
+  dialogForm, numberField, toast, personName, andJoin,
 } from './dom.js';
 import { S, can, change, myId, newId } from './state.js';
 import { canOverride, overrideDialog } from './conflicts.js';
@@ -56,13 +56,14 @@ export function renderEvent(id, tab = '') {
       { id: 'sluzby', label: 'Kdo slouží', icon: 'users', count: fill.needed && !event.cancelled ? `${fill.filled} z ${fill.needed}` : null },
       { id: 'osnova', label: 'Osnova', icon: 'list', count: programCount(event) },
     ], current, (t) => `#setkani/${id}${t ? `/${t}` : ''}`, { label: 'Záložky setkání' }),
-    body: [myAnswer(event), event.cancelled ? callout('Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.', { tone: 'danger', title: 'Zrušeno' }) : null, body],
+    body: [myAnswer(event), event.cancelled ? callout('Tohle setkání je zrušené. Nikdo na něm nemusí sloužit.', { tone: 'neutral', icon: 'ban', title: 'Zrušeno' }) : null, body],
     width: 'wide',
-    cls: ['event-page', `event-tab-${current || 'prehled'}`],
+    cls: ['event-page', `event-tab-${current || 'prehled'}`, event.cancelled && 'is-cancelled'],
   });
   // the cover sits above the title, under the back link
   const head = el.querySelector('.page-head');
-  head.insertBefore(h('div', { class: 'event-cover' }, coverOf(event, { size: 'hero', title: false })), head.querySelector('.page-head-row'));
+  // – the full picture on Přehled, a slim strip of it on Kdo slouží and Osnova (the work is below)
+  head.insertBefore(h('div', { class: ['event-cover', current && 'event-cover-strip'] }, coverOf(event, { size: 'hero', title: false })), head.querySelector('.page-head-row'));
   return el;
 }
 
@@ -169,7 +170,7 @@ function dutiesSummaryCard(event, leader) {
     const mine = me && teamNeeds.some((n) => (event.assignments || []).some((a) => a.roleId === n.roleId && a.personId === me && a.status !== 'declined'));
     return h('li', { class: ['team-sum', mine && 'mine'] },
       h('span', { class: 'team-sum-name' }, team ? groupMark(team, { size: 's' }) : null, team?.name || 'Ostatní'),
-      avatarStack(people, { max: 4, size: 'xs' }),
+      peopleNames(people),
       h('span', { class: 'team-sum-counts' },
         confirmed ? h('span', { class: 'status status-confirmed', title: 'potvrzeno' }, statusIcon('confirmed'), String(confirmed)) : null,
         waiting ? h('span', { class: 'status status-proposed', title: 'čeká na potvrzení' }, statusIcon('proposed'), String(waiting)) : null,
@@ -181,7 +182,7 @@ function dutiesSummaryCard(event, leader) {
     actions: button('Celý rozpis', { variant: 'ghost', size: 's', iconEnd: 'chevron-right', href }),
     body: [
       event.cancelled ? null : h('div', { class: 'fill-summary' },
-        fillRing(fill.filled, fill.needed, { tone: fill.state === 'confirmed' ? 'confirmed' : 'waiting', size: 28 }),
+        fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, size: 28 }),
         h('span', { class: 'fill-words' }, words)),
       h('ul', { class: 'team-sums' }, rows),
     ],
@@ -220,7 +221,7 @@ function warningsCard(event, conflicts) {
             overridable && aid ? textButton(c.overrideNote ? 'Upravit důvod' : 'Vím o tom', () => overrideDialog(aid)) : null,
             other ? h('a', { class: 'text-btn', href: `#setkani/${other}` }, 'Otevřít druhé setkání') : null) : null));
     })),
-    cls: 'warnings-card',
+    cls: `warnings-card warnings-${sorted[0].severity}`,
   });
 }
 
@@ -287,6 +288,16 @@ function attendanceCard(event, leader) {
   });
 }
 
+/** Who serves in a team, by FULL name (DESIGN §1.4), each person once: „Daniel Sýkora, Hedvika Sedláčková a 2 další“. */
+function peopleNames(people) {
+  const unique = [...new Map(people.filter(Boolean).map((p) => [p.id, p])).values()];
+  if (!unique.length) return h('span', { class: 'team-sum-people' });
+  const shown = unique.slice(0, 2).map(personName);
+  const rest = unique.length - shown.length;
+  return h('span', { class: 'team-sum-people', title: unique.map(personName).join(', ') },
+    rest ? `${shown.join(', ')} a ${rest} ${agree(rest, 'další', 'další', 'dalších')}` : andJoin(shown));
+}
+
 /** „1 člověk ještě nepotvrdil“, „3 lidé ještě nepotvrdili“, „11 lidí ještě nepotvrdilo“ */
 const waitingWords = (n) => (n === 1 ? '1 člověk ještě nepotvrdil' : n <= 4 ? `${n} lidé ještě nepotvrdili` : `${n} lidí ještě nepotvrdilo`);
 
@@ -314,25 +325,33 @@ function dutiesTab(event, conflicts, leader) {
   const needs = needsOf(S.data, event, { withAssigned: true });
   const previous = previousEvent(S.data, id);
   const fill = fillOf(event);
-  const tools = editable ? h('div', { class: 'tab-tools' },
-    fill.state === 'open' ? button('Navrhnout lidi', { variant: 'surface', size: 's', icon: 'users', onclick: () => proposeRest(id), title: 'Zvonec doplní, kdo umí a má čas' }) : null,
+  const tools = editable ? h('div', { class: 'side-tools' },
+    fill.state === 'open' ? button('Navrhnout lidi', { variant: 'surface', icon: 'users', onclick: () => proposeRest(id), title: 'Zvonec doplní, kdo umí a má čas' }) : null,
     previous && (previous.assignments || []).some((a) => a.status !== 'declined') && fill.state === 'open'
-      ? button('Obsadit jako minule', { variant: 'surface', size: 's', icon: 'copy', onclick: () => copyPeople(id), title: `Jako ${prettyDay(previous.start)}` }) : null,
-    h('span', { class: 'toolbar-spacer' }),
-    button('Kolik lidí je potřeba', { variant: 'soft', size: 's', icon: 'sliders', onclick: () => needsDialog(id) })) : null;
+      ? button('Obsadit jako minule', { variant: 'surface', icon: 'copy', onclick: () => copyPeople(id), title: `Jako ${prettyDay(previous.start)}` }) : null,
+    button('Kolik lidí je potřeba', { variant: 'surface', icon: 'sliders', onclick: () => needsDialog(id) })) : null;
   if (!needs.length) {
-    return [tools, emptyState({ icon: 'users', title: 'Tohle setkání nikoho do služby nepotřebuje.', action: editable ? button('Určit, kolik lidí je potřeba', { variant: 'solid', onclick: () => needsDialog(id) }) : null })];
+    return emptyState({ icon: 'users', title: 'Tohle setkání nikoho do služby nepotřebuje.', action: editable ? button('Určit, kolik lidí je potřeba', { variant: 'solid', onclick: () => needsDialog(id) }) : null });
   }
   const problems = assignmentProblems(conflicts);
-  const summary = !event.cancelled ? h('div', { class: 'duties-summary' },
-    fillRing(fill.filled, fill.needed, { tone: fill.state === 'confirmed' ? 'confirmed' : 'waiting', size: 22 }),
-    h('span', {}, `${fill.confirmed} ${agree(fill.confirmed, 'potvrdil', 'potvrdili', 'potvrdilo')}`),
-    fill.filled - fill.confirmed ? h('span', {}, `${fill.filled - fill.confirmed} ${agree(fill.filled - fill.confirmed, 'čeká', 'čekají')} na potvrzení`) : null,
-    fill.needed - fill.filled ? h('span', { class: 'missing' }, `${fill.needed - fill.filled} chybí`) : null,
-    h('span', { class: 'duties-progress' }, progressBar(fill.filled, fill.needed, { tone: fill.state === 'confirmed' ? 'confirmed' : 'waiting' }))) : null;
-  return [
-    tools,
-    summary,
+  const waiting = fill.filled - fill.confirmed;
+  const missing = fill.needed - fill.filled;
+  // the summary sits at the side, like the cards of Přehled: the ring with words, the bar right under them
+  const summary = !event.cancelled || tools ? card({
+    title: 'Obsazení',
+    body: [
+      !event.cancelled ? h('div', { class: 'duties-summary' },
+        fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, size: 28 }),
+        progressBar(fill.filled, fill.needed, { label: `Obsazeno ${fill.filled} z ${fill.needed}` }),
+        h('ul', { class: 'duties-words' },
+          h('li', {}, statusIcon('confirmed'), `${fill.confirmed} ${agree(fill.confirmed, 'potvrdil', 'potvrdili', 'potvrdilo')}`),
+          waiting ? h('li', { class: 'waiting' }, statusIcon('proposed'), `${waiting} ${agree(waiting, 'čeká', 'čekají')} na potvrzení`) : null,
+          missing ? h('li', { class: 'missing' }, h('span', { class: 'open-ring', 'aria-hidden': 'true' }), `${missing} chybí`) : null)) : null,
+      tools,
+    ],
+    cls: 'duties-side',
+  }) : null;
+  return h('div', { class: 'event-grid' }, h('div', { class: 'event-main' },
     h('div', { class: 'duty-teams' }, teamsOf(event).map(({ team, needs: teamNeeds }) => {
       const filled = teamNeeds.reduce((s, n) => s + Math.min(n.count || 0, (event.assignments || []).filter((a) => a.roleId === n.roleId && a.status !== 'declined').length), 0);
       const needed = teamNeeds.reduce((s, n) => s + (n.count || 0), 0);
@@ -343,8 +362,7 @@ function dutiesTab(event, conflicts, leader) {
         flush: true,
         cls: 'duty-card',
       });
-    })),
-  ];
+    }))), summary ? h('aside', { class: 'event-side' }, summary) : null);
 }
 
 /** One role: name and „1 z 2“, then the people (avatar + full name + status) and the empty places. */
@@ -358,8 +376,9 @@ function dutyRow(event, need, { editable, problems }) {
   return h('li', { class: ['duty', people.some((a) => a.personId === me && a.status !== 'declined') && 'mine'] },
     h('div', { class: 'duty-head' },
       h('span', { class: 'duty-role' }, roleName),
-      h('span', { class: ['duty-count', empty && 'missing'] }, need.count ? `${active} z ${need.count}` : 'navíc'),
-      editable && !empty ? h('span', { class: 'duty-more' }, textButton('Přidat dalšího', () => pickFor(event.id, need.roleId), { 'aria-label': `Přidat dalšího: ${roleName}` })) : null),
+      h('span', { class: 'duty-sub' },
+        h('span', { class: ['duty-count', empty && 'missing'] }, need.count ? `${active} z ${need.count}` : 'navíc'),
+        editable && !empty ? h('span', { class: 'duty-more' }, textButton('Přidat dalšího', () => pickFor(event.id, need.roleId), { 'aria-label': `Přidat dalšího: ${roleName}` })) : null)),
     h('div', { class: 'duty-people' },
       people.map((a) => {
         const problem = problems.get(a.id);

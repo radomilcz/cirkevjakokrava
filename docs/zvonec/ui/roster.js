@@ -10,7 +10,7 @@ import { eventsInRange, needsOf } from '../lib/events.js';
 import { personById } from '../lib/people.js';
 import { addDays, addMonths, dayOf, monthOf, prettyDay, prettyTime, today } from '../lib/time.js';
 import {
-  filteredEmpty, kindHue, kindLabel, monthTitle, openIcon, passesFilters, roleComparator, activeFilterCount,
+  filteredEmpty, kindHue, kindLabel, monthTitle, openIcon, passesFilters, roleComparator, activeFilterCount, isPhone,
 } from './calendar-shared.js';
 import { SEVERITY_WEIGHT, assignmentMenu, assignmentProblems, eventConflicts, pickFor } from './event-duties.js';
 import { overrideDialog } from './conflicts.js';
@@ -144,10 +144,42 @@ export function rosterView(ctx) {
     leader ? h('li', { class: 'no-print' }, severityIcon('error'), severityIcon('warning'), 'něco nesedí') : null,
     leader ? h('li', { class: 'no-print legend-hint' }, 'Klikni na jméno nebo na „chybí“.') : null);
 
+  // a phone: one card per event – „Role · ✓ Jméno“ lines – instead of a table that shows one column at a time
+  if (isPhone()) {
+    const cards = events.map((e) => {
+      const conflicts = leader ? eventConflicts(e.id) : [];
+      const problems = assignmentProblems(conflicts);
+      const lines = columns.map((rid, i) => {
+        const td = cell(e, rid, i, conflicts, problems);
+        if (td.classList.contains('none')) return null;
+        const box = h('div', { class: ['roster-line-people', ...[...td.classList].filter((c) => c !== 'roster-cell' && c !== 'team-start')] });
+        box.append(...td.childNodes);
+        return h('li', { class: 'roster-line' }, h('span', { class: 'roster-line-role' }, roles.get(rid).name), box);
+      }).filter(Boolean);
+      return h('section', { class: ['card', 'roster-card', e.cancelled && 'cancelled', dayOf(e.end) < now && 'past'] },
+        h('a', { href: `#setkani/${e.id}`, class: 'roster-card-head' },
+          h('span', { class: ['roster-kind', `c-${kindHue(e.kind)}`], 'aria-hidden': 'true' }),
+          h('span', { class: 'roster-event-text' },
+            h('span', { class: 'roster-when' }, h('span', { class: 'roster-day' }, prettyDay(e.start)), h('span', { class: 'roster-time' }, prettyTime(e.start))),
+            h('span', { class: 'roster-title' }, metaJoin([e.title, e.cancelled ? 'zrušeno' : null]))),
+          icon('chevron-right', { cls: 'roster-card-chevron' })),
+        h('ul', { class: 'roster-lines' }, lines));
+    });
+    return h('div', { class: 'roster roster-phone' }, h('div', { class: 'roster-cards' }, cards), h('div', { class: 'roster-foot' }, legendItems));
+  }
+
+  const scroller = h('div', { class: 'table-scroll', tabindex: 0, role: 'region', 'aria-label': `Rozpis ${monthTitle(month)}` }, table);
+  const wrap = h('div', { class: 'table-wrap card roster-wrap' }, scroller);
+  // edge fades: more roles to the right (or left) than fit
+  const edges = () => {
+    wrap.classList.toggle('fade-right', scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 2);
+    wrap.classList.toggle('scrolled', scroller.scrollLeft > 2);
+  };
+  scroller.addEventListener('scroll', edges, { passive: true });
+  requestAnimationFrame(edges);
   return h('div', { class: 'roster' },
     printHeader(`rozpis služeb${SEP}${monthTitle(month)}`),
-    h('div', { class: 'table-wrap card roster-wrap' },
-      h('div', { class: 'table-scroll', tabindex: 0, role: 'region', 'aria-label': `Rozpis ${monthTitle(month)}` }, table)),
+    wrap,
     h('div', { class: 'roster-foot' }, legendItems,
       skipped ? h('p', { class: 'roster-skipped no-print' }, skipped === 1 ? 'Skryto 1 setkání, které nikoho do služby nepotřebuje.'
         : `${agree(skipped, 'Skryto', 'Skryta')} ${skipped} setkání, která nikoho do služby nepotřebují.`) : null),

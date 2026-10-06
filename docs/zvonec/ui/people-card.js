@@ -7,7 +7,8 @@
 
 import {
   h, icon, plural, page, card, facts, list, row, avatar, personName, groupMark, badge, button, menuButton, callout,
-  emptyState, dateBlock, statusBadge, severityIcon, severityMark, progressBar, metaJoin, SEP, agree, mapUrl, canMap, download, section, note, btn, plus,
+  emptyState, dateBlock, statusBadge, severityIcon, severityMark, severityBadge, progressBar, metaJoin, SEP, agree, mapUrl, canMap, download, section, note, btn, plus,
+  cancelledBadge,
 } from './dom.js';
 import { S, can, myId, change, isUpcoming, ACCESS_LABELS, MEMBERSHIP_LABELS, SKILL_LABELS } from './state.js';
 import { createInvite, createLoginDialog, revokeLogin, allLogins } from './login.js';
@@ -52,7 +53,7 @@ export function renderPersonCard(id) {
   const nick = (person.nickname || '').trim();
   const soon = leader || self ? birthdaySoon(person) : '';
   const metaItems = [
-    leader ? h('span', { class: ['membership-mark', `membership-${statusOf(person)}`] }, capital(membershipText(person))) : null,
+    leader ? [icon('user'), h('span', { class: ['membership-mark', `membership-${statusOf(person)}`] }, capital(membershipText(person)))] : null,
     leader && isKid(person) ? kidText(person) : null,
     household ? [icon('home'), leader ? h('a', { href: `#domacnost/${household.id}` }, household.name) : household.name] : null,
     nick && nick !== person.firstName ? `přezdívka ${nick}` : null,
@@ -199,7 +200,7 @@ function membershipCard(person) {
     title: 'Ve sboru',
     actions: editButton(() => membershipDialog(person)),
     body: facts([
-      ['Členství', capital(MEMBERSHIP_LABELS[status])],
+      ['Členství', MEMBERSHIP_LABELS[status]],
       ['Ve sboru od', m.since ? fullDate(m.since) : null],
       ['Do', status === 'former' && m.until ? fullDate(m.until) : null],
       ['Souhlas', person.consentDate ? fullDate(person.consentDate)
@@ -272,7 +273,7 @@ function warningsCard(person) {
       });
     }, { cls: 'warning-rows' }),
     flush: true,
-    cls: 'person-card warnings-card',
+    cls: `person-card warnings-card warnings-${sorted[0].severity}`,
   });
 }
 
@@ -325,10 +326,10 @@ export function dutyRow({ event, assignment }, { trail } = {}) {
     lead: dateBlock(dayOf(event.start)),
     title: role?.name || 'Služba',
     meta: [
-      h('span', { class: 'duty-when' }, `${monthOf(event.start) === monthOf(today()) ? '' : `${prettyDay(event.start, false)} `}${prettyTime(event.start)}\u00a0· ${event.title}`),
+      h('span', { class: 'duty-when' }, `${prettyTime(event.start)}\u00a0· ${event.title}`),
       worst ? h('span', { class: ['duty-warning', `sev-${worst.severity}`], title: worst.text }, severityIcon(worst.severity), CODES[worst.code] || worst.text) : null,
     ],
-    trail: trail ?? (event.cancelled ? badge('zrušeno', { tone: 'neutral' }) : statusBadge(assignment.status)),
+    trail: trail ?? (event.cancelled ? cancelledBadge() : statusBadge(assignment.status)),
     href: `#setkani/${event.id}`,
     tone: event.cancelled ? 'cancelled' : assignment.status === 'declined' ? 'quiet' : null,
     cls: 'duty-row',
@@ -344,7 +345,7 @@ function dutiesCard(person) {
     actions: all.length ? button(null, { variant: 'ghost', size: 's', icon: 'download', label: 'Stáhnout do kalendáře', onclick: () => downloadDuties(person) }) : null,
     body: all.length ? list(shown, (duty) => dutyRow(duty), { cls: 'duty-rows' })
       : h('div', { class: 'card-pad' }, quiet(self ? 'Teď žádnou službu nemáš.' : 'Teď nemá žádnou službu.')),
-    footer: all.length > shown.length ? h('span', { class: 'card-foot-text' }, `A ještě ${plural(all.length - shown.length, 'další', 'další', 'dalších')} – v Kalendáři v Rozpisu.`) : null,
+    footer: all.length > shown.length ? button(`A ještě ${plural(all.length - shown.length, 'další', 'další', 'dalších')} v Rozpisu`, { variant: 'ghost', size: 's', iconEnd: 'chevron-right', href: '#kalendar/rozpis' }) : null,
     flush: true,
     cls: 'person-card',
   });
@@ -412,17 +413,17 @@ function loadCard(person) {
   const streak = load?.sundaysInRow || 0;
   const custom = (S.data.servingLimits || []).some((x) => (x.personId || x.id) === person.id);
   const over = count > limits.maxPerMonth;
-  const tone = over ? 'danger' : count && count >= limits.maxPerMonth ? 'waiting' : 'neutral';
+  const tone = over ? 'warning' : null;
   return card({
     title: 'Břemeno',
     actions: editButton(() => limitsDialog(person)),
     body: [
       limits.paused ? callout('Má pauzu, do rozpisu se teď nenabízí.', { tone: 'info', icon: 'clock' }) : null,
-      h('div', { class: ['load-big', `load-${tone}`] },
+      h('div', { class: ['load-big', over && 'load-over'] },
         over
           ? h('p', { class: 'load-figure' }, h('strong', {}, String(count)),
             h('span', { class: 'load-unit' }, `${agree(count, 'služba', 'služby', 'služeb')} v ${MONTHS_LOCATIVE[Number(month.slice(5, 7)) - 1]}, limit ${limits.maxPerMonth}`),
-            badge('přes limit', { tone: 'danger', symbol: 'declined' }))
+            severityBadge('warning', { word: 'přes limit' }))
           : h('p', { class: 'load-figure' }, h('strong', {}, String(count)), ` ${outOf(limits.maxPerMonth)} `,
             h('span', { class: 'load-unit' }, `služeb v ${MONTHS_LOCATIVE[Number(month.slice(5, 7)) - 1]}`)),
         progressBar(count, limits.maxPerMonth || 1, { tone, label: over ? `${dutiesText(count)} tento měsíc, limit ${limits.maxPerMonth}` : `${count} ${outOf(limits.maxPerMonth)} služeb tento měsíc` })),

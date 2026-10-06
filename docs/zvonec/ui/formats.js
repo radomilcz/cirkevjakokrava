@@ -5,7 +5,7 @@
 // openFormatInfo() (the event screens open it from an osnova item).
 
 import {
-  h, plural, page, tabs, button, badge, list, row, icon, emptyState, toast, confirmDialog, formDialog, infoDialog,
+  h, nodes, plural, page, tabs, button, badge, list, row, icon, emptyState, toast, confirmDialog, formDialog, infoDialog,
   field, textField, textArea, numberField, switchField, card, link, removeButton, andJoin, metaJoin,
 } from './dom.js';
 import { S, can, change, newId, navigate } from './state.js';
@@ -84,10 +84,10 @@ export function needsEditor(needs, { label: text = 'Kolik lidí je potřeba', em
       onchange: (e) => { if (e.target.value) { needs.push({ roleId: e.target.value, count: 1 }); redraw(true); onchange?.(); } },
     }, h('option', { value: '' }, 'Přidat roli…'),
     free.map(({ group, roles }) => h('optgroup', { label: group.name }, roles.map((r) => h('option', { value: r.id }, r.name))))) : null;
-    wrap.replaceChildren(
+    wrap.replaceChildren(...nodes([
       h('span', { class: 'field-label' }, text),
       rows.length ? h('ul', { class: 'needs-list' }, rows) : h('p', { class: 'needs-empty' }, empty),
-      add);
+      add]));
     if (focusAdd) queueMicrotask(() => wrap.querySelector('.needs-add, .needs-add + .select-btn')?.focus());
   };
   redraw();
@@ -167,7 +167,7 @@ function renderList() {
     lead: 'Formáty jsou části setkání, třeba chvály nebo kázání. Z nich se skládá osnova.',
     tabs: libraryTabs('formaty'),
     actions: leader ? button('Přidat formát', { variant: 'solid', icon: 'plus', onclick: add }) : null,
-    width: 'list',
+    width: 'wide',   // Jak se scházíme: one width for Šablony · Formáty · Místa
     cls: 'library-page',
     body: list(formats, (f) => {
       const role = roleById(S.data, f.leadRoleId);
@@ -280,7 +280,7 @@ export function formatDialog(format) {
       {
         title: 'Formát',
         fields: [
-          textField('name', 'Název', format?.name, { full: true, attr: { autofocus: true, placeholder: 'Otázky na tělo', autocomplete: 'off' } }),
+          textField('name', 'Název', format?.name, { full: true, attr: { autofocus: true, placeholder: 'např. Svědectví', autocomplete: 'off' } }),
           numberField('minutes', 'Kolik minut', format?.minutes ?? 10, { min: 1, max: 600, step: 5, unit: 'min' }),
           field('Kdo vede', roleSelect('leadRoleId', format?.leadRoleId || '', 'Nikdo konkrétní – vybereš v osnově'),
             { hint: 'Kdo má na setkání tuhle roli, ten bod vede.' }),

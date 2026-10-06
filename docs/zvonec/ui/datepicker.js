@@ -1,12 +1,11 @@
 // Date fields in the Zvonec style. The browser's own calendar looks different in every browser
-// and can't be styled, so on devices with a mouse every <input type="date"> gets a pill button
-// with the date in Czech and a calendar of our own. The original input stays in the form
-// (hidden) and keeps the value, so screens work unchanged: picking a day sets input.value and
-// fires the usual input and change events. On touch screens the native picker stays.
+// and can't be styled (on a phone it even writes „10/11/2026“), so every <input type="date"> gets a
+// button with the date in Czech and a calendar of our own – with a mouse and on touch alike. The
+// original input stays in the form (hidden) and keeps the value, so screens work unchanged: picking
+// a day sets input.value and fires the usual input and change events.
 
 import { icon } from './icons.js';
 
-const fine = () => typeof matchMedia === 'function' && matchMedia('(pointer: fine)').matches;
 const MONTHS = ['leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září', 'říjen', 'listopad', 'prosinec'];
 const DAYS = ['po', 'út', 'st', 'čt', 'pá', 'so', 'ne'];
 const pad = (n) => String(n).padStart(2, '0');
@@ -211,7 +210,7 @@ function scan(root) {
   root.querySelectorAll('input[type="date"]').forEach(enhance);
 }
 
-if (typeof document !== 'undefined' && typeof MutationObserver !== 'undefined' && fine()) {
+if (typeof document !== 'undefined' && typeof MutationObserver !== 'undefined') {
   new MutationObserver((records) => {
     for (const record of records) record.addedNodes.forEach(scan);
   }).observe(document.documentElement, { childList: true, subtree: true });

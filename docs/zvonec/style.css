@@ -75,6 +75,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .me-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--font-size-4)}
 .me-role{display:none;font-size:var(--font-size-3);color:var(--text-2)}
 .appbar .menu-toggle,.appbar .topbar-signin,.sidebar .sheet-close,.sidebar-head{display:none}
+/* „Přihlásit se“ once: in the sidebar on a desktop, in the header on a phone (rules below) */
+.appbar .account .signin{display:none}
 /* the Vzhled menu: a small popover with two segmented choices */
 .look{position:relative;display:flex}
 .look-toggle-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -145,7 +147,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   .sheet-tools .me .avatar{width:40px;height:40px;font-size:14px}
   .sheet-tools .me-text{padding-top:4px;line-height:1.3;gap:1px}
   .sheet-tools .me-role{display:block}
-  .sheet-tools .signin{width:100%}
+  .sheet-tools .signin,.sidebar .nav-item[href="#prihlaseni"]{display:none}
   .sheet-tools .look-toggle{width:100%;justify-content:flex-start;padding:var(--optical) 12px 0;height:var(--control-3);gap:10px;color:var(--text-1)}
   .sheet-tools .look-toggle .icon{width:18px;height:18px;margin:calc(-1*var(--optical)) 0 0;color:var(--text-2)}
   .sheet-tools .look-toggle-label{position:static;width:auto;height:auto;overflow:visible;clip:auto}
@@ -154,8 +156,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 @media (max-width:459.98px){
   .app-name{display:none}
+}
+/* signed out on a phone the header holds the brand, „Přihlásit se“ and the menu: no room for the word „Menu“
+   (the button keeps its accessible name) */
+@media (max-width:459.98px){
   body.signed-out .menu-toggle-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   body.signed-out .menu-toggle{width:var(--control-2);padding:0}
+}
+@media (max-width:459.98px){
   .appbar .save-status{max-width:40vw}
   .appbar .save-status-text{overflow:hidden;text-overflow:ellipsis}
 }
@@ -215,6 +223,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* tabs: views of a page – underline 2 px in the indicator colour + count */
 .page-tabs{display:flex;gap:4px;box-shadow:inset 0 -1px 0 var(--line-1);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .page-tabs::-webkit-scrollbar{display:none}
+/* a sideways scroller says there is more: the hidden edge fades (app.js watchScrollers), and it snaps */
+.page-tabs,.toolbar .chips{scroll-snap-type:x proximity;scroll-padding-inline:16px}
+.page-tabs>*,.toolbar .chips>*{scroll-snap-align:start}
+.more-right{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
+.more-left{-webkit-mask-image:linear-gradient(90deg,transparent,#000 48px);mask-image:linear-gradient(90deg,transparent,#000 48px)}
+.more-left.more-right{-webkit-mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent)}
 .tab{
   position:relative;display:inline-flex;align-items:center;gap:8px;flex:none;height:42px;padding:var(--optical) 10px 0;border:0;background:none;
   font:inherit;font-size:var(--font-size-4);line-height:1;color:var(--text-2);text-decoration:none;cursor:pointer;white-space:nowrap;
@@ -230,6 +244,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
 .toolbar-spacer{flex:1 1 0}
 .toolbar>.chips{flex-wrap:wrap}
+/* a phone: filter chips in one sideways row (with the edge fade) instead of three ragged rows */
+@media (max-width:719.98px){.toolbar>.chips,.toolbar .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;padding:2px;margin:-2px}.toolbar .chips::-webkit-scrollbar{display:none}}
 
 /* ‹ Říjen 2026 › Dnes */
 .datenav{display:inline-flex;align-items:center;gap:2px}
@@ -267,6 +283,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn-danger:hover{background:var(--danger-bg);box-shadow:inset 0 0 0 1px var(--declined-fg)}
 .btn-danger-solid{background:var(--declined-solid);color:var(--text-on-danger);box-shadow:none}
 .btn-danger-solid:hover{background:var(--danger-solid-hover);box-shadow:none}
+/* a surface button inside a panel (card, list, dialog, popover, callout) gets a fill of its own: on the panel
+   colour it would be a bare 1 px ring, and a button is never an outline alone (DESIGN §3) */
+:is(.card,.items,.dialog,.popover,.callout,.table-wrap,.empty-state:not(.bare)) :is(.btn-surface,.btn:not(.btn-solid,.btn-soft,.btn-ghost,.btn-danger,.btn-danger-solid,.btn-add,.primary,.plain,.menu-btn,[aria-pressed="true"])){
+  background:var(--hover);box-shadow:inset 0 0 0 1px var(--line-1);
+}
+:is(.card,.items,.dialog,.popover,.callout,.table-wrap,.empty-state:not(.bare)) :is(.btn-surface,.btn:not(.btn-solid,.btn-soft,.btn-ghost,.btn-danger,.btn-danger-solid,.btn-add,.primary,.plain,.menu-btn,[aria-pressed="true"])):hover{
+  background:var(--pressed);box-shadow:inset 0 0 0 1px var(--line-hover);
+}
 /* the last row of a list that adds to it (variant 'add'): full width, soft, the plus in the accent */
 .btn-add{--h:var(--control-3);display:flex;width:100%;justify-content:flex-start;gap:10px;background:var(--hover);box-shadow:none;color:var(--text-2);border-radius:var(--radius-3)}
 .btn-add .icon{color:var(--text-accent)}
@@ -364,6 +388,10 @@ a.link,.link{color:var(--text-accent);text-decoration-thickness:1px;text-underli
 .callout-body{flex:1 1 auto;min-width:0}
 .callout-title{font-size:var(--font-size-4);line-height:20px;margin:0 0 2px}
 .callout-action{flex:none;align-self:center}
+/* a one-line callout with an action: text, icon and action on one centre line */
+.callout:has(>.callout-action){align-items:center}
+.callout:has(>.callout-action)>:is(.icon,.status-icon,.severity-icon){margin-top:calc(-1*var(--optical))}
+.callout:has(>.callout-action) .callout-body{padding-top:var(--optical)}
 .callout-warning{background:var(--waiting-bg);color:var(--warning-text)}
 .callout-warning>svg{color:var(--waiting-fg)}
 .callout-info{background:var(--info-bg);color:var(--info-text)}
@@ -392,6 +420,16 @@ a.link,.link{color:var(--text-accent);text-decoration-thickness:1px;text-underli
 .seg>label>input:focus-visible+span{outline:2px solid var(--focus);outline-offset:1px}
 .seg-s>button,.seg-s>a,.seg-s>label>span{height:26px;padding:var(--optical) 10px 0;font-size:var(--font-size-2);border-radius:var(--radius-control-1)}
 .seg-s{border-radius:calc(var(--radius-control-1) + 2px)}
+/* a phone: a segmented control in a form never runs off the edge – its options wrap into an even grid
+   (two per row; the days of the week seven in a row under „Kdykoli“) */
+@media (max-width:520px){
+  .field>.segment.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-self:stretch;overflow:visible}
+  .field>.segment.seg>label>span{width:100%;height:auto;min-height:32px;padding-block:calc(6px + var(--optical)) 6px;white-space:normal;text-align:center;line-height:1.15}
+  .field>.segment.seg>label{min-width:0}
+  .seg-days>.segment.seg{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .seg-days>.segment.seg>label:first-child{grid-column:1/-1}
+  .seg-days>.segment.seg>label>span{padding-inline:0}
+}
 
 /* chips: filter pills; chosen = rose fill + rose ring + ✓ + rose text */
 .chips{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
@@ -484,16 +522,20 @@ a.card-link:hover{box-shadow:var(--shadow-raised)}
 .item.tone-quiet .item-title{color:var(--text-2)}
 .item.tone-quiet :is(.group-mark,.avatar){opacity:.6}
 .item.tone-cancelled .item-title{text-decoration:line-through;color:var(--text-2)}
+/* zrušeno: the title struck through, next to the gray ⊘ badge (kit cancelledBadge) */
+.struck,.struck a,.event-page.is-cancelled .page-title{text-decoration:line-through;text-decoration-thickness:2px}
+.struck,.struck a{color:var(--text-2)}
 .item.tone-selected{background:var(--selected-bg)}
 .item.tone-selected::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--indicator)}
 .item.tone-mine .avatar{box-shadow:0 0 0 2px var(--surface-panel),0 0 0 3.5px var(--indicator)}
 .item.tone-mine .date-block{background:var(--primary-bg);color:var(--primary-fg)}
-.item.tone-mine .date-block-dow{color:var(--primary-fg)}
+.item.tone-mine :is(.date-block-dow,.date-block-month){color:var(--primary-fg)}
 .item.tone-error .item-title::before,.item.tone-warning .item-title::before{
-  content:"";display:inline-block;width:9px;height:9px;margin-right:7px;vertical-align:.04em;
+  content:"";display:inline-block;width:15px;height:15px;margin-right:6px;vertical-align:-.16em;
 }
-.item.tone-error .item-title::before{border-radius:2px;background:var(--declined-solid)}
-.item.tone-warning .item-title::before{border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--waiting-fg)}
+/* the severity symbols themselves (chyba ■!, pozor △!) – a plain square read as a checkbox */
+.item.tone-error .item-title::before{background:var(--declined-solid);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect width='20' height='20' fill='white'/%3E%3Cpath d='M10 5.6v5.2M10 14.2h.01' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='1.5' y='1.5' width='17' height='17' rx='4' mask='url(%23m)'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect width='20' height='20' fill='white'/%3E%3Cpath d='M10 5.6v5.2M10 14.2h.01' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='1.5' y='1.5' width='17' height='17' rx='4' mask='url(%23m)'/%3E%3C/svg%3E") center/contain no-repeat}
+.item.tone-warning .item-title::before{background:var(--waiting-fg);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000'%3E%3Cpath d='M8.6 3.3 2.2 14.6a1.6 1.6 0 0 0 1.4 2.4h12.8a1.6 1.6 0 0 0 1.4-2.4L11.4 3.3a1.6 1.6 0 0 0-2.8 0z' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M10 8v3.6M10 14.2h.01' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000'%3E%3Cpath d='M8.6 3.3 2.2 14.6a1.6 1.6 0 0 0 1.4 2.4h12.8a1.6 1.6 0 0 0 1.4-2.4L11.4 3.3a1.6 1.6 0 0 0-2.8 0z' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M10 8v3.6M10 14.2h.01' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
 /* group labels inside a list */
 .list-group{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:12px 18px 4px}
 .items>li.list-group+li{border-top:0}
@@ -504,15 +546,16 @@ a.card-link:hover{box-shadow:var(--shadow-raised)}
   .item-trail{white-space:normal;max-width:48%;justify-content:flex-end;text-align:right;flex-wrap:wrap}
 }
 
-/* date block: weekday over the day number */
+/* date block: weekday · day number · month */
 .date-block{
-  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:42px;height:46px;flex:none;
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:44px;height:56px;flex:none;
   padding-top:var(--optical-n);border-radius:var(--radius-4);background:var(--hover);font-family:var(--font-mark);font-weight:900;line-height:1;color:var(--text-1);
 }
 .date-block-dow{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2);margin-right:-.08em}
 .date-block-day{font-size:20px;line-height:.8}
 .date-block.solid{background:var(--primary-bg);color:var(--primary-fg)}
-.date-block.solid .date-block-dow{color:var(--primary-fg)}
+.date-block-month{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2);margin-right:-.08em}
+.date-block.solid :is(.date-block-dow,.date-block-month){color:var(--primary-fg)}
 
 /* ============================================================
    KIT – table: sortable headers, selectable rows, bulk bar
@@ -590,6 +633,7 @@ a.card-link:hover{box-shadow:var(--shadow-raised)}
 .person-line-text{display:flex;flex-direction:column;min-width:0}
 .person-line-name{font-size:var(--font-size-4);line-height:20px;color:var(--text-1);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 a.person-line-name:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
+.me-tag{display:inline-flex;align-items:center;height:18px;margin-left:8px;padding:var(--optical) 7px 0;border-radius:var(--radius-full);background:var(--selected-bg);color:var(--selected-fg);font-size:var(--font-size-1);line-height:1;vertical-align:.1em;text-decoration:none}
 .person-line-meta{font-size:var(--font-size-3);line-height:18px;color:var(--text-2)}
 .person-line.struck .person-line-name{text-decoration:line-through;text-decoration-color:var(--declined-fg);color:var(--text-2)}
 .table .person-line-name{font-size:var(--font-size-3)}
@@ -638,10 +682,10 @@ a.person-line-name:hover{text-decoration:underline;text-underline-offset:.2em;te
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
 
 /* progress bar + fill ring */
-.progress{position:relative;display:block;width:100%;min-width:48px;height:6px;border-radius:var(--radius-full);background:var(--hover);overflow:hidden}
-.progress-fill{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--text-2)}
-.progress-confirmed .progress-fill{background:var(--confirmed-solid)}
-.progress-waiting .progress-fill{background:var(--waiting-solid)}
+.progress{position:relative;display:block;width:100%;min-width:48px;height:6px;border-radius:var(--radius-full);background:var(--line-1);overflow:hidden}
+/* one colour meaning: accent = progress · amber = over a limit / warning · red = error */
+.progress-fill{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--indicator)}
+.progress-warning .progress-fill{background:var(--waiting-solid)}
 .progress-danger .progress-fill{background:var(--declined-solid)}
 .fill-ring{display:inline-flex;align-items:center;gap:6px;font-size:var(--font-size-3);line-height:1;padding-top:var(--optical);white-space:nowrap;color:var(--text-2);font-variant-numeric:tabular-nums}
 .fill-ring-svg{flex:none;margin-top:calc(-1*var(--optical))}
@@ -651,6 +695,11 @@ a.person-line-name:hover{text-decoration:underline;text-underline-offset:.2em;te
 .fill-waiting .fill-ring-arc{stroke:var(--waiting-solid)}
 .fill-danger .fill-ring-arc{stroke:var(--declined-solid)}
 .fill-confirmed .fill-ring-text{color:var(--confirmed-fg)}
+/* two arcs (fillRing({ confirmed })): green = potvrzeno, amber = čeká, the track = nobody yet */
+.fill-split .fill-ring-track{stroke:var(--line-2)}
+.fill-split .fill-ring-done{stroke:var(--confirmed-solid)}
+.fill-split .fill-ring-wait{stroke:var(--waiting-solid)}
+.fill-split.fill-waiting .fill-ring-text{color:var(--text-2)}
 
 /* ============================================================
    KIT – dialog
@@ -676,12 +725,17 @@ a.person-line-name:hover{text-decoration:underline;text-underline-offset:.2em;te
   margin:4px -22px 0;padding:14px 22px 18px;background:var(--surface-overlay);border-top:1px solid var(--line-1);
 }
 .dialog-foot-space{flex:1 1 0}
+/* more of the form under the foot: a soft shadow over its top edge says so (openDialog watches it) */
+.dialog.more-below .dialog-foot{box-shadow:0 -10px 14px -10px var(--shadow-color,rgb(0 0 0 / .25))}
+.dialog-end{height:1px;margin-top:-1px;flex:none}
 .dialog .actions .left{margin-right:auto}
 .dialog .eyebrow{margin:0;font-size:var(--font-size-3);color:var(--text-2)}
 /* sections of a form and „Další možnosti“ */
 .form-section{display:flex;flex-direction:column;gap:10px;min-width:0}
 .form-section+.form-section{padding-top:16px;border-top:1px solid var(--line-1)}
-.form-section-title{margin:0;font-family:var(--font-body);font-weight:400;font-size:var(--font-size-4);line-height:20px;color:var(--text-1)}
+/* a section heading must never look like a field label: Narrow Black, uppercase, tracked (the card-title recipe) */
+.form-section-title{margin:4px 0 0;font-family:var(--font-mark);font-weight:900;text-transform:uppercase;font-size:var(--font-size-1);line-height:16px;letter-spacing:var(--tracking-label);color:var(--text-1)}
+.dialog-title[tabindex="-1"]:focus,.dialog h2[tabindex="-1"]:focus{outline:none}
 .form-section-hint{margin:-6px 0 0;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
 .disclosure{border-top:1px solid var(--line-1);padding-top:6px}
 .disclosure>summary{
@@ -698,7 +752,17 @@ a.person-line-name:hover{text-decoration:underline;text-underline-offset:.2em;te
   .dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}
   .dialog-form,.dialog>form,.dialog .inner{padding:18px 16px 0}
   .dialog-foot,.dialog .actions{margin-inline:-16px;padding:12px 16px 16px}
+  /* the foot in two even rows: the main action across the full width first, then the rest in pairs */
+  .dialog .dialog-foot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .dialog-foot>.dialog-foot-space,.dialog-foot .foot-wide{display:none}
+  .dialog-foot>.dialog-foot-left{display:contents}
+  .dialog-foot :is(.btn,.foot-narrow){width:100%;min-width:0;margin:0}
+  .dialog-foot .foot-narrow{display:flex}
+  .dialog-foot>:is(.btn-solid,.btn-danger-solid,[type=submit]):last-child{order:-1;grid-column:1/-1}
+  /* nothing to pair the dismiss button with: it takes the whole row too */
+  .dialog-foot:not(:has(.btn-danger,.btn.left,.foot-narrow))>.btn-ghost{grid-column:1/-1}
 }
+.foot-narrow{display:none}
 
 /* ============================================================
    KIT – fields
@@ -725,7 +789,7 @@ a.person-line-name:hover{text-decoration:underline;text-underline-offset:.2em;te
 :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=range]),select,textarea):where(:focus){box-shadow:inset 0 0 0 1.5px var(--focus),0 0 0 3px var(--focus-halo)}
 :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=range]),select,textarea):focus-visible{outline:none}   /* the ring + halo above is the focus mark */
 :where(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=range]),select,textarea):where(:disabled){color:var(--text-3);cursor:not-allowed;background-color:var(--hover)}
-input::placeholder,textarea::placeholder{color:var(--text-3);opacity:1}
+input::placeholder,textarea::placeholder{color:var(--text-3);opacity:.72}   /* clearly lighter than a value (--text-1) and than meta (--text-2) */
 input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 :where(select){
   appearance:none;-webkit-appearance:none;padding-right:34px;cursor:pointer;
@@ -774,9 +838,20 @@ input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-ou
 .check-row>input,.switch-row>input{margin-top:2px}
 .check-row .caption,.switch-row .caption{font-size:var(--font-size-4);max-width:65ch}
 .check-row .caption small,.switch-row .caption small{display:block;margin-top:2px;color:var(--text-2);font-size:var(--font-size-3);line-height:20px}
-/* time range, number with a unit */
+/* time of day (kit timeInput): a 24-hour text field „10.00“ + a clock button with quarter hours */
 .time-range{display:flex;align-items:center;gap:8px}
-.time-range>input{width:auto;flex:1 1 0;min-width:0;max-width:10em}
+.time-field{position:relative;display:inline-flex;align-items:center;flex:1 1 0;min-width:6.5em;max-width:9em}
+.time-field>.time-text{padding-right:34px;font-variant-numeric:tabular-nums}
+.time-field>.time-text.invalid{box-shadow:inset 0 0 0 1.5px var(--declined-solid)}
+.time-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:28px;height:28px;padding:0;border:0;border-radius:var(--radius-control-1);background:none;color:var(--text-2);cursor:pointer}
+.time-btn:hover,.time-field.pop-open .time-btn{background:var(--hover);color:var(--text-1)}
+.time-btn .icon{width:16px;height:16px}
+.field>.time-field{align-self:flex-start;width:9em}
+.time-pop{width:7.5em;max-height:240px;padding:6px;background:var(--surface-overlay);color:var(--text-1);border-radius:var(--radius-5);box-shadow:var(--shadow-popover)}
+.time-list{display:flex;flex-direction:column;gap:1px}
+.time-option{display:block;width:100%;height:32px;padding:var(--optical) 10px 0;border:0;border-radius:var(--radius-3);background:none;color:inherit;font:inherit;font-size:var(--font-size-4);line-height:1;text-align:left;cursor:pointer;font-variant-numeric:tabular-nums}
+.time-option:hover,.time-option:focus-visible{background:var(--hover);outline:none}
+.time-option[aria-selected="true"]{background:var(--selected-bg);color:var(--selected-fg)}
 .time-range-dash{color:var(--text-2)}
 .number-field{display:inline-flex;align-items:center;gap:10px}
 .number-unit{font-size:var(--font-size-3);color:var(--text-2)}
@@ -898,8 +973,10 @@ input.count-input{width:5.2em;text-align:center}
 
 /* places as chips grouped by building (kit placeChipsField) */
 .place-chips{display:flex;flex-direction:column;gap:10px}
-.place-chips-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
-.place-chips-building{display:inline-flex;align-items:center;gap:6px;min-width:7.5em;font-size:var(--font-size-3);color:var(--text-2)}
+.place-chips-group{display:grid;grid-template-columns:7.5em minmax(0,1fr);align-items:start;gap:8px 12px}   /* the building always left of its rooms */
+.place-chips-group>.chips:only-child{grid-column:1/-1}
+.place-chips-building{display:inline-flex;align-items:center;gap:6px;min-height:32px;font-size:var(--font-size-3);color:var(--text-2);min-width:0}
+@media (max-width:520px){.place-chips-group{grid-template-columns:minmax(0,1fr);gap:6px}.place-chips-building{min-height:0}}
 .place-chips-building .icon{width:16px;height:16px;margin-top:calc(-1*var(--optical))}
 
 /* ============================================================
@@ -977,9 +1054,9 @@ button.tag:hover{background:var(--surface-hover)}
 a.assignee-name:hover{text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}
 .assignee.status-declined .assignee-name{text-decoration:line-through;text-decoration-color:var(--declined-fg);color:var(--text-2)}
 .assignee-answer{display:flex;gap:6px;margin-left:auto}
-.assignee.tone-error .assignee-name::before,.assignee.tone-warning .assignee-name::before{content:"";display:inline-block;width:9px;height:9px;margin-right:7px;border-radius:2px;vertical-align:.04em}
-.assignee.tone-error .assignee-name::before{background:var(--declined-solid)}
-.assignee.tone-warning .assignee-name::before{box-shadow:inset 0 0 0 1.5px var(--waiting-fg)}
+.assignee.tone-error .assignee-name::before,.assignee.tone-warning .assignee-name::before{content:"";display:inline-block;width:15px;height:15px;margin-right:6px;vertical-align:-.16em}
+.assignee.tone-error .assignee-name::before{background:var(--declined-solid);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect width='20' height='20' fill='white'/%3E%3Cpath d='M10 5.6v5.2M10 14.2h.01' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='1.5' y='1.5' width='17' height='17' rx='4' mask='url(%23m)'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect width='20' height='20' fill='white'/%3E%3Cpath d='M10 5.6v5.2M10 14.2h.01' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='1.5' y='1.5' width='17' height='17' rx='4' mask='url(%23m)'/%3E%3C/svg%3E") center/contain no-repeat}
+.assignee.tone-warning .assignee-name::before{background:var(--waiting-fg);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000'%3E%3Cpath d='M8.6 3.3 2.2 14.6a1.6 1.6 0 0 0 1.4 2.4h12.8a1.6 1.6 0 0 0 1.4-2.4L11.4 3.3a1.6 1.6 0 0 0-2.8 0z' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M10 8v3.6M10 14.2h.01' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23000'%3E%3Cpath d='M8.6 3.3 2.2 14.6a1.6 1.6 0 0 0 1.4 2.4h12.8a1.6 1.6 0 0 0 1.4-2.4L11.4 3.3a1.6 1.6 0 0 0-2.8 0z' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M10 8v3.6M10 14.2h.01' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
 /* drag to reorder (ui/sortable.js) */
 .drag-handle{
   width:28px;height:36px;padding:0;border:0;border-radius:var(--radius-control-1);cursor:grab;touch-action:none;color:var(--text-3);background:none;
@@ -1016,8 +1093,15 @@ a.assignee-name:hover{text-decoration:underline;text-underline-offset:.2em;text-
 .cover-hero.cover-plain{aspect-ratio:auto;height:clamp(96px,11vw,156px)}
 .cover-hero.cover-plain .cover-imprint{width:58%;right:-4%;top:-130%}
 .cover-hero.cover-plain.cover-v2 .cover-imprint,.cover-hero.cover-plain.cover-v3 .cover-imprint{left:-6%;bottom:-150%;top:auto;right:auto}
-.cover-hero.cover-plain::after{content:"";position:absolute;left:clamp(18px,3cqi,36px);bottom:clamp(18px,3cqi,32px);width:clamp(28px,4cqi,44px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,currentColor 0 36%,transparent 39%);box-shadow:0 0 0 2px currentColor}
-.cover-hero.cover-plain.cover-v2::after,.cover-hero.cover-plain.cover-v3::after{left:auto;right:clamp(18px,3cqi,36px)}
+.cover-hero.cover-plain .cover-imprint{opacity:.26}
+/* dark mode: the generated cover keeps its composition but on a deep tint of its hue, the imprint in the
+   hue's low-contrast text colour – never a full-brightness slab on a dark page */
+:root[data-theme="dark"] .cover-generated{background:var(--c3,var(--rose-3));color:var(--c12,var(--rose-12))}
+:root[data-theme="dark"] .cover-generated .cover-imprint{color:var(--c11,var(--rose-11));opacity:.42}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme]) .cover-generated{background:var(--c3,var(--rose-3));color:var(--c12,var(--rose-12))}
+  :root:not([data-theme]) .cover-generated .cover-imprint{color:var(--c11,var(--rose-11));opacity:.42}
+}
 /* placeLine() / placeMap() */
 .place-address{color:var(--text-2)}
 .place-lines{display:flex;flex-direction:column;gap:2px}

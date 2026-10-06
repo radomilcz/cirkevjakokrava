@@ -6,7 +6,7 @@
 // edits only its own block (and its own import block „// IMPORTS:<module>“); the shell owns the rest.
 
 import { S, setHooks, can, myId, recompute, isUpcoming, loadRemembered, forgetRemembered, ACCESS_LABELS } from './ui/state.js';
-import { h, nodes, emptyState, page, isDialogOpen, avatar, personName, icon, countBadge, button, SEP } from './ui/dom.js';
+import { h, nodes, emptyState, page, isDialogOpen, avatar, personName, icon, countBadge, button, closePopover, assignGroupHues, SEP } from './ui/dom.js';
 import './ui/stepper.js';   // − and + buttons on every number field
 import './ui/select.js';    // drop-downs in the Zvonec style
 import './ui/datepicker.js'; // date fields with our own calendar
@@ -19,7 +19,7 @@ import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
 
-import { renderLogin, renderSetup, renderInvite } from './ui/login.js';
+import { renderLogin, renderSetup, renderInvite, renderDemoLogin } from './ui/login.js';
 import { renderKit } from './ui/kit-page.js';
 
 // IMPORTS:calendar
@@ -100,7 +100,7 @@ const HOME_ADMIN_ROUTES = {
 // ROUTES:home-admin end
 
 const SHELL_ROUTES = {
-  prihlaseni: { render: () => signInPage(), access: 'signedOut' },
+  prihlaseni: { render: ([part]) => signInPage(part), access: 'signedOut' },
   pozvanka: { render: ([code]) => invitePage(code), access: 'signedOut', menu: 'prihlaseni' },
   kit: { render: ([tab]) => renderKit(tab), access: 'leader', menu: null },   // the living specimen, not in the nav
 };
@@ -186,8 +186,15 @@ function resolve() {
 
 // ---------- signed-out pages ----------
 
-function signInPage() {
+const DEMO_ACCESS_WORDS = { admin: 'správce', leader: 'vedoucí', member: 'člen' };
+function signInPage(part = '') {
   inviteCode = null;   // an invite that did not work sends the visitor here – opening it again checks it again
+  // the demo shows the real sign-in form (with its demo logins); setting up a Zvonec is behind a link
+  if (S.mode === 'demo' && part !== 'zalozit') {
+    const viewers = Object.entries(DEMO_VIEWERS).map(([access, personId]) => ({ access: DEMO_ACCESS_WORDS[access] || access, role: access, personId, name: personName(personById(S.data, personId)) }))
+      .filter((v) => personById(S.data, v.personId));
+    return renderDemoLogin({ viewers, onSignIn: (v) => { S.me = { login: null, priv: null, github: null, personId: v.personId, access: v.role }; location.hash = '#prehled'; } });
+  }
   if (!S.logins.length) return renderSetup();
   return renderLogin(S.signInMessage || '');
 }
@@ -324,11 +331,36 @@ function asPage(content) {
   return h('div', { class: 'page w-list' }, h('div', { class: 'page-body' }, list_));
 }
 
+let lastHash = null;
+
+/** Sideways scrollers (tabs and chips on a phone): fade the edge where more is hidden, and bring the
+ * chosen tab or chip into view. */
+function watchScrollers(root) {
+  for (const el of root.querySelectorAll('.page-tabs, .toolbar .chips, .page-toolbar .seg')) {
+    const update = () => {
+      el.classList.toggle('more-right', el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
+      el.classList.toggle('more-left', el.scrollLeft > 2);
+    };
+    el.addEventListener('scroll', update, { passive: true });
+    requestAnimationFrame(() => {
+      const on = el.querySelector('[aria-current="page"], [aria-selected="true"], [aria-pressed="true"]');
+      if (on && el.scrollWidth > el.clientWidth) el.scrollLeft = Math.max(0, on.offsetLeft - (el.clientWidth - on.offsetWidth) / 2);
+      update();
+    });
+  }
+}
 function renderApp({ toTop = false } = {}) {
   const main = document.getElementById('content');
   if (!S.mode) return;                               // still finding out whether this is the demo or live
   if (signedIn() && !S.data) return;                 // signed in, data still loading
   const { section, parts, route } = resolve();
+  assignGroupHues(S.data?.groups);
+  // a popover or the Vzhled menu belongs to the page it was opened on: another page closes it
+  if (location.hash !== lastHash || toTop) {
+    lastHash = location.hash;
+    closePopover();
+    document.dispatchEvent(new CustomEvent('zvonec:navigate'));
+  }
   const active = updateShell(route, section, parts);
   const position = window.scrollY;
   let content;
@@ -345,6 +377,7 @@ function renderApp({ toTop = false } = {}) {
   const same = (a, b) => (a || '').toLocaleLowerCase('cs') === (b || '').toLocaleLowerCase('cs');
   if (head && head.dataset.context === undefined) head.dataset.context = context && !same(context, title) ? context : '';
   main.replaceChildren(content);
+  watchScrollers(content);
   document.title = title ? `${title} – Zvonec` : 'Zvonec – Církev jako kráva';
   window.scrollTo(0, toTop ? 0 : position);
 }

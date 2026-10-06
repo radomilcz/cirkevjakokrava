@@ -8,6 +8,7 @@ import {
   h, icon, nodes, plural, page, tabs, toolbar, spacer, searchField, chipLinks, chips, list, row, groupedList,
   avatar, personName, personLine, groupMark, avatarStack, badge, button, table, emptyState, toast, progressBar,
   dateNav, metaJoin, severityIcon, SEP,
+  meTag, disclosure,
 } from './dom.js';
 import { S, can, myId, render, MEMBERSHIP_LABELS } from './state.js';
 import { createInvite } from './login.js';
@@ -73,6 +74,7 @@ export function renderPeoplePage(parts = []) {
   const filter = leader ? FILTERS.find(([s]) => s === slugIn) || FILTERS[0] : FILTERS[0];
   // #lide/<filtr> from another screen (Přehled › Karty k doplnění) needs a view that filters
   if (filter[0] && !FILTER_VIEWS.includes(view)) view = can('leader') && !isPhone() ? 'tabulka' : 'seznam';
+  if (view === 'tabulka' && isPhone()) view = 'seznam';   // a phone gets the list, never a clipped table (DESIGN §5)
   write(VIEW_KEY, view);
   const canonical = `#lide/${view}${arg && (view === 'bremeno' || filter[0]) ? `/${view === 'bremeno' ? arg : filter[0]}` : ''}`;
   if (location.hash !== canonical) history.replaceState(history.state, '', canonical);
@@ -170,7 +172,7 @@ function personRow(p, leader) {
   const mine = p.id === myId();
   return row({
     lead: avatar(p, { size: 'm', mine }),
-    title: personName(p),
+    title: [personName(p), mine ? meTag() : null],
     meta: personMeta(p, leader),
     trail: [
       seesContact(p) && (p.phone || p.email) ? h('span', { class: 'row-contact' },
@@ -249,12 +251,12 @@ function tabulka(ctx) {
     { key: 'name', label: 'Jméno', primary: true, cls: 'col-name',
       render: (p) => {
         const missing = missingOf(p);
-        return h('span', { class: 'name-cell' }, personLine(p, { href: `#osoba/${p.id}`, size: 's', mine: p.id === myId(), cls: isFormer(p) ? 'quiet' : null }),
+        return h('span', { class: 'name-cell' }, personLine(p, { href: `#osoba/${p.id}`, size: 's', mine: p.id === myId(), cls: isFormer(p) ? 'quiet' : null }), p.id === myId() ? meTag() : null,
           missing.length ? h('span', { class: 'name-missing', title: `Chybí: ${missing.map((k) => MISSING_LABELS[k]).join(', ')}` }, severityIcon('warning')) : null);
       },
       sortValue: (p) => `${p.lastName || p.firstName || ''} ${p.firstName || ''}` },
     { key: 'status', label: 'Členství', nowrap: true, cls: 'col-status',
-      render: (p) => h('span', { class: ['cell-status-text', isFormer(p) && 'quiet'] }, MEMBERSHIP_LABELS[statusOf(p)], isKid(p) ? h('span', { class: 'cell-sub' }, `${SEP}dítě`) : null),
+      render: (p) => h('span', { class: ['cell-status-text', isFormer(p) && 'quiet'] }, isKid(p) && !isFormer(p) ? 'dítě' : MEMBERSHIP_LABELS[statusOf(p)]),
       sortValue: (p) => STATUS_ORDER.indexOf(statusOf(p)) + (isKid(p) ? 0.5 : 0) },
     { key: 'household', label: 'Domácnost', cls: 'col-household',
       render: (p) => householdById(S.data, p.householdId)?.name || '', sortValue: (p) => householdById(S.data, p.householdId)?.name || '' },
@@ -314,7 +316,7 @@ function memberLine(p, leader, { showKid = true } = {}) {
   return h('li', { class: 'mini-row' },
     avatar(p, { size: 's', mine: p.id === myId() }),
     h('span', { class: 'mini-text' },
-      h('a', { class: 'mini-name', href: `#osoba/${p.id}` }, personName(p)),
+      h('a', { class: 'mini-name', href: `#osoba/${p.id}` }, personName(p), p.id === myId() ? meTag() : null),
       meta ? h('span', { class: 'mini-meta' }, meta) : null));
 }
 
@@ -329,7 +331,9 @@ function domacnosti(ctx) {
       : emptyState({ icon: 'home', title: 'Zatím tu není žádná domácnost.', text: 'Domácnost tvoří lidé, kteří spolu bydlí. Víš pak, komu volat kvůli dětem.',
         action: leader ? button('Přidat domácnost', { variant: 'solid', icon: 'plus', onclick: () => householdDialog(null) }) : null });
   }
-  const cards = groups.map(({ household, members }) => {
+  // people without a household are not a household: a compact list after the cards, not a giant card
+  const loose = groups.find((g) => !g.household);
+  const cards = groups.filter((g) => g.household).map(({ household, members }) => {
     const alone = !household;
     const showAddress = household?.address && (leader || household.id === mineId);
     const kids = members.filter(isKid).length;
@@ -344,7 +348,12 @@ function domacnosti(ctx) {
       showAddress ? h('p', { class: 'household-address' }, icon('map-pin'), household.address) : null,
       h('ul', { class: 'mini-rows' }, members.map((p) => memberLine(p, leader))));
   });
-  return h('div', { class: 'masonry' }, cards);
+  return [
+    cards.length ? h('div', { class: 'masonry' }, cards) : null,
+    loose ? h('section', { class: 'section household-loose' },
+      h('div', { class: 'section-head' }, h('h2', {}, 'Bez domácnosti', ' ', h('span', { class: 'n' }, String(loose.members.length)))),
+      h('ul', { class: 'mini-rows loose-rows card' }, loose.members.map((p) => memberLine(p, leader)))) : null,
+  ];
 }
 
 // ---------- Podle skupin ----------
@@ -376,7 +385,7 @@ function skupiny(ctx) {
       members.length ? h('ul', { class: 'mini-rows' }, members.map(({ person, record }) => h('li', { class: 'mini-row' },
         avatar(person, { size: 's', mine: person.id === myId() }),
         h('span', { class: 'mini-text' },
-          h('a', { class: 'mini-name', href: `#osoba/${person.id}` }, personName(person)),
+          h('a', { class: 'mini-name', href: `#osoba/${person.id}` }, personName(person), person.id === myId() ? meTag() : null),
           skillsText({ record }) ? h('span', { class: 'mini-meta' }, skillsText({ record })) : null),
         record.leader ? badge(g.kind === 'team' ? 'vede tým' : 'vede', { tone: 'accent' }) : null)))
         : h('p', { class: 'mini-empty' }, 'Zatím tu nikdo není.'))]);
@@ -396,7 +405,8 @@ function skupiny(ctx) {
   if (!cards.length) return noMatch(ctx);
   return [['team', 'Týmy'], ['other', 'Skupinky a vedení']].map(([kind, title]) => {
     const els = cards.filter(([k]) => k === kind).map(([, el]) => el);
-    return els.length ? h('section', { class: 'group-section' }, h('h2', { class: 'label group-section-label' }, title), h('div', { class: 'masonry' }, els)) : null;
+    // a real section heading (the h2 recipe), not a 12 px label lost above the big cards
+    return els.length ? h('section', { class: 'section group-section' }, h('div', { class: 'section-head' }, h('h2', {}, title, ' ', h('span', { class: 'n' }, String(els.length)))), h('div', { class: 'masonry' }, els)) : null;
   });
 }
 
@@ -420,7 +430,7 @@ function narozeniny() {
         h('span', { class: 'birthday-tile-name' }, personName(b.person)),
         h('span', { class: 'birthday-tile-meta' }, b.isToday ? [icon('cake'), metaJoin(['dnes', plural(b.age, 'rok', 'roky', 'let')])] : metaJoin([`${wd(b.date)} ${shortDate(b.date)}`, plural(b.age, 'rok', 'roky', 'let')]))))))) : null;
   const year = day.slice(0, 4);
-  const missing = S.data.people.filter((p) => !isFormer(p) && String(p.birthDate || '').length < 10).length;
+  const missing = sortPeople(S.data.people.filter((p) => !isFormer(p) && String(p.birthDate || '').length < 10));
   return [
     highlight,
     h('div', { class: 'masonry months' }, months.map((m) => h('section', { class: 'card month-card' },
@@ -429,8 +439,10 @@ function narozeniny() {
         h('span', { class: 'birthday-date' }, h('span', { class: 'birthday-day' }, String(Number(b.date.slice(8, 10)))), h('span', { class: 'birthday-dow' }, wd(b.date))),
         avatar(b.person, { size: 'xs' }),
         h('a', { class: 'birthday-name', href: `#osoba/${b.person.id}` }, personName(b.person)),
-        h('span', { class: 'birthday-age' }, b.isToday ? badge('dnes', { tone: 'accent', icon: 'cake' }) : null, `${b.age}`))))))),
-    missing ? h('p', { class: 'people-foot' }, `Bez celého data narození: ${peopleCount(missing)}.`) : null,
+        h('span', { class: 'birthday-age' }, b.isToday ? badge('dnes', { tone: 'accent', icon: 'cake' }) : null, plural(b.age, 'rok', 'roky', 'let')))))))),
+    // who has no full date: the names under a disclosure, each one a link to the card where it is filled in
+    missing.length ? disclosure(`Bez celého data narození: ${peopleCount(missing.length)}`, h('ul', { class: 'bday-missing' },
+      missing.map((p) => h('li', {}, h('a', { href: `#osoba/${p.id}` }, personName(p))))), { cls: 'bday-missing-more' }) : null,
   ];
 }
 
@@ -474,19 +486,19 @@ function bremeno(ctx) {
     : loadFilter === 'idle' ? !r.count && !r.paused : loadFilter === 'paused' ? r.paused : true));
   const monthIn = `v ${['lednu', 'únoru', 'březnu', 'dubnu', 'květnu', 'červnu', 'červenci', 'srpnu', 'září', 'říjnu', 'listopadu', 'prosinci'][Number(month.slice(5, 7)) - 1]}`;
   if (!rows.length) return emptyState({ icon: 'scale', title: loadFilter === 'all' ? 'V tomhle měsíci nikdo neslouží.' : 'Nikdo takový.' });
-  const max = Math.max(...rows.map((r) => Math.max(r.count, r.limit)), 1);
   const items = rows.map((r) => {
-    const tone = r.over ? 'danger' : r.count && r.count >= r.limit ? 'waiting' : 'neutral';
+    // one scale for everybody: the track is the person's limit, the fill how much of it is used; over the
+    // limit the bar is full and amber and the words say by how much
+    const tone = r.over ? 'warning' : null;
     const bar = progressBar(r.count, r.limit || 1, { tone, label: r.over ? `${dutiesText(r.count)} ${monthIn}, limit ${r.limit}` : `${r.count} ${outOf(r.limit)} služeb ${monthIn}` });
-    bar.style.width = `${Math.max(30, Math.round(((r.limit || 1) / max) * 100))}%`;   // the track is as long as the limit
-    const meter = h('span', { class: ['load-meter', `load-${tone}`] },
+    const meter = h('span', { class: ['load-meter', r.over && 'load-over'] },
       h('span', { class: 'load-track' }, bar),
-      h('span', { class: 'load-text' }, r.over ? [severityIcon('error'), `${dutiesText(r.count)}, limit ${r.limit}`] : `${r.count} ${outOf(r.limit)}`));
+      h('span', { class: 'load-text' }, r.over ? [severityIcon('warning'), `${r.count}, limit ${r.limit}`] : `${r.count} ${outOf(r.limit)}`));
     const sundays = r.sundaysInRow > 1 ? h('span', { class: ['load-sundays', r.overSundays && 'over'] },
       r.overSundays ? severityIcon('warning') : null, `${plural(r.sundaysInRow, 'neděle', 'neděle', 'nedělí')} po sobě`) : null;
     return row({
       lead: avatar(r.person, { size: 'm', mine: r.person.id === myId() }),
-      title: personName(r.person),
+      title: [personName(r.person), r.person.id === myId() ? meTag() : null],
       meta: metaJoin([
         r.count ? dutiesText(r.count) : 'žádná služba',
         sundays,

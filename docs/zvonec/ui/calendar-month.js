@@ -9,7 +9,7 @@ import { eventsInRange } from '../lib/events.js';
 import { addDays, dayOf, monthGrid, monthOf, prettyDay, prettyDayLong, prettyTime, today, DAYS } from '../lib/time.js';
 import {
   capital, eventRow, eventWarning, fillOf, filteredEmpty, isMultiDay, kindHue, kindLabel, myRoles, passesFilters, timeText,
-  activeFilterCount, isPhone,
+  activeFilterCount, isPhone, fillLegendItems,
 } from './calendar-shared.js';
 
 const MAX_CHIPS = 3;
@@ -30,7 +30,7 @@ function marks(event, { leader }) {
     if (warning) out.push(h('span', { class: ['cal-mark', `cal-mark-${warning}`], title: SEVERITY_LABELS[warning] }, severityIcon(warning), h('span', { class: 'visually-hidden' }, SEVERITY_LABELS[warning])));
     else if (fill.state === 'open') {
       out.push(h('span', { class: 'cal-mark cal-mark-fill', title: `Obsazeno ${fill.filled} z ${fill.needed}` },
-        fillRing(fill.filled, fill.needed, { tone: 'waiting', text: false, size: 13, label: `obsazeno ${fill.filled} z ${fill.needed}` })));
+        fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, text: false, size: 13, label: `obsazeno ${fill.filled} z ${fill.needed}` })));
     }
   }
   return out.length ? h('span', { class: 'cal-marks' }, out) : null;
@@ -44,7 +44,7 @@ function chip(event, ctx) {
   const mine = myRoles(event).length > 0 && !event.cancelled;
   return h('a', {
     href: `#setkani/${event.id}`,
-    class: ['cal-chip', `c-${kindHue(event.kind)}`, `kind-${event.kind}`, event.kind === 'service' && 'solid', mine && 'mine', event.cancelled && 'cancelled',
+    class: ['cal-chip', `c-${kindHue(event.kind)}`, `kind-${event.kind}`, mine && 'mine', event.cancelled && 'cancelled',
       dayOf(event.end) < today() && 'past'],
     title: [event.title, timeText(event), event.cancelled ? 'zrušeno' : null].filter(Boolean).join(SEP),
     'aria-label': chipLabel(event),
@@ -188,7 +188,7 @@ function legend(events, ctx) {
     kinds.map((k) => h('li', {}, kindMark(k, { size: 's' }), kindLabel(k))),
     myId() ? h('li', { class: 'legend-mine' }, h('span', { class: 'cal-mark cal-mark-mine' }, icon('user')), 'tady sloužíš') : null,
     ctx.leader ? [
-      h('li', {}, h('span', { class: 'cal-mark cal-mark-fill' }, fillRing(1, 3, { tone: 'waiting', text: false, size: 13 })), 'někdo chybí'),
+      ...fillLegendItems(),
       h('li', {}, h('span', { class: 'cal-mark cal-mark-error' }, severityIcon('error')), h('span', { class: 'cal-mark cal-mark-warning' }, severityIcon('warning')), 'něco nesedí'),
     ] : null);
 }

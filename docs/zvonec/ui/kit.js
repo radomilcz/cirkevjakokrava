@@ -5,7 +5,7 @@
 // Reference with every export, its signature and the classes it emits: scratchpad/redesign/reports/
 // shell-kit.md; the living specimen is the #kit route (ui/kit-page.js).
 
-import { h, nodes, avatar, personName, openDialog, dialogForm, KIND_HUES } from './dom.js';
+import { h, nodes, avatar, personName, openDialog, dialogForm, KIND_HUES, agree, SEP } from './dom.js';
 import { icon, statusIcon, severityIcon, svgEl } from './icons.js';
 import { KIND_LABELS, KIND_ICONS } from '../lib/events.js';
 
@@ -62,6 +62,9 @@ export function badge(text, { tone = 'neutral', icon: iconName, symbol, solid = 
   return h('span', { class: ['badge', `badge-${t}`, solid && 'badge-solid', !iconName && !symbol && 'no-icon'], title: title || null },
     symbol ? statusIcon(symbol) : iconName ? icon(iconName) : null, text);
 }
+
+/** „zrušeno“ – the one look of a cancelled event everywhere: a gray pill with ⊘ (the title next to it is struck through). */
+export const cancelledBadge = () => badge('zrušeno', { tone: 'neutral', icon: 'ban' });
 
 /**
  * A count in a small round pill (nav, tabs, summaries). tone: 'neutral' (gray), 'warn' (amber solid –
@@ -257,6 +260,9 @@ export function personLine(person, { href, size = 's', meta, mine = false, struc
       href ? h('a', { class: 'person-line-name', href }, name) : h('span', { class: 'person-line-name' }, name),
       meta ? h('span', { class: 'person-line-meta' }, meta) : null));
 }
+
+/** „ty“ after the viewer's own name in a list – the rose ring on the avatar is explained by a word. */
+export const meTag = () => h('span', { class: 'me-tag' }, 'ty');
 
 /** Overlapping avatars, „+N“ after `max`. The names go in `label` (screen readers) – the stack is a picture. */
 export function avatarStack(people, { max = 5, size = 's', label } = {}) {
@@ -506,8 +512,8 @@ export function switchField(name, text, checked = false, { hint, value = 'yes', 
 }
 
 /** A segmented control with a label (≤ 4 options; more → select): segmentedField('kind', 'Účel', [[v, text, icon]…], value). */
-export function segmentedField(name, text, options, value, { hint, full = false, onchange } = {}) {
-  return field(text, segmentInline(name, options, value, { label: text, onchange }), { hint, full, group: true });
+export function segmentedField(name, text, options, value, { hint, full = false, onchange, cls } = {}) {
+  return field(text, segmentInline(name, options, value, { label: text, onchange }), { hint, full, group: true, cls });
 }
 function segmentInline(name, options, value, o) {
   return h('span', { class: 'segment seg', role: 'radiogroup', 'aria-label': o.label || null, onchange: o.onchange || null },
@@ -537,15 +543,80 @@ export function dateField(name, text, value = '', { hint, full = false, min, max
   return field(text, h('input', { type: 'date', name, value: value || '', min: min || null, max: max || null, required }), { hint, full });
 }
 
+/** „9“, „9.30“, „930“, „09:30“, „9,5“… → 'HH:MM' (24 hours), or '' when it is not a time of day. */
+export function parseClock(text) {
+  const t = String(text ?? '').trim().replace(/\s+/g, '');
+  if (!t) return '';
+  let m = t.match(/^(\d{1,2})(?:[.:,h](\d{1,2}))?$/) || t.match(/^(\d{1,2})(\d{2})$/);
+  if (!m) return '';
+  const hours = Number(m[1]);
+  const minutes = m[2] == null ? 0 : m[2].length === 1 ? Number(m[2]) * 10 : Number(m[2]);
+  if (hours > 23 || minutes > 59) return '';
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+/** 'HH:MM' → „10.00“ (the way Zvonec writes a time everywhere). */
+export const clockText = (value) => (/^\d{2}:\d{2}$/.test(value || '') ? `${Number(value.slice(0, 2))}.${value.slice(3)}` : '');
+
 /**
- * From – to (time of day): two time inputs with a dash. Values 'HH:MM'.
+ * A time of day, always in 24 hours and written the Czech way („10.00“) – never the browser's own
+ * time field, which shows „10:00 AM“ on a 12-hour system. A text field you can type into („9“, „930“,
+ * „9.30“, „9:30“) plus a small list of quarter hours under the clock button. The value 'HH:MM' goes
+ * into a hidden input `name`, so forms read it like before (form.elements[name].value).
+ *   timeInput('startTime', '10:00', { label: 'Začátek' })
+ */
+export function timeInput(name, value = '', { label, required = false } = {}) {
+  const hidden = h('input', { type: 'hidden', name, value: parseClock(value) || '' });
+  const text = h('input', {
+    type: 'text', class: 'time-text', inputmode: 'numeric', autocomplete: 'off', placeholder: 'např. 10.00', required,
+    value: clockText(hidden.value), 'aria-label': label || null, pattern: '\\d{1,2}([.:,]?\\d{2})?', maxlength: 5,
+  });
+  const read = () => { hidden.value = parseClock(text.value); text.classList.toggle('invalid', !!text.value.trim() && !hidden.value); };
+  text.addEventListener('input', read);   // before the form's own input listener: the hidden value is ready
+  text.addEventListener('blur', () => { if (hidden.value) text.value = clockText(hidden.value); });
+  const pick = (v) => {
+    text.value = clockText(v);
+    read();
+    text.dispatchEvent(new Event('input', { bubbles: true }));
+    text.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  const toggle = h('button', { type: 'button', class: 'time-btn', 'aria-label': label ? `Vybrat čas: ${label}` : 'Vybrat čas', 'aria-haspopup': 'listbox', tabindex: '-1' }, icon('clock'));
+  const openList = () => {
+    if (popoverOpenAt(wrap)) { closePopover(); return; }
+    const current = hidden.value || '';
+    const options = [];
+    for (let m = 6 * 60; m < 24 * 60; m += 15) options.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`);
+    const buttons = options.map((v) => h('button', { type: 'button', role: 'option', class: 'time-option', 'aria-selected': String(v === current), onclick: () => { pop.close(); pick(v); text.focus(); } }, clockText(v)));
+    const listEl = h('div', { class: 'time-list', role: 'listbox', 'aria-label': label || 'Čas' }, buttons);
+    const pop = anchoredPopover(wrap, listEl, { cls: 'time-pop', role: 'presentation' });
+    listEl.addEventListener('keydown', (e) => {
+      const i = buttons.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); buttons[Math.max(0, Math.min(buttons.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1)))]?.focus(); }
+    });
+    // show the chosen time (or the nearest quarter after it) in the middle
+    const near = buttons[options.findIndex((v) => v >= (current || '10:00'))] || buttons[0];
+    pop.el.scrollTop = Math.max(0, near.offsetTop - pop.el.clientHeight / 2 + near.offsetHeight / 2);
+    near.focus({ preventScroll: true });
+  };
+  toggle.addEventListener('click', openList);
+  text.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' && e.altKey) { e.preventDefault(); openList(); } });
+  const wrap = h('span', { class: 'time-field' }, text, toggle, hidden);
+  return wrap;
+}
+
+/**
+ * From – to (time of day): two 24-hour time fields with a dash. Values 'HH:MM'.
  *   timeRange('Čas', ['startTime', '10:00'], ['endTime', '12:00'], { hint: 'Končí další den.' })
  */
 export function timeRange(text, [fromName, fromValue], [toName, toValue], { hint, full = false } = {}) {
   return field(text, h('span', { class: 'time-range' },
-    h('input', { type: 'time', name: fromName, value: fromValue || '', 'aria-label': 'Od', step: 300 }),
+    timeInput(fromName, fromValue, { label: 'Od' }),
     h('span', { class: 'time-range-dash', 'aria-hidden': 'true' }, '–'),
-    h('input', { type: 'time', name: toName, value: toValue || '', 'aria-label': 'Do', step: 300 })), { hint, full, group: true });
+    timeInput(toName, toValue, { label: 'Do' })), { hint, full, group: true });
+}
+
+/** One time of day with a label: timeField('startTime', 'Začátek', '10:00'). */
+export function timeField(name, text, value = '', { hint, full = false, required = false } = {}) {
+  return field(text, timeInput(name, value, { label: text, required }), { hint, full, group: true });
 }
 
 /** A number with − and + (ui/stepper.js adds the buttons) and an optional unit after it: numberField('max', 'Nejvíc služeb', 4, { unit: 'za měsíc' }). */
@@ -685,7 +756,7 @@ export function peopleField({ name, label: text, people, value = [], hint, meta,
       onchange: (id) => { if (id && !chosen.includes(id)) { chosen.push(id); redraw(true); } },
     });
     const combo = picker.querySelector('.combo');
-    holder.replaceChildren(
+    holder.replaceChildren(...nodes([
       chosen.length ? h('ul', { class: 'people-chips', 'aria-label': text }, chosen.map((id) => {
         const person = find(id);
         return h('li', { class: 'people-chip' },
@@ -693,7 +764,7 @@ export function peopleField({ name, label: text, people, value = [], hint, meta,
           iconButton('x', `Odebrat: ${personName(person)}`, { size: 's', cls: 'people-chip-x', onclick: () => { chosen.splice(chosen.indexOf(id), 1); redraw(true); } }),
           h('input', { type: 'hidden', name, value: id }));
       })) : null,
-      combo);
+      combo]));
     if (focus) queueMicrotask(() => holder.querySelector('.combo-input')?.focus());
   };
   redraw();
@@ -833,12 +904,15 @@ export { menuButton as kebab };
 // ---------- progress ----------
 
 /**
- * A progress bar (how full a duty plan is, minutes of an osnova): progressBar(12, 14).
- * tone: auto = 'confirmed' when full, 'waiting' otherwise; or 'neutral' | 'danger'. `label` for screen readers.
+ * A progress bar (how full a duty plan is, minutes of an osnova, duties against a limit): progressBar(12, 14).
+ * One colour meaning everywhere: accent = progress (the default), 'warning' = amber (over a limit, too
+ * long), 'danger' = red (an error). Older tones ('confirmed', 'waiting', 'neutral') are progress too.
+ * Over the max the bar is full and amber unless a tone says otherwise. `label` for screen readers.
  */
 export function progressBar(value, max, { tone, label } = {}) {
   const ratio = max > 0 ? Math.max(0, Math.min(1, value / max)) : 0;
-  const t = tone || (value >= max && max > 0 ? 'confirmed' : 'waiting');
+  const t = tone === 'danger' || tone === 'error' ? 'danger'
+    : tone === 'warning' || tone === 'over' || (!tone && max > 0 && value > max) ? 'warning' : 'accent';
   const fill = h('span', { class: 'progress-fill' });
   fill.style.width = `${(ratio * 100).toFixed(2)}%`;
   return h('span', { class: ['progress', `progress-${t}`], role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(max), 'aria-valuenow': String(value), 'aria-label': label || `${value} z ${max}` }, fill);
@@ -847,17 +921,40 @@ export function progressBar(value, max, { tone, label } = {}) {
 /**
  * A fill ring with the words: ◔ „12 z 14“ (an event's people, a template's needs). The ring is drawn
  * (SVG), the words are text. tone as progressBar. `text: false` = ring only (then pass `label`).
+ * With `confirmed` (how many of `value` have confirmed) the ring has two arcs on the empty track:
+ * green = potvrzeno, amber (dashed from 20 px up) = čeká – and the words say it: „14 z 15 · 3 čekají“.
+ *   fillRing(14, 15, { confirmed: 11 })
  */
-export function fillRing(value, max, { tone, text = true, label, size = 18 } = {}) {
-  const ratio = max > 0 ? Math.max(0, Math.min(1, value / max)) : 0;
-  const t = tone || (value >= max && max > 0 ? 'confirmed' : 'waiting');
+export function fillRing(value, max, { tone, text = true, label, size = 18, confirmed } = {}) {
+  const clamp = (n) => (max > 0 ? Math.max(0, Math.min(1, n / max)) : 0);
+  const ratio = clamp(value);
+  const split = confirmed != null;
+  const done = split ? Math.min(confirmed, value) : 0;
+  const waiting = split ? Math.max(0, value - done) : 0;
+  const t = tone || (split ? (value >= max && max > 0 ? (waiting ? 'waiting' : 'confirmed') : 'waiting') : value >= max && max > 0 ? 'confirmed' : 'waiting');
   const radius = 7;
   const length = 2 * Math.PI * radius;
+  const arc = (from, part, cls, dashed) => {
+    if (part <= 0) return null;
+    const len = part * length;
+    let dash = `${len.toFixed(2)} ${(length - len + 1).toFixed(2)}`;
+    if (dashed) {   // a dashed arc: dashes of 2.2 with gaps of 1.6 inside it, then nothing to the end of the circle
+      const pieces = [];
+      let used = 0;
+      while (used + 2.2 <= len) { pieces.push(2.2, 1.6); used += 3.8; }
+      if (len - used > 0.4) { pieces.push(len - used, 0); used = len; }
+      dash = [...pieces, length - used + 1].map((n) => n.toFixed(2)).join(' ');
+    }
+    return svgEl('circle', { class: cls, cx: 9, cy: 9, r: radius, fill: 'none', 'stroke-width': 2.5, 'stroke-linecap': 'butt', 'stroke-dasharray': dash, 'stroke-dashoffset': (-from * length).toFixed(2), transform: 'rotate(-90 9 9)' });
+  };
   const ring = svgEl('svg', { class: 'fill-ring-svg', viewBox: '0 0 18 18', width: size, height: size, 'aria-hidden': 'true', focusable: 'false' },
     svgEl('circle', { class: 'fill-ring-track', cx: 9, cy: 9, r: radius, fill: 'none', 'stroke-width': 2.5 }),
-    ratio > 0 ? svgEl('circle', { class: 'fill-ring-arc', cx: 9, cy: 9, r: radius, fill: 'none', 'stroke-width': 2.5, 'stroke-linecap': ratio >= 1 ? 'butt' : 'round', 'stroke-dasharray': `${(ratio * length).toFixed(2)} ${length.toFixed(2)}`, transform: 'rotate(-90 9 9)' }) : null);
-  return h('span', { class: ['fill-ring', `fill-${t}`], role: text ? null : 'img', 'aria-label': text ? null : label || `${value} z ${max}` },
-    ring, text ? h('span', { class: 'fill-ring-text' }, `${value} z ${max}`) : null);
+    split
+      ? [arc(0, clamp(done), 'fill-ring-arc fill-ring-done', false), arc(clamp(done), clamp(done + waiting) - clamp(done), 'fill-ring-arc fill-ring-wait', size >= 20)]
+      : arc(0, ratio, 'fill-ring-arc', false));
+  const words = `${value} z ${max}${waiting ? `${SEP}${waiting} ${agree(waiting, 'čeká', 'čekají')}` : ''}`;
+  return h('span', { class: ['fill-ring', `fill-${t}`, split && 'fill-split'], role: text ? null : 'img', 'aria-label': text ? null : label || words, title: text ? null : label || words },
+    ring, text ? h('span', { class: 'fill-ring-text' }, words) : null);
 }
 
 // ---------- page furniture ----------

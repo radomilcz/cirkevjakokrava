@@ -33,7 +33,21 @@
 /* ---------- „Kdo co umí“ ---------- */
 .skill-matrix-wrap{display:flex;flex-direction:column;gap:12px;min-width:0}
 .skill-matrix-card{overflow:hidden;padding:0}
-.skill-matrix-scroll{overflow:auto;max-height:max(360px,calc(100dvh - 300px));overscroll-behavior:contain}
+.skill-matrix-scroll{overflow:auto;max-height:max(420px,calc(100dvh - 220px));overscroll-behavior-x:contain}
+/* one team (a dozen rows): the whole table on the page, no inner scrolling that hides the last row */
+.group-page .skill-matrix-scroll{max-height:none}
+/* a phone: per person a row of role chips */
+.skill-cards-scroll{max-height:none;overflow:visible}
+.skill-cards{list-style:none;margin:0;padding:0}
+.skill-card-row{display:flex;flex-direction:column;gap:8px;padding:10px 14px}
+.skill-card-row+.skill-card-row{border-top:1px solid var(--line-1)}
+.skill-chips{display:flex;flex-wrap:wrap;gap:6px}
+.skill-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:var(--optical) 10px 0;border:0;border-radius:var(--radius-chip);font:inherit;font-size:var(--font-size-2);line-height:1;background:var(--hover);color:var(--text-2)}
+button.skill-chip{cursor:pointer}
+.skill-chip.lvl-trained{background:var(--confirmed-bg);color:var(--confirmed-fg)}
+.skill-chip.lvl-learning{color:var(--text-1)}
+.skill-chip.lvl-none{background:none;box-shadow:inset 0 0 0 1px var(--line-control)}
+.skill-none{font-size:var(--font-size-3);color:var(--text-3)}
 .skill-matrix-scroll:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 .skill-matrix{border-collapse:separate;border-spacing:0;font-size:var(--font-size-3);line-height:20px;min-width:100%}
 .skill-matrix th,.skill-matrix td{background:var(--surface-panel);border-bottom:1px solid var(--line-1);text-align:left;font-weight:400}
@@ -55,11 +69,11 @@
 .skill-scarce-icon,.skill-legend-scarce .icon{width:13px;height:13px;flex:none;color:var(--waiting-fg);margin-top:-2px}
 .skill-matrix .team-start{box-shadow:inset 1px 0 0 var(--line-2)}
 .skill-matrix thead tr.skill-teams th.team-start{box-shadow:inset 1px 0 0 var(--line-2)}
-.skill-person{position:sticky;left:0;z-index:1;min-width:220px;padding:6px 16px;box-shadow:inset -1px 0 0 var(--line-1)}
+.skill-person{position:sticky;left:0;z-index:1;min-width:220px;padding:3px 16px;box-shadow:inset -1px 0 0 var(--line-1)}
 .skill-person .person-line-name{max-width:16em}
 .skill-matrix tbody tr:last-child :is(th,td){border-bottom:0}
 .skill-matrix tbody tr:hover :is(th,td){background:var(--surface-sunken)}
-.skill-td{padding:4px 6px;height:48px}
+.skill-td{padding:3px 6px;height:40px}
 .skill-matrix .skill-load-head{min-width:96px;text-align:right}
 .skill-load-head .skill-role-name{text-align:right}
 .skill-load-head .skill-role-count{justify-content:flex-end}
@@ -69,7 +83,7 @@
 
 /* a cell: symbol + colour + word (umí ● green tint · učí se ◐ neutral · – quiet) */
 .skill-cell{
-  display:inline-flex;align-items:center;gap:6px;width:100%;min-width:84px;height:32px;padding:var(--optical) 10px 0;
+  display:inline-flex;align-items:center;gap:6px;width:100%;min-width:84px;height:30px;padding:var(--optical) 10px 0;
   border:0;border-radius:var(--radius-control-1);background:none;color:var(--text-3);font:inherit;font-size:var(--font-size-2);
   white-space:nowrap;text-align:left;
 }

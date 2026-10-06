@@ -59,7 +59,7 @@ function blockMarks(event, leader) {
     if (warning) out.push(h('span', { class: ['cal-mark', `cal-mark-${warning}`], title: SEVERITY_LABELS[warning] }, severityIcon(warning), h('span', { class: 'visually-hidden' }, SEVERITY_LABELS[warning])));
     if (fill.state) {
       out.push(h('span', { class: ['cal-mark', 'cal-mark-fill', `fill-state-${fill.state}`], title: `Obsazeno ${fill.filled} z ${fill.needed}` },
-        fillRing(fill.filled, fill.needed, { tone: fill.state === 'confirmed' ? 'confirmed' : 'waiting', text: false, size: 13, label: `obsazeno ${fill.filled} z ${fill.needed}` })));
+        fillRing(fill.filled, fill.needed, { confirmed: fill.confirmed, text: false, size: 13, label: `obsazeno ${fill.filled} z ${fill.needed}` })));
     }
   }
   return out.length ? h('span', { class: 'cal-marks' }, out) : null;
@@ -142,7 +142,7 @@ export function weekView(ctx) {
         const places = placeNames(e);
         const block = h('a', {
           href: `#setkani/${e.id}`,
-          class: ['week-event', `c-${kindHue(e.kind)}`, e.kind === 'service' && 'solid', short && 'short', myRoles(e).length && !e.cancelled && 'mine', e.cancelled && 'cancelled',
+          class: ['week-event', `c-${kindHue(e.kind)}`, short && 'short', myRoles(e).length && !e.cancelled && 'mine', e.cancelled && 'cancelled',
             dayOf(e.end) < now && 'past', p.cols > 1 && 'side'],
           title: [e.title, timeText(e), places, e.cancelled ? 'zrušeno' : null].filter(Boolean).join(SEP),
           'aria-label': [e.title, timeText(e), places, kindLabel(e.kind), e.cancelled ? 'zrušeno' : null].filter(Boolean).join(', '),
@@ -153,8 +153,12 @@ export function weekView(ctx) {
         blockMarks(e, leader));
         block.style.top = `${top(p.startMin) + 1}px`;
         block.style.height = `${Math.max(22, (minutes / 60) * HOUR - 3)}px`;
-        block.style.left = `calc(${(p.col / p.cols) * 100}% + 2px)`;
-        block.style.width = `calc(${(1 / p.cols) * 100}% - 5px)`;
+        // overlapping events cascade: each later one a step to the right, all of them ~85 % wide, so
+        // every title stays readable (a 50/50 split broke „Setkání na pastvě“ into one word per line)
+        const step = p.cols > 1 ? Math.min(15, 45 / (p.cols - 1)) : 0;
+        block.style.left = `calc(${p.col * step}% + 2px)`;
+        block.style.width = `calc(${100 - (p.cols - 1) * step}% - 5px)`;
+        if (p.col) block.style.zIndex = String(1 + p.col);
         return block;
       }));
     if (day === now) {

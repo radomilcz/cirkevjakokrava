@@ -38,7 +38,7 @@
 .cal-mark :is(.icon,.severity-icon){width:12px;height:12px}
 .cal-mark .fill-ring{padding:0;gap:0}
 .cal-mark .fill-ring-svg{margin:0}
-.cal-mark-mine{background:var(--surface-panel);color:var(--text-1)}
+.cal-mark-mine{background:var(--selected-fg);color:var(--surface-panel)}
 .cal-mark-mine .icon{stroke-width:2.2}
 .cal-mark-error{background:var(--surface-panel);color:var(--declined-solid)}
 .cal-mark-warning{background:var(--surface-panel);color:var(--waiting-fg)}
@@ -66,7 +66,7 @@
 .month-day-num:hover{background:var(--hover)}
 .month-day.today .month-day-num{background:var(--primary-bg);color:var(--primary-fg)}
 .month-day.other .month-day-num{color:var(--text-3)}
-.month-day.other :is(.cal-chip,.cal-more){opacity:.5}
+/* days of the next month are future: only their number is lighter, the chips stay full strength (only past chips fade) */
 .month-day-add{width:24px;height:24px;margin-right:-2px;color:var(--text-2);opacity:0;transition:opacity .12s}
 .month-day-add .icon{width:15px;height:15px}
 .month-day:hover .month-day-add,.month-day-add:focus-visible{opacity:1}
@@ -89,12 +89,8 @@
 .cal-chip:focus-visible,.cal-bar:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
 .cal-chip-text{flex:1 1 auto;min-width:0;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow-wrap:anywhere;padding-top:1px}
 .cal-chip-time{font-family:var(--font-mark);font-weight:900;font-size:11px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
-/* the Sunday meeting is the anchor of the week: solid in its hue */
-.cal-chip.solid{background:var(--c9);color:var(--cc);box-shadow:none}
-.cal-chip.solid:hover{background:var(--c9);box-shadow:inset 0 0 0 100px var(--hover)}
-/* „tady sloužíš“: a ring in the hue + the person mark */
-.cal-chip.mine,.cal-bar.mine{box-shadow:inset 3px 0 0 var(--c9),inset 0 0 0 1.5px var(--c11)}
-.cal-chip.solid.mine{box-shadow:inset 0 0 0 2px var(--cc),inset 0 0 0 3.5px var(--c9)}
+/* every Účel the same recipe (soft fill + bar); the Sunday meeting is told apart by its icon in the legend, not a loud slab */
+/* „tady sloužíš“: the filled person disc in the marks (no heavy ring around the chip) */
 .cal-chip.cancelled,.cal-bar.cancelled{background:var(--hover);color:var(--text-2);box-shadow:none}
 .cal-chip.cancelled .cal-chip-title,.cal-bar.cancelled .cal-chip-title{text-decoration:line-through}
 .cal-chip.past:not(:hover){opacity:.66}
@@ -112,6 +108,9 @@
 /* legend under the grid */
 .cal-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin:14px 0 0;padding:0 4px;list-style:none;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
 .cal-legend li{display:inline-flex;align-items:center;gap:6px}
+.cal-legend .fill-ring{padding-top:0}
+.cal-legend .fill-ring-svg{margin-top:0}
+.agenda .cal-legend{margin-top:4px}
 .cal-legend .cal-mark{box-shadow:0 0 0 1px var(--line-1)}
 .cal-legend .kind-mark .icon{width:16px;height:16px}
 
@@ -173,10 +172,7 @@
 }
 .week-event:hover{background:var(--c4);z-index:2}
 .week-event:focus-visible{outline:2px solid var(--focus);outline-offset:1px;z-index:3}
-.week-event.solid{background:var(--c9);color:var(--cc);box-shadow:0 0 0 1px var(--surface-panel)}
-.week-event.solid:hover{box-shadow:inset 0 0 0 100px var(--hover),0 0 0 1px var(--surface-panel)}
-.week-event.mine{box-shadow:inset 3px 0 0 var(--c9),inset 0 0 0 1.5px var(--c11),0 0 0 1px var(--surface-panel)}
-.week-event.solid.mine{box-shadow:inset 0 0 0 2px var(--cc),inset 0 0 0 3.5px var(--c9),0 0 0 1px var(--surface-panel)}
+/* „tady sloužíš“ = the filled person disc in the marks, like the month chips */
 .week-event.cancelled{background:var(--surface-sunken);color:var(--text-2);box-shadow:inset 3px 0 0 var(--line-2),0 0 0 1px var(--surface-panel)}
 .week-event.cancelled .week-event-title{text-decoration:line-through}
 .week-event.past:not(:hover){opacity:.66}
@@ -186,9 +182,9 @@
 .week-event .cal-marks{position:absolute;top:3px;right:3px;margin:0}
 .week-event.short{flex-direction:row;align-items:baseline;gap:6px;padding-block:3px}
 .week-event.short .week-event-title{-webkit-line-clamp:1}
-.week-event.side .week-event-place,.week-event.side .week-event-end{display:none}
-.week-event.side .cal-marks{position:static;margin-top:2px}
-.week-event.side .week-event-time{padding-right:0}
+.week-event.side{box-shadow:inset 3px 0 0 var(--c9),0 0 0 1.5px var(--surface-panel),0 2px 6px -2px rgb(0 0 0 / .25)}
+.week-event.side .week-event-title{-webkit-line-clamp:2}
+.week-event.side .week-event-end{display:none}
 .now-line{position:absolute;z-index:4;left:-1px;right:0;height:2px;background:var(--indicator);pointer-events:none}
 .now-line::before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--indicator)}
 .cal-view-tyden .page-body>.empty-state{margin-top:12px}
@@ -212,7 +208,6 @@
 .kind-inline .kind-mark .icon{width:14px;height:14px;margin-top:calc(-1*var(--optical))}
 .mine-badge .icon{stroke-width:2.2}
 .fill-count{display:inline-flex;align-items:center;gap:6px;color:var(--text-2)}
-.fill-count.cancelled{font-size:var(--font-size-3);color:var(--declined-fg)}
 @media (max-width:520px){
   .event-row .cover-thumb{display:none}
   .event-row .mine-badge{max-width:100%;white-space:normal;height:auto;min-height:24px;padding-block:3px}

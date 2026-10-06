@@ -129,5 +129,6 @@
       if (!menu.hidden && !wrap.contains(event.target)) close(false);
     });
     document.addEventListener('zvonec:appearance', mark);
+    document.addEventListener('zvonec:navigate', function () { close(false); });
   });
 })();

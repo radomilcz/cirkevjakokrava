@@ -177,8 +177,8 @@ export function addPersonDialog({ householdId = '' } = {}) {
     saveLabel: 'Přidat',
     sections: [
       { fields: [
-        textField('firstName', 'Jméno', '', { attr: { required: true, autocomplete: 'off', placeholder: 'Jana' } }),
-        textField('lastName', 'Příjmení', '', { attr: { autocomplete: 'off', placeholder: 'Nováková' } }),
+        textField('firstName', 'Jméno', '', { attr: { required: true, autocomplete: 'off', placeholder: 'např. Alžběta' } }),
+        textField('lastName', 'Příjmení', '', { attr: { autocomplete: 'off', placeholder: 'např. Svobodová' } }),
         dupe,
       ] },
       { title: 'Ve sboru', fields: [
@@ -187,8 +187,8 @@ export function addPersonDialog({ householdId = '' } = {}) {
         guestNote,
       ] },
       { title: 'Kontakt', cls: 'contact-section', fields: [
-        textField('phone', 'Telefon', '', { type: 'tel', attr: { autocomplete: 'off', placeholder: '777 123 456' } }),
-        textField('email', 'E-mail', '', { type: 'email', attr: { autocomplete: 'off', placeholder: 'jana@example.cz' } }),
+        textField('phone', 'Telefon', '', { type: 'tel', attr: { autocomplete: 'off', placeholder: 'např. 603 000 000' } }),
+        textField('email', 'E-mail', '', { type: 'email', attr: { autocomplete: 'off', placeholder: 'např. jmeno@email.cz' } }),
         switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', false, { hint: 'Jinak je vidí jen vedoucí.' }),
         kidContact,
       ] },
@@ -203,8 +203,8 @@ export function addPersonDialog({ householdId = '' } = {}) {
     more: {
       key: 'person-new',
       sections: [{ fields: [
-        textField('nickname', 'Přezdívka', '', { hint: 'Ukáže se v závorce za jménem.', attr: { autocomplete: 'off', placeholder: 'Péťa' } }),
-        textField('birthDate', 'Datum narození', '', { hint: 'Třeba 8. 6. 1984, stačí i rok.', attr: { autocomplete: 'off', inputmode: 'numeric', placeholder: '8. 6. 1984' } }),
+        textField('nickname', 'Přezdívka', '', { hint: 'Ukáže se v závorce za jménem.', attr: { autocomplete: 'off', placeholder: 'např. Bětka' } }),
+        textField('birthDate', 'Datum narození', '', { hint: 'Třeba 8. 6. 1984, stačí i rok.', attr: { autocomplete: 'off', inputmode: 'numeric', placeholder: 'např. 8. 6. 1984' } }),
         dateField('since', 'Ve sboru od', ''),
         textArea('note', 'Poznámka', '', { hint: 'Krátce. Nic o zdraví, penězích ani pastoraci.', attr: { rows: 2, maxlength: 300 } }),
       ] }],
@@ -304,8 +304,8 @@ export function contactEditDialog(person) {
         tone: 'info', action: button('Zapsat souhlas', { variant: 'surface', size: 's', onclick: () => membershipDialog(person) }),
       }) : null,
     fields: [
-      textField('phone', 'Telefon', person.phone, { type: 'tel', attr: { autocomplete: self ? 'tel' : 'off', placeholder: '777 123 456', disabled: restricted || null } }),
-      textField('email', 'E-mail', person.email, { type: 'email', attr: { autocomplete: self ? 'email' : 'off', placeholder: 'jana@example.cz', disabled: restricted || null } }),
+      textField('phone', 'Telefon', person.phone, { type: 'tel', attr: { autocomplete: self ? 'tel' : 'off', placeholder: 'např. 603 000 000', disabled: restricted || null } }),
+      textField('email', 'E-mail', person.email, { type: 'email', attr: { autocomplete: self ? 'email' : 'off', placeholder: 'např. jmeno@email.cz', disabled: restricted || null } }),
       switchField('showInDirectory', 'Telefon a e-mail smí vidět i ostatní ve sboru', !!person.showInDirectory, {
         hint: 'Jinak je vidí jen vedoucí.', disabled: restricted || kid,
       }),
@@ -406,7 +406,7 @@ export function detailsDialog(person) {
     fields: [
       textField('firstName', 'Jméno', person.firstName, { attr: { required: true, autocomplete: 'off' } }),
       textField('lastName', 'Příjmení', person.lastName, { attr: { autocomplete: 'off', disabled: restricted || null } }),
-      textField('nickname', 'Přezdívka', person.nickname, { hint: 'Ukáže se v závorce za jménem.', attr: { autocomplete: 'off', placeholder: 'Péťa', disabled: restricted || null } }),
+      textField('nickname', 'Přezdívka', person.nickname, { hint: 'Ukáže se v závorce za jménem.', attr: { autocomplete: 'off', placeholder: 'např. Bětka', disabled: restricted || null } }),
       textField('birthDate', 'Datum narození', fullDate(person.birthDate), { hint: 'Třeba 8. 6. 1984, stačí i rok.', attr: { autocomplete: 'off', inputmode: 'numeric', disabled: restricted || null } }),
       textArea('note', 'Poznámka', person.note, { hint: 'Krátce. Nic o zdraví, penězích ani pastoraci. Vidí ji jen vedoucí.', attr: { rows: 3, maxlength: 300, disabled: restricted || null } }),
     ],
@@ -551,7 +551,7 @@ export function availabilityDialog(person, record = null) {
     fields: [
       dateField('from', 'Od', record?.from || day, { required: true }),
       dateField('to', 'Do', record?.to || day, { required: true }),
-      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: self && !leader ? 'Uvidí ho jen vedoucí.' : 'Vidí ho jen vedoucí a ten, koho se týká.', attr: { placeholder: 'dovolená, směna, výlet…', maxlength: 80, autocomplete: 'off' } }),
+      textField('reason', 'Důvod', record?.reason || '', { full: true, hint: self && !leader ? 'Uvidí ho jen vedoucí.' : 'Vidí ho jen vedoucí a ten, koho se týká.', attr: { placeholder: 'např. dovolená, směna, výlet', maxlength: 80, autocomplete: 'off' } }),
     ],
     remove: record ? () => {
       S.data.availability = S.data.availability.filter((x) => x.id !== record.id);
@@ -650,8 +650,8 @@ export function householdDialog(original) {
     title: original ? original.name : 'Přidat domácnost',
     saveLabel: original ? 'Uložit' : 'Přidat',
     fields: [
-      textField('name', 'Název', original?.name, { full: true, hint: 'Jak jim říkáte: Novákovi, Byt na Zborovské…', attr: { required: true, placeholder: 'Novákovi', autocomplete: 'off' } }),
-      textField('address', 'Adresa', original?.address, { full: true, hint: 'Vidí ji jen vedoucí a lidé z domácnosti.', attr: { autocomplete: 'off', placeholder: 'Dlouhá 21, Nový Jičín' } }),
+      textField('name', 'Název', original?.name, { full: true, hint: 'Jak jim říkáte: Novákovi, Byt na Zborovské…', attr: { required: true, placeholder: 'např. Svobodovi', autocomplete: 'off' } }),
+      textField('address', 'Adresa', original?.address, { full: true, hint: 'Vidí ji jen vedoucí a lidé z domácnosti.', attr: { autocomplete: 'off', placeholder: 'např. Dlouhá 21, Nový Jičín' } }),
     ],
     remove: original ? () => deleteHousehold(original) : null,
     removeLabel: 'Smazat domácnost',

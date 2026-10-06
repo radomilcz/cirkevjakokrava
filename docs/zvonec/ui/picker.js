@@ -233,7 +233,7 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
   function paint() {
     const q = state.query.trim();
     scopeHolder.replaceChildren(...nodes(ranked && !state.creating
-      ? [chips(SCOPE_OPTIONS, q ? null : state.scope, (v) => { state.scope = v; search.value = ''; state.query = ''; state.active = 0; paint(); search.focus(); }, { label: 'Koho ukázat', multi: false })]
+      ? [chips(SCOPE_OPTIONS, q ? 'all' : state.scope /* a search looks through everybody – say so */, (v) => { state.scope = v; search.value = ''; state.query = ''; state.active = 0; paint(); search.focus(); }, { label: 'Koho ukázat', multi: false })]
       : null));
     searchBox.hidden = state.creating;
     state.active = Math.max(0, state.active);
@@ -253,12 +253,12 @@ export function openPicker({ title, eventId, roleId, groupId, scope = 'skilled',
           h('span', { class: 'pp-name' }, `Nový člověk „${q}“`),
           h('span', { class: 'pp-meta' }, rows.length ? 'Když to není nikdo z nich.' : 'Nikdo takový tu není.')))));
       }
-      listHolder.replaceChildren(
+      listHolder.replaceChildren(...nodes([
         items.length ? h('ul', { class: 'pp-list', onkeydown: onKeys }, items)
           : h('p', { class: 'pp-empty' }, q ? 'Nikdo takový.' : ranked && state.scope === 'skilled' ? 'Tuhle roli nikdo neumí. Zkus „Celý tým“ nebo „Všichni lidé“.' : 'Nikdo tu není.'),
         ranked && !q && items.length ? h('p', { class: 'pp-legend' },
           reasonText({ severity: 'error', text: 'nepůjde' }), h('span', { class: 'pp-sep' }, ' · '),
-          reasonText({ severity: 'warning', text: 'jde to, ale pozor' })) : null);
+          reasonText({ severity: 'warning', text: 'jde to, ale pozor' })) : null]));
     }
     paintFooter();
     pop?.place();

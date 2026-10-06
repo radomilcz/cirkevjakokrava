@@ -9,6 +9,7 @@ import {
   switchField, segmentedField, chipsField, dateField, timeRange, numberField, searchField, personPicker,
   menuButton, progressBar, fillRing, dateNav, toolbar, spacer, facts, label, dateBlock, statusCell,
   formSection, disclosure, field, icon, statusIcon, severityMark, severityWord, severityCounts, rowIcon, ICON_NAMES, HUES, filterButtons, eventCover, metaJoin,
+  cancelledBadge, meTag, timeField,
 } from './dom.js';
 import { S } from './state.js';
 
@@ -50,7 +51,7 @@ function buttonsBlock() {
 
 function statusBlock() {
   return stack(
-    rowWrap(statusBadge('confirmed', { variant: 'badge' }), statusBadge('proposed'), statusBadge('declined', { variant: 'badge' }), badge('Veřejné', { tone: 'info', icon: 'globe' }), badge('Koncept'), badge('Vybráno', { tone: 'accent' })),
+    rowWrap(statusBadge('confirmed', { variant: 'badge' }), statusBadge('proposed'), statusBadge('declined', { variant: 'badge' }), badge('Veřejné', { tone: 'info', icon: 'globe' }), badge('Koncept'), badge('Vybráno', { tone: 'accent' }), cancelledBadge(), meTag()),
     rowWrap(statusBadge('confirmed', { word: 'potvrdila' }), statusBadge('proposed', { variant: 'plain' }), statusBadge('declined')),
     rowWrap(badge('Hotovo', { tone: 'success', symbol: 'confirmed', solid: true }), badge('2 čekají', { tone: 'warning', symbol: 'proposed', solid: true }), badge('Chybí 1', { tone: 'danger', symbol: 'declined', solid: true }),
       countBadge(5), countBadge(2, { tone: 'warn' }), countBadge(12, { tone: 'accent' })),
@@ -91,6 +92,7 @@ function formsBlock(theme) {
     selectField(n('kit-team'), 'Tým', [['', 'Celý sbor'], ['g1', 'Chvály'], ['g2', 'Technika'], ['g3', 'Děti']], 'g1'),
     dateField(n('kit-day'), 'Den', '2026-10-11'),
     timeRange('Čas', [n('kit-from'), '10:00'], [n('kit-to'), '11:30']),
+    timeField(n('kit-start'), 'Začátek', '9:30'),
     personPicker({ name: n('kit-person'), label: 'Kdo', people: ps, value: ps[0]?.id, meta: () => 'umí to' }),
     field('Hledat', searchField({ placeholder: 'Jméno, tým, role…' })),
     numberField(n('kit-max'), 'Nejvíc služeb za měsíc', 4, { min: 1, max: 9, unit: 'služby' }),
@@ -108,7 +110,7 @@ function formsBlock(theme) {
 function listBlock() {
   const ps = people();
   return list([
-    { lead: dateBlock('2026-10-11', { today: true }), title: 'Setkání na pastvě', meta: metaJoin(['10.00', 'Sál', '7 služeb']), trail: [fillRing(12, 14), badge('2 čekají', { tone: 'warning', symbol: 'proposed' })], href: '#kit' },
+    { lead: dateBlock('2026-10-11', { today: true }), title: 'Setkání na pastvě', meta: metaJoin(['10.00', 'Sál', '7 služeb']), trail: [fillRing(12, 14, { confirmed: 10 })], href: '#kit' },
     { lead: dateBlock('2026-10-14'), title: 'Skupinka u Fialových', meta: metaJoin(['19.00', 'Fialovi']), trail: statusBadge('confirmed', { word: 'všichni potvrdili' }), href: '#kit' },
     'group',
     { lead: groupMark({ id: 'g-worship', name: 'Chvály' }), title: 'Chvály', meta: '8 lidí\u00a0· 4 role', trail: avatarStack(ps.slice(0, 4), { size: 'xs' }), href: '#kit', tone: 'selected' },
@@ -151,7 +153,13 @@ function surfacesBlock() {
   return h('div', { class: 'kit-cards' },
     card({ title: 'Lidé', count: 4, body: h('p', { class: 'note' }, 'Karta s počtem u nadpisu: card({ title, count }).') }),
     card({ title: 'Kdy a kde', actions: button('Upravit', { variant: 'ghost', size: 's', icon: 'pencil' }), body: facts([['Začátek', '10.00'], ['Konec', '11.30'], ['Místo', ['Sál\u00a0· ', h('a', { href: '#kit' }, 'Otevřít v mapě')]], ['Šablona', 'Nedělní setkání']]) }),
-    card({ title: 'Obsazení', body: stack(progressBar(12, 14), progressBar(14, 14), rowWrap(fillRing(12, 14), fillRing(14, 14), fillRing(0, 3), fillRing(2, 5, { text: false }))), footer: button('Celý rozpis', { variant: 'ghost', size: 's', iconEnd: 'chevron-right' }) }),
+    card({
+      title: 'Obsazení',
+      body: stack(
+        progressBar(12, 14), progressBar(14, 14), progressBar(6, 4, { label: 'přes limit' }),
+        rowWrap(fillRing(14, 15, { confirmed: 11, size: 22 }), fillRing(14, 14, { confirmed: 14 }), fillRing(0, 3, { confirmed: 0 }), fillRing(2, 5, { text: false })),
+      ),
+      footer: button('Celý rozpis', { variant: 'ghost', size: 's', iconEnd: 'chevron-right' }) }),
     card({ href: '#kit', label: 'Ukázková karta jako odkaz', body: stack(h('span', { class: 'label' }, 'Ne 11. 10.\u00a0· 10.00'), h('span', {}, 'Karta jako odkaz – najetí myší ji zvedne'), rowWrap(badge('Veřejné', { tone: 'info', icon: 'globe' }))) }),
     panel(stack(label('Panel'), h('p', { class: 'note' }, 'Panel je karta bez hlavičky. Seznamy, tabulky a prázdné stavy v něm leží samy.'))));
 }

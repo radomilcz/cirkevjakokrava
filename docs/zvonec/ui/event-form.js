@@ -9,7 +9,7 @@
 import {
   h, button, icon, openDialog, closeDialog, toast, formError, formErrorLine, textField, textArea, selectField,
   dateField, timeRange, switchField, formSection, disclosure, kindMark, eventCover, plural, agree, inNumber, metaJoin, SEP, field, numberField,
-  segmentedField, textButton, groupMark, andJoin, placeChipsField,
+  segmentedField, textButton, groupMark, andJoin, placeChipsField, popMenu,
 } from './dom.js';
 import { S, change, navigate, newId } from './state.js';
 import {
@@ -203,11 +203,11 @@ function openEventForm({ mode, event, type, day, onBack }) {
   } else forWhom = [forWhomControls];
 
   const publicSwitch = switchField('public', 'Zveřejnit na webu', base.public === true, { hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', onchange: (e) => { publicChoice = e.target.checked; } });
-  const description = textArea('description', 'Popis', base.description || '', { attr: { rows: 3, placeholder: 'Co lidi na setkání čeká, co si vzít s sebou…' } });
-  const note = textArea('note', 'Poznámka pro tým', base.note || '', { attr: { rows: 2, placeholder: 'Sraz v 9.30, klíče má Petr…' }, hint: 'Na webu ji nikdo neuvidí.' });
+  const description = textArea('description', 'Popis', base.description || '', { attr: { rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' } });
+  const note = textArea('note', 'Poznámka pro tým', base.note || '', { attr: { rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }, hint: 'Na webu ji nikdo neuvidí.' });
 
   const sections = [
-    formSection('Název', [textField('title', 'Název setkání', base.title, { full: true, attr: { required: true, placeholder: 'Setkání na pastvě', autofocus: true, oninput: () => picture.redraw() } })], { cols: 1 }),
+    formSection('Název', [textField('title', 'Název setkání', base.title, { full: true, attr: { required: true, placeholder: 'např. Výlet na Javorník', autofocus: true, oninput: () => picture.redraw() } })], { cols: 1 }),
     formSection('Kdy', [
       dateField('day', 'Den', dayOf(base.start), { required: true }),
       h('div', { class: 'field-stack' }, timeRange('Čas', ['from', timeOf(base.start)], ['to', timeOf(base.end)]), overnightHint),
@@ -234,12 +234,19 @@ function openEventForm({ mode, event, type, day, onBack }) {
     h('h2', { class: 'dialog-title' }, editing ? 'Upravit setkání' : 'Přidat setkání'),
     h('p', { class: 'dialog-sub' }, editing ? metaJoin([event.title, prettyDay(event.start)]) : type ? `Podle šablony ${type.name}` : 'Bez šablony'));
   const body = h('div', { class: 'dialog-body' }, sections, formErrorLine());
+  const cancelIt = () => { closeDialog(); cancelDialog(event.id); };
+  const deleteIt = () => { closeDialog(); deleteDialog(event.id); };
+  // on a phone the two destructive actions fold into one „Další akce“ menu, so the foot stays two even rows
   const leftActions = editing ? [
-    button(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', { variant: event.cancelled ? 'soft' : 'danger', onclick: () => { closeDialog(); cancelDialog(event.id); } }),
-    button('Smazat', { variant: 'danger', icon: 'trash', onclick: () => { closeDialog(); deleteDialog(event.id); } }),
+    button(event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', { variant: event.cancelled ? 'soft' : 'danger', onclick: cancelIt, cls: 'foot-wide' }),
+    button('Smazat', { variant: 'danger', icon: 'trash', onclick: deleteIt, cls: 'foot-wide' }),
+    h('span', { class: 'foot-narrow' }, button('Další akce', { variant: 'soft', icon: 'more', onclick: (e) => popMenu(e.currentTarget, [
+      [event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', cancelIt, { icon: event.cancelled ? 'undo' : 'x' }],
+      ['Smazat', deleteIt, { danger: true, icon: 'trash' }],
+    ], { label: 'Další akce' }) })),
   ] : [];
   const foot = h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-left' }, leftActions), h('span', { class: 'dialog-foot-space' }),
-    button('Zavřít', { variant: 'ghost', onclick: closeDialog }), submit);
+    button('Zrušit', { variant: 'ghost', onclick: closeDialog }), submit);
   form.append(head, body, foot);
 
   form.addEventListener('input', () => { if (submit.lastChild.textContent !== submitLabel) submit.lastChild.textContent = submitLabel; formError(form, null); updateWhen(); });
@@ -408,7 +415,7 @@ export function addEventDialog({ day, exact = false } = {}) {
       h('h2', { class: 'dialog-title' }, 'Přidat setkání'),
       h('p', { class: 'dialog-sub' }, 'Podle čeho? Šablona vyplní čas, místo, služby i osnovu. Pak to můžeš upravit.')),
     h('div', { class: 'dialog-body' }, h('ul', { class: 'template-tiles' }, types.map(tile), blank)),
-    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zavřít', { variant: 'ghost', onclick: closeDialog })));
+    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zrušit', { variant: 'ghost', onclick: closeDialog })));
   openDialog(content, { wide: true });
   content.querySelector('.template-tile')?.focus();
 }
@@ -452,7 +459,7 @@ export function needsDialog(eventId) {
         segmentedField('scope', 'Platí pro', [['one', 'Jen tohle setkání'], ['following', capitalFirst(andFollowing(following))]], 'one', { full: true })) : null,
       formErrorLine()),
     h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }),
-      button('Zavřít', { variant: 'ghost', onclick: closeDialog }), button('Uložit', { variant: 'solid', type: 'submit' })));
+      button('Zrušit', { variant: 'ghost', onclick: closeDialog }), button('Uložit', { variant: 'solid', type: 'submit' })));
   const total = () => {
     let people = 0; let roles = 0;
     form.querySelectorAll('input[type=number]').forEach((i) => { const n = Math.max(0, Number(i.value) || 0); people += n; roles += n ? 1 : 0; });
@@ -499,7 +506,7 @@ export function extendSeriesDialog(eventId) {
       h('p', { class: 'dialog-sub' }, `${seriesSummary(series, { today: today() })}. Nová setkání převezmou název, místo, služby i osnovu posledního, jen bez lidí.`)),
     h('div', { class: 'dialog-body' }, h('div', { class: 'form-grid' }, dateField('until', 'Do kdy', addMonths(lastDay, 3), { min: addDays(lastDay, 1) })), formErrorLine()),
     h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }),
-      button('Zavřít', { variant: 'ghost', onclick: closeDialog }), button('Prodloužit', { variant: 'solid', type: 'submit' })));
+      button('Zrušit', { variant: 'ghost', onclick: closeDialog }), button('Prodloužit', { variant: 'solid', type: 'submit' })));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const until = form.elements.until.value;

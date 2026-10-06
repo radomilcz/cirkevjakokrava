@@ -6,6 +6,7 @@
 import {
   h, page, tabs, toolbar, spacer, chips, viewSwitch, card, list, row, emptyState, button, personName, avatar,
   dateBlock, severityIcon, severityMark, severityWord, severityCounts, textField, dialogForm, closeDialog, SEP, metaJoin, andJoin,
+  cancelledBadge, agree,
 } from './dom.js';
 import { S, change, render, isUpcoming, myId } from './state.js';
 import { SEVERITIES, CODES } from '../lib/conflicts.js';
@@ -60,9 +61,9 @@ function rowActions(conflict, { overrideButton = true, replaceButton = true } = 
   const swap = replaceButton ? replaceTarget(conflict) : null;
   const overridable = overrideButton && canOverride(conflict);
   return [
-    swap ? button('Vybrat jiného', { variant: 'ghost', size: 's', onclick: () => pickPerson(swap.event.id, swap.assignment.roleId, swap.assignment.id) }) : null,
+    swap ? button('Vybrat jiného', { variant: 'soft', size: 's', onclick: () => pickPerson(swap.event.id, swap.assignment.roleId, swap.assignment.id) }) : null,
     overridable ? button(conflict.overrideNote ? 'Upravit důvod' : 'Vím o tom', {
-      variant: 'ghost', size: 's', title: conflict.overrideNote ? 'Proč to půjde' : 'Vím o tom, půjde to i tak',
+      variant: 'soft', size: 's', title: conflict.overrideNote ? 'Proč to půjde' : 'Vím o tom, půjde to i tak',
       onclick: () => { const t = overrideTarget(conflict); if (t) overrideDialog(t.assignment.id); },
     }) : null,
   ];
@@ -119,7 +120,7 @@ export function overrideDialog(assignmentId) {
       h('p', { class: 'dialog-text' }, `Když víš, že ${name} to zvládne, napiš proč. Zvonec to pak přestane hlásit jako chybu.`),
       existing?.at ? h('p', { class: 'dialog-text quiet' }, metaJoin([`Zapsáno ${prettyDay(existing.at, false)}`, by])) : null,
       h('div', { class: 'form-grid one' },
-        textField('reason', 'Proč to půjde', existing?.reason || '', { full: true, attr: { autofocus: true, placeholder: 'odejde ze zkoušky dřív', maxlength: 120 } })),
+        textField('reason', 'Proč to půjde', existing?.reason || '', { full: true, attr: { autofocus: true, placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 } })),
     ],
     saveLabel: 'Je to v pořádku',
     removeLabel: 'Přece jen to hlídat',
@@ -181,8 +182,8 @@ function eventCard(group) {
   const head = h('div', { class: 'conflict-card-head' },
     dateBlock(dayOf(event.start), { today: dayOf(event.start) === today() }),
     h('div', { class: 'conflict-card-text' },
-      h('h2', { class: 'conflict-card-title' }, h('a', { href: `#setkani/${event.id}` }, event.title)),
-      h('p', { class: 'conflict-card-meta' }, metaJoin([prettyDay(event.start), prettyTime(event.start), event.cancelled ? 'zrušeno' : null]))),
+      h('h2', { class: ['conflict-card-title', event.cancelled && 'struck'] }, h('a', { href: `#setkani/${event.id}` }, event.title)),
+      h('p', { class: 'conflict-card-meta' }, metaJoin([prettyTime(event.start), event.cancelled ? cancelledBadge() : null]))),
     severityCounts(items),
     button('Otevřít setkání', { variant: 'surface', size: 's', href: `#setkani/${event.id}`, iconEnd: 'chevron-right', cls: 'conflict-open' }));
   return h('section', { class: 'card conflict-card', 'aria-label': `${event.title} ${prettyDay(event.start)}` },
@@ -194,10 +195,10 @@ function personCard(group) {
   const head = h('div', { class: 'conflict-card-head' },
     person ? avatar(person, { size: 'm' }) : h('span', { class: 'sev-mark sev-neutral', 'aria-hidden': 'true' }, severityIcon('info')),
     h('div', { class: 'conflict-card-text' },
-      h('h2', { class: 'conflict-card-title' }, person ? h('a', { href: `#osoba/${person.id}` }, personName(person)) : 'Setkání bez lidí'),
-      h('p', { class: 'conflict-card-meta' }, person ? `${items.length} ${items.length === 1 ? 'věc' : items.length < 5 ? 'věci' : 'věcí'} nesedí` : 'Chybí lidi, osnova, místo')),
+      h('h2', { class: 'conflict-card-title' }, person ? h('a', { href: `#osoba/${person.id}` }, personName(person)) : 'Týká se celého setkání'),
+      h('p', { class: 'conflict-card-meta' }, `${items.length} ${agree(items.length, 'věc', 'věci', 'věcí')} nesedí`)),
     severityCounts(items));
-  return h('section', { class: 'card conflict-card', 'aria-label': person ? personName(person) : 'Setkání bez lidí' },
+  return h('section', { class: 'card conflict-card', 'aria-label': person ? personName(person) : 'Týká se celého setkání' },
     head, h('div', { class: 'card-body flush' }, conflictList(items)));
 }
 
@@ -218,7 +219,7 @@ export function renderConflicts(parts = []) {
     chip.querySelector('.chip-check').after(severityIcon(SEVERITIES[i]));
   });
   const when = viewSwitch([['upcoming', 'Co nás čeká'], ['all', 'I to, co už bylo']], f.conflictScope,
-    { onPick: (v) => { f.conflictScope = v; render(); }, label: 'Kdy', size: 's' });
+    { onPick: (v) => { f.conflictScope = v; render(); }, label: 'Kdy' });   // the same height as the chips next to it
 
   const groups = groupsFor(view, shown);
   const hidden = SEVERITIES.filter((s) => !f.conflictSeverities.includes(s) && countOf(s)).map((s) => SEVERITY_CHIPS[s].toLowerCase());
@@ -230,7 +231,8 @@ export function renderConflicts(parts = []) {
     title: 'Upozornění',
     lead: 'Co v rozpisu nesedí. Oprav to rovnou tady, nebo napiš, proč to půjde i tak.',
     width: 'list',
-    tabs: tabs(VIEWS.map(([id, label]) => [id, label, id === view ? shown.length || null : null]), view, (v) => (v === 'setkani' ? '#upozorneni' : `#upozorneni/${v}`)),
+    // the two tabs show the same warnings sorted another way: the count lives on the module (sidebar), not on a tab
+    tabs: tabs(VIEWS.map(([id, label]) => [id, label]), view, (v) => (v === 'setkani' ? '#upozorneni' : `#upozorneni/${v}`)),
     toolbar: toolbar(severityChips, spacer(), when),
     body: groups.length ? h('div', { class: 'conflict-groups' }, groups.map(view === 'lide' ? personCard : eventCard)) : nothing,
   });

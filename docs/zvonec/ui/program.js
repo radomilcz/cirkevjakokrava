@@ -4,7 +4,7 @@
 
 import {
   h, button, list, row, emptyState, toast, closeDialog, openDialog, confirmDialog, textField, numberField,
-  field, textButton, progressBar, switchField, printHeader, personLine, dialogForm, SEP,
+  field, textButton, progressBar, switchField, printHeader, personLine, dialogForm, card, SEP,
 } from './dom.js';
 import { S, change, newId, render } from './state.js';
 import { openPicker } from './picker.js';
@@ -78,22 +78,24 @@ export function programTab(event, { leader }) {
     h('div', { class: 'program-summary-text' },
       h('span', { class: 'program-total' }, `${total} z ${length} min`),
       h('span', { class: 'program-end' }, over > 0 ? `O ${over} min delší než setkání` : over < 0 ? `Konec podle osnovy v ${prettyTime(addMinutes(event.start, total))}${SEP}zbývá ${durationText(-over)}` : 'Přesně na čas')),
-    progressBar(Math.min(total, length), length, { tone: over > 0 ? 'danger' : total === length ? 'confirmed' : 'neutral', label: `Osnova ${total} z ${length} minut` })) : null;
+    progressBar(Math.min(total, length), length, { tone: over > 0 ? 'warning' : null, label: `Osnova ${total} z ${length} minut` })) : null;
 
-  const tools = h('div', { class: 'tab-tools' },
-    leader && previous && (previous.program || []).length ? button('Převzít minulou osnovu', { variant: 'surface', size: 's', icon: 'copy', onclick: takePrevious }) : null,
-    times.length ? button('Vytisknout', { variant: 'surface', size: 's', icon: 'print', onclick: () => window.print(), title: 'Na A4 na výšku' }) : null,
+  const takeButton = leader && previous && (previous.program || []).length ? button('Převzít minulou osnovu', { variant: 'surface', icon: 'copy', onclick: takePrevious }) : null;
+  const tools = takeButton || times.length ? h('div', { class: 'side-tools' },
+    times.length ? button('Vytisknout', { variant: 'surface', icon: 'print', onclick: () => window.print(), title: 'Na A4 na výšku' }) : null,
+    takeButton,
     times.length ? switchField('programShowHow', 'Ukázat i „Jak to probíhá“', showHow, { full: false, onchange: (e) => { S.filters.programShowHow = e.target.checked; render(); } }) : null,
-  );
+  ) : null;
 
-  return h('div', { class: 'program-tab osnova-sheet' },
-    printHeader(`osnova${SEP}${prettyDay(event.start)}`),
-    tools,
-    summary,
-    items || (leader
-      ? emptyState({ icon: 'list', title: 'Osnova je zatím prázdná.', text: 'Slož ji z formátů, časy se dopočítají samy.', action: button('Přidat bod', { variant: 'solid', icon: 'plus', onclick: () => addItemDialog(id) }) })
-      : emptyState({ icon: 'list', text: 'Osnova ještě není hotová.' })),
-    leader && items ? button('Přidat bod', { variant: 'add', onclick: () => addItemDialog(id), cls: 'no-print' }) : null,
+  // the same two columns as Přehled: the osnova, and at the side its length and the tools
+  return h('div', { class: 'event-grid program-grid' },
+    h('div', { class: 'program-tab osnova-sheet event-main' },
+      printHeader(`osnova${SEP}${prettyDay(event.start)}`),
+      items || (leader
+        ? emptyState({ icon: 'list', title: 'Osnova je zatím prázdná.', text: 'Slož ji z formátů, časy se dopočítají samy.', action: button('Přidat bod', { variant: 'solid', icon: 'plus', onclick: () => addItemDialog(id) }) })
+        : emptyState({ icon: 'list', text: 'Osnova ještě není hotová.' })),
+      leader && items ? button('Přidat bod', { variant: 'add', onclick: () => addItemDialog(id), cls: 'no-print' }) : null),
+    summary || tools ? h('aside', { class: 'event-side program-side' }, card({ title: summary ? 'Délka' : null, body: [summary, tools], cls: 'program-side-card' })) : null,
   );
 }
 
@@ -121,7 +123,7 @@ function addItemDialog(eventId) {
       onclick: () => add(f),
       label: `Přidat: ${f.name}`,
     }), { cls: 'in-dialog', empty: emptyState({ compact: true, text: 'Nejsou tu žádné formáty.', action: button('Otevřít Formáty', { href: '#formaty', variant: 'surface', size: 's' }) }) })),
-    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zavřít', { variant: 'ghost', onclick: closeDialog })));
+    h('div', { class: 'dialog-foot actions' }, h('span', { class: 'dialog-foot-space' }), button('Zrušit', { variant: 'ghost', onclick: closeDialog })));
   openDialog(content);
 }
 
@@ -171,7 +173,7 @@ function itemDialog(eventId, itemId, draft) {
         h('span', { class: 'leader-tools' },
           d.personId ? textButton(roleName ? `Podle role ${roleName}` : 'Nikdo', () => keep('')) : null,
           button(d.personId ? 'Vybrat jiného' : 'Vybrat', { variant: 'surface', size: 's', icon: 'user', onclick: choosePerson }))), { full: true, group: true }),
-      textField('note', 'Poznámka', d.note, { full: true, attr: { placeholder: 'Tónina, text, kdo podá mikrofon…' } }),
+      textField('note', 'Poznámka', d.note, { full: true, attr: { placeholder: 'např. tónina, text, kdo podá mikrofon' } }),
     ]),
     save: (f) => {
       const e = fresh(eventId);

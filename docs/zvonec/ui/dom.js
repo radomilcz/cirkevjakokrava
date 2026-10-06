@@ -245,16 +245,24 @@ export function row({ lead, title, meta: metaLine, trail, href, onclick, tone, l
     opens ? h('span', { class: 'item-chevron', 'aria-hidden': 'true' }, icon('chevron-right')) : null);
 }
 
+/** The usual Czech short month names (červen and červenec stay apart: čvn, čvc). */
+export const MONTHS_SHORT = ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'];
+
 /**
- * Date block for the leading slot of an event row: weekday over the day number.
- *   dateBlock('2026-10-11') → „ne / 11“ (the month is in the meta line or the list heading).
+ * Date block for the leading slot of an event row: weekday, day number and month in three lines, so a
+ * list that crosses months never leaves the reader to guess – and the meta line need not repeat the date.
+ *   dateBlock('2026-10-11') → „ne / 11 / říj“
  * `today` / `solid`: filled with the primary colour (today, or the viewer's own).
  */
 export function dateBlock(day, { today = false, solid = false } = {}) {
   const date = new Date(`${day}T12:00`);
   const weekday = ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'][date.getDay()];
-  return h('span', { class: ['date-block', (today || solid) && 'solid'], 'aria-hidden': 'true' },
-    h('span', { class: 'date-block-dow' }, weekday), h('span', { class: 'date-block-day' }, String(date.getDate())));
+  // the three short lines are a picture; screen readers get the date once, in full
+  return h('span', { class: ['date-block', (today || solid) && 'solid'] },
+    h('span', { class: 'date-block-dow', 'aria-hidden': 'true' }, weekday),
+    h('span', { class: 'date-block-day', 'aria-hidden': 'true' }, String(date.getDate())),
+    h('span', { class: 'date-block-month', 'aria-hidden': 'true' }, MONTHS_SHORT[date.getMonth()]),
+    h('span', { class: 'visually-hidden' }, `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()}`));
 }
 
 // ---------- people ----------
@@ -281,6 +289,20 @@ export function hueOf(key) {
   let hash = 0;
   for (const ch of String(key || '')) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
   return HUES[hash % HUES.length];
+}
+
+/** Hues of the groups by their order within a kind (teams, home groups…): with up to six of a kind no two
+ * share a colour, which a hash of the id cannot promise. app.js refreshes it before every render. */
+const GROUP_HUES = new Map();
+export function assignGroupHues(groups = []) {
+  GROUP_HUES.clear();
+  const byKind = new Map();
+  for (const g of [...groups].sort((a, b) => Number(!!a?.archived) - Number(!!b?.archived))) {   // archived ones last
+    if (!g?.id) continue;
+    const i = byKind.get(g.kind) || 0;
+    GROUP_HUES.set(g.id, HUES[i % HUES.length]);
+    byKind.set(g.kind, i + 1);
+  }
 }
 
 /** Initials of a person: „VF“ (first + last name), „V“ without a last name, „?“ when deleted. */
@@ -317,7 +339,7 @@ export function groupMark(group, { size = 'm' } = {}) {
   const words = String(group?.name || '?').split(/\s+/).filter(Boolean);
   // two words → their initials (Mládež Nový Jičín → MN); one word → its first two letters (Chvály → CH)
   const letters = words.length > 1 ? [words[0], words[1]].map((w) => [...w][0]).join('') : [...(words[0] || '?')].slice(0, 2).join('');
-  const hue = HUES.includes(group?.color) ? group.color : hueOf(group?.id);
+  const hue = HUES.includes(group?.color) ? group.color : GROUP_HUES.get(group?.id) || hueOf(group?.id);
   return h('span', { class: ['group-mark', `group-mark-${size}`, `c-${hue}`], 'aria-hidden': 'true' },
     letters.toLocaleUpperCase('cs'));
 }
@@ -546,6 +568,7 @@ export function copyButton(value, label = 'Kopírovat') {
 export const dialogElement = () => document.getElementById('dialog');
 export const isDialogOpen = () => !!dialogElement()?.open;
 let backdropClose = false;
+let dialogObserver = null;
 
 /** Show content in the one modal <dialog> (560 px; `wide` = 760 px for two text areas side by side). */
 export function openDialog(content, { wide = false } = {}) {
@@ -556,11 +579,26 @@ export function openDialog(content, { wide = false } = {}) {
   }
   d.replaceChildren(...nodes(content));
   d.classList.toggle('wide', wide);
+  // a sentinel at the end of the form: while it is hidden under the sticky foot, the foot casts a shadow
+  const body = d.querySelector('.dialog-body');
+  d.classList.remove('more-below');
+  dialogObserver?.disconnect();
+  if (body && typeof IntersectionObserver === 'function') {
+    const end = h('div', { class: 'dialog-end', 'aria-hidden': 'true' });
+    body.append(end);
+    dialogObserver = new IntersectionObserver(([entry]) => d.classList.toggle('more-below', !entry.isIntersecting), { root: d, rootMargin: '0px 0px -72px 0px' });
+    dialogObserver.observe(end);
+  }
   if (!d.open) d.showModal();
   // on a touch screen focusing a field would pop the keyboard up and cover half the dialog
+  // – there the dialog's heading takes the focus (screen readers start with the title), and the dialog
+  // always opens at its top, never scrolled to wherever the first focusable thing happens to sit
   const fine = !window.matchMedia || window.matchMedia('(pointer: fine)').matches;
-  const first = fine ? d.querySelector('[autofocus], input, select, textarea, button') : d.querySelector('button');
-  if (first) first.focus();
+  const heading = d.querySelector('.dialog-title, h2');
+  if (heading && !heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+  const first = fine ? d.querySelector('[autofocus], input:not([type=hidden]), select, textarea, button') : null;
+  (first || heading || d).focus({ preventScroll: true });
+  d.scrollTop = 0;
   return d;
 }
 

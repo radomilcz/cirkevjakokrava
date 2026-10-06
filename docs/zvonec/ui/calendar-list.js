@@ -5,7 +5,7 @@ import { h, groupedList, button, emptyState, agree, SEP } from './dom.js';
 import { S, render } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, addMonths, dayOf, monthOf, today } from '../lib/time.js';
-import { eventRow, filteredEmpty, mondayOf, passesFilters, rangeLabel, activeFilterCount } from './calendar-shared.js';
+import { eventRow, filteredEmpty, mondayOf, passesFilters, rangeLabel, activeFilterCount, fillLegendItems } from './calendar-shared.js';
 
 export function listView(ctx) {
   const { month } = ctx;
@@ -46,5 +46,6 @@ export function listView(ctx) {
     pastToggle,
     shown.length
       ? groupedList(groups, (e) => eventRow(e, { past: dayOf(e.end) < now }), { cls: 'agenda-list', label: 'Setkání' })
-      : emptyState({ compact: true, text: `Do konce měsíce už nic není. ${agree(past.length, 'Proběhlo', 'Proběhla')} ${past.length === 1 ? 'jedno' : past.length} setkání.` }));
+      : emptyState({ compact: true, text: `Do konce měsíce už nic není. ${agree(past.length, 'Proběhlo', 'Proběhla')} ${past.length === 1 ? 'jedno' : past.length} setkání.` }),
+    ctx.leader && shown.length ? h('ul', { class: 'cal-legend', 'aria-label': 'Co znamená kroužek' }, h('li', { class: 'cal-legend-title' }, 'Obsazení:'), fillLegendItems()) : null);
 }

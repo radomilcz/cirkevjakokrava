@@ -7,6 +7,7 @@
 import {
   h, page, card, list, row, button, iconButton, avatar, personName, dateBlock, kindMark, groupMark,
   fillRing, statusBadge, badge, callout, toast, plural, eventCover, coverKey, metaJoin, avatarStack, severityCounts, rowIcon, SEP, agree,
+  cancelledBadge,
 } from './dom.js';
 import { S, can, myId, change, render, newId, ACCESS_LABELS } from './state.js';
 import { topConflicts, conflictRow, pickPerson } from './conflicts.js';
@@ -56,9 +57,7 @@ const timeLine = (event) => {
 };
 const isToday = (event) => dayOf(event.start) === today();
 /** The meta of a row with a date block: time and title, plus the date when the block's month is not this one. */
-const rowMeta = (event, ...rest) => metaJoin([
-  event.start.slice(0, 7) === today().slice(0, 7) ? null : prettyDay(event.start, false),
-  timeLine(event), event.title, ...rest]);
+const rowMeta = (event, ...rest) => metaJoin([timeLine(event), event.title, ...rest]);   // the date is in the date block
 
 /** Set the status of one of my assignments (re-found by id – data may have been refreshed). */
 function answer(person, eventId, assignmentId, status, { quiet = false } = {}) {
@@ -119,7 +118,7 @@ function dutiesBlock(person) {
       lead: dateBlock(dayOf(event.start), { today: isToday(event) }),
       title: roleById(S.data, assignment.roleId)?.name || 'Služba',
       meta: rowMeta(event),
-      trail: event.cancelled ? badge('zrušeno', { tone: 'neutral' }) : statusBadge(assignment.status),
+      trail: event.cancelled ? cancelledBadge() : statusBadge(assignment.status),
       href: `#setkani/${event.id}`,
       tone: event.cancelled ? 'cancelled' : assignment.status === 'declined' ? 'quiet' : null,
     }), { label: 'Tvoje služby' }),
@@ -175,12 +174,12 @@ function nextSundayBlock() {
   const body = h('div', { class: 'next-sunday' },
     h('a', { class: 'next-cover', href: `#setkani/${next.id}`, tabindex: '-1', 'aria-hidden': 'true' }, coverFor(next)),
     h('div', { class: 'next-body' },
-      h('h3', { class: 'next-title' }, h('a', { href: `#setkani/${next.id}` }, next.title)),
+      h('h3', { class: ['next-title', next.cancelled && 'struck'] }, h('a', { href: `#setkani/${next.id}` }, next.title)),
       h('p', { class: 'next-when' }, metaJoin([prettyDay(next.start), timeLine(next), places.join(', ') || null])),
-      next.cancelled ? h('p', { class: 'next-facts' }, badge('zrušeno', { tone: 'danger' }))
+      next.cancelled ? h('p', { class: 'next-facts' }, cancelledBadge())
         : h('ul', { class: 'next-facts' },
-          h('li', {}, fillRing(fill.filled, fill.needed, { text: false, label: `Obsazeno ${fill.text}` }), h('span', { class: 'next-fill' }, fill.complete ? 'Všechno obsazeno' : `Obsazeno ${fill.text}`)),
-          waiting ? h('li', {}, statusBadge('proposed', { word: `${waiting} ${waiting === 1 ? 'čeká' : 'čekají'} na potvrzení`, variant: 'plain' })) : null,
+          h('li', {}, fillRing(fill.filled, fill.needed, { confirmed: Math.max(0, fill.filled - waiting), text: false, label: `Obsazeno ${fill.text}` }), h('span', { class: 'next-fill' }, fill.complete ? 'Všechno obsazeno' : `Obsazeno ${fill.text}`)),
+          waiting ? h('li', {}, statusBadge('proposed', { word: `${waiting} ${agree(waiting, 'čeká', 'čekají')} na potvrzení`, variant: 'plain' })) : null,
           h('li', {}, statusBadge(outline.ok ? 'confirmed' : 'proposed', { word: outline.text, variant: 'plain' })))),
     slots.length ? h('div', { class: 'next-slots' },
         h('span', { class: 'label' }, 'Chybí'),
@@ -270,7 +269,7 @@ function weekBlock() {
       lead: kindMark(e.kind, { size: 'l' }),
       title: e.title,
       meta: metaJoin([`${prettyDay(e.start)} ${timeLine(e)}`, placesOf(S.data, e).map((p) => p.name).join(', ') || null]),
-      trail: e.cancelled ? badge('zrušeno', { tone: 'neutral' }) : isToday(e) ? badge('dnes', { tone: 'accent' }) : null,
+      trail: e.cancelled ? cancelledBadge() : isToday(e) ? badge('dnes', { tone: 'accent' }) : null,
       href: `#setkani/${e.id}`,
       tone: e.cancelled ? 'cancelled' : null,
     }), { label: 'Tento týden ve sboru' }),

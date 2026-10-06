@@ -10,16 +10,16 @@
 .form-grid.one{grid-template-columns:minmax(0,1fr)}
 
 /* ---------- Nastavení ---------- */
-.settings-body{display:flex;flex-direction:column;gap:16px;max-width:var(--w-form)}
-.settings-pristupy,.settings-zaloha{max-width:var(--w-list)}
+.settings-body{display:flex;flex-direction:column;gap:16px;max-width:var(--w-list)}   /* one right edge for every tab */
 .settings-body .card-head+.card-body{padding-top:2px}
 .settings-body .card-body.flush{border-top:1px solid var(--line-1)}
 .preview-place{font-size:var(--font-size-4);line-height:22px}
 .settings-preview .place-map{max-width:none;height:200px}
 
 /* Pravidla: each rule a row – the sentence and its hint left, the number right */
-.rules-form{display:flex;flex-direction:column;gap:16px}
-.rules-form>.form-grid{margin-top:-4px}
+.settings-form{display:flex;flex-direction:column;gap:16px}
+/* Uložit: always under the cards on the right, and it stays in reach at the bottom of the window */
+.settings-save{position:sticky;bottom:0;z-index:3;margin:0 -8px -8px;padding:12px 8px 16px;background:linear-gradient(to bottom,transparent,var(--surface-app) 40%)}
 .rule-rows{display:flex;flex-direction:column}
 .rule-row{display:flex;align-items:center;justify-content:space-between;gap:8px 24px;padding:14px 0}
 .rule-row+.rule-row{border-top:1px solid var(--line-1)}
@@ -73,6 +73,8 @@
 .form-submit{display:flex;padding-top:4px}
 .signin-submit{min-width:12em}
 @media (max-width:520px){.signin-submit{width:100%}}
+.demo-logins{margin:4px 0 0;padding:0 0 0 18px}
+.demo-logins li+li{margin-top:2px}
 .signin-note{margin:0;padding:0 4px;font-size:var(--font-size-3);line-height:20px;color:var(--text-2)}
 .signin-note a{color:var(--text-accent);text-underline-offset:.2em;text-decoration-thickness:1px}
 .signin-steps .steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;font-size:var(--font-size-3);line-height:20px}
