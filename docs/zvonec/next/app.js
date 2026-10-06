@@ -37,8 +37,7 @@ import { renderGroups, renderGroup } from './ui/groups.js';
 // IMPORTS:people end
 
 // IMPORTS:more
-import { renderMore } from './ui/more.js';
-import { renderAccount } from './ui/account.js';
+import { renderMore, renderAccountPage } from './ui/more.js';
 import { renderTemplates, renderTemplate } from './ui/templates.js';
 import { renderFormats } from './ui/formats.js';
 import { renderPlaces, renderPlace } from './ui/places.js';
@@ -92,8 +91,7 @@ const PEOPLE_ROUTES = {
 // (#nastaveni), and the public Pastva (#pastva[/<id>], anchor „jak-se-schazime“).
 const MORE_ROUTES = {
   vice: { render: () => renderMore(), access: 'member' },
-  // ≥ 1200 px Můj účet sits beside the Více list (#vice); below it is its own page
-  ucet: { render: () => (isSplit() ? renderMore() : renderAccount()), access: 'member' },
+  ucet: { render: () => renderAccountPage(), access: 'member' },
   sablony: { render: () => renderTemplates(), access: 'leader' },
   sablona: { render: ([id]) => renderTemplate(id || 'nova'), access: 'leader', nav: 'sablony' },
   formaty: { render: ([id]) => renderFormats(id), access: 'member' },
@@ -151,14 +149,23 @@ const TABS = [
   ['lide', 'Lidé', 'people', '#lide'],
   ['vice', 'Více', 'menu', '#vice'],
 ];
-/** Desktop rail, leaders: the Více pages right under Více, so nothing is two clicks deep. */
-const RAIL_MORE = [
-  ['sablony', 'Šablony setkání', '#sablony'],
-  ['formaty', 'Formáty', '#formaty'],
-  ['mista', 'Místa', '#mista'],
-  ['pristupy', 'Přístupy', '#pristupy'],
-  ['nastaveni', 'Nastavení sboru', '#nastaveni'],
+/**
+ * Wide rail (≥ 1200 px): the Více pages are the rail's own groups (the same groups as the Více list on a
+ * phone), so there is no Více item and nothing is two clicks deep. [id, label, icon, href, leaders only]
+ */
+const RAIL_GROUPS = [
+  ['Jak se scházíme', [
+    ['sablony', 'Šablony setkání', 'layers', '#sablony', true],
+    ['formaty', 'Formáty', 'book', '#formaty', false],
+    ['mista', 'Místa', 'pin', '#mista', false],
+  ]],
+  ['Sbor', [
+    ['pristupy', 'Přístupy', 'key', '#pristupy', true],
+    ['nastaveni', 'Nastavení sboru', 'sliders', '#nastaveni', true],
+    ['pastva', 'Veřejný web', 'globe', '#pastva', false],
+  ]],
 ];
+const RAIL_MORE = RAIL_GROUPS.flatMap(([, items]) => items);
 const TAB_OF = { sablony: 'vice', formaty: 'vice', mista: 'vice', pristupy: 'vice', nastaveni: 'vice', ucet: 'vice' };
 
 const signedIn = () => !!S.me;
@@ -230,9 +237,13 @@ function buildShell() {
     h('a', { class: 'rail__brand', href: '#domu', 'aria-label': 'Domů – církev jako kráva' }, brand()),
     ...TABS.map(([id, label, iconName, href]) => h('a', { class: 'rail__item', href, dataset: { nav: id } },
       icon(iconName), h('span', { class: 'rail__label' }, label), h('span', { class: 'tab__badge', dataset: { badge: id } }))),
-    leader ? h('div', { class: 'rail__sub', role: 'group', 'aria-label': 'Více' },
-      RAIL_MORE.map(([id, label, href]) => h('a', { class: 'rail__item rail__item--sub', href, dataset: { nav: id } },
-        h('span', { class: 'rail__label' }, label), h('span', { class: 'tab__badge', dataset: { badge: id } })))) : null,
+    RAIL_GROUPS.map(([title, items]) => {
+      const shown = items.filter(([, , , , leadersOnly]) => leader || !leadersOnly);
+      return shown.length ? h('div', { class: 'rail__group', role: 'group', 'aria-label': title },
+        h('p', { class: 'rail__group-title', 'aria-hidden': 'true' }, title),
+        shown.map(([id, label, iconName, href]) => h('a', { class: 'rail__item', href, dataset: { nav: id } },
+          icon(iconName), h('span', { class: 'rail__label' }, label), h('span', { class: 'tab__badge', dataset: { badge: id } })))) : null;
+    }),
     h('div', { class: 'rail__bottom' },
       h('a', { class: 'rail__foot', href: '#ucet', dataset: { nav: 'ucet' }, title: 'Můj účet' },
         person ? avatar(person, { size: 's', me: true }) : h('span', { class: 'avatar avatar--s', 'aria-hidden': 'true' }, icon('user', { size: 's' })),
@@ -254,7 +265,7 @@ function updateShell(route, section, parts) {
   for (const a of [...tabbarEl.querySelectorAll('[data-nav]'), ...railEl.querySelectorAll('[data-nav]')]) {
     const current = a.closest('.rail') && a.dataset.nav === nav ? true
       // the Více pages light up themselves where the rail lists them (≥ 1200); the narrow rail lights Více
-      : a.closest('.rail') && RAIL_MORE.some(([id]) => id === nav) && can('leader') && isSplit() ? false
+      : a.closest('.rail') && RAIL_MORE.some(([id]) => id === nav) && isSplit() ? false
         : a.dataset.nav === tab && (a.closest('.tabbar') || !(nav === 'ucet' && a.dataset.nav === 'vice'));
     if (current) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }

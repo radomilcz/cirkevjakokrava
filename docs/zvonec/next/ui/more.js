@@ -8,9 +8,10 @@ import { createDemo } from '../../lib/demo.js';
 import { emptyData } from '../../lib/store/store.js';
 import { today } from '../../lib/time.js';
 import {
-  h, list, row, avatar, personName, icon, count, toast, confirmSheet, splitView, detailPane, isSplit, paletteChoices,
+  h, list, row, avatar, personName, icon, count, toast, confirmSheet, isSplit, paletteChoices,
   screen, agree,
 } from './kit.js';
+import { morePage } from './more-common.js';
 import { accountBody, viewAsSheet } from './account.js';
 import { waitingInvites } from './access.js';
 
@@ -40,7 +41,6 @@ function moreList({ open } = {}) {
   const leader = can('leader');
   const person = personById(S.data, myId());
   const role = ACCESS_LABELS[S.me?.access] || '';
-  const demo = S.mode === 'demo';
   const me = row({
     lead: person ? avatar(person, { me: true }) : h('span', { class: 'avatar', 'aria-hidden': 'true' }, icon('user', { size: 's' })),
     title: person ? personName(person) : 'Můj účet',
@@ -49,15 +49,6 @@ function moreList({ open } = {}) {
   });
   const colours = coloursRow();
   const invites = waitingInvites();
-
-  const resetDemo = () => confirmSheet({
-    title: 'Chceš začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začni znovu',
-    onConfirm: () => { replaceAll(createDemo(today()), 'nová ukázka'); toast('Ukázka je zpátky.'); },
-  });
-  const emptyDemo = () => confirmSheet({
-    title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Zpátky ji vrátíš tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
-    onConfirm: () => { replaceAll(emptyData(), 'prázdný Zvonec'); toast('Je to prázdné.'); },
-  });
 
   return h('nav', { class: 'more-list', 'aria-label': 'Více' },
     list([me], { label: 'Můj účet' }),
@@ -74,23 +65,42 @@ function moreList({ open } = {}) {
       leader ? pageRow('sliders', 'Nastavení sboru', '#nastaveni') : null,
       pageRow('globe', 'Veřejný web', '#pastva', { meta: 'Pastva, jak ji vidí návštěvníci' }),
     ].filter(Boolean), { label: 'Sbor' }),
-    demo ? heading('Ukázka') : null,
-    demo ? list([
-      row({ lead: icon('user'), title: 'Podívej se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: viewAsSheet, chevron: true }),
-      row({ lead: icon('undo'), title: 'Začni ukázku znovu', single: true, onclick: resetDemo }),
-      row({ lead: icon('trash'), title: 'Začni načisto', single: true, onclick: emptyDemo }),
-    ], { label: 'Ukázka' }) : null);
+    demoTools());
 }
 
-/** #vice (and #ucet at ≥ 1200 px): the list, at ≥ 1200 px with Můj účet beside it. */
-export function renderMore() {
-  const split = isSplit();
-  return screen({
-    tab: { title: 'Více' },
-    wide: split,
-    cls: 'more-page more-root',
-    body: split
-      ? splitView({ list: moreList({ open: 'ucet' }), detail: detailPane({ body: accountBody({ pane: true }) }), label: 'Můj účet' })
-      : moreList(),
+/**
+ * Ukázka (demo only): Podívej se očima druhých · Začni ukázku znovu · Začni načisto. `viewAs: false` on
+ * Můj účet, which has its own „Podívej se očima druhých“ row.
+ */
+function demoTools({ viewAs = true } = {}) {
+  if (S.mode !== 'demo') return null;
+  const person = personById(S.data, myId());
+  const role = ACCESS_LABELS[S.me?.access] || '';
+  const resetDemo = () => confirmSheet({
+    title: 'Chceš začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začni znovu',
+    onConfirm: () => { replaceAll(createDemo(today()), 'nová ukázka'); toast('Ukázka je zpátky.'); },
   });
+  const emptyDemo = () => confirmSheet({
+    title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Zpátky ji vrátíš tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
+    onConfirm: () => { replaceAll(emptyData(), 'prázdný Zvonec'); toast('Je to prázdné.'); },
+  });
+  return [
+    heading('Ukázka'),
+    list([
+      viewAs ? row({ lead: icon('user'), title: 'Podívej se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: viewAsSheet, chevron: true }) : null,
+      row({ lead: icon('undo'), title: 'Začni ukázku znovu', single: true, onclick: resetDemo }),
+      row({ lead: icon('trash'), title: 'Začni načisto', single: true, onclick: emptyDemo }),
+    ].filter(Boolean), { label: 'Ukázka' }),
+  ];
+}
+
+/** #vice: the list (phone and the narrow rail; ≥ 1200 px the rail lists these pages, so #vice is Můj účet). */
+export function renderMore() {
+  if (isSplit()) return renderAccountPage();
+  return screen({ tab: { title: 'Více' }, cls: 'more-page more-root', body: moreList() });
+}
+
+/** #ucet: Můj účet; on a wide desktop with the demo's tools under it (there is no Více list there). */
+export function renderAccountPage() {
+  return morePage({ title: 'Můj účet', body: [accountBody(), isSplit() ? demoTools({ viewAs: false }) : null], cls: 'acct-page' });
 }

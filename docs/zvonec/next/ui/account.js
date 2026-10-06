@@ -211,6 +211,3 @@ export function accountBody({ pane = false } = {}) {
     access);
 }
 
-export function renderAccount() {
-  return morePage({ title: 'Můj účet', body: accountBody(), cls: 'acct-page' });
-}
