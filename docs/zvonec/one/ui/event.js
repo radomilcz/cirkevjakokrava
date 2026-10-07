@@ -202,7 +202,11 @@ function problemsSection(event, conflicts) {
 
 const YOU_WORDS = { proposed: 'čeká na tvou odpověď', confirmed: 'potvrzeno', declined: 'nemůžeš' };
 
-/** My duty at this meeting: while it waits Můžu / Nemůžu (L 52), once answered a tap changes the answer. */
+/**
+ * My duty at this meeting. While one waits for my answer: a card with Můžu / Nemůžu (L 52) – the one thing to do here.
+ * Once answered (or past): a plain section like Co nesedí – the h2, then a row per duty (role, ✓ potvrzeno / ✕ nemůžeš,
+ * › changes the answer), lit whole like every row; no card around it and no lit block inside a card.
+ */
 function youCard(event) {
   if (event.cancelled) return null;
   const mine = myDuties(event);
@@ -210,29 +214,36 @@ function youCard(event) {
   const past = isPast(event);
   const blocked = past ? null : blockoutOn(event, myId());
   const label = mine.length > 1 ? 'Tvoje služby' : 'Tvoje služba';
-  const hid = uid('you');
-  return h('section', { class: 'ev-you', 'aria-labelledby': hid },
-    h('h2', { class: 'ev-you__label', id: hid }, label),
-    mine.map(({ assignment, role }) => {
-      const name = role?.name || 'Služba';
-      const waits = assignment.status === 'proposed' && !past;
-      const words = h('span', { class: 'ev-you__status', dataset: { status: assignment.status === 'proposed' ? 'waiting' : assignment.status } },
-        statusSymbol(STATUS_KEY[assignment.status] || 'waiting'), YOU_WORDS[assignment.status] || '');
-      const top = h('span', { class: 'ev-you__top' }, h('span', { class: 'ev-you__role' }, name), words);
-      if (!waits) {
-        return past ? h('div', { class: 'ev-you__item' }, top)
-          : h('button', {
-            type: 'button', class: 'ev-you__item ev-you__item--button', onclick: () => openMyAnswer(event.id, assignment.id),
-            'aria-label': `${name}: ${YOU_WORDS[assignment.status]} – změň odpověď`,
-          }, top, icon('chevron-right', { size: 's' }));
-      }
-      return h('div', { class: 'ev-you__item' },
-        top,
+  const waiting = mine.filter(({ assignment }) => assignment.status === 'proposed' && !past);
+  const answered = mine.filter((d) => !waiting.includes(d));
+  const asked = waiting.length ? (() => {
+    const hid = uid('you');
+    return h('section', { class: 'ev-you', 'aria-labelledby': hid },
+      h('h2', { class: 'ev-you__label', id: hid }, waiting.length > 1 ? 'Čeká na tvou odpověď' : label),
+      waiting.map(({ assignment, role }) => h('div', { class: 'ev-you__item' },
+        h('span', { class: 'ev-you__top' }, h('span', { class: 'ev-you__role' }, role?.name || 'Služba'),
+          h('span', { class: 'ev-you__status', dataset: { status: 'waiting' } }, statusSymbol('waiting'), YOU_WORDS.proposed)),
         blocked ? h('p', { class: 'ev-you__clash' }, blockoutNote(blocked)) : null,
         buttonRow(     // the same pair as Moje; a clash with „Kdy nemůžu“ makes Nemůžu the solid one
           button('Můžu', { variant: blocked ? 'tint' : 'primary', size: 'l', onclick: () => answer(event.id, assignment.id, 'confirmed') }),
-          button('Nemůžu', { variant: blocked ? 'primary' : 'tint', size: 'l', onclick: () => answer(event.id, assignment.id, 'declined') })));
-    }));
+          button('Nemůžu', { variant: blocked ? 'primary' : 'tint', size: 'l', onclick: () => answer(event.id, assignment.id, 'declined') })))));
+  })() : null;
+  const done = answered.length ? section({
+    title: waiting.length ? (answered.length > 1 ? 'Tvoje další služby' : 'Tvoje další služba') : label,
+    cls: 'ev-you-done',
+    body: list(answered.map(({ assignment, role }) => {
+      const name = role?.name || 'Služba';
+      const words = YOU_WORDS[assignment.status] || '';
+      return row({
+        title: name,
+        note: statusNote(assignment.status, { word: words, capital: false }),
+        chevron: !past,
+        onclick: past ? null : () => openMyAnswer(event.id, assignment.id),
+        label: past ? null : `${name}: ${words} – změň odpověď`,
+      });
+    }), { label }),
+  }) : null;
+  return [asked, done];
 }
 
 // ---------- Kdo slouží ----------

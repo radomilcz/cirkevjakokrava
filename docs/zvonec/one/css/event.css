@@ -39,16 +39,7 @@
 .ev-you__item { display: grid; gap: var(--space-4); }
 .ev-you__item + .ev-you__item { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--hairline); }
 /* an answered duty is one button: the whole line lights up, rounded, reaching 12 past the text on both sides */
-.ev-you__item--button {
-  grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); width: calc(100% + 2 * var(--space-3));
-  min-height: var(--control-m); margin: 0 calc(-1 * var(--space-3)); padding: var(--space-2) var(--space-3); border: 0; border-radius: var(--radius-m);
-  background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer;
-  transition: background-color var(--dur-state) var(--ease);
-}
-.ev-you__item--button:hover { background: var(--wash); }
-.ev-you__item + .ev-you__item--button { margin-top: var(--space-3); padding-top: var(--space-2); border-top: 0; }
-.ev-you__item--button > .icon { color: var(--ink-3); }
-.ev-you__top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px var(--space-3); min-width: 0; }
+.ev-you__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px var(--space-3); min-width: 0; }
 .ev-you__role { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
 .ev-you__status { display: inline-flex; align-items: center; gap: 6px; font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); }
 .ev-you__status > .sym { align-self: center; }
