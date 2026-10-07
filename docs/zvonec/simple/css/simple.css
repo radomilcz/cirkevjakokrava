@@ -132,7 +132,7 @@
 /* ---------- list | detail on a wide screen (≥ 1200): the list keeps its phone width, the detail beside it ---------- */
 @media (min-width: 1200px) {
   .screen--wide:is(.mine, .staffing, .people-root) { max-width: none; }
-  .screen--wide:is(.mine, .staffing, .people-root) > .split > .split__aside { top: var(--space-5); margin-top: var(--space-7); }
+  .screen--wide:is(.mine, .staffing, .people-root) > .split > .split__aside { top: var(--space-5); margin-top: calc(var(--space-7) - 2px); }
   .screen--wide:is(.mine, .staffing, .people-root) > .split {
     grid-template-columns: minmax(0, 560px) minmax(0, 640px); gap: var(--space-7); justify-content: start;
   }

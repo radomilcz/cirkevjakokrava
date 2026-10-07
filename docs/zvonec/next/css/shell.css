@@ -392,7 +392,9 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .detail__head .meta { margin-top: 2px; }
 .detail .section { margin-top: 0; }
 @media (min-width: 1200px) {
-  .split > .split__aside { max-height: calc(100dvh - var(--topbar-h) - var(--space-6)); overflow-y: auto; scrollbar-width: thin; }
+  /* the pane scrolls on its own; 2 px of room inside the scroll box keep the card's 1 px ring (it is drawn outside
+     the card) – clipped, it vanished from the straight edges and only its arcs showed at the corners */
+  .split > .split__aside { max-height: calc(100dvh - var(--topbar-h) - var(--space-6)); overflow-y: auto; scrollbar-width: thin; padding: 2px; margin: -2px; }
   .split { grid-template-columns: minmax(360px, 1fr) minmax(0, 2fr); }
 }
 
