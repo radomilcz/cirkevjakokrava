@@ -334,9 +334,8 @@ input { font: inherit; color: inherit; }
 .problem .acts a { font-weight: 600; color: var(--text-1); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
 .problem .where { color: var(--text-2); }
 .callout { display: flex; gap: var(--space-2); align-items: flex-start; padding: 10px var(--space-3); border-radius: var(--radius-md);
-  background: var(--card-bg); box-shadow: inset 3px 0 0 var(--waiting-solid), inset 0 0 0 1px var(--line-1); font-size: var(--ui-md); line-height: var(--ui-md-lh); }
+  background: var(--card-bg); box-shadow: inset 0 0 0 1px var(--line-1); font-size: var(--ui-md); line-height: var(--ui-md-lh); }
 .callout .i { width: 16px; height: 16px; color: var(--waiting-fg); margin-top: 1px; }
-.callout-error { box-shadow: inset 3px 0 0 var(--danger-solid), inset 0 0 0 1px var(--line-1); }
 .callout-error .i { color: var(--danger-fg); }
 
 /* fill meter: 14 z 15 */
@@ -358,7 +357,9 @@ input { font: inherit; color: inherit; }
 .table td.clip { max-width: 200px; overflow: hidden; }
 .table tr:hover td { background: var(--hover); }
 .table tr.current td { background: var(--soft); }
-.table tr.current td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+/* the selection bar: detached from the row's edges, never a coloured side border */
+.table tr.current td:first-child { position: relative; }
+.table tr.current td:first-child::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
 .table .cell { display: flex; align-items: center; gap: var(--space-2); }
 .check { display: inline-block; width: 16px; height: 16px; border-radius: var(--radius-xs); box-shadow: inset 0 0 0 1.5px var(--line-control); vertical-align: middle; }
 
@@ -459,7 +460,8 @@ input { font: inherit; color: inherit; }
 .ce .x { overflow: hidden; text-overflow: ellipsis; }
 .ce.service { background: var(--soft-hover); font-weight: 600; }
 .ce.cancel .x { text-decoration: line-through; color: var(--text-3); }
-.ce.mine { box-shadow: inset 3px 0 0 var(--accent); padding-left: 7px; }
+.ce.mine { background: var(--accent); color: var(--on-accent); }
+.ce.mine .t { color: var(--on-accent); }
 .ce.sel { background: var(--primary-bg); color: var(--primary-fg); box-shadow: none; }
 .ce.sel .t { color: var(--primary-fg); }
 .ce .flag { width: 6px; height: 6px; border-radius: 50%; background: var(--waiting-solid); flex: none; margin-left: auto; }
@@ -585,7 +587,7 @@ input { font: inherit; color: inherit; }
 .legend { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ui-sm); color: var(--text-2); margin-left: var(--space-3); }
 .legend .flag { width: 7px; height: 7px; border-radius: 50%; background: var(--waiting-solid); }
 .legend .flag.err { background: var(--danger-solid); }
-.legend .lg-mine { width: 3px; height: 14px; border-radius: 2px; background: var(--accent); }
+.legend .lg-mine { width: 12px; height: 12px; border-radius: 3px; background: var(--accent); }
 
 /* calendar peek card */
 .peek-cal { left: 474px; top: 150px; width: 400px; display: flex; flex-direction: column; }
@@ -594,7 +596,7 @@ input { font: inherit; color: inherit; }
 .peek-body { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-1) var(--space-4) var(--space-4); }
 .peek-body .props { grid-template-columns: 76px minmax(0, 1fr); }
 .mine-box { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3); border-radius: 10px; background: var(--card-bg);
-  box-shadow: inset 3px 0 0 var(--accent), inset 0 0 0 1px var(--line-1); }
+  box-shadow: inset 0 0 0 1px var(--line-1); }
 .mine-line { display: flex; align-items: center; gap: var(--space-2); }
 .mine-line b { font-weight: 600; font-size: var(--ui-lg); }
 
@@ -686,7 +688,7 @@ input { font: inherit; color: inherit; }
 .agenda-ev .t span { display: block; font-weight: 400; color: var(--text-3); font-size: 12px; line-height: 14px; }
 .agenda-ev b { font-weight: 600; font-size: 15px; display: block; }
 .agenda-ev .sub { font-size: 13px; line-height: 18px; color: var(--text-2); }
-.agenda-ev.mine { box-shadow: var(--shadow-2), inset 3px 0 0 var(--accent); }
+.agenda-ev .role { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: var(--radius-full); background: var(--accent); color: var(--on-accent); font-size: 12px; line-height: 18px; font-weight: 600; }
 .agenda-ev.cancel b { text-decoration: line-through; color: var(--text-3); }
 
 .seg-full { display: grid; grid-template-columns: repeat(3, 1fr); }

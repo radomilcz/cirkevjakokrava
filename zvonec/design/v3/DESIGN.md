@@ -194,14 +194,14 @@ functions) · **Empty**.
 * **Desktop** Top bar: title, ‹ ›, month label (display-xs), „Dnes“ (T), segmented Měsíc · Týden · Seznam
   (1/2/3), „Přidej setkání“ (C, leader). Toolbar: chips „Jen moje“, „Druh“, „Tým“, „Zrušená“, legend.
   * **Měsíc**: Monday-first grid, weekend cells on `--surface-sunken`, today's number in a pink circle.
-    Event chip = time + title. Sunday services are a soft filled chip (`--soft-hover`, 600). My duty = a 3 px
-    pink rule. Missing people = amber dot, a problem = red dot. Cancelled = struck through and muted. More
+    Event chip = time + title. Sunday services are a soft filled chip (`--soft-hover`, 600). My duty = a solid
+    pink chip (`--accent`, `--on-accent` text). Missing people = amber dot, a problem = red dot. Cancelled = struck through and muted. More
     than 4 events → „+2 další“. Click on a free part of a day (leader) → Nové setkání for that day.
   * **Týden**: 7 columns of time (7.00–22.00 visible, scrolls), events as blocks with overlap lanes.
   * **Seznam**: agenda by day with the week strip (the phone default).
   * **Peek card** (not a drawer, because the Sunday column is on the right edge): 400 px popover anchored
     to the event and flipped away from the edge. It shows kind, title, Kdy / Kde / Řada / Pastva props, a
-    **Tvoje služba** box (pink rule, status, Můžu / Nemůžu), team fill and status counts, the meeting's
+    **Tvoje služba** box (hairline card, status, Můžu / Nemůžu), team fill and status counts, the meeting's
     problems, and the footer buttons „Otevři setkání ↵“ and „Osnova“. Esc closes it, ←/→ move to the
     neighbouring event.
 * **Phone** Title, search, +. Segmented Seznam · Měsíc. Week strip (today pink, dots for days with
@@ -464,7 +464,7 @@ sidebar is the only feedback (plus toast for destructive or multi-record edits).
   a personal view in localStorage (per viewer; shared views later).
 * Selection: checkbox column (visible on hover or when something is selected), X key, Shift-click ranges.
   A bulk bar replaces the filter row.
-* The current row (open in the panel) has `--soft` background and a 2 px pink inset rule on the left.
+* The current row (open in the panel) has `--soft` background and the selection bar (see 7.3, „No coloured side borders“).
 * Loading: 12 skeleton rows. Empty: the empty state inside the table body, the header stays.
 
 ### 6.7 Forms
@@ -513,7 +513,8 @@ Odeber přístup, Obnov ze zálohy. Everything else is optimistic + undo.
   sentences, unchanged. Titles from `CODES` are used only as group headers in K řešení.
 * Severity → presentation: **error** red icon `--danger-fg` / red underline / red dot; **warning** amber
   icon `--waiting-fg` / amber underline / amber dot; **info** `--text-3` icon, no dot. Never a red or pink
-  background area – callouts use a 3 px left rule on the panel surface.
+  background area – callouts are hairline cards on the panel surface; the coloured icon alone carries the
+  severity (no side rule, see 7.3).
 * Where: the meeting rail (that meeting), K řešení (all), Rozpis cells (underline + tooltip), calendar dots,
   Přehled team card (the most urgent one), the picker (as reasons).
 * **Vím o tom** (errors on assignments only): dialog „Výjimka z pravidla“ with the conflict text and a
@@ -581,7 +582,7 @@ never writes a colour value.
 | Tab / focus | `--indicator` (`--tab-indicator`), `--focus` | 2 px tab underline, 2 px focus outline |
 | Status: confirmed | `--confirmed-solid` (glyph fill), `--confirmed-fg` (text), `--confirmed-bg` (badge) | |
 | Status: waiting | `--waiting-solid` (bars, dots, rules), `--waiting-fg` (text, glyph stroke, icons), `--waiting-bg` (badge) | |
-| Status: declined / error | `--declined-solid` / `--danger-solid` (glyph fill, underline, dot, rule), `--declined-fg` / `--danger-fg` (text, icons), `--text-on-danger` | **no red background areas** |
+| Status: declined / error | `--declined-solid` / `--danger-solid` (glyph fill, underline, dot), `--declined-fg` / `--danger-fg` (text, icons), `--text-on-danger` | **no red background areas** |
 | Danger button | `--danger-solid`, `--danger-solid-hover`, `--text-on-danger` | |
 | Toast, tooltips on dark | `--gray-12` bg, `--gray-1` text (`--toast-bg`, `--toast-fg`) | inverted surface |
 | Scrim | `--scrim` | behind dialogs and sheets |
@@ -592,9 +593,9 @@ never writes a colour value.
 **The one pink.** The brand's pink `#e6acac` is `--rose-9` in every palette block (device modes too). In
 v3 it is the token `--accent`, always **solid**, and it always means *you, here, now*:
 
-* the current sidebar item and the current tab (pill), my avatar, my duty's rule / dot (calendar, Rozpis,
-  Přehled), today (calendar circle, week strip), the selected range ends in the date picker, the „dnes“
-  badge, the „Tvoje služba“ box rule, the selected table row's 2 px rule, the logo.
+* the current sidebar item and the current tab (pill), my avatar, my duty's chip / dot / role pill (calendar,
+  Rozpis, Přehled), today (calendar circle, week strip), the selected range ends in the date picker, the „dnes“
+  badge, the selection bar of the selected row, the logo.
 * **Never**: as text colour, at reduced opacity, as a tint, for buttons, links, hover, status or
   decoration. At most three pink things in view at once (the nav item counts).
 * Don't use these palette tokens (they are tints of the pink, or read as other pinks on cream):
@@ -691,6 +692,13 @@ line up (`.num`, fill meters, the date picker).
   overlay, Přehled one column) · desktop ≥ 1024 (full sidebar, docked panels) · wide ≥ 1440 (content max
   1080 centred, Rozpis shows more columns).
 * **Density**: desktop rows 36, list rows 44, controls 32; phone rows ≥ 56, controls 44.
+* **No coloured side borders** (the owner's rule). Never a coloured `border-left` / `border-inline-start`
+  or an `inset Npx 0 0` box-shadow on anything rounded – callouts, cards, chips, boxes: the rule curls
+  into the corners and reads as decoration. Meaning goes into an icon, a dot, a solid chip or a pill.
+  The one side mark allowed is the **selection bar** of the selected row (table row open in the panel,
+  a selected list row): a detached `::before`, `left: 0; top: 12px; bottom: 12px` (8 px on rows under
+  40 px), `width: 3px; border-radius: 0 3px 3px 0; background: var(--accent)`, so it never reaches the
+  row's corners.
 
 ### 7.4 Icons
 
@@ -737,7 +745,7 @@ States every interactive component has: default, hover, focus-visible, active/pr
 | **Roster cell** | names + glyphs, `.gap-cell` (full / compact), underline `.warn` / `.err`, `.past`, `.na`, `.focus-cell` | grid keyboard model, tooltip |
 | **Date block** `.date` | weekday + numeral; `.date-today` pink | |
 | **Fill meter** `.fill` | 28 × 4 bar + „14 z 15“; full = green, gap = amber | |
-| **Callout** `.callout` | warning (amber rule), `-error` (red rule), info (no rule, `--soft`) | panel surface + 3 px rule, never a tinted area |
+| **Callout** `.callout` | warning (amber icon), `-error` (red icon), info (`--text-3` icon, `--soft`) | hairline card on the panel surface, never a tinted area, never a side rule |
 | **Problem item** `.problem` | icon by severity, sentence, „where“, actions | |
 | **Card** `.card` | head (title, count, link), body | no border, `--shadow-2` |
 | **List row** `.row`, `.ask`, `.duty`, `.prow` | 44 / 56 px | hover `--hover`; whole row clickable when it has one target |
