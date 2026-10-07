@@ -1,5 +1,14 @@
 # Zvonec One: the design
 
+> **Update after launch – the desktop uses the whole screen (≥ 1200).** The owner compared One with Next: One was a
+> phone column on a desktop (29 % of a 1920 window). Now: the frame fills the content area (max 1600); A spans it
+> (⋯ and the main action at its right edge); B keeps a fixed 568 at the left (search 440 + Filtr 120), so it never
+> moves; D spans the frame, and with a pane open D is 1fr beside a 480–720 pane. Moje has two columns (left: my
+> answers and duties; right: Co je potřeba for leaders, Tento týden). Kalendář opens as Měsíc and Lidé as the table
+> (Podrobný výpis) on a desktop unless the person chose otherwise. Below 1200 nothing changed. Where a section below
+> still says 1312 / Seznam first / the table for leaders only, this note wins.
+
+
 The final spec of the new Zvonec in `docs/zvonec/one/`. It is a synthesis. The base is the proposal **calm**
 (the A·B·C·D skeleton, the period inside the content, Next's whole Setkání detail, Správa in the person's menu).
 From **leader** it takes the person tab, Lidé · Skupiny as views, the sidebar from 900, „Filtr 1“ for a default

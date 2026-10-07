@@ -33,6 +33,12 @@
 .cal-event .fill { flex-wrap: nowrap; }
 .event[data-cancelled] .event__meta { text-decoration: line-through; }
 .cal-more { margin-top: var(--space-5); }
+/* a narrow D beside a pane (1200–1279: about 360–440): the fill goes under the words, so a title keeps its line */
+@container list-body (max-width: 479.98px) {
+  .cal-event--trail { grid-template-columns: 52px minmax(0, 1fr); }
+  .cal-event__trail { grid-column: 2; justify-self: start; padding-left: var(--space-4); }
+  .rblock .rblock__team { grid-template-columns: 96px minmax(0, 1fr); }   /* Rozpis: the phone's team column */
+}
 /* a wide D (desktop, css/kit.css): the title, the place and my duty side by side, the fill at the right edge */
 @container list-body (min-width: 800px) {
   .cal-event .event__body {
