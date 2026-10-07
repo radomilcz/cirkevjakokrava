@@ -720,10 +720,13 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .fact__chevron { margin-left: auto; color: var(--ink-3) !important; }
 .fact__link { color: inherit; text-decoration: underline; text-decoration-color: var(--edge-control); text-underline-offset: 3px; }
 
-/* section: h2 20/26 + at most one action or value at its right edge; 12 to its content, 32 between sections */
+/* section: h2 20/26 + at most one action or value at its right edge. Proximity says what belongs together: the h2 sits
+   8 above its own content, sections stand 40 apart (--section-gap), so a heading never floats between two blocks.
+   The head is 44 high only when it carries an action or a value; a bare h2 is as tall as its line. */
 .section { margin-top: var(--section-gap); min-width: 0; }
 .section:first-child { margin-top: 0; }
-.section-head { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-y); min-height: var(--control-m); margin-bottom: var(--gap-y); }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-y); min-height: var(--control-m); margin-bottom: var(--space-2); }
+.section-head:not(:has(> .section-head__end)) { min-height: 0; }
 .section-head > h2 { min-width: 0; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
 .section-head__end { display: flex; align-items: center; gap: var(--gap-x); flex: none; color: var(--ink-2); }
 
