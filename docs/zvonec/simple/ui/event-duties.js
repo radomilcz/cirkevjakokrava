@@ -12,15 +12,15 @@
 
 import {
   h, icon, button, buttonRow, segmented, statusNote, warningRow, dutyRow, teamHead, statusSymbol, openSheet, formSheet,
-  toast, sev, field, textInput, stepper, disclosure, peoplePicker, avatar, personName, agree, shortDate, plural, dateArch,
+  toast, sev, field, textInput, stepper, disclosure, searchField, avatar, personName, agree, shortDate, plural, dateArch,
   link, joinMeta, note, SEP, STATUS_WORDS, SEVERITY_WORDS,
 } from './kit.js';
 import { S, can, myId, change, newId, render } from '../../ui/state.js';
 import { eventById, needsOf, missingCount, followingInSeries, updateSeries } from '../../lib/events.js';
 import { programNeeds } from '../../lib/program.js';
-import { candidates, sameAsLastTime, previousEvent, limitsOf, unavailability } from '../../lib/scheduling.js';
-import { roleById, memberRecord, setSkill, removeMember } from '../../lib/groups.js';
-import { fullName, sortPeople, statusOf } from '../../lib/people.js';
+import { candidates, sameAsLastTime, previousEvent, unavailability } from '../../lib/scheduling.js';
+import { roleById, groupById, memberRecord, setSkill, removeMember } from '../../lib/groups.js';
+import { fullName } from '../../lib/people.js';
 import { today, dayOf } from '../../lib/time.js';
 import {
   personOf, openable, nameOf, shortName, assignmentWarnings, eventConflicts, teamsWithRoles, capital, whenText, placeText,
@@ -45,53 +45,88 @@ function snapshot(eventId, note, extra) {
 
 // ---------- the picker ----------
 
-function sinceWords(lastStart) {
-  if (!lastStart) return null;
-  const days = Math.round((Date.parse(today()) - Date.parse(dayOf(lastStart))) / 86400000);
-  if (days < 0) return null;
-  if (days < 7) return 'naposledy tento týden';
-  if (days < 14) return 'naposledy minulý týden';
-  if (days < 35) return `naposledy před ${Math.floor(days / 7)} týdny`;
-  if (days < 60) return 'naposledy před měsícem';
-  return `naposledy před ${Math.floor(days / 30)} měsíci`;
-}
-
-/** Reason pills of one candidate: what speaks against them first (solid = it will not work), then facts. */
-const reasonsOf = (c, roleId) => {
-  const pills = c.reasons.filter((r) => r.code !== 'K4' || !c.inTeam || c.level).map((r) => ({ text: r.severity === 'error' && r.code === 'K3' ? 'nemůže' : r.text, solid: r.severity === 'error' }));
-  const since = sinceWords(c.lastServed);
-  if (since && !c.hardCount && pills.length < 3) pills.push({ text: since });
-  if (c.monthCount && !c.reasons.some((r) => r.code === 'K7') && pills.length < 3) {
-    pills.push({ text: `tento měsíc ${c.monthCount} z ${limitsOf(S.data, c.person.id).maxPerMonth}` });
-  }
-  return pills.slice(0, 3);
-};
-
 /**
- * Výběr člověka for a slot – the one picker of the app (Setkání, Rozpis, Domů › Co je potřeba): an empty
- * slot (assignmentId null) or „Vybrat jiného“ (replaces that duty). Pools Umí to · Celý tým · Všichni lidé,
- * ranked by lib/scheduling (who can and has time first; pills say why someone would not fit), a search over
- * everyone who still comes, „Přidat „…“ a vybrat“ for a new name (a quick card: host, to be completed,
- * learning the role). The pick waits for an answer; the toast offers „Vrátit“.
+ * Výběr člověka for a slot – the one picker of the app (Setkání, Obsazení, the team sheet): an empty slot
+ * (assignmentId null) or „Vyber jiného“ (replaces that duty). Titled by the role: the people of its team,
+ * who can first and the longest rested first („naposledy 13. 9.“); who cannot that day stays in the list,
+ * greyed, with the reason („ten den nemůže · dovolená“). „Hledej ve všech lidech“ reaches everyone who still
+ * comes, and „Přidej nového člověka „…““ makes a quick card. The pick waits for an answer; the toast offers „Vrať“.
  */
 export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {}) {
   const event = fresh(eventId);
   if (!event || !can('leader')) return;
   const role = roleById(S.data, roleId);
+  const group = role ? groupById(S.data, role.groupId) : null;
   const replacing = assignmentId ? (event.assignments || []).find((a) => a.id === assignmentId) : null;
   const taken = new Set((event.assignments || []).filter((a) => a.roleId === roleId && (a.status !== 'declined' || a.id === assignmentId)).map((a) => a.personId));
-  const pool = (scope) => candidates(S.data, eventId, roleId, { today: today(), scope, includeInactive: scope === 'all' })
-    .filter((c) => !taken.has(c.person.id)).map((c) => ({ person: c.person, reasons: reasonsOf(c, roleId) }));
-  const pools = [{ id: 'skilled', label: 'Umí to', items: pool('skilled') }, { id: 'team', label: 'Celý tým', items: pool('team') }, { id: 'all', label: 'Všichni lidé', items: pool('all') }];
-  peoplePicker({
+  const ranked = (scope) => candidates(S.data, eventId, roleId, { today: today(), scope, includeInactive: scope === 'all' }).filter((c) => !taken.has(c.person.id));
+  const team = ranked('team');
+  const everyone = new Map(ranked('all').map((c) => [c.person.id, c]));
+  let sheet;
+  let query = '';
+  let showRest = false;
+  let more = null;
+  const pick = (person) => { sheet.close({ restore: false }); assign(eventId, roleId, person.id, assignmentId); onPicked?.(); };
+  const rowOf = (c) => {
+    const off = c.hardCount > 0;
+    return h('button', { type: 'button', class: ['row', 'pick-row', off && 'pick-row--off'], onclick: () => pick(c.person) },
+      avatar(c.person),
+      h('span', { class: 'row__body' },
+        h('span', { class: 'row__title' }, personName(c.person)),
+        h('span', { class: ['row__meta', off && 'pick-row__why'] }, whyOf(c, event))));
+  };
+  const results = h('div', { class: 'list list--inset pick-list', role: 'list' });
+  const heading = h('h3', { class: 'pick-heading' });
+  const draw = () => {
+    const q = fold(query);
+    let items;
+    if (q) {
+      heading.textContent = 'Všichni lidé';
+      items = [...everyone.values()].filter((c) => fold(`${fullName(c.person)} ${c.person.nickname || ''}`).includes(q)).slice(0, 40);
+    } else {
+      heading.textContent = group ? `Z týmu ${group.name}` : 'Kdo to umí';
+      // who can it (or is learning it) first; the rest of the team one tap further
+      const can = group ? team.filter((c) => c.level) : ranked('skilled');
+      const rest = group ? team.filter((c) => !c.level) : [];
+      items = can.length && !showRest ? can : [...can, ...rest];
+      if (can.length && rest.length && !showRest) {
+        more = button(`Ukaž i ostatní z týmu (${rest.length})`, { variant: 'quiet', block: true, iconEnd: 'chevron-down', onclick: () => { showRest = true; draw(); } });
+      }
+    }
+    const rows = items.map(rowOf);
+    if (more) { rows.push(more); more = null; }
+    if (!rows.length) rows.push(h('p', { class: 'meta pick-none' }, q ? 'Nikdo takový tu není.' : 'V týmu zatím nikdo není. Najdi někoho ve všech lidech.'));
+    if (query.trim()) rows.push(button(`Přidej nového člověka „${query.trim()}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close({ restore: false }); addAndAssign(eventId, roleId, query.trim(), assignmentId); onPicked?.(); } }));
+    results.replaceChildren(...rows);
+  };
+  const search = searchField({ placeholder: 'Hledej ve všech lidech', label: 'Hledej ve všech lidech', onInput: (v) => { query = v; draw(); } });
+  sheet = openSheet({
     title: role?.name || 'Služba',
-    meta: [replacing ? `Teď: ${nameOf(replacing)}` : null, dayWords(event), event.title].filter(Boolean).join(SEP),
-    pools,
-    pool: pools[0].items.length ? 'skilled' : 'team',
-    everyone: sortPeople((S.data.people || []).filter((p) => !taken.has(p.id) && statusOf(p) !== 'former')),
-    onPick: (person) => { assign(eventId, roleId, person.id, assignmentId); onPicked?.(); },
-    onAdd: (name) => { addAndAssign(eventId, roleId, name, assignmentId); onPicked?.(); },
+    subtitle: [replacing ? `Teď: ${nameOf(replacing)}` : null, event.title, dayWords(event)].filter(Boolean).join(SEP),
+    body: [heading, results, search],
+    cls: 'sheet--pick',
+    autofocus: false,
   });
+  draw();
+}
+
+const fold = (t) => String(t || '').normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('cs').trim();
+
+/** The line under a name in the picker: why not (in red), or when they last did it and what to know. */
+function whyOf(c, event) {
+  const hard = c.reasons.find((r) => r.severity === 'error');
+  if (hard) {
+    if (hard.code === 'K11') return 'tahle role je jen pro dospělé';
+    if (hard.code === 'K1') return `ten den je ${hard.text}`;          // „ten den je jinde: Brigáda“
+    if (hard.code === 'K2') return `ten den ${hard.text}`;             // „ten den má Bicí“
+    if (hard.code !== 'K3') return hard.text;
+    const off = blockoutOn(event, c.person.id);
+    const reason = String(off?.reason || off?.note || '').trim();
+    return reason ? `ten den nemůže${SEP}${reason}` : 'ten den nemůže';
+  }
+  // „naposledy 13. 9.“ – or „poprvé“ for someone who can it and has not done it here yet
+  const since = c.lastServed ? `naposledy ${shortDate(c.lastServed, { weekday: false })}` : c.level ? 'poprvé' : null;
+  return [since, ...c.reasons.map((r) => r.text)].filter(Boolean).join(SEP);
 }
 
 /** „Přidat „Jana Malá“ a vybrat“: a quick card (host, to be completed) learning the role, on the slot. */

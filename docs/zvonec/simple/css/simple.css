@@ -247,3 +247,94 @@
 .ev-about-kind { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .ev-about-kind > :is(.tag, .pill) { flex: none; }
 .ev-about-kind__series { flex: 1 1 100%; }
+
+/* ---------- Kalendář ---------- */
+/* phone: the head – the title, „Říjen ▾“, + and ⋯ */
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-4); }
+.cal-head > .title { min-width: 0; }
+.cal-head__tools { display: flex; align-items: center; gap: var(--space-1); margin-right: -10px; }
+.month-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px 0 16px; border: 0; border-radius: var(--shape-pill);
+  background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control); color: var(--ink);
+  font: inherit; font-size: var(--type-meta); font-weight: var(--weight-bold); cursor: pointer; white-space: nowrap;
+}
+.month-chip:hover { background: var(--wash); }
+.month-chip > .icon { color: var(--ink-2); }
+
+/* the list: weeks, one arch per day, the events of the day beside it */
+.cal-list { display: grid; gap: var(--space-4); }
+.cal-week { display: grid; }
+.cal-week__title { padding: var(--space-2) 0 var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.cal-day-row { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid var(--hairline); }
+.cal-week > .cal-day-row:last-child { border-bottom: 0; }
+.cal-day-row__events { display: grid; gap: var(--space-2); min-width: 0; }
+.day-event { display: grid; gap: 2px; padding: 6px var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--shape-control); color: inherit; }
+.day-event:hover { background: var(--wash); }
+.day-event__head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); }
+.day-event__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
+.day-event__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.day-event--cancelled .day-event__title { text-decoration: line-through; color: var(--ink-2); }
+.pill--you { min-height: 26px; padding: 0 10px; font-size: var(--type-meta); background: var(--tint); }
+.cal-screen--list .cal-more { margin-top: var(--space-4); }
+
+/* the mini month (a sheet without a title row: the month and its arrows are the head) */
+.sheet--month .sheet__head { display: none; }
+.sheet--month .sheet__body { gap: var(--space-3); padding-top: var(--space-2); }
+.mini-month__head { display: flex; align-items: center; gap: var(--space-1); }
+.mini-month__title { flex: 1; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
+.sheet--month .day__dots > i { background: var(--ink-2); }
+
+/* desktop: ‹ Říjen 2026 › and Dnes on one line above the grid */
+.cal-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.cal-bar .period__label { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
+/* a chip is the title, up to two lines (the time is in its name for a screen reader and in the pane) */
+.cal-chip__time { display: none; }
+.cal-chip__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.cal-chip[data-mine] { font-weight: var(--weight-bold); }
+.sheet--month .day[aria-selected="true"][data-today]::after { box-shadow: none; }
+@media (min-width: 1200px) {
+  .cal--month > .split { grid-template-columns: minmax(0, 1fr) minmax(380px, 440px); }
+  .cal--month > .split > .split__aside { top: var(--space-5); }
+}
+
+/* ---------- Obsazení ---------- */
+.staffing-head { padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-4); }
+.staffing-head__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.staffing-head__row > .title { min-width: 0; }
+.staffing-head__lead { margin-top: var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+@media (min-width: 960px) { .staffing-head { padding-top: var(--space-7); } }
+.scope-chip { min-width: 0; max-width: 60%; }
+.scope-chip__label { overflow: hidden; text-overflow: ellipsis; }
+
+.staff-list { display: grid; }
+.staff-item {
+  position: relative; display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-4);
+  padding: var(--space-4) var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--shape-control);
+}
+.staff-item + .staff-item::before { content: ""; position: absolute; top: 0; left: var(--space-3); right: var(--space-3); height: 1px; background: var(--hairline); }
+.staff-item[data-open] { background: var(--pick); }
+.staff-item[data-open]::before, .staff-item[data-open] + .staff-item::before { background: transparent; }
+.staff-item__body { display: grid; gap: var(--space-2); min-width: 0; }
+.staff-item__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.staff-item__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); color: var(--ink); }
+.staff-item__title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.staff-item__fill { display: inline-flex; align-items: center; gap: var(--space-2); flex: none; font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink-2); font-feature-settings: var(--numerals); }
+.staff-item__fill > .ring { width: 28px; height: 28px; }
+.staff-item__meta { margin-top: -6px; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.staff-item__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-1) 0; }
+.staff-item__line {
+  display: inline-flex; align-items: center; gap: 2px; justify-self: start; min-height: 32px; padding: 0; border: 0; background: none;
+  color: var(--ink); font: inherit; font-size: var(--type-meta); line-height: var(--lh-meta); text-align: left; cursor: pointer;
+}
+.staff-item__line .mark { margin-right: var(--space-2); }
+.staff-item__line > .icon { width: 16px; height: 16px; color: var(--ink-2); }
+.staff-item__line:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* the picker: titled by the role, the team first, who cannot greyed with the reason */
+.sheet--pick .sheet__body { gap: var(--space-2); }
+.pick-heading { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.pick-list { margin-bottom: var(--space-3); }
+.pick-row--off .row__title { color: var(--ink-2); }
+.pick-row--off .avatar { opacity: .55; }
+.pick-row__why { color: var(--no-ink); }
+.pick-none { padding: var(--space-3) 0; }

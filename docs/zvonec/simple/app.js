@@ -78,11 +78,10 @@ const STAFFING_ROUTES = {
 // ROUTES:staffing end
 
 // ROUTES:calendar – Kalendář and Setkání.
-// #kalendar[/<seznam|mesic|rozpis>[/<YYYY-MM | YYYY-MM-DD>][/upozorneni | /bremeno]] (#kalendar alone:
-// the remembered view; Rozpis takes the chip „upozorneni“ and the „bremeno“ sheet as a last part),
-// #setkani/<id> (anchor „kdo-slouzi“ from the old /sluzby), #setkani/<id>/osnova.
-// The screens live in ui/calendar.js (Seznam · Měsíc), ui/roster.js (Rozpis), ui/event.js (Setkání),
-// ui/program.js (Osnova); at ≥ 1200 px #setkani/<id> draws the calendar with the event in the pane.
+// #kalendar[/<YYYY-MM | YYYY-MM-DD>] (a phone lists from that day, a desktop shows that month), the printable
+// roster #kalendar/rozpis[/<YYYY-MM>][/bremeno] (from ⋯), #setkani/<id> (anchor „kdo-slouzi“ from the old
+// /sluzby), #setkani/<id>/osnova. The screens live in ui/calendar.js, ui/roster.js (Rozpis), ui/event.js
+// (Setkání), ui/program.js (Osnova); at ≥ 1200 px #setkani/<id> draws the calendar with the event in the pane.
 const CALENDAR_ROUTES = CALENDAR_SCREENS;
 // ROUTES:calendar end
 
@@ -135,8 +134,7 @@ const REDIRECTS = [
   [/^porad\/(.+)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^setkani\/([^/]+)\/(porad|prubeh)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^setkani\/([^/]+)\/sluzby$/, (m) => [`setkani/${m[1]}`, 'kdo-slouzi']],
-  [/^kalendar\/tyden(\/.*)?$/, (m) => `kalendar/seznam${m[1] || ''}`],
-  [/^kalendar\/(\d{4}-\d{2}(?:-\d{2})?)$/, (m) => `kalendar/mesic/${m[1]}`],
+  [/^kalendar\/(?:tyden|seznam|mesic)(?:\/(.*))?$/, (m) => `kalendar${m[1] ? `/${m[1]}` : ''}`],   // Next's views: one Kalendář now
   [/^rozpis(?:\/(.+))?$/, (m) => `kalendar/rozpis${m[1] ? `/${m[1]}` : ''}`],
   [/^(?:upozorneni|kolize)(?:\/.*)?$/, () => 'kalendar/rozpis/upozorneni'],
   [/^lide\/bremeno(?:\/(\d{4}-\d{2}))?$/, (m) => `kalendar/rozpis${m[1] ? `/${m[1]}` : ''}/bremeno`],
