@@ -65,11 +65,12 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - Rail: Moje · Obsazení · Kalendář · Lidé and the person at the bottom. Each tab is its phone screen on
      the left and the chosen item on the right (Moje → the event of the chosen duty as a member sees it,
      Obsazení → the event as a leader sees it, Lidé → the person).
-   - The chosen item has only a soft fill, no edge (the owner did not like the dark bar). The fill is a solid
+   - The chosen item has a soft fill and the fine bar at its left edge, as in the rail (first without the bar; the
+     owner asked for it back). The fill is a solid
      step of our pink (`--rose-1`): the alpha tint `--pick` is solved over the rail colour, so on the lighter
      page it turns cold and pinkish-purple. The build fixes `--pick` at the source (`zvonec/palettes.mjs`).
    - No divider touches the fill: the chosen (and the hovered) row hides its own line and the one of the row
-     above it.
+     above it, and two lit rows keep 3 px apart (Next too).
    - The rail keeps the fine bar at the left edge of the current item, as in the live app.
 
 Data and logic stay as they are – only the screens change.

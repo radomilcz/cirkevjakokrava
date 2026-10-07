@@ -52,8 +52,8 @@
 .people-table th, .people-table td { padding: 0 var(--space-3); height: 52px; }
 .people-table td { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .people-table tbody tr { cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
-.people-table tbody tr:hover { background: var(--wash); }
-.people-table tbody tr[data-picked] { background: var(--pick); }
+.people-table tbody tr:hover > * { background: var(--wash); }
+.people-table tbody tr[data-picked] > * { background: var(--pick); }
 .people-table tbody tr[data-picked] .table-quiet { color: var(--ink); }
 .col-pick { width: 44px; padding-right: 0 !important; }
 .people-table th.col-name { width: 26%; }
@@ -67,8 +67,10 @@
 .people-table.people-table--compact th.col-name { width: auto; }
 .people-table.people-table--compact th.col-phone { width: 132px; }
 .people-table.people-table--compact th.col-groups { width: 28%; }
-.people-table tbody tr[data-open] { background: var(--pick); }
-.people-table tbody tr[data-open] > :first-child { box-shadow: inset 3px 0 0 var(--mark); }
+.people-table tbody tr[data-open] > * { background: var(--pick); }
+/* the open row's bar as on rows: straight, 3 px, clear of the rounded ends */
+.people-table tbody tr[data-open] > :first-child { position: relative; }
+.people-table tbody tr[data-open] > :first-child::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
 .people-table tbody tr[data-open] .table-quiet { color: var(--ink); }
 .people-table th.col-birthday { width: 108px; }
 .people-table th.col-last { width: 140px; }

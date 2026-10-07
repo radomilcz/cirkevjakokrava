@@ -186,9 +186,10 @@ a { color: inherit; text-decoration: none; }
 .seg > button:hover { color: var(--ink); }
 .seg > button { position: relative; min-height: 38px; }
 .seg > button::after { content: ""; position: absolute; inset: -3px -1px; }   /* the whole 44 px track answers a tap */
-.seg > button[aria-checked="true"] { background: var(--overlay); color: var(--ink); font-weight: var(--weight-bold); box-shadow: inset 0 0 0 1px var(--edge), var(--lift-2); }
-/* dark palettes: the overlay is barely lighter than the track – the thumb takes the ink fill instead */
-:root[data-theme="dark"] .seg > button[aria-checked="true"] { background: var(--act); color: var(--on-act); box-shadow: none; }
+/* the chosen segment takes the ink fill, flat – as a chosen chip or tab does (a lifted white thumb with an inner
+   ring read as from another app) */
+.seg > button[aria-checked="true"] { background: var(--act); color: var(--on-act); font-weight: var(--weight-bold); box-shadow: none; }
+.seg > button:not([aria-checked="true"]):hover { background: var(--wash); }
 
 /* ---------- chips (filters, choices) ---------- */
 .chips { display: flex; gap: var(--space-2); overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter); scroll-padding: 0 var(--gutter); }
@@ -300,6 +301,13 @@ a.row:active, button.row:active { background: var(--press); }
 .row__stretch::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 .row:has(> .row__stretch):hover { background: var(--wash); }
 .row > :is(.icon-btn, .btn, .switch) { position: relative; z-index: 1; }
+/* a lit row (hover, selected, open) touches no line: the line is the ::before of the row below, so a lit row hides
+   its own and the one under it; in a list two lit rows keep 3 px apart, with the line in that gap */
+.list > .row + .row { margin-top: 3px; }
+.list > .row + .row::before { top: -2px; }
+:is(a.row, button.row, .row:has(> .row__stretch)):hover::before,
+:is(a.row, button.row, .row:has(> .row__stretch)):hover + .row::before,
+.row[aria-selected="true"]::before, .row[aria-selected="true"] + .row::before { background: transparent; }
 .row-link {                      /* „Celý rozpis ›“ – the quiet way on under a list */
   display: flex; align-items: center; gap: 6px; min-height: var(--hit); margin-top: var(--space-1);
   color: var(--ink-accent); font-size: var(--type-meta); font-weight: var(--weight-strong);
@@ -586,6 +594,7 @@ a.event:hover { background: var(--wash); }
 @media (min-width: 1200px) {     /* split views: list 400 | detail; data-open marks what the detail pane shows */
   :is(.row, .event)[data-open] { background: var(--pick); }
   :is(.row, .event)[data-open] :is(.row__meta, .event__meta, .event__end) { color: var(--ink); }
+  .row[data-open]::before, .row[data-open] + .row::before { background: transparent; }
   .row[data-open]::after { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
   .split { display: grid; grid-template-columns: minmax(360px, 1fr) minmax(0, 2fr); gap: var(--space-7); align-items: start; }
   .split > .split__aside { position: sticky; top: calc(var(--topbar-h) + var(--space-4)); }

@@ -5,16 +5,9 @@
    list | detail on a wide screen.
    ============================================================ */
 
-/* ---------- rows: a filled row touches no divider, and carries no bar ---------- */
-/* the divider is the ::before of the next row: hide a lit row's own and the one under it */
-.row[aria-selected="true"]::after { content: none; }
-:is(a.row, button.row, .row:has(> .row__stretch)):hover::before,
-:is(a.row, button.row, .row:has(> .row__stretch)):hover + .row::before,
-.row:is([aria-selected="true"], [data-open])::before,
-.row:is([aria-selected="true"], [data-open]) + .row::before { background: transparent; }
-@media (min-width: 1200px) {
-  .row[data-open]::after { content: none; }
-}
+/* ---------- rows: a lit row touches no divider and keeps 3 px from the next (css/components.css); the chosen row
+   has the fine bar at its left edge, as in the rail ---------- */
+.row[data-open]::before, .row[data-open] + .row::before { background: transparent; }
 
 /* ---------- categorical colour (avatars, teams, kind tags): the brand's colours only ----------
    The brand's blue and green, the sand of its cream and clay and the lilac between its pink and blue, each mixed
