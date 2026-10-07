@@ -359,7 +359,7 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .time-range__dash { color: var(--ink-2); }
 
 .stepper { display: inline-flex; align-items: center; gap: 2px; padding: 4px; border-radius: var(--shape-control); background: var(--tint); justify-self: start; }
-.stepper > .icon-btn { width: 44px; height: 44px; border-radius: var(--shape-inner); }
+.stepper > .icon-btn { width: var(--control-m); height: var(--control-m); border-radius: var(--radius-m); }
 .stepper > .icon-btn:hover { background: var(--overlay); }
 .stepper > .icon-btn:disabled { color: var(--ink-3); cursor: not-allowed; background: none; }
 .stepper__value { width: 3em; min-height: 44px; border: 0; border-radius: var(--shape-inner); background: transparent; color: var(--ink); text-align: center; font-size: var(--type-body); font-weight: var(--weight-bold); font-feature-settings: var(--numerals); }
@@ -420,10 +420,9 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .palette-options > button[aria-checked="true"] .bullseye { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--ink); }
 .palette-options > button:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 0; }
 .palette-options .palette-auto {
-  padding: 0 16px; min-height: 40px; height: 40px; box-shadow: inset 0 0 0 1px var(--edge-control);
-  font-size: var(--type-meta); font-weight: var(--weight-medium); white-space: nowrap;
+  padding: 0 16px; min-height: var(--control-m); height: var(--control-m); box-shadow: inset 0 0 0 1px var(--edge-control);
+  font-size: var(--type-control); font-weight: var(--weight-control); white-space: nowrap;
 }
-.palette-options .palette-auto::after { content: ""; position: absolute; inset: -2px 0; }
 .palette-options .palette-auto:hover { background: var(--wash); }
 .palette-options .palette-auto[aria-checked="true"] { background: var(--act); color: var(--on-act); box-shadow: none; font-weight: var(--weight-strong); }
 /* the menu button (rail foot): the current palette's bullseye */

@@ -63,8 +63,11 @@
      person                             → circle
      group / team                       → rounded square
      date / meeting                     → ARCH (round top, nearly square foot) – the church window */
-  --shape-control: 14px;
-  --shape-inner: 10px;                         /* segmented thumb, items inside a 14 px control */
+  /* the codex (zvonec/design/one-question/codex.md): the corner follows the height – S 36 → 10, M 44 → 12,
+     L 52 → 14; an inner part (the segmented thumb) is the outer corner minus the 3 px gap */
+  --radius-s: 10px; --radius-m: 12px; --radius-l: 14px;
+  --shape-control: var(--radius-m);
+  --shape-inner: 9px;                          /* segmented thumb: 12 − 3 */
   --shape-block: 20px;                         /* the feature block, cards */
   --shape-sheet: 28px;                         /* top corners of a bottom sheet */
   --shape-pill: 999px;
@@ -76,11 +79,19 @@
   --shape-arch-l: 44px 44px 19px 19px;         /* empty-state well (88 px wide) */
   --shape-arch-sm: 24px 24px 9px 9px;          /* month / week day cell, selected day (≈ 48 px wide) */
 
-  /* ---- sizes: every target ≥ 44 px; the main action 52 px ---- */
+  /* ---- sizes (the codex): three heights and nothing between – every target ≥ 44 px ----
+     S 36  a quiet control beside text on a desktop (Filtr, Dnes, a row's action); the hit is 44 via ::after
+     M 44  every other control: buttons, icon buttons, segmented, search, fields, chips, the month chip
+     L 52  the one main action at the foot of a sheet or form, the answer pair Můžu / Nemůžu */
   --hit: 44px;
-  --control-s: 36px;                           /* desktop only, hit area still 44 via ::after */
+  --control-s: 36px;
   --control-m: 44px;
   --control-l: 52px;
+  /* one label size per height, one weight (620) – a chosen state changes the fill, never the weight */
+  --type-control-s: 14px;
+  --type-control: 16px;                        /* also what you type: 16 keeps a phone from zooming in */
+  --type-control-l: 17px;
+  --weight-control: 620;
   --row-h: 64px;                               /* a two-line row */
   --row-h-single: 52px;
   --avatar-s: 32px; --avatar-m: 40px; --avatar-l: 64px;
@@ -157,6 +168,7 @@
   :where(:root) {
     --type-meta: 14px; --lh-meta: 20px;
     --type-body: 16px; --lh-body: 22px;
+    --type-control: 15px;
     --type-title: 40px; --lh-title: 44px;
     --gutter: 40px;
     --row-h: 60px; --row-h-single: 48px;

@@ -513,7 +513,6 @@ button.osnova__open::after { content: ""; position: absolute; inset: 0; border-r
 .rlist__team { display: grid; grid-template-columns: minmax(80px, 112px) minmax(0, 1fr); gap: var(--space-3); font-size: var(--type-meta); line-height: var(--lh-meta); }
 .rlist__team-name { color: var(--ink-2); }
 .rlist__who { color: var(--ink); min-width: 0; }
-.rlist__who .add-chip { min-height: 28px; padding: 0 10px; margin: 0 4px 2px 0; font-size: var(--type-caption); vertical-align: middle; }
-.rlist__who .add-chip .icon { width: 14px; height: 14px; }
+.rlist__who .add-chip { margin: 2px 4px 2px 0; vertical-align: middle; }   /* the S capsule of the codex */
 .roster-screen .cal-bar .roster-team-chip { flex: none; }
 @media (max-width: 559.98px) { .rlist__team { grid-template-columns: minmax(0, 1fr); gap: 0; } .rlist__team-name { font-weight: var(--weight-strong); } }

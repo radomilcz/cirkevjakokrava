@@ -127,8 +127,8 @@ a { color: inherit; text-decoration: none; }
 /* ---------- buttons ---------- */
 .btn {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
-  min-height: var(--control-m); padding: 0 18px; border: 0; border-radius: var(--shape-control);
-  font-size: var(--type-body); line-height: 20px; font-weight: var(--weight-strong); white-space: nowrap;
+  min-height: var(--control-m); padding: 0 18px; border: 0; border-radius: var(--radius-m);
+  font-size: var(--type-control); line-height: 20px; font-weight: var(--weight-control); white-space: nowrap;
   background: var(--tint); color: var(--ink);
   transition: background-color var(--dur-state) var(--ease), transform var(--dur-press) var(--ease);
   -webkit-tap-highlight-color: transparent;
@@ -142,8 +142,8 @@ a { color: inherit; text-decoration: none; }
 .btn--quiet:hover { background: var(--wash); }
 .btn--danger { background: var(--no-fill); color: var(--no-ink); }
 .btn--danger:hover { background: var(--no-fill); box-shadow: inset 0 0 0 1px var(--no-ink); }
-.btn--l { min-height: var(--control-l); padding: 0 22px; border-radius: 16px; }
-.btn--s { min-height: var(--control-s); padding: 0 14px; font-size: var(--type-meta); border-radius: 12px; }
+.btn--l { min-height: var(--control-l); padding: 0 22px; border-radius: var(--radius-l); font-size: var(--type-control-l); }
+.btn--s { min-height: var(--control-s); padding: 0 14px; font-size: var(--type-control-s); border-radius: var(--radius-s); }
 .btn--s::after { content: ""; position: absolute; inset: -4px 0; }
 .btn--block { display: flex; width: 100%; }
 .btn[disabled], .btn[aria-disabled="true"] { background: var(--tint); color: var(--ink-3); cursor: not-allowed; transform: none; }
@@ -151,7 +151,7 @@ a { color: inherit; text-decoration: none; }
 
 .icon-btn {
   position: relative; display: inline-grid; place-items: center; flex: none;
-  width: var(--hit); height: var(--hit); border: 0; border-radius: var(--shape-control);
+  width: var(--control-m); height: var(--control-m); border: 0; border-radius: var(--radius-m);
   background: transparent; color: var(--ink);
   transition: background-color var(--dur-state) var(--ease);
 }
@@ -175,12 +175,12 @@ a { color: inherit; text-decoration: none; }
 /* ---------- segmented control ---------- */
 .seg {
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px;
-  min-height: var(--control-m); padding: 3px; border-radius: var(--shape-control); background: var(--tint);
+  min-height: var(--control-m); padding: 3px; border-radius: var(--radius-m); background: var(--tint);
 }
 .seg > button {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   border: 0; border-radius: var(--shape-inner); background: transparent; padding: 0 8px; white-space: nowrap;
-  color: var(--ink-2); font-size: var(--type-meta); font-weight: var(--weight-medium);
+  color: var(--ink-2); font-size: var(--type-control); font-weight: var(--weight-control);
   transition: background-color var(--dur-state) var(--ease), color var(--dur-state) var(--ease), box-shadow var(--dur-state) var(--ease);
 }
 .seg > button:hover { color: var(--ink); }
@@ -188,7 +188,7 @@ a { color: inherit; text-decoration: none; }
 .seg > button::after { content: ""; position: absolute; inset: -3px -1px; }   /* the whole 44 px track answers a tap */
 /* the chosen segment takes the ink fill, flat – as a chosen chip or tab does (a lifted white thumb with an inner
    ring read as from another app) */
-.seg > button[aria-checked="true"] { background: var(--act); color: var(--on-act); font-weight: var(--weight-bold); box-shadow: none; }
+.seg > button[aria-checked="true"] { background: var(--act); color: var(--on-act); box-shadow: none; }
 .seg > button:not([aria-checked="true"]):hover { background: var(--wash); }
 
 /* ---------- chips (filters, choices) ---------- */
@@ -196,18 +196,17 @@ a { color: inherit; text-decoration: none; }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
   position: relative; display: inline-flex; align-items: center; gap: 6px; flex: none;
-  min-height: 40px; padding: 0 16px; border: 0; border-radius: var(--shape-pill);
+  min-height: var(--control-m); padding: 0 16px; border: 0; border-radius: var(--shape-pill);
   background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control);
-  color: var(--ink); font-size: var(--type-meta); font-weight: var(--weight-medium); white-space: nowrap;
+  color: var(--ink); font-size: var(--type-control); font-weight: var(--weight-control); white-space: nowrap;
   transition: background-color var(--dur-state) var(--ease), color var(--dur-state) var(--ease);
 }
-.chip::after { content: ""; position: absolute; inset: -2px 0; }
 .chip:hover { background: var(--wash); }
 .chip .chip__n { color: var(--ink-2); font-feature-settings: var(--numerals); }
 .chip > .icon { margin-left: -4px; }
 .chip[aria-pressed="false"] > .icon { display: none; }
 .chip:not([aria-pressed]) > .icon:last-child { margin: 0 -6px 0 -2px; }
-.chip[aria-pressed="true"] { background: var(--act); color: var(--on-act); box-shadow: none; font-weight: var(--weight-strong); }
+.chip[aria-pressed="true"] { background: var(--act); color: var(--on-act); box-shadow: none; }
 .chip[aria-pressed="true"] .chip__n { color: inherit; }
 
 /* category tag: what kind of meeting (hue from data-hue) */
@@ -364,9 +363,9 @@ a.row:active, button.row:active { background: var(--press); }
 .field__hint { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
 .field__error { display: flex; gap: 6px; align-items: center; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--no-ink); font-weight: var(--weight-medium); }
 .input {
-  width: 100%; min-height: var(--control-l); padding: 0 var(--space-4); border: 0; border-radius: var(--shape-control);
+  width: 100%; min-height: var(--control-m); padding: 0 var(--space-4); border: 0; border-radius: var(--radius-m);
   background: var(--field-bg); box-shadow: inset 0 0 0 1px var(--edge-field);
-  font-size: var(--type-body); color: var(--ink); appearance: none;
+  font-size: var(--type-control); color: var(--ink); appearance: none;
   transition: box-shadow var(--dur-state) var(--ease);
 }
 .input::placeholder { color: var(--ink-3); opacity: 1; }
@@ -519,8 +518,8 @@ a.event:hover { background: var(--wash); }
 .fab {
   position: fixed; z-index: 25; right: var(--gutter); bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + var(--space-4));
   display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--control-l); padding: 0 22px 0 18px;
-  border: 0; border-radius: 18px; background: var(--act); color: var(--on-act);
-  font-size: var(--type-body); font-weight: var(--weight-strong); box-shadow: var(--lift-4);
+  border: 0; border-radius: var(--radius-l); background: var(--act); color: var(--on-act);
+  font-size: var(--type-control-l); font-weight: var(--weight-control); box-shadow: var(--lift-4);
   transition: background-color var(--dur-state) var(--ease), transform var(--dur-press) var(--ease);
 }
 .fab:hover { background: var(--act-hover); }
