@@ -228,7 +228,7 @@
 .team-line__open:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
 .team-line > :not(.team-line__open) { position: relative; pointer-events: none; }
 .team-line .add-chip { pointer-events: auto; }
-.team-line:has(> .team-line__open:hover) { border-bottom-color: transparent; }
+.team-line:has(> .team-line__open:hover), .team-line:has(+ .team-line > .team-line__open:hover) { border-bottom-color: transparent; }
 
 .add-chip {
   position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 16px 0 12px;
@@ -248,7 +248,13 @@
 .ev-row > .icon { align-self: center; margin-left: auto; color: var(--ink-2); }
 .ev-row__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
 .ev-row__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
-.ev-row:hover .ev-row__title { text-decoration: underline; text-underline-offset: 3px; }
+/* hover like any row: the whole row lit, rounded, the fill reaching past the text as far as on the team lines;
+   the row's own line and the one above it step aside */
+.ev-row { margin: 0 calc(-1 * var(--space-3)); padding-left: var(--space-3); padding-right: var(--space-3); border-radius: var(--shape-control); transition: background-color var(--dur-state) var(--ease); }
+.ev-row:hover { background: var(--wash); border-bottom-color: transparent; }
+.ev-row:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.ev-row:has(+ .ev-row:hover),
+.ev-who:has(+ .ev-rows > .ev-row:first-child:hover) .team-line:last-child { border-bottom-color: transparent; }
 
 /* the team sheet: each role with who and what they said */
 .tslots { display: grid; }
@@ -259,7 +265,8 @@
 }
 .tslot:last-child { border-bottom: 0; }
 .tslot--button { cursor: pointer; margin: 0 calc(-1 * var(--space-3)); padding-left: var(--space-3); padding-right: var(--space-3); width: calc(100% + 2 * var(--space-3)); border-radius: var(--shape-control); }
-.tslot--button:hover { background: var(--wash); }
+.tslot--button:hover { background: var(--wash); border-bottom-color: transparent; }
+.tslot:has(+ .tslot--button:hover) { border-bottom-color: transparent; }
 .tslot__role { font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); }
 .tslot__who { display: grid; gap: 2px; justify-items: start; min-width: 0; }
 .tslot__name { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }

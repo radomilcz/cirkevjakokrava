@@ -89,6 +89,9 @@ says otherwise (`docs/zvonec/go.js`).
   role). Their styles are in `simple/css/simple.css` (loaded last).
 - The selection tint of the light Krém a hlína palette is now a plain alpha of the brand pink (`zvonec/palettes.mjs`),
   so it stays warm on the page in all three apps.
+- One hover everywhere: the whole row lights up, rounded, with its trailing buttons (⋯, ›) inside the fill, and
+  neither its own line nor the one above it touches the fill – rows, Osnova points (Next too), the team lines,
+  the team sheet and „Osnova ›“ / „O setkání a místě ›“.
 - Colours from the brand only. The two blue palettes take selection, today, links, info and the progress ring from
   their own ink, not the pink (`zvonec/palettes.mjs`, all three apps). In Simple, avatars, team marks and kind tags
   are the brand's pink, blue, green, sand and lilac mixed into the palette, and the calendar chips are one colour
