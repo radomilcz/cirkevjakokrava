@@ -222,7 +222,7 @@ A click on a row opens the detail as a page (§5). At 1024 the same layout sits 
 
 ```
 ┌──────────────┬──────────────────────────────────────────────────────────────────────────────────┐
-│ církev jako… │ Kalendář                                          [+ Přidej setkání]  [⋯]       │ A  spans list + pane
+│ církev jako… │ Kalendář              [⋯][+ Přidej setkání]                                       │ A  list track only
 │              │                                                                                  │ 12
 │ ⌂ Moje     4 │ [⌕ Hledej setkání              ][⚟ Filtr  ]  ┌──────────────────────────[⋯][✕]┐ │ B  list track only
 │ ⊕ Obsazení10 │                                               │ ▒▒▒▒▒ Účel band 96 ▒▒▒▒▒▒ ∩∩ ▒ │ │ pane top = B top
@@ -240,7 +240,11 @@ A click on a row opens the detail as a page (§5). At 1024 the same layout sits 
 - Grid: `minmax(400px, 560px) 32px minmax(440px, 720px)`, both tracks **always reserved**. At 1200: 400 | 440; at
   1440: 520 | 560; from ≈ 1660: 560 | 720. **The list keeps its width and x whether the pane is open or not**, so
   names are never cut to „B…“. With nothing open the pane track is plain page ground.
-- A spans both tracks; the main action and ⋯ sit at the pane track's right edge and never move.
+- A sits in the list track, like B and C: ⋯ then the main action end at the list's right edge (808 at 1440), level
+  with Filtr, pane open or not, so they are never detached from the content they act on (the owner's order, §1). The
+  pane has its own ⋯ ✕ row; the pane track's first row stays plain ground. Where the list track is under 440
+  (1200–1279) „Kalendář“ or „Obsazení“ + ⋯ + a labelled action do not fit it, so the main action is the icon-only 44
+  square there, as on a phone (its aria-label and title keep the words). Nothing in A moves when the pane opens.
 
 ### 3.4 Search, Filtr and empty states
 

@@ -597,8 +597,10 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   .ls--split .frame {
     display: grid; grid-template-columns: var(--split-list) var(--split-pane); column-gap: var(--split-gap); align-items: start;
   }
-  .ls--split .frame > .head { grid-column: 1 / -1; }
-  .ls--split .frame > .ls__list, .ls--split .frame > .ls__controls { grid-column: 1; min-width: 0; }
+  /* A belongs to the list: in the list track, so the main action ends at the list's right edge, pane open or not
+     (the pane has its own ⋯ ✕ row); it never moves */
+  .ls--split .frame > .head, .ls--split .frame > .ls__list, .ls--split .frame > .ls__controls { grid-column: 1; min-width: 0; }
+  .ls--split .frame > .head { container: list-head / inline-size; }
   .ls--split .frame > .ls__body { grid-column: 1 / -1; }           /* wide: D spans both tracks (Měsíc) */
   .ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
 }
@@ -617,6 +619,13 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 :is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]):is(:active, [aria-expanded="true"]) { background: var(--press); }
 @media (max-width: 599.98px) {
   /* phone: the main action is an icon-only 44 square with its aria-label */
+  .head__action:not(.head__action--label) { width: var(--control-m); padding: 0; }
+  .head__action:not(.head__action--label) > .icon { margin: 0; }
+  .head__action:not(.head__action--label) > .head__action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+/* the split's list track under 440 (1200–1279): „Kalendář“ or „Obsazení“ + ⋯ + a labelled action do not fit it, so
+   the main action is the icon-only 44 square there too (its aria-label and title keep the words) */
+@container list-head (max-width: 439.98px) {
   .head__action:not(.head__action--label) { width: var(--control-m); padding: 0; }
   .head__action:not(.head__action--label) > .icon { margin: 0; }
   .head__action:not(.head__action--label) > .head__action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

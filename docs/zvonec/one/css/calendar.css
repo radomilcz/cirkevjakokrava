@@ -14,7 +14,7 @@
 .cal-past > .link { margin-left: -4px; }
 .cal-mark { display: inline-block; flex: none; width: 10px; height: 10px; border-radius: 50%; vertical-align: 0; }
 .cal-mark--wait { box-shadow: inset 0 0 0 2px var(--wait-ink); }
-.cal-mark--no { background: var(--no-ink); }
+.cal-mark--no { background: var(--no-solid); }  /* the same red as the fill ring's (.ring__fill) */
 .cal-legend {
   display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin-bottom: var(--space-2);
   font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2);

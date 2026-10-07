@@ -85,7 +85,7 @@ function filterGroups() {
   const { options, value } = teamOptions();
   return [
     { id: 'tym', title: 'Tým', kind: 'chips', options, value },
-    { id: 'co', title: 'Co řešit', kind: 'chips', multiple: true, options: CO },
+    { id: 'co', title: 'Stav', kind: 'chips', multiple: true, options: CO },
   ];
 }
 

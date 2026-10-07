@@ -26,7 +26,7 @@ const RULES = [
   {
     id: 'alerts', title: 'Kdy Zvonec bučí', hint: 'Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.',
     rules: [
-      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Tolik dní předem je to chyba, ještě o tolik dřív jen pozor.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
+      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Tolik dní předem Zvonec hlásí chybu, dvakrát tolik dní předem jen upozorní.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
       { key: 'openDaysBefore', where: 'rules', label: 'Ostatní prázdná místa', hint: 'Upozornění, že ještě někdo chybí.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
       { key: 'unconfirmedDaysBefore', where: 'rules', label: 'Nepotvrzená služba', hint: 'Někdo ještě neřekl, jestli může.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
     ],

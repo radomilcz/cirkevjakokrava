@@ -154,7 +154,7 @@ export function viewAsSheet() {
     sheet.close({ restore: false });
     peoplePicker({
       title: 'Čí očima se chceš dívat?',
-      meta: `Oprávnění: ${ACCESS_LABELS[access]}`,
+      meta: `Přístup: ${ACCESS_LABELS[access]}`,
       pools: [{ id: 'all', label: 'Všichni lidé', items: people.map((person) => ({ person })) }],
       everyone: people,
       onPick: (p) => { actAs(p.id, access); toast(`${ACCESS_VIEW[access]}: ${personName(p)}`); },
@@ -172,8 +172,8 @@ export function viewAsSheet() {
         onclick: () => pick(p.id, level),
       })), { label: 'Lidé z ukázky' }),
       field({
-        label: 'Někdo jiný s oprávněním',
-        control: segmented([{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }], access, (v) => { access = v; }, { label: 'Oprávnění' }),
+        label: 'Někdo jiný jako',
+        control: segmented([{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }], access, (v) => { access = v; }, { label: 'Přístup' }),
       }),
       button('Vyber člověka', { icon: 'search', block: true, onclick: others }),
       rowLink('Správce bez karty v Lidech', { onclick: () => pick(null, 'admin') }),

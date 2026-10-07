@@ -159,19 +159,20 @@ function birthdayLine() {
   return rowLink(words, { icon: 'cake', onclick: () => { setFilter(PEOPLE_FILTER, { narozeniny: true }); render(); } });
 }
 
+/** The cards over a year in the archive – shown and offered only while Filtr › Ukaž i archiv is on (leaders). */
+function overduePeople() {
+  if (!can('leader') || !filterState(PEOPLE_FILTER).archiv) return [];
+  return (S.data.people || []).filter((p) => isFormer(p) && archiveOverdue(p, today()));
+}
+
 /**
- * The cards over a year in the archive (Filtr › Ukaž i archiv): one question at the end of D, only under rows (never
- * beside an empty state). Its button asks first (confirmSheet), nothing is deleted from here.
+ * The cards over a year in the archive: one sentence at the end of D, only under rows (never beside an empty state).
+ * It deletes nothing – the delete lives in the head's ⋯ (DESIGN §5: destructive actions only in ⋯).
  */
 function overdueLine() {
-  if (!can('leader') || !filterState(PEOPLE_FILTER).archiv) return null;
-  const overdue = (S.data.people || []).filter((p) => isFormer(p) && archiveOverdue(p, today()));
-  if (!overdue.length) return null;
-  const n = overdue.length;
-  return callout({
-    tone: 'info', icon: 'archive', text: `${plural(n, 'karta je', 'karty jsou', 'karet je')} v archivu déle než rok.`,
-    actions: button(n === 1 ? 'Smaž ji' : 'Smaž je', { size: isPhone() ? 'm' : 's', variant: 'quiet', onclick: () => deleteOverdueSheet(overdue) }),
-  });
+  const n = overduePeople().length;
+  if (!n) return null;
+  return callout({ tone: 'info', icon: 'archive', text: `${plural(n, 'karta je', 'karty jsou', 'karet je')} v archivu déle než rok.` });
 }
 
 /** The three empty states of the Lidé view. */
@@ -287,9 +288,11 @@ function downloadCsv(people) {
   toast(`Stahuju seznam: ${peopleCount(people.length)}.`, { icon: 'download' });
 }
 
-function listMenu(view) {
+/** The head's ⋯ – a function, read when it opens, so it follows the Filtr (Ukaž i archiv) without a redraw. */
+const listMenu = (view) => () => {
   const download = { label: 'Stáhni seznam', icon: 'download', onclick: () => downloadCsv(shownPeople()) };
   if (!can('leader')) return [download];
+  const overdue = view === 'skupiny' ? [] : overduePeople();
   return [
     { label: 'Přidej skupinu', icon: 'teams', onclick: () => groupSheet() },
     { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) },
@@ -299,9 +302,14 @@ function listMenu(view) {
     download,
     WIDE_TABLE.matches ? (view === 'vypis'
       ? { label: 'Ukaž jednoduchý seznam', icon: 'people', href: '#lide' }
-      : { label: 'Podrobný výpis', icon: 'table', href: '#lide/vypis' }) : null,
+      : { label: 'Ukaž podrobný výpis', icon: 'table', href: '#lide/vypis' }) : null,
+    overdue.length ? '-' : null,
+    overdue.length ? {
+      label: overdue.length === 1 ? 'Smaž starou kartu z archivu' : 'Smaž staré karty z archivu',
+      icon: 'trash', danger: true, onclick: () => deleteOverdueSheet(overdue),
+    } : null,
   ].filter(Boolean);
-}
+};
 
 // ---------- the frame ----------
 

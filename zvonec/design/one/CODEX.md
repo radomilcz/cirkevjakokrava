@@ -121,7 +121,7 @@ Agrandir Grand Heavy (`--font-brand`) only for the wordmark.
 h1 ································ [⋯][main action]
 ```
 - Title row: min-height 44, items centred; h1 `flex: none`, one line (a long page title wraps under the actions,
-  never under them). At the content frame's right edge: ⋯ (outlined like a quiet button, so it never reads as an empty place), then the main action, 8 apart – the main action ends at the edge (the owner's order).
+  never under them). At the content's right edge (≥ 1200: the list track's, §6.4): ⋯ (outlined like a quiet button, so it never reads as an empty place), then the main action, 8 apart – the main action ends at the edge (the owner's order).
 - **Main action:** primary M (`--act` / `--on-act`, r12, 620). Phone: icon-only 44 square with its aria-label
   („Přidej setkání“). ≥ 600: icon 20 + label. `data-primary` (the „N“ key). Shown only to who may use it.
 - **⋯:** quiet icon M, aria-label „Další možnosti“; opens a menu (§6.10). Absent when empty.
@@ -154,7 +154,8 @@ h1 ································ [⋯][main a
 ### 6.4 Detail pane and detail page – `detail({ back, close, menu, body })`
 
 - **Split grid** (≥ 1200): `grid-template-columns: minmax(400px, 560px) minmax(440px, 720px); column-gap: 32px;`
-  max width 1312 (`--frame-max`). A spans both tracks; B, C and the list are in track 1; the pane in track 2,
+  max width 1312 (`--frame-max`). A, B, C and the list are in track 1 (A's actions end at the list's right edge;
+  under 440 the main action is icon-only, a container query on A); the pane in track 2,
   `align-self: start`, its top level with B's top. Both tracks always exist. Měsíc's wide grid spans both tracks.
 - **Pane:** `--card`, r20, padding 24, `--lift-2`; `position: sticky; top: 24px` while it fits, `data-tall` → static
   (Simple's `fitPanes()`); never `overflow: auto`. Action row 44 at the top: `‹ Back` (quiet M with its label) left,

@@ -220,7 +220,7 @@ export function switchRow({ label, hint, checked = false, onChange, name, disabl
 export function searchField({ placeholder = 'Hledej', value = '', onInput, label = 'Hledej', name = 'q' } = {}) {
   const input = h('input', { class: 'input', type: 'search', name, value, placeholder, autocomplete: 'off', enterkeyhint: 'search' });
   // our own ✕ in the palette's ink (the browser's own clear button is a blue of its own)
-  const clear = h('button', { type: 'button', class: 'icon-btn search__clear', 'aria-label': 'Smaž hledání', title: 'Smaž hledání', hidden: !value }, icon('x', { size: 's' }));
+  const clear = h('button', { type: 'button', class: 'icon-btn search__clear', 'aria-label': 'Vymaž hledání', title: 'Vymaž hledání', hidden: !value }, icon('x', { size: 's' }));
   input.addEventListener('input', (e) => { clear.hidden = !input.value; onInput?.(input.value, e); });
   clear.addEventListener('click', (e) => {
     e.preventDefault();

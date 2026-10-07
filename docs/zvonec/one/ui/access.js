@@ -355,7 +355,7 @@ export function renderAccess() {
     title: 'Přístupy',
     action: { label: 'Pozvi člověka', icon: 'user-plus', onclick: () => inviteSheet(null) },
     menu: [
-      { label: 'Jak se lidé dostanou dovnitř', icon: 'info', onclick: helpSheet },
+      { label: 'Ukaž, jak se lidé dostanou dovnitř', icon: 'info', onclick: helpSheet },
       can('admin') ? { label: 'Vyměň klíč', icon: 'key', onclick: keySheet } : null,
     ].filter(Boolean),
     search: { key: KEY, placeholder: 'Hledej člověka', onInput: redraw },

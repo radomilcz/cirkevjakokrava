@@ -115,7 +115,7 @@ function openPoint(eventId, itemId) {
   formSheet({
     title: itemName(S.data, item),
     body: [
-      field({ label: 'Název bodu', hint: format ? `Když necháš prázdné, bude tu „${format.name}“.` : null, control: textInput({ name: 'title', value: item.title || '', placeholder: format?.name || 'např. Slovo na cestu' }) }),
+      field({ label: 'Název bodu', hint: format ? `Když název necháš prázdný, bude tu „${format.name}“.` : null, control: textInput({ name: 'title', value: item.title || '', placeholder: format?.name || 'např. Slovo na cestu' }) }),
       field({ label: 'Kolik minut', control: stepper({ name: 'minutes', value: Number(item.minutes) || 0, min: 0, max: 240, step: 5, label: 'Kolik minut' }) }),
       field({ label: 'Kdo vede', control: h('div', { class: 'osnova-who' }, whoText, h('span', { class: 'cluster' }, choose, reset)) }),
       disclosure(field({ label: 'Poznámka', optional: true, control: textArea({ name: 'note', value: item.note || '', rows: 2, placeholder: 'např. píseň Jsi můj pastýř' }) }), { open: !!item.note }),
@@ -166,7 +166,7 @@ function takePrevious(eventId) {
   const undo = keep(eventId);
   copyProgram(S.data, e, prev.program, newId);
   change(`osnova ${e.title}: jako ${shortDate(prev.start, { weekday: false })}`);
-  toast(`Převzato z ${shortDate(prev.start)}.`, { action: undo });
+  toast(`Převzato ze setkání ${shortDate(prev.start)}.`, { action: undo });
 }
 
 // ---------- drag to reorder ----------

@@ -54,7 +54,7 @@ export function eventMenuItems(event) {
     open && f.missing ? { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots([event.id]) } : null,
     open ? { label: 'Obsaď jako minule', icon: 'copy', onclick: () => sameAsLast(event.id) } : null,
     series?.step ? { label: 'Prodluž řadu', icon: 'layers', onclick: () => openExtendSeries(event.id) } : null,
-    !event.cancelled && dayOf(event.start) <= today() ? { label: 'Kolik lidí přišlo', icon: 'people', onclick: () => openAttendance(event.id) } : null,
+    !event.cancelled && dayOf(event.start) <= today() ? { label: 'Zapiš, kolik lidí přišlo', icon: 'people', onclick: () => openAttendance(event.id) } : null,
     { label: 'Vytiskni', icon: 'printer', onclick: printEvent },
     '-',
     { label: event.cancelled ? 'Obnov setkání' : 'Zruš setkání', icon: event.cancelled ? 'undo' : 'x', onclick: () => cancelOrRestore(event.id) },

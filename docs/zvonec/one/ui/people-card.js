@@ -320,7 +320,7 @@ function detailsSection(person) {
       person.birthDate ? { icon: 'cake', text: exact ? `${fullDate(person.birthDate)} · ${yearsText(years)}` : `rok ${person.birthDate.slice(0, 4)}` } : null,
       person.nickname ? { icon: 'star', text: `přezdívka ${person.nickname}` } : null,
       needsConsent || person.consentDate ? { icon: 'check', text: person.consentDate ? `Souhlas se zpracováním údajů ${fullDate(person.consentDate)}` : 'Souhlas se zpracováním údajů chybí', onclick: person.consentDate ? null : () => consentSheet(person) } : null,
-      serves ? { icon: 'sliders', onclick: () => limitsSheet(person), text: limits.paused ? 'Má pauzu, do služeb se teď nenavrhuje' : `Nejvíc ${plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')} za měsíc · ${plural(limits.maxConsecutiveWeeks, 'neděle', 'neděle', 'nedělí')} po sobě` } : null,
+      serves ? { icon: 'sliders', onclick: () => limitsSheet(person), text: limits.paused ? 'Má pauzu od služeb' : `Nejvíc ${plural(limits.maxPerMonth, 'služba', 'služby', 'služeb')} za měsíc · ${plural(limits.maxConsecutiveWeeks, 'neděle', 'neděle', 'nedělí')} po sobě` } : null,
       { icon: login ? 'log-in' : invite ? 'mail' : 'lock', text: access, href: '#pristupy' },
     ]),
   });

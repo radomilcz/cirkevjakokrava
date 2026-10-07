@@ -142,20 +142,94 @@ function fitBottomStack() {
 }
 
 /**
- * Phone: the toasts sit 16 above the tab bar – or, while a bottom sheet covers the tab bar, 16 above the sheet's top
- * edge (on the dimmed page), so they never cover its fields or its title. A sheet too tall for that: at the top.
+ * Toasts never cover a layer (CODEX §6.10). Normally they sit 16 above the tab bar (phone) or at the bottom left of
+ * the content (≥ 600). When that place meets an open layer – a bottom sheet covers the tab bar, a dialog or a popover
+ * stands over the bottom left – they move to the first free place of: beside the layers (≥ 600), 16 above them, the
+ * window's top. When none is free, only the newest toast stays and the layers make room for it: the bottom sheets end
+ * 8 under it, a dialog shrinks evenly from the top and the bottom. That room stays until the last layer closes, so a
+ * sheet never jumps under the fingers when a toast leaves.
  */
+let layerRoom = 0;   // px from the window's top the layers keep free for a toast (0: their own max-height)
+
+/** The rect a layer takes when it has settled – from its size, so the rise / drag transforms do not count. */
+function layerRect(layer, W, H) {
+  const el = layer.el;
+  const w = el.offsetWidth;
+  const ht = el.offsetHeight;
+  const mode = el.dataset.mode;
+  if (mode === 'bottom') return { left: 0, top: H - ht, right: W, bottom: H };
+  if (mode === 'dialog') return { left: (W - w) / 2, top: (H - ht) / 2, right: (W + w) / 2, bottom: (H + ht) / 2 };
+  const left = parseFloat(el.style.left) || 0;
+  const top = parseFloat(el.style.top) || 0;
+  return { left, top, right: left + w, bottom: top + ht };
+}
+
+/** Bottom sheets end `layerRoom` + 8 under the window's top (the one over another 24 lower); dialogs shrink evenly. */
+function capLayers(H) {
+  let bottoms = 0;
+  for (const layer of stack) {
+    const mode = layer.el.dataset.mode;
+    if (mode === 'bottom') {
+      const own = bottoms ? `calc(92dvh - ${24 * bottoms}px)` : '92dvh';
+      layer.el.style.maxHeight = layerRoom ? `min(${own}, ${Math.floor(H - layerRoom - 24 * bottoms)}px)` : '';
+      bottoms += 1;
+    } else if (mode === 'dialog') {
+      layer.el.style.maxHeight = layerRoom ? `min(85vh, ${Math.floor(H - 2 * layerRoom)}px)` : '';
+    }
+  }
+}
+
 function placeToasts() {
   const root = document.querySelector('.toasts');
+  if (!stack.length) layerRoom = 0;
   if (!root) return;
-  const sheets = stack.filter((l) => l.el.dataset.mode === 'bottom');
-  root.style.bottom = '';
-  delete root.dataset.place;
-  if (!sheets.length) return;
+  const reset = () => { root.style.left = ''; root.style.bottom = ''; delete root.dataset.place; };
+  reset();
+  const toasts = [...root.children];
+  toasts.forEach((t) => delete t.dataset.tucked);
+  if (!stack.length) return;
+  const pad = 8;
+  const gap = 16;
+  const W = document.documentElement.clientWidth;
   const H = window.innerHeight;
-  const sheetTop = H - Math.max(...sheets.map((l) => l.el.offsetHeight));   // the highest sheet's top edge
-  if (sheetTop - 16 - root.offsetHeight >= 8) root.style.bottom = `${Math.round(H - sheetTop + 16)}px`;
-  else root.dataset.place = 'top';
+  if (layerRoom) { capLayers(H); fitBottomStack(); }   // a layer opened since keeps the room too
+  if (!toasts.length) return;
+  const rects = () => stack.map((l) => layerRect(l, W, H));
+  const free = (obstacles) => {
+    const r = root.getBoundingClientRect();
+    if (r.top < pad || r.left < pad || r.right > W - pad + 0.5 || r.bottom > H - pad + 0.5) return false;
+    return obstacles.every((o) => r.right + pad <= o.left || o.right + pad <= r.left || r.bottom + pad <= o.top || o.bottom + pad <= r.top);
+  };
+  const tryPlaces = () => {
+    const obstacles = rects();
+    const u = obstacles.reduce((a, o) => ({
+      left: Math.min(a.left, o.left), top: Math.min(a.top, o.top), right: Math.max(a.right, o.right), bottom: Math.max(a.bottom, o.bottom),
+    }));
+    const places = [
+      () => {},                                                                     // its own place
+      ...(phone() ? [] : [
+        () => { root.style.left = `${Math.round(Math.max(pad, u.left - gap - root.offsetWidth))}px`; },   // left of them
+        () => { root.style.left = `${Math.round(u.right + gap)}px`; },                                   // right of them
+      ]),
+      () => { root.style.bottom = `${Math.round(H - u.top + gap)}px`; },           // 16 above them
+      () => { root.dataset.place = 'top'; },                                      // the window's top
+    ];
+    for (const put of places) {
+      reset();
+      put();
+      if (free(obstacles)) return true;
+    }
+    reset();
+    return false;
+  };
+  if (tryPlaces()) return;
+  // no free place: only the newest toast, and then the layers make room for it under the window's top
+  toasts.slice(0, -1).forEach((t) => { t.dataset.tucked = ''; });
+  if (tryPlaces()) return;
+  root.dataset.place = 'top';
+  layerRoom = Math.max(layerRoom, Math.ceil(root.getBoundingClientRect().bottom + pad));
+  capLayers(H);
+  fitBottomStack();
 }
 
 /**
@@ -232,8 +306,10 @@ function open({
   syncInert();
   anchor?.setAttribute?.('aria-expanded', 'true');
   reposition();
+  placeToasts();   // again: an anchored popover has its place only now
   requestAnimationFrame(() => {
     reposition();
+    placeToasts();
     const target = typeof initialFocus === 'string' ? el.querySelector(initialFocus) : initialFocus
       || (autofocus ? el.querySelector('.sheet__body :is(input:not([type=hidden]), textarea, select)') : null)
       || el.querySelector('.sheet__body [role="menuitem"], .sheet__body .menu__row')
@@ -244,7 +320,7 @@ function open({
   return {
     el, head: headEl, body: bodyEl, foot: footEl, close, kind, reposition,
     /** Re-anchor (the opener was redrawn): the popover moves to the new element, focus returns there. */
-    setAnchor: (next) => { if (next) { anchor = next; returnTo = next; next.setAttribute('aria-expanded', 'true'); reposition(); } },
+    setAnchor: (next) => { if (next) { anchor = next; returnTo = next; next.setAttribute('aria-expanded', 'true'); reposition(); placeToasts(); } },
     setBody: (content) => { bodyEl.replaceChildren(...nodes(content)); reposition(); fitBottomStack(); placeToasts(); },
     setFoot: (content) => { footEl.replaceChildren(...nodes(content)); footEl.hidden = !nodes(content).length; reposition(); fitBottomStack(); placeToasts(); },
     setTitle: (text) => { if (titleEl) titleEl.textContent = text; },
@@ -412,7 +488,7 @@ export function toast(words, { action, actionLabel = 'Vrať', duration = 6000, i
   while (root.children.length >= 2) root.firstElementChild.remove();
   let timer = 0;
   const undo = action ? () => { done(); action(); } : null;
-  const done = () => { clearTimeout(timer); el.remove(); };
+  const done = () => { clearTimeout(timer); el.remove(); placeToasts(); };
   const el = h('div', { class: 'toast', role: 'status' },
     iconName ? icon(iconName, { size: 's' }) : null,
     h('span', { class: 'toast__text' }, words),

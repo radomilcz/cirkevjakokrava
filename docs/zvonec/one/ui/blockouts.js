@@ -13,7 +13,7 @@ import { upcomingDuties } from '../../lib/events.js';
 import { roleById } from '../../lib/groups.js';
 import { today, dayOf, inBlockout } from '../../lib/time.js';
 
-const LEAD = 'Zapiš si dny, kdy nemůžeš. Zvonec tě na ně nebude navrhovat.';
+const LEAD = 'Zapiš si dny, kdy nemůžeš. V těch dnech tě Zvonec do služeb nenavrhne.';
 
 /** The person's current and future ranges, soonest first. */
 export const blockoutsOf = (personId) => (S.data.availability || [])
@@ -178,7 +178,7 @@ export function blockoutSection(person, { cls } = {}) {
 export function renderBlockoutsPage() {
   const person = personById(S.data, myId());
   const add = person ? { label: 'Přidej', icon: 'plus', onclick: () => blockoutSheet(person) } : null;
-  if (add && isPhone()) add.label = 'Přidej dny, kdy nemůžu';   // the phone shows „+“ only: its name says what it adds
+  if (add && isPhone()) add.label = 'Přidej dny, kdy nemůžeš';   // the phone shows „+“ only: its name says what it adds
   if (!person) {
     return page({
       title: 'Kdy nemůžu',

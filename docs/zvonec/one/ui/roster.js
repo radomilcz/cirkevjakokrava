@@ -2,7 +2,7 @@
 //   #kalendar/rozpis/<YYYY-MM>[/<eventId> | /bremeno]
 // D: the period line ‹ Říjen 2026 › ······ Dnes, the legend „○ čeká na odpověď ● něco nesedí“ once (leaders, when
 // a mark appears), then one block per meeting of the month: the date arch, „Setkání na pastvě · 10.00“, from 600 up
-// the fill ring in the trail (on the title line only), and one line per team – the team (a column of 96 / 120) and
+// the fill in the trail as Seznam has it (◯ 6 z 6 · 1 čeká, on the title line only), and one line per team – the team (a column of 96 / 120) and
 // its people, wrapping between people (a name moves to the next line whole), ○ / ● after a name (leaders), and under
 // them the „+ Klávesy“ slots in a row of their own (leaders). Filtr › Tým narrows the lines.
 // A click on a name (leaders) → the duty sheet; on „Ty“ → my answer; on the block → the meeting (pane ≥ 1200, page
@@ -11,7 +11,7 @@
 // the Břemeno dialog and the print (A4 landscape, a table of every role).
 
 import {
-  h, slot, dateArch, fill, list, row, avatar, personName, layer, formSheet, field, selectInput, isSplit, isPhone,
+  h, slot, dateArch, list, row, avatar, personName, layer, formSheet, field, selectInput, isSplit, isPhone,
   isLayerOpen, shortDate, clock, monthLabel, periodLine, table, plural, statusSymbol, sev, STATUS_KEY, SEP,
   shiftMonth,
 } from './kit.js';
@@ -25,7 +25,7 @@ import {
 import { fillOpenSlots, pickFor, openDutySheet, openMyAnswer } from './event-duties.js';
 import {
   calendarScreen, passesFilter, matchesSearch, shownBy, filterTeams, emptyCase, emptyLine, eventPane, eventPage,
-  missingPage, isMonth, thisMonth, lastDayOf, inMonth, currentMonth,
+  missingPage, isMonth, thisMonth, lastDayOf, inMonth, currentMonth, fillLine,
 } from './calendar.js';
 
 const isPast = (event) => dayOf(event.end) < today();
@@ -111,7 +111,7 @@ function block({ event, lines }, { month, openId, marks, teams }) {
   const open = event.id === openId;
   const href = open && isSplit() ? `#kalendar/rozpis/${month}` : `#kalendar/rozpis/${month}/${event.id}`;
   const f = fillOfTeams(event, teams);
-  const trail = !isPhone() && !event.cancelled && f.needed ? h('span', { class: 'rblock__trail' }, fill(f.filled, f.needed, { trailing: true })) : null;
+  const trail = !isPhone() && !event.cancelled && f.needed ? h('span', { class: 'rblock__trail' }, fillLine(f)) : null;
   return h('article', {
     class: 'rblock', dataset: { open: open ? '' : null, cancelled: event.cancelled ? '' : null, past: isPast(event) ? '' : null, id: event.id },
     'aria-label': `${event.title}, ${shortDate(event.start)}`,
@@ -260,7 +260,7 @@ export function calendarMenu({ month = currentMonth(), ids = () => [] } = {}) {
     { label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport },
     { label: 'Vytiskni rozpis…', icon: 'printer', onclick: () => openPrint(month) },
     leader ? { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: filterTeams() }) } : null,
-    leader ? { label: 'Břemeno', icon: 'layers', onclick: () => openLoad(month) } : null,
+    leader ? { label: 'Ukaž, kdo kolik slouží', icon: 'layers', onclick: () => openLoad(month) } : null,
   ].filter(Boolean);
 }
 

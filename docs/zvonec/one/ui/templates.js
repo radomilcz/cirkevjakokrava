@@ -409,7 +409,7 @@ export function basicsSheet(type) {
       });
       if (created) navigate(`${LIST}/${target.id}`);
       change(`šablona ${n}`);
-      toast(created ? `Přidáno: ${n}. Doplň, kdo je potřeba, a osnovu.` : 'Uloženo.');
+      toast(created ? `Přidáno: ${n}. Doplň ještě „Kdo je potřeba“ a osnovu.` : 'Uloženo.');
       return undefined;
     },
   });

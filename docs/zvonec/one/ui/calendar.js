@@ -151,13 +151,17 @@ export function emptyLine(c) {
 
 // ---------- the event line (Seznam, Měsíc's day list and popover) ----------
 
-/** The leader's fill: ◯ 14 z 15 · chybí 1 (or · 2 čekají). */
-function fillOfEvent(event) {
-  if (!can('leader') || event.cancelled) return null;
-  const f = fillOf(event);
-  if (!f.needed) return null;
+/** A fill as the leader reads it everywhere: ◯ 14 z 15 · chybí 1 (or · 2 čekají). `f`: fillOf / fillOfTeams. */
+export function fillLine(f) {
+  if (!f?.needed) return null;
   const words = f.missing ? missingWords(f.missing) : f.waiting ? waitingWords(f.waiting) : null;
   return fill(f.filled, f.needed, { words });
+}
+
+/** The leader's fill of a meeting (Seznam, Měsíc's day list and popover). */
+function fillOfEvent(event) {
+  if (!can('leader') || event.cancelled) return null;
+  return fillLine(fillOf(event));
 }
 
 /** „ty · Kázání · potvrzeno“ when I serve. */

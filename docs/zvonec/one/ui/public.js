@@ -15,7 +15,7 @@ import { PUBLIC_FILE } from '../../lib/public.js';
 import { addDays, dayOf, today, weekday } from '../../lib/time.js';
 import {
   h, button, list, row, section, empty, pill, kindTag, KIND_HUES, layer, disclosure, callout, skeleton, plural,
-  joinMeta, clockRange, icon, download, asciiName, mapFrame, hasCoords, canMap, mapUrl, detailHead, facts,
+  joinMeta, clockRange, icon, download, asciiName, mapFrame, mapLink, hasCoords, detailHead, facts,
   agenda, agendaDay, agendaEvent, subhead, text, meta, brand, minutesMark,
 } from './kit.js';
 
@@ -226,10 +226,8 @@ function findUsSection(d) {
     title: 'Kde nás najdeš',
     cls: 'pub-find',
     body: [
-      facts([
-        { icon: 'pin', text: joinMeta([name, d.address || home?.address]) },
-        canMap(place) ? { icon: 'external', text: 'Otevři v mapě', href: mapUrl(place), external: true, target: '_blank' } : null,
-      ]),
+      facts([{ icon: 'pin', text: joinMeta([name, d.address || home?.address]) }]),
+      mapLink(place),   // the app's „Otevři v mapě ↗“ (pin + ↗, accent), as in Setkání, Místa and a household
       mapFrame(home, { title: 'Mapa: kde nás najdeš' }),
     ],
   });
@@ -294,8 +292,8 @@ function renderPublicEvent(id) {
       facts: facts([
         { icon: 'clock', text: cap(whenText(event)) },
         places.length ? { icon: 'pin', text: places.map((p) => joinMeta([p.name, p.address])).join('; ') } : null,
-        mapPlace && canMap(mapPlace) ? { icon: 'external', text: 'Otevři v mapě', href: mapUrl(mapPlace), external: true, target: '_blank' } : null,
       ]),
+      after: mapPlace ? mapLink(mapPlace) : null,   // under the address, the app's map link (as on #mista/<id>)
     }),
     event.cancelled ? callout({ tone: 'no', title: 'Tohle setkání je zrušené.', text: 'Mrkni na Pastvu, co chystáme dál.' }) : null,
     section({

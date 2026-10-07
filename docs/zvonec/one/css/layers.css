@@ -127,8 +127,10 @@ html[data-layer-open] { overflow: hidden; }
 .toast__action { flex: none; }
 .toast__close { flex: none; color: var(--ink-2); }
 body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-4)); }
-/* phone, over a bottom sheet too tall to leave room above it (ui/layers.js placeToasts): at the window's top */
+/* over a layer that leaves no room under the toasts (ui/layers.js placeToasts): at the window's top; with no room at
+   all only the newest stays (the older one is tucked away until the layers close or the newest leaves) */
 .toasts[data-place="top"] { top: calc(env(safe-area-inset-top) + var(--space-2)); bottom: auto; }
+.toast[data-tucked] { display: none; }
 @media (min-width: 600px) {
   .toasts { left: calc(var(--nav-w) + var(--gutter)); right: auto; bottom: var(--space-5); justify-items: start; }
   .toast { max-width: 400px; width: max-content; }

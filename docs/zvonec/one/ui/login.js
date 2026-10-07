@@ -214,7 +214,7 @@ async function checkInvite(code) {
   const found = await signIn(S.logins, INVITE_NAME, code);
   if (invite?.code !== code) return;
   if (!found || found.record.access !== 'invite') {
-    invite = { code, status: 'invalid', message: 'Tahle pozvánka neplatí. Úplně nová pozvánka začne fungovat za pár minut, jinak požádej toho, kdo tě pozval, o novou.' };
+    invite = { code, status: 'invalid', message: 'Tahle pozvánka neplatí. Jestli je úplně nová, začne fungovat za pár minut. Jinak požádej toho, kdo tě pozval, o novou.' };
   } else if (isExpired(found.record, today())) {
     invite = { code, status: 'expired', message: 'Tahle pozvánka už vypršela. Požádej toho, kdo tě pozval, o novou.' };
   } else {
