@@ -132,7 +132,7 @@
 /* ---------- list | detail on a wide screen (≥ 1200): the list keeps its phone width, the detail beside it ---------- */
 @media (min-width: 1200px) {
   .screen--wide:is(.mine, .staffing, .people-root) { max-width: none; }
-  .screen--wide:is(.mine, .staffing, .people-root) > .split > .split__aside { top: var(--space-5); margin-top: calc(var(--space-7) - 2px); }
+  .screen--wide:is(.mine, .staffing, .people-root) > .split > .split__aside { top: var(--space-5); margin-top: var(--space-7); }
   .screen--wide:is(.mine, .staffing, .people-root) > .split {
     grid-template-columns: minmax(0, 560px) minmax(0, 640px); gap: var(--space-7); justify-content: start;
   }
@@ -150,15 +150,17 @@
 .ev-head > .callout { margin-top: var(--space-2); }
 
 /* Tvoje služba: the one lifted block */
-.ev-you { display: grid; gap: 0; padding: var(--space-4) var(--space-5); border-radius: var(--shape-block); background: var(--feature); }
-.ev-you__item { display: grid; gap: var(--space-4); padding: var(--space-1) 0; }
-.ev-you__item + .ev-you__item { margin-top: var(--space-3); padding-top: var(--space-4); border-top: 1px solid var(--hairline); }
+.ev-you { display: grid; overflow: hidden; border-radius: var(--shape-block); background: var(--feature); }
+/* each duty carries the card's padding, so the hover of an answered one fills the card edge to edge, evenly */
+.ev-you__item { display: grid; gap: var(--space-4); padding: var(--space-4) var(--space-5); }
+.ev-you__item + .ev-you__item { border-top: 1px solid var(--hairline); }
 .ev-you__item--button {
-  grid-template-columns: 1fr auto; align-items: center; width: 100%; margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-3));
-  width: calc(100% + 2 * var(--space-3)); padding: var(--space-2) var(--space-3); border: 0; border-radius: var(--shape-control);
+  grid-template-columns: 1fr auto; align-items: center; width: 100%; margin: 0; border: 0; border-radius: 0;
   background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease);
 }
 .ev-you__item--button:hover { background: var(--wash); }
+.ev-you__item--button:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; border-radius: var(--shape-block); }
 .ev-you__item--button > .icon { color: var(--ink-3); }
 .ev-you__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
 .ev-you__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
@@ -215,6 +217,7 @@
 
 /* Osnova ›, O setkání a místě › */
 .ev-rows { display: grid; margin-top: calc(-1 * var(--space-4)); }
+.ev--pane .ev-rows > :last-child { border-bottom: 0; }   /* the card's edge closes the list in a pane */
 .ev-row {
   display: flex; align-items: baseline; gap: var(--space-2); min-height: 56px; padding: var(--space-4) 0;
   border: 0; border-bottom: 1px solid var(--hairline); background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer;

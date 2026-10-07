@@ -254,7 +254,7 @@ export function renderProgram(id) {
     const leaders = itemLeaders(S.data, event, item).map((pid) => nameAt(event, pid));
     const format = formatById(S.data, item.formatId);
     const needsLeader = !!format?.leadRoleId || !!item.personId;
-    const who = leaders.length ? leaders.join(', ') : needsLeader ? 'chybí, kdo vede' : null;
+    const who = leaders.length ? leaders.join(', ') : needsLeader ? 'chybí vedoucí' : null;
     const body = [
       h('span', { class: 'osnova__time' }, clock(start), h('span', { class: 'osnova__end' }, clock(end))),
       h('span', { class: 'osnova__body' },

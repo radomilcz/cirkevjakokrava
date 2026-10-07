@@ -392,9 +392,9 @@ body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-
 .detail__head .meta { margin-top: 2px; }
 .detail .section { margin-top: 0; }
 @media (min-width: 1200px) {
-  /* the pane scrolls on its own; 2 px of room inside the scroll box keep the card's 1 px ring (it is drawn outside
-     the card) – clipped, it vanished from the straight edges and only its arcs showed at the corners */
-  .split > .split__aside { max-height: calc(100dvh - var(--topbar-h) - var(--space-6)); overflow-y: auto; scrollbar-width: thin; padding: 2px; margin: -2px; }
+  /* the pane sticks while it fits the window; a taller one (app.js fitPanes → data-tall) scrolls with the page –
+     no scroll box of its own, so one scrollbar and the card's ring (drawn outside it) is never clipped */
+  :is(.split__aside, .cal-split__aside)[data-tall] { position: static; }
   .split { grid-template-columns: minmax(360px, 1fr) minmax(0, 2fr); }
 }
 
