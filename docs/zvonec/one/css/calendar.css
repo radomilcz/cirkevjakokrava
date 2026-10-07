@@ -111,9 +111,9 @@
 .cal-cell__more:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* „ty · Vedení chval + Klávesy · čeká“: the roles stay on the pill's line and wrap between words beside it (the pill
-   „ty“ is about 32, + 8 gap + room for rounding), so „ty“ never stands alone above its own words; the pill sits on the
-   roles' first baseline; the status may take the next line */
-.cal-event .event__duty:has(> .pill:first-child) { align-items: baseline; }
+   „ty“ is about 32, + 8 gap + room for rounding), so „ty“ never stands alone above its own words; the status may take
+   the next line. All are centred on one line (kit .event__duty): a baseline alignment lifted „✓ potvrzeno“ 5 px above
+   „Kázání“, because a status note's baseline is its icon's bottom. */
 .cal-event .event__duty > .pill:first-child + span { max-width: calc(100% - 44px); min-width: 0; }
 
 /* the day popover (320): the day's meetings as event lines */
