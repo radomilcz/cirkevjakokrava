@@ -367,6 +367,7 @@
 .pick-list { margin-bottom: var(--space-3); }
 .pick-list > :not(.row) { margin-inline: var(--space-3); }   /* headings, hints and buttons line up with the names, the rows bleed */
 .pick-list > .btn { width: auto; }
+.waiting-lead { margin: 0; }
 .pick-row--off .row__title { color: var(--ink-2); }
 .pick-row--off .avatar { opacity: .55; }
 .pick-row__why { color: var(--no-ink); }

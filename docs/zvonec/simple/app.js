@@ -31,7 +31,7 @@ import { openMeMenu, renderBlockoutsPage, renderAccountPage } from './ui/me-menu
 // IMPORTS:mine end
 
 // IMPORTS:staffing
-import { renderStaffing } from './ui/staffing.js';
+import { renderStaffing, staffingCount } from './ui/staffing.js';
 // IMPORTS:staffing end
 
 // IMPORTS:calendar
@@ -264,6 +264,10 @@ function updateShell(route, section, parts) {
   const answers = waitingAnswers();
   const answersLabel = `${answers} ${agree(answers, 'služba čeká', 'služby čekají', 'služeb čeká')} na tvou odpověď`;
   const counts = { moje: [answers, answersLabel] };
+  if (can('leader')) {
+    const open = staffingCount();
+    counts.obsazeni = [open, `${open} ${agree(open, 'věc', 'věci', 'věcí')} k obsazení nebo vyřešení`];
+  }
   for (const slot of document.querySelectorAll('[data-badge]')) {
     const [n, label] = counts[slot.dataset.badge] || [0, ''];
     slot.replaceChildren(...nodes(badge(n, { label })));
