@@ -13,7 +13,7 @@
 import {
   h, icon, button, buttonRow, segmented, statusNote, warningRow, dutyRow, teamHead, statusSymbol, openSheet, formSheet,
   toast, sev, field, textInput, stepper, disclosure, searchField, avatar, personName, agree, shortDate, plural, dateArch,
-  link, joinMeta, note, SEP, STATUS_WORDS, SEVERITY_WORDS,
+  link, joinMeta, note, row, SEP, STATUS_WORDS, SEVERITY_WORDS,
 } from './kit.js';
 import { S, can, myId, change, newId, render } from '../../ui/state.js';
 import { eventById, needsOf, missingCount, followingInSeries, updateSeries } from '../../lib/events.js';
@@ -48,9 +48,11 @@ function snapshot(eventId, note, extra) {
 /**
  * Výběr člověka for a slot – the one picker of the app (Setkání, Obsazení, the team sheet): an empty slot
  * (assignmentId null) or „Vyber jiného“ (replaces that duty). Titled by the role: the people of its team,
- * who can first and the longest rested first („naposledy 13. 9.“); who cannot that day stays in the list,
- * greyed, with the reason („ten den nemůže · dovolená“). „Hledej mezi všemi lidmi“ reaches everyone who still
- * comes, and „Přidej nového člověka „…““ makes a quick card. The pick waits for an answer; the toast offers „Vrať“.
+ * who can first and the longest rested first („naposledy 13. 9.“); who cannot that day comes under „Nemůžou“,
+ * greyed, with the reason („ten den nemůže · dovolená“) – picking them asks „Proč to půjde“ first (the answer
+ * is the duty's Vím o tom), and someone who only has another role at this meeting gets „Přesuň sem“.
+ * „Hledej mezi všemi lidmi“ reaches everyone who still comes, and „Přidej nového člověka „…““ makes a quick
+ * card. The pick waits for an answer; the toast offers „Vrať“.
  */
 export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {}) {
   const event = fresh(eventId);
@@ -66,14 +68,49 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
   let query = '';
   let showRest = false;
   let more = null;
-  const pick = (person) => { sheet.close({ restore: false }); assign(eventId, roleId, person.id, assignmentId); onPicked?.(); };
+  const done = () => { sheet.close({ restore: false }); onPicked?.(); };
+  // a reason that is a rule, not just their earlier „nemůže“ to this very duty: ask why it will work first
+  const needsReason = (c) => c.reasons.some((r) => r.severity === 'error' && r.code !== 'declined');
+  const pick = (c) => {
+    if (needsReason(c)) { askWhy(c); return; }
+    done();
+    assign(eventId, roleId, c.person.id, assignmentId);
+  };
+  const askWhy = (c) => formSheet({
+    title: 'Výjimka',
+    subtitle: [role?.name, dayWords(event)].filter(Boolean).join(SEP),
+    submitLabel: 'Přiřaď',
+    body: [
+      h('p', { class: 'text' }, `${personName(c.person)} – ${whyOf(c, event)}.`),
+      field({ label: 'Proč to půjde', hint: 'Zvonec to pak přestane hlásit jako chybu.', control: textInput({ name: 'reason', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
+    ],
+    onSubmit: (form, values) => {
+      const reason = String(values.reason || '').trim();
+      if (!reason) return 'Napiš, proč to půjde.';
+      done();
+      assign(eventId, roleId, c.person.id, assignmentId, { override: reason });
+      return undefined;
+    },
+  });
+  // only another role at this very meeting stands in the way: move them here in one tap
+  const otherRoleHere = (c) => (c.hardCount === 1 && c.reasons.some((r) => r.code === 'K2')
+    ? (fresh(eventId)?.assignments || []).find((a) => a.personId === c.person.id && a.roleId !== roleId && a.status !== 'declined') || null
+    : null);
   const rowOf = (c) => {
     const off = c.hardCount > 0;
-    return h('button', { type: 'button', class: ['row', 'pick-row', off && 'pick-row--off'], onclick: () => pick(c.person) },
-      avatar(c.person),
-      h('span', { class: 'row__body' },
-        h('span', { class: 'row__title' }, personName(c.person)),
-        h('span', { class: ['row__meta', off && 'pick-row__why'] }, whyOf(c, event))));
+    const other = off ? otherRoleHere(c) : null;
+    return row({
+      lead: avatar(c.person),
+      title: personName(c.person),
+      meta: off ? h('span', { class: 'pick-row__why' }, whyOf(c, event)) : whyOf(c, event),
+      onclick: () => pick(c),
+      cls: off ? 'pick-row pick-row--off' : 'pick-row',
+      trail: other ? button('Přesuň sem', {
+        size: 's',
+        onclick: () => { done(); moveHere(eventId, other.id, roleId, assignmentId); },
+        label: `Přesuň sem: ${personName(c.person)}, teď ${roleName(other.roleId)}`,
+      }) : null,
+    });
   };
   const results = h('div', { class: 'list list--inset pick-list', role: 'list' });
   const heading = h('h3', { class: 'pick-heading' });
@@ -93,8 +130,12 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
         more = button(`Ukaž i ostatní z týmu (${rest.length})`, { variant: 'quiet', block: true, iconEnd: 'chevron-down', onclick: () => { showRest = true; draw(); } });
       }
     }
-    const rows = items.map(rowOf);
+    const free = items.filter((c) => !c.hardCount);
+    const blocked = items.filter((c) => c.hardCount);
+    const rows = free.map(rowOf);
+    if (!q && !free.length && blocked.length) rows.push(h('p', { class: 'meta pick-none' }, 'Ten den nemá čas nikdo, kdo to umí.'));
     if (more) { rows.push(more); more = null; }
+    if (blocked.length) rows.push(h('h4', { class: 'pick-heading pick-heading--off' }, 'Nemůžou'), ...blocked.map(rowOf));
     if (!rows.length) rows.push(h('p', { class: 'meta pick-none' }, q ? 'Nikdo takový tu není.' : 'V týmu zatím nikdo není. Najdi někoho mezi všemi lidmi.'));
     if (query.trim()) rows.push(button(`Přidej nového člověka „${query.trim()}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close({ restore: false }); addAndAssign(eventId, roleId, query.trim(), assignmentId); onPicked?.(); } }));
     results.replaceChildren(...rows);
@@ -118,7 +159,7 @@ function whyOf(c, event) {
   if (hard) {
     if (hard.code === 'K11') return 'tahle role je jen pro dospělé';
     if (hard.code === 'K1') return `ten den je ${hard.text}`;          // „ten den je jinde: Brigáda“
-    if (hard.code === 'K2') return `ten den ${hard.text}`;             // „ten den má Bicí“
+    if (hard.code === 'K2') return `ten den ${hard.text}`;             // „ten den má službu: Bicí“
     if (hard.code !== 'K3') return hard.text;
     const off = blockoutOn(event, c.person.id);
     const reason = String(off?.reason || off?.note || '').trim();
@@ -149,22 +190,43 @@ function addAndAssign(eventId, roleId, name, assignmentId) {
 }
 
 /** Put a person on a slot (or in place of `assignmentId`): „čeká na potvrzení“, toast with Vrátit. */
-export function assign(eventId, roleId, personId, assignmentId = null, { created = false, undoExtra } = {}) {
+export function assign(eventId, roleId, personId, assignmentId = null, { created = false, undoExtra, override } = {}) {
   const e = fresh(eventId);
   if (!e) return;
   const name = nameOf(personId);
   const undo = snapshot(eventId, `${name} (${roleName(roleId)})`, undoExtra);
+  place(e, roleId, personId, assignmentId, override);
+  change(`${created ? 'nový člověk ' : ''}${name} na ${roleName(roleId)} ${shortDate(e.start, { weekday: false })}${override ? ' (výjimka)' : ''}`);
+  toast(`${name}: ${roleName(roleId)}${SEP}čeká na potvrzení`, { action: undo });
+}
+
+/** The slot itself: a new duty, or the person swapped into `assignmentId`; waiting for their answer. */
+function place(e, roleId, personId, assignmentId, override) {
   e.assignments = e.assignments || [];
-  const target = assignmentId && e.assignments.find((a) => a.id === assignmentId);
+  let target = assignmentId && e.assignments.find((a) => a.id === assignmentId);
   if (target) {
     target.personId = personId;
     target.status = 'proposed';
     delete target.override;
   } else {
-    e.assignments.push({ id: newId('a'), roleId, personId, status: 'proposed' });
+    target = { id: newId('a'), roleId, personId, status: 'proposed' };
+    e.assignments.push(target);
   }
-  change(`${created ? 'nový člověk ' : ''}${name} na ${roleName(roleId)} ${shortDate(e.start, { weekday: false })}`);
-  toast(`${name}: ${roleName(roleId)}${SEP}čeká na potvrzení`, { action: undo });
+  if (override) target.override = { reason: override, at: today(), ...(myId() ? { by: myId() } : {}) };
+}
+
+/** „Přesuň sem“: the person leaves their other role at this meeting (it opens up) and takes this one. */
+export function moveHere(eventId, fromAssignmentId, roleId, assignmentId = null) {
+  const e = fresh(eventId);
+  const from = e?.assignments?.find((a) => a.id === fromAssignmentId);
+  if (!from) return;
+  const name = nameOf(from);
+  const was = roleName(from.roleId);
+  const undo = snapshot(eventId, `${name} (${roleName(roleId)})`);
+  e.assignments = e.assignments.filter((a) => a.id !== from.id);
+  place(e, roleId, from.personId, assignmentId);
+  change(`${name}: ${roleName(roleId)}, předtím ${was} ${shortDate(e.start, { weekday: false })}`);
+  toast(`${name}: ${roleName(roleId)}, předtím ${was}${SEP}čeká na potvrzení`, { action: undo });
 }
 
 // ---------- status ----------

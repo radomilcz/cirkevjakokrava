@@ -190,7 +190,7 @@ export function candidates(data, eventId, roleId, { today, scope = 'skilled', in
       } else if (s.assignment.roleId === roleId) {
         reasons.push({ code: 'already', severity: 'error', text: 'už tu je' });
       } else if (!isCombinable(roles, s.assignment.roleId, roleId)) {
-        reasons.push({ code: 'K2', severity: 'error', text: `má ${s.role?.name || 'jinou službu'}` });
+        reasons.push({ code: 'K2', severity: 'error', text: s.role?.name ? `má službu: ${s.role.name}` : 'má jinou službu' });
       }
     }
     if (role?.adultsOnly && child(person)) reasons.push({ code: 'K11', severity: 'error', text: 'dítě' });

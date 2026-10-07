@@ -300,7 +300,7 @@ a.row:active, button.row:active { background: var(--press); }
 .row__stretch { color: inherit; }
 .row__stretch::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 .row:has(> .row__stretch):hover { background: var(--wash); }
-.row > :is(.icon-btn, .btn, .switch) { position: relative; z-index: 1; }
+.row > :is(.icon-btn, .btn, .switch), .row > .row__trail > :is(.icon-btn, .btn, .switch) { position: relative; z-index: 1; }
 /* a lit row (hover, selected, open) touches no line: the line is the ::before of the row below, so a lit row hides
    its own and the one under it; in a list two lit rows keep 3 px apart, with the line in that gap */
 .list > .row + .row { margin-top: 3px; }
