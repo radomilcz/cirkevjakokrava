@@ -316,10 +316,13 @@ button.row:disabled { color: var(--ink-3); cursor: not-allowed; }
 .lead-mark--kind { height: 48px; padding-top: 4px; border-radius: var(--shape-arch-sm); background: var(--hue-fill); color: var(--hue-ink); }
 .lead-mark--kind.lead-mark--l { width: 56px; height: 64px; border-radius: var(--shape-arch-l); }
 /* the minutes block: „25 / min“ */
-.lead-mark--minutes { gap: 0; color: var(--ink); }
-.lead-mark--minutes > b { font-family: var(--font-title); font-weight: 900; font-size: 18px; line-height: 18px; font-feature-settings: var(--numerals); }
+/* 48 high like the Účel arch, so „25“ and „min“ have room; the Agrandir numerals sit high in their line, so the number
+   gets 2 px above it – otherwise it flies up against the block's top edge */
+.lead-mark--minutes { height: 48px; gap: 1px; color: var(--ink); }
+.lead-mark--minutes > b { padding-top: 2px; font-family: var(--font-title); font-weight: 900; font-size: 18px; line-height: 20px; font-feature-settings: var(--numerals); }
 .lead-mark--minutes > span { font-size: var(--type-caption); line-height: 14px; font-weight: var(--weight-medium); color: var(--ink-2); }
-.lead-mark--minutes.lead-mark--l > b { font-size: 24px; line-height: 24px; }
+.lead-mark--minutes.lead-mark--l { height: 64px; }
+.lead-mark--minutes.lead-mark--l > b { font-size: 24px; line-height: 26px; }
 .row:has(> .lead-mark:first-child) { --row-rule-start: calc(var(--space-3) + var(--avatar-m) + var(--space-3)); }
 
 /* ---------- the date arch (CODEX §6.14) ---------- */
