@@ -1,5 +1,5 @@
 // Zvonec One – Lidé (DESIGN §6.5): „How do I reach someone?“ One list screen with two views, Lidé · Skupiny.
-//   A  „Lidé“ · [Přidej člověka] (leaders, both views) · ⋯
+//   A  „Lidé“ · ⋯ · [Nový člověk] (leaders, both views; the owner's wording)
 //   B  „Hledej jméno“ (one search for both views, kept for the visit) + Filtr (key 'lide' / 'skupiny')
 //   C  Lidé · Skupiny
 //   D  Lidé: the birthday line (leaders, someone within 7 days) as the first line, then A–Z under letters – a phone
@@ -180,7 +180,7 @@ function peopleEmpty(q) {
     return empty({
       kind: 'none', icon: 'people', title: 'Zatím tu nikdo není.',
       text: 'Tady najdeš, jak se s kým spojit. Přidej první lidi, nebo jim pošli pozvánku.',
-      action: leader ? { label: 'Přidej člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
+      action: leader ? { label: 'Nový člověk', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
     });
   }
   const hidden = everyone().length;
@@ -334,7 +334,7 @@ function peopleScreen({ view, body, pane = null, wide = false }) {
   });
   main = listScreen({
     title: 'Lidé',
-    action: can('leader') ? { label: 'Přidej člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
+    action: can('leader') ? { label: 'Nový člověk', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
     menu: listMenu(view),
     search: { key: SEARCH, placeholder: 'Hledej jméno', onInput: () => main.setBody(body()) },
     filter,

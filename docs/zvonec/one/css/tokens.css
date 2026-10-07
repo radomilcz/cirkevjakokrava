@@ -150,6 +150,7 @@
   --pick: var(--selected-bg);
   --pick-hover: var(--selected-bg-hover);
   --mark: var(--indicator);            /* the detached 3 px selection bar */
+  --mark-h: 16px;                      /* its height, centred on the item (the owner: a taller bar looked too tall) */
   --focus-ring: var(--focus);
 
   --ok-ink: var(--confirmed-fg);   --ok-fill: var(--confirmed-bg);   --ok-solid: var(--confirmed-solid);   --on-ok: var(--text-on-confirmed);

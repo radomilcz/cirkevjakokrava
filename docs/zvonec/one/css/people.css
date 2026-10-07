@@ -77,7 +77,7 @@
 .people-table tbody tr:is([data-picked], [data-open]):hover > * { background-color: var(--pick-hover); }
 .people-table tbody tr:is([data-picked], [data-open]) .table-quiet { color: var(--ink); }
 .people-table tbody tr:is([data-picked], [data-open]) > :first-child::before {
-  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
 }
 .people-table .col-pick { width: 44px; padding-right: 0; }
 .people-table th.col-name { width: 28%; }

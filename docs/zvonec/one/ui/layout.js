@@ -51,7 +51,7 @@ function moreButton(menu, title) {
 }
 
 /**
- * A: h1 ·················· [main action][⋯] – min-height 44; the h1 never carries a chip, a date, a count or a
+ * A: h1 ·················· [⋯][main action] – min-height 44; the h1 never carries a chip, a date, a count or a
  * subtitle; the main action never changes with the view, the month or the filter.
  *   titleRow({ title: 'Kalendář', action: { label: 'Přidej setkání', icon: 'calendar-plus', onclick }, menu: [...] })
  * action.phoneMenu: on a phone the action is not an „add“ and has no room for its label (Obsazení: „Doplň volná
@@ -65,7 +65,7 @@ export function titleRow({ title, action, menu, headingId } = {}) {
     items = Array.isArray(menu) && !menu.some((x) => x instanceof Node) ? [first, ...menu] : [first];
     act = null;
   }
-  const actions = [act ? mainAction(act) : null, moreButton(items, title)].flat().filter(Boolean);
+  const actions = [moreButton(items, title), act ? mainAction(act) : null].flat().filter(Boolean);   // ⋯ first: the main action ends at the edge
   return h('header', { class: 'head' },
     h('h1', { class: 'title head__title', id: headingId }, title),
     actions.length ? h('div', { class: 'head__actions' }, actions) : null);

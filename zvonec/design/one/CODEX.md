@@ -82,7 +82,7 @@ Agrandir Grand Heavy (`--font-brand`) only for the wordmark.
 
 | gap | px | where |
 |---|---|---|
-| side by side | 8 | controls in a row (search ↔ Filtr, main action ↔ ⋯, Můžu ↔ Nemůžu, chips in a row) |
+| side by side | 8 | controls in a row (search ↔ Filtr, ⋯ ↔ main action, Můžu ↔ Nemůžu, chips in a row) |
 | stacked controls | 12 | title row → toolbar, toolbar → view row, chip rows in Filtr, buttons in a sheet foot |
 | control group → content | 24 | the last control row → D; a sheet head → its body |
 | between sections | 32 | in a detail and on a page (`--section-gap`) |
@@ -103,8 +103,8 @@ Agrandir Grand Heavy (`--font-brand`) only for the wordmark.
 - **Hover:** `--wash` fill on the whole row, radius 12. **Pressed:** `--press`.
 - **Selected / open / current** (one look everywhere: rows, Seznam events, Rozpis blocks, Obsazení items, nav items,
   table rows, the chosen mini-month day): `--pick` fill + a **detached 3 px bar** in `--mark`:
-  `width: 3px; border-radius: 0 3px 3px 0`, at the item's left edge, inset 12 from the top and bottom (sidebar: at the
-  sidebar's edge, inset 10). The chosen mini-month day: `--pick` on its arch + a 16 × 3 bar centred 3 under the cell,
+  `width: 3px; border-radius: 0 3px 3px 0`, at the item's left edge, **16 px tall (`--mark-h`), centred on the item** – the owner found a
+  bar running the item's height too tall (sidebar: at the sidebar's edge, the same 16). The chosen mini-month day: `--pick` on its arch + a 16 × 3 bar centred 3 under the cell,
   radius 3. Selected + hover = `--pick-hover`, never grey.
 - Phone tab, rail cell: the niche (56 × 32 capsule behind the icon) takes `--pick`; the rail adds the bar at its edge.
 - **No hairline touches a lit row.** The hairline belongs to the row below (`::before`, inset to the text start) and
@@ -118,10 +118,10 @@ Agrandir Grand Heavy (`--font-brand`) only for the wordmark.
 
 ```
 [‹ Parent]                                   (drill-in pages only: a top bar 56 on every width, §6.5)
-h1 ································ [main action][⋯]
+h1 ································ [⋯][main action]
 ```
 - Title row: min-height 44, items centred; h1 `flex: none`, one line (a long page title wraps under the actions,
-  never under them). At the content frame's right edge: the main action, then ⋯, 8 apart.
+  never under them). At the content frame's right edge: ⋯ (outlined like a quiet button, so it never reads as an empty place), then the main action, 8 apart – the main action ends at the edge (the owner's order).
 - **Main action:** primary M (`--act` / `--on-act`, r12, 620). Phone: icon-only 44 square with its aria-label
   („Přidej setkání“). ≥ 600: icon 20 + label. `data-primary` (the „N“ key). Shown only to who may use it.
 - **⋯:** quiet icon M, aria-label „Další možnosti“; opens a menu (§6.10). Absent when empty.

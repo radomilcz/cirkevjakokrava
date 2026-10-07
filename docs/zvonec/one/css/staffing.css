@@ -29,7 +29,7 @@
 .staff[data-open] { background: var(--pick); --tint: var(--card); }
 .staff[data-open]:has(.staff__title:hover) { background: var(--pick-hover); }
 .staff[data-open]::after {
-  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
 }
 .staff:has(.staff__title:hover)::before, .staff:has(.staff__title:hover) + .staff::before,
 .staff[data-open]::before, .staff[data-open] + .staff::before { background: transparent; }

@@ -294,7 +294,7 @@ button.row:disabled { color: var(--ink-3); cursor: not-allowed; }
 .row:is([aria-selected="true"], [data-open]):hover { background: var(--pick-hover); }
 .row:is([aria-selected="true"], [data-open]) .row__meta { color: var(--ink); }
 .row:is([aria-selected="true"], [data-open])::after {
-  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
 }
 :is(a.row, button.row, .row:has(> .row__stretch)):hover::before,
 :is(a.row, button.row, .row:has(> .row__stretch)):hover + .row::before,
@@ -361,7 +361,7 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 .event__duty { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-2); margin-top: var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); }
 .event[data-cancelled] .event__title { text-decoration: line-through; color: var(--ink-2); }
 .event:is([data-open], [aria-current="true"]) { background: var(--pick); }
-.event:is([data-open], [aria-current="true"])::after { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
+.event:is([data-open], [aria-current="true"])::after { content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
 .event:is([data-open], [aria-current="true"]) :is(.event__meta, .event__end) { color: var(--ink); }
 
 /* ---------- the month grid as a mini month (date picker, Měsíc narrow) (CODEX §6.14) ---------- */
@@ -603,6 +603,9 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .head__title { flex: 1 1 auto; min-width: 0; min-height: var(--control-m); display: flex; align-items: center; }
 .head__actions { display: flex; align-items: center; gap: var(--gap-x); flex: none; margin-left: auto; }
 .head__action { flex: none; }
+/* ⋯ beside the main action has the quiet button's outline, so it reads as a button, not as an empty place */
+.head__actions > .menu-btn { box-shadow: inset 0 0 0 1px var(--edge-control); border-radius: var(--radius-m); }
+.head__actions > .menu-btn:hover { background: var(--wash); }
 @media (max-width: 599.98px) {
   /* phone: the main action is an icon-only 44 square with its aria-label */
   .head__action:not(.head__action--label) { width: var(--control-m); padding: 0; }

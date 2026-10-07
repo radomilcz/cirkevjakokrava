@@ -80,7 +80,7 @@ html[data-keyboard] .screen { padding-bottom: var(--space-6); }
 .nav-item__label { min-width: 0; }
 .nav-item[aria-current="page"] { color: var(--ink); }
 .nav-item[aria-current="page"]::before {   /* the detached 3 px bar at the navigation's edge */
-  content: ""; position: absolute; left: 0; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
 }
 .sidenav__foot {
   position: relative; flex: none; display: flex; align-items: center; border: 0; background: none; color: inherit; font: inherit;
@@ -104,7 +104,6 @@ html[data-keyboard] .screen { padding-bottom: var(--space-6); }
   .nav-item__niche { width: 56px; height: 32px; }
   .nav-item:hover .nav-item__niche { background: var(--wash); }
   .nav-item[aria-current="page"] .nav-item__niche { background: var(--pick); }
-  .nav-item[aria-current="page"]::before { top: 16px; height: 32px; }
   .nav-item__label { max-width: 80px; white-space: nowrap; }
   .nav-item__count { position: absolute; top: 4px; left: calc(50% + 6px); }
   .nav-item__count:empty { display: none; }
@@ -128,14 +127,14 @@ html[data-keyboard] .screen { padding-bottom: var(--space-6); }
   .nav-item:hover { background: var(--wash); color: var(--ink); }
   .nav-item[aria-current="page"] { background: var(--pick); }
   .nav-item[aria-current="page"]:hover { background: var(--pick-hover); }
-  .nav-item[aria-current="page"]::before { left: -12px; top: 10px; bottom: 10px; }
+  .nav-item[aria-current="page"]::before { left: -12px; }
   .nav-item__count { flex: none; display: inline-flex; }
   .nav-item__count:empty { display: none; }
   .sidenav__foot { gap: var(--space-3); min-height: 56px; margin: var(--space-2) var(--space-3) var(--space-3); padding: 0 var(--space-3); border-radius: var(--radius-m); }
   .sidenav__foot .avatar { width: 36px; height: 36px; font-size: 14px; }
   .sidenav__foot:hover { background: var(--wash); }
   .sidenav__foot[aria-current="page"] { background: var(--pick); }
-  .sidenav__foot[aria-current="page"]::before { content: ""; position: absolute; left: -12px; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
+  .sidenav__foot[aria-current="page"]::before { content: ""; position: absolute; left: -12px; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
 }
 
 /* ---------- the person's menu (a menu layer; ui/me-menu.js) ---------- */

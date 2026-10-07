@@ -146,7 +146,7 @@ Every list screen (Obsazení, Kalendář, Lidé, Šablony, Formáty, Místa, Př
 It has four bands, always in this order, **each one present or absent per screen and role, never per state**:
 
 ```
-A  title row   h1 ··································· [main action] [⋯]
+A  title row   h1 ··································· [⋯] [main action]
 B  toolbar     [⌕ search ·························] [⚟ Filtr ⁿ]          ← the same x, y and width on every list screen
 C  view row    [ Seznam | Měsíc | Rozpis ]                              ← only Kalendář and Lidé
 D  content     list / grid; its own first line may be a period line, a birthday line or a note
@@ -474,13 +474,13 @@ Dál než 4 týdny dopředu: Rozpis ›
 
 ### 6.5 Lidé `#lide[/<id>]` and Skupiny `#lide/skupiny[/<id>]` (everyone) – „How do I reach someone?“
 
-A: „Lidé“ · [Přidej člověka] (leaders, in both views) · ⋯ (Přidej skupinu · Přidej domácnost · Pozvi do Zvonce
+A: „Lidé“ · ⋯ · [Nový člověk] (leaders, in both views; the owner's wording) (Přidej skupinu · Přidej domácnost · Pozvi do Zvonce
 · Zkopíruj e-maily · Stáhni seznam · Podrobný výpis (≥ 900) – leaders; members: Stáhni seznam).
 B: „Hledej jméno“ + Filtr. C: Lidé · Skupiny.
 
 ```
 P                                          D (list track | pane: Člověk)
-Lidé                          [+]  [⋯]     Lidé                                   [+ Přidej člověka] [⋯]
+Lidé                          [⋯]  [+]     Lidé                                   [⋯] [+ Nový člověk]
 [⌕ Hledej jméno          ][⚟ Filtr  ]      [⌕ Hledej jméno              ][⚟ Filtr ]  ┌───────────[⋯][✕]┐
 [     Lidé      |    Skupiny      ]        [ Lidé | Skupiny ]                         │ (B) Bára        │
                                                                                       │ host            │
