@@ -1,0 +1,116 @@
+<!doctype html><html lang="cs" data-palette="cream-clay"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../docs/zvonec/css/palettes.css"><link rel="stylesheet" href="../../../docs/zvonec/next/css/next-tokens.css"><link rel="stylesheet" href="mock.css">
+<style>.hright { display: flex; align-items: center; gap: 0; margin-right: -10px; }
+.search.on { box-shadow: inset 0 0 0 2px var(--ink); color: var(--ink); }
+.search .clear { margin-left: auto; color: var(--ink-2); }
+.teamrow { display: flex; align-items: center; gap: 14px; min-height: 64px; border-bottom: 1px solid var(--hairline); }
+.tm { width: 40px; height: 40px; border-radius: 30%; display: grid; place-items: center; font-size: 13px; font-weight: 720; background: #dbdcf3; flex: none; }
+.teamrow .body { flex: 1; } .teamrow .t { font-size: 17px; font-weight: 620; } .teamrow .m { font-size: 15px; color: var(--ink-2); }
+.sheet .row { min-height: 56px; }
+.sheet .cnt { font-size: 15px; font-weight: 620; color: var(--ink-2); margin-right: 6px; }
+.chips2 { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 22px; }
+.chip2 { height: 34px; padding: 0 12px; border-radius: 10px; background: var(--tint); display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 620; }
+.chip2 .tm { width: 22px; height: 22px; font-size: 10px; border-radius: 6px; background: #d6e7dc; }
+.miss { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--ink); margin: 2px 0 18px; }
+.miss .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--wait-ink); }
+.miss a { color: var(--ink-accent); font-weight: 620; margin-left: auto; }</style></head><body><svg width="0" height="0" style="position:absolute">
+  <symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></symbol>
+  <symbol id="people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.7.8 2.8 2.5 3 5.2"/></symbol>
+  <symbol id="fill" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="sms" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  <symbol id="down" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+</svg>
+<div class="board"><div class="frame" id="l1"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="head"><h1 class="title">Lidé</h1><span class="hright"><span class="icon-btn"><svg class="i"><use href="#plus"/></svg></span><span class="icon-btn"><svg class="i"><use href="#more"/></svg></span></span></div>
+    <div class="search"><svg class="i s"><use href="#search"/></svg>Hledej jméno nebo tým</div>
+    <p class="letter">B</p>
+    <div class="row"><span class="av p1">BH</span><div class="body"><p class="t">Barbora Horáková</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <p class="letter">Č</p>
+    <div class="row"><span class="av p2">PČ</span><div class="body"><p class="t">Petra Černá</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p3">OČ</span><div class="body"><p class="t">Ondřej Černý</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <p class="letter">D</p>
+    <div class="row"><span class="av p4">FD</span><div class="body"><p class="t">Filip Doležal</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p5">AD</span><div class="body"><p class="t">Aleš Dvořák</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p1">MD</span><div class="body"><p class="t">Martina Dvořáková</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav></div>
+<p class="cap"><b>A · Lidé: „Jak se s někým spojím?“</b>Hledání a abeceda. U každého rovnou telefon, ťuknutím na jméno se otevře karta. Žádné filtry, čipy ani tabulky. Vedoucí mají vpravo nahoře „+“ (nový člověk) a ⋯.</p></div><div class="frame" id="l2"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="head"><h1 class="title">Lidé</h1><span class="hright"><span class="icon-btn"><svg class="i"><use href="#plus"/></svg></span><span class="icon-btn"><svg class="i"><use href="#more"/></svg></span></span></div>
+    <div class="search on"><svg class="i s"><use href="#search"/></svg>chv<svg class="i s clear"><use href="#x"/></svg></div>
+    <p class="letter">Tým</p>
+    <div class="teamrow"><span class="tm">CH</span><div class="body"><p class="t">Chvály</p><p class="m">7 lidí · vedou Lukáš Šťastný a Martina Dvořáková</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <p class="letter">Lidé v týmu Chvály</p>
+    <div class="row"><span class="av p4">DS</span><div class="body"><p class="t">Daniel Sýkora</p><p class=m>Vedení chval · Kytara</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p5">HS</span><div class="body"><p class="t">Hedvika Sedláčková</p><p class=m>Zpěv</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p2">JM</span><div class="body"><p class="t">Jakub Marek</p><p class=m>Bicí</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p1">MD</span><div class="body"><p class="t">Martina Dvořáková</p><p class=m>Klávesy</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav></div>
+<p class="cap"><b>B · Hledání najde i tým</b>Stačí napsat kus jména nebo týmu. Najde se tým (ťuknutím otevřeš jeho stránku) a pod ním jeho lidé i s tím, co dělají. Tím odpadá samostatná záložka Skupiny.</p></div><div class="frame" id="l3"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="head"><h1 class="title">Lidé</h1><span class="hright"><span class="icon-btn"><svg class="i"><use href="#plus"/></svg></span><span class="icon-btn"><svg class="i"><use href="#more"/></svg></span></span></div>
+    <div class="search"><svg class="i s"><use href="#search"/></svg>Hledej jméno nebo tým</div>
+    <p class="letter">B</p>
+    <div class="row"><span class="av p1">BH</span><div class="body"><p class="t">Barbora Horáková</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <p class="letter">Č</p>
+    <div class="row"><span class="av p2">PČ</span><div class="body"><p class="t">Petra Černá</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p3">OČ</span><div class="body"><p class="t">Ondřej Černý</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <p class="letter">D</p>
+    <div class="row"><span class="av p4">FD</span><div class="body"><p class="t">Filip Doležal</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p5">AD</span><div class="body"><p class="t">Aleš Dvořák</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+    <div class="row"><span class="av p1">MD</span><div class="body"><p class="t">Martina Dvořáková</p></div><span class="callbtn"><svg class="i s"><use href="#phone"/></svg></span></div>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav><div class="dim"></div><div class="sheet"><div class="grab"></div>
+    <div class="row"><div class="body"><p class="t">Týmy a skupinky</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Narozeniny</p><p class="m">Eva Kučerová dnes</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Chybí údaje</p></div><span class="cnt">3</span><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Hosté bez souhlasu</p></div><span class="cnt">1</span><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Archiv</p></div><span class="cnt">12</span><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Stáhni seznam</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+  </div></div>
+<p class="cap"><b>C · ⋯ pro vedoucí</b>Všechno, co je „navíc“, na jednom místě: týmy a skupinky, narozeniny, kdo nemá vyplněné údaje nebo souhlas, archiv a stažení seznamu. Na hlavní obrazovce z toho nic není.</p></div><div class="frame" id="l4"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="topbar"><span class="back"><svg class="i"><use href="#left"/></svg>Lidé</span><span class="icon-btn"><svg class="i"><use href="#more"/></svg></span></div>
+    <span class="big-av p3">OČ</span>
+    <h1 class="ev-title">Ondřej Černý</h1>
+    <div class="chips2"><span class="chip2">Člen</span><span class="chip2"><span class="tm">TE</span>Technika</span></div>
+    <div class="reach" style="margin-top:0">
+      <div><svg class="i"><use href="#phone"/></svg>Zavolej</div>
+      <div><svg class="i"><use href="#sms"/></svg>SMS</div>
+      <div><svg class="i"><use href="#mail"/></svg>E-mail</div>
+    </div>
+    <p class="miss"><span class="dot"></span>Chybí datum narození<a>Doplň</a></p>
+    <p class="h2">Příští služby</p>
+    <div class="row"><div class="arch"><b>NE</b><span>11</span></div><div class="body"><p class="t">Zvuk</p><p class="m">Setkání na pastvě</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div>
+    <div class="row"><div class="arch"><b>NE</b><span>25</span></div><div class="body"><p class="t">Projekce</p><p class="m">Setkání na pastvě</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div>
+    <a class="link"><span>Kontakt, domácnost a údaje</span><svg class="i s"><use href="#chev"/></svg></a>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav></div>
+<p class="cap"><b>D · Člověk</b>Kdo to je (člen, v jakém týmu) a tři velká tlačítka. Vedoucí navíc vidí, co chybí, a rovnou to doplní. Pod tím jeho příští služby. Adresa, domácnost, narozeniny a souhlas jsou o ťuknutí dál, úpravy v ⋯.</p></div></div></body></html>
