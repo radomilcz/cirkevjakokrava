@@ -146,7 +146,7 @@ function osnovaPreview(event) {
         return h('li', {},
           h('span', { class: 'osnova-mini__time' }, clock(start)),
           h('span', { class: 'osnova-mini__what' }, h('span', { class: 'osnova-mini__title' }, itemName(S.data, item)),
-            leaders.length ? h('span', { class: 'meta' }, leaders.join(', ')) : needsLeader ? h('span', { class: 'meta osnova-mini__missing' }, 'chybí, kdo vede') : null));
+            leaders.length ? h('span', { class: 'meta' }, leaders.join(', ')) : needsLeader ? h('span', { class: 'meta osnova-mini__missing' }, 'chybí vedoucí') : null));
       })),
       rowLink(`Celá osnova${SEP}${plural(items.length, 'bod', 'body', 'bodů')}${SEP}${minutes} min`, { href }),
     ],
