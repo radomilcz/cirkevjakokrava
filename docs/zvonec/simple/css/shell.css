@@ -167,8 +167,6 @@ button.row:disabled { color: var(--ink-3); cursor: not-allowed; }
 .row > .icon:first-child { color: var(--ink-2); }
 .fact__link { color: inherit; text-decoration: underline; text-decoration-color: var(--edge-control); text-underline-offset: 3px; }
 .need__title { color: inherit; }
-.need__title:hover { text-decoration: underline; text-underline-offset: 3px; }
-.need__arch { display: block; border-radius: var(--shape-arch); }
 .need .fill { padding-top: 2px; }
 .need__sum > .need__act {                    /* „3 čekají“ (who waits) and „1 chyba“ (open Kdo slouží) */
   position: relative; border: 0; background: none; padding: 0; margin: 0; font: inherit; font-weight: var(--weight-strong);

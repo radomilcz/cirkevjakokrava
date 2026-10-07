@@ -574,7 +574,8 @@ export function agendaEvent({ start, end, title: head, meta: metaText, hue, href
 }
 
 /**
- * Co je potřeba – one event that wants people. The arch and the title open the event (href).
+ * Co je potřeba – one event that wants people. The whole block opens the event (href: the title's link covers it,
+ * as a row's does); „3 čekají“, „1 chyba“ and the slots sit above it and act on their own.
  *   needRow({ day, title, href, summary: [['error', 'chybí 2'], ['warning', '3 čekají', { onclick, label }],
  *             ['error', '1 chyba', { href }]], filled: 10, total: 15, slots: [{ label: 'Klávesy', onclick, aria }] })
  * A summary item with onclick / href is a quiet button / link in its severity colour („3 čekají“ → who waits).
@@ -587,9 +588,9 @@ export function needRow({ day, today: isToday, title: head, href, summary = [], 
   };
   const arch = dateArch(day, { today: isToday });
   return h('div', { class: 'need', dataset },
-    href ? h('a', { class: 'need__arch', href, tabIndex: -1, 'aria-hidden': 'true' }, arch) : arch,
+    arch,
     h('div', { class: 'row__body' },
-      href ? h('a', { class: 'row__title need__title', href }, head) : h('span', { class: 'row__title' }, head),
+      href ? h('a', { class: 'row__title need__title need__stretch', href }, head) : h('span', { class: 'row__title' }, head),
       summary.length ? h('span', { class: 'need__sum' }, summary.filter(Boolean).map(sumItem)) : null),
     total ? fill(filled, total, { trailing: true }) : h('span'),
     slots.length ? h('div', { class: 'need__slots' }, slots.map((s) => slot(s.label, s.onclick, { aria: s.aria }))) : null);
