@@ -52,6 +52,8 @@ export function placeText(event) {
     if (same) same.rooms.push(p.name);
     else groups.push({ key, building: p.building || '', rooms: p.building ? [p.name] : [], name: p.name });
   }
+  // rooms with no building read as one list („Sál a Malá místnost“); „; “ only parts places in different buildings
+  if (!groups.some((g) => g.building)) return andJoin(groups.map((g) => g.name));
   return groups.map((g) => (g.building ? `${g.building}, ${andJoin(g.rooms)}` : g.name)).join('; ');
 }
 
