@@ -1,6 +1,6 @@
 // Zvonec – Lidé: how do I reach someone? (zvonec/design/one-question › Lidé)
 //   #lide[/<filtr>]: the title „Lidé“ with + (leaders) and ⋯, the switch Lidé · Skupiny under it, the search
-//     („Hledej jméno, telefon, e-mail“) and, for leaders, the filter chips with counts (Všichni · Členové ·
+//     („Hledej jméno, telefon nebo e-mail“) and, for leaders, the filter chips with counts (Všichni · Členové ·
 //     Přátelé · Hosté · Děti · Chybí údaje – the slug is the filter: clenove, pratele, hoste, deti, doplnit). Under
 //     them one quiet line: the birthday line („Dnes slaví …“ → Narozeniny, leaders) and, at its end, the view
 //     switch „Podrobný výpis“ / „Jednoduchý seznam“ (remembered in this browser). A search finds households and a
@@ -317,7 +317,7 @@ function addFromQuery(q) {
 function tools(slug, redraw) {
   const leader = can('leader');
   const search = searchField({
-    placeholder: leader ? 'Hledej jméno, telefon, e-mail' : 'Hledej jméno nebo tým', value: state.query, label: 'Hledej v Lidech',
+    placeholder: leader ? 'Hledej jméno, telefon nebo e-mail' : 'Hledej jméno nebo tým', value: state.query, label: 'Hledej v Lidech',
     onInput: (v) => { state.query = v; state.sortTouched = false; redraw(); },
   });
   let chipRow = null;

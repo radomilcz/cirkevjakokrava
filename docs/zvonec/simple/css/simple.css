@@ -338,7 +338,6 @@
 .sheet--month .sheet__body { gap: var(--space-3); padding-top: var(--space-2); }
 .mini-month__head { display: flex; align-items: center; gap: var(--space-1); }
 .mini-month__title { flex: 1; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
-.sheet--month .day__dots > i { background: var(--ink-2); }
 
 /* desktop: ‹ Říjen 2026 › and Dnes (or „Říjen ▾“ above the list) on one line, „Seznam“ / „Měsíc“ at its right end */
 .cal-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
@@ -347,13 +346,8 @@
 /* a chip is the title, up to two lines (the time is in its name for a screen reader and in the pane) */
 .cal-chip__time { display: none; }
 .cal-chip__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
-/* one colour for every kind (the concept): a quiet bar; mine is bold with the ink bar, the open one filled */
-.cal-chip::before { background: var(--edge-control); }
-.cal-chip[data-mine] { background: transparent; color: var(--ink); font-weight: var(--weight-bold); }
-.cal-chip[data-mine]::before { background: var(--ink-2); }
-.cal-chip[data-mine]:not([data-open]):hover { background: var(--wash); }
-.cal-chip[data-open] { background: var(--pick); }
-.cal-chip[data-open]::before { background: var(--mark); }
+/* the colours of Next (the owner's wish): the bar in the meeting's Účel hue (css/calendar.css), mine filled with
+   it, the open one with the pick */
 .sheet--month .day[aria-selected="true"][data-today]::after { box-shadow: none; }
 @media (min-width: 1200px) {
   .cal--month > .split { grid-template-columns: minmax(0, 1fr) minmax(380px, 440px); }

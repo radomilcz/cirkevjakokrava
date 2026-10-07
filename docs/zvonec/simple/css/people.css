@@ -8,7 +8,8 @@
 /* ---------- the head (zvonec/design/one-question/codex.md §4): title · switch · search · chips · the view line,
    12 apart; the list 24 under them. The switch and the search share one width (520 on desktop, the whole column on
    a phone), so both edges line up. Heights, corners and labels are the kit's (M controls, chips as capsules). ---------- */
-.people-col { --people-head-w: 520px; gap: var(--space-3); }
+.people-col { --people-head-w: 100%; gap: var(--space-3); }   /* the simple list: the head is as wide as the list under it */
+.people-col--table { --people-head-w: 520px; }                /* over the wide table it keeps a readable width */
 .people-col > .people-head { padding-bottom: 0; }
 .people-col > :is(.people-results, .groups-list) { margin-top: var(--space-3); }
 .people-col > .groups-list > :is(.groups-kind, .groups-section):first-child { margin-top: 0; padding-top: 0; }   /* Skupiny: the same 24 */

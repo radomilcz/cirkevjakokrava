@@ -113,3 +113,17 @@ says otherwise (`docs/zvonec/go.js`).
   own: the sidebar and the chosen row; the window is warm white, fills are clay. In Simple, avatars, team marks and
   kind tags are the brand's blue, green, sand and lilac mixed into the palette (no pink: it marks the chosen row),
   and the calendar chips are one colour (mine bold, the open one filled), as in the concept.
+
+## The hybrid (the owner's call: Simple stays the base, the best of Next comes in)
+
+- **Kalendář:** the month grid has Next's colours again – the bar in the meeting's Účel hue, mine filled with
+  it – and the mini month's dots too; Next's Filtr (Účel, Tým, Jen moje služby) sits at the end of the
+  desktop bar and in ⋯ on a phone (with „Filtr: … · Zruš“ under the head while it is on).
+- **Rozpis** is a calm list: a block per meeting, a line per team with the names (○ / ● / „+ Role“); only
+  ‹ Říjen 2026 › and „Všechny týmy ▾“ above it.
+- **Správa** sits in the desktop rail (≥ 1200) in Next's two groups, Jak se scházíme and Sbor.
+- **Lidé** is Simple's A–Z list by default, with Next's Lidé · Skupiny switch, search, chips and birthday line;
+  „Podrobný výpis“ opens the detailed listing (the table on a desktop, rows with their meta on a phone).
+- **Setkání:** Simple's calm page with Next's tags and series line, the fill in Kdo slouží, teams that open in
+  place to their roles and answers, the Osnova preview and O setkání inline.
+- **The codex of controls** (`codex.md`): three heights, corners and labels that follow them.

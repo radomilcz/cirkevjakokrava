@@ -85,7 +85,7 @@ function filterLine() {
   const words = [...p.kinds.map((k) => KIND_LABELS[k]), ...p.teams.map((t) => teams.get(t)).filter(Boolean), p.mine ? 'jen moje služby' : null].filter(Boolean).join(' · ');
   return h('p', { class: 'cal-filter-line' },
     link(`Filtr: ${words}`, { icon: 'sliders', onclick: openFilters, cls: 'cal-filter-line__what' }),
-    link('Zruš', { onclick: () => { savePrefs({ kinds: [], teams: [], mine: false }); render(); }, label: 'Zruš filtr' }));
+    link('Zruš', { onclick: () => { savePrefs({ kinds: [], teams: [], mine: false }); render(); }, label: 'Zruš filtry' }));
 }
 
 // ---------- one event ----------
@@ -187,7 +187,7 @@ function monthSheet(startMonth, selected) {
         iconButton('chevron-right', 'Další měsíc', { onclick: () => { month = shiftMonth(month, 1); draw(); } })),
       monthGrid({
         month, selected, today: today(), label: monthLabel(month),
-        dots: (d) => (onDay(d).length ? ['ink'] : []),
+        dots: (d) => onDay(d).map((e) => kindHue(e.kind)),   // the Účel hues, as in Next
         mine: (d) => onDay(d).some(iServe),
         onPick: (d) => { sheet.close({ restore: false }); navigate(`${listBase()}/${d}`); },
       }),

@@ -192,7 +192,7 @@ function emptyChips(event, slots) {
 /** The status at the end of a leader's team line: ● something does not fit, ○ someone has not answered, ✓ all confirmed. */
 function teamStatus(marks, slots) {
   if (marks.error) return { mark: ERROR_MARK(), words: 'něco nesedí' };
-  if (marks.wait) return { mark: WAIT_MARK(), words: 'čeká na odpověď' };
+  if (marks.wait) return { mark: WAIT_MARK(), words: 'někdo ještě neodpověděl' };
   if (teamWords(slots).allConfirmed) return { mark: statusSymbol('confirmed'), words: 'všichni potvrdili' };
   return null;
 }

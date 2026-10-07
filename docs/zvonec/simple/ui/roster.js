@@ -405,7 +405,7 @@ export function rosterView({ month, extra, openId, closeHref, toolbar }) {
     const otherTeams = teamIds && (needs.get(ALL_TEAMS)?.missing || 0) > (needs.get(team)?.missing || 0);
     content = empty({
       icon: 'calendar', title: 'V tomhle měsíci nikdo neslouží.',
-      text: leader && !teamIds ? 'Které týmy na setkání slouží, nastavíš u setkání v „Kolik lidí je potřeba“.' : hiddenPast ? 'Co už bylo, ukáže odkaz nahoře.' : null,
+      text: leader && !teamIds ? 'Které týmy slouží, nastavíš u setkání v části „Kolik lidí je potřeba“.' : hiddenPast ? 'Co už bylo, ukáže odkaz nahoře.' : null,
       action: otherTeams ? button('Ukaž všechny týmy', { variant: 'quiet', onclick: () => chooseTeam(ALL_TEAMS) }) : null,
     });
   } else {
