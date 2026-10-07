@@ -5,8 +5,8 @@ Every screen answers one question and fits on one phone screen; details are one 
 
 Open the pages from a local server rooted at the repo, so the tokens and fonts under `docs/` load
 (e.g. `python3 -m http.server` in the repo root, then `/zvonec/design/one-question/moje.html`).
-`index.html` is the first overview; the other pages are the refined screens; the PNGs are how they render
-(390 × 844 phone, 1440 × 900 desktop).
+`index.html` is the first overview; the other pages are the refined screens, drawn as a 390 × 844 phone or a
+1440 × 900 desktop. Screenshots are not committed (`*.png` is ignored outside `docs/`).
 
 ## Tabs
 
