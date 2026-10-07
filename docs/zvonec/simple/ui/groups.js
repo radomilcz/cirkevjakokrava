@@ -1,6 +1,7 @@
-// Zvonec Next – Skupiny (#lide/skupiny) and Skupina (#tym/<id>).
-// The list: three headings Týmy · Skupinky · Vedení, my groups first with „ty“, the archive at the end.
-// Desktop ≥ 960: cards in columns; ≥ 1200 a group opens next to the list. The group: who leads,
+// Zvonec – Skupiny (#lide/skupiny) and Skupina (#tym/<id>).
+// The list: under the head of the Lidé tab („Lidé“, + Přidej skupinu for leaders, the switch Lidé · Skupiny –
+// sectionHead() of ui/people.js), three headings Týmy · Skupinky · Vedení, my groups first with „ty“, the archive at
+// the end. Desktop ≥ 960: cards in columns. The group: who leads,
 // Role (teams, short – first, so a leader reaches them without scrolling past everyone), Lidé (with what they
 // can do – on desktop the „Kdo co umí“ matrix whose cells step neumí → učí se → umí; a big team shows six
 // rows and „Ukázat všech 19“), Kde slouží / Setkání (six weeks). Members read names, leaders and the schedule only.
@@ -17,7 +18,7 @@ import { needsOf } from '../../lib/events.js';
 import { placesOf } from '../../lib/places.js';
 import { today, addDays, dayOf, prettyTime } from '../../lib/time.js';
 import { groupWords, leadersLine, compareGroups, peopleCount, GROUP_WORDS } from './people-common.js';
-import { keepListPlace } from './people.js';
+import { sectionHead } from './people.js';
 import { skillPills } from './people-card.js';
 import {
   groupSheet, toggleArchive, deleteGroup, memberSheet, addToGroup, cycleSkill, roleSheet, deleteRole, SKILL_WORDS,
@@ -98,12 +99,12 @@ export function renderGroups() {
   const leader = can('leader');
   const desktop = isDesktop();
   return screen({
-    topbar: topBar({ back: { href: '#lide', label: 'Lidé' } }),
-    head: { title: 'Týmy a skupinky' },
-    body: h('div', { class: 'groups-list' }, desktop ? groupCards() : groupList()),
-    primary: leader ? { label: 'Přidej skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
+    topbar: false,
+    body: h('div', { class: 'people-col people-col--wide' },
+      sectionHead('skupiny', { add: leader ? { label: 'Přidej skupinu', onclick: () => groupSheet() } : null }),
+      h('div', { class: 'groups-list' }, desktop ? groupCards() : groupList())),
     wide: desktop,
-    cls: 'groups-screen',
+    cls: 'people-root groups-screen',
   });
 }
 
@@ -313,7 +314,7 @@ export function renderGroup([id] = []) {
     action: button('Vrať se na skupiny', { variant: 'quiet', icon: 'chevron-left', href: '#lide/skupiny' }),
   })];
   return screen({
-    topbar: topBar({ back: { href: '#lide/skupiny', label: 'Týmy' }, actions: group ? groupMenu(group) : null }),
+    topbar: topBar({ back: { href: '#lide/skupiny', label: 'Skupiny' }, actions: group ? groupMenu(group) : null }),
     body: group ? groupBody(group) : missing(),
     wide: isDesktop(),
     cls: 'group-screen',

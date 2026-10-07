@@ -254,7 +254,7 @@ export function cover(event, { url, cls } = {}) {
 
 // ---------- remembered view and filters (this browser, per viewer) ----------
 
-const PREFS_KEY = 'zvonec-next-calendar';
+const PREFS_KEY = 'zvonec-simple-calendar';   // apart from Next's („zvonec-next-calendar“), the same origin
 export const VIEWS = [['seznam', 'Seznam'], ['mesic', 'Měsíc'], ['rozpis', 'Rozpis']];
 const viewerKey = () => `${myId() || 'x'}-${S.me?.access || ''}`;
 

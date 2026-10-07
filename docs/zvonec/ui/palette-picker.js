@@ -60,9 +60,19 @@ export function palettePicker() {
     toggle.setAttribute('aria-expanded', 'false');
     if (focus) toggle.focus();
   };
+  // the rail is a scroll box, which clips anything that sticks out of it (the menu is wider than the rail): there the
+  // menu is placed in the window – above the button, from its left edge, kept 8 px inside the window
+  const place = () => {
+    if (!wrap.closest('.rail')) return;
+    const t = toggle.getBoundingClientRect();
+    const w = menu.offsetWidth;
+    const left = Math.max(8, Math.min(t.left, window.innerWidth - w - 8));
+    Object.assign(menu.style, { position: 'fixed', left: `${left}px`, right: 'auto', bottom: `${window.innerHeight - t.top + 8}px` });
+  };
   const open = () => {
     mark(list);
     menu.hidden = false;
+    place();
     toggle.setAttribute('aria-expanded', 'true');
     (list.find((o) => o.getAttribute('aria-checked') === 'true') || list[0]).focus();
   };
@@ -77,6 +87,7 @@ export function palettePicker() {
   });
   document.addEventListener('click', (event) => { if (!menu.hidden && !wrap.contains(event.target)) close(false); });
   document.addEventListener('zvonec:navigate', () => close(false));
+  window.addEventListener('resize', () => close(false));
   return wrap;
 }
 

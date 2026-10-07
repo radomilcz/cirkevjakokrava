@@ -7,15 +7,18 @@
 /* ---------- Kalendář: toolbar, agenda extras ---------- */
 .cal { min-width: 0; }
 .cal-toolbar { position: relative; margin: 0 0 var(--space-2); }
-/* two rows (a split's narrow list column): ‹ Říjen 2026 › · Dnes · Filtr, then Seznam · Měsíc · Rozpis across the width */
-.cal-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2); }
-.cal-toolbar > .cal-views { grid-column: 1 / -1; grid-row: 2; }
+/* two rows (a split's narrow list column): ‹ Říjen 2026 › · Dnes, then Seznam · Měsíc · Rozpis · Filtr – Filtr
+   sits with the switch (both M), so a count on it never pushes the period's › over Dnes */
+.cal-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3) var(--space-2); align-items: center; }
+.cal-toolbar > .cal-period { grid-column: 1 / -1; grid-row: 1; }
+.cal-toolbar > .cal-views { grid-column: 1; grid-row: 2; }
+.cal-toolbar > .cal-filter { grid-column: 2; grid-row: 2; }
 .cal-period { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
-.cal-period > .period { flex: 0 1 auto; margin-left: -10px; }
+.cal-period > .period { flex: none; margin-left: -10px; }
 .cal-period .period__label { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); white-space: nowrap; }
 /* phone: the period is the top bar; under it one row Seznam · Měsíc · Rozpis + Filtr */
 .cal-toolbar--views { grid-template-columns: minmax(0, 1fr) auto; align-items: center; margin-top: var(--space-1); }
-.cal-toolbar--views > .cal-views { grid-column: auto; grid-row: auto; }
+.cal-toolbar--views > .cal-views, .cal-toolbar--views > .cal-filter { grid-column: auto; grid-row: auto; }
 .topbar > .cal-period { flex: 1; }
 .topbar > .cal-period > .period { margin-left: 0; }
 .topbar > .cal-today { margin: 0 2px 0 4px; }
@@ -97,11 +100,10 @@
 @media (min-width: 960px) {      /* desktop Měsíc: the weeks share the window's height, no empty band under the grid */
   .cal-month__body { grid-auto-rows: minmax(104px, 1fr); min-height: calc(100dvh - 232px); }
 }
-@media (min-width: 960px) {      /* desktop: the same two rows in every view and at every width – ‹ Říjen 2026 › · Dnes ·
-                                    Filtr, then Seznam · Měsíc · Rozpis – so switching the view moves nothing (it used to
+@media (min-width: 960px) {      /* desktop: the same two rows in every view and at every width – ‹ Říjen 2026 › · Dnes,
+                                    then Seznam · Měsíc · Rozpis · Filtr – so switching the view moves nothing (it used to
                                     jump from under the period in Seznam's list column to the right end in Měsíc) */
   .cal-toolbar:not(.cal-toolbar--views) { max-width: 360px; margin-bottom: var(--space-3); }
-  .cal-toolbar:not(.cal-toolbar--views) > .cal-views { width: 100%; }
 }
 
 /* ---------- Rozpis ---------- */

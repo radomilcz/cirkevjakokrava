@@ -266,7 +266,7 @@ function needBlock() {
   scopeChip?.setAttribute('aria-haspopup', 'dialog');
   scopeChip?.setAttribute('aria-label', `${current.label} (změň výběr)`);
   const body = items.length
-    ? [list(items.slice(0, NEEDS_SHOWN).map(needItem), { inset: false, cls: 'home-need__list' })]
+    ? [list(items.slice(0, NEEDS_SHOWN).map(needItem), { cls: 'home-need__list' })]
     : [quiet(scoped ? 'V tvých týmech je na příští tři týdny všechno obsazené a potvrzené.' : 'Na příští tři týdny je všechno obsazené.', { icon: 'check' })];
   const hidden = items.length - NEEDS_SHOWN;
   return section({

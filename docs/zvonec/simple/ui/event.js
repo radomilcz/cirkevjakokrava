@@ -1,29 +1,39 @@
-// Zvonec – Setkání (#setkani/<id>): one event on one screen (zvonec/design/one-question › Setkání).
-//   when and where · event-level warnings (leaders) · „Tvoje služba“ (my duty, Můžu / Nemůžu while it waits) ·
-//   Kdo slouží: one line per team with the names (I am „Ty“); a leader sees ○ before a name that has not
-//   answered, ● where something does not fit, „+ Role“ for an empty slot, and › opens the team (its roles,
-//   who said what, „+ Doplň“) · Upozornění (leaders, upcoming): every ● spelled out with its fixes in one
-//   place · Osnova › · O setkání a místě › (a sheet: description, Pro tým, the map,
-//   Účel, the series, Ukaž na webu) · Kolik lidí přišlo (leaders, past).
-// No cover picture, no kind / web pills, no fill ring here. Editing is in ⋯ (leaders).
-// The same body fills the detail pane beside Moje, Obsazení and Kalendář at ≥ 1200 px (eventBody({ pane: true })).
+// Zvonec – Setkání (#setkani/<id>): one event on one screen (zvonec/design/one-question › Setkání), calm like
+// Simple, with the best of Next:
+//   the head: title · Účel and „na webu“ tags · when · where · the series („Každou neděli do 31. 1. 2027“) ·
+//     the cancelled callout (no cover picture) · event-level warnings (leaders) ·
+//   „Tvoje služba“ (my duty, Můžu / Nemůžu while it waits) ·
+//   Kdo slouží: one line per team with the names (I am „Ty“). A leader sees how full the event is in the head
+//     („◔ 14 z 15 · chybí 1“) and a status at the end of each line – ● something does not fit, ○ someone has not
+//     answered, ✓ everyone confirmed; a tap opens the team in place (its roles, who, „potvrzeno“ / „čeká na
+//     potvrzení“ / „nemůže“, „+ Doplň“ for an empty slot; a person opens Služba). A team with an empty slot or
+//     a ● starts open; what is open is kept per event for the session. Members see the names only ·
+//   Upozornění (leaders, upcoming): every ● spelled out with its fixes in one place ·
+//   Osnova: the first four points (time, name, who leads) and „Celá osnova · 9 bodů · 112 min ›“ (its page);
+//     an empty one gives leaders „Slož osnovu“ ·
+//   O setkání: the description, Pro tým, the place with its address and „Otevři v mapě ↗“, „Ukaž na webu“
+//     (leaders) · Kolik lidí přišlo (leaders, past).
+// Editing is in ⋯ (leaders). The same body fills the detail pane beside Moje, Obsazení and Kalendář at ≥ 1200 px
+// (eventBody({ pane: true })).
 
 import {
   h, icon, screen, topBar, menu, button, buttonRow, section, callout, kindTag, pill, empty, statusNote, statusSymbol,
-  switchRow, stepper, field, openSheet, textArea, toast, detailPane, plural, joinMeta, shortDate, SEP, hasCoords, mapFrame, mapLink,
-  link, uid,
+  switchRow, stepper, field, openSheet, textArea, toast, detailPane, plural, SEP, hasCoords, canMap, mapLink,
+  link, rowLink, fill, clock, uid,
 } from './kit.js';
 import { S, can, myId, change, render } from '../../ui/state.js';
 import { eventById, followingInSeries, seriesFor, seriesSummary } from '../../lib/events.js';
-import { programTimes, programDuration } from '../../lib/program.js';
+import { programTimes, programDuration, itemName, itemLeaders, formatById } from '../../lib/program.js';
+import { personInEvent } from '../../lib/archive.js';
+import { fullName, DELETED_NAME } from '../../lib/people.js';
 import { today, dayOf } from '../../lib/time.js';
 import {
-  whenText, placeText, placesOf, slotsOf, fillOf, myDuties, eventConflicts, eventLevelWarnings, assignmentWarnings,
-  nameOf,
+  whenText, placeText, placesOf, slotsOf, fillOf, waitingWords, missingWords, myDuties, eventConflicts,
+  eventLevelWarnings, assignmentWarnings, nameOf,
 } from './calendar-shared.js';
 import {
   answer, openMyAnswer, openDutySheet, pickFor, fillOpenSlots, sameAsLast, openNeedsSheet, askSeries, warningFor,
-  warningTag, andFollowing, blockoutOn, blockoutNote,
+  warningTag, teamWords, andFollowing, blockoutOn, blockoutNote,
 } from './event-duties.js';
 import { openEditEvent, openExtendSeries, cancelOrRestore, deleteEventFlow } from './event-form.js';
 
@@ -48,14 +58,17 @@ export function eventMenu(event) {
   ].filter(Boolean), { label: 'Další možnosti setkání' });
 }
 
-// ---------- when and where ----------
+// ---------- the head: what, when, where ----------
 
 function head(event, { pane }) {
+  const series = seriesFor(S.data, event);
   return h('div', { class: 'ev-head' },
     h(pane ? 'h2' : 'h1', { class: ['title', pane && 'title--s', event.cancelled && 'is-cancelled'] }, event.title),
+    h('div', { class: 'cluster ev-tags' }, kindTag(event.kind), event.public === true ? pill('na webu') : null),
     h('div', { class: 'facts' },
       h('p', { class: 'fact' }, icon('clock', { size: 's' }), h('span', {}, whenText(event))),
-      placesOf(event).length ? h('p', { class: 'fact' }, icon('pin', { size: 's' }), h('span', {}, placeText(event))) : null),
+      placesOf(event).length ? h('p', { class: 'fact' }, icon('pin', { size: 's' }), h('span', {}, placeText(event))) : null,
+      series ? h('p', { class: 'fact' }, icon('layers', { size: 's' }), h('span', {}, seriesSummary(series, { today: today() }))) : null),
     event.cancelled ? callout({ tone: 'no', title: 'Setkání je zrušené.', text: String(event.note || '').trim() || null }) : null);
 }
 
@@ -140,9 +153,9 @@ function youCard(event) {
 const WAIT_MARK = () => h('span', { class: 'mark mark--wait', 'aria-hidden': 'true' });
 const ERROR_MARK = () => h('span', { class: 'mark mark--error', 'aria-hidden': 'true' });
 
-/** The names of a team on one line: „Ty, Jiří Zeman“; a leader sees ○ (not answered) and ● (something does not fit). */
-function teamNames(event, slots, conflicts, leader) {
-  // one name per person (someone with two roles in a team is still one name; the team sheet shows both)
+/** The names of a team on one line: „Ty, Jiří Zeman“ (a screen reader hears who has not answered or does not fit). */
+function teamNames(slots, conflicts, leader) {
+  // one name per person (someone with two roles in a team is still one name; the open team shows both)
   const byPerson = new Map();
   for (const s of slots) {
     const a = s.assignment;
@@ -159,7 +172,6 @@ function teamNames(event, slots, conflicts, leader) {
     const me = a.personId && a.personId === myId();
     const said = [waits ? 'čeká na odpověď' : null, bad ? 'něco nesedí' : null].filter(Boolean).join(', ');
     const name = h('span', { class: 'nm' },
-      bad ? ERROR_MARK() : waits ? WAIT_MARK() : null,
       me ? 'Ty' : nameOf(a),
       said ? h('span', { class: 'visually-hidden' }, ` (${said})`) : null,
       i < people.length - 1 ? ',' : null);
@@ -168,7 +180,7 @@ function teamNames(event, slots, conflicts, leader) {
   return { names, marks };
 }
 
-/** The empty slots of a team as „+ Klávesy“ chips (leaders): one chip per role, „2× Zvuk“ when two are missing. */
+/** The empty slots of a team as „+ Klávesy“ chips (leaders, a closed team): one chip per role, „2× Zvuk“ when two are missing. */
 function emptyChips(event, slots) {
   const byRole = new Map();
   for (const s of slots) if (!s.assignment) byRole.set(s.role.id, { role: s.role, n: (byRole.get(s.role.id)?.n || 0) + 1 });
@@ -177,20 +189,91 @@ function emptyChips(event, slots) {
   }, icon('plus', { size: 's' }), n > 1 ? `${n}× ${role.name}` : role.name));
 }
 
-/** One team as one line: its name, the names, and for a leader the empty slots and › (the team sheet). */
+/** The status at the end of a leader's team line: ● something does not fit, ○ someone has not answered, ✓ all confirmed. */
+function teamStatus(marks, slots) {
+  if (marks.error) return { mark: ERROR_MARK(), words: 'něco nesedí' };
+  if (marks.wait) return { mark: WAIT_MARK(), words: 'někdo ještě neodpověděl' };
+  if (teamWords(slots).allConfirmed) return { mark: statusSymbol('confirmed'), words: 'všichni potvrdili' };
+  return null;
+}
+
+/** Which teams are open, per event, for this session: Map(eventId → Map(groupId → open)). A team's first
+ *  render decides (open when something is to be done there), a tap changes it; re-renders keep it. */
+const openTeams = new Map();
+function teamsOpen(eventId) {
+  if (!openTeams.has(eventId)) openTeams.set(eventId, new Map());
+  return openTeams.get(eventId);
+}
+
+/** An open team: each role with who serves and what they said; a person opens Služba, „+ Doplň“ fills an empty slot. */
+function teamSlots(event, { group, slots }, conflicts, editable) {
+  const rows = slots.map((slot) => {
+    const a = slot.assignment;
+    if (!a) {
+      return h('div', { class: 'tslot' },
+        h('span', { class: 'tslot__role' }, slot.role.name),
+        h('span', { class: 'tslot__who' }, editable
+          ? h('button', { type: 'button', class: 'add-chip', onclick: () => pickFor(event.id, slot.role.id), 'aria-label': `Doplň: ${slot.role.name}` }, icon('plus', { size: 's' }), 'Doplň')
+          : h('span', { class: 'meta' }, 'nikdo')));
+    }
+    const warnings = assignmentWarnings(conflicts, a);
+    const me = a.personId && a.personId === myId();
+    return h('button', { type: 'button', class: 'tslot tslot--button', onclick: () => openDutySheet(event.id, a.id) },
+      h('span', { class: 'tslot__role' }, slot.role.name),
+      h('span', { class: 'tslot__who' },
+        h('span', { class: ['tslot__name', a.status === 'declined' && 'is-declined'] }, me ? 'Ty' : nameOf(a)),
+        statusNote(a.status, { capital: false }),
+        warnings.length ? h('span', { class: 'duty__tags' }, warnings.map(warningTag)) : null));
+  });
+  const empties = slots.filter((s) => !s.assignment).length;
+  return h('div', { class: 'tslots', id: uid('team') }, rows,
+    editable && empties > 1 ? h('p', { class: 'tslots__more' },
+      rowLink('Doplň volná místa', { icon: 'people', onclick: () => fillOpenSlots([event.id], { teams: [group.id] }) })) : null);
+}
+
+/** One team as one line: its name and the names; a leader's line ends with the status and opens the team in place. */
 function teamLine(event, team, conflicts, leader) {
   const { group, slots } = team;
-  const { names, marks } = teamNames(event, slots, conflicts, leader);
-  const editable = leader && !event.cancelled && !isPast(event);
+  const { names, marks } = teamNames(slots, conflicts, leader);
+  if (!leader) {
+    const el = h('div', { class: 'team' }, h('div', { class: 'team-line' },
+      h('p', { class: 'team-line__team' }, group.name),
+      h('div', { class: 'team-line__body' },
+        h('p', { class: ['team-line__names', !names.length && 'team-line__names--none'] }, names.length ? names : 'zatím nikdo'))));
+    el.marks = marks;
+    return el;
+  }
+  const editable = !event.cancelled && !isPast(event);
   const chips = editable ? emptyChips(event, slots) : [];
-  const missing = !leader && !names.length;
-  const el = h('div', { class: ['team-line', leader && 'team-line--open'] },
-    leader ? h('button', { type: 'button', class: 'team-line__open', onclick: () => teamSheet(event.id, group.id), 'aria-label': `${group.name} – kdo slouží` }) : null,
-    h('p', { class: 'team-line__team' }, group.name),
-    h('div', { class: 'team-line__body' },
-      names.length ? h('p', { class: 'team-line__names' }, names) : h('p', { class: 'team-line__names team-line__names--none' }, missing ? 'zatím nikdo' : chips.length ? null : 'nikdo'),
-      chips.length ? h('div', { class: 'team-line__chips' }, chips) : null),
-    leader ? icon('chevron-right', { size: 's' }) : null);
+  const status = teamStatus(marks, slots);
+  const known = teamsOpen(event.id);
+  if (!known.has(group.id)) known.set(group.id, editable && (marks.error || slots.some((s) => !s.assignment)));
+  const roles = teamSlots(event, team, conflicts, editable);
+  const toggle = h('button', {
+    type: 'button', class: 'team-line__open', 'aria-controls': roles.id,
+    'aria-label': status ? `${group.name} – ${status.words}` : group.name,
+  });
+  const el = h('div', { class: 'team' },
+    h('div', { class: 'team-line' },
+      toggle,
+      h('p', { class: 'team-line__team' }, group.name),
+      h('div', { class: 'team-line__body' },
+        names.length ? h('p', { class: 'team-line__names' }, names)
+          : h('p', { class: 'team-line__names team-line__names--none', dataset: { chips: chips.length ? '' : null } }, 'nikdo'),
+        chips.length ? h('div', { class: 'team-line__chips' }, chips) : null),
+      h('span', { class: 'team-line__end' }, status?.mark || null, icon('chevron-right', { size: 's' }))),
+    roles);
+  const show = (open) => {
+    toggle.setAttribute('aria-expanded', String(open));
+    roles.hidden = !open;
+    el.toggleAttribute('data-expanded', open);
+  };
+  show(known.get(group.id));
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    teamsOpen(event.id).set(group.id, open);
+    show(open);
+  });
   el.marks = marks;
   return el;
 }
@@ -205,97 +288,78 @@ function whoServes(event, conflicts) {
         leader ? [' ', link('Uprav, kolik lidí je potřeba', { onclick: () => openNeedsSheet(event.id) })] : null),
     });
   }
+  // leaders: how full it is, as in Next – „◔ 14 z 15 · chybí 1“
+  const f = fillOf(event);
+  const words = [f.waiting ? waitingWords(f.waiting) : null, f.missing ? missingWords(f.missing) : null].filter(Boolean).join(SEP);
   const lines = teams.map((t) => teamLine(event, t, conflicts, leader));
   const wait = lines.some((l) => l.marks.wait);
   const error = lines.some((l) => l.marks.error);
   const legend = wait || error ? h('p', { class: 'ev-who__legend' },
     wait ? h('span', {}, WAIT_MARK(), 'čeká na odpověď') : null,
     error ? h('span', {}, ERROR_MARK(), 'něco nesedí') : null) : null;
-  const id = uid('who');
-  return h('section', { class: 'ev-who', id: 'kdo-slouzi', 'aria-labelledby': id },
-    h('h2', { class: 'ev-who__title', id }, 'Kdo slouží'),
-    legend,
-    h('div', { class: 'ev-who__lines' }, lines));
-}
-
-/** One team: each role with who serves and what they said; a leader fills an empty slot and opens a filled one. */
-export function teamSheet(eventId, groupId) {
-  const event = eventById(S.data, eventId);
-  const team = event ? slotsOf(event).find((t) => t.group.id === groupId) : null;
-  if (!team) return;
-  const conflicts = eventConflicts(event.id);
-  const editable = !event.cancelled && !isPast(event);
-  let sheet;
-  const go = (fn) => () => { sheet.close({ restore: false }); fn(); };
-  const rows = team.slots.map((slot) => {
-    const a = slot.assignment;
-    if (!a) {
-      return h('div', { class: 'tslot' }, h('span', { class: 'tslot__role' }, slot.role.name),
-        editable ? h('div', { class: 'tslot__who' }, h('button', { type: 'button', class: 'add-chip', onclick: go(() => pickFor(event.id, slot.role.id)), 'aria-label': `Doplň: ${slot.role.name}` }, icon('plus', { size: 's' }), 'Doplň'))
-          : h('div', { class: 'tslot__who' }, h('span', { class: 'meta' }, 'nikdo')));
-    }
-    const warnings = assignmentWarnings(conflicts, a);
-    const me = a.personId === myId();
-    return h('button', { type: 'button', class: 'tslot tslot--button', onclick: go(() => openDutySheet(event.id, a.id)), 'aria-label': `${slot.role.name}: ${nameOf(a)}` },
-      h('span', { class: 'tslot__role' }, slot.role.name),
-      h('span', { class: 'tslot__who' },
-        h('span', { class: 'tslot__name' }, me ? 'Ty' : nameOf(a)),
-        statusNote(a.status, { word: a.status === 'proposed' ? 'čeká na odpověď' : undefined, capital: false }),
-        warnings.length ? h('span', { class: 'duty__tags' }, warnings.map(warningTag)) : null),
-      icon('chevron-right', { size: 's' }));
-  });
-  const empties = team.slots.filter((s) => !s.assignment).length;
-  sheet = openSheet({
-    title: team.group.name,
-    subtitle: joinMeta([event.title, shortDate(event.start)]),
-    body: h('div', { class: 'tslots' }, rows),
-    foot: editable && empties > 1 ? button('Doplň volná místa', { icon: 'people', block: true, onclick: go(() => fillOpenSlots([event.id], { teams: [team.group.id] })) }) : null,
-    cls: 'team-sheet',
+  return section({
+    title: 'Kdo slouží', id: 'kdo-slouzi', cls: 'ev-who',
+    action: leader && f.needed && !event.cancelled ? fill(f.filled, f.needed, { words: words || null }) : null,
+    body: [legend, h('div', { class: 'ev-who__lines' }, lines)],
   });
 }
 
-// ---------- the rows under it ----------
+// ---------- Osnova ----------
 
-function osnovaRow(event) {
+/** The full name of a leader at this event – a deleted card by the name the event kept (as on Osnova). */
+const nameAt = (event, personId) => { const p = personInEvent(S.data, event, personId); return p ? fullName(p) : DELETED_NAME; };
+
+/** The first four points (time, name, who leads) and the way to the whole osnova; leaders start an empty one. */
+function osnovaSection(event) {
   const items = programTimes(event);
   const href = `#setkani/${event.id}/osnova`;
-  if (!items.length && !can('leader')) return null;
-  const words = items.length ? joinMeta([plural(items.length, 'bod', 'body', 'bodů'), `${programDuration(event)} min`]) : 'zatím prázdná';
-  return h('a', { class: 'ev-row', href }, h('span', { class: 'ev-row__title' }, 'Osnova'), h('span', { class: 'ev-row__meta' }, words), icon('chevron-right', { size: 's' }));
+  if (!items.length) {
+    if (!can('leader') || event.cancelled || isPast(event)) return null;
+    return section({
+      title: 'Osnova', cls: 'ev-outline',
+      body: h('div', { class: 'ev-outline__empty' }, h('p', { class: 'meta' }, 'Osnova je zatím prázdná.'), rowLink('Slož osnovu', { href })),
+    });
+  }
+  return section({
+    title: 'Osnova', cls: 'ev-outline',
+    body: [
+      h('ol', { class: 'ev-outline__list' }, items.slice(0, 4).map(({ item, start }) => {
+        const leaders = itemLeaders(S.data, event, item).map((id) => nameAt(event, id));
+        const needsLeader = !!formatById(S.data, item.formatId)?.leadRoleId || !!item.personId;
+        return h('li', { class: 'ev-outline__item' },
+          h('span', { class: 'ev-outline__time' }, clock(start)),
+          h('span', { class: 'ev-outline__title' }, itemName(S.data, item)),
+          leaders.length ? h('span', { class: 'ev-outline__who' }, leaders.join(', '))
+            : needsLeader ? h('span', { class: 'ev-outline__who ev-outline__who--missing' }, 'chybí vedoucí') : h('span'));
+      })),
+      rowLink(`Celá osnova${SEP}${plural(items.length, 'bod', 'body', 'bodů')}${SEP}${programDuration(event)} min`, { href }),
+    ],
+  });
 }
 
-function aboutRow(event) {
-  return h('button', { type: 'button', class: 'ev-row', onclick: () => aboutSheet(event.id) },
-    h('span', { class: 'ev-row__title' }, 'O setkání a místě'), icon('chevron-right', { size: 's' }));
-}
+// ---------- O setkání ----------
 
-/** O setkání a místě: description, Pro tým, the place with its map, Účel and the series, Ukaž na webu (leaders). */
-function aboutSheet(eventId) {
-  const event = eventById(S.data, eventId);
-  if (!event) return;
+/** The description, Pro tým, the place with its address and „Otevři v mapě“, „Ukaž na webu“ (leaders). */
+function aboutSection(event) {
   const leader = can('leader');
   const places = placesOf(event);
-  const main = places.find(hasCoords) || places[0];
+  const main = places.find(hasCoords) || places.find(canMap) || places[0];
   const description = String(event.description || '').trim();
-  const note = String(event.note || '').trim();
-  const series = seriesFor(S.data, event);
-  let sheet;
-  sheet = openSheet({
-    title: 'O setkání a místě',
-    subtitle: joinMeta([event.title, shortDate(event.start)]),
-    cls: 'about-sheet',
+  const note = event.cancelled ? '' : String(event.note || '').trim();   // a cancelled event says its note in the head
+  if (!leader && !description && !note && !main) return null;
+  return section({
+    title: 'O setkání',
+    cls: 'ev-about',
     body: [
       description ? h('p', { class: 'text ev-text' }, description)
-        : leader ? h('p', { class: 'meta' }, 'Popis pro web zatím chybí. ', link('Doplň popis', { onclick: () => { sheet.close({ restore: false }); openEditEvent(event.id); } })) : null,
-      note && !event.cancelled ? h('div', { class: 'ev-note' }, h('p', { class: 'field__label' }, 'Pro tým'), h('p', { class: 'text' }, note)) : null,
-      h('div', { class: 'ev-about-kind' }, kindTag(event.kind), event.public === true ? pill('na webu') : null,
-        series ? h('span', { class: 'ev-about-kind__series meta' }, seriesSummary(series, { today: today() })) : null),
-      main ? h('div', { class: 'ev-place' },
-        h('p', { class: 'ev-place__name' }, [placeText(event), main.address].filter(Boolean).join(SEP)),
-        mapFrame(main), mapLink(main)) : null,
+        : leader ? h('p', { class: 'meta' }, 'Popis pro web zatím chybí. ', link('Doplň popis', { onclick: () => openEditEvent(event.id) })) : null,
+      note ? h('div', { class: 'ev-note' }, h('p', { class: 'field__label' }, 'Pro tým'), h('p', { class: 'text' }, note)) : null,
+      main ? h('p', { class: 'ev-where' },
+        h('span', { class: 'ev-where__text' }, [main.building || main.name, main.address].filter(Boolean).join(SEP)),
+        mapLink(main)) : null,
       leader && !event.cancelled ? switchRow({
         label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
-        onChange: (on) => { sheet.close({ restore: false }); publish(event.id, on); },
+        onChange: (on) => publish(event.id, on),
       }) : null,
     ],
   });
@@ -385,7 +449,8 @@ export function eventBody(event, { pane = false } = {}) {
     youCard(event),
     whoServes(event, conflicts),
     personWarnings(event, conflicts),
-    h('div', { class: 'ev-rows' }, osnovaRow(event), aboutRow(event)),
+    osnovaSection(event),
+    aboutSection(event),
     attendanceSection(event),
   ];
 }

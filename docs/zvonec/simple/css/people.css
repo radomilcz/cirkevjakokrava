@@ -1,81 +1,151 @@
-/* Zvonec Next – Lidé: the list, the desktop table, the person card, Narozeniny, Domácnost.
-   Only layout of this module; every colour, type size and shape is a token (next-tokens.css). The kit
-   components (row, list, chips, seg, card, sheet…) are used as they are. */
+/* Zvonec – Lidé: the switch under the head, the search and Filtr, the list (and its ticks), the desktop table
+   with its ticks and bulk bar, the pane beside it, the person card, Narozeniny, Domácnost, Archiv.
+   Only layout of this module; every colour, type size and shape is a token (next-tokens.css, simple.css). The kit
+   components (row, list, chips, seg, table, card, sheet…) are used as they are: a lit row (hover, ticked, open) is
+   lit whole and rounded, touches no line and keeps 3 px from the next (components.css .list/.row, shell.css
+   .people-table). The head (.people-head) and the column (.people-col) are css/simple.css. */
 
-/* ---------- the tab: Lidé | Skupiny under the title ---------- */
-.people-switch { margin-bottom: var(--space-2); }
-.people-switch > .seg { max-width: 360px; }
+/* ---------- the head (zvonec/design/one-question/codex.md §4): title · switch · search + Filtr · the view line,
+   12 apart; the list 24 under them. The switch and the search share one width (520 on desktop, the whole column on
+   a phone), so both edges line up. Heights, corners and labels are the kit's (M controls, chips as capsules). ---------- */
+.people-col { --people-head-w: 100%; gap: var(--space-3); }   /* the simple list: the head is as wide as the list under it */
+.people-col--table { --people-head-w: 520px; }                /* over the wide table it keeps a readable width */
+.people-col > .people-head { padding-bottom: 0; }
+.people-col > :is(.people-results, .groups-list) { margin-top: var(--space-3); }
+.people-col > .groups-list > :is(.groups-kind, .groups-section):first-child { margin-top: 0; padding-top: 0; }   /* Skupiny: the same 24 */
+.people-head__tools:has(> .btn:last-child) { margin-right: 0; }   /* a solid button ends at the column's edge (⋯ and + reach into it) */
+/* the search and Filtr: one row of M controls (Filtr opens the sheet of Všichni · Členové · …) */
+.people-find { display: flex; align-items: center; gap: var(--space-2); }
+.people-find > .search { flex: 1; min-width: 0; }
+.people-filter { flex: none; }
+.people-filter .count { background: var(--tint-2); }
+.people-hint > .filter-line { min-height: 24px; }
+/* phone: the search and Filtr stay at the top while the list scrolls (there is no top bar on this screen) */
+@media (max-width: 959.98px) {
+  .people-find {
+    position: sticky; top: 0; z-index: 10; margin: calc(-1 * var(--space-3)) calc(-1 * var(--gutter));
+    padding: calc(env(safe-area-inset-top) + var(--space-3)) var(--gutter) var(--space-3); background: var(--ground);
+  }
+}
+@media (min-width: 960px) {
+  .people-col.people-col--table, .people-col.people-col--wide { max-width: none; }
+  /* the whole control group keeps that width: Filtr and the view switch end where the switch above them does */
+  .people-switch > .seg, .people-find, .people-view { max-width: var(--people-head-w); }
+}
 
-/* ---------- the list ---------- */
-.people-tools { margin: 0 calc(-1 * var(--gutter)); padding-left: var(--gutter); padding-right: var(--gutter); }
-.people-screen .row-link { margin-top: var(--space-2); }
+/* the line under the search: the filter line or the birthday line, and the view switch at its end (S beside text on a desktop, M on
+   a phone, where it takes the next line when both do not fit) */
+.people-view { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.people-hint { flex: 0 1 auto; min-width: 0; }
+.people-hint:empty { display: none; }
+/* the birthday line is as tall as its words; its 44 px tap target reaches into the gaps around it */
+.people-hint > .row-link { position: relative; min-height: 0; margin: 0; }
+.people-hint > .row-link::after { content: ""; position: absolute; inset: calc(-1 * var(--space-3)) 0; }
+.people-view__toggle { flex: none; margin-left: auto; }
+
+/* ---------- the results: the list or the table, the count ---------- */
+/* the first letter (or heading) starts the list: its gap above is the head's 24 */
+.people-results > :is(.index-letter, .people-sub):first-child { padding-top: 0; }
 .people-foot { padding: var(--space-5) 0 var(--space-2); }
 .people-sub { padding-top: var(--space-4); }
 .people-results > .empty { padding-top: var(--space-8); }
+.people-also { margin-top: var(--space-5); }
+.people-tools { margin: 0 calc(-1 * var(--gutter)); padding-left: var(--gutter); padding-right: var(--gutter); }   /* Archiv's search */
 
-/* Vybrat lidi (phone): a round check in place of the avatar */
+/* Vyber lidi (phone): a round tick in place of the avatar; a ticked row is lit like a chosen one – the pick fill,
+   the detached bar at its left edge, no line touching it */
 .pick-box {
   display: grid; place-items: center; flex: none; width: var(--avatar-m); height: var(--avatar-m); border-radius: 50%;
   box-shadow: inset 0 0 0 2px var(--edge-field); color: var(--on-act);
 }
-.row[aria-pressed="true"] { background: var(--pick); }
+.row:has(> .pick-box:first-child) { --row-rule-start: calc(var(--space-3) + var(--avatar-m) + var(--space-3)); }
+button.row[aria-pressed="true"] { background: var(--pick); --tint: var(--card); }
 .row[aria-pressed="true"] .row__meta { color: var(--ink); }
 .row[aria-pressed="true"] .pick-box { background: var(--act); box-shadow: none; }
-.people-screen--picking { padding-bottom: calc(var(--tabbar-h) + 170px) !important; }
+.row[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
+.row[aria-pressed="true"]::before, .row[aria-pressed="true"] + .row::before { background: transparent; }
+.screen.people-root--picking { padding-bottom: calc(var(--tabbar-h) + 4 * var(--control-m) + 6 * var(--space-3) + env(safe-area-inset-bottom)); }   /* room for the dock */
 
-/* the bulk bar: docked above the tab bar on a phone, above the table on desktop */
+/* the bulk bar: docked above the tab bar on a phone, above the table on desktop (it stays in sight while the
+   table scrolls) */
 .people-bulk { display: grid; gap: var(--space-2); }
 .people-bulk--dock { padding-top: var(--space-3); background: var(--overlay); box-shadow: var(--lift-3); border-radius: var(--shape-block) var(--shape-block) 0 0; }
 .people-bulk__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: var(--hit); margin-top: calc(-1 * var(--space-2)); }
 .people-bulk__head > .link { min-height: var(--hit); padding: 0 var(--space-1); }
-.people-bulk__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
-.people-bulk__grid > .btn { flex-direction: column; gap: 4px; min-height: 64px; padding: var(--space-2) var(--space-1); font-size: var(--type-caption); line-height: var(--lh-caption); text-align: center; white-space: normal; }
-.people-bulk__grid > .btn > .icon { margin: 0; }
+.people-bulk__grid { display: grid; gap: var(--space-2); }   /* M buttons, one under another: three labels do not fit side by side */
 .people-bulk__count { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); }
 .people-bulk__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 @media (min-width: 960px) {
+  /* above the table: a band of the ground that sticks to the top (the rows scroll under it, the header row sticks
+     under it), the bar a lifted card in it, as wide as the rows */
+  .people-bulk-band { position: sticky; top: 0; z-index: 9; margin: 0 calc(-1 * var(--space-3)); padding: var(--space-2) 0; background: var(--ground); }
   .people-bulk:not(.dock) {
-    position: sticky; top: calc(var(--topbar-h) + 4px); z-index: 9; display: flex; align-items: center; gap: var(--space-4);
-    margin: var(--space-2) 0 var(--space-3); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-    border-radius: var(--shape-control); background: var(--overlay); box-shadow: var(--lift-3);
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+    border-radius: var(--shape-block); background: var(--overlay); box-shadow: var(--lift-3);
   }
+  /* the header row sticks under the band: 8 · the bar (8 · an S button · 8) · 8 */
+  .people-results:has(> .people-bulk-band) .people-table th { top: calc(var(--control-s) + 4 * var(--space-2)); }
 }
 
-/* ---------- desktop: search and chips side by side, the table ---------- */
-@media (min-width: 960px) {
-  .people-screen--table .people-tools > .search { max-width: 440px; }
-  .people-screen--table .people-tools > .chips { padding: 2px 0; }
-}
-.people-results > .table-wrap { overflow: visible; }   /* fixed layout fits; no scroll box, so the header can stick to the top bar */
+/* ---------- desktop: the table ---------- */
+/* fixed layout fits: no scroll box, so the header can stick to the top; the rows bleed 12 px into the gutter as a
+   list's do, so the ticks and names line up with the title and the search */
+.people-results > .table-wrap { overflow: visible; max-width: none; padding: 0; }
 .people-table { width: 100%; table-layout: fixed; }
-.people-table th { position: sticky; top: var(--topbar-h); z-index: 2; white-space: nowrap; }
+.people-table th { position: sticky; top: 0; z-index: 2; white-space: nowrap; }
 .people-table th, .people-table td { padding: 0 var(--space-3); height: 52px; }
 .people-table td { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.people-table tbody tr { cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
-.people-table tbody tr:hover > * { background: var(--wash); }
-.people-table tbody tr[data-picked] > * { background: var(--pick); }
-.people-table tbody tr[data-picked] .table-quiet { color: var(--ink); }
-.col-pick { width: 44px; padding-right: 0 !important; }
+/* the line between two rows runs from the tick to the last column's text, as in a list (the row's fill reaches 12 px
+   further): the end cells draw their part of it as a 1 px gradient; a lit row and the row under it drop it */
+.people-table tbody tr + tr > :is(:first-child, :last-child) {
+  border-top-color: transparent; background-image: linear-gradient(var(--hairline), var(--hairline));
+  background-repeat: no-repeat; background-origin: border-box; background-size: calc(100% - var(--space-3)) 1px;
+}
+.people-table tbody tr + tr > :first-child { background-position: right top; }
+.people-table tbody tr + tr > :last-child { background-position: left top; }
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) > :is(:first-child, :last-child),
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) + tr > :is(:first-child, :last-child) { background-image: none; }
+.people-table thead th:is(:first-child, :last-child) {
+  box-shadow: none; background-image: linear-gradient(var(--edge), var(--edge));
+  background-repeat: no-repeat; background-size: calc(100% - var(--space-3)) 1px;
+}
+.people-table thead th:first-child { background-position: right bottom; }
+.people-table thead th:last-child { background-position: left bottom; }
+.people-table tbody tr { cursor: pointer; }
+.people-table tbody tr > * { transition: background-color var(--dur-state) var(--ease); }
+.people-table tbody tr:hover > * { background-color: var(--wash); }
+/* ticked or open: the pick fill and the detached bar at the row's left edge (as .row[aria-selected]) – straight,
+   3 px, clear of the rounded ends; a soft fill inside is the card colour, not a second pink */
+.people-table tbody tr:is([data-picked], [data-open]) { --tint: var(--card); }
+.people-table tbody tr:is([data-picked], [data-open]) > * { background-color: var(--pick); }
+.people-table tbody tr:is([data-picked], [data-open]) .table-quiet { color: var(--ink); }
+.people-table tbody tr:is([data-picked], [data-open]) > :first-child { position: relative; }
+.people-table tbody tr:is([data-picked], [data-open]) > :first-child::before {
+  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+}
+.people-table .col-pick { width: 44px; padding-right: 0; }
 .people-table th.col-name { width: 26%; }
 .people-table th.col-status { width: 11%; }
 .people-table th.col-household { width: 12%; }
 .people-table th.col-phone { width: 120px; }
 .people-table th.col-email { width: 20%; }
 .people-table th.col-groups { width: 13%; }
-/* ≥ 1200 with a card open: the same table, narrowed to name · phone · groups, the open person marked */
-@media (min-width: 1200px) { .people-screen--split .split { grid-template-columns: minmax(0, 1fr) minmax(420px, 480px); } }
-.people-table.people-table--compact th.col-name { width: auto; }
-.people-table.people-table--compact th.col-phone { width: 132px; }
-.people-table.people-table--compact th.col-groups { width: 28%; }
-.people-table tbody tr[data-open] > * { background: var(--pick); }
-/* the open row's bar as on rows: straight, 3 px, clear of the rounded ends */
-.people-table tbody tr[data-open] > :first-child { position: relative; }
-.people-table tbody tr[data-open] > :first-child::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
-.people-table tbody tr[data-open] .table-quiet { color: var(--ink); }
-.people-table th.col-birthday { width: 108px; }
+.people-table th.col-birthday { width: 128px; }
 .people-table th.col-last { width: 140px; }
 .people-table:not(:has(.col-status)) th.col-name { width: 32%; }
 @media (max-width: 1599.98px) { .people-table .col-last { display: none; } }
+/* narrower desktops (960–1199): the table keeps what you look up most */
+@media (max-width: 1199.98px) {
+  .people-table :is(.col-household, .col-groups, .col-birthday) { display: none; }
+  .people-table th.col-name { width: 38%; }
+  .people-table th.col-status { width: 17%; }
+  .people-table th.col-email { width: auto; }
+}
+/* ≥ 1200 with a card open: the same table, narrowed to name · phone · groups, the open person marked */
+.people-table.people-table--compact th.col-name { width: auto; }
+.people-table.people-table--compact th.col-phone { width: 132px; }
+.people-table.people-table--compact th.col-groups { width: 30%; }
 .table-check { width: 20px; height: 20px; margin: 0; accent-color: var(--act); cursor: pointer; vertical-align: middle; }
 .col-name > * { vertical-align: middle; }
 .table-person { display: inline-flex; vertical-align: middle; align-items: center; gap: var(--space-3); max-width: 100%; min-height: var(--hit); font-weight: var(--weight-strong); }
@@ -85,17 +155,10 @@
 .table-missing { display: inline-flex; margin-left: var(--space-2); color: var(--wait-ink); }
 .table-link { color: inherit; }
 .table-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-.table-more, .table-quiet { color: var(--ink-2); }
+.table-quiet { color: var(--ink-2); }
 .people-table td > .icon { margin-left: 6px; vertical-align: -4px; color: var(--ink-accent); }
-.people-table tr[data-former] .table-person__name { color: var(--ink-2); }
-.people-households { margin-top: var(--space-5); }
 
-/* ---------- split: the pane scrolls on its own, the list keeps its place ---------- */
-@media (min-width: 1200px) {
-  :is(.people-screen--split, .groups-screen--split) .split { margin-top: var(--space-2); }
-  .people-screen--split .people-tools { margin: 0; padding-left: 0; padding-right: 0; }
-  .people-screen--split .people-tools > .chips { margin: 0; padding: 2px 0; }
-}
+/* ---------- ≥ 1200: list | card – the pane scrolls with the page, the list keeps its place ---------- */
 .pane-menu { position: absolute; top: var(--space-3); right: calc(var(--space-3) + var(--hit) + var(--space-1)); }
 .pane-menu:empty { display: none; }
 
@@ -110,11 +173,11 @@
 .person-reach { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); gap: var(--space-2); }
 .person-reach[data-n="1"] { --n: 1; }
 .person-reach[data-n="2"] { --n: 2; }
-.person-reach > .btn { flex-direction: column; gap: 4px; min-height: 68px; padding: var(--space-2) var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); text-align: center; }
+.person-reach > .btn { flex-direction: column; gap: 4px; padding: var(--space-2) var(--space-1); text-align: center; }
 .person-reach > .btn > .icon { margin: 0; width: var(--icon-m); height: var(--icon-m); }
 @media (min-width: 960px) {
   .person-reach { display: flex; flex-wrap: wrap; }
-  .person-reach > .btn { flex-direction: row; min-height: var(--control-m); padding: 0 var(--space-4); gap: var(--space-2); font-size: var(--type-body); }
+  .person-reach > .btn { flex-direction: row; padding: 0 var(--space-4); gap: var(--space-2); }
   .person-reach > .btn > .icon { width: var(--icon-s); height: var(--icon-s); margin-left: -4px; }
 }
 .person-quiet { padding: var(--space-1) 0; }
@@ -154,18 +217,7 @@
 }
 .birthday-missing .meta { line-height: 28px; }
 
-/* narrower desktops (960–1199): the table keeps what you look up most */
-@media (max-width: 1199.98px) {
-  .people-table :is(.col-household, .col-groups, .col-birthday) { display: none; }
-  .people-table th.col-name { width: 38%; }
-  .people-table th.col-status { width: 17%; }
-  .people-table th.col-email { width: auto; }
-}
-@media (min-width: 960px) { .people-screen--table .people-tools { position: static; } }
-
 /* ---------- Archiv ---------- */
-.people-archive-link { margin: 0; padding: 0 0 var(--space-4); }
-.people-archive-link .link { color: var(--ink-3); }
 @media (max-width: 719.98px) {
   .archive-list .row { flex-wrap: wrap; min-width: 0; }
   .archive-list .row__trail { order: 3; flex: 1 0 100%; flex-wrap: wrap; padding-left: calc(var(--avatar-m) + var(--space-3)); }
