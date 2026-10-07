@@ -2,7 +2,8 @@
 //   when and where · event-level warnings (leaders) · „Tvoje služba“ (my duty, Můžu / Nemůžu while it waits) ·
 //   Kdo slouží: one line per team with the names (I am „Ty“); a leader sees ○ before a name that has not
 //   answered, ● where something does not fit, „+ Role“ for an empty slot, and › opens the team (its roles,
-//   who said what, „+ Doplň“) · Osnova › · O setkání a místě › (a sheet: description, Pro tým, the map,
+//   who said what, „+ Doplň“) · Upozornění (leaders, upcoming): every ● spelled out with its fixes in one
+//   place · Osnova › · O setkání a místě › (a sheet: description, Pro tým, the map,
 //   Účel, the series, Ukaž na webu) · Kolik lidí přišlo (leaders, past).
 // No cover picture, no kind / web pills, no fill ring here. Editing is in ⋯ (leaders).
 // The same body fills the detail pane beside Moje, Obsazení and Kalendář at ≥ 1200 px (eventBody({ pane: true })).
@@ -79,6 +80,23 @@ function removeAll(eventId) {
   e.assignments = [];
   change(`odebráni všichni: ${e.title}`);
   toast('Všichni jsou odebraní.', { action: () => { const again = eventById(S.data, eventId); if (again) { again.assignments = JSON.parse(kept); change('vráceno: odebraní'); } } });
+}
+
+/** The person-level warnings (leaders, upcoming): the ● of Kdo slouží spelled out, each with its fixes. */
+function personWarnings(event, conflicts) {
+  if (event.cancelled || isPast(event)) return null;
+  const own = new Set(eventLevelWarnings(conflicts));
+  const items = conflicts.filter((c) => !own.has(c) && c.code !== 'K6' && (c.severity !== 'info' || c.overrideNote));
+  if (!items.length) return null;
+  return section({
+    title: 'Upozornění',
+    count: items.length,
+    cls: 'ev-problems',
+    body: h('div', { class: 'stack' }, items.map((c) => warningFor(c, {
+      eventId: event.id,
+      assignment: (event.assignments || []).find((a) => (c.assignmentIds || []).includes(a.id)) || null,
+    }))),
+  });
 }
 
 // ---------- Tvoje služba ----------
@@ -366,6 +384,7 @@ export function eventBody(event, { pane = false } = {}) {
     eventWarnings(event, conflicts),
     youCard(event),
     whoServes(event, conflicts),
+    personWarnings(event, conflicts),
     h('div', { class: 'ev-rows' }, osnovaRow(event), aboutRow(event)),
     attendanceSection(event),
   ];

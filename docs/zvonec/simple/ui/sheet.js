@@ -273,23 +273,37 @@ function toastRoot() {
   return root;
 }
 
+let lastUndo = null;   // { el, undo } – the „Vrať“ of the newest toast with one; Ctrl Z runs it while el is on screen
+
 /**
- * One line, an optional „Vrať“, 6 s, never more than two at once.
+ * One line, an optional „Vrať“, 6 s, never more than two at once. While it is on screen, Ctrl Z (⌘Z) does
+ * what its „Vrať“ does (undoLast()); once it is gone the undo is gone too, so it never undoes a stale snapshot.
  *   toast('Díky, počítáme s tebou.', { action: undo })
  */
 export function toast(words, { action, actionLabel = 'Vrať', duration = 6000, icon: iconName = 'check' } = {}) {
   const root = toastRoot();
   while (root.children.length >= 2) root.firstElementChild.remove();
   let timer = 0;
+  const undo = action ? () => { done(); action(); } : null;
   const done = () => { clearTimeout(timer); el.remove(); };
   const el = h('div', { class: 'toast', role: 'status' },
     iconName ? icon(iconName, { size: 's' }) : null,
     h('span', {}, words),
-    action ? h('button', { type: 'button', class: 'btn btn--s', onclick: () => { done(); action(); } }, actionLabel) : null,
+    action ? h('button', { type: 'button', class: 'btn btn--s', onclick: undo }, actionLabel) : null,
     h('button', { type: 'button', class: 'icon-btn toast__close', 'aria-label': 'Zavři', onclick: done }, icon('x', { size: 's' })));
   root.append(el);
+  if (undo) lastUndo = { el, undo };
   timer = setTimeout(done, duration);
   el.addEventListener('pointerenter', () => clearTimeout(timer));
   el.addEventListener('pointerleave', () => { timer = setTimeout(done, 2500); });
   return { close: done };
+}
+
+/** Ctrl Z: the „Vrať“ of the newest toast on screen; false when there is none. */
+export function undoLast() {
+  if (!lastUndo?.el.isConnected) return false;
+  const { undo } = lastUndo;
+  lastUndo = null;
+  undo();
+  return true;
 }

@@ -115,7 +115,7 @@ function waitingSheet(event, waiting) {
     const text = encodeURIComponent(reminderText(d));
     const who = personName(p);
     return [
-      p.phone ? h('a', { class: 'icon-btn icon-btn--tint', href: `${smsHref(p.phone)}?&body=${text}`, 'aria-label': `Připomeň SMS: ${who}`, title: 'Připomeň SMS' }, icon('message', { size: 's' })) : null,
+      p.phone ? h('a', { class: 'icon-btn icon-btn--tint', href: `${smsHref(p.phone)}?&body=${text}`, 'aria-label': `Připomeň v SMS: ${who}`, title: 'Připomeň v SMS' }, icon('message', { size: 's' })) : null,
       !p.phone && p.email ? h('a', { class: 'icon-btn icon-btn--tint', href: `${mailHref(p.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomeň e-mailem: ${who}`, title: 'Připomeň e-mailem' }, icon('mail', { size: 's' })) : null,
       p.phone ? h('a', { class: 'icon-btn icon-btn--tint', href: telHref(p.phone), 'aria-label': `Zavolej: ${who}`, title: 'Zavolej' }, icon('phone', { size: 's' })) : null,
     ].filter(Boolean);
@@ -124,7 +124,7 @@ function waitingSheet(event, waiting) {
     title: 'Čeká na odpověď',
     subtitle: joinMeta([event.title, shortDate(event.start)]),
     body: [
-      h('p', { class: 'meta waiting-lead' }, 'Odpověď zapíšeš i tady: klepni na jméno. SMS a e-mail mají připravenou zprávu.'),
+      h('p', { class: 'meta waiting-lead' }, 'Odpověď zapíšeš i tady: klepni na jméno. Text SMS i e-mailu ti Zvonec připraví.'),
       list(waiting.map((d) => row({
         lead: avatar(d.person),
         title: d.person ? personName(d.person) : 'Smazaný člověk',
