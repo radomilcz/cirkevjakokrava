@@ -1,0 +1,83 @@
+<!doctype html><html lang="cs" data-palette="cream-clay"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../docs/zvonec/css/palettes.css"><link rel="stylesheet" href="../../../docs/zvonec/next/css/next-tokens.css"><link rel="stylesheet" href="mock.css">
+<style>.hright { display: flex; align-items: center; gap: 4px; }
+.week { font-size: 15px; font-weight: 720; color: var(--ink-2); margin: 16px 0 0; }
+.week:first-of-type { margin-top: 0; }
+.day { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+.day .evs { flex: 1; display: grid; gap: 12px; align-content: center; }
+.day .e .t { font-size: 17px; line-height: 22px; font-weight: 620; }
+.day .e .m { font-size: 15px; line-height: 20px; color: var(--ink-2); }
+.day .e.off .t { text-decoration: line-through; color: var(--ink-2); }
+.mine { font-size: 13px; font-weight: 720; color: var(--ink); background: var(--tint); border-radius: 999px; padding: 2px 9px; margin-left: 6px; vertical-align: 2px; }
+.pillx { font-size: 13px; font-weight: 720; color: var(--ink); background: var(--tint); border-radius: 999px; padding: 2px 9px; margin-left: 6px; vertical-align: 2px; text-decoration: none; display: inline-block; }
+.mini-head { display: flex; justify-content: space-between; align-items: center; margin: 2px 0 10px; }
+.mini-head .p { font-size: 20px; font-weight: 720; }
+.mini-head .nav { display: flex; gap: 4px; }
+.mini { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; row-gap: 6px; }
+.mini .wd { font-size: 13px; color: var(--ink-2); padding-bottom: 4px; display: block; }
+.mini .c { height: 48px; display: grid; justify-items: center; align-content: center; gap: 3px; font-size: 17px; font-weight: 620; }
+.mini .c.out { color: var(--ink-3); font-weight: 400; }
+.mini .c .n { width: 36px; height: 40px; border-radius: 18px 18px 8px 8px; display: grid; place-items: center; }
+.mini .c.today .n { background: var(--act); color: var(--on-act); font-family: var(--font-title); }
+.mini .c i { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-2); }
+.mini .c i.no { visibility: hidden; }
+.sheet .foot { display: flex; gap: 10px; margin-top: 16px; }
+.sheet .foot .btn { flex: 1; height: 48px; }</style></head><body><svg width="0" height="0" style="position:absolute">
+  <symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></symbol>
+  <symbol id="people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.7.8 2.8 2.5 3 5.2"/></symbol>
+  <symbol id="fill" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="sms" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  <symbol id="down" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+</svg>
+<div class="board"><div class="frame" id="k1"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="head"><h1 class="title">Kalendář</h1><span class="hright"><span class="scope">Říjen <svg class="i s"><use href="#down"/></svg></span><span class="icon-btn"><svg class="i"><use href="#plus"/></svg></span></span></div>
+    <p class="week">Tento týden</p>
+    <div class="day"><div class="arch today"><b>ST</b><span>7</span></div><div class="evs"><div class="e"><p class="t">Skupinka</p><p class="m">19.00 · Byt Kučerových</p></div></div></div>
+    <div class="day"><div class="arch"><b>ČT</b><span>8</span></div><div class="evs"><div class="e"><p class="t">Zkouška chval</p><p class="m">18.30 · Sál</p></div></div></div>
+    <div class="day"><div class="arch"><b>PÁ</b><span>9</span></div><div class="evs"><div class="e"><p class="t">Mládež</p><p class="m">18.00 · Sál</p></div></div></div>
+    <div class="day"><div class="arch"><b>NE</b><span>11</span></div><div class="evs"><div class="e"><p class="t">Setkání na pastvě <span class=mine>Ty</span></p><p class="m">10.00 · Monta, Sál</p></div><div class="e"><p class="t">Zahradní slavnost</p><p class="m">14.00 · Zahrada u Kučerů</p></div></div></div>
+    <p class="week">Příští týden</p>
+    <div class="day"><div class="arch"><b>ÚT</b><span>13</span></div><div class="evs"><div class="e"><p class="t">Maminky s dětmi</p><p class="m">9.30 · Malá místnost</p></div></div></div>
+    <div class="day"><div class="arch"><b>SO</b><span>17</span></div><div class="evs"><div class="e off"><p class="t">Večer chval na zahradě <span class=pillx>zrušeno</span></p><p class="m">18.00 · Zahrada u Kučerů</p></div></div></div>
+    <div class="day"><div class="arch"><b>NE</b><span>18</span></div><div class="evs"><div class="e"><p class="t">Setkání na pastvě <span class=mine>Ty</span></p><p class="m">10.00 · Monta, Sál</p></div><div class="e"><p class="t">Členské shromáždění</p><p class="m">12.00 · Sál</p></div></div></div>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav></div>
+<p class="cap"><b>A · Seznam po týdnech</b>Od dneška dál. Jeden den má jedno datum, i když je v něm víc setkání. „Ty“ tam, kde sloužíš, zrušené setkání je přeškrtnuté. Vedoucí mají vpravo nahoře „+“.</p></div><div class="frame" id="k2"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="head"><h1 class="title">Kalendář</h1><span class="hright"><span class="scope">Říjen <svg class="i s"><use href="#down"/></svg></span><span class="icon-btn"><svg class="i"><use href="#plus"/></svg></span></span></div>
+    <p class="week">Tento týden</p>
+    <div class="day"><div class="arch today"><b>ST</b><span>7</span></div><div class="evs"><div class="e"><p class="t">Skupinka</p><p class="m">19.00 · Byt Kučerových</p></div></div></div>
+    <div class="day"><div class="arch"><b>ČT</b><span>8</span></div><div class="evs"><div class="e"><p class="t">Zkouška chval</p><p class="m">18.30 · Sál</p></div></div></div>
+    <div class="day"><div class="arch"><b>PÁ</b><span>9</span></div><div class="evs"><div class="e"><p class="t">Mládež</p><p class="m">18.00 · Sál</p></div></div></div>
+    <div class="day"><div class="arch"><b>NE</b><span>11</span></div><div class="evs"><div class="e"><p class="t">Setkání na pastvě <span class=mine>Ty</span></p><p class="m">10.00 · Monta, Sál</p></div><div class="e"><p class="t">Zahradní slavnost</p><p class="m">14.00 · Zahrada u Kučerů</p></div></div></div>
+    <p class="week">Příští týden</p>
+    <div class="day"><div class="arch"><b>ÚT</b><span>13</span></div><div class="evs"><div class="e"><p class="t">Maminky s dětmi</p><p class="m">9.30 · Malá místnost</p></div></div></div>
+    <div class="day"><div class="arch"><b>SO</b><span>17</span></div><div class="evs"><div class="e off"><p class="t">Večer chval na zahradě <span class=pillx>zrušeno</span></p><p class="m">18.00 · Zahrada u Kučerů</p></div></div></div>
+    <div class="day"><div class="arch"><b>NE</b><span>18</span></div><div class="evs"><div class="e"><p class="t">Setkání na pastvě <span class=mine>Ty</span></p><p class="m">10.00 · Monta, Sál</p></div><div class="e"><p class="t">Členské shromáždění</p><p class="m">12.00 · Sál</p></div></div></div>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav><div class="dim"></div><div class="sheet"><div class="grab"></div>
+    <div class="mini-head"><span class="p">Říjen 2026</span><span class="nav"><span class="icon-btn"><svg class="i"><use href="#left"/></svg></span><span class="icon-btn"><svg class="i"><use href="#chev"/></svg></span></span></div>
+    <div class="mini"><span class="wd">po</span><span class="wd">út</span><span class="wd">st</span><span class="wd">čt</span><span class="wd">pá</span><span class="wd">so</span><span class="wd">ne</span><span class="c out"><span class="n">28</span><i class="no"></i></span><span class="c out"><span class="n">29</span><i class="no"></i></span><span class="c out"><span class="n">30</span><i class="no"></i></span><span class="c"><span class="n">1</span><i class=""></i></span><span class="c"><span class="n">2</span><i class=""></i></span><span class="c"><span class="n">3</span><i class="no"></i></span><span class="c"><span class="n">4</span><i class=""></i></span><span class="c"><span class="n">5</span><i class="no"></i></span><span class="c"><span class="n">6</span><i class=""></i></span><span class="c today"><span class="n">7</span><i class=""></i></span><span class="c"><span class="n">8</span><i class=""></i></span><span class="c"><span class="n">9</span><i class=""></i></span><span class="c"><span class="n">10</span><i class="no"></i></span><span class="c"><span class="n">11</span><i class=""></i></span><span class="c"><span class="n">12</span><i class="no"></i></span><span class="c"><span class="n">13</span><i class=""></i></span><span class="c"><span class="n">14</span><i class=""></i></span><span class="c"><span class="n">15</span><i class=""></i></span><span class="c"><span class="n">16</span><i class=""></i></span><span class="c"><span class="n">17</span><i class=""></i></span><span class="c"><span class="n">18</span><i class=""></i></span><span class="c"><span class="n">19</span><i class="no"></i></span><span class="c"><span class="n">20</span><i class=""></i></span><span class="c"><span class="n">21</span><i class=""></i></span><span class="c"><span class="n">22</span><i class=""></i></span><span class="c"><span class="n">23</span><i class=""></i></span><span class="c"><span class="n">24</span><i class="no"></i></span><span class="c"><span class="n">25</span><i class=""></i></span><span class="c"><span class="n">26</span><i class="no"></i></span><span class="c"><span class="n">27</span><i class=""></i></span><span class="c"><span class="n">28</span><i class=""></i></span><span class="c"><span class="n">29</span><i class=""></i></span><span class="c"><span class="n">30</span><i class=""></i></span><span class="c"><span class="n">31</span><i class=""></i></span><span class="c out"><span class="n">1</span><i class="no"></i></span></div>
+    <div class="foot"><span class="btn soft">Dnes</span></div>
+  </div></div>
+<p class="cap"><b>B · Ťuknutí na „Říjen ▾“</b>Malý měsíc. Tečka znamená, že ten den něco je. Ťukneš na den a seznam na něj skočí. Šipkami se dostaneš do jiných měsíců, i do minulosti. Měsíční pohled na telefonu není potřeba.</p></div></div></body></html>

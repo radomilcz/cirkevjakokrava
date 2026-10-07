@@ -151,6 +151,17 @@ svg.i.s { width: 20px; height: 20px; }
 .chip.open { background: var(--pick); border-left-color: var(--mark); font-weight: 720; }
 .wd { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); font-size: 13px; color: var(--ink-2); padding: 0 8px 8px; }
 .pane { background: var(--card, var(--overlay)); border-radius: 24px; padding: 28px; box-shadow: 0 0 0 1px var(--hairline); align-self: start; }
+
+.nm { white-space: nowrap; }
+.wait-dot { width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid var(--wait-ink); display: inline-block; flex: none; }
+.team .names .w { display: inline-flex; align-items: center; gap: 5px; }
+.team .chev { color: var(--ink-3); align-self: center; }
+.team.lead { grid-template-columns: 92px 1fr 20px; }
+.team .adds { display: flex; margin-top: 8px; }
+.team .add { height: 36px; font-size: 15px; }
+.legend { display: flex; gap: 16px; font-size: 14px; color: var(--ink-2); margin: -6px 0 6px; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.dhead .tools { display: flex; gap: 10px; align-items: center; }
 </style>
 </head>
 <body>
@@ -241,7 +252,7 @@ svg.i.s { width: 20px; height: 20px; }
     <div class="ev"><div class="arch"><b>ČT</b><span>8</span></div><div class="body"><p class="t">Zkouška chval</p><p class="m">18.30 · Sál</p></div></div>
     <div class="ev"><div class="arch"><b>PÁ</b><span>9</span></div><div class="body"><p class="t">Mládež</p><p class="m">18.00 · Sál</p></div></div>
     <p class="week">Příští týden</p>
-    <div class="ev"><div class="arch"><b>NE</b><span>11</span></div><div class="body"><p class="t">Setkání na pastvě <span class="mine">ty</span></p><p class="m">10.00 · Monta, Sál</p></div></div>
+    <div class="ev"><div class="arch"><b>NE</b><span>11</span></div><div class="body"><p class="t">Setkání na pastvě <span class="mine">Ty</span></p><p class="m">10.00 · Monta, Sál</p></div></div>
     <div class="ev"><div class="arch"><b>NE</b><span>11</span></div><div class="body"><p class="t">Zahradní slavnost</p><p class="m">14.00 · Zahrada u Kučerů</p></div></div>
     <div class="ev"><div class="arch"><b>ÚT</b><span>13</span></div><div class="body"><p class="t">Maminky s dětmi</p><p class="m">9.30 · Malá místnost</p></div></div>
   </div>
@@ -400,16 +411,16 @@ svg.i.s { width: 20px; height: 20px; }
     <section>
       <div class="dhead"><h1 class="title" style="font-size:40px;line-height:44px">Kalendář</h1>
         <span class="btn solid" style="height:44px;padding:0 18px;font-size:16px;display:inline-flex;gap:8px;align-items:center"><svg class="i s"><use href="#plus"/></svg>Přidej setkání</span></div>
-      <div class="dhead"><span class="period"><svg class="i"><use href="#left"/></svg>Říjen 2026<svg class="i"><use href="#chev"/></svg></span></div>
+      <div class="dhead"><span class="period"><svg class="i"><use href="#left"/></svg>Říjen 2026<svg class="i"><use href="#chev"/></svg></span><span class="btn soft" style="height:40px;padding:0 16px;font-size:15px">Dnes</span></div>
       <div class="wd"><span>po</span><span>út</span><span>st</span><span>čt</span><span>pá</span><span>so</span><span>ne</span></div>
       <div class="month">
-        <div class="d out"><p class="n">28</p></div><div class="d out"><p class="n">29</p><p class="chip">Maminky s dětmi</p></div><div class="d out"><p class="n">30</p></div>
+        <div class="d out"><p class="n">28</p></div><div class="d out"><p class="n">29</p><p class="chip">Maminky s dětmi</p></div><div class="d out"><p class="n">30</p><p class="chip">Skupinka</p></div>
         <div class="d"><p class="n">1</p><p class="chip">Zkouška chval</p></div><div class="d"><p class="n">2</p><p class="chip">Mládež</p></div><div class="d"><p class="n">3</p></div><div class="d"><p class="n">4</p><p class="chip">Setkání na pastvě</p></div>
-        <div class="d"><p class="n">5</p></div><div class="d"><p class="n today">6</p><p class="chip">Maminky s dětmi</p><p class="chip">Modlitební večer</p></div><div class="d"><p class="n">7</p></div>
+        <div class="d"><p class="n">5</p></div><div class="d"><p class="n">6</p><p class="chip">Maminky s dětmi</p><p class="chip">Modlitební večer</p></div><div class="d"><p class="n today">7</p><p class="chip">Skupinka</p></div>
         <div class="d"><p class="n">8</p><p class="chip">Zkouška chval</p></div><div class="d"><p class="n">9</p><p class="chip">Mládež</p></div><div class="d"><p class="n">10</p></div><div class="d"><p class="n">11</p><p class="chip open">Setkání na pastvě</p><p class="chip">Zahradní slavnost</p></div>
-        <div class="d"><p class="n">12</p></div><div class="d"><p class="n">13</p><p class="chip">Maminky s dětmi</p></div><div class="d"><p class="n">14</p></div>
+        <div class="d"><p class="n">12</p></div><div class="d"><p class="n">13</p><p class="chip">Maminky s dětmi</p></div><div class="d"><p class="n">14</p><p class="chip">Skupinka</p></div>
         <div class="d"><p class="n">15</p><p class="chip">Zkouška chval</p></div><div class="d"><p class="n">16</p><p class="chip">Mládež</p></div><div class="d"><p class="n">17</p></div><div class="d"><p class="n">18</p><p class="chip">Setkání na pastvě</p></div>
-        <div class="d"><p class="n">19</p></div><div class="d"><p class="n">20</p><p class="chip">Maminky s dětmi</p></div><div class="d"><p class="n">21</p></div>
+        <div class="d"><p class="n">19</p></div><div class="d"><p class="n">20</p><p class="chip">Maminky s dětmi</p></div><div class="d"><p class="n">21</p><p class="chip">Skupinka</p></div>
         <div class="d"><p class="n">22</p><p class="chip">Zkouška chval</p></div><div class="d"><p class="n">23</p><p class="chip">Mládež</p></div><div class="d"><p class="n">24</p></div><div class="d"><p class="n">25</p><p class="chip">Setkání na pastvě</p></div>
       </div>
     </section>
@@ -422,11 +433,13 @@ svg.i.s { width: 20px; height: 20px; }
       </div>
       <div class="you"><div><p class="l">Tvoje služba</p><p class="t">Vedení</p></div><span class="status ok"><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span>potvrzeno</span></div>
       <p class="h2">Kdo slouží</p>
-      <div class="team"><b>Slovo</b><span class="names">Jiří Zeman, Radomil Martinec</span></div>
-      <div class="team"><b>Chvály</b><span class="names">Daniel Sýkora, Hedvika Sedláčková, Jakub Marek · <span class="gap">chybí Klávesy</span></span></div>
-      <div class="team"><b>Technika</b><span class="names">Petr Novák, Ondřej Černý</span></div>
-      <div class="team"><b>Děti</b><span class="names">Lucie Svobodová, Eva Kučerová</span></div>
+      <p class="legend"><span><span class="wait-dot"></span>čeká na odpověď</span></p>
+      <div class="team lead"><b>Slovo</b><span class="names">Ty, <span class="nm">Jiří Zeman</span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+      <div class="team lead"><b>Chvály</b><span class="names"><span class="nm">Daniel Sýkora</span>, <span class="nm">Hedvika Sedláčková</span>, <span class="w"><span class="wait-dot"></span><span class="nm">Jakub Marek</span></span><span class="adds"><span class="add"><svg class="i s"><use href="#plus"/></svg>Klávesy</span></span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+      <div class="team lead"><b>Technika</b><span class="names"><span class="nm">Petr Novák</span>, <span class="nm">Ondřej Černý</span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+      <div class="team lead"><b>Děti</b><span class="names"><span class="nm">Lucie Svobodová</span>, <span class="nm">Eva Kučerová</span></span><svg class="i s chev"><use href="#chev"/></svg></div>
       <a class="link"><span>Osnova<small>9 bodů · 112 min</small></span><svg class="i s"><use href="#chev"/></svg></a>
+      <a class="link"><span>O setkání a místo</span><svg class="i s"><use href="#chev"/></svg></a>
     </aside>
   </main>
 </div>
