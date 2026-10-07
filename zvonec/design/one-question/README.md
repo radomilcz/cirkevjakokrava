@@ -93,6 +93,7 @@ says otherwise (`docs/zvonec/go.js`).
   neither its own line nor the one above it touches the fill – rows, Osnova points (Next too), the team lines,
   the team sheet and „Osnova ›“ / „O setkání a místě ›“.
 - Colours from the brand only. The two blue palettes take selection, today, links, info and the progress ring from
-  their own ink, not the pink (`zvonec/palettes.mjs`, all three apps). In Simple, avatars, team marks and kind tags
-  are the brand's pink, blue, green, sand and lilac mixed into the palette, and the calendar chips are one colour
-  (mine bold, the open one filled), as in the concept.
+  their own ink, not the pink (`zvonec/palettes.mjs`, all three apps). Růžová a hlína has one pink, the brand's
+  own: the sidebar and the chosen row; the window is warm white, fills are clay. In Simple, avatars, team marks and
+  kind tags are the brand's blue, green, sand and lilac mixed into the palette (no pink: it marks the chosen row),
+  and the calendar chips are one colour (mine bold, the open one filled), as in the concept.
