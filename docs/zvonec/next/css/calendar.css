@@ -292,8 +292,8 @@ span.roster-entry { cursor: default; }
 .ev-head .title.is-cancelled { color: var(--ink-2); }
 .ev-pills { gap: var(--space-2); }
 .pill--cancelled { background: var(--no-fill); color: var(--no-ink); }
-.fact--button {
-  width: calc(100% + 16px); min-height: var(--hit); margin: -8px -8px; padding: 0 8px; border: 0; border-radius: var(--shape-inner);
+.fact--button {   /* lit like a row: the fill reaches 12 px past the text on both sides, rounded as a row */
+  width: calc(100% + 2 * var(--space-3)); min-height: var(--hit); margin: -8px calc(-1 * var(--space-3)); padding: 0 var(--space-3); border: 0; border-radius: var(--shape-control);
   background: none; font: inherit; color: var(--ink); text-align: left; cursor: pointer;
 }
 .fact--button > span { flex: 1; min-width: 0; }
@@ -311,16 +311,31 @@ span.roster-entry { cursor: default; }
 .ev-none { padding: var(--space-2) 0; }
 .ev-none .link { font-size: inherit; min-height: 0; }
 .team-block:first-child > .team-head, .team-block:first-child > .team-fold { margin-top: 0; }
-.team-fold {
-  display: flex; align-items: center; gap: var(--space-2); width: 100%; margin-top: var(--space-4); padding: 0; border: 0; border-radius: var(--shape-inner);
-  background: none; font: inherit; color: inherit; text-align: left; cursor: pointer;
+.team-fold {   /* lit like a row: the same 12 px of fill before the team mark as after the chevron */
+  display: flex; align-items: center; gap: var(--space-2); width: calc(100% + 2 * var(--space-3)); margin: var(--space-4) calc(-1 * var(--space-3)) 0;
+  padding: 0 var(--space-3); border: 0; border-radius: var(--shape-control);
+  background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; transition: background-color var(--dur-state) var(--ease);
 }
 .team-fold > .team-head { flex: 1; margin-top: 0; }
-.team-fold > .icon { margin-right: var(--space-1); color: var(--ink-2); transition: transform var(--dur-state) var(--ease); }
+.team-fold > .icon { color: var(--ink-2); transition: transform var(--dur-state) var(--ease); }
 .team-fold[aria-expanded="true"] > .icon { transform: rotate(180deg); }
 .team-fold:hover { background: var(--wash); }
 .team-head .row__note { margin-left: auto; }
-.duty[data-me] { background: var(--pick); margin: 0 calc(-1 * var(--space-2)); padding-left: var(--space-2); padding-right: var(--space-2); border-radius: var(--shape-inner); }
+/* a duty lights up as a whole row – role and person, 12 px past the text on both sides, rounded as a row – and the
+   lines above and below it step aside. The fill is the row's ::before (behind the text, the row's lines keep their
+   length); the person button's ::after stretches over the row, so the whole row opens the duty. Mine: the pick. */
+.duty { position: relative; isolation: isolate; }
+.duty::before { content: ""; position: absolute; inset: 0 calc(-1 * var(--space-3)); z-index: -1; border-radius: var(--shape-control); transition: background-color var(--dur-state) var(--ease); }
+.duty:has(> :is(.duty__who--button, a.duty__who)):hover::before { background: var(--wash); }
+.duty[data-me]::before { background: var(--pick); }
+.duty[data-me]:has(> :is(.duty__who--button, a.duty__who)):hover::before { background: linear-gradient(var(--wash), var(--wash)), var(--pick); }
+.duty:is([data-me], :has(> :is(.duty__who--button, a.duty__who)):hover), .duty:is([data-me], :has(> :is(.duty__who--button, a.duty__who)):hover) + .duty { border-top-color: transparent; }
+.duty > :is(.duty__who--button, a.duty__who) { margin: 0; padding: 0; border-radius: 0; }
+.duty > :is(.duty__who--button, a.duty__who):hover { background: none; }
+.duty > :is(.duty__who--button, a.duty__who)::after { content: ""; position: absolute; inset: 0 calc(-1 * var(--space-3)); border-radius: var(--shape-control); }
+.duty > :is(.duty__who--button, a.duty__who):focus-visible { outline: none; }
+.duty > :is(.duty__who--button, a.duty__who):focus-visible::after { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.duty > :not(.duty__role, .duty__who) { position: relative; z-index: 1; }
 .duty[data-me] .duty__role { color: var(--ink); }
 
 .osnova-mini { display: grid; margin-bottom: var(--space-1); }
