@@ -1,0 +1,64 @@
+/* Zvonec Next – Skupiny: group cards (desktop), the „Kdo co umí“ matrix, the member sheet's skill rows.
+   Layout only; colours, type and shapes are tokens. */
+
+.groups-kind { padding-top: var(--space-5); }
+.groups-list > .disclosure { margin-top: var(--space-6); }
+
+/* desktop without a chosen group: cards in columns */
+.groups-section:first-child { margin-top: var(--space-2); }
+.group-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4); }
+.group-card {
+  display: grid; align-content: start; gap: var(--space-2); min-height: 152px; padding: var(--space-5);
+  border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge);
+  transition: box-shadow var(--dur-state) var(--ease), background-color var(--dur-state) var(--ease);
+}
+.group-card:hover { background: var(--wash); box-shadow: 0 0 0 1px var(--edge-control); }
+.group-card__head { display: flex; align-items: center; gap: var(--space-3); }
+.group-card__name { flex: 1; min-width: 0; font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
+.group-card__roles { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: var(--ink-2); }
+.group-card > .avatars { margin-top: var(--space-2); }
+
+/* the group page */
+.group-page__about { max-width: var(--measure); }
+.group-section > .slot { margin-top: var(--space-3); }
+.group-section > .caption { display: block; margin-top: var(--space-2); }
+@media (min-width: 960px) { .group-screen .group-page { padding-top: var(--space-7); } }
+
+/* „Kdo co umí“: people × roles */
+.skill-matrix th, .skill-matrix td { padding: 6px var(--space-1); text-align: center; vertical-align: middle; }
+.skill-matrix thead th { vertical-align: bottom; padding-bottom: var(--space-2); }
+.skill-matrix__who { text-align: left !important; min-width: 200px; }
+thead .skill-matrix__who { color: var(--ink-2); font-weight: var(--weight-strong); }
+.th-role {
+  display: block; margin: 0 auto; padding: 4px 8px; border: 0; border-radius: var(--shape-inner); background: none;
+  color: var(--ink); font: inherit; font-weight: var(--weight-bold); white-space: nowrap; cursor: pointer;
+}
+.th-role:hover { background: var(--wash); }
+.skill-matrix__count { display: block; font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-medium); color: var(--ink-2); white-space: nowrap; }
+.skill-matrix__count.is-scarce { color: var(--wait-ink); }
+.skill-matrix__person {
+  display: inline-flex; align-items: center; gap: var(--space-2); max-width: 100%; min-height: var(--hit); padding: 0 var(--space-2); margin-left: calc(-1 * var(--space-2));
+  border: 0; border-radius: var(--shape-inner); background: none; color: var(--ink); font: inherit; font-weight: var(--weight-strong); text-align: left; cursor: pointer;
+}
+.skill-matrix__person:hover { background: var(--wash); }
+.skill-matrix__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.skill-matrix__person > .pill { font-weight: var(--weight-medium); }
+.skill-cell {
+  display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 76px; min-height: 36px; padding: 0 10px;
+  border: 0; border-radius: var(--shape-pill); background: transparent; color: var(--ink-2); font: inherit; font-weight: var(--weight-medium);
+  cursor: pointer; position: relative; transition: background-color var(--dur-state) var(--ease);
+}
+.skill-cell::after { content: ""; position: absolute; inset: -4px 0; }
+.skill-cell:hover { background: var(--wash); }
+.skill-cell[data-level="trained"] { background: var(--ok-fill); color: var(--ok-ink); font-weight: var(--weight-strong); }
+.skill-cell[data-level="trained"] > .icon { width: 16px; height: 16px; stroke-width: 2.25; margin-left: -2px; }
+.skill-cell[data-level="learning"] { color: var(--ink); box-shadow: inset 0 0 0 1px var(--edge-control); }
+
+/* member sheet: one line per role – name, then Neumí · Učí se · Umí */
+.skill-rows { display: grid; gap: var(--space-3); }
+.skill-row { display: grid; gap: 6px; }
+.skill-row__role { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); font-weight: var(--weight-medium); }
+@media (min-width: 960px) {
+  .skill-row { grid-template-columns: 140px 1fr; align-items: center; gap: var(--space-3); }
+}
+.group-card .avatars > .avatar { box-shadow: 0 0 0 2px var(--card); }

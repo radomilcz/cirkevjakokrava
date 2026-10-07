@@ -1,0 +1,49 @@
+/* ============================================================
+   Zvonec Next – Domů (#domu). Only what the kit leaves to the screen: the demo line, the two
+   columns, the actionable parts of „Co je potřeba“ and the small sheets. Tokens only, no raw colours.
+   ============================================================ */
+
+/* ---------- demo: „Díváš se jako … · Změnit“ ---------- */
+.home-demo {
+  display: flex; align-items: center; gap: var(--space-2);
+  min-height: var(--hit); padding: 0 var(--space-1) 0 var(--space-3);
+  border: 1px solid var(--hairline); border-radius: var(--shape-pill);
+  font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2);
+}
+.home-demo > .icon { flex: none; color: var(--ink-2); }
+.home-demo__text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-demo__text strong { color: var(--ink); font-weight: var(--weight-strong); }
+.home-demo > .link { flex: none; margin: 0; padding: 0 var(--space-3); font-size: var(--type-caption); }
+@media (min-width: 960px) {
+  .home-demo { display: inline-flex; max-width: 100%; font-size: var(--type-meta); line-height: var(--lh-meta); }
+  .home-demo > .link { font-size: var(--type-meta); }
+}
+
+/* ---------- columns ---------- */
+.home-col > :first-child { margin-top: 0; }
+.home-col > .feature + .section { margin-top: var(--section-gap); }
+
+/* ---------- Odpověz ---------- */
+.home-answer__link { color: inherit; }
+.home-answer__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.home-answer .feature__item + .feature__item { padding-top: var(--space-4); border-top: 1px solid var(--hairline); }
+
+/* ---------- Co je potřeba ---------- */
+.home-need__scope { flex: none; }
+.home-need .row-link, .home-mine .row-link, .home-week .row-link { margin-top: var(--space-1); }
+.home-need__list > .need:first-child { padding-top: var(--space-2); }
+
+/* ---------- rows ---------- */
+.home-you { color: var(--ink-2); }
+.home-you > .pill { min-height: 22px; }
+.home-icon {
+  display: grid; place-items: center; flex: none; width: var(--avatar-m); height: var(--avatar-m);
+  border-radius: 50%; background: var(--tint); color: var(--ink);
+}
+
+/* the demo line sits under the title, above the first block */
+.home > .home-demo { margin-bottom: var(--space-5); }
+@media (min-width: 1200px) {
+  .home-cols { column-gap: var(--space-9); }
+  .home-cols > .col-b { padding-top: 0; }
+}

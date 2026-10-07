@@ -834,6 +834,12 @@ export function createDemo(today = localToday()) {
     && e.assignments.some((a) => a.status === 'confirmed' && !locked.has(a)));
   const waiting = soon?.assignments.find((a) => a.status === 'confirmed' && !locked.has(a) && a.roleId !== 'r-sound');
   if (waiting) waiting.status = 'proposed';
+  // the demo's správce has answered most of what is a few weeks off: Moje shows a question and his
+  // confirmed duties at once (the nearest one still waits for him)
+  const radim = personId('radim');
+  const his = events.filter((e) => !e.cancelled && e.start.slice(0, 10) > today)
+    .flatMap((e) => e.assignments.filter((a) => a.personId === radim && a.status === 'proposed' && !locked.has(a)));
+  for (const a of his.slice(1, 5)) a.status = 'confirmed';
 
   // ---------- headcounts of past meetings ----------
   for (const e of events) {

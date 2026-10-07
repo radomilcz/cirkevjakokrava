@@ -1,0 +1,172 @@
+/* Zvonec Next – Lidé: the list, the desktop table, the person card, Narozeniny, Domácnost.
+   Only layout of this module; every colour, type size and shape is a token (next-tokens.css). The kit
+   components (row, list, chips, seg, card, sheet…) are used as they are. */
+
+/* ---------- the tab: Lidé | Skupiny under the title ---------- */
+.people-switch { margin-bottom: var(--space-2); }
+.people-switch > .seg { max-width: 360px; }
+
+/* ---------- the list ---------- */
+.people-tools { margin: 0 calc(-1 * var(--gutter)); padding-left: var(--gutter); padding-right: var(--gutter); }
+.people-screen .row-link { margin-top: var(--space-2); }
+.people-foot { padding: var(--space-5) 0 var(--space-2); }
+.people-sub { padding-top: var(--space-4); }
+.people-results > .empty { padding-top: var(--space-8); }
+
+/* Vybrat lidi (phone): a round check in place of the avatar */
+.pick-box {
+  display: grid; place-items: center; flex: none; width: var(--avatar-m); height: var(--avatar-m); border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--edge-field); color: var(--on-act);
+}
+.row[aria-pressed="true"] { background: var(--pick); }
+.row[aria-pressed="true"] .row__meta { color: var(--ink); }
+.row[aria-pressed="true"] .pick-box { background: var(--act); box-shadow: none; }
+.people-screen--picking { padding-bottom: calc(var(--tabbar-h) + 170px) !important; }
+
+/* the bulk bar: docked above the tab bar on a phone, above the table on desktop */
+.people-bulk { display: grid; gap: var(--space-2); }
+.people-bulk--dock { padding-top: var(--space-3); background: var(--overlay); box-shadow: var(--lift-3); border-radius: var(--shape-block) var(--shape-block) 0 0; }
+.people-bulk__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: var(--hit); margin-top: calc(-1 * var(--space-2)); }
+.people-bulk__head > .link { min-height: var(--hit); padding: 0 var(--space-1); }
+.people-bulk__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.people-bulk__grid > .btn { flex-direction: column; gap: 4px; min-height: 64px; padding: var(--space-2) var(--space-1); font-size: var(--type-caption); line-height: var(--lh-caption); text-align: center; white-space: normal; }
+.people-bulk__grid > .btn > .icon { margin: 0; }
+.people-bulk__count { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); }
+.people-bulk__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+@media (min-width: 960px) {
+  .people-bulk:not(.dock) {
+    position: sticky; top: calc(var(--topbar-h) + 4px); z-index: 9; display: flex; align-items: center; gap: var(--space-4);
+    margin: var(--space-2) 0 var(--space-3); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+    border-radius: var(--shape-control); background: var(--overlay); box-shadow: var(--lift-3);
+  }
+}
+
+/* ---------- desktop: search and chips side by side, the table ---------- */
+@media (min-width: 960px) {
+  .people-screen--table .people-tools > .search { max-width: 440px; }
+  .people-screen--table .people-tools > .chips { padding: 2px 0; }
+}
+.people-results > .table-wrap { overflow: visible; }   /* fixed layout fits; no scroll box, so the header can stick to the top bar */
+.people-table { width: 100%; table-layout: fixed; }
+.people-table th { position: sticky; top: var(--topbar-h); z-index: 2; white-space: nowrap; }
+.people-table th, .people-table td { padding: 0 var(--space-3); height: 52px; }
+.people-table td { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.people-table tbody tr { cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
+.people-table tbody tr:hover { background: var(--wash); }
+.people-table tbody tr[data-picked] { background: var(--pick); }
+.people-table tbody tr[data-picked] .table-quiet { color: var(--ink); }
+.col-pick { width: 44px; padding-right: 0 !important; }
+.people-table th.col-name { width: 26%; }
+.people-table th.col-status { width: 11%; }
+.people-table th.col-household { width: 12%; }
+.people-table th.col-phone { width: 120px; }
+.people-table th.col-email { width: 20%; }
+.people-table th.col-groups { width: 13%; }
+/* ≥ 1200 with a card open: the same table, narrowed to name · phone · groups, the open person marked */
+@media (min-width: 1200px) { .people-screen--split .split { grid-template-columns: minmax(0, 1fr) minmax(420px, 480px); } }
+.people-table.people-table--compact th.col-name { width: auto; }
+.people-table.people-table--compact th.col-phone { width: 132px; }
+.people-table.people-table--compact th.col-groups { width: 28%; }
+.people-table tbody tr[data-open] { background: var(--pick); }
+.people-table tbody tr[data-open] > :first-child { box-shadow: inset 3px 0 0 var(--mark); }
+.people-table tbody tr[data-open] .table-quiet { color: var(--ink); }
+.people-table th.col-birthday { width: 108px; }
+.people-table th.col-last { width: 140px; }
+.people-table:not(:has(.col-status)) th.col-name { width: 32%; }
+@media (max-width: 1599.98px) { .people-table .col-last { display: none; } }
+.table-check { width: 20px; height: 20px; margin: 0; accent-color: var(--act); cursor: pointer; vertical-align: middle; }
+.col-name > * { vertical-align: middle; }
+.table-person { display: inline-flex; vertical-align: middle; align-items: center; gap: var(--space-3); max-width: 100%; min-height: var(--hit); font-weight: var(--weight-strong); }
+.table-person__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.col-name .table-person { max-width: calc(100% - 32px); }
+.table-person:hover .table-person__name { text-decoration: underline; text-underline-offset: 3px; }
+.table-missing { display: inline-flex; margin-left: var(--space-2); color: var(--wait-ink); }
+.table-link { color: inherit; }
+.table-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.table-more, .table-quiet { color: var(--ink-2); }
+.people-table td > .icon { margin-left: 6px; vertical-align: -4px; color: var(--ink-accent); }
+.people-table tr[data-former] .table-person__name { color: var(--ink-2); }
+.people-households { margin-top: var(--space-5); }
+
+/* ---------- split: the pane scrolls on its own, the list keeps its place ---------- */
+@media (min-width: 1200px) {
+  :is(.people-screen--split, .groups-screen--split) .split__aside { max-height: calc(100dvh - var(--topbar-h) - var(--space-4) * 2); overflow-y: auto; overscroll-behavior: contain; border-radius: var(--shape-block); }
+  :is(.people-screen--split, .groups-screen--split) .split { margin-top: var(--space-2); }
+  .people-screen--split .people-tools { margin: 0; padding-left: 0; padding-right: 0; }
+  .people-screen--split .people-tools > .chips { margin: 0; padding: 2px 0; }
+}
+.pane-menu { position: absolute; top: var(--space-3); right: calc(var(--space-3) + var(--hit) + var(--space-1)); }
+.pane-menu:empty { display: none; }
+
+/* ---------- the person card ---------- */
+.person-card, .group-page { display: grid; gap: var(--space-5); padding-top: var(--space-2); }
+.person-card > .section, .group-page > .section { margin-top: var(--space-2); }
+.person-head { display: flex; align-items: center; gap: var(--space-4); }
+.person-head__text { min-width: 0; display: grid; gap: var(--space-1); }
+.person-head__text > .title { overflow-wrap: anywhere; }
+.person-head__text > .meta .pill { vertical-align: 1px; }
+.person-card--pane .person-head, .group-page--pane .person-head { padding-right: calc(2 * var(--hit) + var(--space-2)); }
+.person-reach { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); gap: var(--space-2); }
+.person-reach[data-n="1"] { --n: 1; }
+.person-reach[data-n="2"] { --n: 2; }
+.person-reach > .btn { flex-direction: column; gap: 4px; min-height: 68px; padding: var(--space-2) var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); text-align: center; }
+.person-reach > .btn > .icon { margin: 0; width: var(--icon-m); height: var(--icon-m); }
+@media (min-width: 960px) {
+  .person-reach { display: flex; flex-wrap: wrap; }
+  .person-reach > .btn { flex-direction: row; min-height: var(--control-m); padding: 0 var(--space-4); gap: var(--space-2); font-size: var(--type-body); }
+  .person-reach > .btn > .icon { width: var(--icon-s); height: var(--icon-s); margin-left: -4px; }
+}
+.person-quiet { padding: var(--space-1) 0; }
+.person-section .section-head h2 .count { vertical-align: 2px; }
+.person-section > .facts + .caption { display: block; margin-top: var(--space-2); }
+.person-section > .slot { margin-top: var(--space-3); }
+.person-house { background: var(--tint); color: var(--ink-2); }
+.avatar--l.person-house > .icon { width: 28px; height: 28px; }
+.person-map { margin-top: var(--space-2); }
+.person-group-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); white-space: normal; }
+.person-group-meta > b { font-weight: var(--weight-strong); color: var(--ink); }
+.skill-pills { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.skill-pill { gap: 3px; font-weight: var(--weight-medium); }
+.skill-pill[data-level="trained"] { background: var(--ok-fill); color: var(--ok-ink); }
+.skill-pill[data-level="trained"] > .icon { width: 14px; height: 14px; margin-left: -3px; stroke-width: 2.25; }
+.skill-pill[data-level="learning"] { background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control); color: var(--ink); }
+.person-limits { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+.person-consent { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin-top: var(--space-3); color: var(--wait-ink); }
+.person-consent > .meta { color: var(--wait-ink); }
+.person-access { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+.person-access > .icon { color: var(--ink-2); }
+.person-warnings { display: grid; }
+.person-warnings > .warning + .warning { border-top: 1px solid var(--hairline); }
+.person-screen .screen > .person-card, .person-screen .person-card { padding-top: var(--space-4); }
+@media (min-width: 960px) {
+  .person-screen .person-card { padding-top: var(--space-7); }
+}
+/* household page: the head is the same shape as the person's */
+.person-screen > .person-head { margin-top: var(--space-4); }
+
+/* ---------- Narozeniny ---------- */
+.birthday-soon { margin-top: 0; }
+@media (min-width: 960px) {
+  .birthday-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-5) var(--space-8); align-items: start; }
+  .birthday-month { margin-top: 0; }
+  .birthday-soon { margin-bottom: var(--space-6); max-width: 680px; }
+}
+.birthday-missing .meta { line-height: 28px; }
+
+/* narrower desktops (960–1199): the table keeps what you look up most */
+@media (max-width: 1199.98px) {
+  .people-table :is(.col-household, .col-groups, .col-birthday) { display: none; }
+  .people-table th.col-name { width: 38%; }
+  .people-table th.col-status { width: 17%; }
+  .people-table th.col-email { width: auto; }
+}
+@media (min-width: 960px) { .people-screen--table .people-tools { position: static; } }
+
+/* ---------- Archiv ---------- */
+.people-archive-link { margin: 0; padding: 0 0 var(--space-4); }
+.people-archive-link .link { color: var(--ink-3); }
+@media (max-width: 719.98px) {
+  .archive-list .row { flex-wrap: wrap; min-width: 0; }
+  .archive-list .row__trail { order: 3; flex: 1 0 100%; flex-wrap: wrap; padding-left: calc(var(--avatar-m) + var(--space-3)); }
+  .archive-list .row__trail .btn .icon { display: none; }   /* both buttons fit on one line at 360 */
+}

@@ -1,0 +1,168 @@
+/* ============================================================
+   Zvonec Next – design tokens (visual language „Oblouk“)
+   Builds ONLY on the verified palette tokens of docs/zvonec/css/palettes.css (surfaces, text-1/2/3,
+   lines, primary, selected, status, hue scales, avatar pairs). No raw colours here: every colour role
+   below is a var() of a palette token, so all five palettes + „Podle zařízení“ work unchanged.
+   Load order: ../../css/palettes.css → next-tokens.css → components.css.
+   Scope: :where() everywhere (zero specificity). Colour roles are declared on the root AND on every
+   [data-palette] / [data-theme] island, so a palette island resolves its own values.
+   ============================================================ */
+
+/* ---- fonts: self-hosted, latin + latin-ext (unicode-range), path from docs/zvonec/next/css/ ---- */
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal; font-weight: 400 900; font-display: swap;
+  src: url("../../../assets/fonts/schibsted-grotesk-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal; font-weight: 400 900; font-display: swap;
+  src: url("../../../assets/fonts/schibsted-grotesk-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face { font-family: "Agrandir Narrow Black"; src: url("../../../assets/fonts/Agrandir-NarrowBlack.woff") format("woff"); font-weight: 900; font-display: swap; }
+@font-face { font-family: "Agrandir Grand Heavy"; src: url("../../../assets/fonts/Agrandir-GrandHeavy.woff") format("woff"); font-weight: 800; font-display: swap; }
+
+:where(:root) {
+  /* ---- type ----
+     Schibsted Grotesk carries everything people read and touch. Agrandir appears in exactly four
+     places: the brand mark (Grand Heavy), the one screen title, the numeral of a date arch, and the
+     headline of an empty state / a big number (Narrow Black). Never for buttons, labels or body. */
+  --font-ui: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-title: "Agrandir Narrow Black", "Schibsted Grotesk", system-ui, sans-serif;
+  --font-brand: "Agrandir Grand Heavy", system-ui, sans-serif;
+
+  /* six sizes, each with its own line height; phone values (desktop: see the media query) */
+  --type-caption: 13px;  --lh-caption: 16px;   /* tab labels, weekday letters, counts */
+  --type-meta: 15px;     --lh-meta: 20px;      /* second line of a row, hints, labels */
+  --type-body: 17px;     --lh-body: 24px;      /* running text, row titles, inputs, buttons */
+  --type-lead: 20px;     --lh-lead: 26px;      /* section titles, sheet titles */
+  --type-title: 34px;    --lh-title: 36px;     /* the screen title (Agrandir) */
+  --type-display: 44px;  --lh-display: 44px;   /* empty-state headline, big numbers (Agrandir) */
+  --weight-regular: 400; --weight-medium: 500; --weight-strong: 620; --weight-bold: 720;
+  --tracking-title: .004em;                    /* Agrandir Narrow Black, sentence case */
+  --tracking-caps: .06em;                      /* the only uppercase: weekday in a date arch */
+  --numerals: normal;                          /* proportional figures everywhere: Schibsted's tabular set
+                                                  (tnum) has slab-footed 1 and wide stops – it reads as
+                                                  a typewriter. Columns of times get a fixed width instead. */
+
+  /* ---- space: a 4 px grid (same steps as tokens.css) + page gutters ---- */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 40px; --space-8: 48px; --space-9: 64px;
+  --gutter: 20px;                              /* phone side margin */
+  --section-gap: 36px;                         /* between sections of a screen */
+  --measure: 680px;                            /* the widest a list or text column gets */
+  --page-max: 1600px;                          /* desktop: the widest a wide screen gets (data views excepted) */
+
+  /* ---- shape grammar: what a thing IS decides its corners ----
+     act (buttons, fields, segmented)  → soft rectangle
+     value / state (chips, status)     → pill
+     person                             → circle
+     group / team                       → rounded square
+     date / meeting                     → ARCH (round top, nearly square foot) – the church window */
+  --shape-control: 14px;
+  --shape-inner: 10px;                         /* segmented thumb, items inside a 14 px control */
+  --shape-block: 20px;                         /* the feature block, cards */
+  --shape-sheet: 28px;                         /* top corners of a bottom sheet */
+  --shape-pill: 999px;
+  --shape-team: 30%;                           /* team mark: rounded square at any size */
+  /* The arch: a round head (half the width) over gently rounded feet (~22 % of the width – 10 px at 44).
+     Radii must fit the box: 999px tops made the browser scale ALL radii down uniformly, so the feet
+     came out square (it read as a tombstone). */
+  --shape-arch: calc(var(--arch-w) / 2) calc(var(--arch-w) / 2) calc(var(--arch-w) * .22) calc(var(--arch-w) * .22);
+  --shape-arch-l: 44px 44px 19px 19px;         /* empty-state well (88 px wide) */
+  --shape-arch-sm: 24px 24px 9px 9px;          /* month / week day cell, selected day (≈ 48 px wide) */
+
+  /* ---- sizes: every target ≥ 44 px; the main action 52 px ---- */
+  --hit: 44px;
+  --control-s: 36px;                           /* desktop only, hit area still 44 via ::after */
+  --control-m: 44px;
+  --control-l: 52px;
+  --row-h: 64px;                               /* a two-line row */
+  --row-h-single: 52px;
+  --avatar-s: 32px; --avatar-m: 40px; --avatar-l: 64px;
+  --arch-w: 44px; --arch-h: 56px;
+  --icon-s: 20px; --icon-m: 24px;
+  --icon-stroke: 1.75;
+  --topbar-h: 56px;
+  --tabbar-h: 64px;                            /* + env(safe-area-inset-bottom) */
+  --rail-w: 248px;                             /* desktop navigation */
+
+  /* ---- motion: quiet, short, never decorative ---- */
+  --ease: cubic-bezier(.2, .7, .2, 1);         /* state changes, sheets in */
+  --ease-in: cubic-bezier(.5, 0, .75, 0);      /* sheets out */
+  --dur-press: 90ms;                           /* press feedback */
+  --dur-state: 180ms;                          /* hover, selected, segmented thumb */
+  --dur-sheet: 280ms;                          /* sheet, toast */
+}
+
+/* The arch radius is computed where the size is: a block that sets its own --arch-w (a bigger date arch,
+   a month-cell numeral) gets its round head and its gentle feet at that size, not the 44 px ones of :root.
+   Use the class .arch (the date block) or .arch-shape on anything else drawn as an arch. */
+:where(.arch, .arch-shape) {
+  --shape-arch: calc(var(--arch-w) / 2) calc(var(--arch-w) / 2) calc(var(--arch-w) * .22) calc(var(--arch-w) * .22);
+}
+
+/* ---- colour roles (all from palettes.css) ---- */
+:where(:root, [data-palette], [data-theme]) {
+  /* three surfaces, that is all: the ground, the bar, the overlay */
+  --ground: var(--surface-app);                /* every screen sits on it; lists are drawn ON it */
+  --bar: var(--surface-chrome);                /* tab bar, desktop rail – the brand colour */
+  --overlay: var(--surface-overlay);           /* sheets, menus, toasts, the segmented thumb */
+  --feature: var(--hero-bg);                   /* the ONE highlighted block per screen (Čeká na tebe) */
+  --card: var(--surface-panel);                /* a card when content must be lifted (desktop detail) */
+
+  --ink: var(--text-1);                        /* titles, values, row titles */
+  --ink-2: var(--text-2);                      /* meta, labels, hints – ≥ 4.5 : 1 everywhere */
+  --ink-3: var(--text-3);                      /* placeholder, disabled, chevrons */
+  --ink-accent: var(--text-accent);            /* links, „Všechno“, today's numeral */
+
+  --hairline: var(--line-1);                   /* row dividers */
+  --edge: var(--line-2);                       /* card / sheet edge */
+  --edge-control: var(--line-control);         /* quiet button / chip outline (decorative) */
+  --edge-field: var(--line-field);             /* field ring ≥ 3 : 1 */
+  --press: var(--pressed);
+  --wash: var(--hover);                        /* hover */
+  --tint: var(--soft);                         /* soft fills: date arch, secondary button, track */
+  --tint-2: var(--soft-hover);
+
+  --act: var(--primary-bg);                    /* the one solid: primary button, selected chip, today */
+  --act-hover: var(--primary-bg-hover);
+  --on-act: var(--primary-fg);
+  --mark: var(--indicator);                    /* tab indicator, selected day, rail bar */
+  --pick: var(--selected-bg);                  /* a selected row */
+  --pick-edge: var(--selected-line);
+  --focus-ring: var(--focus);
+
+  /* status: symbol + colour + word – the trio never splits */
+  --ok-ink: var(--confirmed-fg);   --ok-fill: var(--confirmed-bg);   --ok-solid: var(--confirmed-solid);   --on-ok: var(--text-on-confirmed);
+  --wait-ink: var(--waiting-fg);   --wait-fill: var(--waiting-bg);   --wait-solid: var(--waiting-solid);   --wait-body: var(--warning-text);
+  --no-ink: var(--declined-fg);    --no-fill: var(--declined-bg);    --no-solid: var(--declined-solid);    --on-no: var(--text-on-danger);
+  --info-ink: var(--info-fg);      --info-fill: var(--info-bg);      --info-body: var(--info-text);
+
+  --dim: var(--scrim);
+
+  /* elevation – only three lifts, all from the palette's shadow tints */
+  --lift-1: 0 1px 0 var(--line-1);                                                         /* top bar on scroll */
+  --lift-2: 0 0 0 1px var(--line-2), 0 1px 2px var(--shadow-tint-b), 0 2px 6px -2px var(--shadow-tint-a);   /* thumb, raised */
+  --lift-3: 0 0 0 1px var(--line-2), 0 -8px 32px -12px var(--shadow-tint-c), 0 -2px 8px -4px var(--shadow-tint-b); /* bottom sheet */
+  --lift-4: 0 0 0 1px var(--line-2), 0 12px 32px -8px var(--shadow-tint-c), 0 4px 10px -4px var(--shadow-tint-b);  /* menu, toast, dialog */
+}
+
+/* desktop: one step denser – type 1 px smaller, gutters wider */
+@media (min-width: 960px) {
+  :where(:root) {
+    --type-meta: 14px; --lh-meta: 20px;
+    --type-body: 16px; --lh-body: 22px;
+    --type-title: 40px; --lh-title: 44px;
+    --gutter: 40px;
+    --row-h: 60px; --row-h-single: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(:root) { --dur-press: 0ms; --dur-state: 0ms; --dur-sheet: 0ms; }
+}
