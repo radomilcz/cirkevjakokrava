@@ -1,0 +1,139 @@
+/* ============================================================
+   Zvonec One – layers (CODEX §6.9, §6.10) – ui/layers.js. Everything mounts in #layers; the z-index of a layer and
+   its scrim is set from JS by depth (40 + 2n, 41 + 2n). data-mode: 'bottom' (phone sheet) · 'dialog' (≥ 600,
+   centred) · 'popover' (≥ 600, anchored; JS sets top / left). data-kind: sheet · filter · menu · popover · confirm.
+   data-size (dialogs): s 400 · m 480 · l 640.
+   ============================================================ */
+
+html[data-layer-open] { overflow: hidden; }
+
+.scrim { position: fixed; inset: 0; z-index: 40; background: var(--dim); animation: nx-fade var(--dur-sheet) var(--ease); }
+.scrim[data-mode="popover"] { background: transparent; animation: none; }
+
+.sheet {
+  position: fixed; z-index: 41; display: flex; flex-direction: column; min-width: 0;
+  --sheet-pad: var(--gutter);
+  background: var(--overlay); color: var(--ink);
+}
+.sheet__head, .sheet__grabber, .sheet__foot { flex: none; }
+/* head 44: the h2 and ✕ on one line – the title line is centred on the 44 ✕; a subtitle wraps under it, ✕ stays up */
+.sheet__head { display: flex; align-items: flex-start; gap: var(--space-3); min-height: var(--control-m); padding: 0 var(--sheet-pad); margin-bottom: var(--space-3); }
+.sheet__titles { flex: 1; min-width: 0; padding-top: calc((var(--control-m) - var(--lh-lead)) / 2); }
+.sheet__titles > h2, .sheet__title { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); overflow-wrap: break-word; }
+.sheet__titles > .meta { margin-top: 2px; }
+.sheet__close { margin-right: -10px; }
+.sheet__body {
+  flex: 1 1 auto; min-height: 0; overflow: hidden auto; overscroll-behavior: contain;
+  display: grid; grid-auto-rows: max-content; gap: var(--space-5); padding: var(--space-1) var(--sheet-pad) var(--space-5);
+}
+.sheet__foot {
+  display: flex; flex-direction: column; gap: var(--gap-y); padding: var(--gap-y) var(--sheet-pad) var(--space-4);
+  background: var(--overlay); box-shadow: 0 -1px 0 var(--hairline);
+}
+.sheet__foot .form-error { margin: 0; }
+
+/* phone: the bottom sheet – top r28, grabber 36 × 4 at 8, head 44, padding 20, the body scrolls, the foot sticks */
+.sheet[data-mode="bottom"] {
+  inset: auto 0 0 0; max-height: 92dvh; padding: 0 0 env(safe-area-inset-bottom);
+  border-radius: var(--shape-sheet) var(--shape-sheet) 0 0; box-shadow: var(--lift-3);
+  animation: nx-rise var(--dur-sheet) var(--ease);
+}
+.sheet[data-mode="bottom"][data-depth="2"] { max-height: calc(92dvh - 24px); }   /* the first one's top edge shows, dimmed */
+.sheet__grabber { width: 36px; height: 4px; margin: 8px auto 4px; border-radius: 2px; background: var(--line-strong); opacity: .6; }
+.sheet[data-mode="bottom"] .sheet__head { margin-top: 4px; }
+.sheet--dragging { animation: none; }
+.sheet[data-mode="bottom"]:not(.sheet--dragging) { transition: transform var(--dur-sheet) var(--ease); }
+
+/* ≥ 600: the dialog – centred, r20, padding 24; s 400 · m 480 · l 640; max-height 85vh */
+.sheet[data-mode="dialog"] {
+  --sheet-pad: var(--space-5);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: min(480px, calc(100vw - 2 * var(--space-4))); max-height: 85vh; padding-top: var(--space-5);
+  border-radius: var(--shape-block); box-shadow: var(--lift-4); animation: nx-fade var(--dur-sheet) var(--ease);
+}
+.sheet[data-mode="dialog"][data-size="s"] { width: min(400px, calc(100vw - 2 * var(--space-4))); }
+.sheet[data-mode="dialog"][data-size="l"] { width: min(640px, calc(100vw - 2 * var(--space-4))); }
+.sheet[data-mode="dialog"] .sheet__foot {
+  flex-direction: row-reverse; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: var(--gap-x);
+  padding-bottom: var(--space-5); border-radius: 0 0 var(--shape-block) var(--shape-block);
+}
+.sheet[data-mode="dialog"] .sheet__foot > .btn--block { display: inline-flex; width: auto; }
+.sheet[data-mode="dialog"] .sheet__foot > :not(.btn) { flex-basis: 100%; }
+/* more than two buttons do not fit a dialog's row: they stack as a column of full-width L buttons, 12 apart, the
+   primary on top and „Nech to být“ last (the DOM order: primary, the other action, the secondary) */
+.sheet[data-mode="dialog"] .sheet__foot:has(> .btn ~ .btn ~ .btn) { flex-direction: column; align-items: stretch; gap: var(--gap-y); }
+.sheet[data-mode="dialog"] .sheet__foot:has(> .btn ~ .btn ~ .btn) > .btn { display: flex; width: 100%; }
+
+/* ≥ 600: the popover – anchored, r20; filter 360 · menu 240–320 (size m: 320) · popover 320 */
+.sheet[data-mode="popover"] {
+  --sheet-pad: var(--space-5);
+  top: 0; left: 0; width: 320px; max-width: calc(100vw - 16px); padding-top: var(--space-4);
+  border-radius: var(--shape-block); box-shadow: var(--lift-4); animation: nx-fade var(--dur-state) var(--ease);
+}
+.sheet[data-mode="popover"][data-kind="filter"] { width: 360px; }
+.sheet[data-mode="popover"][data-kind="menu"] { width: max-content; min-width: 240px; max-width: 320px; padding: var(--space-2); --sheet-pad: 0; }
+.sheet[data-mode="popover"][data-kind="menu"][data-size="m"] { width: 320px; }
+.sheet[data-mode="popover"][data-kind="menu"] .sheet__body { padding: 0; gap: 0; }
+.sheet[data-mode="popover"] .sheet__foot {
+  box-shadow: none; padding-top: 0; padding-bottom: var(--space-4); flex-direction: row; border-radius: 0 0 var(--shape-block) var(--shape-block);
+}
+.sheet[data-mode="popover"] .sheet__head { margin-bottom: var(--space-2); }
+
+/* ---------- the menu (⋯): an action sheet on a phone, a popover ≥ 600 ---------- */
+.menu { display: grid; gap: var(--gap-lit); }
+.menu__row {
+  position: relative; display: flex; align-items: center; gap: var(--space-3); width: 100%;
+  min-height: var(--row-h-single); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-m);
+  background: none; color: var(--ink); text-align: left; font: inherit; font-size: var(--type-body); line-height: var(--lh-body); cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease);
+}
+.menu__row > .icon { color: var(--ink-2); }
+.menu__text { display: grid; min-width: 0; }
+.menu__label { overflow-wrap: break-word; }
+.menu__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.menu__row:hover, .menu__row:focus-visible { background: var(--wash); outline: none; }
+.menu__row:focus-visible { box-shadow: inset 0 0 0 2px var(--focus-ring); }
+.menu__row:disabled { color: var(--ink-3); cursor: not-allowed; background: none; }
+.menu__row--danger, .menu__row--danger > .icon { color: var(--no-ink); }
+.menu__rule { height: 1px; margin: 4px var(--space-3); border: 0; background: var(--hairline); }
+.sheet[data-mode="bottom"] .menu { margin: 0 calc(-1 * var(--space-3)); }
+@media (min-width: 600px) {
+  .sheet[data-mode="popover"] .menu__row { min-height: var(--control-m); font-size: var(--type-control); white-space: nowrap; }
+  .sheet[data-mode="popover"] .menu__label { white-space: normal; }
+}
+.menu-btn { flex: none; }
+
+/* ---------- the Filtr layer ---------- */
+.filter-groups { display: grid; gap: var(--space-5); }
+.filter-group { display: grid; gap: var(--gap-y); }
+.filter-group__title { font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
+.filter-group--switch { gap: 0; }
+.sheet--filter .sheet__foot > .btn { flex: none; }
+
+/* ---------- toast ---------- */
+.toasts {
+  position: fixed; z-index: 60; left: var(--gutter); right: var(--gutter);
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + var(--space-4));
+  display: grid; gap: var(--space-2); justify-items: center; pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: var(--space-3); width: 100%; max-width: 360px; min-height: var(--control-l);
+  padding: 4px 4px 4px var(--space-4); border-radius: var(--radius-m);
+  background: var(--overlay); color: var(--ink); box-shadow: var(--lift-4); pointer-events: auto;
+  font-size: var(--type-meta); line-height: var(--lh-meta); animation: nx-rise var(--dur-sheet) var(--ease);
+}
+.toast > .icon { color: var(--ink-2); }
+.toast__text { flex: 1; min-width: 0; padding: var(--space-2) 0; }
+.toast__action { flex: none; }
+.toast__close { flex: none; color: var(--ink-2); }
+body.is-public .toasts { bottom: calc(env(safe-area-inset-bottom) + var(--space-4)); }
+/* over a layer that leaves no room under the toasts (ui/layers.js placeToasts): at the window's top; with no room at
+   all only the newest stays (the older one is tucked away until the layers close or the newest leaves) */
+.toasts[data-place="top"] { top: calc(env(safe-area-inset-top) + var(--space-2)); bottom: auto; }
+.toast[data-tucked] { display: none; }
+@media (min-width: 600px) {
+  .toasts { left: calc(var(--nav-w) + var(--gutter)); right: auto; bottom: var(--space-5); justify-items: start; }
+  .toast { max-width: 400px; width: max-content; }
+  .toast__action { min-height: var(--control-s); padding: 0 14px; border-radius: var(--radius-s); font-size: var(--type-control-s); }
+  body.is-public .toasts { left: var(--gutter); }
+}

@@ -1,0 +1,76 @@
+/* ============================================================
+   Zvonec One – Obsazení and the picker. Owned by package P3 (DESIGN §6.4).
+   Obsazení (#obsazeni: ui/staffing.js) – the list screen is the kit's (listScreen, Filtr, the pane); here only the
+   Obsazení item anatomy, the horizon line, and the picker / who-waits sheets (ui/event-duties.js, ui/staffing.js).
+   Tokens only (css/tokens.css → ../css/palettes.css), no raw colours.
+   ============================================================ */
+
+/* ---------- the list: week subheads, then one block per meeting ---------- */
+.staff-list { display: grid; margin: 0 calc(-1 * var(--space-3)); }
+.staff-list > .subhead { padding-left: var(--space-3); padding-right: var(--space-3); }
+.staff-list > .subhead:first-child { padding-top: 0; }
+
+/* one meeting = one link (the title stretched over the block, whole-block hover); its slots and lines act on their
+   own. Lit per CODEX §5: --wash on hover, --pick + a detached 3 px --mark bar when its pane is open. */
+.staff {
+  position: relative; display: grid; grid-template-columns: var(--arch-w) minmax(0, 1fr); gap: 0 var(--space-3);
+  padding: var(--space-3); border-radius: var(--radius-m);
+  transition: background-color var(--dur-state) var(--ease);
+}
+.subhead + .staff { margin-top: 0; }
+.staff + .staff { margin-top: var(--gap-lit); }
+/* the hairline belongs to the block below, inset to the text start, and steps aside for a lit block */
+.staff + .staff::before {
+  content: ""; position: absolute; top: calc(-1 * var(--gap-lit) + 1px); left: calc(var(--space-3) + var(--arch-w) + var(--space-3)); right: var(--space-3);
+  height: 1px; background: var(--hairline);
+}
+.staff:has(.staff__title:hover) { background: var(--wash); }
+.staff:has(.staff__title:active) { background: var(--press); }
+.staff[data-open] { background: var(--pick); --tint: var(--card); }
+.staff[data-open]:has(.staff__title:hover) { background: var(--pick-hover); }
+.staff[data-open]::after {
+  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+}
+.staff:has(.staff__title:hover)::before, .staff:has(.staff__title:hover) + .staff::before,
+.staff[data-open]::before, .staff[data-open] + .staff::before { background: transparent; }
+.staff > .arch { align-self: start; }
+.staff__body { display: grid; gap: 2px; min-width: 0; align-content: start; }
+.staff__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.staff__title { min-width: 0; font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: break-word; }
+.staff__title::after { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
+.staff__title:focus-visible { outline: none; }
+.staff__title:focus-visible::after { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+/* the kit's fill (◯ 6 z 6 · 1 čeká), the same as on Seznam and in the pane; centred on the title's first line */
+.staff__head > .fill { flex: none; min-height: var(--lh-body); }
+.staff__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: break-word; }
+.staff__slots { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--space-2); }
+.staff__slots > .slot, .staff__line { position: relative; z-index: 1; }
+.staff__slots + .staff__line, .staff__meta + .staff__line { margin-top: var(--space-1); }
+/* „○ 1 člověk ještě neodpověděl ›“ / „● Ondra má dvě služby naráz ›“: quiet lines that open their sheet; 36 tall,
+   a 44 hit area */
+.staff__line {
+  display: inline-flex; align-items: center; gap: var(--space-2); justify-self: start; max-width: 100%; min-height: var(--control-s);
+  padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: var(--type-meta); line-height: var(--lh-meta); text-align: left; cursor: pointer;
+}
+.staff__line::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2) 0; }
+.staff__line > .mark { margin: 0; }
+.staff__line > span:not(.mark) { min-width: 0; overflow-wrap: break-word; }
+.staff__line > .icon { width: 16px; height: 16px; flex: none; color: var(--ink-3); }
+.staff__line:hover > span:not(.mark) { text-decoration: underline; text-underline-offset: 3px; }
+.staff__line--error { color: var(--no-ink); }
+
+/* the horizon, said once at the end of the list */
+.staff-horizon { margin-top: var(--space-5); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.staff-horizon > .link { display: inline-flex; vertical-align: baseline; }
+
+/* ---------- the picker: titled by the role, the team first, who cannot greyed with the reason ---------- */
+.sheet--pick .sheet__body { gap: var(--space-3); }
+.pick-heading { font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
+.pick-list > :not(.row) { margin-inline: var(--space-3); }   /* headings, hints and buttons line up with the names, the rows bleed */
+.pick-list > .btn { width: auto; margin-top: var(--space-2); }
+.pick-heading--off { margin-top: var(--space-4); padding-bottom: var(--space-1); }
+.pick-row--off .row__title { color: var(--ink-2); }
+.pick-row--off .avatar { opacity: .55; }
+.pick-row__why { color: var(--no-ink); }
+.pick-none { padding: var(--space-3) 0; }
+.waiting-lead { margin: 0 0 var(--space-2); }

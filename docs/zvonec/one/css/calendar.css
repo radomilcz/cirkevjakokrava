@@ -1,0 +1,212 @@
+/* ============================================================
+   Zvonec One – Kalendář: Seznam, Měsíc, Rozpis, Břemeno, the print. Owned by package P2 (DESIGN §6.2).
+   Tokens only (css/tokens.css → ../css/palettes.css), no raw colours. The kit (css/kit.css) draws the frame, the
+   period line, the date arch, the agenda and the event line; here only what these views add.
+   ============================================================ */
+
+/* ---------- shared: the quiet line of an empty month, the past link, the marks ---------- */
+.cal-note {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--gap-x);
+  font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2);
+}
+.cal-note__act { flex: none; }
+.cal-past { margin: 0 0 var(--space-2); }
+.cal-past > .link { margin-left: -4px; }
+.cal-mark { display: inline-block; flex: none; width: 10px; height: 10px; border-radius: 50%; vertical-align: 0; }
+.cal-mark--wait { box-shadow: inset 0 0 0 2px var(--wait-ink); }
+.cal-mark--no { background: var(--no-solid); }  /* the same red as the fill ring's (.ring__fill) */
+.cal-legend {
+  display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin-bottom: var(--space-2);
+  font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2);
+}
+.cal-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- Seznam: week subheads, one date arch per day, the event line (kit .agenda / .event) ---------- */
+.cal-agenda > .subhead:first-child { padding-top: 0; }
+.cal-agenda > .subhead + .agenda__day { border-top: 0; }
+.cal-agenda .agenda__day { padding: var(--space-3) 0; }
+.cal-agenda .agenda__day > .arch { top: var(--space-4); }
+.cal-agenda .agenda__label { padding-top: 0; }
+/* from 600 up the leader's fill sits in the trail (a value never inside the meta) */
+.cal-event--trail { grid-template-columns: 52px minmax(0, 1fr) auto; }
+.cal-event__trail { align-self: center; flex: none; padding-left: var(--space-2); white-space: nowrap; }
+.cal-event .fill { flex-wrap: nowrap; }
+.event[data-cancelled] .event__meta { text-decoration: line-through; }
+.cal-more { margin-top: var(--space-5); }
+
+/* ---------- Měsíc: one of two forms by the content's own width (DESIGN §6.2) ---------- */
+.cal-mesic { container-type: inline-size; min-width: 0; }
+.cal-mesic__wide { display: none; }
+@container (min-width: 700px) {
+  .cal-mesic__narrow { display: none; }
+  .cal-mesic__wide { display: block; }
+}
+/* ≥ 1200 D spans both tracks for the grid only: the period line and the quiet line stay in the list track, so „Dnes“
+   ends at the toolbar's right edge in Měsíc as in Seznam and Rozpis (it never jumps between the views) */
+@media (min-width: 1200px) {
+  .cal--mesic.ls--split .frame > .ls__body { display: grid; grid-template-columns: subgrid; align-items: start; }
+  .cal--mesic.ls--split .ls__body > * { grid-column: 1 / -1; }
+  .cal--mesic.ls--split .ls__body > :is(.period-line, .cal-note) { grid-column: 1; }
+}
+
+/* narrow: the mini month (cells 44) and the chosen day's meetings */
+.cal-mini .month { max-width: 420px; }
+.cal-mini .day { min-height: 52px; }
+.cal-dayview { margin-top: var(--space-5); }
+.cal-dayview > .subhead { padding-top: 0; }
+.cal-dayview > .quiet { margin-top: var(--space-1); }
+.cal-dayview__add { margin-top: var(--gap-y); }
+
+/* wide: the grid – cells ≥ 100, min-height 112, hairlines; the day number 16/620 in a 28 arch (today --act) */
+.cal-grid { min-width: 0; }
+.cal-grid__head, .cal-grid__body { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.cal-grid__head > span {
+  padding: 0 var(--space-2) var(--space-2); font-size: var(--type-caption); line-height: var(--lh-caption);
+  font-weight: var(--weight-medium); color: var(--ink-2);
+}
+.cal-grid__body { border-top: 1px solid var(--hairline); border-left: 1px solid var(--hairline); }
+.cal-cell {
+  container-type: inline-size; position: relative; display: flex; flex-direction: column; gap: var(--space-1);
+  min-width: 0; min-height: 112px; padding: var(--space-2); cursor: pointer;
+  border-right: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline);
+}
+.cal-cell__num {
+  position: relative; display: inline-grid; place-items: center; align-self: flex-start; flex: none;
+  width: 28px; height: 32px; padding: 3px 0 0; border: 0; border-radius: var(--shape-arch-sm); background: transparent;
+  color: var(--ink); font: inherit; font-size: 16px; line-height: 20px; font-weight: var(--weight-strong);
+  font-feature-settings: var(--numerals); cursor: pointer; transition: background-color var(--dur-state) var(--ease);
+}
+.cal-cell__num::after { content: ""; position: absolute; inset: -6px -8px; }
+.cal-cell__num:hover { background: var(--wash); }
+.cal-cell[data-outside] .cal-cell__num { color: var(--ink-3); }
+.cal-cell[data-today] .cal-cell__num { background: var(--act); color: var(--on-act); }
+.cal-cell__chips { display: grid; gap: 3px; min-width: 0; }
+/* the chip: min 24, square left edge with the 3 px Účel bar (its own pseudo-element on a straight edge), right corners
+   9; one line of 16 in 4 + 4, a title that does not fit takes a second line (whole words, then „…“) */
+.cal-chip {
+  position: relative; display: flex; align-items: flex-start; gap: 6px; min-width: 0; min-height: 24px; padding: 4px 8px 4px 11px;
+  border-radius: 0 var(--shape-inner) var(--shape-inner) 0; color: var(--ink);
+  font-size: var(--type-caption); line-height: var(--lh-caption); transition: background-color var(--dur-state) var(--ease);
+}
+.cal-chip::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--hue-mark, var(--edge-control)); }
+.cal-chip:hover { background: var(--wash); }
+.cal-chip__time { flex: none; font-weight: var(--weight-strong); font-feature-settings: var(--numerals); }
+/* up to two lines of whole words: month.js fits the words that fit and adds „…“ (a cut word never shows) */
+.cal-chip__title {
+  flex: 1 1 auto; min-width: 0; max-height: calc(2 * var(--lh-caption)); overflow: hidden; overflow-wrap: normal;
+  word-break: normal; hyphens: none; font-weight: var(--weight-regular);
+}
+.cal-chip__title[data-cut] { white-space: nowrap; text-overflow: ellipsis; }
+.cal-chip[data-mine] { background: var(--hue-fill); color: var(--hue-ink); }
+.cal-chip[data-mine]:hover { background: var(--hue-fill); box-shadow: inset 0 0 0 1px var(--hue-mark); }
+.cal-chip[data-cancelled] { color: var(--ink-3); }
+.cal-chip[data-cancelled] .cal-chip__title { text-decoration: line-through; }
+@container (max-width: 129.98px) { .cal-chip__time { display: none; } }
+.cal-cell__more {
+  position: relative; align-self: flex-start; min-height: 24px; padding: 0 var(--space-1); margin-left: -4px; border: 0;
+  border-radius: var(--radius-s); background: none; color: var(--ink-accent); font: inherit; font-size: var(--type-caption);
+  line-height: var(--lh-caption); font-weight: var(--weight-strong); cursor: pointer; white-space: nowrap;
+}
+.cal-cell__more::after { content: ""; position: absolute; inset: -10px 0; }
+.cal-cell__more:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* „ty · Vedení chval + Klávesy · čeká“: the roles stay on the pill's line and wrap between words beside it (the pill
+   „ty“ is about 32, + 8 gap + room for rounding), so „ty“ never stands alone above its own words; the pill sits on the
+   roles' first baseline; the status may take the next line */
+.cal-event .event__duty:has(> .pill:first-child) { align-items: baseline; }
+.cal-event .event__duty > .pill:first-child + span { max-width: calc(100% - 44px); min-width: 0; }
+
+/* the day popover (320): the day's meetings as event lines */
+.cal-daypop__list { display: grid; gap: var(--gap-lit); }
+.cal-daypop__list > .event { margin: 0; }
+
+/* ---------- Rozpis: one block per meeting, one line per team ---------- */
+.rlist { display: grid; }
+.rblock {
+  --rblock-rule-start: calc(var(--space-3) + var(--arch-w) + var(--space-4));
+  position: relative; display: grid; grid-template-columns: var(--arch-w) minmax(0, 1fr) auto; gap: var(--space-2) var(--space-4);
+  grid-template-areas: "arch head trail" "arch teams teams"; grid-template-rows: auto 1fr; align-items: start; padding: var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--radius-m);
+  transition: background-color var(--dur-state) var(--ease);
+}
+.rblock + .rblock { margin-top: var(--gap-lit); }
+/* the hairline belongs to the block below and steps aside for a lit block and the one after it */
+.rblock + .rblock::before {
+  content: ""; position: absolute; top: calc(-1 * var(--gap-lit) + 1px); left: var(--rblock-rule-start); right: var(--space-3);
+  height: 1px; background: var(--hairline);
+}
+.rblock:hover { background: var(--wash); }
+.rblock[data-open] { background: var(--pick); --tint: var(--card); }
+.rblock[data-open]:hover { background: var(--pick-hover); }
+.rblock[data-open]::after {
+  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+}
+.rblock:is(:hover, [data-open])::before, .rblock:is(:hover, [data-open]) + .rblock::before { background: transparent; }
+.rblock[data-open] .rblock__time, .rblock[data-open] .rblock__team-name { color: var(--ink); }
+/* the whole block is one link; the names and slots on it are their own targets */
+.rblock__link { position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
+.rblock__link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.rblock :is(button, .slot) { position: relative; z-index: 1; }
+.rblock > .arch { grid-area: arch; }
+/* the fill trail sits on the title line only; the team lines run under it to the list's right edge */
+.rblock__head { grid-area: head; min-width: 0; overflow-wrap: normal; }
+.rblock__head > .pill { margin-left: var(--space-2); vertical-align: 1px; }
+.rblock__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); }
+.rblock__time { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); font-feature-settings: var(--numerals); }
+.rblock[data-cancelled] .rblock__title { text-decoration: line-through; color: var(--ink-2); }
+/* what is over (the whole month shows): quieter, still readable */
+.rblock[data-past] :is(.rblock__title, .cal-who) { color: var(--ink-2); }
+.rblock__trail { grid-area: trail; align-self: start; padding-top: 2px; white-space: nowrap; }
+.rblock__teams { grid-area: teams; display: grid; gap: var(--space-2); min-width: 0; }
+.rblock__team { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-3); align-items: baseline; }
+@media (min-width: 600px) { .rblock__team { grid-template-columns: 120px minmax(0, 1fr); } }
+.rblock__team-name {
+  font-size: var(--type-caption); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2);
+  overflow-wrap: normal; min-width: 0;
+}
+.cal-who { min-width: 0; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); overflow-wrap: normal; }
+.cal-who__tail { white-space: nowrap; }
+/* a person is one box: the line breaks between people, the same for a member's text and a leader's button */
+.cal-who__person { display: inline-block; max-width: 100%; vertical-align: top; }
+.cal-who__tail > .cal-mark { margin-left: 4px; }
+.cal-name {
+  display: inline; padding: 0; border: 0; border-radius: 4px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+button.cal-name:hover { text-decoration: underline; text-underline-offset: 3px; }
+span.cal-name { cursor: default; }
+/* the slots: a row of their own under the names, 8 across and 12 down; from 600 up a slot is one line (S 36) and a
+   role too long for the line ends in „…“ instead of wrapping inside the capsule; on a phone (M 44) a long role
+   („Modlitby po setkání“ in 182) wraps between its words instead: two lines of 20 still fit the 44, nothing is cut */
+.cal-who__slots { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-2); min-width: 0; }
+.cal-who > * ~ .cal-who__slots { margin-top: var(--space-2); }
+.cal-who__slots > .slot { max-width: 100%; min-width: 0; }
+.slot__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 599.98px) { .slot__label { white-space: normal; overflow-wrap: normal; text-align: left; } }
+.cal-who > .sev { margin-left: 2px; }
+
+/* ---------- Břemeno (a dialog) ---------- */
+.load-list .row__trail { gap: var(--space-3); }
+.load-bar { position: relative; display: block; width: 72px; height: 8px; border-radius: var(--shape-pill); background: var(--tint-2); overflow: hidden; }
+.load-bar__fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--ink-2); }
+.load-bar[data-over] .load-bar__fill { background: var(--wait-ink); }
+
+/* ---------- print (A4 landscape): „Vytiskni rozpis…“ ---------- */
+.print-sheet { display: none; }
+@page roster { size: A4 landscape; margin: 10mm; }
+@media print {
+  html[data-print] :is(.sidenav, .tabbar, .toasts, .save-line, #layers, .skip-link) { display: none !important; }
+  html[data-print="roster"] #view { display: none !important; }
+  html[data-print="roster"] .print-sheet { display: block; page: roster; color: var(--ink); }
+  .print-sheet { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .print-sheet__title { margin-bottom: 4mm; font-family: var(--font-title); font-size: 18pt; }
+  .print-roster { width: 100%; border-collapse: collapse; font-size: 8pt; line-height: 1.25; }
+  .print-roster :is(th, td) { padding: 3px 4px; border: 0.5pt solid var(--edge); text-align: left; vertical-align: top; }
+  .print-roster thead th { font-weight: 620; }
+  .print-roster tbody th { min-width: 36mm; font-weight: 620; }
+  .print-roster tbody th > span { display: block; }
+  .print-event { font-weight: 400; }
+  .print-team { text-align: center; }
+  .print-cell { display: flex; align-items: flex-start; gap: 3px; }
+  .print-cell .sym { width: 10px; height: 10px; margin-top: 1px; flex: none; }
+  .print-cell__missing { font-style: italic; }
+  .print-roster tr { break-inside: avoid; }
+}
