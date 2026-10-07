@@ -17,22 +17,22 @@
 }
 
 /* ---------- categorical colour (avatars, teams, kind tags): the brand's colours only ----------
-   The brand's pink, blue and green, the sand of its cream and clay and the lilac between its pink and blue,
-   each mixed into the palette (light: 30 % into the card; dark: 36 % into the deeper rail colour, so a disc
-   stays a disc on a blue ground), with the palette's ink on it (≥ 4.5 : 1 in every palette). So no palette
-   shows a hue the brand does not have (teal, plum, amber, cornflower). teal → green. */
+   The brand's blue and green, the sand of its cream and clay and the lilac between its pink and blue, each mixed
+   into the palette (light: 30 % into the card; dark: 36 % into the deeper rail colour, so a disc stays a disc on a
+   blue ground), with the palette's ink on it (≥ 4.5 : 1 in every palette). So no palette shows a hue the brand
+   does not have (teal, plum, amber, cornflower): teal → green. Not the pink: the brand has one pink, it marks the
+   chosen row (and frames Růžová a hlína), and a pink tint would be a second pink – rose → sand. */
 :where(:root) {
-  --brand-pink: #e6acac; --brand-blue: #464994; --brand-green: #498660;
+  --brand-blue: #464994; --brand-green: #498660;
   --brand-sand: color-mix(in oklab, #f9e7dd 60%, #3b2f2f); --brand-lilac: color-mix(in oklab, #e6acac, #464994);
   --hue-k: 30%; --hue-over: var(--card);
 }
 :root[data-theme="dark"] { --hue-k: 36%; --hue-over: var(--bar); }
 @media (prefers-color-scheme: dark) { :root:not([data-palette]) { --hue-k: 36%; --hue-over: var(--bar); } }
-[data-hue="rose"] { --hue-base: var(--brand-pink); }
 [data-hue="blue"] { --hue-base: var(--brand-blue); }
 [data-hue="green"], [data-hue="teal"] { --hue-base: var(--brand-green); }
 [data-hue="plum"] { --hue-base: var(--brand-lilac); }
-[data-hue="amber"] { --hue-base: var(--brand-sand); }
+[data-hue="amber"], [data-hue="rose"] { --hue-base: var(--brand-sand); }
 [data-hue] {
   --hue-fill: color-mix(in oklab, var(--hue-base) var(--hue-k), var(--hue-over)); --hue-ink: var(--ink);
   --hue-av: var(--hue-fill); --hue-av-ink: var(--ink);
@@ -353,6 +353,9 @@
 .staff-item + .staff-item::before { content: ""; position: absolute; top: 0; left: var(--space-3); right: var(--space-3); height: 1px; background: var(--hairline); }
 .staff-item[data-open] { background: var(--pick); }
 .staff-item[data-open]::before, .staff-item[data-open] + .staff-item::before { background: transparent; }
+/* inside a chosen row a soft fill (the date arch) is the card colour: the ink over the brand pink of Růžová a hlína
+   would be one more pink */
+:is(.row[aria-selected="true"], .row[data-open], .staff-item[data-open]) { --tint: var(--card); }
 .staff-item__body { display: grid; gap: var(--space-2); min-width: 0; }
 .staff-item__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
 .staff-item__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); color: var(--ink); }

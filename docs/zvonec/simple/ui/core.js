@@ -142,8 +142,8 @@ export const badge = (n, { label } = {}) => (n ? h('span', { class: 'badge', 'ar
 /** A neutral word-pill: „zrušeno“, „ty“, „na webu“, „učí se“. */
 export const pill = (word, { cls } = {}) => h('span', { class: ['pill', cls] }, word);
 
-/** Účel → hue: Nedělní setkání rose · Zkouška blue · Skupinka green · Akce plum (the lilac). */
-export const KIND_HUES = { service: 'rose', rehearsal: 'blue', smallGroup: 'green', event: 'plum' };
+/** Účel → hue: Nedělní setkání the sand · Zkouška blue · Skupinka green · Akce plum (the lilac). */
+export const KIND_HUES = { service: 'amber', rehearsal: 'blue', smallGroup: 'green', event: 'plum' };
 /** A category tag in a hue. */
 export const tag = (word, hue) => h('span', { class: 'tag', dataset: { hue } }, word);
 /** The Účel tag of an event kind: kindTag('service') → „Nedělní setkání“ in rose. */
@@ -233,9 +233,9 @@ export const slot = (label, onclick, { aria } = {}) => h('button', { type: 'butt
 
 // ---------- identity ----------
 
-/** The brand's colours (css/simple.css): pink, blue, green, the pink-blue lilac, the cream-clay sand. A stored
- *  'teal' (older data) shows as green. */
-export const HUES = ['rose', 'blue', 'green', 'plum', 'amber'];
+/** The brand's colours (css/simple.css): blue, green, the pink-blue lilac, the cream-clay sand. The pink marks the
+ *  chosen row only; a stored 'rose' shows as sand, 'teal' (older data) as green. */
+export const HUES = ['blue', 'green', 'plum', 'amber'];
 
 /** Stable hue for an id: hueOf('p123') → 'plum'. */
 export function hueOf(key) {
@@ -244,7 +244,7 @@ export function hueOf(key) {
   return HUES[hash % HUES.length];
 }
 
-/** Hues of groups by their order within a kind, so up to five teams never share a colour (app.js calls it). */
+/** Hues of groups by their order within a kind, so up to four teams never share a colour (app.js calls it). */
 const GROUP_HUES = new Map();
 export function assignGroupHues(groups = []) {
   GROUP_HUES.clear();
@@ -256,7 +256,7 @@ export function assignGroupHues(groups = []) {
     byKind.set(g.kind, i + 1);
   }
 }
-export const groupHue = (group) => ([...HUES, 'teal'].includes(group?.color) ? group.color : GROUP_HUES.get(group?.id) || hueOf(group?.id || group?.name));
+export const groupHue = (group) => ([...HUES, 'teal', 'rose'].includes(group?.color) ? group.color : GROUP_HUES.get(group?.id) || hueOf(group?.id || group?.name));
 
 /** Full name, nickname in brackets when it differs: „Alžběta Svobodová (Bětka)“. Deleted → „Někdo smazaný“. */
 export function personName(person) {

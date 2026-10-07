@@ -130,7 +130,7 @@ const minC = (fg, bgs) => Math.min(...bgs.map((bg) => contrast(fg, bg)));
 // Otázky has nine pairs; Zvonec takes the five that carry small app text, and tests the two green ones.
 const PALETTES = [
   { id: 'clay-pink',  label: 'Hlína a růžová', ground: '#3b2f2f', ink: '#e6acac', scheme: 'dark',  ref: 'dark' },
-  { id: 'pink-clay',  label: 'Růžová a hlína', ground: '#e6acac', ink: '#3b2f2f', scheme: 'light' },
+  { id: 'pink-clay',  label: 'Růžová a hlína', ground: '#e6acac', ink: '#3b2f2f', scheme: 'light', accent: 'ink', pick: 'ground' },
   { id: 'green-cream', label: 'Zelená a krém', ground: '#498660', ink: '#f9e7dd', scheme: 'dark', candidate: true },
   { id: 'blue-cream', label: 'Modrá a krém',   ground: '#464994', ink: '#f9e7dd', scheme: 'dark', accent: 'ink' },
   { id: 'cream-blue', label: 'Krém a modrá',   ground: '#f9e7dd', ink: '#464994', scheme: 'light', accent: 'ink' },
@@ -176,11 +176,11 @@ function surfacesFor(p) {
       return { chrome: p.ground, app: '#fffaf6', panel: '#fffdfb', overlay: '#fffdfb', hover: '#fbefe8',
         hero: mix(p.ground, '#fffaf6', 0.5), heroLine: mix(p.ink, p.ground, 0.12) };
     }
-    // a mid-light ground (pink): the sidebar is the full ground, the stage a light window of the same hue,
-    // the head band halfway – the palette stays pink everywhere, the reading surfaces stay light
-    return { chrome: p.ground, app: fromLch([0.945, C * 0.38, H + 4]), panel: fromLch([0.982, C * 0.14, H + 10]),
-      overlay: fromLch([0.985, C * 0.12, H + 10]), hover: fromLch([0.962, C * 0.3, H + 6]),
-      hero: fromLch([0.905, C * 0.62, H + 2]), heroLine: fromLch([0.84, C * 0.9, H]) };
+    // a mid-light ground (the pink): the brand has one pink, so it appears only as itself – the sidebar and a
+    // selected row (pick: 'ground'). The window is cream-clay's warm white and the head band a hint of the ink:
+    // a lighter pink window, band or fill read as further pinks.
+    return { chrome: p.ground, app: '#fffaf6', panel: '#fffdfb', overlay: '#fffdfb', hover: mix(p.ink, '#fffaf6', 0.04),
+      hero: mix(p.ink, '#fffaf6', 0.045), heroLine: mix(p.ink, '#fffaf6', 0.12) };
   }
   // dark: the ground is the stage; the sidebar deeper, cards and dialogs a little lighter
   const dC = C > 0.05 ? 0.92 : 1;
@@ -202,7 +202,7 @@ function build(p) {
   const A_ = (n, k) => S[n].alpha[k - 1];
   const words = () => [su.app, su.panel, su.overlay, su.hero, over(A_('gray', 2), su.panel), over(A_('gray', 3), su.panel)];
   const countBg = () => (!light && !p.ref ? rgba(fromLch([0.2, lch(p.ground)[1] * 0.8, lch(p.ground)[2]]), 0.28) : A_('gray', 4));
-  const meta = () => [...words(), over(A_('gray', 3), su.app), over(A_('gray', 2), su.overlay), su.chrome, su.hover,
+  const meta = () => [...words(), ...(p.pick === 'ground' ? [p.ground] : []), over(A_('gray', 3), su.app), over(A_('gray', 2), su.overlay), su.chrome, su.hover,
     over(countBg(), su.chrome), over(countBg(), su.hero)];
 
   if (p.ref) {
@@ -404,8 +404,8 @@ function build(p) {
     Object.assign(T, { 'today-bg': rgba(pink, 0.16), 'selected-bg': rgba(pink, 0.3), 'selected-bg-hover': rgba(pink, 0.4) });
   }
   if (p.accent === 'ink') {
-    // a pair without the pink (the blue ones): selection, today, links, info and the progress ring take the
-    // pair's own ink – the pink of the other palettes is not a colour of this one
+    // selection, today, links, info and the progress ring take the pair's own ink: in the blue pairs the pink is
+    // not their colour, in the pink pair a tint of the pink would be a second pink
     const k = light ? { today: 0.05, sel: 0.08, hover: 0.12, line: 0.3, info: 0.08 } : { today: 0.06, sel: 0.1, hover: 0.14, line: 0.42, info: 0.1 };
     Object.assign(T, {
       'today-bg': rgba(p.ink, k.today), 'selected-bg': rgba(p.ink, k.sel), 'selected-bg-hover': rgba(p.ink, k.hover),
@@ -413,6 +413,8 @@ function build(p) {
       'milnik-accent': p.ink, 'milnik-accent-solid': p.ink, 'milnik-accent-soft': p.ink, 'milnik-badge-fg': light ? p.ink : gray[11],
       'info-fg': p.ink, 'info-solid': p.ink, 'text-accent': p.ink,
     });
+    // the pink pair: a selected row is the brand pink itself, not a tint of it; today is a hint of the ink
+    if (p.pick === 'ground') Object.assign(T, { 'selected-bg': p.ground, 'selected-bg-hover': p.ground, 'selected-line': p.ground, 'today-bg': rgba(p.ink, 0.04) });
   }
   // text-3 (dashes in empty cells, other-month days) also sits on a selected or today's row
   const t3bgs = [su.panel, su.app, over(T['surface-sunken'], su.panel), over(T['selected-bg'], su.panel), over(T['selected-bg-hover'], su.panel), over(T['today-bg'], su.panel)];
