@@ -84,7 +84,8 @@
   content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
 }
 /* the columns by the table's own width: below 680 (a tablet column of 588) Jméno · Telefon · E-mail, then Členství,
-   ≥ 860 Skupiny, ≥ 1100 (desktop 1440 and up) Domácnost and Narozeniny too. E-mail takes what is left. */
+   ≥ 860 Skupiny, ≥ 1100 (desktop 1440 and up) Domácnost and Narozeniny too, ≥ 1300 Poslední služba. E-mail takes
+   what is left. Members have no Členství, Narozeniny and Poslední služba (people.js, as in Next). */
 .people-table .col-pick { width: 44px; padding-right: 0; }
 .people-table th.col-name { width: 200px; }
 .people-table th.col-status { width: 104px; }
@@ -101,6 +102,22 @@
 }
 @container (max-width: 679.98px) {
   .people-table .col-status { display: none; }
+}
+/* beside a pane at 1200–1279 (the list ≈ 360–440): Jméno · Telefon */
+@container (max-width: 479.98px) {
+  .people-table .col-email { display: none; }
+}
+/* the whole desktop width (≥ 1300, a 1920 window): Poslední služba too (leaders, as in Next), and the columns that
+   hold words get the room, so the e-mail does not take it all */
+.people-table th.col-last { width: 128px; }
+@container (max-width: 1299.98px) {
+  .people-table .col-last { display: none; }
+}
+@container (min-width: 1300px) {
+  .people-table th.col-name { width: 260px; }
+  .people-table th.col-household { width: 200px; }
+  .people-table th.col-phone { width: 128px; }
+  .people-table th.col-groups { width: 220px; }
 }
 /* ≥ 1200 with a person open beside it: name · phone in the list track */
 .people-table.people-table--compact th.col-name { width: auto; }

@@ -156,7 +156,26 @@ function renderApp({ toTop = false } = {}) {
     if (target) { target.scrollIntoView(); return 'anchor'; }
   }
   window.scrollTo(0, toTop ? 0 : position);
+  if (!toTop) keepClicked();
   fitPanes({ reveal: navigated });
+}
+
+// ≥ 1200 a pane that opens or closes changes the list's width, and a wide list's rows lay their lines side by side
+// (css/kit.css): the item that was clicked stays at the same height in the window, so the list does not seem to jump.
+const ROWISH = ':is(.row, .event, .staff, .rblock, tbody tr)';
+let clicked = null;
+document.addEventListener('click', (e) => {
+  const item = e.target.closest?.(`#view .ls__body ${ROWISH}`);
+  const all = item ? [...viewEl.querySelectorAll(`.ls__body ${ROWISH}`)] : [];
+  clicked = item ? { index: all.indexOf(item), count: all.length, top: item.getBoundingClientRect().top, at: Date.now() } : null;
+}, true);
+function keepClicked() {
+  const was = clicked;
+  if (!was || Date.now() - was.at > 1500 || !isSplit()) return;
+  const all = [...viewEl.querySelectorAll(`.ls__body ${ROWISH}`)];
+  if (all.length !== was.count || !all[was.index]) return;
+  const shift = all[was.index].getBoundingClientRect().top - was.top;
+  if (Math.abs(shift) >= 1) window.scrollBy(0, shift);
 }
 
 // ---------- the detail pane beside a list (≥ 1200 px) ----------
@@ -216,7 +235,7 @@ window.addEventListener('hashchange', () => {
   const hadPane = hasPane();
   const position = window.scrollY;
   if (renderApp() === 'anchor') return;
-  if (paneOnly(before, location.hash, hadPane)) { window.scrollTo(0, position); fitPanes({ reveal: true }); return; }
+  if (paneOnly(before, location.hash, hadPane)) { window.scrollTo(0, position); keepClicked(); fitPanes({ reveal: true }); return; }
   const saved = history.state?.scroll;
   window.scrollTo(0, Number.isFinite(saved) ? saved : 0);
   fitPanes({ reveal: true });

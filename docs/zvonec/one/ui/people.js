@@ -8,7 +8,8 @@
 //      Skupiny: ui/groups.js – Týmy · Skupinky · Vedení.
 // Routes: #lide[/<person>] · #lide/skupiny[/<group>[/<person>]] · #lide/domacnost/<id> · #lide/vypis[/<person>].
 // A click opens the detail: a pane beside the list ≥ 1200 (the list keeps its place – no jump to the top), a page
-// below. Nothing opens by itself. Podrobný výpis (leaders, ≥ 900, from ⋯): Simple's table under the same A·B·C.
+// below. Nothing opens by itself. Podrobný výpis (leaders ≥ 900 from ⋯; on a desktop ≥ 1200 #lide opens it for
+// everyone, unless the simple list was chosen): Simple's table under the same A·B·C, the columns as in Next's.
 
 import {
   h, icon, avatar, row, list, subhead, empty, rowLink, link, button, listScreen, filterButton, filterState, setFilter,
@@ -32,6 +33,16 @@ import { groupDetail, groupRow, groupRows, groupMatches, groupFilterGroups, show
 
 const SEARCH = 'lide';                                   // one search for both views (survives a view switch)
 const WIDE_TABLE = window.matchMedia('(min-width: 900px)');   // Podrobný výpis needs room for its columns
+/** Podrobný výpis can be shown: leaders from 900 (from ⋯), everyone on a desktop (≥ 1200 #lide opens it). */
+const tableFits = () => (can('leader') ? WIDE_TABLE.matches : isSplit());
+
+// The simple list or the table – the person's choice, remembered in this browser. On a desktop (≥ 1200) #lide opens
+// the table across the whole width unless the simple list was chosen (the owner's decision); below 1200 #lide is the
+// list, as it always was.
+const MODE_KEY = 'zvonec-one-people-view';
+const chosenMode = () => { try { return localStorage.getItem(MODE_KEY); } catch { return null; } };
+const chooseMode = (mode) => { try { localStorage.setItem(MODE_KEY, mode); } catch { /* not remembered, that's all */ } };
+const opensTable = () => isSplit() && chosenMode() !== 'list';
 const VIEWS = [['lide', 'Lidé', '#lide'], ['skupiny', 'Skupiny', '#lide/skupiny']];
 const MONTHS = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
 
@@ -291,7 +302,10 @@ function downloadCsv(people) {
 /** The head's ⋯ – a function, read when it opens, so it follows the Filtr (Ukaž i archiv) without a redraw. */
 const listMenu = (view) => () => {
   const download = { label: 'Stáhni seznam', icon: 'download', onclick: () => downloadCsv(shownPeople()) };
-  if (!can('leader')) return [download];
+  const mode = tableFits() ? (view === 'vypis'
+    ? { label: 'Ukaž jednoduchý seznam', icon: 'people', onclick: () => { chooseMode('list'); location.hash = 'lide'; } }
+    : { label: 'Ukaž podrobný výpis', icon: 'table', onclick: () => { chooseMode('table'); location.hash = 'lide/vypis'; } }) : null;
+  if (!can('leader')) return [download, mode].filter(Boolean);
   const overdue = view === 'skupiny' ? [] : overduePeople();
   return [
     { label: 'Přidej skupinu', icon: 'teams', onclick: () => groupSheet() },
@@ -300,9 +314,7 @@ const listMenu = (view) => () => {
     '-',
     { label: 'Zkopíruj e-maily', icon: 'copy', onclick: () => copyEmails(shownPeople()) },
     download,
-    WIDE_TABLE.matches ? (view === 'vypis'
-      ? { label: 'Ukaž jednoduchý seznam', icon: 'people', href: '#lide' }
-      : { label: 'Ukaž podrobný výpis', icon: 'table', href: '#lide/vypis' }) : null,
+    mode,
     overdue.length ? '-' : null,
     overdue.length ? {
       label: overdue.length === 1 ? 'Smaž starou kartu z archivu' : 'Smaž staré karty z archivu',
@@ -403,9 +415,9 @@ function renderGroupsView({ groupId, personId } = {}) {
   return peopleScreen({ view: 'skupiny', body: () => groupsBody({ openId: groupId }), pane });
 }
 
-/** #lide/vypis[/<person>] (leaders, ≥ 900) – below 900 the simple list. */
+/** #lide/vypis[/<person>] (leaders ≥ 900, everyone ≥ 1200) – narrower, the simple list. */
 function renderTableView({ personId } = {}) {
-  if (!WIDE_TABLE.matches) {
+  if (!tableFits()) {
     history.replaceState(history.state, '', personId ? `#lide/${personId}` : '#lide');
     return renderPeopleView({ personId });
   }
@@ -423,6 +435,10 @@ function renderTableView({ personId } = {}) {
 /** The router of package P4 (routes-people.js): parts after „lide“. */
 export function renderPeopleRoute(parts = []) {
   const [first, second, third] = parts;
+  if (!first && opensTable()) {
+    history.replaceState(history.state, '', '#lide/vypis');
+    return renderTableView();
+  }
   if (!first) return renderPeopleView();
   if (first === 'skupiny') return renderGroupsView({ groupId: second || null, personId: third || null });
   if (first === 'domacnost') return renderPeopleView({ householdId: second });
@@ -444,12 +460,13 @@ document.addEventListener('zvonec:navigate', () => { if (viewOf(location.hash) !
 
 const COLUMNS = [
   { key: 'name', label: 'Jméno', compare: comparePeople },
-  { key: 'status', label: 'Členství', value: (p) => ['member', 'regular', 'guest', 'former'].indexOf(statusOf(p)) + (isKid(p) ? 0.5 : 0) },
+  { key: 'status', label: 'Členství', leader: true, value: (p) => ['member', 'regular', 'guest', 'former'].indexOf(statusOf(p)) + (isKid(p) ? 0.5 : 0) },
   { key: 'household', label: 'Domácnost', value: (p) => householdById(S.data, p.householdId)?.name || '￿' },
   { key: 'phone', label: 'Telefon', value: (p) => (seesContact(p) ? p.phone : '') || '￿' },
   { key: 'email', label: 'E-mail', value: (p) => (seesContact(p) ? p.email : '') || '￿' },
   { key: 'groups', label: 'Skupiny', value: (p) => groupsInOrder(p.id).map((g) => g.name).join(', ') || '￿' },
-  { key: 'birthday', label: 'Narozeniny', value: (p) => daysToBirthday(p) ?? 999 },
+  { key: 'birthday', label: 'Narozeniny', leader: true, value: (p) => daysToBirthday(p) ?? 999 },
+  { key: 'last', label: 'Poslední služba', leader: true },
 ];
 
 const pickedPeople = () => [...table$.picked].map((id) => personById(S.data, id)).filter(Boolean);
@@ -481,23 +498,35 @@ function tableBody({ openId, compact = false } = {}) {
   };
   redraw();
   return [
-    h('p', { class: 'meta people-mode' }, 'Podrobný výpis', ' · ', link('Ukaž jednoduchý seznam', { href: '#lide' })),
+    h('p', { class: 'meta people-mode' }, 'Podrobný výpis', ' · ', simpleListLink()),
     box,
   ];
+}
+
+/** „Ukaž jednoduchý seznam“ – a choice, remembered (so a desktop #lide opens the list from now on). */
+function simpleListLink() {
+  const a = link('Ukaž jednoduchý seznam', { href: '#lide' });
+  a.addEventListener('click', () => chooseMode('list'));
+  return a;
 }
 
 function tableParts({ openId, compact, redraw }) {
   const q = query();
   const people = shownPeople(q);
   if (!people.length) return [peopleEmpty(q)];
-  const ticks = !compact;
-  const columns = COLUMNS.filter((c) => !compact || ['name', 'phone'].includes(c.key));
+  const leader = can('leader');
+  const ticks = !compact && leader;
+  // as in Next: everyone sees name, household, phone, e-mail and groups; leaders also membership, birthday and the
+  // last duty. Which of them fit is the table's own width (css/people.css), with a person open beside it too.
+  const columns = COLUMNS.filter((c) => leader || !c.leader);
+  const lastDays = leader ? lastDutyDays(S.data, { today: today() }) : new Map();
   const col = columns.find((c) => c.key === table$.sort.key) || columns[0];
   const collator = new Intl.Collator('cs', { sensitivity: 'base', numeric: true });
-  const blank = (p) => col.value && ['￿', 999, ''].includes(col.value(p));
+  const value = col.key === 'last' ? (p) => lastDays.get(p.id) || '' : col.value;
+  const blank = (p) => value && ['￿', 999, ''].includes(value(p));
   const sorted = q && !table$.sortTouched ? people : people.slice().sort((a, b) => {
     if (blank(a) !== blank(b)) return blank(a) ? 1 : -1;
-    const r = col.compare ? col.compare(a, b) : typeof col.value(a) === 'number' ? col.value(a) - col.value(b) : collator.compare(String(col.value(a)), String(col.value(b)));
+    const r = col.compare ? col.compare(a, b) : typeof value(a) === 'number' ? value(a) - value(b) : collator.compare(String(value(a)), String(value(b)));
     return (r || comparePeople(a, b)) * table$.sort.dir;
   });
   const pick = (ids, on) => { for (const id of ids) { if (on) table$.picked.add(id); else table$.picked.delete(id); } redraw(); };
@@ -525,7 +554,7 @@ function tableParts({ openId, compact, redraw }) {
         const words = `Chybí: ${missing.map((k) => MISSING_LABELS[k]).join(', ')}`;
         return h('td', {}, h('a', { class: 'table-person', href: p.id === openId ? '#lide/vypis' : `#lide/vypis/${p.id}`, 'aria-current': p.id === openId ? 'true' : null },
           avatar(p, { size: 's', me: p.id === myId() }), h('span', { class: 'table-person__name' }, fullName(p))),
-        missing.length && !isFormer(p) ? h('span', { class: 'table-missing', title: words }, icon('alert', { size: 's', label: words })) : null);
+        leader && missing.length && !isFormer(p) ? h('span', { class: 'table-missing', title: words }, icon('alert', { size: 's', label: words })) : null);
       }
       case 'status': return h('td', {}, membershipWord(p));
       case 'household': return h('td', {}, householdById(S.data, p.householdId)?.name || '');
@@ -547,6 +576,7 @@ function tableParts({ openId, compact, redraw }) {
         return h('td', {}, dayMonth(p.birthDate), h('span', { class: 'table-quiet' }, ` · ${nextAge(p)}`),
           d <= 7 ? icon('cake', { size: 's', label: d === 0 ? 'dnes má narozeniny' : 'narozeniny tento týden' }) : null);
       }
+      case 'last': return h('td', { class: 'table-quiet' }, lastDays.get(p.id) ? dayMonth(lastDays.get(p.id)) : '');
       default: return h('td');
     }
   };
