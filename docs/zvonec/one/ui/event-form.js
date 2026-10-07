@@ -1,7 +1,7 @@
 // Zvonec One – adding and changing meetings (DESIGN §6.3), package P3. Every form is a layer: a bottom sheet on a
 // phone, a dialog 640 on ≥ 600; the date picker opens over it at depth 2 and dims it.
-//   openAddEvent({ day, typeId }) „Co přidáváš?“ (templates first, „Něco jiného“ last) → „Nové setkání“, prefilled from the
-//                      template (next matching day, time, place); Opakování Ne · Týdně · Po 14 dnech · Měsíčně
+//   openAddEvent({ day, typeId }) „Nové setkání“ (templates first, „Něco jiného“ last) → „Nové setkání“, prefilled from the
+//                      template (next matching day, time, place); Opakování (chips) Ne · Týdně · Ob týden · Měsíčně
 //                      + Do kdy with the live rule („Každou neděli do 27. 12. · 12 setkání“) – lib addSeries
 //   openEditEvent()    Úprava setkání; the series question on save (lib updateSeries)
 //   openExtendSeries() / extendSeriesSheet()   Prodloužení řady (lib extendSeries)
@@ -10,7 +10,7 @@
 
 import {
   h, icon, row, list, layer, formSheet, confirmSheet, toast, button, link, field, fieldError, textInput, textArea,
-  selectInput, dateInput, timeRange, segmentedField, chipsField, switchRow, disclosure, shortDate, clock, plural,
+  selectInput, dateInput, timeRange, chipsField, switchRow, disclosure, shortDate, clock, plural,
   SEP,
 } from './kit.js';
 import { S, change, newId, navigate } from '../../ui/state.js';
@@ -25,6 +25,10 @@ import { cover, kindHue, placeText, backHref, forgetImageUrl } from './calendar-
 import { askSeries } from './event-duties.js';
 
 const setkani = (n) => `${n} setkání`;
+
+const ON_DAY = ['v neděli', 'v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek', 'v sobotu'];
+/** „ve čtvrtek 8. 10.“ */
+const onDay = (start) => `${ON_DAY[new Date(`${dayOf(start)}T12:00`).getDay()]} ${shortDate(start, { weekday: false })}`;
 
 // ---------- template helpers ----------
 
@@ -212,7 +216,8 @@ function fieldsFor(base, { adding, image, moreOpen }) {
   const visible = [
     field({ label: 'Název setkání', control: textInput({ name: 'title', value: base.title || '', placeholder: 'např. Výlet na Javorník', onInput: () => image?.redraw() }) }),
     when,
-    adding ? segmentedField({ name: 'repeat', label: 'Opakování', options: REPEAT_OPTIONS, value: '', onChange: (v) => { repeat = v; repaintRule(); } }) : null,
+    // chips, not a segmented switch: four labels of different length wrap instead of squeezing into 79 px on a phone
+    adding ? chipsField({ name: 'repeat', label: 'Opakování', options: REPEAT_OPTIONS, value: '', onChange: (v) => { repeat = v; repaintRule(); } }) : null,
     untilField, adding ? rule : null,
     chipsField({ name: 'places', label: 'Kde', options: placeOptions(), value: base.placeIds || [], multiple: true }),
     adding ? null : field({ label: 'Popis pro web', optional: true, control: textArea({ name: 'description', value: base.description || '', rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' }) }),
@@ -243,7 +248,7 @@ export function openAddEvent({ day, typeId } = {}) {
   let sheet;
   const choose = (type) => { sheet.close({ restore: false }); openEventForm({ type, day }); };
   sheet = layer.open({ kind: 'sheet',
-    title: 'Co přidáváš?',
+    title: 'Nové setkání',
     body: list([
       ...types.map((type) => row({
         lead: h('span', { class: 'ev-kind', dataset: { hue: kindHue(type.kind) } }, icon(KIND_ICONS[type.kind] || 'star')),
@@ -429,18 +434,26 @@ export function deleteEventFlow(eventId) {
     toast(removed.length > 1 ? `Smazáno: ${setkani(removed.length)}.` : `Smazáno: ${target.title}.`);
     if (location.hash.startsWith(`#setkani/${eventId}`)) navigate(back);
   };
+  // the object named in the question (CODEX §6.9), the day in the sentence – a series has many of the same name
+  const title = `Chceš smazat setkání ${event.title}?`;
+  const text = `Setkání ${onDay(event.start)} zmizí i s tím, kdo slouží, a s osnovou. Vrátit to nepůjde.`;
   if (!following) {
-    confirmSheet({ title: 'Chceš smazat setkání?', text: `${event.title} (${shortDate(event.start)}) zmizí i s tím, kdo slouží, a s osnovou. Vrátit to nepůjde.`, confirmLabel: 'Smaž setkání', onConfirm: () => remove(false) });
+    confirmSheet({ title, text, confirmLabel: 'Smaž setkání', onConfirm: () => remove(false) });
     return;
   }
+  // a series: the choice is a switch in the body, the foot keeps one danger action and „Nech to být“
+  let all = false;
   let sheet;
+  const confirm = button('Smaž setkání', { variant: 'danger', size: 'l', block: true, onclick: () => { sheet.close(); remove(all); } });
+  const others = following === 1 ? 'další setkání' : `${following} ${following <= 4 ? 'další' : 'dalších'} setkání`;
   sheet = layer.open({
-    kind: 'confirm', size: 's',
-    title: 'Chceš smazat setkání?',
-    body: h('p', { class: 'text' }, `${event.title} (${shortDate(event.start)}) zmizí i s tím, kdo slouží, a s osnovou. Vrátit to nepůjde.`),
+    kind: 'confirm', size: 's', title,
+    body: [
+      h('p', { class: 'text' }, text),
+      switchRow({ label: `Smaž i ${others} v řadě`, onChange: (on) => { all = on; confirm.lastChild.textContent = on ? `Smaž ${setkani(following + 1)}` : 'Smaž setkání'; } }),
+    ],
     foot: [
-      button('Smaž jen tohle setkání', { variant: 'danger', size: 'l', block: true, onclick: () => { sheet.close(); remove(false); } }),
-      button(`Smaž i ${following} ${following === 1 ? 'další' : following <= 4 ? 'další' : 'dalších'}`, { variant: 'danger', size: 'l', block: true, onclick: () => { sheet.close(); remove(true); } }),
+      confirm,
       button('Nech to být', { variant: 'quiet', size: 'l', block: true, onclick: () => sheet.close() }),
     ],
   });

@@ -40,10 +40,8 @@
 .staff__title::after { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
 .staff__title:focus-visible { outline: none; }
 .staff__title:focus-visible::after { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
-.staff__fill {
-  display: inline-flex; align-items: center; gap: var(--space-2); flex: none; min-height: var(--lh-body);
-  font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); font-feature-settings: var(--numerals); white-space: nowrap;
-}
+/* the kit's fill (◯ 6 z 6 · 1 čeká), the same as on Seznam and in the pane; centred on the title's first line */
+.staff__head > .fill { flex: none; min-height: var(--lh-body); }
 .staff__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: break-word; }
 .staff__slots { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--space-2); }
 .staff__slots > .slot, .staff__line { position: relative; z-index: 1; }

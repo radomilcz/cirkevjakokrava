@@ -148,12 +148,12 @@ function fitBottomStack() {
 function placeToasts() {
   const root = document.querySelector('.toasts');
   if (!root) return;
-  const sheet = [...stack].reverse().find((l) => l.el.dataset.mode === 'bottom')?.el;
+  const sheets = stack.filter((l) => l.el.dataset.mode === 'bottom');
   root.style.bottom = '';
   delete root.dataset.place;
-  if (!sheet) return;
+  if (!sheets.length) return;
   const H = window.innerHeight;
-  const sheetTop = H - sheet.offsetHeight;
+  const sheetTop = H - Math.max(...sheets.map((l) => l.el.offsetHeight));   // the highest sheet's top edge
   if (sheetTop - 16 - root.offsetHeight >= 8) root.style.bottom = `${Math.round(H - sheetTop + 16)}px`;
   else root.dataset.place = 'top';
 }

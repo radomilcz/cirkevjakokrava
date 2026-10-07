@@ -21,7 +21,7 @@ import { roleName, refocus } from './home-actions.js';
 import { eventDetail } from './event.js';
 
 const SHOWN = 6;              // Tvoje další služby: six rows, then „Ukaž další N“
-const state = { pos: 0, more: false, who: null, enter: false };
+const state = { pos: 0, more: false, who: null, enter: false, openId: null };
 
 const cap = (s) => s.charAt(0).toLocaleUpperCase('cs') + s.slice(1);
 /** „Středa 7. října“ */
@@ -38,7 +38,8 @@ const eventLine = (event) => joinMeta([event.title, clock(event.start)]);
 /** „ze 4“, „z 5“ – the preposition the number's spoken form wants. */
 const outOf = (n) => `${[2, 3, 4, 7, 12, 13, 14, 17].includes(n) ? 'ze' : 'z'} ${n}`;
 const isToday = (event) => dayOf(event.start) === today();
-const dutyHref = (event) => `#moje/${event.id}`;
+/** A duty opens its meeting; a click on the meeting already open beside the list closes the pane (DESIGN §5). */
+const dutyHref = (event) => (event.id === state.openId ? '#moje' : `#moje/${event.id}`);
 
 // ---------- the meeting beside the list (≥ 1200) or as a page (< 1200): P3's detail ----------
 
@@ -74,7 +75,7 @@ function askCard(person, waiting) {
   const n = waiting.length;
   const enter = state.enter;
   state.enter = false;
-  return h('section', { class: 'ask', 'aria-labelledby': labelId, dataset: { enter: enter ? '' : null } },
+  const card = h('section', { class: 'ask', 'aria-labelledby': labelId, dataset: { enter: enter ? '' : null } },
     h('div', { class: 'ask__top' },
       h('h2', { class: 'ask__label', id: labelId }, 'Čeká na tvou odpověď'),
       n > 1 ? h('span', { class: 'ask__n' }, `${state.pos + 1} ${outOf(n)}`) : null),
@@ -87,22 +88,55 @@ function askCard(person, waiting) {
     buttonRow(
       button('Můžu', { variant: off ? 'tint' : 'primary', size: 'l', onclick: () => go('confirmed'), label: `Můžu: ${label}` }),
       button('Nemůžu', { variant: off ? 'primary' : 'tint', size: 'l', onclick: () => go('declined'), label: `Nemůžu: ${label}` })),
-    n > 1 ? h('div', { class: 'ask__dots', role: 'group', 'aria-label': 'Další služby k odpovědi' },
+    // the dots only for a handful; above five, „1 ze 12“ in the head says it (swipe and the arrows still move)
+    n > 1 && n <= 5 ? h('div', { class: 'ask__dots', role: 'group', 'aria-label': 'Další služby k odpovědi' },
       waiting.map((x, i) => h('button', {
         type: 'button', class: 'ask__dot', 'aria-current': i === state.pos ? 'true' : null,
         'aria-label': `${i + 1}. ${outOf(n)}: ${roleName(x.assignment.roleId)}, ${shortDate(x.event.start)}`,
         onclick: () => { state.pos = i; swap(person); },
       }))) : null);
+  if (n > 1) movable(card, person, n);
+  return card;
 }
 
-/** Redraw only the card (the dots move between duties; the scroll and the rest stay). */
-function swap(person) {
+/** ← → (focus in the card) and a sideways swipe move between the waiting duties, with or without the dots. */
+function movable(card, person, n) {
+  const step = (d) => {
+    const pos = Math.min(n - 1, Math.max(0, state.pos + d));
+    if (pos === state.pos) return;
+    state.pos = pos;
+    swap(person, document.activeElement);
+  };
+  card.addEventListener('keydown', (e) => {
+    const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    if (!d || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    e.preventDefault();
+    step(d);
+  });
+  let from = null;
+  card.addEventListener('pointerdown', (e) => { from = e.pointerType === 'mouse' ? null : { x: e.clientX, y: e.clientY }; });
+  card.addEventListener('pointercancel', () => { from = null; });
+  card.addEventListener('pointerup', (e) => {
+    if (!from) return;
+    const dx = e.clientX - from.x;
+    const dy = e.clientY - from.y;
+    from = null;
+    if (Math.abs(dx) >= 48 && Math.abs(dx) > 2 * Math.abs(dy)) step(dx < 0 ? 1 : -1);
+  });
+}
+
+/** Redraw only the card (a dot, an arrow or a swipe moves between duties; the scroll and the rest stay).
+ *  A click on a dot focuses the new current dot; an arrow keeps the focus on the same control of the new card. */
+function swap(person, was = null) {
   const el = document.querySelector('.ask');
   const waiting = waitingOf(person);
   if (!el || !waiting.length) return;
   const fresh = askCard(person, waiting);
+  const controls = (card) => [...card.querySelectorAll('a[href], button')];
+  const at = was && !was.classList.contains('ask__dot') ? controls(el).indexOf(was) : -1;
   el.replaceWith(fresh);
-  fresh.querySelector('.ask__dot[aria-current]')?.focus({ preventScroll: true });
+  const target = at >= 0 ? controls(fresh)[at] : fresh.querySelector('.ask__dot[aria-current]');
+  target?.focus({ preventScroll: true });
 }
 
 /** Nothing waits for an answer: one line, no card. */
@@ -189,6 +223,7 @@ export function renderMine(parts = []) {
   const openId = parts[0] || null;
   const opened = openId ? eventById(S.data, openId) : null;
   const split = isSplit();
+  state.openId = split ? openId : null;
   // below 1200 a chosen meeting is its own page (the same URL)
   if (openId && !split) return opened ? eventDetailFor(opened, 'page') : missingDetail('page');
 

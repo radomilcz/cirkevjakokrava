@@ -81,18 +81,19 @@ const everyone = () => (S.data.people || []).filter((p) => !isFormer(p) || (can(
 
 /** The Filtr groups of the Lidé view (members: their groups only, so B is the same for every role). */
 function peopleFilterGroups() {
-  const groups = activeGroups();
+  // Tým only (as Kalendář's and Obsazení's Tým): the skupinky and vedení are reached through the Skupiny view
+  const teams = activeGroups().filter((g) => g.kind === 'team');
   if (!can('leader')) {
-    const mine = groups.filter((g) => groupsOf(S.data, myId() || '').some((x) => x.id === g.id));
-    return [{ id: 'skupina', title: 'Skupina', kind: 'chips', options: (mine.length ? mine : groups).map((g) => [g.id, g.name]) }];
+    const mine = teams.filter((g) => groupsOf(S.data, myId() || '').some((x) => x.id === g.id));
+    return [{ id: 'skupina', title: 'Tým', kind: 'chips', options: (mine.length ? mine : teams).map((g) => [g.id, g.name]) }];
   }
   return [
     { id: 'clenstvi', title: 'Členství', kind: 'chips', multiple: true, options: MEMBERSHIP_FILTER },
-    { id: 'skupina', title: 'Skupina', kind: 'chips', options: groups.map((g) => [g.id, g.name]) },
+    teams.length ? { id: 'skupina', title: 'Tým', kind: 'chips', options: teams.map((g) => [g.id, g.name]) } : null,
     { id: 'chybi', title: 'Chybí údaje', kind: 'switch', hint: 'Karty bez příjmení, kontaktu, souhlasu nebo domácnosti.' },
     { id: 'narozeniny', title: 'Narozeniny', kind: 'switch', hint: 'Seřadí lidi podle toho, kdo slaví nejdřív.' },
     { id: 'archiv', title: 'Ukaž i archiv', kind: 'switch', hint: 'Lidé, kteří k nám už nechodí.' },
-  ];
+  ].filter(Boolean);
 }
 
 // ---------- rows ----------
@@ -158,7 +159,10 @@ function birthdayLine() {
   return rowLink(words, { icon: 'cake', onclick: () => { setFilter(PEOPLE_FILTER, { narozeniny: true }); render(); } });
 }
 
-/** The cards over a year in the archive (Filtr › Ukaž i archiv): one question with its button, D's first line. */
+/**
+ * The cards over a year in the archive (Filtr › Ukaž i archiv): one question at the end of D, only under rows (never
+ * beside an empty state). Its button asks first (confirmSheet), nothing is deleted from here.
+ */
 function overdueLine() {
   if (!can('leader') || !filterState(PEOPLE_FILTER).archiv) return null;
   const overdue = (S.data.people || []).filter((p) => isFormer(p) && archiveOverdue(p, today()));
@@ -205,7 +209,7 @@ function peopleBody({ openId } = {}) {
   const leader = can('leader');
   const people = shownPeople(q);
   const groups = q ? activeGroups().filter((g) => groupMatches(g, q)).slice(0, 3) : [];
-  if (!people.length && !groups.length) return [overdueLine(), peopleEmpty(q)];
+  if (!people.length && !groups.length) return peopleEmpty(q);   // the empty state alone, in its place under B
   const rows = [];
   if (groups.length) {
     rows.push(subhead('Skupiny'), ...groups.map((g) => groupRow(g)));
@@ -236,9 +240,9 @@ function peopleBody({ openId } = {}) {
   }
   return [
     birthdayLine(),
-    overdueLine(),
     list(rows, { label: 'Lidé' }),
     h('p', { class: 'meta list-foot' }, peopleCount(people.length)),
+    overdueLine(),
   ];
 }
 
@@ -518,7 +522,12 @@ function tableParts({ openId, compact, redraw }) {
       case 'status': return h('td', {}, membershipWord(p));
       case 'household': return h('td', {}, householdById(S.data, p.householdId)?.name || '');
       case 'phone': return h('td', {}, contact && p.phone ? h('a', { class: 'table-link', href: telHref(p.phone) }, p.phone) : '');
-      case 'email': return h('td', {}, contact && p.email ? h('a', { class: 'table-link', href: mailHref(p.email), title: p.email }, p.email) : '');
+      case 'email': {
+        if (!contact || !p.email) return h('td', {}, '');
+        // a long e-mail breaks before its „@“, never in the middle of a word
+        const at = p.email.lastIndexOf('@');
+        return h('td', {}, h('a', { class: 'table-link', href: mailHref(p.email) }, at > 0 ? [p.email.slice(0, at), h('wbr'), p.email.slice(at)] : p.email));
+      }
       case 'groups': {
         const groups = groupsInOrder(p.id);
         return h('td', { title: groups.map((g) => g.name).join(', ') || null }, groups.length ? [groups[0].name, groups.length > 1 ? h('span', { class: 'table-quiet' }, ` +${groups.length - 1}`) : null] : '');

@@ -313,7 +313,9 @@ export function renderProgram(id) {
       leader ? { label: 'Převezmi minulou osnovu', icon: 'copy', onclick: () => takePrevious(id) } : null,
     ].filter(Boolean),
     body,
-    cls: 'osnova-page',
+    // the meeting's own column (--detail-col 720, as on its Setkání page), so ‹ and ⋯ stay put going one level deeper
+    width: 'detail',
+    cls: ['detail-page', 'osnova-page'],
   });
 }
 

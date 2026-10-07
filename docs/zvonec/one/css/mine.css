@@ -18,6 +18,7 @@
 .ask {
   display: grid; gap: var(--space-4); padding: 20px;
   border-radius: var(--shape-block); background: var(--feature);
+  touch-action: pan-y;   /* a sideways swipe moves to the next / previous duty (ui/mine.js) */
 }
 .ask__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
 .ask__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); }
@@ -28,7 +29,7 @@
 .ask__title:hover { text-decoration: underline; text-underline-offset: 3px; }
 .ask__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: normal; }
 .ask__body > .row__note { margin-top: var(--space-1); }
-/* the dots: 8 wide each, a 44 hit; the row takes 20 of the card's height */
+/* the dots (2–5 waiting; more and „1 ze 12“ says it): 8 wide each, a 44 hit; the row takes 20 of the card's height */
 .ask__dots { display: flex; min-width: 0; justify-content: center; height: 20px; margin: calc(-1 * var(--space-1)) 0 calc(-1 * var(--space-2)); }
 .ask__dot {
   position: relative; display: grid; place-items: center; flex: 0 1 24px; min-width: 12px; height: 20px; padding: 0; border: 0;

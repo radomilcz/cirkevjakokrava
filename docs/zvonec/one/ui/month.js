@@ -4,8 +4,8 @@
 // width (a container query at 700 in css/calendar.css), not by the device:
 //   narrow (phone, tablet 768): the mini month (cells 44, up to 3 Účel dots, today = --act disc, the chosen day =
 //          pick + bar) and under it the chosen day's meetings (Simple). A tap on a day only chooses it.
-//   wide (1024 tablet, desktop): the grid with the meetings as chips (24, the Účel bar on the square left edge, mine
-//          in the Účel tint), at most 3 a day, then „+ 2 další“. A chip opens the Setkání page (never a pane beside
+//   wide (1024 tablet, desktop): the grid with the meetings as chips (min 24, the title in up to two lines of whole
+//          words, the Účel bar on the square left edge, mine in the Účel tint), at most 3 a day, then „+ 2 další“. A chip opens the Setkání page (never a pane beside
 //          the grid); a day number, „+ 2 další“ or the free part of a day opens the day popover.
 // Search hides the chips and dots that do not match, Filtr the same; the month stays, and an empty case is one quiet
 // line under the period line.
@@ -77,6 +77,9 @@ function narrowForm(month, chosen, days) {
 
 // ---------- wide: the grid with chips, the day popover ----------
 
+/** Czech typesetting: a one-letter preposition or conjunction never ends a line („Maminky s dětmi“ keeps „s dětmi“). */
+const bound = (text) => String(text).replace(/(?<=^|\s)([ksvzouaiKSVZOUAI]) /g, '$1\u00a0');
+
 function chip(event) {
   const mine = iServe(event);
   return h('a', {
@@ -85,25 +88,27 @@ function chip(event) {
     'aria-label': [event.title, clock(event.start), mine ? 'sloužíš' : null, errorCount(event.id) ? 'něco nesedí' : null, event.cancelled ? 'zrušeno' : null].filter(Boolean).join(', '),
   },
   h('span', { class: 'cal-chip__time', 'aria-hidden': 'true' }, clock(event.start)),
-  h('span', { class: 'cal-chip__title', 'aria-hidden': 'true', title: event.title, dataset: { full: event.title } }, event.title));
+  h('span', { class: 'cal-chip__title', 'aria-hidden': 'true', title: event.title, dataset: { full: bound(event.title) } }, bound(event.title)));
 }
 
 /**
- * A chip's title on one line of whole words: as many words as fit, then „…“ (CODEX §6.14 – never a cut word). Run when
- * the grid gets its size and whenever it changes (a ResizeObserver on the grid). One long word that does not fit
- * alone is the only case cut by the browser's own ellipsis.
+ * A chip's title in at most two lines of whole words: as many words as fit, then „…“ (CODEX §6.14 – never a cut
+ * word). Both the height (a third line) and the width (one word wider than the line) count. Run when the grid gets its
+ * size, whenever it changes (a ResizeObserver on the grid) and once the fonts are in. Only a first word that does not
+ * fit the line on its own is cut, by the browser's own ellipsis on one line (data-cut).
  */
 function fitTitles(grid) {
+  const fits = (t) => t.scrollHeight <= t.clientHeight + 1 && t.scrollWidth <= t.clientWidth + 1;
   for (const t of grid.querySelectorAll('.cal-chip__title')) {
     const full = t.dataset.full;
     t.textContent = full;
     t.removeAttribute('data-cut');
-    if (t.scrollHeight <= t.clientHeight + 1) continue;
-    const words = full.split(/\s+/);
+    if (fits(t)) continue;
+    const words = full.split(' ');   // a no-break space binds a one-letter word to the next one
     let n = words.length - 1;
     for (; n > 0; n -= 1) {
       t.textContent = `${words.slice(0, n).join(' ')}…`;
-      if (t.scrollHeight <= t.clientHeight + 1) break;
+      if (fits(t)) break;
     }
     if (n === 0) { t.textContent = full; t.setAttribute('data-cut', ''); }
   }
@@ -156,6 +161,7 @@ function wideForm(month, days) {
     h('div', { class: 'cal-grid__head', role: 'row' }, DOW_HEAD.map((w) => h('span', { role: 'columnheader' }, w))),
     h('div', { class: 'cal-grid__body', role: 'rowgroup' }, cells));
   sized?.observe(grid);
+  document.fonts?.ready.then(() => { if (grid.isConnected && grid.clientWidth) fitTitles(grid); });
   return h('div', { class: 'cal-mesic__wide' }, grid);
 }
 

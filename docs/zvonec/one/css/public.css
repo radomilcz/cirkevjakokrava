@@ -61,15 +61,7 @@
 
 /* one meeting */
 .pub .pub-event { padding-top: var(--space-2); }
-.pub-band { position: relative; min-height: 96px; height: 100%; overflow: hidden; background: var(--hue-fill); }
-.pub-band__arch {
-  position: absolute; right: 32px; bottom: 0; width: 64px; height: 76px;
-  border-radius: 32px 32px 0 0; background: var(--hue-mark);
-}
-.pub-band__arch--2 { right: 108px; width: 40px; height: 48px; border-radius: 20px 20px 0 0; opacity: .55; }
+/* the band is the app's Setkání band (.ev-band, css/event.css) */
 .pub-photo { overflow: hidden; margin-top: var(--space-4); border-radius: var(--shape-block); background: var(--tint); aspect-ratio: 16 / 9; }
 .pub-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .pub-event__actions { display: flex; margin-top: var(--space-4); }
-@media (min-width: 600px) {
-  .pub-band { min-height: 120px; }
-}

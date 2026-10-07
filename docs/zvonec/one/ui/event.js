@@ -372,7 +372,8 @@ function whoServes(event, conflicts) {
     });
   }
   const f = fillOf(event);
-  const words = leader ? [f.waiting ? waitingWords(f.waiting) : null, f.missing ? missingWords(f.missing) : null].filter(Boolean).join(SEP) : '';
+  // the same words as Seznam and Obsazení (one fill reads the same everywhere): what is missing, else who waits
+  const words = leader ? (f.missing ? missingWords(f.missing) : f.waiting ? waitingWords(f.waiting) : '') : '';
   return section({
     title: 'Kdo slouží', id: 'kdo-slouzi', cls: 'ev-who',
     value: f.needed && !event.cancelled ? fill(f.filled, f.needed, { words: words || null }) : null,

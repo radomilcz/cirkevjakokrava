@@ -2,19 +2,20 @@
 //   #kalendar/rozpis/<YYYY-MM>[/<eventId> | /bremeno]
 // D: the period line ‹ Říjen 2026 › ······ Dnes, the legend „○ čeká na odpověď ● něco nesedí“ once (leaders, when
 // a mark appears), then one block per meeting of the month: the date arch, „Setkání na pastvě · 10.00“, from 600 up
-// the fill ring in the trail, and one line per team – the team (a column of 96 / 120) and its people, names wrapping
-// between names, ○ / ● after a name (leaders), „+ Klávesy“ slots (leaders). Filtr › Tým narrows the lines.
+// the fill ring in the trail (on the title line only), and one line per team – the team (a column of 96 / 120) and
+// its people, wrapping between people (a name moves to the next line whole), ○ / ● after a name (leaders), and under
+// them the „+ Klávesy“ slots in a row of their own (leaders). Filtr › Tým narrows the lines.
 // A click on a name (leaders) → the duty sheet; on „Ty“ → my answer; on the block → the meeting (pane ≥ 1200, page
-// below). In the current month what is over hides behind „‹ Ukaž, co už bylo“.
+// below). The whole month shows, what is over in --ink-2 (‹ › already walks back; „Ukaž, co už bylo“ is Seznam's).
 // Also here: Kalendář's ⋯ (calendarMenu) – Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa · Břemeno –
 // the Břemeno dialog and the print (A4 landscape, a table of every role).
 
 import {
   h, slot, dateArch, fill, list, row, avatar, personName, layer, formSheet, field, selectInput, isSplit, isPhone,
-  isLayerOpen, shortDate, clock, monthLabel, link, periodLine, table, plural, statusSymbol, sev, STATUS_KEY, SEP,
+  isLayerOpen, shortDate, clock, monthLabel, periodLine, table, plural, statusSymbol, sev, STATUS_KEY, SEP,
   shiftMonth,
 } from './kit.js';
-import { S, can, myId, render } from '../../ui/state.js';
+import { S, can, myId } from '../../ui/state.js';
 import { eventById, eventsInRange, needsOf } from '../../lib/events.js';
 import { servingLoad } from '../../lib/scheduling.js';
 import { dayOf, today } from '../../lib/time.js';
@@ -44,25 +45,14 @@ function linesOf(event, teams) {
   return teams ? groups.filter((g) => teams.includes(g.group.id)) : groups;
 }
 
-const pastState = { month: null, on: false };
-/** In the current month what is over hides (until „Ukaž, co už bylo“); other months show whole. */
-function fromDayOf(month) {
-  if (pastState.month !== month) Object.assign(pastState, { month, on: false });
-  return month === thisMonth() && !pastState.on ? today() : null;
-}
-
-/** { items: [{ event, lines }], hiddenPast, all, afterFilter } for the month. */
+/** { items: [{ event, lines }], all, afterFilter } for the whole month (a month view: ‹ › walks back, nothing hides). */
 function rosterData(month) {
   const teams = filterTeams();
-  const fromDay = fromDayOf(month);
   const withLines = monthEvents(month).map((event) => ({ event, lines: linesOf(event, teams) })).filter((x) => x.lines.length);
-  const visible = (x) => !fromDay || dayOf(x.event.end) >= fromDay;
-  const items = withLines.filter((x) => shownBy(x.event));
   return {
-    items: items.filter(visible),
-    hiddenPast: items.filter((x) => !visible(x)).length,
-    all: withLines.filter(visible).filter((x) => matchesSearch(x.event)).length,
-    afterFilter: withLines.filter(visible).filter((x) => passesFilter(x.event)).length,
+    items: withLines.filter((x) => shownBy(x.event)),
+    all: withLines.filter((x) => matchesSearch(x.event)).length,
+    afterFilter: withLines.filter((x) => passesFilter(x.event)).length,
   };
 }
 
@@ -70,7 +60,7 @@ function rosterData(month) {
 
 const mark = (kind) => h('span', { class: ['cal-mark', `cal-mark--${kind}`], 'aria-hidden': 'true' });
 
-/** A team's people („Ty“ for me), ○ / ● after a name for leaders, then a slot per empty role (leaders). */
+/** A team's people („Ty“ for me), ○ / ● after a name for leaders, then a row of slots, one per empty role (leaders). */
 function teamWho(event, slots, conflicts, marks) {
   const leader = can('leader');
   const editable = leader && !event.cancelled && !isPast(event);
@@ -90,8 +80,8 @@ function teamWho(event, slots, conflicts, marks) {
     if (bad) marks.error = true;
     const me = !!a.personId && a.personId === myId();
     const said = [waits ? 'čeká na odpověď' : null, bad ? 'něco nesedí' : null].filter(Boolean).join(', ');
-    // the name wraps between its words; its last word stays with the mark and the comma
-    // (a phone's short „Hedvika S.“ stays whole)
+    // a person is one box (css: inline-block), so the line breaks between people; only a name wider than the whole
+    // line breaks inside, and then its last word stays with the mark and the comma (a phone's short „Hedvika S.“)
     const short = me || isPhone();
     const parts = short ? [] : String(nameOf(a)).split(' ');
     const last = short ? (me ? 'Ty' : shortName(a)) : parts.pop();
@@ -108,10 +98,12 @@ function teamWho(event, slots, conflicts, marks) {
   const emptyRoles = new Map();
   for (const s of slots) if (!s.assignment) emptyRoles.set(s.role.id, { role: s.role, n: (emptyRoles.get(s.role.id)?.n || 0) + 1 });
   const holes = [...emptyRoles.values()];
-  const slotsEl = editable ? holes.map(({ role, n }) => slot(n > 1 ? `${n}× ${role.name}` : role.name, () => pickFor(event.id, role.id),
-    { aria: `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}` })) : [];
+  // the slots: a row of their own under the names (8 across, 12 down), each one line (a long role ends in „…“)
+  const slotsEl = editable && holes.length ? h('span', { class: 'cal-who__slots' }, holes.map(({ role, n }) => slot(
+    h('span', { class: 'slot__label' }, n > 1 ? `${n}× ${role.name}` : role.name), () => pickFor(event.id, role.id),
+    { aria: `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}` }))) : null;
   const missing = !editable && holes.length && !event.cancelled ? sev('error', `chybí ${holes.reduce((m, x) => m + x.n, 0)}`) : null;
-  return [names, slotsEl, missing];
+  return [names, missing, slotsEl];
 }
 
 function block({ event, lines }, { month, openId, marks, teams }) {
@@ -121,19 +113,19 @@ function block({ event, lines }, { month, openId, marks, teams }) {
   const f = fillOfTeams(event, teams);
   const trail = !isPhone() && !event.cancelled && f.needed ? h('span', { class: 'rblock__trail' }, fill(f.filled, f.needed, { trailing: true })) : null;
   return h('article', {
-    class: 'rblock', dataset: { open: open ? '' : null, cancelled: event.cancelled ? '' : null, id: event.id },
+    class: 'rblock', dataset: { open: open ? '' : null, cancelled: event.cancelled ? '' : null, past: isPast(event) ? '' : null, id: event.id },
     'aria-label': `${event.title}, ${shortDate(event.start)}`,
   },
   h('a', { class: 'rblock__link', href, 'aria-current': open ? 'true' : null, 'aria-label': `${event.title}, ${shortDate(event.start)}, ${clock(event.start)}` }),
+  // the grid: arch | head | trail on the title line, then the team lines under head and trail (the full width)
   dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
-  h('div', { class: 'rblock__body' },
-    h('p', { class: 'rblock__head' },
-      h('span', { class: 'rblock__title' }, event.title), h('span', { class: 'rblock__time' }, `${SEP}${clock(event.start)}`),
-      event.cancelled ? h('span', { class: 'pill' }, 'zrušeno') : null),
-    event.cancelled ? null : h('div', { class: 'rblock__teams' }, lines.map((g) => h('div', { class: 'rblock__team' },
-      h('span', { class: 'rblock__team-name' }, g.group.name),
-      h('span', { class: 'cal-who' }, teamWho(event, g.slots, conflicts, marks)))))),
-  trail);
+  h('p', { class: 'rblock__head' },
+    h('span', { class: 'rblock__title' }, event.title), h('span', { class: 'rblock__time' }, `${SEP}${clock(event.start)}`),
+    event.cancelled ? h('span', { class: 'pill' }, 'zrušeno') : null),
+  trail,
+  event.cancelled ? null : h('div', { class: 'rblock__teams' }, lines.map((g) => h('div', { class: 'rblock__team' },
+    h('span', { class: 'rblock__team-name' }, g.group.name),
+    h('div', { class: 'cal-who' }, teamWho(event, g.slots, conflicts, marks))))));
 }
 
 function rosterBody(month, openId) {
@@ -141,12 +133,11 @@ function rosterBody(month, openId) {
   const data = rosterData(month);
   const marks = { wait: false, error: false };
   const blocks = data.items.map((it) => block(it, { month, openId, marks, teams }));
-  const pastLink = data.hiddenPast ? h('div', { class: 'cal-past' }, link('Ukaž, co už bylo', { icon: 'chevron-left', onclick: () => { pastState.on = true; render(); } })) : null;
   let note = null;
   if (!blocks.length) {
     note = emptyLine(emptyCase({
       all: data.all, afterFilter: data.afterFilter,
-      noneTitle: data.hiddenPast ? `${capital(inMonth(month))} už nikdo nebude sloužit.` : `${capital(inMonth(month))} tu nic není.`,
+      noneTitle: `${capital(inMonth(month))} tu nic není.`,
     }));
   }
   const legend = marks.wait || marks.error ? h('p', { class: 'cal-legend' },
@@ -154,7 +145,7 @@ function rosterBody(month, openId) {
     marks.error ? h('span', {}, mark('no'), 'něco nesedí') : null) : null;
   return [
     periodLine({ month, href: (m) => `#kalendar/rozpis/${m}`, todayHref: `#kalendar/rozpis/${thisMonth()}` }),
-    note, legend, pastLink,
+    note, legend,
     blocks.length ? h('div', { class: 'rlist' }, blocks) : null,
   ];
 }
@@ -268,7 +259,7 @@ export function calendarMenu({ month = currentMonth(), ids = () => [] } = {}) {
   return [
     { label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport },
     { label: 'Vytiskni rozpis…', icon: 'printer', onclick: () => openPrint(month) },
-    leader ? { label: 'Doplň volná místa', icon: 'people', onclick: () => fillOpenSlots(ids(), { teams: filterTeams() }) } : null,
+    leader ? { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: filterTeams() }) } : null,
     leader ? { label: 'Břemeno', icon: 'layers', onclick: () => openLoad(month) } : null,
   ].filter(Boolean);
 }

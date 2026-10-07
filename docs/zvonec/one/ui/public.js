@@ -258,9 +258,18 @@ export function renderProgram(id) {
 
 // ---------- #pastva/<id> ----------
 
-/** The Účel band: its hue's fill with an arch window in its mark colour (Next's Setkání band, without people). */
-const band = (event) => h('div', { class: 'pub-band', dataset: { hue: hueOf(event) }, 'aria-hidden': 'true' },
-  h('span', { class: 'pub-band__arch' }), h('span', { class: 'pub-band__arch pub-band__arch--2' }));
+/** Same title → same variant of the band (as cover() in calendar-shared.js, so the app and Pastva agree). */
+function hashOf(text) {
+  let n = 0;
+  for (const ch of String(text || '')) n = (n * 31 + ch.codePointAt(0)) >>> 0;
+  return n;
+}
+/** The Účel band: the Setkání band of the app (css/event.css .ev-band) – its hue's fill with the outline arches in
+ *  its mark colour. Built here, not with cover(), because Pastva has no data store (the photo is a section below). */
+const band = (event) => h('div', {
+  class: ['ev-cover', 'ev-band'], dataset: { hue: hueOf(event), variant: String(hashOf(event.title) % 3) }, 'aria-hidden': 'true',
+}, h('span', { class: 'ev-cover__arch' }), h('span', { class: 'ev-cover__arch ev-cover__arch--2' }),
+h('span', { class: 'ev-cover__arch ev-cover__arch--3' }));
 
 function renderPublicEvent(id) {
   const d = data();

@@ -685,7 +685,8 @@ export function openNeedsSheet(eventId) {
     body: [
       h('p', { class: 'meta' }, [e.title, shortDate(e.start)].join(SEP)),
       active.map(block),
-      others.length ? disclosure(others.map(block), { label: 'Další týmy' }) : null,
+      // a meeting without teams of its own shows every team at once (a closed „Další týmy“ alone looks empty)
+      !active.length ? others.map(block) : others.length ? disclosure(others.map(block), { label: 'Další týmy' }) : null,
     ],
     onSubmit: () => {
       const apply = (following) => {

@@ -53,8 +53,8 @@ body.has-nav #view { padding-left: var(--nav-w); }
 }
 .tab__label { max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tab:hover .tab__niche { background: var(--wash); }
-.tab[aria-current="page"] { color: var(--ink); }
-.tab[aria-current="page"] .tab__niche { background: var(--pick); }
+/* current: the niche takes --pick and the icon --ink; the label keeps its weight and colour (DESIGN §2.4) */
+.tab[aria-current="page"] .tab__niche { background: var(--pick); color: var(--ink); }
 .tab__badge { position: absolute; top: -4px; left: calc(50% + 6px); }
 .tab__badge:empty { display: none; }
 .tab__dot { position: absolute; top: 2px; right: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--act); box-shadow: 0 0 0 2px var(--bar); }
@@ -102,6 +102,8 @@ html[data-keyboard] .screen { padding-bottom: var(--space-6); }
   .nav-group__title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .nav-item { flex-direction: column; justify-content: center; gap: 4px; min-height: 64px; padding: 0 4px; text-align: center; font-size: var(--type-caption); line-height: var(--lh-caption); }
   .nav-item__niche { width: 56px; height: 32px; }
+  /* the bar is centred on the niche (6 from the cell top: 64 − 32 − 4 − the label line, halved), not on the cell */
+  .nav-item[aria-current="page"]::before { top: calc((64px - 4px - var(--lh-caption)) / 2 - var(--mark-h) / 2); }
   .nav-item:hover .nav-item__niche { background: var(--wash); }
   .nav-item[aria-current="page"] .nav-item__niche { background: var(--pick); }
   .nav-item__label { max-width: 80px; white-space: nowrap; }
@@ -109,8 +111,13 @@ html[data-keyboard] .screen { padding-bottom: var(--space-6); }
   .nav-item__count:empty { display: none; }
   .sidenav__foot { justify-content: center; height: 72px; margin-top: var(--space-2); padding: 0; }
   .sidenav__foot .avatar { width: 40px; height: 40px; font-size: 15px; }
-  .sidenav__foot:hover .avatar { box-shadow: 0 0 0 4px var(--wash); }
-  .sidenav__foot[aria-current="page"] .avatar { box-shadow: 0 0 0 3px var(--bar), 0 0 0 5px var(--mark); }
+  /* the avatar sits in a niche like the other cells (56 × 48 around the 40 avatar): --wash on hover; current = --pick
+     + the detached bar at the rail's edge, the same look as a current cell (CODEX §5) */
+  .sidenav__face { padding: 4px 8px; border-radius: var(--shape-pill); transition: background-color var(--dur-state) var(--ease); }
+  .sidenav__face > .tab__dot { top: 3px; right: 7px; }
+  .sidenav__foot:hover .sidenav__face { background: var(--wash); }
+  .sidenav__foot[aria-current="page"] .sidenav__face { background: var(--pick); }
+  .sidenav__foot[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
   .sidenav__person { display: none; }
 }
 

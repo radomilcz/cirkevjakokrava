@@ -7,9 +7,9 @@
 .meta-wait { color: var(--wait-ink); }
 .list-foot { margin-top: var(--gap-y); padding: 0 var(--space-3); }
 .ls__body > .row-link:first-child { margin-bottom: var(--gap-y); }
-.ls__body > :is(.row-link, .callout) + .list > .subhead:first-child { padding-top: 0; }
-.ls__body > .callout + .list, .ls__body > .callout + .empty { margin-top: var(--gap-group); }
-.ls__body > .row-link + .callout { margin-bottom: var(--gap-y); }
+.ls__body > .row-link + .list > .subhead:first-child { padding-top: 0; }
+/* the archive question (Filtr › Ukaž i archiv) closes D, under the count */
+.ls__body > .list-foot + .callout { margin-top: var(--gap-group); }
 
 /* the group meta in a row: what someone does there, then the skill pills; wraps between pills */
 .group-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); }
@@ -60,12 +60,16 @@
 .people-bulk__count { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); }
 .people-bulk__actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-left: auto; }
 
-/* the table: rows 52, bleeding 12 into the gutter like a list's rows; fixed layout, so nothing pushes the page */
-.people-table-box > .table-wrap { margin: 0 calc(-1 * var(--space-3)); padding: 0; }
+/* the table: rows 52, flush with the frame (the cell padding lines the text up with B's search); fixed layout with
+   widths fitted to what the columns hold, so nothing pushes the page and the columns never jump while searching.
+   Nothing is cut: a name, a household, a group or an e-mail wraps (an e-mail before its „@“), a row grows. */
+.people-table-box { container-type: inline-size; }
+.people-table-box > .table-wrap { margin: 0; padding: 0; }
 .people-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0 var(--gap-lit); margin: calc(-1 * var(--gap-lit)) 0; }
 .people-table th { white-space: nowrap; height: 44px; padding: 0 var(--space-3); background: var(--ground); }
 .people-table thead th { box-shadow: inset 0 -1px 0 var(--edge); }
-.people-table td { height: 52px; padding: 0 var(--space-3); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.people-table td { height: 52px; padding: 4px var(--space-3); color: var(--ink); white-space: normal; overflow-wrap: anywhere; }
+.people-table td.col-phone, .people-table td.col-birthday { white-space: nowrap; }
 .people-table tbody tr + tr > * { border-top: 0; }
 .people-table tbody tr { cursor: pointer; }
 .people-table tbody tr > * { transition: background-color var(--dur-state) var(--ease); }
@@ -79,30 +83,34 @@
 .people-table tbody tr:is([data-picked], [data-open]) > :first-child::before {
   content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
 }
+/* the columns by the table's own width: below 680 (a tablet column of 588) Jméno · Telefon · E-mail, then Členství,
+   ≥ 860 Skupiny, ≥ 1100 (desktop 1440 and up) Domácnost and Narozeniny too. E-mail takes what is left. */
 .people-table .col-pick { width: 44px; padding-right: 0; }
-.people-table th.col-name { width: 28%; }
-.people-table th.col-status { width: 12%; }
-.people-table th.col-household { width: 13%; }
-.people-table th.col-phone { width: 132px; }
-.people-table th.col-email { width: 22%; }
-.people-table th.col-groups { width: 14%; }
-.people-table th.col-birthday { width: 112px; }
-/* 900–1199 (a column of 720): the table keeps what you look up most */
-@media (max-width: 1199.98px) {
-  .people-table :is(.col-household, .col-groups, .col-birthday) { display: none; }
-  .people-table th.col-name { width: 34%; }
-  .people-table th.col-status { width: 15%; }
-  .people-table th.col-email { width: auto; }
+.people-table th.col-name { width: 200px; }
+.people-table th.col-status { width: 104px; }
+.people-table th.col-household { width: 144px; }
+.people-table th.col-phone { width: 104px; }
+.people-table th.col-email { width: auto; }
+.people-table th.col-groups { width: 152px; }
+.people-table th.col-birthday { width: 120px; }
+@container (max-width: 1099.98px) {
+  .people-table :is(.col-household, .col-birthday) { display: none; }
 }
-/* ≥ 1200 with a person open beside it: name · phone in the list track; a long name wraps, it is never cut */
+@container (max-width: 859.98px) {
+  .people-table .col-groups { display: none; }
+}
+@container (max-width: 679.98px) {
+  .people-table .col-status { display: none; }
+}
+/* ≥ 1200 with a person open beside it: name · phone in the list track */
 .people-table.people-table--compact th.col-name { width: auto; }
 .people-table.people-table--compact th.col-phone { width: 132px; }
-.people-table--compact td.col-name { white-space: normal; padding-top: 4px; padding-bottom: 4px; }
-.people-table--compact .table-person__name { white-space: normal; overflow: visible; }
 .table-check { width: 20px; height: 20px; margin: 0; accent-color: var(--act); cursor: pointer; vertical-align: middle; }
 .col-name > * { vertical-align: middle; }
-.table-person { display: inline-flex; vertical-align: middle; align-items: center; gap: var(--space-3); max-width: calc(100% - 32px); min-height: var(--control-m); color: var(--ink); font-weight: var(--weight-strong); }
-.table-person__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.table-person { display: inline-flex; vertical-align: middle; align-items: center; gap: var(--space-3); max-width: 100%; min-height: var(--control-m); color: var(--ink); font-weight: var(--weight-strong); }
+.table-person > .avatar { flex: none; }
+.col-name:has(.table-missing) > .table-person { max-width: calc(100% - 32px); }   /* room for the ⚠ beside it */
+.table-person__name { min-width: 0; }
 .table-person:hover .table-person__name { text-decoration: underline; text-underline-offset: 3px; }
 .table-missing { display: inline-flex; margin-left: var(--space-2); color: var(--wait-ink); vertical-align: middle; }
 .table-link { color: inherit; }

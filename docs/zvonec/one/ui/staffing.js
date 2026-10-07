@@ -3,7 +3,8 @@
 // všem, kdo neodpověděli · Vytiskni rozpis). B: „Hledej setkání“ + Filtr (Tým – the teams I lead by default, so a
 // leader starts at „Filtr 1“ · Co řešit: Chybí lidi · Čeká na odpověď · Něco nesedí). No C.
 // D: only the meetings of the next 4 weeks with something to do, nearest first, under week subheads. Each is one
-// block (one link → the pane ≥ 1200, the meeting's page below): the date arch, the title and the fill „6 z 6 ◯“,
+// block (one link → the pane ≥ 1200, the meeting's page below): the date arch, the title and the fill „◯ 6 z 6 · 1 čeká“
+// (the whole meeting, as on Seznam and in the pane),
 // „18.30 · Monta, Sál“, „+ Klávesy“ per empty role (→ the picker), „○ 1 člověk ještě neodpověděl ›“ (→ who waits:
 // SMS · Zavolej with a ready text, a tap on a name answers for them) and „● Ondra má dvě služby naráz ›“ (→ the duty
 // sheet with its fixes). The horizon is said at the end of the list („Dál než 4 týdny dopředu: Rozpis ›“).
@@ -11,15 +12,17 @@
 
 import {
   h, icon, listScreen, filterButton, filterState, clearFilter, searchText, empty, list, row, avatar, subhead,
-  dateArch, fillRing, link, toast, layer, isSplit, clock, joinMeta, shortDate, agree, plural, personName, SEP,
+  dateArch, fill, link, toast, layer, isSplit, clock, joinMeta, shortDate, agree, plural, personName, SEP,
   missingItem,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
-import { eventById, fillRatio, needsOf, KIND_LABELS } from '../../lib/events.js';
+import { eventById, needsOf, KIND_LABELS } from '../../lib/events.js';
 import { openSlots, unconfirmedDuties } from '../../lib/scheduling.js';
 import { roleById, ledBy } from '../../lib/groups.js';
 import { today, addDays, dayOf } from '../../lib/time.js';
-import { teamsWithRoles, placeText, personOf, nameOf, mondayOf, weekRange } from './calendar-shared.js';
+import {
+  teamsWithRoles, placeText, personOf, nameOf, mondayOf, weekRange, fillOf, waitingWords, missingWords,
+} from './calendar-shared.js';
 import { pickFor, openDutySheet, fillOpenSlots } from './event-duties.js';
 import { eventDetail, notFound } from './event.js';
 import { smsHref, telHref, mailHref } from './people-common.js';
@@ -29,24 +32,9 @@ const KEY = 'obsazeni';
 
 // ---------- what needs doing ----------
 
-/** filled / needed of a meeting, only over the roles in scope (all roles: lib fillRatio). */
-function scopedFill(event, inScope) {
-  if (!inScope) { const r = fillRatio(S.data, event); return { filled: r.filled, needed: r.needed }; }
-  let needed = 0;
-  let filled = 0;
-  for (const n of needsOf(S.data, event)) {
-    if (!roleById(S.data, n.roleId) || !inScope(n.roleId)) continue;
-    const want = Math.max(0, Number(n.count) || 0);
-    const have = (event.assignments || []).filter((a) => a.roleId === n.roleId && a.personId && a.status !== 'declined').length;
-    needed += want;
-    filled += Math.min(want, have);
-  }
-  return { filled, needed };
-}
-
 /**
  * Meetings of the next four weeks that want something from a leader, nearest first:
- * [{ event, slots, waiting, errors: [conflict], filled, needed }]. `groupIds` narrows it to those teams' roles.
+ * [{ event, slots, waiting, errors: [conflict] }]. `groupIds` narrows it to those teams' roles.
  */
 export function needsFor(groupIds) {
   const day = today();
@@ -75,7 +63,6 @@ export function needsFor(groupIds) {
   }
   return [...byEvent.values()]
     .sort((a, b) => a.event.start.localeCompare(b.event.start))
-    .map((x) => ({ ...x, ...scopedFill(x.event, only ? inScope : null) }))
     .filter((x) => x.slots.length || x.waiting.length || x.errors.length);
 }
 
@@ -173,10 +160,11 @@ export function waitingSheet(waiting, { event } = {}) {
     if (!p) return null;
     const text = encodeURIComponent(reminderText(d));
     const who = personName(p);
+    // the row's call button of Lidé and Skupiny (quiet icon M on a phone, S with a 44 hit from 600 up), for both
     return [
-      p.phone ? h('a', { class: 'icon-btn', href: `${smsHref(p.phone)}?&body=${text}`, 'aria-label': `Připomeň v SMS: ${who}`, title: 'Připomeň v SMS' }, icon('message')) : null,
-      !p.phone && p.email ? h('a', { class: 'icon-btn', href: `${mailHref(p.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomeň e-mailem: ${who}`, title: 'Připomeň e-mailem' }, icon('mail')) : null,
-      p.phone ? h('a', { class: 'icon-btn', href: telHref(p.phone), 'aria-label': `Zavolej: ${who}`, title: 'Zavolej' }, icon('phone')) : null,
+      p.phone ? h('a', { class: 'icon-btn icon-btn--call', href: `${smsHref(p.phone)}?&body=${text}`, 'aria-label': `Připomeň v SMS – ${who}`, title: `Připomeň v SMS – ${who}` }, icon('message', { size: 's' })) : null,
+      !p.phone && p.email ? h('a', { class: 'icon-btn icon-btn--call', href: `${mailHref(p.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomeň e-mailem – ${who}`, title: `Připomeň e-mailem – ${who}` }, icon('mail', { size: 's' })) : null,
+      p.phone ? h('a', { class: 'icon-btn icon-btn--call', href: telHref(p.phone), 'aria-label': `Zavolej – ${who}`, title: `Zavolej – ${who}` }, icon('phone', { size: 's' })) : null,
     ].filter(Boolean);
   };
   const rowOf = (d) => {
@@ -194,7 +182,7 @@ export function waitingSheet(waiting, { event } = {}) {
   sheet = layer.open({ kind: 'sheet',
     title: 'Čeká na odpověď',
     subtitle: event ? joinMeta([event.title, shortDate(event.start)]) : plural(waiting.length, 'služba', 'služby', 'služeb'),
-    size: 'l',
+    size: 'm',
     body: [
       h('p', { class: 'meta waiting-lead' }, 'Odpověď zapíšeš i za ně: klepni na jméno. Text SMS i e-mailu ti Zvonec připraví.'),
       list(waiting.map(rowOf), { label: 'Čeká na odpověď' }),
@@ -217,8 +205,20 @@ function errorLine(c) {
 }
 
 /** One meeting as one block: a link to the meeting; its slots and lines act on their own. */
+/**
+ * The meeting's fill: the whole meeting (not the Filtr's teams – those only decide which meetings are listed), drawn
+ * with the kit's fill() and the same words as Seznam and the pane: ◯ 6 z 6 · 1 čeká, ◔ 14 z 15 · chybí 1.
+ */
+function fillWords(f) {
+  return f.missing ? missingWords(f.missing) : f.waiting ? waitingWords(f.waiting) : null;
+}
+function meetingFill(event) {
+  const f = fillOf(event);
+  return f.needed ? fill(f.filled, f.needed, { words: fillWords(f) }) : null;
+}
+
 function needItem(x, { openId }) {
-  const { event, slots, waiting, errors, filled, needed } = x;
+  const { event, slots, waiting, errors } = x;
   const byRole = new Map();
   for (const s of slots) byRole.set(s.roleId, { role: s.role, n: (byRole.get(s.roleId)?.n || 0) + (s.missing || 1) });
   const day = dayOf(event.start);
@@ -234,9 +234,9 @@ function needItem(x, { openId }) {
     dateArch(day, { today: day === today() }),
     h('div', { class: 'staff__body' },
       h('div', { class: 'staff__head' },
-        h('a', { class: 'staff__title', href: `#obsazeni/${event.id}`, 'aria-current': open ? 'true' : null }, event.title),
-        needed ? h('span', { class: 'staff__fill', 'aria-label': `obsazeno ${filled} z ${needed}` },
-          h('span', { 'aria-hidden': 'true' }, `${filled} z ${needed}`), fillRing(filled, needed)) : null),
+        // a click on the open item closes it (DESIGN §5)
+        h('a', { class: 'staff__title', href: open ? '#obsazeni' : `#obsazeni/${event.id}`, 'aria-current': open ? 'true' : null }, event.title),
+        meetingFill(event)),
       h('p', { class: 'staff__meta' }, joinMeta([clock(event.start), placeText(event) || null])),
       chips.length ? h('div', { class: 'staff__slots' }, chips) : null,
       waiting.length ? line('wait', waitingLine(waiting.length), () => waitingSheet(waiting, { event }), `${waitingLine(waiting.length)} – ukaž, kdo to je`) : null,
