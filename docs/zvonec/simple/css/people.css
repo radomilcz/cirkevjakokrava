@@ -90,7 +90,7 @@
 
 /* ---------- split: the pane scrolls on its own, the list keeps its place ---------- */
 @media (min-width: 1200px) {
-  :is(.people-screen--split, .groups-screen--split) .split__aside { max-height: calc(100dvh - var(--topbar-h) - var(--space-4) * 2); overflow-y: auto; overscroll-behavior: contain; border-radius: var(--shape-block); }
+  :is(.people-screen--split, .groups-screen--split) .split__aside { max-height: calc(100dvh - var(--topbar-h) - var(--space-4) * 2); overflow-y: auto; overscroll-behavior: contain; padding: 2px; margin: -2px; border-radius: calc(var(--shape-block) + 2px); }
   :is(.people-screen--split, .groups-screen--split) .split { margin-top: var(--space-2); }
   .people-screen--split .people-tools { margin: 0; padding-left: 0; padding-right: 0; }
   .people-screen--split .people-tools > .chips { margin: 0; padding: 2px 0; }

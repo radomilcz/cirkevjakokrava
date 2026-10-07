@@ -90,7 +90,7 @@
 @media (min-width: 1200px) {
   .cal-split { grid-template-columns: minmax(0, 1fr) minmax(360px, 410px); }
   .cal-split .cal-chip__time { display: none; }
-  .cal-split__aside { position: sticky; top: calc(var(--topbar-h) + var(--space-3)); max-height: calc(100dvh - var(--topbar-h) - var(--space-6)); overflow-y: auto; scrollbar-width: thin; }
+  .cal-split__aside { position: sticky; top: calc(var(--topbar-h) + var(--space-3)); max-height: calc(100dvh - var(--topbar-h) - var(--space-6)); overflow-y: auto; scrollbar-width: thin; padding: 2px; margin: -2px; }   /* room for the card's ring */
   .cal-split .cal-cell { min-height: 104px; }
   .cal--seznam .split { gap: var(--space-6); }
 }
