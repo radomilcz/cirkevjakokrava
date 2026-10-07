@@ -57,7 +57,7 @@
   --gap-y: 12px;             /* stacked controls (title row → toolbar → view row) */
   --gap-group: 24px;         /* the last control row → content; a sheet head → its body */
   --gap-lit: 3px;            /* between two rows that may light up */
-  --section-gap: 32px;       /* between sections of a detail or a page */
+  --section-gap: 40px;       /* between sections of a detail or a page – 5× the h2's 8 to its own content */
   --gutter: 20px;            /* content padding: phone 20 · tablet 32 · desktop 40 */
   --title-top: 16px;         /* the title row's top under the safe area: 16 · 32 · 40 */
   --measure: 680px;          /* the widest running text */

@@ -146,7 +146,7 @@ export function formatDetail(format, frame = 'pane') {
       tags: leader && format.public ? [pill('na webu')] : null,
       title: format.name,
       facts: facts([
-        { icon: 'clock', text: `${format.minutes ?? 0} min` },
+        // the minutes are the mark above the title – no second „2 min“ here
         { icon: 'user', text: leadText(format) },
         format.link && safeLink(format.link) ? { icon: 'external', text: 'K přečtení', href: format.link, external: true, target: '_blank' } : null,
       ]),
