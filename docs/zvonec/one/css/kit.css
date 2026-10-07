@@ -155,7 +155,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- segmented (CODEX §6.3): views as links (C), or a radio group in a form ---------- */
 .seg {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px;   /* a lit segment never touches its neighbour */
   min-height: var(--control-m); padding: 3px; border-radius: var(--radius-m); background: var(--tint);
 }
 .seg > :is(a, button) {
@@ -689,6 +689,9 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .screen:is(.detail-page, .page--drill) > .topbar + .frame { padding-top: var(--gap-y); }
 /* ≥ 600 the top bar is as wide as its page's column, so ⋯ sits at the column's edge, not at the window's */
 @media (min-width: 600px) {
+  /* the back button starts where a list screen's title does (--title-top), not at the window's top edge;
+     the bar still sticks at 0 once the page scrolls */
+  .screen:is(.detail-page, .page--drill) { padding-top: calc(var(--title-top) - (var(--topbar-h) - var(--control-m)) / 2); }
   .detail-page > .topbar { max-width: calc(var(--detail-col) + 2 * var(--gutter)); }
   .page--drill.page--column > .topbar { max-width: calc(var(--page-col) + 2 * var(--gutter)); }
 }
