@@ -156,8 +156,9 @@
   }
 }
 
-/* ---------- the waiting symbol: a plain ring (○), as in the concept – no dashes, no clock ---------- */
-.sym[data-status="waiting"] .sym__disc { stroke-dasharray: none; stroke-width: 3.4; transform: scale(.7); transform-box: fill-box; transform-origin: center; }
+/* ---------- the waiting symbol: a plain ring (○), as in the concept – no dashes, no clock ----------
+   r 8.25 + a 2 px stroke ends at 9.25, the edge of the full disc of Potvrzeno, so both are the same size */
+.sym[data-status="waiting"] .sym__disc { stroke-dasharray: none; stroke-width: 2; }
 .sym[data-status="waiting"] .sym__glyph { display: none; }
 
 /* ---------- Setkání ---------- */

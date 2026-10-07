@@ -56,6 +56,11 @@
 .cal-cell[data-outside] .cal-cell__num { color: var(--ink-2); font-weight: var(--weight-regular); }
 .cal-cell[data-today] .cal-cell__num { background: var(--act); color: var(--on-act); font-family: var(--font-title); font-weight: 900; }
 .cal-cell[data-selected]:not([data-today]) .cal-cell__num { box-shadow: inset 0 0 0 1.5px var(--ink-accent); color: var(--ink-accent); }
+/* a day is clickable: its number, „+ 2 další“ and its free space show that day's meetings */
+.cal-cell { cursor: pointer; }
+button.cal-cell__num { position: relative; border: 0; background: transparent; }
+button.cal-cell__num::after { content: ""; position: absolute; inset: -5px -7px; }
+.cal-cell:not([data-today]) button.cal-cell__num:hover { background: var(--wash); }
 .cal-cell__add {
   position: relative; display: inline-grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: var(--shape-inner);
   background: transparent; color: var(--ink-2); opacity: 0; transition: opacity var(--dur-state) var(--ease), background-color var(--dur-state) var(--ease);
@@ -81,7 +86,7 @@
 .cal-chip__sev { flex: none; align-self: center; width: 8px; height: 8px; border-radius: 50%; }
 .cal-chip__sev[data-sev="error"] { background: var(--no-solid); }
 .cal-chip__sev[data-sev="warn"] { box-shadow: inset 0 0 0 2px var(--wait-ink); }
-.cal-cell__more { padding: 2px 8px; font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-accent); border-radius: 7px; }
+.cal-cell__more { align-self: flex-start; border: 0; background: none; padding: 2px 8px; font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-accent); border-radius: 7px; }
 .cal-cell__more:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* grid | event (≥ 1200) */
@@ -491,8 +496,7 @@ button.osnova__open::after { content: ""; position: absolute; inset: 0; border-r
 /* Simple's Kalendář: Filtr (as in Next) – at the end of the bar on a desktop, an icon with its count in the phone head */
 .cal-bar__end { display: flex; align-items: center; gap: var(--space-3); flex: none; }
 .cal-filter .count { background: var(--tint-2); }
-.cal-filter-line { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-4); margin: calc(-1 * var(--space-2)) 0 var(--space-3); font-size: var(--type-meta); line-height: var(--lh-meta); }
-.cal-filter-line__what { min-width: 0; }
+.cal-filter-line { margin: calc(-1 * var(--space-2)) 0 var(--space-3); }   /* .filter-line itself is components.css */
 
 /* ---------- Rozpis as a list: a block per meeting, a line per team (names, ○ / ●, „+ Role“) ---------- */
 .rlist-col { display: grid; align-content: start; }

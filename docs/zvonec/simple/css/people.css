@@ -1,11 +1,11 @@
-/* Zvonec – Lidé: the switch under the head, the search and the chips, the list (and its ticks), the desktop table
+/* Zvonec – Lidé: the switch under the head, the search and Filtr, the list (and its ticks), the desktop table
    with its ticks and bulk bar, the pane beside it, the person card, Narozeniny, Domácnost, Archiv.
    Only layout of this module; every colour, type size and shape is a token (next-tokens.css, simple.css). The kit
    components (row, list, chips, seg, table, card, sheet…) are used as they are: a lit row (hover, ticked, open) is
    lit whole and rounded, touches no line and keeps 3 px from the next (components.css .list/.row, shell.css
    .people-table). The head (.people-head) and the column (.people-col) are css/simple.css. */
 
-/* ---------- the head (zvonec/design/one-question/codex.md §4): title · switch · search · chips · the view line,
+/* ---------- the head (zvonec/design/one-question/codex.md §4): title · switch · search + Filtr · the view line,
    12 apart; the list 24 under them. The switch and the search share one width (520 on desktop, the whole column on
    a phone), so both edges line up. Heights, corners and labels are the kit's (M controls, chips as capsules). ---------- */
 .people-col { --people-head-w: 100%; gap: var(--space-3); }   /* the simple list: the head is as wide as the list under it */
@@ -14,9 +14,13 @@
 .people-col > :is(.people-results, .groups-list) { margin-top: var(--space-3); }
 .people-col > .groups-list > :is(.groups-kind, .groups-section):first-child { margin-top: 0; padding-top: 0; }   /* Skupiny: the same 24 */
 .people-head__tools:has(> .btn:last-child) { margin-right: 0; }   /* a solid button ends at the column's edge (⋯ and + reach into it) */
-.people-find { display: grid; gap: var(--space-3); }
-.people-find > .chips { margin-top: -2px; margin-bottom: -2px; }   /* the row's 2 px room for the focus ring is not part of the gap */
-/* phone: the search and the chips stay at the top while the list scrolls (there is no top bar on this screen) */
+/* the search and Filtr: one row of M controls (Filtr opens the sheet of Všichni · Členové · …) */
+.people-find { display: flex; align-items: center; gap: var(--space-2); }
+.people-find > .search { flex: 1; min-width: 0; }
+.people-filter { flex: none; }
+.people-filter .count { background: var(--tint-2); }
+.people-hint > .filter-line { min-height: 24px; }
+/* phone: the search and Filtr stay at the top while the list scrolls (there is no top bar on this screen) */
 @media (max-width: 959.98px) {
   .people-find {
     position: sticky; top: 0; z-index: 10; margin: calc(-1 * var(--space-3)) calc(-1 * var(--gutter));
@@ -25,11 +29,11 @@
 }
 @media (min-width: 960px) {
   .people-col.people-col--table, .people-col.people-col--wide { max-width: none; }
-  /* the whole control group keeps that width: the chips wrap inside it, the view switch ends where the search does */
+  /* the whole control group keeps that width: Filtr and the view switch end where the switch above them does */
   .people-switch > .seg, .people-find, .people-view { max-width: var(--people-head-w); }
 }
 
-/* the line under the chips: the birthday line, and the view switch at its end (S beside text on a desktop, M on
+/* the line under the search: the filter line or the birthday line, and the view switch at its end (S beside text on a desktop, M on
    a phone, where it takes the next line when both do not fit) */
 .people-view { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 .people-hint { flex: 0 1 auto; min-width: 0; }
@@ -86,7 +90,7 @@ button.row[aria-pressed="true"] { background: var(--pick); --tint: var(--card); 
 
 /* ---------- desktop: the table ---------- */
 /* fixed layout fits: no scroll box, so the header can stick to the top; the rows bleed 12 px into the gutter as a
-   list's do, so the ticks and names line up with the title and the chips */
+   list's do, so the ticks and names line up with the title and the search */
 .people-results > .table-wrap { overflow: visible; max-width: none; padding: 0; }
 .people-table { width: 100%; table-layout: fixed; }
 .people-table th { position: sticky; top: 0; z-index: 2; white-space: nowrap; }
