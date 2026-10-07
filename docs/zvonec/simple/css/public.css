@@ -29,7 +29,11 @@
 
 .pub-week + .pub-week { margin-top: var(--space-4); }
 .pub-weeks .disclosure { margin-top: var(--space-3); }
-.pub-updated { margin-top: var(--space-2); }
+/* nothing published ahead: a quiet note where Nejbližší setkání would be */
+.pub-none { display: grid; gap: 2px; padding: var(--space-5); border-radius: var(--shape-block); background: var(--feature); }
+.pub-none__title { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.pub-grid--one { max-width: 640px; }
+.pub-updated { margin-top: var(--section-gap); }
 .pub-find .section-head + .text { margin-bottom: var(--space-2); }
 .pub-find .map { margin-top: var(--space-3); }
 
@@ -51,8 +55,11 @@
   .pub-page { max-width: calc(1120px + 2 * var(--gutter)); }
   body.is-public .topbar--public { max-width: calc(1120px + 2 * var(--gutter)); }
   body.is-public:has(.screen--narrow) .topbar--public { max-width: calc(480px + 2 * var(--gutter)); }
+  /* one column (nothing ahead, no formats): the page and its bar are that column, centred */
+  .pub-page:has(.pub-grid--one) { max-width: calc(640px + 2 * var(--gutter)); }
+  body.is-public:has(.pub-grid--one) .topbar--public { max-width: calc(640px + 2 * var(--gutter)); }
   .pub-grid:not(.pub-grid--one) { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
-  .pub-side > .section:first-child { margin-top: 0; }
+  .pub-grid:not(.pub-grid--one) > .pub-side > .section:first-child { margin-top: 0; }
   .pub-next { grid-template-columns: minmax(0, 1fr); }
   .pub-next__title { font-size: 32px; line-height: 36px; }
   .pub-event__grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }

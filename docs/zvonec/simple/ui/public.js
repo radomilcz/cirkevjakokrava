@@ -217,24 +217,33 @@ function formatsBlock(d) {
 function findUsBlock(d) {
   const places = (d.events || []).flatMap((e) => e.places || []);
   const home = d.address ? places.find((p) => p.address === d.address && hasCoords(p)) : null;
-  const updated = /^\d{4}-\d{2}-\d{2}$/.test(d.generated || '') ? `Pastvu jsme naposledy upravili ${longDay(d.generated).replace(/^\S+ /, '')}.` : null;
-  if (!d.address && !home) return updated ? h('p', { class: 'meta pub-updated' }, updated) : null;
+  if (!d.address && !home) return null;
+  // the building's name when a place gives one; the church's name is already the brand above
+  const name = home?.building || home?.name;
   return section({
     title: 'Kde nás najdeš',
     cls: 'pub-find',
     body: [
-      h('p', { class: 'text' }, h('b', {}, home?.building || home?.name || d.churchName || FALLBACK_NAME), h('br'), d.address || home?.address || ''),
+      h('p', { class: 'text' }, name ? [h('b', {}, name), h('br')] : null, d.address || home?.address || ''),
       mapLink(home || { address: d.address }),
       mapFrame(home, { title: 'Mapa: kde nás najdeš' }),
-      updated ? h('p', { class: 'meta pub-updated' }, updated) : null,
     ],
   });
 }
 
+/** „Naposledy aktualizováno 7. října.“ at the foot of the page. */
+const updatedLine = (d) => (/^\d{4}-\d{2}-\d{2}$/.test(d.generated || '')
+  ? h('p', { class: 'meta pub-updated' }, `Naposledy aktualizováno ${longDay(d.generated).replace(/^\S+ /, '')}.`) : null);
+
+/** Nothing published ahead: a quiet note in the place of Nejbližší setkání, not an empty-screen picture. */
+const nothingAhead = () => h('div', { class: 'pub-none' },
+  h('p', { class: 'pub-none__title' }, 'Teď nic nechystáme.'),
+  h('p', { class: 'meta' }, 'Mrkni sem později.'));
+
 export function renderProgram(id) {
   if (id) return renderPublicEvent(id);
   const d = data();
-  const head = { overline: d?.churchName || FALLBACK_NAME, title: 'Pastva', lead: 'Kdy a kde se potkáváme. Přijď, jak jsi.' };
+  const head = { title: 'Pastva', lead: 'Kdy a kde se potkáváme. Přijď, jak jsi.' };   // the church's name is the brand above
   if (!d) {
     const failed = S.mode !== 'live' || load === 'failed';
     return screen({
@@ -247,15 +256,18 @@ export function renderProgram(id) {
   const now = today();
   const upcoming = (d.events || []).filter((e) => dayOf(e.end || e.start) >= now);
   const first = upcoming.find((e) => !e.cancelled) || null;
+  // one column when the side would be all there is (nothing ahead, no formats): the note, then where we are
+  const one = !(d.formats || []).length && (!first || !d.address);
   return screen({
     topbar: publicBar(),
     head,
     cls: 'pub-page',
-    body: h('div', { class: ['pub-grid', !(d.formats || []).length && !d.address && 'pub-grid--one'] },
-      h('div', { class: 'pub-main' },
-        first ? nextBlock(first, d) : empty({ icon: 'calendar', title: 'Teď nic nechystáme.', text: 'Mrkni sem později.' }),
-        weeksBlock(upcoming, first)),
-      h('div', { class: 'pub-side' }, formatsBlock(d), findUsBlock(d))),
+    body: [
+      h('div', { class: ['pub-grid', one && 'pub-grid--one'] },
+        h('div', { class: 'pub-main' }, first ? nextBlock(first, d) : nothingAhead(), weeksBlock(upcoming, first)),
+        h('div', { class: 'pub-side' }, formatsBlock(d), findUsBlock(d))),
+      updatedLine(d),
+    ],
   });
 }
 
@@ -284,7 +296,7 @@ function renderPublicEvent(id) {
     body: [
       h('div', { class: 'pub-event__head' },
         dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
-        h('div', {}, h('p', { class: 'overline' }, d.churchName || FALLBACK_NAME), titleEl(event.title))),
+        h('div', {}, titleEl(event.title))),
       event.cancelled ? callout({ tone: 'no', title: 'Tohle setkání je zrušené.', text: 'Mrkni na Pastvu, co chystáme dál.' }) : null,
       h('div', { class: 'pub-event__grid' },
         h('div', { class: 'pub-event__main' },
