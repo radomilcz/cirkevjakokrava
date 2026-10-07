@@ -97,17 +97,11 @@
 @media (min-width: 960px) {      /* desktop Měsíc: the weeks share the window's height, no empty band under the grid */
   .cal-month__body { grid-auto-rows: minmax(104px, 1fr); min-height: calc(100dvh - 232px); }
 }
-@media (min-width: 960px) {      /* desktop: one row – the period left, the view switch and Filtr right */
-  .cal-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-3); }
-  .cal-toolbar > .cal-period { flex: 1 1 auto; }
-  .cal-toolbar > .cal-views { flex: 0 1 340px; min-width: 260px; }
-  /* inside a split (the 400 px list, the main column next to a pane) the phone's two rows */
-  :is(.split__list, .cal-split__main) > .cal-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
-  :is(.split__list, .cal-split__main) > .cal-toolbar > .cal-views { grid-column: 1 / -1; grid-row: 2; min-width: 0; width: 100%; max-width: 360px; }   /* never a 1000 px switch */
-}
-@media (min-width: 1600px) {     /* a wide main column next to the event: one row again (period · switch · Filtr) */
-  .cal-split__main > .cal-toolbar { display: flex; }
-  .cal-split__main > .cal-toolbar > .cal-views { flex: 0 1 340px; min-width: 260px; }
+@media (min-width: 960px) {      /* desktop: the same two rows in every view and at every width – ‹ Říjen 2026 › · Dnes ·
+                                    Filtr, then Seznam · Měsíc · Rozpis – so switching the view moves nothing (it used to
+                                    jump from under the period in Seznam's list column to the right end in Měsíc) */
+  .cal-toolbar:not(.cal-toolbar--views) { max-width: 360px; margin-bottom: var(--space-3); }
+  .cal-toolbar:not(.cal-toolbar--views) > .cal-views { width: 100%; }
 }
 
 /* ---------- Rozpis ---------- */

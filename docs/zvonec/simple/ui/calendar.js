@@ -1,21 +1,20 @@
 // Zvonec – Kalendář: what is happening? (zvonec/design/one-question › Kalendář; the list is Next's Seznam)
 //   #kalendar[/<YYYY-MM-DD | YYYY-MM>]
-//   One list from today (or from the chosen day / the 1st of the chosen month), by week, one date arch per day.
-//   An event: the time from–to, the bar in its Účel hue (the brand's colours), title, place, „ty · Kázání ·
-//   potvrzeno“ where I serve, and for leaders ◔ 10 z 15 · chybí 2 · 3 čekají · 1 chyba. „Ukaž, co už bylo“ adds
-//   the last four weeks, „Ukaž další týdny“ six more. „Říjen ▾“ opens a mini month (dots, arrows, Dnes).
-//   ≥ 1200 px: the list | the event beside it (#setkani/<id>; the nearest one when nothing is chosen), as Moje.
-//   Měsíc (#kalendar/mesic[/<YYYY-MM | YYYY-MM-DD>], the switch Seznam · Měsíc; the choice is remembered):
-//     desktop – the month grid, the events as chips in their Účel hue, ‹ Říjen 2026 › Dnes, ← →; ≥ 1200 the event
-//     beside it; phone – the small month (dots) and the chosen day's events under it.
-//   Rozpis (#kalendar/rozpis[/<YYYY-MM>[/bremeno | /upozorneni]], the third view, as in Next): who serves when.
-//   ⋯: Stáhni do kalendáře; in Rozpis also Vytiskni and (leaders) Břemeno.
+//   phone: Simple's own head – Kalendář, „Říjen ▾“ (a mini month: dots, arrows, Dnes), + for leaders, ⋯ – over
+//     Next's Seznam: one list from today (or the chosen day / the 1st of the chosen month), by week, one date
+//     arch per day; an event with its time from–to, the bar in its Účel hue (the brand's colours), title,
+//     place, „ty · Kázání · potvrzeno“ where I serve and for leaders ◔ 10 z 15 · chybí 2 · 3 čekají · 1 chyba.
+//     „Ukaž, co už bylo“ adds the last four weeks, „Ukaž další týdny“ six more.
+//   desktop: the month grid with the events as chips, ‹ Říjen 2026 › and Dnes (← → too), „Seznam“ on the
+//     right of that bar opens the same list (#kalendar/seznam[/<day | month>]), whose „Měsíc“ comes back;
+//     ≥ 1200 px the event beside either (#setkani/<id>; the nearest one when nothing is chosen).
+//   ⋯: Stáhni do kalendáře, Rozpis (#kalendar/rozpis[/<YYYY-MM>[/bremeno | /upozorneni]]: who serves when,
+//     its own page with Vytiskni and – leaders – Břemeno; Obsazení links to it as „Celý rozpis ›“).
 // Routes for app.js: CALENDAR_ROUTES.
 
 import {
-  h, icon, screen, period, button, menu, iconButton, empty, openSheet, monthGrid, splitView, isSplit,
-  isDesktop, monthLabel, shiftMonth, clock, agenda, agendaDay, agendaEvent, weekLabel, fillRing, sev, link, segmented,
-  dateArch, quiet,
+  h, icon, screen, topBar, period, button, menu, iconButton, empty, openSheet, monthGrid, splitView, isSplit,
+  isDesktop, monthLabel, shiftMonth, clock, agenda, agendaDay, agendaEvent, weekLabel, fillRing, sev, link,
 } from './kit.js';
 import { S, can, render, navigate } from '../../ui/state.js';
 import { eventById, eventsInRange } from '../../lib/events.js';
@@ -142,14 +141,14 @@ function monthSheet(startMonth, selected) {
         month, selected, today: today(), label: monthLabel(month),
         dots: (d) => (onDay(d).length ? ['ink'] : []),
         mine: (d) => onDay(d).some(iServe),
-        onPick: (d) => { sheet.close({ restore: false }); navigate(`#kalendar/${d}`); },
+        onPick: (d) => { sheet.close({ restore: false }); navigate(`${listBase()}/${d}`); },
       }),
     ]);
   };
   sheet = openSheet({
     label: 'Vyber den',
     body: [],
-    foot: button('Dnes', { size: 'l', block: true, onclick: () => { sheet.close({ restore: false }); navigate('#kalendar'); } }),
+    foot: button('Dnes', { size: 'l', block: true, onclick: () => { sheet.close({ restore: false }); navigate(listBase()); } }),
     cls: 'sheet--month',
     autofocus: false,
   });
@@ -166,15 +165,6 @@ function paneLinks(root) {
     quietGo(a.getAttribute('href'), { push: true });
   });
   return root;
-}
-
-// ---------- the screen ----------
-
-function calendarMenu(month, view) {
-  return menu([
-    { label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport },
-    ...(view === 'rozpis' ? rosterMenuItems(month) : []),
-  ], { label: 'Další možnosti kalendáře' });
 }
 
 // ---------- Měsíc ----------
@@ -217,36 +207,27 @@ function monthDesktop({ month, day, openId }) {
     h('div', { class: 'cal-month__body', role: 'rowgroup' }, cells));
 }
 
-/** Phone: the small month (dots in the Účel hues) and the chosen day's events under it. */
-function monthPhone({ month, day }) {
-  const events = eventsInRange(S.data, `${month}-01`, lastDayOf(month));
-  const onDay = (d) => events.filter((e) => dayOf(e.start) === d);
-  const chosen = day && day.startsWith(month) ? day : month === monthOfToday() ? today() : (events[0] ? dayOf(events[0].start) : `${month}-01`);
-  const list = onDay(chosen);
-  return [
-    h('div', { class: 'cal-grid-phone' }, monthGrid({
-      month, selected: chosen, today: today(), label: monthLabel(month),
-      dots: (d) => onDay(d).filter((e) => !e.cancelled).map((e) => kindHue(e.kind)),
-      mine: (d) => onDay(d).some(iServe),
-      onPick: (d) => quietGo(`#kalendar/mesic/${d}`),
-    })),
-    h('section', { class: 'cal-day', 'aria-label': new Date(`${chosen}T12:00`).toLocaleDateString('cs', { weekday: 'long', day: 'numeric', month: 'long' }) },
-      list.length
-        ? agenda([agendaDay({ day: chosen, today: chosen === today(), label: dayLabel(chosen), events: list.map((e) => eventItem(e)) })])
-        : h('div', { class: 'cal-day__none' }, dateArch(chosen, { today: chosen === today(), quiet: true }),
-          quiet('Na tenhle den nic není.'),
-          can('leader') ? button('Přidej setkání', { size: 's', icon: 'plus', onclick: () => openAddEvent({ day: chosen }) }) : null)),
-  ];
-}
-
 // ---------- the screen ----------
 
-/** Seznam, Měsíc or Rozpis – remembered in this browser (Next keeps its own). */
-const VIEW_KEY = 'zvonec-simple-calendar-view';
-const CAL_VIEWS = [{ value: 'seznam', label: 'Seznam' }, { value: 'mesic', label: 'Měsíc' }, { value: 'rozpis', label: 'Rozpis' }];
-function savedView() { try { const v = localStorage.getItem(VIEW_KEY); return CAL_VIEWS.some((x) => x.value === v) ? v : 'seznam'; } catch { return 'seznam'; } }
-function saveView(view) { try { localStorage.setItem(VIEW_KEY, view); } catch { /* not remembered, that's all */ } }
+/** The list's own URL: #kalendar on a phone (the list is all there is), #kalendar/seznam on a desktop. */
+const listBase = () => (isDesktop() ? '#kalendar/seznam' : '#kalendar');
+
+function calendarMenu(month) {
+  return menu([
+    { label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport },
+    { label: 'Rozpis', icon: 'table', href: month === monthOfToday() ? '#kalendar/rozpis' : `#kalendar/rozpis/${month}` },
+  ], { label: 'Další možnosti kalendáře' });
+}
+
 const shown = { view: null, month: null };   // what the screen shows, so an event opened beside it keeps it
+
+/** Parse #kalendar parts: { day, month } – a day marks it on the grid. */
+function parse(parts) {
+  const [first] = parts;
+  if (isDay(first)) return { day: first, month: first.slice(0, 7) };
+  if (isMonth(first)) return { day: null, month: first };
+  return { day: null, month: monthOfToday() };
+}
 
 /** Where the list starts: the chosen day, the 1st of a chosen month (today in this month), or today. */
 function fromOf(parts) {
@@ -256,123 +237,113 @@ function fromOf(parts) {
   return today();
 }
 
-/** #kalendar/mesic[/<month | day>] → { month, day }. */
-function monthOf(part) {
-  if (isDay(part)) return { month: part.slice(0, 7), day: part };
-  if (isMonth(part)) return { month: part, day: null };
-  return { month: monthOfToday(), day: null };
-}
-
-/** #kalendar/<view>/<month> – this month without the month part. */
-const viewHref = (view, month, tail = '') => {
-  const base = view === 'seznam' ? '#kalendar' : `#kalendar/${view}`;
-  return month === monthOfToday() && !tail ? base : `${base}/${month}${tail}`;
-};
-
-/** The head (title, the action, ⋯) and the bar under it: Seznam · Měsíc · Rozpis, and „Říjen ▾“ or ‹ Říjen 2026 ›. */
-function calHead({ view, month, from, add, action, tail = '' }) {
-  const leader = can('leader');
-  const switcher = segmented(CAL_VIEWS, view, (v) => { saveView(v); navigate(viewHref(v, month)); }, { label: 'Pohled', cls: 'cal-views' });
-  const go = (m) => navigate(viewHref(view, m, tail));
-  const where = view !== 'seznam'
-    ? h('div', { class: 'cal-period' },
-      period({ label: monthLabel(month), onPrev: () => go(shiftMonth(month, -1)), onNext: () => go(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc', heading: false }),
-      month === monthOfToday() ? null : button('Dnes', { size: 's', onclick: () => go(monthOfToday()), cls: 'cal-today' }))
-    : h('button', { type: 'button', class: 'month-chip', 'aria-haspopup': 'dialog', 'aria-label': `${monthLabel(month)} – vyber den`, onclick: () => monthSheet(month, from) },
-      monthWord(month), icon('chevron-down', { size: 's' }));
-  return [
-    h('div', { class: 'cal-head' },
-      h('h1', { class: 'title' }, 'Kalendář'),
-      h('div', { class: 'cal-head__tools' },
-        action ? (isDesktop()
-          ? button(action.label, { icon: action.icon, variant: 'primary', onclick: action.onclick, cls: 'cal-head__add' })
-          : iconButton(action.icon, action.label, { onclick: action.onclick, dataset: { primary: '' } }))
-          : leader ? (isDesktop()
-            ? button('Přidej setkání', { icon: 'calendar-plus', variant: 'primary', onclick: add, cls: 'cal-head__add' })
-            : iconButton('plus', 'Přidej setkání', { onclick: add, dataset: { primary: '' } })) : null,
-        calendarMenu(month, view))),
-    h('div', { class: 'cal-toolbar' }, switcher, where),
-  ];
-}
-
 /** Kalendář. `openId` = the event shown in the pane (#setkani/<id> at ≥ 1200 px). */
 export function renderCalendar(parts = [], { openId } = {}) {
-  // which view: Měsíc / Rozpis by its URL; an event opened beside the calendar keeps what was shown; #kalendar the saved one
-  const view = ['mesic', 'rozpis'].includes(parts[0]) ? parts[0]
-    : parts.length ? 'seznam'
-      : openId && shown.view ? shown.view
-        : savedView();
-  const rest = ['mesic', 'rozpis'].includes(parts[0]) ? parts.slice(1) : [];
-  if (view === 'rozpis') return renderRoster(rest, { openId });
-  if (view === 'mesic') return renderMonth(rest, { openId });
-  return renderList(parts, { openId });
+  if (parts[0] === 'rozpis') return renderRoster(parts.slice(1), { openId });
+  if (parts[0] === 'seznam') return renderList(parts.slice(1), { openId });
+  // an event opened beside the calendar keeps what was shown: the month, the list or Rozpis
+  const kept = openId && !parts.length ? shown.view : null;
+  if (kept === 'rozpis') return renderRoster([], { openId });
+  if (!isDesktop() || kept === 'seznam') return renderList(parts, { openId });
+  return renderMonth(parts, { openId });
 }
 
+/** The list (Next's Seznam): on a phone under Simple's own head, on a desktop under the title with „Měsíc“. */
 function renderList(parts, { openId }) {
   // an event opened beside the list keeps the list where it was
   const from = openId && !parts.length && listState.from ? listState.from : fromOf(parts);
-  Object.assign(shown, { view: 'seznam', month: from.slice(0, 7) });
-  const split = isSplit();
+  const month = from.slice(0, 7);
+  Object.assign(shown, { view: 'seznam', month });
+  const leader = can('leader');
+  const add = () => openAddEvent({ day: from > today() ? from : null });
+  const chip = h('button', { type: 'button', class: 'month-chip', 'aria-haspopup': 'dialog', 'aria-label': `${monthLabel(month)} – vyber den`, onclick: () => monthSheet(month, from) },
+    monthWord(month), icon('chevron-down', { size: 's' }));
   const events = listEvents(from);
+
+  if (!isDesktop()) {
+    const head = h('div', { class: 'cal-head' },
+      h('h1', { class: 'title' }, 'Kalendář'),
+      h('div', { class: 'cal-head__tools' },
+        chip,
+        leader ? iconButton('plus', 'Přidej setkání', { onclick: add, dataset: { primary: '' } }) : null,
+        calendarMenu(month)));
+    return screen({ topbar: false, cls: 'cal-screen cal-agenda', body: [head, ...agendaList(from, events, null)] });
+  }
+
+  const split = isSplit();
   const opened = openId ? eventById(S.data, openId) : null;
   // ≥ 1200: the chosen event beside the list – the nearest one from the start of the list when nothing is chosen
   const chosen = split ? (opened || events.find((e) => !e.cancelled && dayOf(e.start) >= from) || null) : null;
-  const body = agendaList(from, events, chosen?.id);
-  const column = h('div', { class: 'cal-col' }, calHead({ view: 'seznam', month: from.slice(0, 7), from, add: () => openAddEvent({ day: from > today() ? from : null }) }), body);
+  const bar = h('div', { class: 'cal-bar' }, chip,
+    link('Měsíc', { href: month === monthOfToday() ? '#kalendar' : `#kalendar/${month}`, icon: 'calendar', cls: 'cal-switch' }));
+  const column = h('div', { class: 'cal-col' }, bar, agendaList(from, events, chosen?.id));
   // the pane's ✕ comes back to the list where it was (from the chosen day)
-  const back = from === today() ? '#kalendar' : `#kalendar/${from}`;
+  const back = from === today() ? '#kalendar/seznam' : `#kalendar/seznam/${from}`;
   return screen({
     topbar: false,
-    wide: split,
+    head: { title: 'Kalendář', actions: h('div', { class: 'head-actions' }, calendarMenu(month)) },
+    body: paneLinks(h('div', { class: 'cal cal--list' }, split && chosen ? splitView({ list: column, detail: eventPane(chosen, opened ? back : null), label: 'Setkání' }) : column)),
+    primary: leader ? { label: 'Přidej setkání', icon: 'calendar-plus', onclick: add } : null,
+    wide: true,
     cls: 'cal-screen cal-agenda',
-    body: paneLinks(split && chosen ? splitView({ list: column, detail: eventPane(chosen, opened ? back : null), label: 'Setkání' }) : column),
   });
 }
 
+/** Desktop: the month grid, ‹ Říjen 2026 › Dnes and „Seznam“ above it; ≥ 1200 the event beside it. */
 function renderMonth(parts, { openId }) {
+  const leader = can('leader');
   const opened = openId ? eventById(S.data, openId) : null;
-  const parsed = monthOf(parts[0]);
+  const parsed = parse(parts);
   const month = opened && !parts.length ? (shown.view === 'mesic' && shown.month ? shown.month : opened.start.slice(0, 7)) : parsed.month;
   const day = opened ? dayOf(opened.start) : parsed.day;
   Object.assign(shown, { view: 'mesic', month });
   const add = () => openAddEvent({ day: day && day >= today() ? day : null });
-  if (!isDesktop()) {
-    return screen({ topbar: false, cls: 'cal-screen cal-screen--month-phone', body: [...calHead({ view: 'mesic', month, from: day || today(), add }), ...monthPhone({ month, day })] });
-  }
   // ≥ 1200: the chosen event beside the grid – the nearest one from today when nothing is chosen
   let chosen = opened;
   if (!chosen && isSplit() && month === monthOfToday()) {
     chosen = eventsInRange(S.data, today(), lastDayOf(month)).find((e) => !e.cancelled && dayOf(e.start) >= today()) || null;
   }
-  // the head and the switch belong to the grid's column, so the event beside it starts at the top, as on the list
-  const column = [...calHead({ view: 'mesic', month, from: day || today(), add }), monthDesktop({ month, day, openId: chosen?.id })];
-  const back = month === monthOfToday() ? '#kalendar/mesic' : `#kalendar/mesic/${month}`;
-  const content = isSplit() && chosen ? splitView({ list: column, detail: eventPane(chosen, opened ? back : null), label: 'Setkání' }) : column;
+  const go = (m) => navigate(m === monthOfToday() ? '#kalendar' : `#kalendar/${m}`);
+  const bar = h('div', { class: 'cal-bar' },
+    h('div', { class: 'cal-period' },
+      period({ label: monthLabel(month), onPrev: () => go(shiftMonth(month, -1)), onNext: () => go(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc', heading: false }),
+      month === monthOfToday() ? null : button('Dnes', { size: 's', onclick: () => go(monthOfToday()), cls: 'cal-today' })),
+    link('Seznam', { href: month === monthOfToday() ? '#kalendar/seznam' : `#kalendar/seznam/${month}`, icon: 'list', cls: 'cal-switch' }));
+  const grid = monthDesktop({ month, day, openId: chosen?.id });
+  const back = month === monthOfToday() ? '#kalendar' : `#kalendar/${month}`;
+  const content = isSplit() && chosen
+    ? splitView({ list: [bar, grid], detail: eventPane(chosen, opened ? back : null), label: 'Setkání' })
+    : [bar, grid];
   return screen({
     topbar: false,
+    head: { title: 'Kalendář', actions: h('div', { class: 'head-actions' }, calendarMenu(month)) },
+    body: paneLinks(h('div', { class: 'cal cal--month' }, content)),
+    primary: leader ? { label: 'Přidej setkání', icon: 'calendar-plus', onclick: add } : null,
     wide: true,
     cls: 'cal-screen cal-screen--month',
-    body: paneLinks(h('div', { class: 'cal cal--month' }, content)),
   });
 }
 
-/** #kalendar/rozpis[/<YYYY-MM>][/bremeno | /upozorneni] – Rozpis: who serves when (the third view, as in Next). */
-function renderRoster(parts, { openId }) {
+/** #kalendar/rozpis[/<YYYY-MM>][/bremeno | /upozorneni] – Rozpis: who serves when, its own page (from ⋯ and Obsazení). */
+function renderRoster(parts, { openId } = {}) {
   const opened = openId ? eventById(S.data, openId) : null;
   const month = isMonth(parts[0]) ? parts[0] : opened && shown.view === 'rozpis' && shown.month ? shown.month : monthOfToday();
   const extra = ['upozorneni', 'bremeno'].includes(parts[1]) ? parts[1] : ['upozorneni', 'bremeno'].includes(parts[0]) ? parts[0] : null;
   Object.assign(shown, { view: 'rozpis', month });
   const tail = extra ? `/${extra}` : '';
-  const closeHref = `#kalendar/rozpis/${month}${tail}`;
-  // the bar goes into the roster's column (its team tabs and chips follow); the head stays above it
-  const pre = calHead({ view: 'rozpis', month, from: `${month}-01`, add: () => openAddEvent(), tail });
-  const r = rosterView({ month, extra, openId: opened?.id || null, closeHref, toolbar: pre[1] });
-  const head = r.primary ? calHead({ view: 'rozpis', month, from: `${month}-01`, action: r.primary, tail })[0] : pre[0];
+  const go = (m) => navigate(`#kalendar/rozpis/${m}${tail}`);
+  const bar = h('div', { class: 'cal-bar' },
+    h('div', { class: 'cal-period' },
+      period({ label: monthLabel(month), onPrev: () => go(shiftMonth(month, -1)), onNext: () => go(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc', heading: false }),
+      month === monthOfToday() ? null : button('Dnes', { size: 's', onclick: () => go(monthOfToday()), cls: 'cal-today' })));
+  const r = rosterView({ month, extra, openId: opened?.id || null, closeHref: `#kalendar/rozpis/${month}${tail}`, toolbar: bar });
   return screen({
-    topbar: false,
+    topbar: topBar({ back: { href: '#kalendar', label: 'Kalendář' }, actions: [menu(rosterMenuItems(month), { label: 'Další možnosti rozpisu' })] }),
+    head: { title: 'Rozpis' },
+    body: paneLinks(h('div', { class: 'cal cal--rozpis' }, r.body)),
+    primary: r.primary,
     wide: true,
     cls: 'cal-screen roster-screen',
-    body: paneLinks(h('div', { class: 'cal cal--rozpis' }, head, r.body)),
   });
 }
 
