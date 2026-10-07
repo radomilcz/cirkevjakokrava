@@ -1,18 +1,14 @@
-// Zvonec Next – Kalendář › Rozpis, the planning surface (ux §3.3). Month by month; in the current month it
-// starts at today („Ukázat, co už bylo“ shows the past).
-// One team filter: „Tým“ – a chip at the head of the chip row on a phone (a sheet with every team and what it
-// lacks), tabs over the table on a desktop. Team leaders open on their team, members on the team they serve in.
-// Status chips: Všechno · Chybí lidi · Čeká · Upozornění (leader; #…/upozorneni) · Jen moje.
-// Phone: one card per event (the same block as „Kdo slouží“). Desktop: one team = the table events × its
-// roles (sticky first column and head, an edge shadow while it scrolls sideways); „Všechny týmy“ = the
-// overview events × teams (how full each team is; a click opens that team). Status chips other than
-// „Všechno“ and „Upozornění“ show the cards (a warning needs its sentence and its buttons).
-// ≥ 1200 px the event (or Břemeno) sits next to the table in the same split as Seznam and Měsíc.
-// Leader: „Doplnit volná místa“ for the shown month and team, ⋯ › Břemeno and Vytisknout (A4 landscape).
+// Zvonec – Rozpis (#kalendar/rozpis[/<YYYY-MM>][/bremeno]): who serves when, as a calm list (the owner found the
+// grid needlessly busy). ‹ Říjen 2026 › and „Všechny týmy ▾“ (a sheet with every team and what it lacks; team
+// leaders open on their team, members on the team they serve in). Then the month's meetings from today
+// („Ukaž, co už bylo“ shows the past): the date arch, the title · the time, and one line per team with the names
+// – ○ before who has not answered, ● where something does not fit (leaders), „+ Klávesy“ for an empty slot
+// (leaders, the picker). A cancelled meeting says so and nothing more. ≥ 1200 px the meeting opens beside it.
+// Leaders: „Doplň volná místa“ for the month and team; ⋯ › Vytiskni (the A4 table) and Břemeno.
 
 import {
-  h, icon, button, chip, statusSymbol, dateArch, fill, fillRing, empty, list, row, avatar, personName, openSheet, detailPane,
-  sev, isDesktop, isSplit, isLayerOpen, shortDate, clock, monthLabel, link, SEP, STATUS_KEY, table, plural, teamMark,
+  h, icon, button, chip, statusSymbol, dateArch, fill, empty, list, row, avatar, personName, openSheet, detailPane,
+  sev, isSplit, isLayerOpen, shortDate, clock, monthLabel, link, SEP, STATUS_KEY, table, plural, teamMark,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
 import { eventsInRange, needsOf, eventById } from '../../lib/events.js';
@@ -20,16 +16,11 @@ import { servingLoad } from '../../lib/scheduling.js';
 import { dayOf, today } from '../../lib/time.js';
 import {
   prefs, savePrefs, rosterTeam, ALL_TEAMS, teamsWithRoles, passes, slotsOf, fillOfTeams, waitingWords, missingWords, eventConflicts,
-  assignmentWarnings, eventLevelWarnings, timeText, placeText, shortName, nameOf, openable, kindHue,
+  assignmentWarnings, eventLevelWarnings, shortName, nameOf, openable,
 } from './calendar-shared.js';
-import { teamBlock, slotRow, fillOpenSlots, pickFor, openDutySheet, openMyAnswer, warningFor } from './event-duties.js';
+import { fillOpenSlots, pickFor, openDutySheet, openMyAnswer } from './event-duties.js';
 import { eventPane } from './event.js';
 
-const CHIPS = [
-  ['vse', 'Všechno'], ['chybi', 'Chybí lidi'], ['ceka', 'Čeká'], ['upozorneni', 'Upozornění'], ['moje', 'Jen moje'],
-];
-const LEADER_CHIPS = new Set(['chybi', 'upozorneni']);
-let chipNow = 'vse';
 const pastState = { month: null, on: false };
 
 /** How many Rozpis filters are on (the „Filtr“ count): Účel. The team is chosen in the Rozpis itself. */
@@ -154,80 +145,73 @@ function teamChip(team, needs) {
   return el;
 }
 
-/** Desktop: the teams as tabs over the table (a count says how many people each team still lacks). */
-function teamTabs(team, needs, panelId) {
-  const leader = can('leader');
-  const options = teamOptions();
-  const tabs = options.map((o) => {
-    const n = needs.get(o.value)?.missing || 0;
-    return h('button', {
-      type: 'button', role: 'tab', class: 'roster-tab', id: `roster-tab-${o.value}`, 'aria-selected': String(o.value === team),
-      'aria-controls': panelId, tabIndex: o.value === team ? 0 : -1, dataset: { value: o.value },
-      onclick: () => { if (o.value !== team) chooseTeam(o.value); },
-    },
-    o.group ? teamMark(o.group, { size: 's' }) : null,
-    h('span', { class: 'roster-tab__label' }, o.label),
-    leader && n ? h('span', { class: 'roster-tab__n', title: missingWords(n) }, String(n), h('span', { class: 'visually-hidden' }, ` – ${missingWords(n)}`)) : null);
+// ---------- the list: one block per meeting, one line per team ----------
+
+const WAIT_MARK = () => h('span', { class: 'mark mark--wait', 'aria-hidden': 'true' });
+const ERROR_MARK = () => h('span', { class: 'mark mark--error', 'aria-hidden': 'true' });
+
+/** A team's names (one per person, „Ty“ for me) with ○ / ● for a leader, and „+ Role“ for each empty role. */
+function teamWho(event, slots, conflicts, leader) {
+  const byPerson = new Map();
+  for (const s of slots) {
+    const a = s.assignment;
+    if (!a || a.status === 'declined') continue;
+    const key = a.personId || a.id;
+    const seen = byPerson.get(key) || { a, waits: false, bad: false };
+    seen.waits = seen.waits || (leader && a.status === 'proposed');
+    seen.bad = seen.bad || (leader && assignmentWarnings(conflicts, a).some((c) => c.severity === 'error'));
+    byPerson.set(key, seen);
+  }
+  const people = [...byPerson.values()];
+  const names = people.flatMap(({ a, waits, bad }, i) => {
+    const said = [waits ? 'čeká na odpověď' : null, bad ? 'něco nesedí' : null].filter(Boolean).join(', ');
+    const name = h('span', { class: 'nm' },
+      bad ? ERROR_MARK() : waits ? WAIT_MARK() : null,
+      a.personId && a.personId === myId() ? 'Ty' : nameOf(a),
+      said ? h('span', { class: 'visually-hidden' }, ` (${said})`) : null,
+      i < people.length - 1 ? ',' : null);
+    return i < people.length - 1 ? [name, ' '] : [name];
   });
-  const bar = h('div', { class: 'roster-tabs', role: 'tablist', 'aria-label': 'Tým' }, tabs);
-  bar.addEventListener('keydown', (e) => {
-    const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
-    if (!step) return;
-    e.preventDefault();
-    const i = tabs.indexOf(document.activeElement);
-    const next = tabs[(Math.max(0, i) + step + tabs.length) % tabs.length];
-    next.focus();
-    next.click();
-  });
-  const edge = () => bar.toggleAttribute('data-more-right', bar.scrollLeft < bar.scrollWidth - bar.clientWidth - 1);
-  bar.addEventListener('scroll', edge, { passive: true });
-  requestAnimationFrame(() => {     // the chosen tab in view when the row is too narrow (split view)
-    const on = bar.querySelector('[aria-selected="true"]');
-    const right = on ? on.offsetLeft - bar.offsetLeft + on.offsetWidth : 0;
-    if (on && right > bar.clientWidth) bar.scrollLeft = right - bar.clientWidth + 48;
-    edge();
-  });
-  return bar;
+  const editable = leader && !event.cancelled && !isPast(event);
+  const empty = new Map();
+  for (const s of slots) if (!s.assignment) empty.set(s.role.id, { role: s.role, n: (empty.get(s.role.id)?.n || 0) + 1 });
+  const chips = editable ? [...empty.values()].map(({ role, n }) => h('button', {
+    type: 'button', class: 'add-chip', onclick: () => pickFor(event.id, role.id), 'aria-label': `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}`,
+  }, icon('plus', { size: 's' }), n > 1 ? `${n}× ${role.name}` : role.name)) : [];
+  const missing = !editable && empty.size ? sev('error', missingWords([...empty.values()].reduce((m, x) => m + x.n, 0))) : null;
+  return { names, chips, missing, marks: { wait: people.some((x) => x.waits), error: people.some((x) => x.bad) } };
 }
 
-// ---------- phone (and the status chips on a desktop): cards ----------
-
-function cardHead(event, teamIds) {
-  const f = fillOfTeams(event, teamIds);
-  const words = [f.waiting ? waitingWords(f.waiting) : null, f.missing ? missingWords(f.missing) : null].filter(Boolean).join(SEP);
-  return h('div', { class: 'roster-card__head' },
-    dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
-    h('div', { class: 'roster-card__titles' },
-      h('a', { class: ['roster-card__title', event.cancelled && 'is-cancelled'], href: `#setkani/${event.id}` }, event.title),
-      h('span', { class: 'meta' }, [timeText(event), placeText(event)].filter(Boolean).join(SEP)),
-      event.cancelled ? h('span', { class: 'pill' }, 'zrušeno') : f.needed ? fill(f.filled, f.needed, { words: words || null }) : null));
-}
-
-/** „Chybí i jinde: Chvály 1“ – a gap in a team that is not shown, one tap to all teams (leaders). */
-function elsewhereLine(event, teamIds) {
-  if (!teamIds || !can('leader') || event.cancelled || isPast(event)) return null;
-  const others = teamsWithRoles().filter(({ group }) => !teamIds.includes(group.id))
-    .map(({ group }) => ({ group, missing: fillOfTeams(event, [group.id]).missing })).filter((x) => x.missing);
-  if (!others.length) return null;
-  return h('p', { class: 'meta roster-card__elsewhere' },
-    sev('error', `chybí i jinde: ${others.map((x) => `${x.group.name} ${x.missing}`).join(', ')}`), ' ',
-    link('Ukaž všechny týmy', { onclick: () => chooseTeam(ALL_TEAMS) }));
-}
-
-function rosterCard({ event, groups, conflicts, eventWarnings }, chipValue, teamIds, openId) {
-  const leader = can('leader');
-  const f = fillOfTeams(event, teamIds);
-  const fold = chipValue === 'vse';
+function meetingBlock({ event, allGroups, conflicts }, openId, leader, marks) {
+  const head = h('div', { class: 'rlist__head' },
+    h('a', { class: ['rlist__title', event.cancelled && 'is-cancelled'], href: `#setkani/${event.id}` }, event.title),
+    h('span', { class: 'rlist__time' }, clock(event.start)),
+    event.cancelled ? h('span', { class: 'pill' }, 'zrušeno') : null);
+  const teams = event.cancelled ? null : h('div', { class: 'rlist__teams' }, allGroups.map((g) => {
+    const who = teamWho(event, g.slots, conflicts, leader);
+    marks.wait = marks.wait || who.marks.wait;
+    marks.error = marks.error || who.marks.error;
+    return h('div', { class: 'rlist__team' },
+      h('span', { class: 'rlist__team-name' }, g.group.name),
+      h('span', { class: 'rlist__who' }, who.names, who.names.length && (who.chips.length || who.missing) ? ' ' : null, who.chips, who.missing));
+  }));
   return h('section', {
-    class: 'roster-card', dataset: { hue: kindHue(event.kind), open: event.id === openId ? '' : null },
+    class: 'rlist__event', dataset: { open: event.id === openId ? '' : null },
     'aria-label': `${event.title}, ${shortDate(event.start)}`,
   },
-  cardHead(event, teamIds),
-  chipValue === 'vse' ? elsewhereLine(event, teamIds) : null,
-  eventWarnings.length ? h('div', { class: 'roster-card__warn' }, eventWarnings.map((c) => warningFor(c, { eventId: event.id }))) : null,
-  groups.map((g) => teamBlock(event, g, conflicts, { fold, rows: g.slots.map((s) => slotRow(event, s, conflicts)) })),
-  leader && f.missing && !event.cancelled && !isPast(event) && chipValue !== 'moje'
-    ? h('div', { class: 'roster-card__foot' }, button('Doplň volná místa', { size: 's', icon: 'people', onclick: () => fillOpenSlots([event.id], { teams: teamIds }) })) : null);
+  dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
+  h('div', { class: 'rlist__body' }, head, teams));
+}
+
+/** The month's meetings as blocks; a legend for ○ / ● when they appear (leaders). */
+function rosterList(items, { openId }) {
+  const leader = can('leader');
+  const marks = { wait: false, error: false };
+  const blocks = items.map((it) => meetingBlock(it, openId, leader, marks));
+  const legend = marks.wait || marks.error ? h('p', { class: 'ev-who__legend rlist__legend' },
+    marks.wait ? h('span', {}, WAIT_MARK(), 'čeká na odpověď') : null,
+    marks.error ? h('span', {}, ERROR_MARK(), 'něco nesedí') : null) : null;
+  return [legend, h('div', { class: 'rlist' }, blocks)];
 }
 
 // ---------- desktop: the tables ----------
@@ -320,45 +304,6 @@ function rosterTable(items, { teamIds = null, openId = null, narrow = false, lab
   return framed(table({ label, region: true, wrapCls: 'roster-wrap', cls: ['roster', short && 'roster--narrow'], head: [head1, head2].filter(Boolean), rows }));
 }
 
-/** One team at one event in the overview: ring, „2 z 3“ and what is wrong (chybí 1 · 1 čeká · chyba). */
-function teamSummary(event, group, slots, conflicts) {
-  const f = fillOfTeams(event, [group.id]);
-  const warnings = can('leader') ? slots.flatMap((s) => (s.assignment ? assignmentWarnings(conflicts, s.assignment) : [])).filter((c) => c.severity !== 'info') : [];
-  const worst = warnings.some((c) => c.severity === 'error') ? 'error' : warnings.length ? 'warning' : null;
-  const declined = slots.filter((s) => s.assignment?.status === 'declined').length;
-  const words = [];
-  if (event.cancelled) words.push(h('span', { class: 'roster-sum__word' }, 'zrušeno'));
-  else {
-    if (f.missing) words.push(sev('error', missingWords(f.missing)));
-    if (f.waiting) words.push(h('span', { class: 'roster-sum__word', dataset: { status: 'waiting' } }, statusSymbol('waiting'), waitingWords(f.waiting)));
-    if (declined) words.push(h('span', { class: 'roster-sum__word', dataset: { status: 'declined' } }, statusSymbol('declined'), `${declined} ${declined === 1 ? 'nemůže' : 'nemůžou'}`));
-    if (worst) words.push(sev(worst, worst === 'error' ? 'chyba' : 'pozor'));
-    if (!words.length && f.needed) words.push(h('span', { class: 'roster-sum__word', dataset: { status: 'confirmed' } }, statusSymbol('confirmed'), 'potvrzeno'));
-  }
-  const text = [`${f.filled} z ${f.needed}`, ...words.map((w) => w.textContent)].join(', ');
-  return h('button', {
-    type: 'button', class: 'roster-sum', 'aria-label': `${group.name}: ${text}. Ukaž tým`, title: `Ukaž tým ${group.name}`,
-    onclick: () => chooseTeam(group.id),
-  },
-  h('span', { class: 'roster-sum__fill' }, fillRing(f.filled, f.needed), h('span', { class: 'num' }, `${f.filled} z ${f.needed}`)),
-  words.length ? h('span', { class: 'roster-sum__words' }, words) : null);
-}
-
-/** „Všechny týmy“ on a desktop: events × teams, how full each team is. A cell opens that team's table. */
-function overviewTable(items, { openId }) {
-  const columns = columnsOf(items);
-  const head = h('tr', {}, h('th', { class: 'roster__corner', scope: 'col' }, 'Setkání'),
-    columns.map((c) => h('th', { scope: 'col', class: 'roster__role roster__teamcol' }, h('span', { class: 'roster__teamhead' }, teamMark(c.group, { size: 's' }), c.group.name))));
-  const rows = items.map(({ event, allGroups, conflicts }) => h('tr', { dataset: { cancelled: event.cancelled ? '' : null, open: event.id === openId ? '' : null } },
-    eventHead(event, null),
-    columns.map((c) => {
-      const g = allGroups.find((x) => x.group.id === c.group.id);
-      if (!g) return h('td', { class: 'roster__cell', dataset: { none: '' } }, h('span', { class: 'visually-hidden' }, 'nikoho nepotřebujeme'));
-      return h('td', { class: 'roster__cell' }, teamSummary(event, c.group, g.slots, conflicts));
-    })));
-  return framed(table({ label: 'Rozpis – všechny týmy', region: true, wrapCls: 'roster-wrap', cls: ['roster', 'roster--overview'], head: [head], rows }));
-}
-
 // Sideways scroll: the edge shadows say there is more; the head stays under the top bar while the page scrolls
 // (the wrap scrolls sideways, so the head is moved by a measured offset – CSSOM, allowed by the CSP).
 function syncTables() {
@@ -442,66 +387,30 @@ export function rosterMenuItems(month) {
 
 // ---------- the view ----------
 
-const EMPTY = {
-  vse: ['V tomhle měsíci nikdo neslouží.', 'calendar'],
-  chybi: ['Všechno je obsazené.', 'check'],
-  ceka: ['Nikdo nečeká na potvrzení.', 'check'],
-  upozorneni: ['Všechno sedí.', 'check'],
-  moje: ['Tenhle měsíc nesloužíš.', 'sun'],
-};
-
 /** Rozpis: { body, primary }. */
 export function rosterView({ month, extra, openId, closeHref, toolbar }) {
   const leader = can('leader');
-  const desktop = isDesktop();
-  if (extra === 'upozorneni') chipNow = 'upozorneni';
-  else if (chipNow === 'upozorneni') chipNow = 'vse';
-  if (LEADER_CHIPS.has(chipNow) && !leader) chipNow = 'vse';
-  if (chipNow === 'moje' && !myId()) chipNow = 'vse';
-  const options = CHIPS.filter(([v]) => (!LEADER_CHIPS.has(v) || leader) && (v !== 'moje' || myId()));
   const base = `#kalendar/rozpis/${month}`;
-  const pick = (v) => {
-    chipNow = v;
-    const target = v === 'upozorneni' ? `${base}/upozorneni` : base;
-    if (location.hash !== target) history.replaceState(history.state, '', target);
-    render();
-  };
   const team = rosterTeam();
   const teamIds = teamIdsOf(team);
   const fromDay = fromDayOf(month);
   const needs = teamNeeds(month, fromDay);
-  const panelId = 'roster-panel';
+  toolbar?.append(teamChip(team, needs));
 
-  const statusChips = options.map(([v, label]) => chip(label, { pressed: chipNow === v, onclick: () => pick(v) }));
-  const chipRow = h('div', { class: 'chips roster-chips', role: 'group', 'aria-label': 'Filtr' }, desktop ? null : teamChip(team, needs), statusChips);
-  const edge = () => chipRow.toggleAttribute('data-more-right', chipRow.scrollLeft < chipRow.scrollWidth - chipRow.clientWidth - 1);
-  chipRow.addEventListener('scroll', edge, { passive: true });
-  requestAnimationFrame(() => {     // the chosen chip in view (the row scrolls sideways on a phone)
-    const on = chipRow.querySelector('[aria-pressed="true"]');
-    if (on && chipRow.scrollWidth > chipRow.clientWidth && chipNow !== 'vse') chipRow.scrollLeft = Math.max(0, on.offsetLeft - chipRow.offsetLeft - 20);
-    edge();
-  });
-
-  const { items, hiddenPast } = rosterData(month, chipNow, team, { fromDay });
+  const { items, hiddenPast } = rosterData(month, 'vse', team, { fromDay });
   const pastLink = hiddenPast ? h('div', { class: 'cal-past roster-past' }, link('Ukaž, co už bylo', { icon: 'chevron-left', onclick: () => { pastState.on = true; render(); } })) : null;
 
   let content;
   if (!items.length) {
-    const [title, iconName] = EMPTY[chipNow];
-    const otherTeams = teamIds && chipNow !== 'moje' && (needs.get(ALL_TEAMS)?.missing || 0) > (needs.get(team)?.missing || 0);
+    const otherTeams = teamIds && (needs.get(ALL_TEAMS)?.missing || 0) > (needs.get(team)?.missing || 0);
     content = empty({
-      icon: iconName, title,
-      text: chipNow === 'vse' && leader && !teamIds ? 'Které týmy na setkání slouží, nastavíš u setkání v „Kolik lidí je potřeba“.' : hiddenPast ? 'Co už bylo, ukáže odkaz nahoře.' : null,
+      icon: 'calendar', title: 'V tomhle měsíci nikdo neslouží.',
+      text: leader && !teamIds ? 'Které týmy na setkání slouží, nastavíš u setkání v „Kolik lidí je potřeba“.' : hiddenPast ? 'Co už bylo, ukáže odkaz nahoře.' : null,
       action: otherTeams ? button('Ukaž všechny týmy', { variant: 'quiet', onclick: () => chooseTeam(ALL_TEAMS) }) : null,
     });
-  } else if (desktop && chipNow === 'vse' && !teamIds) {
-    content = overviewTable(items, { openId });
-  } else if (desktop && teamIds && chipNow !== 'upozorneni') {
-    content = rosterTable(items, { teamIds, openId });
   } else {
-    content = h('div', { class: 'roster-cards' }, items.map((it) => rosterCard(it, chipNow, teamIds, openId)));
+    content = rosterList(items, { openId });
   }
-  queueSync();
 
   const opened = openId ? eventById(S.data, openId) : null;
   let aside = null;
@@ -511,8 +420,7 @@ export function rosterView({ month, extra, openId, closeHref, toolbar }) {
     else queueMicrotask(() => openLoadSheet(month));
   }
 
-  const panel = h('div', { class: 'roster-panel', id: panelId, role: desktop ? 'tabpanel' : null, 'aria-labelledby': desktop ? `roster-tab-${team}` : null }, pastLink, content);
-  const main = [toolbar, desktop ? teamTabs(team, needs, panelId) : null, chipRow, panel];
+  const main = h('div', { class: 'rlist-col' }, toolbar, pastLink, content);
   const body = aside ? h('div', { class: 'cal-split roster-split' }, h('div', { class: 'cal-split__main' }, main), aside) : main;
 
   const fillable = monthEvents(month).filter((e) => !e.cancelled && !isPast(e) && (!teamIds || fillOfTeams(e, teamIds).needed)).map((e) => e.id);

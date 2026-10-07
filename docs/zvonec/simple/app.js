@@ -99,17 +99,18 @@ const PEOPLE_ROUTES = {
 };
 // ROUTES:people end
 
-// ROUTES:more – the pages under the circle (Správa): Šablony setkání (#sablony, #sablona/<id|nova>),
-// Formáty (#formaty[/<id>]), Místa (#mista, #misto/<id>), Přístupy (#pristupy), Nastavení sboru
-// (#nastaveni), and the public Pastva (#pastva[/<id>], anchor „jak-se-schazime“).
+// ROUTES:more – Správa: Šablony setkání (#sablony, #sablona/<id|nova>), Formáty (#formaty[/<id>]), Místa
+// (#mista, #misto/<id>), Přístupy (#pristupy), Nastavení sboru (#nastaveni) – on a desktop ≥ 1200 the rail's
+// own groups, on a phone and at 960–1199 under the circle – and the public Pastva (#pastva[/<id>], anchor
+// „jak-se-schazime“).
 const MORE_ROUTES = {
-  sablony: { render: () => renderTemplates(), access: 'leader', nav: 'me' },
-  sablona: { render: ([id]) => renderTemplate(id || 'nova'), access: 'leader', nav: 'me' },
-  formaty: { render: ([id]) => renderFormats(id), access: 'member', nav: 'me' },
-  mista: { render: () => renderPlaces(), access: 'member', nav: 'me' },
-  misto: { render: ([id]) => renderPlace(id), access: 'member', nav: 'me' },
-  pristupy: { render: () => renderAccess(), access: 'leader', nav: 'me' },
-  nastaveni: { render: () => renderSettings(), access: 'leader', nav: 'me' },
+  sablony: { render: () => renderTemplates(), access: 'leader', nav: 'sablony' },
+  sablona: { render: ([id]) => renderTemplate(id || 'nova'), access: 'leader', nav: 'sablony' },
+  formaty: { render: ([id]) => renderFormats(id), access: 'member', nav: 'formaty' },
+  mista: { render: () => renderPlaces(), access: 'member', nav: 'mista' },
+  misto: { render: ([id]) => renderPlace(id), access: 'member', nav: 'mista' },
+  pristupy: { render: () => renderAccess(), access: 'leader', nav: 'pristupy' },
+  nastaveni: { render: () => renderSettings(), access: 'leader', nav: 'nastaveni' },
   pastva: { render: ([id]) => renderProgram(id), access: 'public', nav: null },
 };
 // ROUTES:more end
@@ -162,8 +163,24 @@ const TABS = [
   ['kalendar', 'Kalendář', 'calendar', '#kalendar', false],
   ['lide', 'Lidé', 'people', '#lide', false],
 ];
+/**
+ * Správa as the rail's own groups (≥ 1200 px, as in Next): [title, [[id, label, icon, href, leaders only]]].
+ * At 960–1199 and on a phone they stay under the circle (ui/me-menu.js).
+ */
+const RAIL_GROUPS = [
+  ['Jak se scházíme', [
+    ['sablony', 'Šablony setkání', 'layers', '#sablony', true],
+    ['formaty', 'Formáty', 'book', '#formaty', false],
+    ['mista', 'Místa', 'pin', '#mista', false],
+  ]],
+  ['Sbor', [
+    ['pristupy', 'Přístupy', 'key', '#pristupy', true],
+    ['nastaveni', 'Nastavení sboru', 'sliders', '#nastaveni', true],
+    ['pastva', 'Veřejný web', 'globe', '#pastva', false],
+  ]],
+];
 /** On a phone the pages under the circle belong to Moje (the circle sits there). */
-const TAB_OF = { me: 'moje' };
+const TAB_OF = { me: 'moje', sablony: 'moje', formaty: 'moje', mista: 'moje', pristupy: 'moje', nastaveni: 'moje' };
 
 const BACK_LABELS = { moje: 'Moje', obsazeni: 'Obsazení', kalendar: 'Kalendář', lide: 'Lidé', osoba: 'Zpět' };
 
@@ -244,6 +261,15 @@ function buildShell() {
     h('a', { class: 'rail__brand', href: '#moje', 'aria-label': 'Moje – církev jako kráva' }, brand()),
     ...tabs.map(([id, label, iconName, href]) => h('a', { class: 'rail__item', href, dataset: { nav: id } },
       icon(iconName), h('span', { class: 'rail__label' }, label), h('span', { class: 'tab__badge', dataset: { badge: id } }))),
+    ...RAIL_GROUPS.map(([title, items]) => {
+      const shown = items.filter(([, , , , leadersOnly]) => leader || !leadersOnly);
+      if (!shown.length) return null;
+      const titleId = `rail-group-${title.replace(/\W+/g, '-')}`;
+      return h('nav', { class: 'rail__group', 'aria-labelledby': titleId },
+        h('p', { class: 'rail__group-title', id: titleId }, title),
+        shown.map(([id, label, iconName, href]) => h('a', { class: 'rail__item', href, dataset: { nav: id } },
+          icon(iconName), h('span', { class: 'rail__label' }, label))));
+    }),
     h('div', { class: 'rail__bottom' }, foot),
   ]));
 }

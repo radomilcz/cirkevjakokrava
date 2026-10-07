@@ -15,12 +15,14 @@
 import {
   h, icon, screen, topBar, period, button, menu, iconButton, empty, openSheet, monthGrid, splitView, isSplit,
   isDesktop, monthLabel, shiftMonth, clock, agenda, agendaDay, agendaEvent, weekLabel, fillRing, sev, link,
+  chipsField, switchRow, count,
 } from './kit.js';
 import { S, can, render, navigate } from '../../ui/state.js';
-import { eventById, eventsInRange } from '../../lib/events.js';
+import { eventById, eventsInRange, EVENT_KINDS, KIND_LABELS } from '../../lib/events.js';
 import { addDays, dayOf, today } from '../../lib/time.js';
 import {
   placeText, kindHue, myDuties, fillOf, errorCount, missingWords, waitingWords, mondayOf, weekRange, openCalendarExport,
+  prefs, savePrefs, passes, teamsWithRoles,
 } from './calendar-shared.js';
 import { renderEventPage, eventPane } from './event.js';
 import { renderProgram } from './program.js';
@@ -42,6 +44,49 @@ export function quietGo(href, { push = false } = {}) {
 }
 
 const iServe = (event) => myDuties(event).some((d) => d.assignment.status !== 'declined');
+
+// ---------- Filtr (as in Next): Účel, Tým, Jen moje služby – remembered in this browser ----------
+
+const filterCount = () => { const p = prefs(); return (p.kinds.length ? 1 : 0) + (p.teams.length ? 1 : 0) + (p.mine ? 1 : 0); };
+const shownBy = (event) => passes(event, prefs());
+
+function openFilters() {
+  const p = prefs();
+  let kinds = [...p.kinds];
+  let teams = [...p.teams];
+  let mine = p.mine;
+  let sheet;
+  const apply = (patch) => { savePrefs(patch); sheet.close(); render(); };
+  sheet = openSheet({
+    title: 'Filtr',
+    body: [
+      chipsField({ name: 'kinds', label: 'Účel', options: EVENT_KINDS.map((k) => ({ value: k, label: KIND_LABELS[k] })), value: kinds, multiple: true, onChange: (v) => { kinds = v; } }),
+      chipsField({ name: 'teams', label: 'Tým', hint: 'Setkání, kde ten tým slouží.', options: teamsWithRoles().map(({ group }) => ({ value: group.id, label: group.name })), value: teams, multiple: true, onChange: (v) => { teams = v; } }),
+      S.me?.personId ? switchRow({ label: 'Jen moje služby', checked: mine, onChange: (on) => { mine = on; } }) : null,
+    ],
+    foot: [
+      button('Ukaž', { variant: 'primary', size: 'l', block: true, onclick: () => apply({ kinds, teams, mine }) }),
+      filterCount() ? button('Zruš filtry', { variant: 'quiet', block: true, onclick: () => apply({ kinds: [], teams: [], mine: false }) }) : null,
+    ],
+  });
+}
+
+/** Desktop: „Filtr“ with the number of filters on, at the end of the bar (a phone has it in ⋯). */
+function filterButton() {
+  const n = filterCount();
+  return button(['Filtr', n ? count(n, { label: `zapnuté filtry: ${n}` }) : null], { variant: 'quiet', size: 's', icon: 'sliders', onclick: openFilters, cls: 'cal-filter' });
+}
+
+/** Phone, while a filter is on: „Filtr: Zkouška · Chvály · jen moje služby“ and „Zruš“ under the head. */
+function filterLine() {
+  const p = prefs();
+  if (!filterCount()) return null;
+  const teams = new Map(teamsWithRoles().map(({ group }) => [group.id, group.name]));
+  const words = [...p.kinds.map((k) => KIND_LABELS[k]), ...p.teams.map((t) => teams.get(t)).filter(Boolean), p.mine ? 'jen moje služby' : null].filter(Boolean).join(' · ');
+  return h('p', { class: 'cal-filter-line' },
+    link(`Filtr: ${words}`, { icon: 'sliders', onclick: openFilters, cls: 'cal-filter-line__what' }),
+    link('Zruš', { onclick: () => { savePrefs({ kinds: [], teams: [], mine: false }); render(); }, label: 'Zruš filtr' }));
+}
 
 // ---------- one event ----------
 
@@ -89,17 +134,20 @@ function listEvents(from) {
   if (listState.from !== from) Object.assign(listState, { from, weeks: WEEKS, past: false });
   const start = listState.past ? mondayOf(addDays(from, -7 * PAST_WEEKS)) : from;
   const to = addDays(mondayOf(from), listState.weeks * 7 - 1);
-  return eventsInRange(S.data, start, to).filter((e) => dayOf(e.start) >= start);
+  return eventsInRange(S.data, start, to).filter((e) => dayOf(e.start) >= start && shownBy(e));
 }
 
 /** The events grouped by week and day; [the past link, the agenda, „Ukaž další týdny“]. */
 function agendaList(from, events, openId) {
-  const hasPast = !listState.past && eventsInRange(S.data, mondayOf(addDays(from, -7 * PAST_WEEKS)), addDays(from, -1)).length > 0;
+  const hasPast = !listState.past && eventsInRange(S.data, mondayOf(addDays(from, -7 * PAST_WEEKS)), addDays(from, -1)).some(shownBy);
   const pastLink = hasPast ? h('div', { class: 'cal-past' }, link('Ukaž, co už bylo', { icon: 'chevron-left', onclick: () => { listState.past = true; render(); } })) : null;
   const more = button('Ukaž další týdny', {
     variant: 'quiet', block: true, iconEnd: 'chevron-down', cls: 'cal-more',
     onclick: () => { listState.weeks += WEEKS; render(); },
   });
+  if (!events.length && filterCount()) {
+    return [pastLink, empty({ icon: 'sliders', title: 'S tímhle filtrem tu nic není.', action: button('Zruš filtry', { variant: 'quiet', onclick: () => { savePrefs({ kinds: [], teams: [], mine: false }); render(); } }) }), more];
+  }
   if (!events.length) {
     return [pastLink, empty({
       icon: 'calendar', title: 'V těchhle týdnech tu nic není.',
@@ -131,7 +179,7 @@ function monthSheet(startMonth, selected) {
   let sheet;
   const draw = () => {
     const events = eventsInRange(S.data, `${month}-01`, lastDayOf(month));
-    const onDay = (d) => events.filter((e) => dayOf(e.start) === d && !e.cancelled);
+    const onDay = (d) => events.filter((e) => dayOf(e.start) === d && !e.cancelled && shownBy(e));
     sheet.setBody([
       h('div', { class: 'mini-month__head' },
         h('h2', { class: 'mini-month__title', 'aria-live': 'polite' }, monthLabel(month)),
@@ -181,7 +229,7 @@ function monthDays(month) {
 
 /** Desktop: the full grid, the events as chips (title, the Účel bar); ≥ 1200 a click opens the event beside it. */
 function monthDesktop({ month, day, openId }) {
-  const events = eventsInRange(S.data, mondayOf(`${month}-01`), addDays(mondayOf(lastDayOf(month)), 6));
+  const events = eventsInRange(S.data, mondayOf(`${month}-01`), addDays(mondayOf(lastDayOf(month)), 6)).filter(shownBy);
   const leader = can('leader');
   const cells = monthDays(month).map((d) => {
     const list = events.filter((e) => dayOf(e.start) === d);
@@ -213,10 +261,12 @@ function monthDesktop({ month, day, openId }) {
 const listBase = () => (isDesktop() ? '#kalendar/seznam' : '#kalendar');
 
 function calendarMenu(month) {
+  const n = filterCount();
   return menu([
+    isDesktop() ? null : { label: n ? `Filtr (${n})` : 'Filtr', icon: 'sliders', onclick: openFilters },
     { label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport },
     { label: 'Rozpis', icon: 'table', href: month === monthOfToday() ? '#kalendar/rozpis' : `#kalendar/rozpis/${month}` },
-  ], { label: 'Další možnosti kalendáře' });
+  ].filter(Boolean), { label: 'Další možnosti kalendáře' });
 }
 
 const shown = { view: null, month: null };   // what the screen shows, so an event opened beside it keeps it
@@ -267,7 +317,7 @@ function renderList(parts, { openId }) {
         chip,
         leader ? iconButton('plus', 'Přidej setkání', { onclick: add, dataset: { primary: '' } }) : null,
         calendarMenu(month)));
-    return screen({ topbar: false, cls: 'cal-screen cal-agenda', body: [head, ...agendaList(from, events, null)] });
+    return screen({ topbar: false, cls: 'cal-screen cal-agenda', body: [head, filterLine(), ...agendaList(from, events, null)] });
   }
 
   const split = isSplit();
@@ -275,7 +325,8 @@ function renderList(parts, { openId }) {
   // ≥ 1200: the chosen event beside the list – the nearest one from the start of the list when nothing is chosen
   const chosen = split ? (opened || events.find((e) => !e.cancelled && dayOf(e.start) >= from) || null) : null;
   const bar = h('div', { class: 'cal-bar' }, chip,
-    link('Měsíc', { href: month === monthOfToday() ? '#kalendar' : `#kalendar/${month}`, icon: 'calendar', cls: 'cal-switch' }));
+    h('div', { class: 'cal-bar__end' }, filterButton(),
+      link('Měsíc', { href: month === monthOfToday() ? '#kalendar' : `#kalendar/${month}`, icon: 'calendar', cls: 'cal-switch' })));
   const column = h('div', { class: 'cal-col' }, bar, agendaList(from, events, chosen?.id));
   // the pane's ✕ comes back to the list where it was (from the chosen day)
   const back = from === today() ? '#kalendar/seznam' : `#kalendar/seznam/${from}`;
@@ -301,14 +352,15 @@ function renderMonth(parts, { openId }) {
   // ≥ 1200: the chosen event beside the grid – the nearest one from today when nothing is chosen
   let chosen = opened;
   if (!chosen && isSplit() && month === monthOfToday()) {
-    chosen = eventsInRange(S.data, today(), lastDayOf(month)).find((e) => !e.cancelled && dayOf(e.start) >= today()) || null;
+    chosen = eventsInRange(S.data, today(), lastDayOf(month)).find((e) => !e.cancelled && dayOf(e.start) >= today() && shownBy(e)) || null;
   }
   const go = (m) => navigate(m === monthOfToday() ? '#kalendar' : `#kalendar/${m}`);
   const bar = h('div', { class: 'cal-bar' },
     h('div', { class: 'cal-period' },
       period({ label: monthLabel(month), onPrev: () => go(shiftMonth(month, -1)), onNext: () => go(shiftMonth(month, 1)), prevLabel: 'Předchozí měsíc', nextLabel: 'Další měsíc', heading: false }),
       month === monthOfToday() ? null : button('Dnes', { size: 's', onclick: () => go(monthOfToday()), cls: 'cal-today' })),
-    link('Seznam', { href: month === monthOfToday() ? '#kalendar/seznam' : `#kalendar/seznam/${month}`, icon: 'list', cls: 'cal-switch' }));
+    h('div', { class: 'cal-bar__end' }, filterButton(),
+      link('Seznam', { href: month === monthOfToday() ? '#kalendar/seznam' : `#kalendar/seznam/${month}`, icon: 'list', cls: 'cal-switch' })));
   const grid = monthDesktop({ month, day, openId: chosen?.id });
   const back = month === monthOfToday() ? '#kalendar' : `#kalendar/${month}`;
   const content = isSplit() && chosen
