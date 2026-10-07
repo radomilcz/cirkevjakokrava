@@ -352,7 +352,7 @@ function dayBody(day, { heading = true } = {}) {
   return h('div', { class: 'cal-daylist' },
     heading ? h('h2', { class: 'title title--s' }, words.charAt(0).toLocaleUpperCase('cs') + words.slice(1)) : null,
     list.length ? agenda([agendaDay({ day, today: day === today(), label: dayLabel(day), events: list.map((e) => eventItem(e)) })])
-      : quiet(filterCount() ? 'S tímhle filtrem tu ten den nic není.' : 'Na tenhle den nic není.'),
+      : quiet(filterCount() ? 'S tímhle filtrem tu nic není.' : 'Na tenhle den nic není.'),
     can('leader') && day >= today() ? button('Přidej setkání', { size: 's', icon: 'plus', onclick: () => openAddEvent({ day }) }) : null);
 }
 
