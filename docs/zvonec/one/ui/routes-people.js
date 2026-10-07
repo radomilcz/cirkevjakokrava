@@ -8,7 +8,8 @@ import { PEOPLE_FILTER, FILTER_PRESETS, presetOf } from './people-common.js';
 export const ROUTES = {
   lide: {
     render: renderPeopleRoute,
-    access: (parts) => (parts[0] === 'domacnost' || parts[0] === 'vypis' ? 'leader' : 'member'),
+    // Podrobný výpis: leaders from 900, everyone on a desktop (people.js; members see Next's member columns)
+    access: (parts) => (parts[0] === 'domacnost' ? 'leader' : 'member'),
     nav: 'lide',
   },
 };

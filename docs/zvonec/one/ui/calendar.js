@@ -17,7 +17,7 @@ import { eventById, eventsInRange, EVENT_KINDS, KIND_LABELS } from '../../lib/ev
 import { addDays, dayOf, today } from '../../lib/time.js';
 import {
   placeText, kindHue, myDuties, fillOf, missingWords, waitingWords, mondayOf, weekRange, teamsWithRoles,
-  eventHasTeam, iServe, nameOf, personOf,
+  eventHasTeam, iServe, nameOf, personOf, defaultView, VIEW_KEY,
 } from './calendar-shared.js';
 import { eventDetail } from './event.js';
 import { openAddEvent } from './event-form.js';
@@ -42,14 +42,14 @@ export function dayWords(day) {
 
 // ---------- the remembered view and month ----------
 
-const VIEW_KEY = 'zvonec-one-calendar-view';
 export const VIEWS = ['seznam', 'mesic', 'rozpis'];
 
-/** The view #kalendar opens: the last one chosen in this browser, else Seznam. */
-export function rememberedView() {
-  try { const v = localStorage.getItem(VIEW_KEY); return VIEWS.includes(v) ? v : 'seznam'; } catch { return 'seznam'; }
-}
+/** The view #kalendar opens: the last one chosen in the view switch in this browser, else Měsíc on a desktop
+ * (≥ 1200) and Seznam below it (calendar-shared.js defaultView). */
+export const rememberedView = defaultView;
+/** A click on the view switch is the only choice that is remembered. */
 function rememberView(view) {
+  if (!VIEWS.includes(view)) return;
   try { localStorage.setItem(VIEW_KEY, view); } catch { /* not remembered, that's all */ }
 }
 
@@ -255,7 +255,6 @@ export function paneLinks(root, base) {
  * draw() redraws D on search and Filtr; results() is the number of meetings shown (the phone's „Ukaž 12 setkání“).
  */
 export function calendarScreen({ view, month, draw, results, menu, addDay, pane, wide = false, label = 'Setkání', base }) {
-  rememberView(view);
   if (month) shownMonth = month;
   const m = currentMonth();
   let main;
@@ -281,6 +280,10 @@ export function calendarScreen({ view, month, draw, results, menu, addDay, pane,
     cls: ['cal', `cal--${view}`],
   });
   if (base) paneLinks(main, base);
+  main.querySelector('.ls__views')?.addEventListener('click', (e) => {
+    const a = e.target.closest?.('a[href^="#kalendar/"]');
+    if (a) rememberView(a.getAttribute('href').split('/')[1]);
+  });
   return main;
 }
 

@@ -7,16 +7,26 @@
 //       Tvoje další služby (confirmed, and cancelled ones struck) · Odmítnuté služby (a quiet section) · Minulé služby ›
 //   A duty opens its meeting: #moje/<id> – beside the list at ≥ 1200 (the pane, only on a click), a page below 1200
 //   (back „‹ Moje“). The detail itself is P3's (eventDetail in ui/event.js).
+// ≥ 1200 two columns (the owner's WIDE plan, like Next's Domů): the left one is all of the above; the right one is
+//   Co je potřeba (leaders: Obsazení's meetings as the kit's needRow blocks, in Obsazení's team scope) and Tento
+//   týden (everyone: this week's meetings as agenda rows). A meeting opened from either column takes the right
+//   column's place (the pane, #moje/<id>); ✕ or Esc brings the right column back. Below 1200 nothing of it exists.
 
 import {
   h, page, empty, section, list, row, rowLink, button, buttonRow, pill, callout, dateArch, statusSymbol, shortDate,
-  isSplit, vocative, joinMeta, clock, uid, layer, missingItem,
+  isSplit, vocative, joinMeta, clock, uid, layer, missingItem, needRow, agendaDay, agendaEvent, quiet, agree, plural,
+  filterState, setFilter,
 } from './kit.js';
-import { S, myId, render } from '../../ui/state.js';
-import { upcomingDuties, eventById } from '../../lib/events.js';
+import { S, myId, can, render } from '../../ui/state.js';
+import { upcomingDuties, eventById, eventsInRange } from '../../lib/events.js';
 import { personById } from '../../lib/people.js';
+import { ledBy } from '../../lib/groups.js';
 import { today, dayOf, prettyDayLong, addDays } from '../../lib/time.js';
-import { answer, blockoutOn, blockoutNote } from './event-duties.js';
+import { answer, blockoutOn, blockoutNote, pickFor, openDutySheet } from './event-duties.js';
+import { needsFor, waitingSheet, staffingCount } from './staffing.js';
+import {
+  teamsWithRoles, fillOf, waitingWords, missingWords, placeText, kindHue, myDuties, mondayOf,
+} from './calendar-shared.js';
 import { roleName, refocus } from './home-actions.js';
 import { eventDetail } from './event.js';
 
@@ -213,6 +223,173 @@ function pastLink(past) {
   });
 }
 
+// ---------- the right column (≥ 1200): Co je potřeba (leaders) · Tento týden (everyone) ----------
+
+const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four meetings, then „Celé obsazení“
+const WEEK_SHOWN = 6;         // Tento týden: six meetings, then „Celý kalendář (ještě N)“
+const STAFF_KEY = 'obsazeni'; // Obsazení's Filtr: its Tým choice is this column's scope too, both ways
+const ALL_TEAMS = { value: 'all', label: 'Všechny týmy', ids: null };
+
+const ledTeams = () => (myId() ? ledBy(S.data, myId()).filter((g) => g.kind === 'team' && !g.archived) : []);
+
+/** The team scope of Obsazení's Filtr › Tým (the team I lead by default; „Moje týmy“ when I lead several). */
+function teamScope() {
+  staffingCount();   // tells the kit Obsazení's Filtr defaults before the first read (the nav does the same)
+  const t = filterState(STAFF_KEY).tym;
+  if (t === 'mine') {
+    const mine = ledTeams();
+    return mine.length ? { value: 'mine', label: 'Moje týmy', ids: mine.map((g) => g.id) } : ALL_TEAMS;
+  }
+  const team = teamsWithRoles().find(({ group }) => group.id === t)?.group;
+  return team ? { value: team.id, label: team.name, ids: [team.id] } : ALL_TEAMS;
+}
+
+/** The scope's menu: Moje týmy (when I lead several) · each team · Všechny týmy. A choice changes Obsazení's Filtr. */
+function openScope(anchor, current) {
+  const options = [
+    ledTeams().length > 1 ? ['mine', 'Moje týmy'] : null,
+    ...teamsWithRoles().map(({ group }) => [group.id, group.name]),
+    ['all', 'Všechny týmy'],
+  ].filter(Boolean);
+  let menu;
+  const choose = (value) => {
+    menu.close({ restore: false });
+    setFilter(STAFF_KEY, { tym: value === 'all' ? null : value });
+    render();
+    refocus('.mine-scope');
+  };
+  // the menu's own rows (M 44, r12), one of them chosen: pick + the 3 px bar (CODEX §5)
+  const rows = options.map(([value, label]) => h('button', {
+    type: 'button', role: 'menuitemradio', class: 'menu__row', 'aria-checked': String(value === current), onclick: () => choose(value),
+  }, h('span', { class: 'menu__text' }, h('span', { class: 'menu__label' }, label))));
+  const body = h('div', { class: 'menu mine-scope-menu', role: 'menu', 'aria-label': 'Týmy' }, rows);
+  body.addEventListener('keydown', (e) => {
+    const step = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    rows[(rows.indexOf(document.activeElement) + step + rows.length) % rows.length]?.focus();
+  });
+  anchor.setAttribute('aria-expanded', 'true');
+  menu = layer.open({
+    kind: 'menu', anchor, label: 'Týmy', body, cls: 'sheet--menu',
+    initialFocus: rows.find((b) => b.getAttribute('aria-checked') === 'true') || rows[0],
+    onClose: () => anchor.setAttribute('aria-expanded', 'false'),
+  });
+}
+
+/** „1 chyba“ goes straight to the duty when there is one; otherwise to the meeting beside the list. */
+function errorAction(event, errors) {
+  const n = errors.length;
+  const words = `${n} ${agree(n, 'chyba', 'chyby', 'chyb')}`;
+  const ids = n === 1 ? errors[0].assignmentIds || [] : [];
+  const duty = ids.find((id) => (event.assignments || []).some((a) => a.id === id));
+  return duty
+    ? ['error', words, { onclick: () => openDutySheet(event.id, duty), label: `${errors[0].text} – oprav to` }]
+    : ['error', words, { href: `#moje/${event.id}`, label: `${words} – ukaž setkání` }];
+}
+
+/** One meeting that wants people (Obsazení's data and actions) as the kit's needRow: the whole block opens it. */
+function needItem({ event, slots, waiting, errors }) {
+  const byRole = new Map();
+  for (const s of slots) byRole.set(s.roleId, { role: s.role, n: (byRole.get(s.roleId)?.n || 0) + (s.missing || 1) });
+  const missing = [...byRole.values()].reduce((n, x) => n + x.n, 0);
+  const f = fillOf(event);
+  const day = dayOf(event.start);
+  return needRow({
+    day,
+    today: day === today(),
+    title: event.title,
+    href: `#moje/${event.id}`,
+    dataset: { event: event.id },
+    summary: [
+      missing ? ['error', missingWords(missing)] : null,
+      waiting.length ? ['warning', waitingWords(waiting.length), { onclick: () => waitingSheet(waiting, { event }), label: `${waitingWords(waiting.length)} na odpověď – ukaž, kdo to je` }] : null,
+      errors.length ? errorAction(event, errors) : null,
+    ].filter(Boolean),
+    filled: f.filled,
+    total: f.needed,
+    slots: [...byRole.values()].map(({ role, n }) => ({
+      label: n > 1 ? `${n}× ${role.name}` : role.name,
+      onclick: () => pickFor(event.id, role.id),
+      aria: `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}`,
+    })),
+  });
+}
+
+/** Nothing to do in the scope: „Na příští 4 týdny je všechno obsazené.“ (· „V týmu Chvály je …“ · „V tvých týmech je …“) */
+function allDone(scope) {
+  if (scope.value === 'all') return 'Na příští 4 týdny je všechno obsazené.';
+  return `${scope.value === 'mine' ? 'V tvých týmech' : `V týmu ${scope.label}`} je na příští 4 týdny všechno obsazené.`;
+}
+
+function needSection() {
+  const scope = teamScope();
+  const items = needsFor(scope.ids);
+  const hidden = items.length - NEEDS_SHOWN;
+  const scopeButton = button(scope.label, {
+    variant: 'quiet', size: 's', iconEnd: 'chevron-down', cls: 'section-action mine-scope',
+    label: `Týmy: ${scope.label}`, onclick: (e) => openScope(e.currentTarget, scope.value),
+  });
+  scopeButton.setAttribute('aria-haspopup', 'menu');
+  scopeButton.setAttribute('aria-expanded', 'false');
+  return section({
+    title: 'Co je potřeba',
+    action: scopeButton,
+    cls: 'mine-need',
+    body: [
+      items.length
+        ? h('div', { class: 'mine-need__list' }, items.slice(0, NEEDS_SHOWN).map(needItem))
+        : quiet(allDone(scope), { icon: 'check' }),
+      rowLink(hidden > 0 ? `Celé obsazení (ještě ${plural(hidden, 'setkání', 'setkání', 'setkání')})` : 'Celé obsazení', { href: '#obsazeni' }),
+    ],
+  });
+}
+
+/** „ty · Kázání · čeká na odpověď“ under a meeting I serve at. */
+function myDuty(event) {
+  if (event.cancelled) return null;
+  const mine = myDuties(event).filter((d) => d.assignment.status !== 'declined');
+  if (!mine.length) return null;
+  return { role: mine.map((d) => d.role?.name || 'služba').join(' + '), status: mine.some((d) => d.assignment.status === 'proposed') ? 'proposed' : 'confirmed' };
+}
+
+/** Tento týden: the rest of this week (today → Sunday) as the agenda (Kalendář › Seznam's rows), one day per arch. */
+function weekSection() {
+  const day = today();
+  const sunday = addDays(mondayOf(day), 6);
+  const events = eventsInRange(S.data, day, sunday).filter((e) => dayOf(e.end || e.start) >= day);
+  const shown = events.slice(0, WEEK_SHOWN);
+  const days = new Map();
+  for (const e of shown) {
+    const d = dayOf(e.start) < day ? day : dayOf(e.start);
+    if (!days.has(d)) days.set(d, []);
+    days.get(d).push(e);
+  }
+  const tomorrow = addDays(day, 1);
+  const rest = events.length - shown.length;
+  return section({
+    title: 'Tento týden',
+    cls: 'mine-week',
+    body: [
+      events.length
+        ? h('div', { class: 'agenda mine-week__agenda' }, [...days].map(([d, dayEvents]) => agendaDay({
+          day: d,
+          today: d === day,
+          label: d === day ? 'Dnes' : d === tomorrow ? 'Zítra' : null,
+          events: dayEvents.map((e) => agendaEvent({
+            start: e.start, end: e.end, title: e.title, meta: placeText(e) || null, hue: kindHue(e.kind),
+            href: `#moje/${e.id}`, cancelled: !!e.cancelled, duty: myDuty(e),
+          })),
+        })))
+        : quiet('Do konce týdne už tu nic není.'),
+      rowLink(rest > 0 ? `Celý kalendář (ještě ${rest})` : 'Celý kalendář', { href: '#kalendar' }),
+    ],
+  });
+}
+
+/** The right column when no meeting is open: Co je potřeba for leaders, then Tento týden. */
+const sideColumn = () => h('div', { class: 'mine-side' }, can('leader') ? needSection() : null, weekSection());
+
 // ---------- the page ----------
 
 export function renderMine(parts = []) {
@@ -252,12 +429,14 @@ export function renderMine(parts = []) {
     declinedSection(declined, split ? openId : null),
     person ? pastLink(past) : null);
 
+  // ≥ 1200 the right column: the meeting when one is open (it takes the column's place), otherwise the overview
+  const pane = !split ? null : openId ? (opened ? eventDetailFor(opened, 'pane') : missingDetail('pane')) : sideColumn();
   return page({
     title: greeting(person),
     width: 'split',
     cls: 'mine-page',
     body,
-    label: 'Setkání',
-    pane: split && openId ? (opened ? eventDetailFor(opened, 'pane') : missingDetail('pane')) : null,
+    label: openId ? 'Setkání' : 'Přehled',
+    pane,
   });
 }

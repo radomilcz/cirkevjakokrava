@@ -33,6 +33,22 @@
 .cal-event .fill { flex-wrap: nowrap; }
 .event[data-cancelled] .event__meta { text-decoration: line-through; }
 .cal-more { margin-top: var(--space-5); }
+/* a narrow D beside a pane (1200–1279: about 360–440): the fill goes under the words, so a title keeps its line */
+@container list-body (max-width: 479.98px) {
+  .cal-event--trail { grid-template-columns: 52px minmax(0, 1fr); }
+  .cal-event__trail { grid-column: 2; justify-self: start; padding-left: var(--space-4); }
+  .rblock .rblock__team { grid-template-columns: 96px minmax(0, 1fr); }   /* Rozpis: the phone's team column */
+}
+/* a wide D (desktop, css/kit.css): the title, the place and my duty side by side, the fill at the right edge */
+@container list-body (min-width: 800px) {
+  .cal-event .event__body {
+    grid-template-columns: minmax(0, var(--col-a)) minmax(0, var(--col-b)) minmax(0, 1fr); column-gap: var(--space-5);
+    align-items: baseline; align-content: start;
+  }
+  .cal-event .event__title { grid-column: 1; grid-row: 1; }
+  .cal-event .event__meta { grid-column: 2; grid-row: 1; }
+  .cal-event .event__duty { grid-column: 3; margin-top: 0; }
+}
 
 /* ---------- Měsíc: one of two forms by the content's own width (DESIGN §6.2) ---------- */
 .cal-mesic { container-type: inline-size; min-width: 0; }
@@ -41,13 +57,8 @@
   .cal-mesic__narrow { display: none; }
   .cal-mesic__wide { display: block; }
 }
-/* ≥ 1200 D spans both tracks for the grid only: the period line and the quiet line stay in the list track, so „Dnes“
-   ends at the toolbar's right edge in Měsíc as in Seznam and Rozpis (it never jumps between the views) */
-@media (min-width: 1200px) {
-  .cal--mesic.ls--split .frame > .ls__body { display: grid; grid-template-columns: subgrid; align-items: start; }
-  .cal--mesic.ls--split .ls__body > * { grid-column: 1 / -1; }
-  .cal--mesic.ls--split .ls__body > :is(.period-line, .cal-note) { grid-column: 1; }
-}
+/* ≥ 1200 the grid spans the whole frame; the period line is as wide as B (css/kit.css), so „Dnes“ ends under Filtr's
+   right edge in Měsíc as in Rozpis (it never jumps between the views) */
 
 /* narrow: the mini month (cells 44) and the chosen day's meetings */
 .cal-mini .month { max-width: 420px; }
@@ -102,6 +113,9 @@
 .cal-chip[data-cancelled] { color: var(--ink-3); }
 .cal-chip[data-cancelled] .cal-chip__title { text-decoration: line-through; }
 @container (max-width: 129.98px) { .cal-chip__time { display: none; } }
+/* the whole desktop width (a grid ≥ 1200, cells ≥ 170): taller days, so a week with three meetings a day still
+   reads as a calendar, not a list (as Next's month) */
+@container (min-width: 1200px) { .cal-cell { min-height: 132px; } }
 .cal-cell__more {
   position: relative; align-self: flex-start; min-height: 24px; padding: 0 var(--space-1); margin-left: -4px; border: 0;
   border-radius: var(--radius-s); background: none; color: var(--ink-accent); font: inherit; font-size: var(--type-caption);

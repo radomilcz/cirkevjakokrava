@@ -595,17 +595,46 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   .detail-page .frame { max-width: var(--detail-col); }
 }
 @media (min-width: 1200px) {
-  .ls .frame, .page--split .frame, .page--wide .frame { max-width: var(--frame-max); }
-  /* the split grid: both tracks always reserved, so the list keeps its x and width with the pane open or not */
-  .ls--split .frame {
+  .page--split .frame, .page--wide .frame { max-width: var(--frame-max); }
+  /* a page's list | pane grid (Moje): both tracks always reserved, so the list keeps its x and width */
+  .page--split.ls--split .frame {
     display: grid; grid-template-columns: var(--split-list) var(--split-pane); column-gap: var(--split-gap); align-items: start;
   }
-  /* A belongs to the list: in the list track, so the main action ends at the list's right edge, pane open or not
-     (the pane has its own ⋯ ✕ row); it never moves */
-  .ls--split .frame > .head, .ls--split .frame > .ls__list, .ls--split .frame > .ls__controls { grid-column: 1; min-width: 0; }
-  .ls--split .frame > .head { container: list-head / inline-size; }
-  .ls--split .frame > .ls__body { grid-column: 1 / -1; }           /* wide: D spans both tracks (Měsíc) */
-  .ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
+  .page--split.ls--split .frame > .head, .page--split.ls--split .frame > .ls__list { grid-column: 1; min-width: 0; }
+  .page--split.ls--split .frame > .head { container: list-head / inline-size; }
+  .page--split.ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
+
+  /* a list screen uses the width (the owner's decision, WIDE.md): the frame fills the content area up to 1600.
+       A  spans the frame: the h1 left, ⋯ then the main action at the frame's right edge
+       B  a fixed 568 at the left (search 440 · Filtr 120), C under it – neither moves with the window, the view,
+          the filter or the pane
+       D  spans the frame while nothing is open; with a pane it takes what is left (1fr) and the pane sits beside it
+          (480–720), its top level with D's. D's left edge never moves. */
+  .ls .frame { max-width: var(--frame-wide); }
+  .ls.ls--split .frame { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: var(--split-gap); align-items: start; }
+  .ls.ls--split .frame:has(> .split__pane > *) { grid-template-columns: minmax(0, 1fr) var(--pane-w); }
+  .ls.ls--split .ls__list { display: contents; }
+  .ls.ls--split .frame > .head, .ls.ls--split .ls__controls { grid-column: 1 / -1; min-width: 0; }
+  .ls.ls--split .ls__body { grid-column: 1; grid-row: 3; }
+  .ls.ls--split .split__pane { grid-column: 2; grid-row: 3; margin-top: var(--gap-group); }
+  .ls.ls--split .split__pane:empty { display: none; }
+  .ls.ls--split .toolbar { width: var(--toolbar-w); max-width: 100%; }
+  /* the period line (Měsíc, Rozpis) is as wide as B, so „Dnes“ ends under Filtr's right edge in every view */
+  .ls.ls--split .ls__body > .period-line { max-width: var(--toolbar-w); }
+  /* D is a query container: its rows lay their lines side by side once it is wide (below) */
+  .ls.ls--split .ls__body {
+    container: list-body / inline-size;
+    --col-a: clamp(220px, 24cqi, 360px);   /* the title column of a wide row */
+    --col-b: clamp(200px, 22cqi, 320px);   /* the next column (Seznam: the place) */
+  }
+}
+/* A wide D (≥ 800: a desktop list with no pane, or beside a pane from ≈ 1900): a row reads across like a table row –
+   the title, then its meta and note in a column of their own, the trail at the row's right edge – so the row's
+   hairline runs under words, not under empty ground. The row keeps its height (min 60). */
+@container list-body (min-width: 800px) {
+  .row__body { grid-template-columns: minmax(0, var(--col-a)) minmax(0, 1fr); column-gap: var(--space-5); align-items: baseline; }
+  .row__body > .row__title { grid-column: 1; grid-row: 1; }
+  .row__body > :is(.row__meta, .row__note) { grid-column: 2; }
 }
 
 /* A: the title row – min-height 44, h1 left, the main action then ⋯ at the frame's right edge, 8 apart */
@@ -626,8 +655,8 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   .head__action:not(.head__action--label) > .icon { margin: 0; }
   .head__action:not(.head__action--label) > .head__action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
-/* the split's list track under 440 (1200–1279): „Kalendář“ or „Obsazení“ + ⋯ + a labelled action do not fit it, so
-   the main action is the icon-only 44 square there too (its aria-label and title keep the words) */
+/* a page's list track under 440 (Moje 1200–1279): the title + ⋯ + a labelled action do not fit it, so the main action
+   is the icon-only 44 square there too (its aria-label and title keep the words). A list screen's A spans the frame. */
 @container list-head (max-width: 439.98px) {
   .head__action:not(.head__action--label) { width: var(--control-m); padding: 0; }
   .head__action:not(.head__action--label) > .icon { margin: 0; }

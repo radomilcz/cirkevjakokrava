@@ -6,7 +6,7 @@
 
 import {
   h, icon, layer, rowLink, row, list, toast, KIND_HUES, agree, plural, shortDate, clockRange, isoDay, download, asciiName,
-  hasCoords, canMap, mapFrame, mapLink,
+  hasCoords, canMap, mapFrame, mapLink, isSplit,
 } from './kit.js';
 import { S, can, myId } from '../../ui/state.js';
 import { eventTypeById, needsOf, fillRatio, KIND_LABELS } from '../../lib/events.js';
@@ -256,13 +256,21 @@ export function cover(event, { url, cls } = {}) {
 
 export const VIEWS = [['seznam', 'Seznam'], ['mesic', 'Měsíc'], ['rozpis', 'Rozpis']];
 
-/** The view to open: the one Kalendář remembers (calendar.js, „zvonec-one-calendar-view“), else Seznam. */
-export function defaultView() {
+/** Where the view chosen in Kalendář's view switch is remembered (this browser). Only a click on the switch writes
+ * it, so the view a screen opened by default (or by a link) is never taken for a choice. */
+export const VIEW_KEY = 'zvonec-one-calendar-choice';
+
+/** The view chosen last in the view switch, or null when none was chosen in this browser. */
+export function chosenView() {
   try {
-    const view = localStorage.getItem('zvonec-one-calendar-view');
-    return VIEWS.some(([v]) => v === view) ? view : 'seznam';
-  } catch { return 'seznam'; }
+    const view = localStorage.getItem(VIEW_KEY);
+    return VIEWS.some(([v]) => v === view) ? view : null;
+  } catch { return null; }
 }
+
+/** The view #kalendar opens: the one chosen last, else Měsíc across the whole width on a desktop (≥ 1200, the
+ * owner's decision) and Seznam below it. */
+export const defaultView = () => chosenView() || (isSplit() ? 'mesic' : 'seznam');
 
 /** Is a team part of an event: its own, or one of its roles is needed or filled there? */
 export function eventHasTeam(event, teamId) {

@@ -58,6 +58,21 @@
 .staff__line > .icon { width: 16px; height: 16px; flex: none; color: var(--ink-3); }
 .staff__line:hover > span:not(.mark) { text-decoration: underline; text-underline-offset: 3px; }
 .staff__line--error { color: var(--no-ink); }
+/* a wide D (desktop, css/kit.css): title over time · place in the first column, the slots and lines in the next one,
+   the fill at the right edge on the title's line */
+@container list-body (min-width: 800px) {
+  .staff__body { grid-template-columns: minmax(0, var(--col-a)) minmax(0, 1fr) auto; column-gap: var(--space-5); }
+  .staff__head { display: contents; }
+  .staff__title { grid-column: 1; grid-row: 1; justify-self: start; }
+  .staff__head > .fill { grid-column: 3; grid-row: 1; }
+  .staff__meta { grid-column: 1; grid-row: 2; }
+  /* each line in the second column takes one 24 line (its 44 hit area stays), so time · place keeps its place */
+  .staff__body > :is(.staff__slots, .staff__line) { grid-column: 2; margin-top: 0; }
+  .staff__body > .staff__line { min-height: var(--lh-body); }
+  .staff__body > .staff__line::after { inset: calc((var(--lh-body) - var(--hit)) / 2) 0; }
+  .staff__body > .staff__slots { margin-block: calc((var(--lh-body) - var(--control-s)) / 2); }
+  .staff__body > .staff__slots + .staff__line { margin-top: var(--space-3); }
+}
 
 /* the horizon, said once at the end of the list */
 .staff-horizon { margin-top: var(--space-5); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
