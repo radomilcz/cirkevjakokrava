@@ -158,9 +158,10 @@ export function renderMine(parts = []) {
   const waiting = person ? waitingOf(person) : [];
   const duties = person ? answeredOf(person) : [];
 
-  // ≥ 1200: the chosen duty's event beside the list (the nearest one when nothing is chosen)
+  // ≥ 1200: the chosen duty's event beside the list (the nearest answered one when nothing is chosen, else
+  // the one the answer card asks about)
   const split = isSplit();
-  const chosen = split ? (eventById(S.data, parts[0]) || duties[0]?.event || null) : null;
+  const chosen = split ? (eventById(S.data, parts[0]) || duties[0]?.event || waiting[Math.min(state.pos, waiting.length - 1)]?.event || null) : null;
   const column = h('div', { class: 'mine-col' },
     head(person),
     demoBanner(person),

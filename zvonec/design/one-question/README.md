@@ -73,3 +73,19 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - The rail keeps the fine bar at the left edge of the current item, as in the live app.
 
 Data and logic stay as they are – only the screens change.
+
+## The build
+
+The owner approved the concept („Ano. Začni.“). It is built at `docs/zvonec/simple/` – a fork of Zvonec Next on
+the shared `docs/zvonec/lib`, next to it, so the two can be compared: https://zvonec.cirkevjakokrava.cz/simple/
+(the demo: https://manifest.cirkevjakokrava.cz/zvonec/simple/). The main address stays on `next/` until the owner
+says otherwise (`docs/zvonec/go.js`).
+
+- Shell (`simple/app.js`, `simple/ui/me-menu.js`): the four tabs, the circle on Moje and the person at the rail's
+  foot open one menu; Next's `#domu` and `#vice` lead to `#moje`, Next's calendar views to `#kalendar`.
+- Screens: `ui/mine.js` (Moje, `#moje[/<event>]`), `ui/event.js` (Setkání), `ui/calendar.js` (Kalendář, the printable
+  roster at `#kalendar/rozpis`), `ui/staffing.js` (Obsazení, `#obsazeni[/<event>]`), `ui/people.js` and
+  `ui/people-card.js` (Lidé, `#osoba/<id>[/udaje]`), `ui/event-duties.js` (`pickFor`: the picker titled by the
+  role). Their styles are in `simple/css/simple.css` (loaded last).
+- The selection tint of the light Krém a hlína palette is now a plain alpha of the brand pink (`zvonec/palettes.mjs`),
+  so it stays warm on the page in all three apps.

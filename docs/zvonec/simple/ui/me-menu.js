@@ -32,8 +32,8 @@ function coloursRow() {
     paletteChoices());
 }
 
-/** Ukázka (demo only). */
-function demoRows() {
+/** Ukázka (demo only). `then(fn)` closes the menu first and runs fn. */
+function demoRows(then) {
   if (S.mode !== 'demo') return null;
   const person = personById(S.data, myId());
   const role = ACCESS_LABELS[S.me?.access] || '';
@@ -48,9 +48,9 @@ function demoRows() {
   return [
     heading('Ukázka'),
     list([
-      row({ title: 'Podívej se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: viewAsSheet, chevron: true }),
-      row({ title: 'Začni ukázku znovu', single: true, onclick: resetDemo }),
-      row({ title: 'Začni načisto', single: true, onclick: emptyDemo }),
+      row({ title: 'Podívej se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: then(viewAsSheet), chevron: true }),
+      row({ title: 'Začni ukázku znovu', single: true, onclick: then(resetDemo) }),
+      row({ title: 'Začni načisto', single: true, onclick: then(emptyDemo) }),
     ], { label: 'Ukázka' }),
   ];
 }
@@ -89,7 +89,7 @@ export function openMeMenu() {
       ], { label: 'Správa' }),
     ] : null,
     list([page('Veřejný web', '#pastva', { meta: 'Pastva, jak ji vidí návštěvníci' })], { label: 'Veřejný web' }),
-    demoRows(),
+    demoRows((fn) => () => { sheet.close({ restore: false }); fn(); }),
     list([row({
       title: 'Odhlas se', single: true, cls: 'me-menu__out',
       onclick: () => { sheet.close({ restore: false }); if (S.mode === 'live') logout(); else demoSignOut(); },
