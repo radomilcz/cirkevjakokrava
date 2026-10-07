@@ -1,87 +1,69 @@
-// Zvonec Next – Lidé (#lide[/<filtr>], #lide/narozeniny), Karta člověka (#osoba/<id>), Domácnost
-// (#domacnost/<id>). Phone: the list A–Z with a sticky search and filter chips, a call button on every
-// row whose phone may be seen, the card as its own page. Desktop ≥ 960: a sortable table with selection
-// and bulk actions; ≥ 1200 a card opens next to the list (split view). Members see everybody who still
-// comes, contacts only where shared, never membership or notes; leaders get the filters, Narozeniny,
-// Vybrat lidi, CSV and „Přidat člověka“. Archiv (#lide/archiv, leaders): the cards moved to the archive,
-// reached by the quiet „Archiv (n)“ at the end of the list and the table (the old `nechodi` redirects here).
+// Zvonec – Lidé: how do I reach someone? (zvonec/design/one-question › Lidé)
+//   #lide: „Hledej jméno nebo tým“ and everyone A–Z, a call button on each row whose phone may be seen. A search
+//     finds a team too: the team (→ #tym/<id>), then its people with what they do there. No filters, no
+//     chips, no table. ⋯ (leaders): Týmy a skupinky, Narozeniny, Chybí údaje, Hosté bez souhlasu, Archiv,
+//     Pozvi nového člověka, Přidej domácnost, Zkopíruj e-maily, Stáhni seznam; members get Týmy a skupinky.
+//   #lide/<doplnit|bez-souhlasu|clenove|pratele|hoste|deti>: one of those lists as its own page (leaders).
+//   #lide/narozeniny, #lide/archiv (leaders), #osoba/<id> (the card, ui/people-card.js), #osoba/<id>/udaje
+//   (Kontakt, domácnost a údaje), #domacnost/<id> (leaders). ≥ 1200 px: the list | the card.
 
 import {
-  h, icon, screen, topBar, segmented, menu, searchField, chips, list, row, personRow, indexLetter, empty, button,
-  link, rowLink, detailPane, splitView, isDesktop, isSplit, toast, joinMeta, plural, dateArch, note, section,
-  caption, pill, avatar, personName, table, sortHead, callout,
+  h, icon, screen, topBar, menu, searchField, list, row, personRow, indexLetter, empty, button, iconButton,
+  link, detailPane, splitView, isDesktop, isSplit, toast, joinMeta, plural, dateArch, note, section,
+  caption, pill, avatar, personName, callout, teamMark,
 } from './kit.js';
-import { S, can, myId, navigate, render } from '../../ui/state.js';
+import { S, can, myId, render } from '../../ui/state.js';
 import {
-  personById, householdById, sortPeople, sortHouseholds, householdMembers, upcomingBirthdays, statusOf, MISSING_LABELS, comparePeople,
+  personById, householdById, sortPeople, sortHouseholds, householdMembers, upcomingBirthdays, statusOf, MISSING_LABELS,
   archivedPeople, archiveOverdue,
 } from '../../lib/people.js';
+import { membersOf } from '../../lib/groups.js';
 import { lastDutyDays } from '../../lib/events.js';
 import { today } from '../../lib/time.js';
 import {
-  FILTERS, FILTER_ALIASES, filterCounts, inFilter, matchesQuery, seesContact, isKid, isFormer, missingOf,
-  missingNote, membershipWord, peopleCount, fold, groupsInOrder, copyEmails, csvDownload, telHref, mailHref,
-  dayMonth, fullDate, daysToBirthday, nextAge, householdNames, capital, MEMBERSHIP_WORDS, yearsText,
-  ARCHIVE_SLUG, archivedText, overdueQuestion,
+  inFilter, matchesQuery, seesContact, isKid, isFormer, missingOf, missingNote, membershipWord, peopleCount, fold,
+  groupsInOrder, copyEmails, csvDownload, fullDate, householdNames, capital, MEMBERSHIP_WORDS, yearsText,
+  ARCHIVE_SLUG, archivedText, overdueQuestion, activeGroups, groupWords, leadersLine, skillsIn,
 } from './people-common.js';
-import { addPersonSheet, bulkGroupSheet, householdSheet, restoreFromArchive, deletePerson, deleteOverdueSheet } from './people-forms.js';
+import { addPersonSheet, householdSheet, restoreFromArchive, deletePerson, deleteOverdueSheet } from './people-forms.js';
 import { inviteSheet } from './access.js';
-import { personCard, personMenu, householdBody, householdMenu } from './people-card.js';
+import { personCard, personDetails, personMenu, householdBody, householdMenu } from './people-card.js';
 
-// ---------- module state (kept while the app runs) ----------
-
-const read = (key) => { try { return localStorage.getItem(key); } catch { return null; } };
-const write = (key, value) => { try { localStorage.setItem(key, value); } catch { /* not remembered, that's all */ } };
-const SORT_KEY = 'zvonec-next-people-sort';
-
-const state = {
-  query: '',
-  slug: '',                 // the filter of the list (kept for the split view and the ✕ of the pane)
-  picking: false,           // phone: Vybrat lidi
-  picked: new Set(),
-  sort: (() => { try { return JSON.parse(read(SORT_KEY)) || { key: 'name', dir: 1 }; } catch { return { key: 'name', dir: 1 }; } })(),
-};
-document.addEventListener('zvonec:navigate', () => {
-  if (!/^#(lide|osoba)/.test(location.hash) || /^#lide\/(skupiny|narozeniny)/.test(location.hash)) { state.picking = false; state.picked.clear(); }
-});
-
-const listHref = () => `#lide${state.slug ? `/${state.slug}` : ''}`;
+const state = { query: '' };
 const MONTH_NAMES = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
+const listHref = () => '#lide';
 
-// ---------- the head of the tab: „Lidé“, its ⋯, and the switch Lidé | Skupiny under it ----------
+/** The lists behind ⋯ (leaders): slug → [filter key or a test, title, what it is]. */
+const LISTS = {
+  doplnit: ['missing', 'Chybí údaje', 'Karty, kterým něco chybí. Ťukni na člověka a doplň to.'],
+  'bez-souhlasu': [(p) => missingOf(p).includes('consent'), 'Hosté bez souhlasu', 'Hosté a přátelé, od kterých ještě nemáme souhlas se zpracováním údajů.'],
+  clenove: ['members', 'Členové', null],
+  pratele: ['friends', 'Přátelé', null],
+  hoste: ['guests', 'Hosté', null],
+  deti: ['children', 'Děti', null],
+};
+const countOf = (slug) => {
+  const [test] = LISTS[slug];
+  return S.data.people.filter((p) => (typeof test === 'function' ? !isFormer(p) && test(p) : inFilter(p, test))).length;
+};
 
-/**
- * The tab head of both screens of Lidé (see screen({ tab })) and the segmented Lidé · Skupiny.
- * Phone (the approved mockup): the segmented control and ⋯ are the top bar, the h1 „Lidé“ is visually
- * hidden; desktop: the title row „Lidé“ and the segmented control first in the body (`switcher`).
- *   const t = sectionTab('lide', listMenu(…));  screen({ tab: t.tab, body: [t.switcher, …] })
- */
-export function sectionTab(current, actions) {
-  const seg = segmented([{ value: 'lide', label: 'Lidé' }, { value: 'skupiny', label: 'Skupiny' }], current,
-    (v) => navigate(v === 'lide' ? listHref() : '#lide/skupiny'), { label: 'Lidé nebo skupiny', cls: 'seg--section' });
-  const desk = isDesktop();
-  return {
-    tab: { title: 'Lidé', actions, bar: desk ? null : { center: seg, actions: actions || null } },
-    switcher: desk ? h('div', { class: 'people-switch' }, seg) : null,
-  };
-}
-
-function listMenu(people) {
-  if (!can('leader')) return null;
+function listMenu() {
+  const leader = can('leader');
+  const n = (slug) => countOf(slug);
+  const withCount = (label, k) => (k ? `${label} (${k})` : label);
   return menu([
-    !isDesktop() ? { label: state.picking ? 'Přestaň vybírat' : 'Vyber lidi', icon: 'check', onclick: () => { state.picking = !state.picking; state.picked.clear(); render(); } } : null,
-    { label: 'Ukaž narozeniny', icon: 'cake', href: '#lide/narozeniny' },
-    { label: 'Pozvi nového člověka', icon: 'log-in', onclick: () => inviteSheet(null) },
-    { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) },
-    '-',
-    { label: 'Zkopíruj e-maily', icon: 'copy', onclick: () => copyEmails(people()) },
-    { label: 'Stáhni všechny jako CSV', icon: 'download', onclick: () => downloadCsv(sortPeople(S.data.people.filter((p) => !isFormer(p)))) },
-  ].filter(Boolean), { title: 'Lidé' });
+    { label: 'Týmy a skupinky', icon: 'teams', href: '#lide/skupiny' },
+    leader ? { label: 'Narozeniny', icon: 'cake', href: '#lide/narozeniny' } : null,
+    leader ? { label: withCount('Chybí údaje', n('doplnit')), icon: 'alert', href: '#lide/doplnit' } : null,
+    leader ? { label: withCount('Hosté bez souhlasu', n('bez-souhlasu')), icon: 'check', href: '#lide/bez-souhlasu' } : null,
+    leader ? { label: withCount('Archiv', archivedPeople(S.data).length), icon: 'archive', href: `#lide/${ARCHIVE_SLUG}` } : null,
+    leader ? '-' : null,
+    leader ? { label: 'Pozvi nového člověka', icon: 'log-in', onclick: () => inviteSheet(null) } : null,
+    leader ? { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) } : null,
+    leader ? { label: 'Zkopíruj e-maily', icon: 'copy', onclick: () => copyEmails(sortPeople(S.data.people.filter((p) => !isFormer(p)))) } : null,
+    leader ? { label: 'Stáhni seznam', icon: 'download', onclick: () => downloadCsv(sortPeople(S.data.people.filter((p) => !isFormer(p)))) } : null,
+  ].filter(Boolean), { label: 'Další možnosti', title: 'Lidé' });
 }
-
-// ---------- who is shown ----------
-
-const filterKeyOf = (slug) => (FILTERS.find(([s]) => s === slug) || FILTERS[0])[1];
 
 /**
  * How well a person matches the search, lower first: the first name (or nickname) itself → its start →
@@ -102,31 +84,6 @@ export function matchRank(person, query) {
   return 5;
 }
 
-/**
- * People under the filter and the search. Searching: the people whose name (phone, e-mail) matches, best
- * match first; then the households that match, with their people who did not match by name (`homePeople`).
- */
-function shown(slug) {
-  const leader = can('leader');
-  const key = leader ? filterKeyOf(slug) : 'attending';
-  const base = S.data.people.filter((p) => inFilter(p, key));
-  const q = state.query.trim();
-  if (!q) return { people: sortPeople(base), households: [], homePeople: [] };
-  const households = householdsFound(q);
-  const homeIds = new Set(households.map((x) => x.id));
-  const order = new Map(sortPeople(base).map((p, i) => [p.id, i]));
-  const people = base.filter((p) => matchesQuery(p, q))
-    .map((p) => ({ p, r: matchRank(p, q) }))
-    .sort((a, b) => a.r - b.r || order.get(a.p.id) - order.get(b.p.id))
-    .map((x) => x.p);
-  const found = new Set(people.map((p) => p.id));
-  const homePeople = sortPeople(base.filter((p) => !found.has(p.id) && homeIds.has(p.householdId)));
-  return { people, households, homePeople };
-}
-
-/** Everyone the list shows (for Zkopírovat e-maily). */
-const everyoneShown = (slug) => { const x = shown(slug); return [...x.people, ...x.homePeople]; };
-
 /** Households whose name (or, for leaders, address) matches – shown above the people. */
 function householdsFound(q) {
   const f = fold(q);
@@ -134,39 +91,6 @@ function householdsFound(q) {
   return sortHouseholds(S.data.households || []).filter((x) => fold(`${x.name} ${can('leader') ? x.address || '' : ''}`).includes(f)
     && householdMembers(S.data, x.id).some((p) => !isFormer(p)));
 }
-
-/** The second line of a row: leaders – membership and teams; members – teams (or the household). */
-function rowMeta(p) {
-  const groups = groupsInOrder(p.id).map((g) => g.name);
-  const teams = groups.length > 2 ? `${groups.slice(0, 2).join(', ')} +${groups.length - 2}` : groups.join(', ');
-  if (can('leader')) return joinMeta([membershipWord(p), teams]);
-  return teams || householdById(S.data, p.householdId)?.name || null;
-}
-
-function rowFor(p, { openId } = {}) {
-  const leader = can('leader');
-  const missing = leader ? missingOf(p) : [];
-  if (state.picking) {
-    const on = state.picked.has(p.id);
-    const el = row({
-      lead: h('span', { class: 'pick-box', 'aria-hidden': 'true' }, on ? icon('check', { size: 's' }) : null),
-      title: personName(p), meta: rowMeta(p),
-      onclick: () => { if (state.picked.has(p.id)) state.picked.delete(p.id); else state.picked.add(p.id); render(); },
-    });
-    el.setAttribute('aria-pressed', String(on));
-    return el;
-  }
-  return personRow(p, {
-    meta: missing.length ? null : rowMeta(p),
-    note: missing.length ? note(missingNote(missing), { tone: 'wait', icon: 'alert' }) : null,
-    href: `#osoba/${p.id}`,
-    phone: seesContact(p) && p.phone && p.id !== myId() ? p.phone : null,
-    open: p.id === openId,
-    me: p.id === myId(),
-  });
-}
-
-const letterOf = (p) => [...(p.lastName || p.firstName || '?')][0].toLocaleUpperCase('cs');
 
 function householdRow(x) {
   const leader = can('leader');
@@ -179,130 +103,187 @@ function householdRow(x) {
   });
 }
 
-/** The list itself: households found, then people A–Z (letters when not searching). */
-/** Searching: the households found and their people the name search did not catch – after the people. */
-function householdBlock(households, homePeople, { openId } = {}) {
-  if (!households.length) return [];
-  return [
-    h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'),
-    list([...households.map(householdRow), ...homePeople.map((p) => rowFor(p, { openId }))], { label: 'Domácnosti' }),
-  ];
+
+/** A person row of the list: the name, a call button when the phone may be seen (never on my own row). */
+function rowFor(p, { openId, meta: metaText, note: noteNode } = {}) {
+  return personRow(p, {
+    meta: metaText,
+    note: noteNode,
+    href: `#osoba/${p.id}`,
+    phone: seesContact(p) && p.phone && p.id !== myId() ? p.phone : null,
+    open: p.id === openId,
+    me: p.id === myId(),
+  });
 }
 
-function listBody(slug, { openId } = {}) {
-  const { people, households, homePeople } = shown(slug);
+const letterOf = (p) => [...(p.lastName || p.firstName || '?')][0].toLocaleUpperCase('cs');
+
+/** Teams and groups whose name matches the search (two letters at least). */
+function teamsFound(q) {
+  const f = fold(q);
+  if (f.length < 2) return [];
+  return activeGroups().filter((g) => fold(g.name).split(' ').some((w) => w.startsWith(f)) || fold(g.name).startsWith(f));
+}
+
+/** „Vedení chval · Kytara“ – what someone does in a team. */
+const rolesIn = (group, personId) => skillsIn(group, personId).map(({ role, level }) => (level === 'learning' ? `${role.name} (učí se)` : role.name)).join(', ');
+
+function teamRow(g) {
+  const n = membersOf(S.data, g.id).filter((m) => { const p = personById(S.data, m.personId); return p && !isFormer(p); }).length;
+  return row({ lead: teamMark(g), title: g.name, meta: joinMeta([peopleCount(n), leadersLine(g) || null]), href: `#tym/${g.id}`, chevron: true, wrap: true });
+}
+
+const sub = (text) => h('h2', { class: 'index-letter people-sub' }, text);
+
+/** The list: A–Z under letters; searching – the teams found with their people, then the people by name, then households. */
+function listBody({ openId } = {}) {
   const leader = can('leader');
+  const base = S.data.people.filter((p) => inFilter(p, 'attending'));
   const q = state.query.trim();
   const out = [];
-  if (!people.length && !households.length) {
-    if (q) {
-      out.push(empty({
-        icon: 'search', title: 'Nikdo takový tu není.', text: 'Zkus jiné jméno nebo telefon. Diakritiku psát nemusíš.',
-        action: leader ? button(`Přidej člověka „${q}“`, { icon: 'user-plus', onclick: () => addFromQuery(q) }) : null,
-      }));
-    } else if (!S.data.people.length) {
-      out.push(empty({ icon: 'people', title: 'Zatím tu nikdo není.', text: 'Přidej první lidi, nebo jim pošli pozvánku a údaje si vyplní sami.', action: leader ? button('Přidej člověka', { variant: 'primary', icon: 'user-plus', onclick: () => addPersonSheet() }) : null }));
-    } else if (filterKeyOf(slug) === 'missing') {
-      out.push(empty({ icon: 'check', title: 'Všechny karty jsou doplněné.' }));
-    } else {
-      out.push(empty({ icon: 'people', title: 'Tady nikdo není.', text: 'Zkus jiný filtr.' }));
+  if (!q) {
+    if (!base.length) {
+      return [empty({ icon: 'people', title: 'Zatím tu nikdo není.', text: 'Přidej první lidi, nebo jim pošli pozvánku a údaje si vyplní sami.', action: leader ? button('Přidej člověka', { variant: 'primary', icon: 'user-plus', onclick: () => addPersonSheet() }) : null })];
     }
-    return out;
-  }
-  if (!q && people.length > 12) {
     let letter = null;
     let bucket = [];
     const flush = () => { if (bucket.length) out.push(indexLetter(letter), list(bucket, { label: `Lidé – ${letter}` })); bucket = []; };
-    for (const p of people) {
+    for (const p of sortPeople(base)) {
       const l = letterOf(p);
       if (l !== letter) { flush(); letter = l; }
       bucket.push(rowFor(p, { openId }));
     }
     flush();
-  } else if (people.length) {
+    out.push(h('p', { class: 'people-foot meta' }, peopleCount(base.length)));
+    return out;
+  }
+  const teams = teamsFound(q);
+  const order = new Map(sortPeople(base).map((p, i) => [p.id, i]));
+  const people = base.filter((p) => matchesQuery(p, q))
+    .map((p) => ({ p, r: matchRank(p, q) }))
+    .sort((a, b) => a.r - b.r || order.get(a.p.id) - order.get(b.p.id))
+    .map((x) => x.p);
+  if (teams.length) {
+    out.push(sub(teams.length > 1 ? 'Týmy' : groupWords(teams[0]).kind ? capital(groupWords(teams[0]).kind) : 'Tým'), list(teams.map(teamRow), { label: 'Týmy' }));
+    if (teams.length === 1) {
+      const g = teams[0];
+      const inside = sortPeople(membersOf(S.data, g.id).map((m) => personById(S.data, m.personId)).filter((p) => p && !isFormer(p)));
+      if (inside.length) out.push(sub(`Lidé v týmu ${g.name}`), list(inside.map((p) => rowFor(p, { openId, meta: rolesIn(g, p.id) || null })), { label: `Lidé v týmu ${g.name}` }));
+    }
+  }
+  if (people.length) {
+    if (teams.length) out.push(sub('Podle jména'));
     out.push(list(people.map((p) => rowFor(p, { openId })), { label: 'Lidé' }));
   }
-  out.push(...householdBlock(households, homePeople, { openId }));
-  out.push(h('p', { class: 'people-foot meta' }, peopleCount(people.length + homePeople.length)));
-  out.push(archiveLink());
+  const households = householdsFound(q);
+  if (households.length) out.push(sub(households.length > 1 ? 'Domácnosti' : 'Domácnost'), list(households.map(householdRow), { label: 'Domácnosti' }));
+  if (!out.length) {
+    out.push(empty({
+      icon: 'search', title: 'Nikdo takový tu není.', text: 'Zkus jiné jméno nebo tým. Diakritiku psát nemusíš.',
+      action: leader ? button(`Přidej člověka „${q}“`, { icon: 'user-plus', onclick: () => addFromQuery(q) }) : null,
+    }));
+  }
   return out;
 }
 
-/** The quiet way into the archive at the end of the list (leaders): „Archiv (3)“, nothing when it is empty. */
-function archiveLink() {
-  if (!can('leader')) return null;
-  const n = archivedPeople(S.data).length;
-  return n ? h('p', { class: 'people-archive-link' }, link(`Archiv (${n})`, { href: `#lide/${ARCHIVE_SLUG}`, icon: 'archive' })) : null;
-}
-
-/** „Přidat člověka „Jana Malá““ from an empty search. */
+/** „Přidej člověka „Jana Malá““ from an empty search. */
 function addFromQuery(q) {
   const [firstName, ...rest] = q.trim().split(/\s+/);
   addPersonSheet({ firstName: capital(firstName), lastName: rest.map(capital).join(' ') });
 }
 
-// ---------- the tools: search + filter chips ----------
-
-function tools(slug, redraw) {
+/** The head of Lidé: the title, + (leaders) and ⋯; the search under it. */
+function listColumn({ openId } = {}) {
   const leader = can('leader');
+  const box = h('div', { class: 'people-results', onclick: keepListPlace });
+  const redraw = () => box.replaceChildren(...listBody({ openId }).filter(Boolean));
+  redraw();
   const search = searchField({
-    placeholder: leader ? 'Hledej jméno, telefon, e-mail' : 'Hledej jméno nebo domácnost', value: state.query, label: 'Hledej v Lidech',
-    onInput: (v) => { state.query = v; state.sortTouched = false; redraw(); },
+    placeholder: 'Hledej jméno nebo tým', value: state.query, label: 'Hledej v Lidech',
+    onInput: (v) => { state.query = v; redraw(); },
   });
-  let chipRow = null;
-  if (leader) {
-    const counts = filterCounts();
-    const options = FILTERS.filter(([s, key]) => key !== 'missing' || counts.missing || s === slug)
-      .map(([s, key, label]) => ({ value: s || 'vsichni', label, n: counts[key] }));
-    chipRow = chips(options, slug || 'vsichni', (v) => {
-      state.slug = v === 'vsichni' ? '' : v;
-      navigate(listHref());
-    }, { label: 'Filtr' });
+  return h('div', { class: 'people-col' },
+    h('div', { class: 'people-head' },
+      h('h1', { class: 'title' }, 'Lidé'),
+      h('div', { class: 'people-head__tools' },
+        leader ? (isDesktop()
+          ? button('Přidej člověka', { variant: 'primary', icon: 'plus', onclick: () => addPersonSheet(), dataset: { primary: '' } })
+          : iconButton('plus', 'Přidej člověka', { onclick: () => addPersonSheet(), dataset: { primary: '' } })) : null,
+        listMenu())),
+    h('div', { class: 'people-search' }, search),
+    box);
+}
+
+// ---------- #lide ----------
+
+export function renderPeople(parts = []) {
+  const [first = ''] = parts;
+  const leader = can('leader');
+  if (first === 'narozeniny' && leader) return renderBirthdays();
+  if (first === ARCHIVE_SLUG && leader) return renderArchive();
+  if (LISTS[first] && leader) return renderList(first);
+  if (first && location.hash !== '#lide') history.replaceState(history.state, '', '#lide');
+  return screen({ topbar: false, wide: isSplit(), cls: 'people-root', body: isSplit() ? splitView({ list: listColumn(), detail: null }) : listColumn() });
+}
+
+/** One of the lists behind ⋯ as its own page: each row says what is missing (Chybí údaje) or who it is. */
+function renderList(slug) {
+  const [test, title, lead] = LISTS[slug];
+  const people = sortPeople(S.data.people.filter((p) => (typeof test === 'function' ? !isFormer(p) && test(p) : inFilter(p, test))));
+  const rows = people.map((p) => {
+    const missing = missingOf(p);
+    return rowFor(p, {
+      meta: slug === 'doplnit' || slug === 'bez-souhlasu' ? null : joinMeta([membershipWord(p), groupsInOrder(p.id).map((g) => g.name).slice(0, 2).join(', ') || null]),
+      note: (slug === 'doplnit' || slug === 'bez-souhlasu') && missing.length ? note(missingNote(missing), { tone: 'wait', icon: 'alert' }) : null,
+    });
+  });
+  return screen({
+    topbar: topBar({ back: { href: '#lide', label: 'Lidé' } }),
+    head: { title, lead },
+    body: rows.length ? [list(rows, { label: title }), h('p', { class: 'people-foot meta' }, peopleCount(rows.length))]
+      : empty({ icon: 'check', title: slug === 'doplnit' ? 'Všechny karty jsou doplněné.' : 'Tady nikdo není.' }),
+    cls: 'people-list-screen',
+  });
+}
+
+// ---------- #osoba/<id>[/udaje] ----------
+
+const missingPerson = () => empty({
+  icon: 'user', title: 'Tenhle člověk tu není.', text: 'Možná ho někdo smazal nebo je odkaz starý.',
+  action: button('Vrať se na seznam', { variant: 'quiet', icon: 'chevron-left', href: '#lide' }),
+});
+
+/** In the split list, a tap opens the card without jumping the list to the top. */
+function keepListPlace(e) {
+  const a = e.target.closest('a[href^="#osoba/"], a[href^="#tym/"]');
+  if (!a || !isSplit() || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+  e.preventDefault();
+  history.pushState(null, '', a.getAttribute('href'));
+  render();
+}
+export { keepListPlace };
+
+export function renderPerson([id, part] = []) {
+  const leader = can('leader');
+  const found = personById(S.data, id);
+  // a card in the archive is for leaders only (and the person themselves)
+  const person = found && isFormer(found) && !leader && found.id !== myId() ? null : found;
+  const details = part === 'udaje';
+  const body = (pane) => (person ? (details ? personDetails(person, { pane }) : personCard(person, { pane })) : missingPerson());
+  if (isSplit()) {
+    const pane = detailPane({
+      body: [person ? h('div', { class: 'pane-menu' }, details ? link('Zpět na kartu', { href: `#osoba/${id}`, icon: 'chevron-left' }) : null, personMenu(person)) : null, body(true)],
+      closeHref: listHref(), label: 'Zavři kartu',
+    });
+    return screen({ topbar: false, wide: true, cls: 'people-root', body: splitView({ list: listColumn({ openId: id }), detail: pane, label: 'Karta člověka' }) });
   }
-  return h('div', { class: 'sticky-tools people-tools' }, search, chipRow);
-}
-
-/** Birthdays in the next seven days (leaders) – one quiet line above the list. */
-function birthdayHint() {
-  if (!can('leader') || state.query.trim()) return null;
-  const soon = S.data.people.filter((p) => !isFormer(p)).map((p) => ({ p, d: daysToBirthday(p) })).filter((x) => x.d != null && x.d <= 7)
-    .sort((a, b) => a.d - b.d);
-  if (!soon.length) return null;
-  const first = personName(soon[0].p);
-  const more = soon.length - 1;
-  const others = more === 1 ? 'další' : more <= 4 ? `další ${more}` : `dalších ${more}`;
-  const words = soon[0].d === 0
-    ? `Dnes slaví ${first}${more ? `, do týdne ${others === 'další' ? 'ještě jeden' : `ještě ${more}`}` : ''}`
-    : `Do týdne slaví ${first}${more ? ` a ${others}` : ''}`;
-  return rowLink(words, { href: '#lide/narozeniny', icon: 'cake' });
-}
-
-// ---------- selection: copy e-mails, add to a group, CSV ----------
-
-function pickedPeople() {
-  return [...state.picked].map((id) => personById(S.data, id)).filter(Boolean);
-}
-
-function bulkBar({ dock = false } = {}) {
-  const n = state.picked.size;
-  const stop = () => { state.picked.clear(); state.picking = false; render(); };
-  if (!n && !dock) return null;
-  const done = () => { state.picked.clear(); state.picking = false; };
-  const count = n ? plural(n, 'vybraný člověk', 'vybraní lidé', 'vybraných lidí') : 'Klepni na lidi, které chceš vybrat.';
-  const actions = [
-    button(dock ? 'Zkopíruj e\u2011maily' : 'Zkopíruj e-maily', { size: 's', icon: 'copy', disabled: !n, onclick: () => copyEmails(pickedPeople()) }),
-    button('Přidej do skupiny', { size: 's', icon: 'teams', disabled: !n, onclick: () => bulkGroupSheet(pickedPeople(), done) }),
-    button('Stáhni CSV', { size: 's', icon: 'download', disabled: !n, onclick: () => downloadCsv(pickedPeople()) }),
-  ];
-  if (dock) {
-    return h('div', { class: 'dock people-bulk people-bulk--dock', role: 'region', 'aria-label': 'Vybraní lidé' },
-      h('div', { class: 'people-bulk__head' }, h('p', { class: 'people-bulk__count' }, count), link('Hotovo', { onclick: stop })),
-      h('div', { class: 'people-bulk__grid' }, actions));
-  }
-  return h('div', { class: 'people-bulk', role: 'region', 'aria-label': 'Vybraní lidé' },
-    h('p', { class: 'people-bulk__count' }, count),
-    h('div', { class: 'people-bulk__actions' }, actions,
-      button('Zruš výběr', { size: 's', variant: 'quiet', onclick: () => { state.picked.clear(); render(); } })));
+  const back = details && person ? { href: `#osoba/${id}`, label: personName(person) }
+    : person && isFormer(person) ? { href: `#lide/${ARCHIVE_SLUG}`, label: 'Archiv' } : { href: listHref(), label: 'Lidé' };
+  return screen({
+    topbar: topBar({ back, actions: person ? personMenu(person) : null }),
+    body: person ? body(false) : [h('h1', { class: 'visually-hidden' }, 'Karta člověka'), missingPerson()],
+    cls: 'person-screen',
+  });
 }
 
 function downloadCsv(people) {
@@ -320,187 +301,6 @@ function downloadCsv(people) {
     }),
   ]);
   toast(`Stahuju CSV: ${peopleCount(people.length)}.`, { icon: 'download' });
-}
-
-// ---------- desktop table ----------
-
-const COLUMNS = [
-  { key: 'name', label: 'Jméno', value: (p) => `${p.lastName || p.firstName || ''} ${p.firstName || ''}`, compare: comparePeople },
-  { key: 'status', label: 'Členství', leader: true, value: (p) => ['member', 'regular', 'guest', 'former'].indexOf(statusOf(p)) + (isKid(p) ? 0.5 : 0) },
-  { key: 'household', label: 'Domácnost', value: (p) => householdById(S.data, p.householdId)?.name || '￿' },
-  { key: 'phone', label: 'Telefon', value: (p) => (seesContact(p) ? p.phone : '') || '￿' },
-  { key: 'email', label: 'E-mail', value: (p) => (seesContact(p) ? p.email : '') || '￿' },
-  { key: 'groups', label: 'Skupiny', value: (p) => groupsInOrder(p.id).map((g) => g.name).join(', ') || '￿' },
-  { key: 'birthday', label: 'Narozeniny', leader: true, value: (p) => daysToBirthday(p) ?? 999 },
-  { key: 'last', label: 'Poslední služba', leader: true, wide: true },
-];
-
-/** Open a person from the table: in the split the table stays where it is (no jump to the top). */
-function openFromTable(id) {
-  if (isSplit()) { history.pushState(null, '', `#osoba/${id}`); render(); } else navigate(`#osoba/${id}`);
-}
-
-/**
- * The desktop table. compact (≥ 1200 with a card open beside it): the same table, narrowed to name, phone and
- * groups, with the open person marked – so picking someone does not swap the table for another layout.
- */
-function tableBody(slug, { openId, compact = false } = {}) {
-  const leader = can('leader') && !compact;   // compact: no selection column, no leader-only columns
-  const { people: found, households, homePeople } = shown(slug);
-  const people = [...found, ...homePeople];
-  const lastDays = leader ? lastDutyDays(S.data, { today: today() }) : new Map();
-  const columns = COLUMNS.filter((c) => (compact ? ['name', 'phone', 'groups'].includes(c.key) : !c.leader || leader));
-  const col = columns.find((c) => c.key === state.sort.key) || columns[0];
-  const value = col.key === 'last' ? (p) => lastDays.get(p.id) || '' : col.value;
-  const collator = new Intl.Collator('cs', { sensitivity: 'base', numeric: true });
-  const q = state.query.trim();
-  const rank = new Map(q ? people.map((p) => [p.id, homePeople.includes(p) ? 9 : matchRank(p, q)]) : []);
-  // searching: the best match first (a click on a column sorts by it again)
-  const sorted = people.slice().sort((a, b) => {
-    if (q && !state.sortTouched) return rank.get(a.id) - rank.get(b.id) || comparePeople(a, b);
-    const r = col.compare ? col.compare(a, b) : typeof value(a) === 'number' ? value(a) - value(b) : collator.compare(String(value(a)), String(value(b)));
-    return (r || comparePeople(a, b)) * state.sort.dir;
-  });
-  if (!sorted.length && !households.length) return listBody(slug, { openId });
-  const allOn = sorted.length > 0 && sorted.every((p) => state.picked.has(p.id));
-  const check = (on, label, onchange) => h('input', { type: 'checkbox', class: 'table-check', checked: on, 'aria-label': label, onchange });
-  const head = h('tr', {},
-    leader ? h('th', { class: 'col-pick', scope: 'col' }, check(allOn, 'Vyber všechny', (e) => { for (const p of sorted) { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); } render(); })) : null,
-    columns.map((c) => {
-      const active = c.key === col.key;
-      return sortHead(c.label, {
-        active, dir: state.sort.dir, cls: `col-${c.key}`,
-        onSort: () => { state.sort = { key: c.key, dir: active ? -state.sort.dir : 1 }; state.sortTouched = true; write(SORT_KEY, JSON.stringify(state.sort)); render(); },
-      });
-    }));
-  const cell = (c, p) => {
-    const contact = seesContact(p);
-    switch (c.key) {
-      case 'name': {
-        const missing = can('leader') ? missingOf(p) : [];
-        return h('td', { class: 'col-name' }, h('a', { class: 'table-person', href: `#osoba/${p.id}` },
-          avatar(p, { size: 's', me: p.id === myId() }), h('span', { class: 'table-person__name' }, personName(p))),
-        missing.length ? h('span', { class: 'table-missing', title: `Chybí: ${missing.map((k) => MISSING_LABELS[k]).join(', ')}` }, icon('alert', { size: 's', label: `Chybí: ${missing.map((k) => MISSING_LABELS[k]).join(', ')}` })) : null);
-      }
-      case 'status': return h('td', {}, membershipWord(p));
-      case 'household': return h('td', {}, householdById(S.data, p.householdId)?.name || '');
-      case 'phone': return h('td', { class: 'col-phone' }, contact && p.phone ? h('a', { class: 'table-link', href: telHref(p.phone) }, p.phone) : '');
-      case 'email': return h('td', { class: 'col-email' }, contact && p.email ? h('a', { class: 'table-link', href: mailHref(p.email), title: p.email }, p.email) : '');
-      case 'groups': {
-        const groups = groupsInOrder(p.id);
-        return h('td', { class: 'col-groups', title: groups.map((g) => g.name).join(', ') || null }, groups.length ? [groups[0].name, groups.length > 1 ? h('span', { class: 'table-more' }, ` +${groups.length - 1}`) : null] : '');
-      }
-      case 'birthday': {
-        if (!p.birthDate) return h('td', {}, '');
-        if (p.birthDate.length < 10) return h('td', { class: 'table-quiet' }, `rok ${p.birthDate.slice(0, 4)}`);
-        const d = daysToBirthday(p);
-        return h('td', {}, dayMonth(p.birthDate), h('span', { class: 'table-quiet' }, ` · ${nextAge(p)}`), d <= 7 ? h('span', { class: 'visually-hidden' }, ' (brzy)') : null, d <= 7 ? icon('cake', { size: 's', label: d === 0 ? 'dnes má narozeniny' : 'narozeniny tento týden' }) : null);
-      }
-      case 'last': return h('td', { class: 'table-quiet' }, lastDays.get(p.id) ? dayMonth(lastDays.get(p.id)) : '');
-      default: return h('td');
-    }
-  };
-  const rows = sorted.map((p) => {
-    const tr = h('tr', { dataset: { former: isFormer(p) ? '' : null, picked: state.picked.has(p.id) ? '' : null, open: p.id === openId ? '' : null }, 'aria-current': p.id === openId ? 'true' : null },
-      leader ? h('td', { class: 'col-pick' }, check(state.picked.has(p.id), `Vyber: ${personName(p)}`, (e) => { if (e.target.checked) state.picked.add(p.id); else state.picked.delete(p.id); render(); })) : null,
-      columns.map((c) => { const td = cell(c, p); td.classList.add(`col-${c.key}`); return td; }));
-    tr.addEventListener('click', (e) => { if (!e.target.closest('a, button, input')) openFromTable(p.id); });
-    return tr;
-  });
-  return [
-    leader ? bulkBar() : null,
-    sorted.length ? table({ label: 'Lidé – seřadíš je klepnutím na nadpis sloupce', head, rows, cls: ['people-table', compact && 'people-table--compact'] }) : null,
-    households.length ? h('div', { class: 'people-households' }, h('h2', { class: 'index-letter people-sub' }, households.length > 1 ? 'Domácnosti' : 'Domácnost'), list(households.map(householdRow), { label: 'Domácnosti' })) : null,
-    h('p', { class: 'people-foot meta' }, peopleCount(sorted.length)),
-    compact ? null : archiveLink(),
-  ];
-}
-
-// ---------- #lide ----------
-
-function normalizeSlug(first) {
-  const slug = first in FILTER_ALIASES ? FILTER_ALIASES[first] : first;
-  return FILTERS.some(([s]) => s === slug) ? slug : '';
-}
-
-export function renderPeople(parts = []) {
-  const [first = ''] = parts;
-  if (first === 'narozeniny') return renderBirthdays();
-  const leader = can('leader');
-  if (first === ARCHIVE_SLUG && leader) return renderArchive();
-  const slug = leader ? normalizeSlug(first) : '';
-  state.slug = slug;
-  const canonical = `#lide${slug ? `/${slug}` : ''}`;
-  if (location.hash !== canonical) history.replaceState(history.state, '', canonical);
-  const table = isDesktop() && !state.picking;
-  const box = h('div', { class: 'people-results', onclick: table ? keepListPlace : null });
-  const redraw = () => box.replaceChildren(...(table ? tableBody(slug) : listBody(slug)).filter(Boolean));
-  redraw();
-  const t = sectionTab('lide', listMenu(() => everyoneShown(slug)));
-  return screen({
-    tab: t.tab,
-    body: [
-      t.switcher,
-      tools(slug, redraw),
-      birthdayHint(),
-      box,
-      state.picking && !table ? bulkBar({ dock: true }) : null,
-    ],
-    primary: leader && !state.picking ? { label: 'Přidej člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
-    wide: isDesktop(),
-    cls: ['people-screen', table && 'people-screen--table', state.picking && 'people-screen--picking'].filter(Boolean).join(' '),
-  });
-}
-
-// ---------- #osoba/<id> ----------
-
-const missingPerson = () => empty({
-  icon: 'user', title: 'Tenhle člověk tu není.', text: 'Možná ho někdo smazal nebo je odkaz starý.',
-  action: button('Vrať se na seznam', { variant: 'quiet', icon: 'chevron-left', href: '#lide' }),
-});
-
-/** In the split list, a tap opens the card without jumping the list to the top. */
-function keepListPlace(e) {
-  const a = e.target.closest('a[href^="#osoba/"], a[href^="#tym/"]');
-  if (!a || !isSplit() || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
-  e.preventDefault();
-  history.pushState(null, '', a.getAttribute('href'));
-  render();
-}
-export { keepListPlace };
-
-export function renderPerson([id] = []) {
-  const leader = can('leader');
-  const found = personById(S.data, id);
-  // a card in the archive is for leaders only (and the person themselves)
-  const person = found && isFormer(found) && !leader && found.id !== myId() ? null : found;
-  if (isSplit()) {
-    const box = h('div', { class: 'people-results', onclick: keepListPlace });
-    const redraw = () => box.replaceChildren(...tableBody(state.slug, { openId: id, compact: true }).filter(Boolean));
-    redraw();
-    const card = person ? personCard(person, { pane: true }) : missingPerson();
-    const pane = detailPane({ body: [person ? h('div', { class: 'pane-menu' }, personMenu(person)) : null, card], closeHref: listHref(), label: 'Zavři kartu' });
-    const t = sectionTab('lide', listMenu(() => everyoneShown(state.slug)));
-    return screen({
-      tab: t.tab,
-      body: [
-        t.switcher,
-        splitView({
-          list: [h('h2', { class: 'visually-hidden' }, 'Lidé'), tools(state.slug, redraw), birthdayHint(), box],
-          detail: pane,
-          label: 'Karta člověka',
-        }),
-      ],
-      primary: leader ? { label: 'Přidej člověka', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
-      wide: true,
-      cls: 'people-screen people-screen--table people-screen--split',
-    });
-  }
-  return screen({
-    topbar: topBar({ back: person && isFormer(person) ? { href: `#lide/${ARCHIVE_SLUG}`, label: 'Archiv' } : { href: listHref(), label: 'Lidé' }, actions: person ? personMenu(person) : null }),
-    body: person ? personCard(person) : [h('h1', { class: 'visually-hidden' }, 'Karta člověka'), missingPerson()],
-    cls: 'person-screen',
-  });
 }
 
 // ---------- #lide/archiv (leaders) ----------

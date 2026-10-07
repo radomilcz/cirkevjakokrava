@@ -17,7 +17,7 @@ import { needsOf } from '../../lib/events.js';
 import { placesOf } from '../../lib/places.js';
 import { today, addDays, dayOf, prettyTime } from '../../lib/time.js';
 import { groupWords, leadersLine, compareGroups, peopleCount, GROUP_WORDS } from './people-common.js';
-import { sectionTab, keepListPlace } from './people.js';
+import { keepListPlace } from './people.js';
 import { skillPills } from './people-card.js';
 import {
   groupSheet, toggleArchive, deleteGroup, memberSheet, addToGroup, cycleSkill, roleSheet, deleteRole, SKILL_WORDS,
@@ -43,7 +43,7 @@ function groupRow(g, { openId } = {}) {
     trail: isMine(g) ? pill('ty') : null,
     href: `#tym/${g.id}`,
     open: g.id === openId,
-    chevron: !isSplit(),
+    chevron: true,
   });
 }
 
@@ -97,10 +97,10 @@ function groupCards() {
 export function renderGroups() {
   const leader = can('leader');
   const desktop = isDesktop();
-  const t = sectionTab('skupiny');
   return screen({
-    tab: t.tab,
-    body: [t.switcher, h('div', { class: 'groups-list' }, desktop ? groupCards() : groupList())],
+    topbar: topBar({ back: { href: '#lide', label: 'Lidé' } }),
+    head: { title: 'Týmy a skupinky' },
+    body: h('div', { class: 'groups-list' }, desktop ? groupCards() : groupList()),
     primary: leader ? { label: 'Přidej skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
     wide: desktop,
     cls: 'groups-screen',
@@ -312,22 +312,8 @@ export function renderGroup([id] = []) {
     icon: 'teams', title: 'Tahle skupina tu není.', text: 'Možná ji někdo smazal nebo je odkaz starý.',
     action: button('Vrať se na skupiny', { variant: 'quiet', icon: 'chevron-left', href: '#lide/skupiny' }),
   })];
-  if (isSplit()) {
-    const t = sectionTab('skupiny');
-    return screen({
-      tab: t.tab,
-      body: [t.switcher, splitView({
-        list: [h('h2', { class: 'visually-hidden' }, 'Skupiny'), h('div', { class: 'groups-list', onclick: keepListPlace }, groupList({ openId: id }))],
-        detail: detailPane({ body: group ? [h('div', { class: 'pane-menu' }, groupMenu(group)), groupBody(group, { pane: true })] : missing({ heading: false }), closeHref: '#lide/skupiny', label: 'Zavři skupinu' }),
-        label: group?.name || 'Skupina',
-      })],
-      primary: can('leader') ? { label: 'Přidej skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
-      wide: true,
-      cls: 'groups-screen groups-screen--split',
-    });
-  }
   return screen({
-    topbar: topBar({ back: { href: '#lide/skupiny', label: 'Skupiny' }, actions: group ? groupMenu(group) : null }),
+    topbar: topBar({ back: { href: '#lide/skupiny', label: 'Týmy' }, actions: group ? groupMenu(group) : null }),
     body: group ? groupBody(group) : missing(),
     wide: isDesktop(),
     cls: 'group-screen',

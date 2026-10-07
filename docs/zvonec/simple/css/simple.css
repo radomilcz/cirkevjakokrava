@@ -338,3 +338,51 @@
 .pick-row--off .avatar { opacity: .55; }
 .pick-row__why { color: var(--no-ink); }
 .pick-none { padding: var(--space-3) 0; }
+
+/* ---------- Lidé ---------- */
+.people-col { display: grid; align-content: start; }
+.people-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-4); }
+.people-head__tools { display: flex; align-items: center; gap: var(--space-1); margin-right: -10px; }
+@media (min-width: 960px) { .people-head { padding-top: var(--space-7); } }
+.people-search { margin-bottom: var(--space-2); }
+.people-results .index-letter {
+  padding: var(--space-4) 0 var(--space-1); font-family: var(--font-ui); font-size: var(--type-meta); line-height: var(--lh-meta);
+  font-weight: var(--weight-bold); letter-spacing: 0; color: var(--ink-2);
+}
+@media (min-width: 960px) { .people-head__tools { gap: var(--space-2); } }
+
+/* the card */
+.pcard { display: grid; gap: var(--space-5); }
+.pcard-head { display: grid; gap: var(--space-4); justify-items: start; padding-top: var(--space-2); }
+.pcard-head > .avatar--l {
+  width: 88px; height: 88px; font-family: var(--font-ui); font-weight: var(--weight-bold); font-size: 28px; line-height: 1; letter-spacing: .01em;
+}
+.pcard-head__text { display: grid; gap: var(--space-3); min-width: 0; }
+.pcard-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pcard-chip {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: 34px; padding: 0 12px; border-radius: 10px;
+  background: var(--tint); color: var(--ink); font-size: var(--type-meta); font-weight: var(--weight-strong);
+}
+.pcard-chip--team { padding-left: 6px; }
+.pcard-chip--team:hover { background: var(--tint-2); }
+.pcard-chip > .avatar { width: 24px; height: 24px; border-radius: 7px; font-size: 10px; }
+@media (min-width: 1200px) {
+  .person-card--pane .pcard-head { grid-template-columns: auto 1fr; align-items: center; gap: var(--space-5); }
+}
+
+/* Zavolej · SMS · E-mail as three tiles */
+.pcard .person-reach { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--space-2); }
+.pcard .person-reach > .btn { flex-direction: column; gap: 4px; min-height: 72px; padding: var(--space-2); border-radius: 16px; }
+.pcard .person-reach > .btn > .icon { width: 24px; height: 24px; }
+
+.pcard-missing { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); }
+.pcard-missing__text { flex: 1; min-width: 0; }
+.pcard-missing__fix { flex: none; font-weight: var(--weight-bold); }
+.mark--wait-dot { width: 10px; height: 10px; margin: 0 4px 0 1px; border-radius: 50%; background: var(--wait-ink); }
+
+.pcard-next { display: grid; }
+.pcard-next__title { margin-bottom: var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.pcard-next__more { margin-top: var(--space-1); }
+.pcard-status { display: inline-flex; }
+.pcard-rows { margin-top: calc(-1 * var(--space-3)); }
+.pcard-details-head { display: grid; gap: 2px; }

@@ -1,12 +1,13 @@
-// Zvonec Next – Karta člověka (#osoba/<id>) and Domácnost (#domacnost/<id>).
-// One column, sections in a fixed order (ux.md §3.8): Kontakt · Domácnost · Skupiny · Služby · Kdy nemůže
-// · Upozornění · Údaje · Přístup. Every section has its own „Upravit“ for leaders; the person edits their
+// Zvonec – Karta člověka (#osoba/<id>), its Kontakt, domácnost a údaje (#osoba/<id>/udaje) and Domácnost
+// (#domacnost/<id>). The card is one screen: avatar, name, chips, Zavolej · SMS · E-mail, what is missing
+// (leaders), Příští služby, and „Kontakt, domácnost a údaje ›“ – there the sections in a fixed order (ux.md
+// §3.8): Kontakt · Domácnost · Skupiny · Služby · Kdy nemůže · Upozornění · Údaje · Přístup. Every section has its own „Upravit“ for leaders; the person edits their
 // own Kontakt. A member looking at someone else sees sections 1–5 with the contact only when shared and
 // never membership, birth date, notes, consent or logins. The same body fills the phone page, the
 // 960–1199 page and the detail pane of the split view (≥ 1200).
 
 import {
-  h, icon, avatar, teamMark, title as titleEl, section, facts, list, row, personRow, eventRow, statusNote, note, pill,
+  h, icon, avatar, teamMark, title as titleEl, section, facts, list, row, personRow, eventRow, statusNote, statusSymbol, note, pill,
   button, rowLink, link, callout, menu, joinMeta, plural, agree, slot, caption, meta as metaEl,
   personName, quiet, mapLink,
 } from './kit.js';
@@ -348,16 +349,84 @@ function accessSection(person) {
   });
 }
 
-// ---------- the whole card ----------
+// ---------- the card: one screen (one-question › Lidé) ----------
 
-/** The card body: head, reach buttons, sections. pane: inside the split's detail pane (smaller title). */
+/** The head: a big avatar, the name, membership (leaders) and team chips. */
+function simpleHead(person, { pane }) {
+  const leader = can('leader');
+  const self = person.id === myId();
+  const groups = groupsInOrder(person.id);
+  const word = leader ? (isKid(person) && !isFormer(person) ? kidText(person) : MEMBERSHIP_WORDS[statusOf(person)]) : null;
+  return h('div', { class: 'pcard-head' },
+    avatar(person, { size: 'l' }),
+    h('div', { class: 'pcard-head__text' },
+      titleEl(personName(person), { small: pane, tag: pane ? 'h2' : 'h1' }),
+      h('div', { class: 'pcard-chips' },
+        self ? h('span', { class: 'pcard-chip' }, 'Ty') : null,
+        word ? h('span', { class: 'pcard-chip' }, capital(word)) : null,
+        groups.map((g) => h('a', { class: 'pcard-chip pcard-chip--team', href: `#tym/${g.id}` }, teamMark(g, { size: 'xs' }), g.name)))));
+}
+
+/** „● Chybí datum narození · Doplň“ – one line for leaders, the way to fill it in at its end. */
+function missingLine(person) {
+  const missing = missingOf(person);
+  if (!missing.length) return null;
+  const first = missing.find((k) => k !== 'review') || 'review';
+  const open = {
+    review: () => detailsSheet(person), lastName: () => detailsSheet(person), contact: () => contactSheet(person),
+    consent: () => consentSheet(person), household: () => householdChooseSheet(person),
+  }[first] || (() => detailsSheet(person));
+  const words = missing.filter((k) => k !== 'review').length ? missingSentence(missing.filter((k) => k !== 'review')).replace(/\.$/, '') : 'Karta vznikla narychlo při plánování';
+  return h('div', { class: 'pcard-missing' },
+    h('span', { class: 'mark mark--wait-dot', 'aria-hidden': 'true' }),
+    h('span', { class: 'pcard-missing__text' }, words),
+    h('button', { type: 'button', class: 'link pcard-missing__fix', onclick: open }, 'Doplň'));
+}
+
+const NEXT_SHOWN = 4;
+/** Příští služby: the nearest duties, the answer as a mark; mine open Moje odpověď, others the event. */
+function nextDuties(person) {
+  const self = person.id === myId();
+  const all = upcomingDuties(S.data, person.id, { from: today(), includeDeclined: false, includeCancelled: false });
+  const rows = all.slice(0, NEXT_SHOWN).map(({ event, assignment }) => {
+    const role = roleById(S.data, assignment.roleId);
+    const waits = assignment.status === 'proposed';
+    return eventRow({
+      day: dayOf(event.start), today: dayOf(event.start) === today(),
+      title: role?.name || 'Služba',
+      meta: event.title,
+      trail: h('span', { class: 'pcard-status', title: waits ? 'čeká na odpověď' : 'potvrzeno' },
+        statusSymbol(waits ? 'waiting' : 'confirmed', { large: true }), h('span', { class: 'visually-hidden' }, waits ? 'čeká na odpověď' : 'potvrzeno')),
+      ...(self ? { onclick: () => openMyAnswer(event.id, assignment.id) } : { href: `#setkani/${event.id}` }),
+    });
+  });
+  return h('section', { class: 'pcard-next', 'aria-label': self ? 'Tvoje příští služby' : 'Příští služby' },
+    h('h2', { class: 'pcard-next__title' }, self ? 'Tvoje příští služby' : 'Příští služby'),
+    rows.length ? list(rows, { label: 'Příští služby' }) : quiet(self ? 'Teď žádnou službu nemáš.' : 'Teď žádnou službu nemá.'),
+    all.length > rows.length ? h('p', { class: 'meta pcard-next__more' }, `a ${plural(all.length - rows.length, 'další', 'další', 'dalších')}`) : null);
+}
+
+/** The card body: who, how to reach them, what is missing (leaders), the next duties, and the rest one tap further. */
 export function personCard(person, { pane = false } = {}) {
   const leader = can('leader');
-  return h('article', { class: ['person-card', pane && 'person-card--pane'] },
-    head(person, { pane }),
+  return h('article', { class: ['person-card', 'pcard', pane && 'person-card--pane'] },
+    simpleHead(person, { pane }),
     reach(person),
     leader ? archiveCallout(person) : null,
-    leader ? missingCallout(person) : null,
+    leader ? missingLine(person) : null,
+    nextDuties(person),
+    h('div', { class: 'ev-rows pcard-rows' },
+      h('a', { class: 'ev-row', href: `#osoba/${person.id}/udaje` }, h('span', { class: 'ev-row__title' }, 'Kontakt, domácnost a údaje'), icon('chevron-right', { size: 's' }))));
+}
+
+/** #osoba/<id>/udaje: everything else in the fixed order – Kontakt · Domácnost · Skupiny · Služby · Kdy nemůže ·
+ *  Upozornění · Údaje · Přístup (the last three for leaders). Each section has its own „Uprav“. */
+export function personDetails(person, { pane = false } = {}) {
+  const leader = can('leader');
+  return h('article', { class: ['person-card', pane && 'person-card--pane'] },
+    h('div', { class: 'pcard-details-head' },
+      h('p', { class: 'overline' }, 'Kontakt, domácnost a údaje'),
+      titleEl(personName(person), { small: true, tag: pane ? 'h2' : 'h1' })),
     contactSection(person),
     householdSection(person),
     groupsSection(person),
