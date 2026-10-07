@@ -1,5 +1,9 @@
 # Zvonec 3 – design spec
 
+> **Status (7 Oct 2026): not built.** The owner preferred the look of Next and Simple, so v3 stops at this
+> spec and the mockups. It stays here as a source of behaviour ideas (§1–6) that are being ported into
+> Simple, in Simple's look. Its visual system (§7) is superseded by Simple's.
+
 The spec the v3 engineers build from. Read with `BRIEF.md` (platform, house rules) and the mockups in
 `mockups/` (open `mockups/index.html` from the local server; `?paleta=hlina-ruzova` shows the dark palette).
 `mockups/mock.css` implements the tokens and most components below with the exact names used here. Copy them

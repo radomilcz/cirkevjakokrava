@@ -1,5 +1,9 @@
 # Zvonec 3 – the brief for the new team
 
+> **Status (7 Oct 2026): not built.** The owner preferred the look of Next and Simple, so v3 stops at this
+> spec and the mockups. It stays here as a source of behaviour ideas (§1–6) that are being ported into
+> Simple, in Simple's look. Its visual system (§7) is superseded by Simple's.
+
 Zvonec is the serving-schedule app of the church Církev jako kráva (Nový Jičín): who serves when, the
 calendar of meetings (setkání), people and teams, the outline of a meeting (osnova). Two versions exist
 (`docs/zvonec/next/`, `docs/zvonec/simple/`). The owner wants a **third one, made from scratch by a new team,
