@@ -219,7 +219,8 @@
 .team-line__names--none { color: var(--ink-2); }
 .team-line__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 /* the end of a leader's line: ● / ○ / ✓ and the chevron, turned down while the team is open */
-.team-line__end { display: flex; align-items: center; gap: var(--space-2); align-self: center; color: var(--ink-3); }
+/* (8 px nearer the names than the column gap: the names keep the room they had beside the chevron alone) */
+.team-line__end { display: flex; align-items: center; gap: 6px; align-self: center; margin-left: calc(-1 * var(--space-2)); color: var(--ink-3); }
 .team-line__end > .mark { margin: 0; }
 .team-line__end > .sym { width: 18px; height: 18px; }
 .team-line__end > .icon { transition: transform var(--dur-state) var(--ease); }
