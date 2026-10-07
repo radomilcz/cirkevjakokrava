@@ -294,7 +294,8 @@ function renderApp({ toTop = false } = {}) {
   if (signedIn() && !S.data) return;                 // signed in, data still loading
   const { section, parts, route } = resolve();
   assignGroupHues(S.data?.groups);
-  if (location.hash !== lastHash || toTop) {
+  const navigated = location.hash !== lastHash || toTop;
+  if (navigated) {
     lastHash = location.hash;
     closeLayers();
     document.dispatchEvent(new CustomEvent('zvonec:navigate'));
@@ -323,7 +324,28 @@ function renderApp({ toTop = false } = {}) {
     if (target) { target.scrollIntoView(); return; }
   }
   window.scrollTo(0, toTop ? 0 : position);
+  fitPanes({ reveal: navigated });
 }
+
+// ---------- the detail pane beside a list (≥ 1200 px) ----------
+// It sticks under the top while it fits the window; a taller one scrolls with the page (one scrollbar, the
+// page's – the pane never scrolls inside itself). Opened from far down a list, a tall pane that sits wholly
+// above the window is brought into view.
+
+const paneSizes = typeof ResizeObserver === 'function' ? new ResizeObserver(() => fitPanes()) : null;
+
+function fitPanes({ reveal = false } = {}) {
+  for (const aside of viewEl.querySelectorAll(':is(.split__aside, .cal-split__aside)')) {
+    paneSizes?.observe(aside);
+    const top = parseFloat(getComputedStyle(aside).top) || 0;
+    const tall = aside.offsetHeight > window.innerHeight - top - 16;
+    if (tall !== aside.hasAttribute('data-tall')) aside.toggleAttribute('data-tall', tall);
+    if (reveal && tall && aside.getBoundingClientRect().bottom < 0) {
+      window.scrollTo(0, window.scrollY + aside.getBoundingClientRect().top - 24);
+    }
+  }
+}
+window.addEventListener('resize', () => fitPanes(), { passive: true });
 
 // the top bar gets a hairline once the page scrolls
 function markScrolled() {
