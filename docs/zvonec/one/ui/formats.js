@@ -54,7 +54,8 @@ function usage(formatId) {
 
 const leadText = (format) => {
   const role = roleById(S.data, format.leadRoleId);
-  return role ? `vede role ${role.name}` : 'kdo vede, vybereš v osnově';
+  if (role) return `vede role ${role.name}`;
+  return can('leader') ? 'kdo vede, vybereš v osnově' : 'vede ten, koho určí osnova';
 };
 
 // ---------- the list ----------
@@ -66,7 +67,7 @@ function formatRows(formats, openId) {
     title: f.name,
     meta: leadText(f),
     trail: leader && f.public ? pill('na webu') : null,
-    href: `${LIST}/${f.id}`,
+    href: openId === f.id ? LIST : `${LIST}/${f.id}`,
     open: openId === f.id,
   })), { label: 'Formáty' });
 }

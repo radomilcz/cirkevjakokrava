@@ -11,7 +11,7 @@ import { today, dayOf } from '../../lib/time.js';
 import {
   h, list, row, empty, section, sectionAction, pill, plural, toast, formSheet, confirmSheet, field, textInput,
   selectInput, switchRow, disclosure, isSplit, joinMeta, icon, eventRow, clockRange, fieldError, clearErrors,
-  mapFrame, mapUrl, canMap, quiet, listScreen, detail, detailHead, facts, searchText, layer, button,
+  mapFrame, mapUrl, mapLink, canMap, quiet, listScreen, detail, detailHead, facts, searchText, layer, button,
 } from './kit.js';
 import {
   byName, placeMark, matches, searchEmpty, missingDetail, meetingsWord,
@@ -66,7 +66,7 @@ function placeRows(tree, openId) {
     title: place.name,
     meta: joinMeta([place.address || (canMap(place) ? 'na mapě' : 'bez adresy'), rooms.length ? roomsWord(rooms.length) : null]),
     trail: place.id === main ? pill('hlavní místo') : null,
-    href: `${LIST}/${place.id}`,
+    href: openId === place.id ? LIST : `${LIST}/${place.id}`,
     open: openId === place.id,
   })), { label: 'Místa' });
 }
@@ -140,8 +140,8 @@ export function placeDetail(raw, frame = 'pane') {
       facts: facts([
         building ? { icon: 'home', text: `místnost v budově ${building.name}`, href: `${LIST}/${building.id}` } : null,
         { icon: 'pin', text: place.address ? `${place.address}${inherited ? ' (po budově)' : ''}` : 'Adresa tu zatím není.' },
-        canMap(place) ? { icon: 'external', text: 'Otevři v mapě', href: mapUrl(place), external: true, target: '_blank' } : null,
       ]),
+      after: mapLink(place),
     }),
     canMap(place) ? section({ title: 'Mapa', body: mapFrame(place, { title: `Mapa: ${raw.name}` }) }) : null,
     !building && (rooms.length || leader) ? section({

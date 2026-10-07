@@ -47,6 +47,8 @@ function syncInert() {
     layer.el.dataset.depth = String(i + 1);
   });
   document.documentElement.toggleAttribute('data-layer-open', !!top);
+  fitBottomStack();
+  placeToasts();
 }
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -81,7 +83,9 @@ export function closeLayers() {
 /**
  * Place an anchored popover: under the anchor (right edges aligned: 'below-end'; left edges: 'below-start'), above it
  * ('above-start' – the sidebar foot), or to its right ('right-end' – the rail's avatar, bottoms aligned). It flips
- * when there is no room and keeps 8 px from every window edge; its height is capped by the window (it scrolls inside).
+ * when there is no room and keeps 8 px from every window edge. When it fits on neither side it takes the side with
+ * more room and its height is capped by that room (its body scrolls inside, the foot stays): it never covers its
+ * own anchor (CODEX §6.9).
  */
 function place(el, anchor, placement = 'below-end') {
   const pad = 8;
@@ -90,7 +94,7 @@ function place(el, anchor, placement = 'below-end') {
   el.style.maxHeight = `${H - 2 * pad}px`;
   const r = anchor.getBoundingClientRect();
   const w = el.offsetWidth;
-  const ht = Math.min(el.offsetHeight, H - 2 * pad);
+  let ht = Math.min(el.offsetHeight, H - 2 * pad);
   let left;
   let top;
   if (placement === 'right-end') {
@@ -98,16 +102,60 @@ function place(el, anchor, placement = 'below-end') {
     top = r.bottom - ht;
   } else {
     left = placement.endsWith('start') ? r.left : r.right - w;
-    const below = r.bottom + pad;
-    const above = r.top - pad - ht;
+    const roomBelow = H - pad - (r.bottom + pad);
+    const roomAbove = r.top - pad - pad;
     const wantAbove = placement.startsWith('above');
-    if (wantAbove) top = above >= pad ? above : below;
-    else top = below + ht <= H - pad || above < pad ? below : above;
+    let side;
+    if (wantAbove) side = ht <= roomAbove ? 'above' : ht <= roomBelow ? 'below' : null;
+    else side = ht <= roomBelow ? 'below' : ht <= roomAbove ? 'above' : null;
+    if (!side && Math.max(roomBelow, roomAbove) >= MIN_ROOM) {
+      // fits on neither side: the side with more room, the height capped to it
+      side = roomBelow >= roomAbove ? 'below' : 'above';
+      ht = side === 'below' ? roomBelow : roomAbove;
+      el.style.maxHeight = `${Math.floor(ht)}px`;
+    }
+    if (side === 'below') top = r.bottom + pad;
+    else if (side === 'above') top = r.top - pad - ht;
+    else top = r.bottom + pad;   // a tiny window: keep it inside the window (the clamp below)
   }
   left = Math.max(pad, Math.min(left, W - w - pad));
   top = Math.max(pad, Math.min(top, H - ht - pad));
   el.style.left = `${Math.round(left)}px`;
   el.style.top = `${Math.round(top)}px`;
+}
+const MIN_ROOM = 160;   // less room than this on both sides: the popover may cover its anchor rather than be a sliver
+
+/**
+ * Phone: a second bottom sheet is 24 shorter than the first, so the first one's top edge shows, dimmed (CODEX §6.9).
+ * When the second one is taller (a date picker over a short form), the first one grows (min-height) instead; it gets
+ * its own height back when the second one closes.
+ */
+function fitBottomStack() {
+  stack.forEach((layer, i) => {
+    if (layer.el.dataset.mode !== 'bottom') return;
+    const over = stack[i + 1];
+    layer.el.style.minHeight = '';
+    if (!over || over.el.dataset.mode !== 'bottom') return;
+    const need = over.el.offsetHeight + 24;
+    if (layer.el.offsetHeight < need) layer.el.style.minHeight = `${need}px`;
+  });
+}
+
+/**
+ * Phone: the toasts sit 16 above the tab bar – or, while a bottom sheet covers the tab bar, 16 above the sheet's top
+ * edge (on the dimmed page), so they never cover its fields or its title. A sheet too tall for that: at the top.
+ */
+function placeToasts() {
+  const root = document.querySelector('.toasts');
+  if (!root) return;
+  const sheet = [...stack].reverse().find((l) => l.el.dataset.mode === 'bottom')?.el;
+  root.style.bottom = '';
+  delete root.dataset.place;
+  if (!sheet) return;
+  const H = window.innerHeight;
+  const sheetTop = H - sheet.offsetHeight;
+  if (sheetTop - 16 - root.offsetHeight >= 8) root.style.bottom = `${Math.round(H - sheetTop + 16)}px`;
+  else root.dataset.place = 'top';
 }
 
 /**
@@ -174,7 +222,7 @@ function open({
   const onResize = () => {
     // crossing 600 changes the form of the layer: close it rather than leave a popover where a sheet belongs
     if ((mode === 'bottom') !== phone()) close({ restore: false });
-    else reposition();
+    else { reposition(); fitBottomStack(); placeToasts(); }
   };
   window.addEventListener('resize', onResize);
 
@@ -197,8 +245,8 @@ function open({
     el, head: headEl, body: bodyEl, foot: footEl, close, kind, reposition,
     /** Re-anchor (the opener was redrawn): the popover moves to the new element, focus returns there. */
     setAnchor: (next) => { if (next) { anchor = next; returnTo = next; next.setAttribute('aria-expanded', 'true'); reposition(); } },
-    setBody: (content) => { bodyEl.replaceChildren(...nodes(content)); reposition(); },
-    setFoot: (content) => { footEl.replaceChildren(...nodes(content)); footEl.hidden = !nodes(content).length; reposition(); },
+    setBody: (content) => { bodyEl.replaceChildren(...nodes(content)); reposition(); fitBottomStack(); placeToasts(); },
+    setFoot: (content) => { footEl.replaceChildren(...nodes(content)); footEl.hidden = !nodes(content).length; reposition(); fitBottomStack(); placeToasts(); },
     setTitle: (text) => { if (titleEl) titleEl.textContent = text; },
   };
 }
@@ -371,6 +419,7 @@ export function toast(words, { action, actionLabel = 'Vrať', duration = 6000, i
     action ? h('button', { type: 'button', class: 'btn btn--quiet toast__action', onclick: undo }, actionLabel) : null,
     h('button', { type: 'button', class: 'icon-btn toast__close', 'aria-label': 'Zavři', title: 'Zavři', onclick: done }, icon('x', { size: 's' })));
   root.append(el);
+  placeToasts();
   if (undo) lastUndo = { el, undo };
   timer = setTimeout(done, duration);
   el.addEventListener('pointerenter', () => clearTimeout(timer));

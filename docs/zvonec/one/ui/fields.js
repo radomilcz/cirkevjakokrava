@@ -103,7 +103,8 @@ export function dateInput({ name, value = '', onChange, placeholder = 'Vyber den
         iconButton('chevron-left', 'Předchozí měsíc', { onclick: () => { month = shiftMonth(month, -1); draw(); } }),
         h('span', { class: 'date-sheet__label', 'aria-live': 'polite' }, monthLabel(month)),
         iconButton('chevron-right', 'Další měsíc', { onclick: () => { month = shiftMonth(month, 1); draw(); } }),
-        button('Dnes', { variant: 'quiet', onclick: () => pick(todayIso()) })),
+        h('span', { class: 'date-sheet__gap' }),
+        button('Dnes', { variant: 'quiet', cls: 'date-sheet__today', onclick: () => pick(todayIso()) })),
       monthGrid({ month, selected: hidden.value, today: todayIso(), onPick: pick, label: monthLabel(month) }),
     ]);
     const pick = (day) => {
@@ -280,7 +281,7 @@ export function disclosure(body, { label = 'Další možnosti', open = false } =
  *     everyone: S.data.people, onPick: (person) => …, onAdd: (name) => … (leader: „Přidat „Jana Malá“ a vybrat“),
  *   })
  */
-export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone = [], onPick, onAdd, searchPlaceholder = 'Napiš jméno…' } = {}) {
+export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone = [], onPick, onAdd, searchPlaceholder = 'Hledej jméno' } = {}) {
   let current = pool || pools[0]?.id;
   let query = '';
   let sheet;

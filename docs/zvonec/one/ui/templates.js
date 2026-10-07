@@ -112,7 +112,7 @@ function listBody(openId) {
     title: t.name,
     meta: templateMeta(t),
     trail: t.archived ? pill('v archivu') : t.public ? pill('na webu') : null,
-    href: `${LIST}/${t.id}`,
+    href: t.id === openId ? LIST : `${LIST}/${t.id}`,
     open: t.id === openId,
   })), { label: 'Šablony' });
 }

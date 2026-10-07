@@ -52,13 +52,12 @@
 /* ---------- Nastavení sboru: value blocks ---------- */
 .cfg-blocks { display: grid; gap: var(--gap-group); }
 .cfg-block { padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); min-width: 0; }
-@media (max-width: 599.98px) { .cfg-block { padding: var(--space-4); } }
 .cfg-values { display: grid; }
 .cfg-value { display: grid; gap: 2px; padding: var(--space-2) 0; border-top: 1px solid var(--hairline); }
 .cfg-value:first-child { border-top: 0; padding-top: 0; }
 .cfg-value:last-child { padding-bottom: 0; }
 .cfg-value > dt { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
-.cfg-value > dd { font-size: var(--type-body); line-height: var(--lh-body); overflow-wrap: anywhere; }
+.cfg-value > dd { margin: 0; font-size: var(--type-body); line-height: var(--lh-body); overflow-wrap: anywhere; }
 @media (min-width: 600px) {
   .cfg-value { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); align-items: baseline; }
   .cfg-value > dd { text-align: right; }
