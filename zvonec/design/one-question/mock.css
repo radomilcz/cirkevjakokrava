@@ -129,8 +129,9 @@ svg.i.s { width: 20px; height: 20px; }
 .desk { width: 1440px; height: 900px; background: var(--ground); display: flex; overflow: hidden; }
 .rail { width: 240px; background: var(--bar); padding: 26px 14px; display: flex; flex-direction: column; gap: 4px; }
 .brand { font-family: var(--font-brand); font-weight: 800; font-size: 17px; white-space: nowrap; padding: 0 10px 26px; }
-.ri { display: flex; gap: 12px; align-items: center; height: 46px; padding: 0 12px; border-radius: 14px; font-size: 16px; font-weight: 620; color: var(--ink-2); }
+.ri { position: relative; display: flex; gap: 12px; align-items: center; height: 46px; padding: 0 12px; border-radius: 14px; font-size: 16px; font-weight: 620; color: var(--ink-2); }
 .ri.on { background: var(--ground); color: var(--ink); font-weight: 720; }
+.ri.on::before { content: ""; position: absolute; left: -14px; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
 .rail .foot { margin-top: auto; display: flex; gap: 10px; align-items: center; padding: 0 10px; font-size: 14px; font-weight: 620; }
 .dmain { flex: 1; min-width: 0; padding: 40px 48px; display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 36px; }
 .dhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }

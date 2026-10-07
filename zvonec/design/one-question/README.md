@@ -5,8 +5,8 @@ Every screen answers one question and fits on one phone screen; details are one 
 
 Open the pages from a local server rooted at the repo, so the tokens and fonts under `docs/` load
 (e.g. `python3 -m http.server` in the repo root, then `/zvonec/design/one-question/moje.html`).
-`index.html` is the first overview; the other pages are the refined screens; the PNGs are how they render
-(390 × 844 phone, 1440 × 900 desktop).
+`index.html` is the first overview; the other pages are the refined screens, drawn as a 390 × 844 phone or a
+1440 × 900 desktop. Screenshots are not committed (`*.png` is ignored outside `docs/`).
 
 ## Tabs
 
@@ -65,5 +65,9 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - Rail: Moje · Obsazení · Kalendář · Lidé and the person at the bottom. Each tab is its phone screen on
      the left and the chosen item on the right (Moje → the event of the chosen duty as a member sees it,
      Obsazení → the event as a leader sees it, Lidé → the person).
+   - The chosen item has only a soft fill, no edge (the owner did not like the dark bar). The fill is a solid
+     step of our pink (`--rose-1`): the alpha tint `--pick` is solved over the rail colour, so on the lighter
+     page it turns cold and pinkish-purple. The build fixes `--pick` at the source (`zvonec/palettes.mjs`).
+   - The rail keeps the fine bar at the left edge of the current item, as in the live app.
 
 Data and logic stay as they are – only the screens change.
