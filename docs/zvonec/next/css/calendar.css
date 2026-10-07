@@ -396,9 +396,10 @@ span.roster-entry { cursor: default; }
 .osnova { display: grid; }
 .osnova__item {
   position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0 var(--space-1);
-  border-top: 1px solid var(--hairline); background: var(--ground); transition: transform var(--dur-state) var(--ease);
+  background: var(--ground); transition: transform var(--dur-state) var(--ease);
 }
-.osnova__item:first-child { border-top: 0; }
+/* the line between two points is the ::before of the lower one (as on rows), so a lit point can hide both of its lines */
+.osnova__item + .osnova__item::before { content: ""; position: absolute; top: 0; left: var(--osnova-rule, 0); right: var(--osnova-rule, 0); height: 1px; background: var(--hairline); }
 .osnova__item[data-dragging] { z-index: 2; transition: none; box-shadow: var(--lift-4); border-radius: var(--shape-control); }
 .osnova__grip { cursor: grab; touch-action: none; color: var(--ink-2); margin-left: -10px; }
 .osnova__item[data-dragging] .osnova__grip { cursor: grabbing; }
@@ -406,8 +407,16 @@ span.roster-entry { cursor: default; }
   display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: var(--space-3); align-items: start; min-width: 0;
   padding: var(--space-3) var(--space-2); border: 0; border-radius: var(--shape-inner); background: none; font: inherit; color: inherit; text-align: left;
 }
+/* a leader's point lights up like a row: the grip, the text and ⋯ in one rounded fill, no line touching it. The
+   button stretches over the point; the grip and ⋯ stay their own targets above it. */
+.osnova:has(button.osnova__open) { --osnova-rule: var(--space-3); margin: 0 calc(-1 * var(--space-3)); }
+.osnova:has(button.osnova__open) > .osnova__item { padding: 0 var(--space-3); border-radius: var(--shape-control); }
 button.osnova__open { cursor: pointer; }
-button.osnova__open:hover { background: var(--wash); }
+button.osnova__open::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.osnova__item > :not(.osnova__open) { position: relative; z-index: 1; }
+.osnova__item:has(> button.osnova__open):not([data-dragging]):hover { background-image: linear-gradient(var(--wash), var(--wash)); }
+.osnova__item:has(> button.osnova__open):hover::before, .osnova__item:has(> button.osnova__open):hover + .osnova__item::before,
+.osnova__item[data-dragging]::before, .osnova__item[data-dragging] + .osnova__item::before { background: transparent; }
 .osnova__time { font-size: var(--type-meta); line-height: var(--lh-body); font-weight: var(--weight-strong); }
 .osnova__end { display: block; font-weight: var(--weight-regular); color: var(--ink-2); line-height: var(--lh-meta); }
 .osnova__body { display: grid; gap: 2px; min-width: 0; }
