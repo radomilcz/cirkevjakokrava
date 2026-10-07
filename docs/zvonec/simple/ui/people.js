@@ -355,11 +355,12 @@ function birthdayHint() {
   return rowLink(words, { href: '#lide/narozeniny', icon: 'cake' });
 }
 
-/** „Podrobný výpis“ ↔ „Jednoduchý seznam“: the view of the list, remembered in this browser. */
+/** „Podrobný výpis“ ↔ „Jednoduchý seznam“: the view of the list, remembered in this browser. S beside the birthday
+ *  line on a desktop, M on a phone (codex §1). */
 function viewToggle() {
   const detailed = state.detailed;
   return button(detailed ? 'Jednoduchý seznam' : 'Podrobný výpis', {
-    size: 's', variant: 'quiet', icon: detailed ? 'people' : isDesktop() ? 'table' : 'list', cls: 'people-view__toggle',
+    size: isDesktop() ? 's' : 'm', variant: 'quiet', icon: detailed ? 'people' : isDesktop() ? 'table' : 'list', cls: 'people-view__toggle',
     onclick: () => {
       state.detailed = !detailed;
       state.picking = false;
@@ -382,9 +383,10 @@ function bulkBar({ dock = false, redraw = render } = {}) {
   const done = () => { state.picked.clear(); state.picking = false; };
   const count = n ? plural(n, 'vybraný člověk', 'vybraní lidé', 'vybraných lidí') : 'Klepni na lidi, které chceš vybrat.';
   const actions = [
-    button(dock ? 'Zkopíruj e‑maily' : 'Zkopíruj e-maily', { size: 's', icon: 'copy', disabled: !n, onclick: () => copyEmails(pickedPeople()) }),
-    button('Přidej do skupiny', { size: 's', icon: 'teams', disabled: !n, onclick: () => bulkGroupSheet(pickedPeople(), done) }),
-    button('Stáhni CSV', { size: 's', icon: 'download', disabled: !n, onclick: () => downloadCsv(pickedPeople()) }),
+    // S beside the count on a desktop, M in the dock on a phone (codex §1)
+    button('Zkopíruj e-maily', { size: dock ? 'm' : 's', icon: 'copy', disabled: !n, onclick: () => copyEmails(pickedPeople()) }),
+    button('Přidej do skupiny', { size: dock ? 'm' : 's', icon: 'teams', disabled: !n, onclick: () => bulkGroupSheet(pickedPeople(), done) }),
+    button('Stáhni CSV', { size: dock ? 'm' : 's', icon: 'download', disabled: !n, onclick: () => downloadCsv(pickedPeople()) }),
   ];
   if (dock) {
     return h('div', { class: 'dock people-bulk people-bulk--dock', role: 'region', 'aria-label': 'Vybraní lidé' },

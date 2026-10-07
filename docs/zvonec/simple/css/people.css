@@ -5,36 +5,40 @@
    lit whole and rounded, touches no line and keeps 3 px from the next (components.css .list/.row, shell.css
    .people-table). The head (.people-head) and the column (.people-col) are css/simple.css. */
 
-/* ---------- the column: head · switch · search and chips · the results, one gap between them ---------- */
-.people-col { gap: var(--space-4); }
+/* ---------- the head (zvonec/design/one-question/codex.md §4): title · switch · search · chips · the view line,
+   12 apart; the list 24 under them. The switch and the search share one width (520 on desktop, the whole column on
+   a phone), so both edges line up. Heights, corners and labels are the kit's (M controls, chips as capsules). ---------- */
+.people-col { --people-head-w: 520px; gap: var(--space-3); }
 .people-col > .people-head { padding-bottom: 0; }
+.people-col > .people-results { margin-top: var(--space-3); }
 .people-head__tools:has(> .btn:last-child) { margin-right: 0; }   /* a solid button ends at the column's edge (⋯ and + reach into it) */
-.people-switch > .seg { max-width: 360px; }
 .people-find { display: grid; gap: var(--space-3); }
+.people-find > .chips { margin-top: -2px; margin-bottom: -2px; }   /* the row's 2 px room for the focus ring is not part of the gap */
 /* phone: the search and the chips stay at the top while the list scrolls (there is no top bar on this screen) */
 @media (max-width: 959.98px) {
   .people-find {
-    position: sticky; top: 0; z-index: 10; margin: calc(-1 * var(--space-2)) calc(-1 * var(--gutter));
-    padding: calc(env(safe-area-inset-top) + var(--space-2)) var(--gutter) var(--space-2); background: var(--ground);
+    position: sticky; top: 0; z-index: 10; margin: calc(-1 * var(--space-3)) calc(-1 * var(--gutter));
+    padding: calc(env(safe-area-inset-top) + var(--space-3)) var(--gutter) var(--space-3); background: var(--ground);
   }
 }
 @media (min-width: 960px) {
   .people-col.people-col--table, .people-col.people-col--wide { max-width: none; }
-  .people-find > .search { max-width: 440px; }
+  /* the whole control group keeps that width: the chips wrap inside it, the view switch ends where the search does */
+  .people-switch > .seg, .people-find, .people-view { max-width: var(--people-head-w); }
 }
 
-/* ---------- the line above the results: the birthday line, and the view switch at its end ---------- */
-/* where both do not fit on one line (a phone), the switch takes the next line, still at the end */
-.people-view { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-height: var(--control-s); }
+/* the line under the chips: the birthday line, and the view switch at its end (S beside text on a desktop, M on
+   a phone, where it takes the next line when both do not fit) */
+.people-view { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 .people-hint { flex: 0 1 auto; min-width: 0; }
 .people-hint:empty { display: none; }
-/* the line is as tall as its words; its 44 px tap target reaches into the gaps around it */
+/* the birthday line is as tall as its words; its 44 px tap target reaches into the gaps around it */
 .people-hint > .row-link { position: relative; min-height: 0; margin: 0; }
 .people-hint > .row-link::after { content: ""; position: absolute; inset: calc(-1 * var(--space-3)) 0; }
 .people-view__toggle { flex: none; margin-left: auto; }
 
 /* ---------- the results: the list or the table, the count ---------- */
-/* the first letter (or heading) under that line keeps the column's gap, not twice it */
+/* the first letter (or heading) starts the list: its gap above is the head's 24 */
 .people-results > :is(.index-letter, .people-sub):first-child { padding-top: 0; }
 .people-foot { padding: var(--space-5) 0 var(--space-2); }
 .people-sub { padding-top: var(--space-4); }
@@ -54,7 +58,7 @@ button.row[aria-pressed="true"] { background: var(--pick); --tint: var(--card); 
 .row[aria-pressed="true"] .pick-box { background: var(--act); box-shadow: none; }
 .row[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
 .row[aria-pressed="true"]::before, .row[aria-pressed="true"] + .row::before { background: transparent; }
-.screen.people-root--picking { padding-bottom: calc(var(--tabbar-h) + 170px + env(safe-area-inset-bottom)); }
+.screen.people-root--picking { padding-bottom: calc(var(--tabbar-h) + 4 * var(--control-m) + 6 * var(--space-3) + env(safe-area-inset-bottom)); }   /* room for the dock */
 
 /* the bulk bar: docked above the tab bar on a phone, above the table on desktop (it stays in sight while the
    table scrolls) */
@@ -62,9 +66,7 @@ button.row[aria-pressed="true"] { background: var(--pick); --tint: var(--card); 
 .people-bulk--dock { padding-top: var(--space-3); background: var(--overlay); box-shadow: var(--lift-3); border-radius: var(--shape-block) var(--shape-block) 0 0; }
 .people-bulk__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: var(--hit); margin-top: calc(-1 * var(--space-2)); }
 .people-bulk__head > .link { min-height: var(--hit); padding: 0 var(--space-1); }
-.people-bulk__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
-.people-bulk__grid > .btn { flex-direction: column; gap: 4px; min-height: 64px; padding: var(--space-2) var(--space-1); font-size: var(--type-caption); line-height: var(--lh-caption); text-align: center; white-space: normal; }
-.people-bulk__grid > .btn > .icon { margin: 0; }
+.people-bulk__grid { display: grid; gap: var(--space-2); }   /* M buttons, one under another: three labels do not fit side by side */
 .people-bulk__count { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); }
 .people-bulk__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 @media (min-width: 960px) {
@@ -72,11 +74,12 @@ button.row[aria-pressed="true"] { background: var(--pick); --tint: var(--card); 
      under it), the bar a lifted card in it, as wide as the rows */
   .people-bulk-band { position: sticky; top: 0; z-index: 9; margin: 0 calc(-1 * var(--space-3)); padding: var(--space-2) 0; background: var(--ground); }
   .people-bulk:not(.dock) {
-    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); min-height: 52px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4);
     padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
-    border-radius: var(--shape-control); background: var(--overlay); box-shadow: var(--lift-3);
+    border-radius: var(--shape-block); background: var(--overlay); box-shadow: var(--lift-3);
   }
-  .people-results:has(> .people-bulk-band) .people-table th { top: calc(52px + 2 * var(--space-2)); }
+  /* the header row sticks under the band: 8 · the bar (8 · an S button · 8) · 8 */
+  .people-results:has(> .people-bulk-band) .people-table th { top: calc(var(--control-s) + 4 * var(--space-2)); }
 }
 
 /* ---------- desktop: the table ---------- */
@@ -164,11 +167,11 @@ button.row[aria-pressed="true"] { background: var(--pick); --tint: var(--card); 
 .person-reach { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); gap: var(--space-2); }
 .person-reach[data-n="1"] { --n: 1; }
 .person-reach[data-n="2"] { --n: 2; }
-.person-reach > .btn { flex-direction: column; gap: 4px; min-height: 68px; padding: var(--space-2) var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); text-align: center; }
+.person-reach > .btn { flex-direction: column; gap: 4px; padding: var(--space-2) var(--space-1); text-align: center; }
 .person-reach > .btn > .icon { margin: 0; width: var(--icon-m); height: var(--icon-m); }
 @media (min-width: 960px) {
   .person-reach { display: flex; flex-wrap: wrap; }
-  .person-reach > .btn { flex-direction: row; min-height: var(--control-m); padding: 0 var(--space-4); gap: var(--space-2); font-size: var(--type-body); }
+  .person-reach > .btn { flex-direction: row; padding: 0 var(--space-4); gap: var(--space-2); }
   .person-reach > .btn > .icon { width: var(--icon-s); height: var(--icon-s); margin-left: -4px; }
 }
 .person-quiet { padding: var(--space-1) 0; }
