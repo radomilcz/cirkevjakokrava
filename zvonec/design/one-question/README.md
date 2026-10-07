@@ -46,8 +46,10 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - Later (the owner liked Next's Seznam): the list is the one view on the phone and the desktop alike – by week,
      one arch per day, an event with its time from–to, the bar in its Účel hue (the brand's colours: Nedělní
      setkání sand, Zkouška blue, Skupinka green, Akce lilac), place, „ty · Kázání · potvrzeno“ and for leaders
-     ◔ 14 z 15 · chybí 1; „Ukaž, co už bylo“, „Ukaž další týdny“. ≥ 1200 px: the list | the event, as Moje; the
-     month only as the „Říjen ▾“ mini month.
+     ◔ 14 z 15 · chybí 1; „Ukaž, co už bylo“, „Ukaž další týdny“. ≥ 1200 px: the list | the event, as Moje.
+   - Then the owner missed the whole month: a switch Seznam · Měsíc under the head (remembered per browser).
+     Měsíc (#kalendar/mesic[/<month | day>]) is the grid with the chips in the Účel hues on a desktop (≥ 1200 px the
+     event beside it) and the small month with the chosen day's events on a phone.
 4. **Obsazení** (`obsazeni.html`, approved; leaders only)
    - Only events in the next 4 weeks with something to do. Right: „14 z 15“ with the fill ring (kept here,
      where events are compared). Under the title: „+ Role“ per empty slot, „○ 2 ještě neodpověděli ›“,

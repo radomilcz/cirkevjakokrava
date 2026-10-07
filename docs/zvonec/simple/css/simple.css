@@ -298,6 +298,20 @@
 .cal-agenda .cal-more { margin-top: var(--space-4); }
 .cal-head__add { margin-right: 10px; }   /* the desktop button, then ⋯ */
 
+/* under the head: Seznam · Měsíc, and beside it „Říjen ▾“ (the list) or ‹ Říjen 2026 › Dnes (the month) */
+.cal-screen .cal-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); margin: 0 0 var(--space-3); }
+.cal-screen .cal-toolbar > .cal-views { flex: 0 0 auto; width: 216px; }
+.cal-screen .cal-toolbar > .cal-period { flex: 0 1 auto; }
+
+/* Měsíc on a desktop: a chip is the title, up to two lines (the time is in its name for a screen reader and in
+   the pane), its bar in the Účel hue; mine filled with the hue, the open one with the pick */
+.cal-chip__time { display: none; }
+.cal-chip__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+@media (min-width: 1200px) {
+  .cal--month > .split { grid-template-columns: minmax(0, 1fr) minmax(380px, 440px); }
+  .cal--month > .split > .split__aside { top: var(--space-5); margin-top: var(--space-7); }
+}
+
 /* the mini month (a sheet without a title row: the month and its arrows are the head) */
 .sheet--month .sheet__head { display: none; }
 .sheet--month .sheet__body { gap: var(--space-3); padding-top: var(--space-2); }
