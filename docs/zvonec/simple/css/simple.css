@@ -206,9 +206,6 @@
   padding: var(--space-4) 0;
 }
 .team-line__team { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); overflow-wrap: anywhere; }
-@supports (grid-template-columns: subgrid) {
-  .team, .team-line, .tslots, .tslot { grid-template-columns: subgrid; }
-}
 /* the line between two teams belongs to the lower one: a ::before as wide as the text, in the 3 px between them,
    so a lit line or role never touches it – it steps aside for the lit row above or below it */
 .team + .team { margin-top: 3px; }
@@ -261,6 +258,9 @@
 .tslot__name { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
 .tslots__more { grid-column: 2 / -1; }
 .tslots__more > .row-link { margin-top: 0; }
+@supports (grid-template-columns: subgrid) {
+  .team, .team-line, .tslots, .tslot { grid-template-columns: subgrid; }
+}
 
 /* „+ Klávesy“ / „+ Doplň“ for an empty slot: an S capsule (codex §1–3), its hit area 44 */
 .add-chip {
