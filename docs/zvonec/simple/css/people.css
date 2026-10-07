@@ -23,12 +23,19 @@
   .people-find > .search { max-width: 440px; }
 }
 
-/* ---------- the results: the birthday line, the list or the table, the count ---------- */
-/* the line is as tall as its words, so they keep the column's gap; its 44 px tap target reaches into the gaps */
+/* ---------- the line above the results: the birthday line, and the view switch at its end ---------- */
+/* where both do not fit on one line (a phone), the switch takes the next line, still at the end */
+.people-view { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-height: var(--control-s); }
+.people-hint { flex: 0 1 auto; min-width: 0; }
+.people-hint:empty { display: none; }
+/* the line is as tall as its words; its 44 px tap target reaches into the gaps around it */
 .people-hint > .row-link { position: relative; min-height: 0; margin: 0; }
 .people-hint > .row-link::after { content: ""; position: absolute; inset: calc(-1 * var(--space-3)) 0; }
-.people-results > .people-hint + .list { margin-top: var(--space-3); }
-.people-results > .people-hint + .people-bulk-band { margin-top: var(--space-2); }
+.people-view__toggle { flex: none; margin-left: auto; }
+
+/* ---------- the results: the list or the table, the count ---------- */
+/* the first letter (or heading) under that line keeps the column's gap, not twice it */
+.people-results > :is(.index-letter, .people-sub):first-child { padding-top: 0; }
 .people-foot { padding: var(--space-5) 0 var(--space-2); }
 .people-sub { padding-top: var(--space-4); }
 .people-results > .empty { padding-top: var(--space-8); }

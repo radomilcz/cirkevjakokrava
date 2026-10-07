@@ -189,9 +189,7 @@
 .ev-you__status[data-status="declined"] { color: var(--no-ink); }
 .ev-you__clash { margin-top: calc(-1 * var(--space-2)); }
 
-/* Kdo slouží: one line per team */
-.ev-who { margin-top: var(--space-3); }
-.ev-who__title { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+/* Kdo slouží: one line per team; a leader's line ends with the team's status and opens the team in place */
 .ev-who__legend { display: flex; flex-wrap: wrap; gap: 2px var(--space-4); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
 .ev-who__legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .ev-who__lines { display: grid; grid-template-columns: minmax(84px, max-content) 1fr auto; column-gap: var(--space-4); margin-top: var(--space-1); }
@@ -200,40 +198,81 @@
 .mark--error { width: 10px; height: 10px; margin: 0 7px 0 1px; vertical-align: 0; background: var(--no-solid); }
 .ev-who__legend .mark { margin-right: 0; }
 
+/* a team: its line and, opened, its roles. Every part shares the columns of .ev-who__lines (subgrid): the team
+   names and the roles in one column as wide as the longest, the names and the people in the next */
+.team { position: relative; grid-column: 1 / -1; display: grid; grid-template-columns: minmax(96px, 28%) 1fr auto; column-gap: var(--space-4); }
 .team-line {
-  position: relative; display: grid; grid-template-columns: minmax(96px, 28%) 1fr auto; align-items: start; gap: var(--space-2) var(--space-4);
-  padding: var(--space-4) 0; border-bottom: 1px solid var(--hairline);
+  position: relative; grid-column: 1 / -1; display: grid; grid-template-columns: minmax(96px, 28%) 1fr auto; align-items: start; gap: var(--space-2) var(--space-4);
+  padding: var(--space-4) 0;
 }
 .team-line__team { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); overflow-wrap: anywhere; }
-/* every line shares one column for the team names: as wide as the longest one (subgrid) */
 @supports (grid-template-columns: subgrid) {
-  .team-line { grid-column: 1 / -1; grid-template-columns: subgrid; }
+  .team, .team-line, .tslots, .tslot { grid-template-columns: subgrid; }
 }
+/* the line between two teams belongs to the lower one: a ::before as wide as the text, in the 3 px between them,
+   so a lit line or role never touches it – it steps aside for the lit row above or below it */
+.team + .team { margin-top: 3px; }
+.team + .team::before { content: ""; position: absolute; top: -2px; left: 0; right: 0; height: 1px; background: var(--hairline); }
+.team:has(> .team-line > .team-line__open:hover)::before,
+.team:not([data-expanded]):has(> .team-line > .team-line__open:hover) + .team::before,
+.team[data-expanded]:has(> .tslots > .tslot--button:last-child:hover) + .team::before { background: transparent; }
 .team-line__body { display: grid; gap: var(--space-3); min-width: 0; }
 .team-line__names { font-size: var(--type-body); line-height: var(--lh-body); }
 .team-line__names:empty { display: none; }
 .team-line__names--none { color: var(--ink-2); }
 .team-line__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.team-line > .icon { align-self: center; color: var(--ink-3); }
+/* the end of a leader's line: ● / ○ / ✓ and the chevron, turned down while the team is open */
+.team-line__end { display: flex; align-items: center; gap: var(--space-2); align-self: center; color: var(--ink-3); }
+.team-line__end > .mark { margin: 0; }
+.team-line__end > .sym { width: 18px; height: 18px; }
+.team-line__end > .icon { transition: transform var(--dur-state) var(--ease); }
+.team[data-expanded] .team-line__end > .icon { transform: rotate(90deg); }
 /* a name moves to the next line whole; only a name longer than the line breaks inside */
 .nm { display: inline-block; max-width: 100%; }
 /* a leader's line opens the team: the button covers the line, the chips stay their own tap targets */
-.team-line__open { position: absolute; inset: 0 calc(-1 * var(--space-3)); border: 0; border-radius: var(--shape-control); background: transparent; cursor: pointer; }
+.team-line__open {
+  position: absolute; inset: 0 calc(-1 * var(--space-3)); border: 0; border-radius: var(--shape-control); background: transparent; cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease);
+}
 .team-line__open:hover { background: var(--wash); }
 .team-line__open:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
 .team-line > :not(.team-line__open) { position: relative; pointer-events: none; }
 .team-line .add-chip { pointer-events: auto; }
-.team-line:has(> .team-line__open:hover), .team-line:has(+ .team-line > .team-line__open:hover) { border-bottom-color: transparent; }
+/* open: the empty slots are „+ Doplň“ in their roles, so the chips (and a „nikdo“ beside them) go */
+.team[data-expanded] > .team-line { padding-bottom: var(--space-2); }
+.team[data-expanded] .team-line__chips, .team:not([data-expanded]) .team-line__names--none[data-chips] { display: none; }
 
+/* an open team: each role with who and what they said, lit like a row (whole, rounded, 3 px apart) */
+.tslots { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(96px, 28%) 1fr auto; column-gap: var(--space-4); row-gap: 3px; padding: 3px 0 var(--space-3); }
+.tslots[hidden] { display: none; }
+.tslot {
+  grid-column: 1 / -1; display: grid; grid-template-columns: minmax(96px, 28%) 1fr auto; column-gap: var(--space-4); align-items: baseline; align-content: center;
+  min-height: 48px; padding: var(--space-2) 0; border: 0; background: transparent; color: inherit; text-align: left; font: inherit;
+}
+.tslot--button {
+  margin: 0 calc(-1 * var(--space-3)); padding-left: var(--space-3); padding-right: var(--space-3); border-radius: var(--shape-control); cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease);
+}
+.tslot--button:hover { background: var(--wash); }
+.tslot--button:active { background: var(--press); }
+.tslot--button:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.tslot__role { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: anywhere; }
+.tslot__who { grid-column: 2 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-3); min-width: 0; }
+.tslot__name { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
+.tslots__more { grid-column: 2 / -1; }
+.tslots__more > .row-link { margin-top: 0; }
+
+/* „+ Klávesy“ / „+ Doplň“ for an empty slot: an S capsule (codex §1–3), its hit area 44 */
 .add-chip {
-  position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 16px 0 12px;
+  position: relative; display: inline-flex; align-items: center; gap: 4px; min-height: var(--control-s); padding: 0 14px 0 10px;
   border: 1.5px dashed var(--edge-control); border-radius: var(--shape-pill); background: var(--ground);
-  color: var(--ink); font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); cursor: pointer;
+  color: var(--ink); font-size: var(--type-control-s); line-height: var(--lh-meta); font-weight: var(--weight-control); cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease);
 }
 .add-chip:hover { border-style: solid; background: var(--wash); }
-.add-chip::after { content: ""; position: absolute; inset: -2px 0; }
+.add-chip::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2) 0; }
 
-/* Osnova ›, O setkání a místě › */
+/* rows with › under a block (the person card's „Kontakt, domácnost a údaje ›“) */
 .ev-rows { display: grid; margin-top: calc(-1 * var(--space-4)); }
 .ev--pane .ev-rows > :last-child::after { content: none; }   /* the card's edge closes the list in a pane */
 .ev-row {
@@ -251,33 +290,24 @@
 .ev-row:hover { background: var(--wash); }
 .ev-row:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
 .ev-row:hover::after, .ev-row:has(+ .ev-row:hover)::after { background: transparent; }
-.ev-who:has(+ .ev-rows > .ev-row:first-child:hover) .team-line:last-child { border-bottom-color: transparent; }
 
-/* the team sheet: each role with who and what they said */
-.tslots { display: grid; }
-.tslot {
-  display: grid; grid-template-columns: minmax(96px, 34%) 1fr auto; align-items: center; gap: var(--space-3);
-  min-height: 64px; padding: var(--space-3) 0; border: 0; border-bottom: 1px solid var(--hairline);
-  background: transparent; color: inherit; text-align: left; font: inherit;
+/* Osnova: the first points in three columns – time, name, who leads – then „Celá osnova ›“ */
+.ev-outline__list { display: grid; grid-template-columns: max-content minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-4); }
+.ev-outline__item {
+  position: relative; grid-column: 1 / -1; display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-4);
+  align-items: baseline; padding: 10px 0;
 }
-.tslot:last-child { border-bottom: 0; }
-.tslot--button { cursor: pointer; margin: 0 calc(-1 * var(--space-3)); padding-left: var(--space-3); padding-right: var(--space-3); width: calc(100% + 2 * var(--space-3)); }
-/* rounded only while lit: its line is a border, and a rounded border curls up at both ends */
-.tslot--button:hover { background: var(--wash); border-bottom-color: transparent; border-radius: var(--shape-control); }
-.tslot:has(+ .tslot--button:hover) { border-bottom-color: transparent; }
-.tslot__role { font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); }
-.tslot__who { display: grid; gap: 2px; justify-items: start; min-width: 0; }
-.tslot__name { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
-.tslot > .icon { color: var(--ink-3); }
-.tslot:not(.tslot--button)::after { content: ""; }
+@supports (grid-template-columns: subgrid) { .ev-outline__item { grid-template-columns: subgrid; } }
+.ev-outline__item + .ev-outline__item::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--hairline); }
+.ev-outline__time { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); font-feature-settings: var(--numerals); }
+.ev-outline__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); overflow-wrap: anywhere; }
+.ev-outline__who { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: anywhere; }
+.ev-outline__who--missing { color: var(--no-ink); }
+.ev-outline__empty { display: grid; justify-items: start; }
 
-/* O setkání a místě */
-.about-sheet .sheet__body { gap: var(--space-4); }
-.ev-place { display: grid; gap: var(--space-3); }
-.ev-place__name { font-weight: var(--weight-strong); }
-.ev-about-kind { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-.ev-about-kind > :is(.tag, .pill) { flex: none; }
-.ev-about-kind__series { flex: 1 1 100%; }
+/* O setkání: the place and its address on one line with „Otevři v mapě ↗“ */
+.ev-where { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-4); }
+.ev-where__text { min-width: 0; }
 
 /* ---------- Kalendář ---------- */
 /* phone: the head – the title, „Říjen ▾“, + and ⋯ */
@@ -285,9 +315,9 @@
 .cal-head > .title { min-width: 0; }
 .cal-head__tools { display: flex; align-items: center; gap: var(--space-1); margin-right: -10px; }
 .month-chip {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px 0 16px; border: 0; border-radius: var(--shape-pill);
+  display: inline-flex; align-items: center; gap: 6px; min-height: var(--control-m); padding: 0 12px 0 16px; border: 0; border-radius: var(--shape-pill);
   background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control); color: var(--ink);
-  font: inherit; font-size: var(--type-meta); font-weight: var(--weight-bold); cursor: pointer; white-space: nowrap;
+  font: inherit; font-size: var(--type-control); font-weight: var(--weight-control); cursor: pointer; white-space: nowrap;
 }
 .month-chip:hover { background: var(--wash); }
 .month-chip > .icon { color: var(--ink-2); }

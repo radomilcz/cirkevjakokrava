@@ -1,18 +1,20 @@
 // Zvonec – Lidé: how do I reach someone? (zvonec/design/one-question › Lidé)
 //   #lide[/<filtr>]: the title „Lidé“ with + (leaders) and ⋯, the switch Lidé · Skupiny under it, the search
 //     („Hledej jméno, telefon, e-mail“) and, for leaders, the filter chips with counts (Všichni · Členové ·
-//     Přátelé · Hosté · Děti · Chybí údaje – the slug is the filter: clenove, pratele, hoste, deti, doplnit) and
-//     the birthday line („Dnes slaví …“ → Narozeniny). A search finds households and a team too (its people come
-//     with what they do there).
-//     Phone: everyone A–Z, a call button on each row whose phone may be seen; leaders see membership and teams
-//     (or what is missing) on the row, and ⋯ › Vyber lidi turns the rows into ticks with a bar of bulk actions
-//     (Zkopíruj e-maily · Přidej do skupiny · Stáhni CSV) above the tab bar.
-//     Desktop ≥ 960: a table – Jméno, Členství, Domácnost, Telefon, E-mail, Skupiny, Narozeniny (Poslední služba
-//     ≥ 1600); a click on a column head sorts by it (remembered in this browser); leaders tick people and get the
-//     same bulk actions above the table. ≥ 1200 with a card open: list | card – the table narrows to name ·
-//     phone · groups beside Simple's card pane.
-//   ⋯ (leaders): Vyber lidi (phone), Narozeniny, Hosté bez souhlasu, Archiv, Pozvi nového člověka, Přidej
-//     domácnost, Zkopíruj e-maily (who the list shows), Stáhni seznam. Members: no chips, no ⋯.
+//     Přátelé · Hosté · Děti · Chybí údaje – the slug is the filter: clenove, pratele, hoste, deti, doplnit). Under
+//     them one quiet line: the birthday line („Dnes slaví …“ → Narozeniny, leaders) and, at its end, the view
+//     switch „Podrobný výpis“ / „Jednoduchý seznam“ (remembered in this browser). A search finds households and a
+//     team too (its people come with what they do there).
+//   The simple list (the default, phone and desktop): everyone A–Z, avatar · name · a call button on each row whose
+//     phone may be seen – nothing more. Desktop: the column keeps its width; ≥ 1200 the card opens beside it.
+//   Podrobný výpis: on a phone the rows add membership and teams (or what is missing) and ⋯ › Vyber lidi turns
+//     them into ticks with a bar of bulk actions (Zkopíruj e-maily · Přidej do skupiny · Stáhni CSV) above the tab
+//     bar; on desktop ≥ 960 a table – Jméno, Členství, Domácnost, Telefon, E-mail, Skupiny, Narozeniny (Poslední
+//     služba ≥ 1600) – sorted by a click on a column head (remembered), leaders tick people and get the same bulk
+//     actions above it; ≥ 1200 with a card open it narrows to name · phone · groups beside the card. Ticks and Vyber
+//     lidi exist only here (the simple list stays a plain list).
+//   ⋯ (leaders): Vyber lidi (phone, Podrobný výpis), Narozeniny, Hosté bez souhlasu, Archiv, Pozvi nového člověka,
+//     Přidej domácnost, Zkopíruj e-maily (who the list shows), Stáhni seznam. Members: no chips, no ⋯.
 //   #lide/skupiny (ui/groups.js, the same head), #lide/bez-souhlasu, #lide/narozeniny, #lide/archiv (leaders),
 //   #osoba/<id> (the card, ui/people-card.js), #osoba/<id>/udaje (Kontakt, domácnost a údaje), #domacnost/<id>
 //   (leaders).
@@ -47,6 +49,7 @@ import { personCard, personDetails, personMenu, householdBody, householdMenu } f
 const read = (key) => { try { return localStorage.getItem(key); } catch { return null; } };
 const write = (key, value) => { try { localStorage.setItem(key, value); } catch { /* not remembered, that's all */ } };
 const SORT_KEY = 'zvonec-simple-people-sort';
+const VIEW_KEY = 'zvonec-simple-people-view';   // 'podrobny' | 'jednoduchy'
 
 const state = {
   query: '',
@@ -55,6 +58,7 @@ const state = {
   picked: new Set(),
   sort: (() => { try { return JSON.parse(read(SORT_KEY)) || { key: 'name', dir: 1 }; } catch { return { key: 'name', dir: 1 }; } })(),
   sortTouched: false,       // searching sorts by the best match until a column head is clicked
+  detailed: read(VIEW_KEY) === 'podrobny',   // Podrobný výpis (else the simple list)
 };
 document.addEventListener('zvonec:navigate', () => {
   if (!/^#(lide|osoba)/.test(location.hash) || /^#lide\/(skupiny|narozeniny)/.test(location.hash)) { state.picking = false; state.picked.clear(); }
@@ -98,7 +102,7 @@ function listMenu(people) {
   if (!can('leader')) return null;
   const withCount = (label, k) => (k ? `${label} (${k})` : label);
   return menu([
-    !isDesktop() ? { label: state.picking ? 'Přestaň vybírat' : 'Vyber lidi', icon: 'check', onclick: () => { state.picking = !state.picking; state.picked.clear(); render(); } } : null,
+    !isDesktop() && state.detailed ? { label: state.picking ? 'Přestaň vybírat' : 'Vyber lidi', icon: 'check', onclick: () => { state.picking = !state.picking; state.picked.clear(); render(); } } : null,
     { label: 'Narozeniny', icon: 'cake', href: '#lide/narozeniny' },
     { label: withCount('Hosté bez souhlasu', listPeople('bez-souhlasu').length), icon: 'check', href: '#lide/bez-souhlasu' },
     { label: withCount('Archiv', archivedPeople(S.data).length), icon: 'archive', href: `#lide/${ARCHIVE_SLUG}` },
@@ -192,13 +196,13 @@ function rowMeta(p) {
 }
 
 /**
- * A person row of the list: the name, membership and teams (leaders see what is missing instead), a call button
- * when the phone may be seen (never on my own row). `meta` replaces the second line (what someone does in a team).
- * Vyber lidi: the row is a tick that adds the person to the selection.
+ * A person row of the list: the name and a call button when the phone may be seen (never on my own row); `meta` is
+ * what someone does in a team (searching for it). Podrobný výpis adds membership and teams (leaders see what is
+ * missing instead), and Vyber lidi makes the row a tick that adds the person to the selection.
  */
 function rowFor(p, { openId, meta: metaText } = {}) {
-  const missing = can('leader') && metaText === undefined ? missingOf(p) : [];
-  const second = metaText !== undefined ? metaText : missing.length ? null : rowMeta(p);
+  const missing = state.detailed && can('leader') && metaText === undefined ? missingOf(p) : [];
+  const second = metaText !== undefined ? metaText : !state.detailed || missing.length ? null : rowMeta(p);
   if (state.picking) {
     const on = state.picked.has(p.id);
     const el = row({
@@ -348,7 +352,22 @@ function birthdayHint() {
   const words = soon[0].d === 0
     ? `Dnes slaví ${first}${more ? `, do týdne ${others === 'další' ? 'ještě jeden' : `ještě ${more}`}` : ''}`
     : `Do týdne slaví ${first}${more ? ` a ${others}` : ''}`;
-  return h('div', { class: 'people-hint' }, rowLink(words, { href: '#lide/narozeniny', icon: 'cake' }));
+  return rowLink(words, { href: '#lide/narozeniny', icon: 'cake' });
+}
+
+/** „Podrobný výpis“ ↔ „Jednoduchý seznam“: the view of the list, remembered in this browser. */
+function viewToggle() {
+  const detailed = state.detailed;
+  return button(detailed ? 'Jednoduchý seznam' : 'Podrobný výpis', {
+    size: 's', variant: 'quiet', icon: detailed ? 'people' : isDesktop() ? 'table' : 'list', cls: 'people-view__toggle',
+    onclick: () => {
+      state.detailed = !detailed;
+      state.picking = false;
+      state.picked.clear();
+      write(VIEW_KEY, state.detailed ? 'podrobny' : 'jednoduchy');
+      render();
+    },
+  });
 }
 
 // ---------- selection: copy e-mails, add to a group, CSV ----------
@@ -517,17 +536,16 @@ function tableBody(slug, { openId, compact = false, redraw } = {}) {
 function listColumn({ openId } = {}) {
   const leader = can('leader');
   const slug = state.slug;
-  const asTable = isDesktop() && !state.picking;
+  const asTable = isDesktop() && state.detailed && !state.picking;
+  const hint = h('div', { class: 'people-hint' });
   const box = h('div', { class: 'people-results', onclick: keepListPlace });
   const redraw = () => {
     // keep the focus on the tick (or the column head) that redrew the table
     const active = document.activeElement;
     const pickId = box.contains(active) ? active.dataset?.pick : null;
     const sortCol = box.contains(active) && active.closest('th') ? [...active.closest('th').classList].find((c) => c.startsWith('col-')) : null;
-    box.replaceChildren(...[
-      birthdayHint(),
-      ...(asTable ? tableBody(slug, { openId, compact: !!openId, redraw }) : listBody(slug, { openId })),
-    ].filter(Boolean));
+    hint.replaceChildren(...[birthdayHint()].filter(Boolean));
+    box.replaceChildren(...(asTable ? tableBody(slug, { openId, compact: !!openId, redraw }) : listBody(slug, { openId })).filter(Boolean));
     if (pickId) box.querySelector(`[data-pick="${CSS.escape(pickId)}"]`)?.focus();
     else if (sortCol) box.querySelector(`th.${sortCol} button`)?.focus();
   };
@@ -538,6 +556,7 @@ function listColumn({ openId } = {}) {
       actions: listMenu(() => everyoneShown(slug)),
     }),
     tools(slug, redraw),
+    h('div', { class: 'people-view' }, hint, viewToggle()),
     box,
     state.picking && !asTable ? bulkBar({ dock: true }) : null);
 }
@@ -559,12 +578,14 @@ export function renderPeople(parts = []) {
   state.slug = slug;
   const canonical = `#lide${slug ? `/${slug}` : ''}`;
   if (location.hash !== canonical) history.replaceState(history.state, '', canonical);
-  const asTable = isDesktop() && !state.picking;
+  if (!state.detailed) state.picking = false;
+  const asTable = isDesktop() && state.detailed && !state.picking;
   return screen({
     topbar: false,
     wide: asTable || isSplit(),
     cls: ['people-root', asTable && 'people-root--table', state.picking && 'people-root--picking'].filter(Boolean).join(' '),
-    body: listColumn(),
+    // the simple list: Simple's column, in the place it keeps when a card opens beside it (≥ 1200)
+    body: !asTable && isSplit() ? splitView({ list: listColumn(), detail: null }) : listColumn(),
   });
 }
 
