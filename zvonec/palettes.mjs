@@ -132,8 +132,8 @@ const PALETTES = [
   { id: 'clay-pink',  label: 'Hlína a růžová', ground: '#3b2f2f', ink: '#e6acac', scheme: 'dark',  ref: 'dark' },
   { id: 'pink-clay',  label: 'Růžová a hlína', ground: '#e6acac', ink: '#3b2f2f', scheme: 'light' },
   { id: 'green-cream', label: 'Zelená a krém', ground: '#498660', ink: '#f9e7dd', scheme: 'dark', candidate: true },
-  { id: 'blue-cream', label: 'Modrá a krém',   ground: '#464994', ink: '#f9e7dd', scheme: 'dark' },
-  { id: 'cream-blue', label: 'Krém a modrá',   ground: '#f9e7dd', ink: '#464994', scheme: 'light' },
+  { id: 'blue-cream', label: 'Modrá a krém',   ground: '#464994', ink: '#f9e7dd', scheme: 'dark', accent: 'ink' },
+  { id: 'cream-blue', label: 'Krém a modrá',   ground: '#f9e7dd', ink: '#464994', scheme: 'light', accent: 'ink' },
   { id: 'green-pink', label: 'Zelená a růžová', ground: '#498660', ink: '#e6acac', scheme: 'dark', candidate: true },
   { id: 'cream-clay', label: 'Krém a hlína',   ground: '#f9e7dd', ink: '#3b2f2f', scheme: 'light', ref: 'light' },
 ];
@@ -402,6 +402,17 @@ function build(p) {
     // its warm hue on every light surface (page, card, sheet, chrome).
     const pink = '#e6acac';
     Object.assign(T, { 'today-bg': rgba(pink, 0.16), 'selected-bg': rgba(pink, 0.3), 'selected-bg-hover': rgba(pink, 0.4) });
+  }
+  if (p.accent === 'ink') {
+    // a pair without the pink (the blue ones): selection, today, links, info and the progress ring take the
+    // pair's own ink – the pink of the other palettes is not a colour of this one
+    const k = light ? { today: 0.05, sel: 0.08, hover: 0.12, line: 0.3, info: 0.08 } : { today: 0.06, sel: 0.1, hover: 0.14, line: 0.42, info: 0.1 };
+    Object.assign(T, {
+      'today-bg': rgba(p.ink, k.today), 'selected-bg': rgba(p.ink, k.sel), 'selected-bg-hover': rgba(p.ink, k.hover),
+      'selected-line': rgba(p.ink, k.line), 'info-bg': rgba(p.ink, k.info),
+      'milnik-accent': p.ink, 'milnik-accent-solid': p.ink, 'milnik-accent-soft': p.ink, 'milnik-badge-fg': light ? p.ink : gray[11],
+      'info-fg': p.ink, 'info-solid': p.ink, 'text-accent': p.ink,
+    });
   }
   // text-3 (dashes in empty cells, other-month days) also sits on a selected or today's row
   const t3bgs = [su.panel, su.app, over(T['surface-sunken'], su.panel), over(T['selected-bg'], su.panel), over(T['selected-bg-hover'], su.panel), over(T['today-bg'], su.panel)];

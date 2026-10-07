@@ -95,7 +95,8 @@ Components use only **semantic tokens**; raw scale steps only for categorical co
   `--brand-h`, `--sidebar-foot-h`, `--hero-bg|line`, `--accent-solid`.
 - **Selected vs clickable.** *Selected* nav items, tabs, segments and filter chips take the ink fill of
   the mode (clay in light, pink in dark) with the light text, plus a ✓ on a filter chip, a tick or dot in
-  checkbox / radio and the matching `aria-` attribute. Rose tints (`--selected-bg`) mark „mine“ (my duty,
+  checkbox / radio and the matching `aria-` attribute. Rose tints (`--selected-bg`; in the two blue palettes a
+  tint of their own ink, as are today, links, info and the progress ring – the pink is not their colour) mark „mine“ (my duty,
   my row in Rozpis, today) and selected table rows. *Clickable* is shown by a fill (buttons are never an
   outline alone; a surface button inside a panel gets a soft fill), a hover fill, the cursor and a chevron
   or ⋯ at the row end. The primary action is the same ink.
@@ -106,6 +107,9 @@ Components use only **semantic tokens**; raw scale steps only for categorical co
   classes that set `--c3/4/5/9/11/12` (CSP-safe, no inline styles). Účel: Nedělní setkání rose,
   Zkouška blue, Skupinka teal, Akce plum. An avatar's hue is a stable hash of the person id.
   Colour never carries a meaning alone: Účel has an icon (`sun`, `music`, `home`, `star`).
+  Simple (`docs/zvonec/simple/`) draws them from the brand only: pink, blue, green, the cream-clay sand and the
+  pink-blue lilac mixed into each palette (`css/simple.css`, teal shows as green), and its calendar chips have one
+  colour for every kind, as in the concept.
 - **The imprint** (cow-skin pattern) only on public pages and generated covers.
 
 ## 4. Type, space, size
