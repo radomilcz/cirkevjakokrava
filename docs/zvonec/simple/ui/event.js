@@ -314,7 +314,7 @@ function osnovaSection(event) {
   const items = programTimes(event);
   const href = `#setkani/${event.id}/osnova`;
   if (!items.length) {
-    if (!can('leader')) return null;
+    if (!can('leader') || event.cancelled || isPast(event)) return null;
     return section({
       title: 'Osnova', cls: 'ev-outline',
       body: h('div', { class: 'ev-outline__empty' }, h('p', { class: 'meta' }, 'Osnova je zatím prázdná.'), rowLink('Slož osnovu', { href })),

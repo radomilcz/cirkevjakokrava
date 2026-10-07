@@ -245,7 +245,7 @@
 .tslots[hidden] { display: none; }
 .tslot {
   grid-column: 1 / -1; display: grid; grid-template-columns: minmax(96px, 28%) 1fr auto; column-gap: var(--space-4); align-items: baseline; align-content: center;
-  min-height: 48px; padding: var(--space-2) 0; border: 0; background: transparent; color: inherit; text-align: left; font: inherit;
+  min-height: var(--row-h-single); padding: var(--space-2) 0; border: 0; background: transparent; color: inherit; text-align: left; font: inherit;
 }
 .tslot--button {
   margin: 0 calc(-1 * var(--space-3)); padding-left: var(--space-3); padding-right: var(--space-3); border-radius: var(--shape-control); cursor: pointer;
@@ -293,7 +293,7 @@
 .ev-row:hover::after, .ev-row:has(+ .ev-row:hover)::after { background: transparent; }
 
 /* Osnova: the first points in three columns – time, name, who leads – then „Celá osnova ›“ */
-.ev-outline__list { display: grid; grid-template-columns: max-content minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-4); }
+.ev-outline__list { display: grid; grid-template-columns: max-content minmax(0, 1fr) fit-content(50%); column-gap: var(--space-4); }
 .ev-outline__item {
   position: relative; grid-column: 1 / -1; display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-4);
   align-items: baseline; padding: 10px 0;
@@ -309,6 +309,10 @@
 /* O setkání: the place and its address on one line with „Otevři v mapě ↗“ */
 .ev-where { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-4); }
 .ev-where__text { min-width: 0; }
+/* „Doplň popis“ inside a sentence: as tall as the line, so the line sits under the heading like a description; the
+   tap area stays 44 */
+.ev-about > .meta > .link { position: relative; min-height: 0; }
+.ev-about > .meta > .link::after { content: ""; position: absolute; inset: calc((var(--lh-meta) - var(--hit)) / 2) 0; }
 
 /* ---------- Kalendář ---------- */
 /* phone: the head – the title, „Říjen ▾“, + and ⋯ */
