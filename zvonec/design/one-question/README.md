@@ -50,6 +50,9 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - Then the owner missed the whole month: a switch Seznam · Měsíc under the head (remembered per browser).
      Měsíc (#kalendar/mesic[/<month | day>]) is the grid with the chips in the Účel hues on a desktop (≥ 1200 px the
      event beside it) and the small month with the chosen day's events on a phone.
+   - Rozpis came out of hiding (it was only „Rozpis k tisku“ under ⋯): the third view of the switch, for everyone
+     as in Next (#kalendar/rozpis[/<month>][/bremeno | /upozorneni]); leaders get „Doplň volná místa“ in the head,
+     Vytiskni and Břemeno under ⋯, and Obsazení links to it („Celý rozpis ›“).
 4. **Obsazení** (`obsazeni.html`, approved; leaders only)
    - Only events in the next 4 weeks with something to do. Right: „14 z 15“ with the fill ring (kept here,
      where events are compared). Under the title: „+ Role“ per empty slot, „○ 2 ještě neodpověděli ›“,

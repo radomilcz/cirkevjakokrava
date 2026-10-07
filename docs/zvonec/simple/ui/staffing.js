@@ -182,7 +182,8 @@ export function renderStaffing(parts = []) {
 
   const head = h('div', { class: 'staffing-head' },
     h('div', { class: 'staffing-head__row' }, h('h1', { class: 'title' }, 'Obsazení'), scopeChip(scope, teams)),
-    h('p', { class: 'staffing-head__lead' }, 'Setkání na příští 4 týdny, kde ještě něco chybí.'));
+    h('p', { class: 'staffing-head__lead' }, 'Setkání na příští 4 týdny, kde ještě něco chybí.'),
+    h('a', { class: 'row-link staffing-head__roster', href: '#kalendar/rozpis' }, 'Celý rozpis', icon('chevron-right', { size: 's' })));
   const body = items.length
     ? h('div', { class: 'staff-list' }, items.map((x) => needItem(x, { split, openId: chosen?.id })))
     : h('div', { class: 'mine-calm' },
