@@ -254,6 +254,12 @@ a.duty__who { padding: 6px 8px; margin: -6px -8px; border-radius: var(--shape-in
 .table tbody th { color: var(--ink); }
 .table thead th { background: var(--ground); box-shadow: inset 0 -1px 0 var(--edge); }
 .table tbody tr + tr > * { border-top: 1px solid var(--hairline); }
+/* the people table (its rows light up): a lit row touches no line and has the ends of a row; two lit rows keep
+   3 px apart */
+.people-table { border-spacing: 0 3px; }
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) > *, .people-table tbody tr:is(:hover, [data-picked], [data-open]) + tr > * { border-top-color: transparent; }
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) > :first-child { border-radius: var(--shape-control) 0 0 var(--shape-control); }
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) > :last-child { border-radius: 0 var(--shape-control) var(--shape-control) 0; }
 .th-sort {
   display: inline-flex; align-items: center; gap: 4px; min-height: var(--hit); margin: 0 -8px; padding: 0 8px; border: 0;
   border-radius: var(--shape-inner); background: none; color: inherit; font: inherit; font-weight: var(--weight-strong); cursor: pointer;

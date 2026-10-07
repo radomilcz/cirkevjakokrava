@@ -132,7 +132,11 @@
   border: 0; border-radius: var(--shape-inner) var(--shape-inner) 0 0; background: none; color: var(--ink-2); font: inherit; font-weight: var(--weight-medium); cursor: pointer;
   transition: background-color var(--dur-state) var(--ease), color var(--dur-state) var(--ease);
 }
-.roster-tab:hover { background: var(--wash); color: var(--ink); }
+/* the hover is a rounded fill above the tabs' line, not a block standing on it */
+.roster-tab::before { content: ""; position: absolute; inset: 4px 0 6px; z-index: -1; border-radius: var(--shape-inner); transition: background-color var(--dur-state) var(--ease); }
+.roster-tab { isolation: isolate; }
+.roster-tab:hover { color: var(--ink); }
+.roster-tab:hover::before { background: var(--wash); }
 .roster-tab[aria-selected="true"] { color: var(--ink); font-weight: var(--weight-bold); box-shadow: inset 0 -3px 0 var(--mark); }
 .roster-tab:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
 .roster-tab__n {
@@ -200,6 +204,8 @@
 .roster__cell { padding: var(--space-2) var(--space-2) !important; }
 .roster__cell[data-none]::before { content: "–"; display: block; padding: 6px var(--space-2); color: var(--ink-2); }
 .roster tbody tr:hover > :is(td, th) { background: var(--wash); }
+.roster tbody tr:is(:hover, [data-open]) > *, .roster tbody tr:has(+ tr:is(:hover, [data-open])) > * { border-bottom-color: transparent; }
+.roster:has(tbody > tr:first-child:is(:hover, [data-open])) thead > tr:last-child > * { border-bottom-color: transparent; }
 .roster tbody tr:hover > th.roster__event { background: var(--ground); }
 .roster tr[data-cancelled] .roster__cell { background: var(--tint); }
 /* the event open next to the table: pick tint and the 3 px ink bar (as a row in Seznam) */
@@ -319,6 +325,7 @@ span.roster-entry { cursor: default; }
 .team-fold > .team-head { flex: 1; margin-top: 0; }
 .team-fold > .icon { color: var(--ink-2); transition: transform var(--dur-state) var(--ease); }
 .team-fold[aria-expanded="true"] > .icon { transform: rotate(180deg); }
+.team-fold:hover + .team-fold__body > .duty:first-child { border-top-color: transparent; }
 .team-fold:hover { background: var(--wash); }
 .team-head .row__note { margin-left: auto; }
 /* a duty lights up as a whole row – role and person, 12 px past the text on both sides, rounded as a row – and the
