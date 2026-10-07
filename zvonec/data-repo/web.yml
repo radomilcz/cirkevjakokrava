@@ -67,11 +67,12 @@ jobs:
       - name: Assemble the site
         run: |
           # The domain root opens Zvonec Next (index.html + go.js redirect to next/); the previous app stays
-          # at stara.html and the new one-screen-one-question build at simple/. The apps load ../assets/…,
-          # which on the root resolves to /assets/… – so the icons and fonts go to site/assets.
+          # at stara.html, the one-screen-one-question build at simple/ and Zvonec One (rebuilt from both) at
+          # one/. The apps load ../assets/…, which on the root resolves to /assets/… – so the icons and fonts
+          # go to site/assets.
           mkdir -p site/assets
           for f in index.html stara.html go.js app.js style.css imprint.svg; do cp "web/docs/zvonec/$f" site/; done
-          cp -r web/docs/zvonec/lib web/docs/zvonec/ui web/docs/zvonec/css web/docs/zvonec/next web/docs/zvonec/simple site/
+          cp -r web/docs/zvonec/lib web/docs/zvonec/ui web/docs/zvonec/css web/docs/zvonec/next web/docs/zvonec/simple web/docs/zvonec/one site/
           cp -r web/docs/assets/fonts site/assets/
           cp web/docs/assets/favicon.svg web/docs/assets/favicon-32.png web/docs/assets/icon-180.png site/assets/
           if [ -f private/access.json ]; then cp private/access.json site/; else echo '{"v":2,"logins":[]}' > site/access.json; fi
