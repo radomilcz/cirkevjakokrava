@@ -213,7 +213,7 @@
 .add-chip:hover { border-style: solid; background: var(--wash); }
 .add-chip::after { content: ""; position: absolute; inset: -2px 0; }
 
-/* Osnova ›, O setkání a místo › */
+/* Osnova ›, O setkání a místě › */
 .ev-rows { display: grid; margin-top: calc(-1 * var(--space-4)); }
 .ev-row {
   display: flex; align-items: baseline; gap: var(--space-2); min-height: 56px; padding: var(--space-4) 0;
@@ -240,7 +240,7 @@
 .tslot > .icon { color: var(--ink-3); }
 .tslot:not(.tslot--button)::after { content: ""; }
 
-/* O setkání a místo */
+/* O setkání a místě */
 .about-sheet .sheet__body { gap: var(--space-4); }
 .ev-place { display: grid; gap: var(--space-3); }
 .ev-place__name { font-weight: var(--weight-strong); }

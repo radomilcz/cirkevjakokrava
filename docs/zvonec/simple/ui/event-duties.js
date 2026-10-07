@@ -49,7 +49,7 @@ function snapshot(eventId, note, extra) {
  * Výběr člověka for a slot – the one picker of the app (Setkání, Obsazení, the team sheet): an empty slot
  * (assignmentId null) or „Vyber jiného“ (replaces that duty). Titled by the role: the people of its team,
  * who can first and the longest rested first („naposledy 13. 9.“); who cannot that day stays in the list,
- * greyed, with the reason („ten den nemůže · dovolená“). „Hledej ve všech lidech“ reaches everyone who still
+ * greyed, with the reason („ten den nemůže · dovolená“). „Hledej mezi všemi lidmi“ reaches everyone who still
  * comes, and „Přidej nového člověka „…““ makes a quick card. The pick waits for an answer; the toast offers „Vrať“.
  */
 export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {}) {
@@ -95,11 +95,11 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
     }
     const rows = items.map(rowOf);
     if (more) { rows.push(more); more = null; }
-    if (!rows.length) rows.push(h('p', { class: 'meta pick-none' }, q ? 'Nikdo takový tu není.' : 'V týmu zatím nikdo není. Najdi někoho ve všech lidech.'));
+    if (!rows.length) rows.push(h('p', { class: 'meta pick-none' }, q ? 'Nikdo takový tu není.' : 'V týmu zatím nikdo není. Najdi někoho mezi všemi lidmi.'));
     if (query.trim()) rows.push(button(`Přidej nového člověka „${query.trim()}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close({ restore: false }); addAndAssign(eventId, roleId, query.trim(), assignmentId); onPicked?.(); } }));
     results.replaceChildren(...rows);
   };
-  const search = searchField({ placeholder: 'Hledej ve všech lidech', label: 'Hledej ve všech lidech', onInput: (v) => { query = v; draw(); } });
+  const search = searchField({ placeholder: 'Hledej mezi všemi lidmi', label: 'Hledej mezi všemi lidmi', onInput: (v) => { query = v; draw(); } });
   sheet = openSheet({
     title: role?.name || 'Služba',
     subtitle: [replacing ? `Teď: ${nameOf(replacing)}` : null, event.title, dayWords(event)].filter(Boolean).join(SEP),

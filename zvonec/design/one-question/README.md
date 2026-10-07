@@ -33,7 +33,7 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
      team with the names; the viewer is „Ty“ (capital T).
    - Leader: ○ before a name that has not answered (legend „○ čeká na odpověď“), „+ Role“ under a team
      for an empty slot, › to open the team (roles with ✓ potvrzeno / ○ čeká na odpověď / „+ Doplň“).
-   - **No fill ring** on this screen (the owner removed it); Osnova and „O setkání a místo“ are rows.
+   - **No fill ring** on this screen (the owner removed it); Osnova and „O setkání a místě“ are rows.
    - Editing the event (time, place, Osnova, cancel) is in ⋯. No cover picture, no kind / web pills, no
      recurrence line.
 3. **Kalendář** (`kalendar.html`, approved)
@@ -48,7 +48,7 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
      where events are compared). Under the title: „+ Role“ per empty slot, „○ 2 ještě neodpověděli ›“,
      „● Radomil má dvě služby naráz ›“. Scope chip: the leader's team / „Všechny týmy“ for admins.
    - „+ Klávesy“ opens the picker titled by the role: people of the team who can, longest-rested first;
-     who cannot that day is greyed out with the reason; „Hledej ve všech lidech“.
+     who cannot that day is greyed out with the reason; „Hledej mezi všemi lidmi“.
    - „2 ještě neodpověděli“ opens who waits, with their duty, how long it waits, SMS and call buttons.
 5. **Lidé** (`lide.html`, approved)
    - Search („Hledej jméno nebo tým“) and A–Z with a call button on each row; no filters, chips or table.

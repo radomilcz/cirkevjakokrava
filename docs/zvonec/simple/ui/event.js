@@ -2,7 +2,7 @@
 //   when and where · event-level warnings (leaders) · „Tvoje služba“ (my duty, Můžu / Nemůžu while it waits) ·
 //   Kdo slouží: one line per team with the names (I am „Ty“); a leader sees ○ before a name that has not
 //   answered, ● where something does not fit, „+ Role“ for an empty slot, and › opens the team (its roles,
-//   who said what, „+ Doplň“) · Osnova › · O setkání a místo › (a sheet: description, Pro tým, the map,
+//   who said what, „+ Doplň“) · Osnova › · O setkání a místě › (a sheet: description, Pro tým, the map,
 //   Účel, the series, Ukaž na webu) · Kolik lidí přišlo (leaders, past).
 // No cover picture, no kind / web pills, no fill ring here. Editing is in ⋯ (leaders).
 // The same body fills the detail pane beside Moje, Obsazení and Kalendář at ≥ 1200 px (eventBody({ pane: true })).
@@ -248,10 +248,10 @@ function osnovaRow(event) {
 
 function aboutRow(event) {
   return h('button', { type: 'button', class: 'ev-row', onclick: () => aboutSheet(event.id) },
-    h('span', { class: 'ev-row__title' }, 'O setkání a místo'), icon('chevron-right', { size: 's' }));
+    h('span', { class: 'ev-row__title' }, 'O setkání a místě'), icon('chevron-right', { size: 's' }));
 }
 
-/** O setkání a místo: description, Pro tým, the place with its map, Účel and the series, Ukaž na webu (leaders). */
+/** O setkání a místě: description, Pro tým, the place with its map, Účel and the series, Ukaž na webu (leaders). */
 function aboutSheet(eventId) {
   const event = eventById(S.data, eventId);
   if (!event) return;
@@ -263,7 +263,7 @@ function aboutSheet(eventId) {
   const series = seriesFor(S.data, event);
   let sheet;
   sheet = openSheet({
-    title: 'O setkání a místo',
+    title: 'O setkání a místě',
     subtitle: joinMeta([event.title, shortDate(event.start)]),
     cls: 'about-sheet',
     body: [

@@ -90,7 +90,7 @@ function phoneList(from) {
   });
   if (!events.length) {
     return [empty({
-      icon: 'calendar', title: 'V téhle době tu nic není.',
+      icon: 'calendar', title: 'V těchhle týdnech tu nic není.',
       action: can('leader') ? button('Přidej setkání', { icon: 'plus', variant: 'quiet', onclick: () => openAddEvent({ day: from >= today() ? from : null }) }) : null,
     }), more];
   }
