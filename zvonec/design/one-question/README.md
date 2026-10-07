@@ -53,6 +53,11 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - Rozpis came out of hiding (it was only „Rozpis k tisku“ under ⋯): the third view of the switch, for everyone
      as in Next (#kalendar/rozpis[/<month>][/bremeno | /upozorneni]); leaders get „Doplň volná místa“ in the head,
      Vytiskni and Břemeno under ⋯, and Obsazení links to it („Celý rozpis ›“).
+   - Back to Simple's own form, keeping Next's Seznam (the owner's call): no switch. Phone – the original head
+     (Kalendář, „Říjen ▾“, +, ⋯) over the Seznam list. Desktop – the original month grid (one quiet bar for
+     every kind, mine bold, the open one filled) with ‹ Říjen 2026 › Dnes and a quiet „Seznam“ at the right of
+     that bar (#kalendar/seznam[/<day | month>]); the list has „Říjen ▾“ and „Měsíc“ back. Rozpis is its own page
+     again, from ⋯ („Rozpis“, for everyone) and Obsazení („Celý rozpis ›“).
 4. **Obsazení** (`obsazeni.html`, approved; leaders only)
    - Only events in the next 4 weeks with something to do. Right: „14 z 15“ with the fill ring (kept here,
      where events are compared). Under the title: „+ Role“ per empty slot, „○ 2 ještě neodpověděli ›“,

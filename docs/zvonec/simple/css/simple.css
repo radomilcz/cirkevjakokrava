@@ -149,9 +149,9 @@
 
 /* ---------- list | detail on a wide screen (≥ 1200): the list keeps its phone width, the detail beside it ---------- */
 @media (min-width: 1200px) {
-  .screen--wide:is(.mine, .staffing, .people-root, .cal-agenda) { max-width: none; }
-  .screen--wide:is(.mine, .staffing, .people-root, .cal-agenda) > .split > .split__aside { top: var(--space-5); margin-top: var(--space-7); }
-  .screen--wide:is(.mine, .staffing, .people-root, .cal-agenda) > .split {
+  .screen--wide:is(.mine, .staffing, .people-root) { max-width: none; }
+  .screen--wide:is(.mine, .staffing, .people-root) > .split > .split__aside { top: var(--space-5); margin-top: var(--space-7); }
+  .screen--wide:is(.mine, .staffing, .people-root) > .split, .cal--list > .split {
     grid-template-columns: minmax(0, 560px) minmax(0, 640px); gap: var(--space-7); justify-content: start;
   }
 }
@@ -296,21 +296,7 @@
 .cal-agenda .week-label:first-child, .cal-past + .agenda > .week-label:first-child { margin-top: 0; }
 .pill--you { min-height: 26px; padding: 0 10px; font-size: var(--type-meta); background: var(--tint); }
 .cal-agenda .cal-more { margin-top: var(--space-4); }
-.cal-head__add { margin-right: 10px; }   /* the desktop button, then ⋯ */
-
-/* under the head: Seznam · Měsíc, and beside it „Říjen ▾“ (the list) or ‹ Říjen 2026 › Dnes (the month) */
-.cal-screen .cal-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); margin: 0 0 var(--space-3); }
-.cal-screen .cal-toolbar > .cal-views { flex: 0 0 auto; width: 300px; max-width: 100%; }
-.cal-screen .cal-toolbar > .cal-period { flex: 0 1 auto; }
-
-/* Měsíc on a desktop: a chip is the title, up to two lines (the time is in its name for a screen reader and in
-   the pane), its bar in the Účel hue; mine filled with the hue, the open one with the pick */
-.cal-chip__time { display: none; }
-.cal-chip__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
-@media (min-width: 1200px) {
-  .cal--month > .split { grid-template-columns: minmax(0, 1fr) minmax(380px, 440px); }
-  .cal--month > .split > .split__aside { top: var(--space-5); margin-top: var(--space-7); }
-}
+@media (min-width: 1200px) { .cal--list > .split > .split__aside { top: var(--space-5); } }
 
 /* the mini month (a sheet without a title row: the month and its arrows are the head) */
 .sheet--month .sheet__head { display: none; }
@@ -319,10 +305,25 @@
 .mini-month__title { flex: 1; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
 .sheet--month .day__dots > i { background: var(--ink-2); }
 
-/* Rozpis k tisku: ‹ Říjen 2026 › above the roster */
+/* desktop: ‹ Říjen 2026 › and Dnes (or „Říjen ▾“ above the list) on one line, „Seznam“ / „Měsíc“ at its right end */
 .cal-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
 .cal-bar .period__label { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
+.cal-bar > .cal-switch { flex: none; }
+/* a chip is the title, up to two lines (the time is in its name for a screen reader and in the pane) */
+.cal-chip__time { display: none; }
+.cal-chip__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+/* one colour for every kind (the concept): a quiet bar; mine is bold with the ink bar, the open one filled */
+.cal-chip::before { background: var(--edge-control); }
+.cal-chip[data-mine] { background: transparent; color: var(--ink); font-weight: var(--weight-bold); }
+.cal-chip[data-mine]::before { background: var(--ink-2); }
+.cal-chip[data-mine]:not([data-open]):hover { background: var(--wash); }
+.cal-chip[data-open] { background: var(--pick); }
+.cal-chip[data-open]::before { background: var(--mark); }
 .sheet--month .day[aria-selected="true"][data-today]::after { box-shadow: none; }
+@media (min-width: 1200px) {
+  .cal--month > .split { grid-template-columns: minmax(0, 1fr) minmax(380px, 440px); }
+  .cal--month > .split > .split__aside { top: var(--space-5); }
+}
 
 /* ---------- Obsazení ---------- */
 .staffing-head { padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-4); }
