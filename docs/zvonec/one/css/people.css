@@ -1,0 +1,119 @@
+/* Zvonec One – Lidé, Skupiny, Člověk, Domácnost, Skupina, Podrobný výpis (package P4; ui/people*.js, ui/groups*.js).
+   The frames, rows, sections, pills and layers are the kit's (css/kit.css, css/layers.css); this file only draws
+   what is Lidé's own: the marks 56, linked pills, the contact tiles, meta words, skill pills, the table and its bulk
+   bar. Tokens only. */
+
+/* ---------- list ---------- */
+.meta-wait { color: var(--wait-ink); }
+.list-foot { margin-top: var(--gap-y); padding: 0 var(--space-3); }
+.ls__body > .row-link:first-child { margin-bottom: var(--gap-y); }
+.ls__body > :is(.row-link, .callout) + .list > .subhead:first-child { padding-top: 0; }
+.ls__body > .callout + .list, .ls__body > .callout + .empty { margin-top: var(--gap-group); }
+.ls__body > .row-link + .callout { margin-bottom: var(--gap-y); }
+
+/* the group meta in a row: what someone does there, then the skill pills; wraps between pills */
+.group-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); }
+.skill-pills { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.skill-pill { gap: 4px; }
+.skill-pill > .icon { width: 14px; height: 14px; }
+.skill-pill[data-level="trained"] { background: var(--ok-fill); color: var(--ok-ink); }
+.skill-pill[data-level="learning"] { background: var(--tint); color: var(--ink-2); }
+
+/* ---------- the detail head ---------- */
+/* a mark of 56: the group's team mark and the household's house (CODEX §6.4: mark 56 / 72) */
+.mark-56 { width: 56px; height: 56px; font-size: 20px; }
+.house-mark { color: var(--ink-2); background: var(--tint); }
+.house-mark > .icon { width: 24px; height: 24px; }
+.row > .house-mark > .icon { width: 20px; height: 20px; }
+
+/* the person's teams as pills that are links (24 high, hit 44) */
+.pill--link { position: relative; color: var(--ink); text-decoration: none; transition: background-color var(--dur-state) var(--ease); }
+.pill--link:hover { background: var(--tint-2); }
+.pill--link::after { content: ""; position: absolute; inset: -10px 0; }
+.pill--link:focus-visible { outline: 2px solid var(--focus, var(--ink)); outline-offset: 2px; }
+
+/* Zavolej · SMS · E-mail: L 52, equal parts, 8 apart, right under the head */
+.contact-tiles { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--gap-x); }
+.contact-tiles > .btn { min-width: 0; padding: 0 var(--space-2); gap: 6px; white-space: nowrap; }
+.contact-tiles > .btn > .icon { flex: none; }
+@media (max-width: 379.98px) {
+  /* three tiles at 360: the icon goes, the word stays whole */
+  .contact-tiles[data-n="3"] > .btn > .icon { display: none; }
+}
+
+.group-about { max-width: 60ch; color: var(--ink-2); }
+.dhead__after > .map-link { display: inline-flex; }
+.person-note { white-space: pre-wrap; overflow-wrap: anywhere; }
+.person-warnings { display: grid; gap: var(--gap-y); }
+.duty-mark { display: inline-flex; align-items: center; }
+
+/* ---------- Podrobný výpis ---------- */
+.people-mode { margin-bottom: var(--gap-y); }
+.people-mode > .link { display: inline; }
+
+/* the bulk bar above the table once someone is ticked */
+.people-bulk {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-x) var(--space-4);
+  margin-bottom: var(--gap-y); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: var(--shape-block); background: var(--overlay); box-shadow: var(--lift-3);
+}
+.people-bulk__count { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); }
+.people-bulk__actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-left: auto; }
+
+/* the table: rows 52, bleeding 12 into the gutter like a list's rows; fixed layout, so nothing pushes the page */
+.people-table-box > .table-wrap { margin: 0 calc(-1 * var(--space-3)); padding: 0; }
+.people-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0 var(--gap-lit); margin: calc(-1 * var(--gap-lit)) 0; }
+.people-table th { white-space: nowrap; height: 44px; padding: 0 var(--space-3); background: var(--ground); }
+.people-table thead th { box-shadow: inset 0 -1px 0 var(--edge); }
+.people-table td { height: 52px; padding: 0 var(--space-3); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.people-table tbody tr + tr > * { border-top: 0; }
+.people-table tbody tr { cursor: pointer; }
+.people-table tbody tr > * { transition: background-color var(--dur-state) var(--ease); }
+/* a lit row lights up whole and rounded: the end cells carry the corners */
+.people-table tbody tr > :first-child { border-radius: var(--radius-m) 0 0 var(--radius-m); position: relative; }
+.people-table tbody tr > :last-child { border-radius: 0 var(--radius-m) var(--radius-m) 0; }
+.people-table tbody tr:hover > * { background-color: var(--wash); }
+.people-table tbody tr:is([data-picked], [data-open]) > * { background-color: var(--pick); }
+.people-table tbody tr:is([data-picked], [data-open]):hover > * { background-color: var(--pick-hover); }
+.people-table tbody tr:is([data-picked], [data-open]) .table-quiet { color: var(--ink); }
+.people-table tbody tr:is([data-picked], [data-open]) > :first-child::before {
+  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+}
+.people-table .col-pick { width: 44px; padding-right: 0; }
+.people-table th.col-name { width: 28%; }
+.people-table th.col-status { width: 12%; }
+.people-table th.col-household { width: 13%; }
+.people-table th.col-phone { width: 132px; }
+.people-table th.col-email { width: 22%; }
+.people-table th.col-groups { width: 14%; }
+.people-table th.col-birthday { width: 112px; }
+/* 900–1199 (a column of 720): the table keeps what you look up most */
+@media (max-width: 1199.98px) {
+  .people-table :is(.col-household, .col-groups, .col-birthday) { display: none; }
+  .people-table th.col-name { width: 34%; }
+  .people-table th.col-status { width: 15%; }
+  .people-table th.col-email { width: auto; }
+}
+/* ≥ 1200 with a person open beside it: name · phone in the list track; a long name wraps, it is never cut */
+.people-table.people-table--compact th.col-name { width: auto; }
+.people-table.people-table--compact th.col-phone { width: 132px; }
+.people-table--compact td.col-name { white-space: normal; padding-top: 4px; padding-bottom: 4px; }
+.people-table--compact .table-person__name { white-space: normal; overflow: visible; }
+.table-check { width: 20px; height: 20px; margin: 0; accent-color: var(--act); cursor: pointer; vertical-align: middle; }
+.col-name > * { vertical-align: middle; }
+.table-person { display: inline-flex; vertical-align: middle; align-items: center; gap: var(--space-3); max-width: calc(100% - 32px); min-height: var(--control-m); color: var(--ink); font-weight: var(--weight-strong); }
+.table-person__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.table-person:hover .table-person__name { text-decoration: underline; text-underline-offset: 3px; }
+.table-missing { display: inline-flex; margin-left: var(--space-2); color: var(--wait-ink); vertical-align: middle; }
+.table-link { color: inherit; }
+.table-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.table-quiet { color: var(--ink-2); }
+.people-table td > .icon { margin-left: 6px; vertical-align: -4px; color: var(--ink-accent); }
+
+/* ---------- the member sheet (groups-forms.js): one line per role – its name, then Neumí · Učí se · Umí ---------- */
+.skill-rows { display: grid; gap: var(--gap-y); }
+.skill-row { display: grid; gap: var(--space-2); }
+.skill-row__role { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); font-weight: var(--weight-strong); }
+@media (min-width: 600px) {
+  .skill-row { grid-template-columns: 140px minmax(0, 1fr); align-items: center; gap: var(--gap-y); }
+}

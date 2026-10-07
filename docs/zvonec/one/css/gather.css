@@ -1,0 +1,69 @@
+/* ============================================================
+   Zvonec One – Jak se scházíme (Šablony, Formáty, Místa) and Správa (Přístupy, Nastavení sboru). Owned by P5.
+   Only the pieces these screens add to the kit: the marks that lead a row (40) or a detail (56), the osnova and the
+   needs in the template's layers, the secret sheet, Nastavení's value blocks. The frames, rows, sections, facts,
+   layers and empty states are the kit's (css/kit.css, css/layers.css) and are not restyled here.
+   Tokens only (css/tokens.css → ../css/palettes.css), no raw colours.
+   ============================================================ */
+
+/* the marks (.lead-mark, 40 / 56) are the kit's: css/kit.css */
+.row:has(> .tpl-time:first-child) { --row-rule-start: calc(var(--space-3) + 52px + var(--space-3)); }
+
+/* a quiet line under a list in a section („A ještě 3 setkání.“) */
+.gather-note { margin-top: var(--gap-y); }
+
+/* ---------- Šablony ---------- */
+.tpl-time { flex: none; width: 52px; font-size: var(--type-meta); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink-2); font-feature-settings: var(--numerals); }
+.tpl-sum { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--gap-y); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.tpl-outline > .tpl-sum:first-child { margin-top: 0; margin-bottom: var(--gap-y); }
+.tpl-sum[data-over="true"] { color: var(--wait-ink); }
+.tpl-outline { display: grid; }
+.tpl-outline__foot { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--gap-y); }
+.tpl-description { max-width: 62ch; margin-top: var(--gap-y); }
+.tpl-image:not([hidden]) { display: block; margin-top: var(--gap-y); overflow: hidden; border-radius: var(--shape-block); background: var(--tint); }
+.tpl-image > img { display: block; width: 100%; max-height: 240px; object-fit: cover; }
+.tpl-image-field .tpl-image:not([hidden]) { margin: 0 0 var(--gap-y); }
+.tpl-image__actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); }
+.tpl-places { display: grid; gap: var(--gap-y); }
+.tpl-places__group { display: grid; gap: var(--space-2); }
+.tpl-places .chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
+.tpl-total { font-weight: var(--weight-strong); }
+.tpl-team { display: grid; }
+.tpl-team + .tpl-team { margin-top: var(--gap-group); }
+.tpl-team__head { display: flex; align-items: center; gap: var(--space-3); min-height: var(--control-m); }
+.tpl-team__head > h3 { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
+.tpl-need { display: flex; align-items: center; gap: var(--space-3); min-height: var(--row-h-single); padding-left: calc(var(--avatar-s) + var(--space-3)); border-top: 1px solid var(--hairline); }
+.tpl-need__name { flex: 1; min-width: 0; display: grid; font-size: var(--type-body); line-height: var(--lh-body); }
+
+/* ---------- Formáty: the needs editor in the dialog ---------- */
+.fmt-needs { display: grid; gap: var(--gap-y); }
+.fmt-need { display: flex; align-items: center; gap: var(--space-3); }
+.fmt-need__name { flex: 1; min-width: 0; display: grid; font-weight: var(--weight-strong); }
+
+/* ---------- Místa ---------- */
+.plc-inherit { padding: var(--space-3) var(--space-4); border-radius: var(--radius-m); background: var(--tint); }
+
+/* ---------- Přístupy: the secret shown once ---------- */
+.secret { display: grid; gap: var(--space-2); }
+.secret + .secret { margin-top: var(--gap-group); }
+.secret__actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); }
+.acc-screen .ls__body > .callout { margin-bottom: var(--gap-group); }
+
+/* ---------- Nastavení sboru: value blocks ---------- */
+.cfg-blocks { display: grid; gap: var(--gap-group); }
+.cfg-block { padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); min-width: 0; }
+@media (max-width: 599.98px) { .cfg-block { padding: var(--space-4); } }
+.cfg-values { display: grid; }
+.cfg-value { display: grid; gap: 2px; padding: var(--space-2) 0; border-top: 1px solid var(--hairline); }
+.cfg-value:first-child { border-top: 0; padding-top: 0; }
+.cfg-value:last-child { padding-bottom: 0; }
+.cfg-value > dt { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.cfg-value > dd { font-size: var(--type-body); line-height: var(--lh-body); overflow-wrap: anywhere; }
+@media (min-width: 600px) {
+  .cfg-value { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); align-items: baseline; }
+  .cfg-value > dd { text-align: right; }
+}
+.cfg-stepper { display: flex; align-items: center; gap: var(--space-3); }
+.cfg-unit { color: var(--ink-2); min-width: 4.5em; }
+.cfg-actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--gap-y); }
+.cfg-admin { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--gap-y); }

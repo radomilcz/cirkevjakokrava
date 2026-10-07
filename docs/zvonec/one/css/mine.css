@@ -1,0 +1,82 @@
+/* ============================================================
+   Zvonec One – Moje, Můj účet, Kdy nemůžu. Owned by package P1.
+   Moje (#moje), Můj účet (#ucet), Kdy nemůžu (#kdy-nemuzu) and the add / change sheet of Kdy nemůžu.
+   Tokens only (css/tokens.css → ../css/palettes.css), no raw colours. The frames (page, pane, section, row, empty)
+   are the kit's (css/kit.css); this file draws only what these screens add.
+   ============================================================ */
+
+/* ---------- Moje: D = the date line → 12 → the card or the line → 32 → sections ---------- */
+.mine { display: grid; align-content: start; min-width: 0; }
+.mine-date { font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); }
+.mine > .mine-date + * { margin-top: var(--gap-y); }
+.mine > .ask + *, .mine > .mine-calm + *, .mine > .callout + *, .mine > .empty + * { margin-top: var(--section-gap); }
+.mine > .section + .section { margin-top: var(--section-gap); }
+.mine > .section + .row-link, .mine > .mine-calm + .row-link { margin-top: var(--space-3); }
+.mine > .empty { margin-top: var(--space-5); }
+
+/* the answer card: one duty at a time (--feature, r20, padding 20) */
+.ask {
+  display: grid; gap: var(--space-4); padding: 20px;
+  border-radius: var(--shape-block); background: var(--feature);
+}
+.ask__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.ask__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); }
+.ask__n { flex: none; font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); font-feature-settings: var(--numerals); }
+.ask__duty { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+.ask__body { display: grid; gap: 2px; min-width: 0; }
+.ask__title { justify-self: start; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); color: var(--ink); text-decoration: none; }
+.ask__title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ask__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: normal; }
+.ask__body > .row__note { margin-top: var(--space-1); }
+/* the dots: 8 wide each, a 44 hit; the row takes 20 of the card's height */
+.ask__dots { display: flex; min-width: 0; justify-content: center; height: 20px; margin: calc(-1 * var(--space-1)) 0 calc(-1 * var(--space-2)); }
+.ask__dot {
+  position: relative; display: grid; place-items: center; flex: 0 1 24px; min-width: 12px; height: 20px; padding: 0; border: 0;
+  background: transparent; cursor: pointer;
+}
+.ask__dot::after { content: ""; position: absolute; inset: -12px 0; }   /* the 44 hit area */
+.ask__dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--edge-control); transition: background-color var(--dur-state) var(--ease); }
+.ask__dot:hover::before { background: var(--ink-3); }
+.ask__dot[aria-current="true"]::before { background: var(--ink); }
+/* after an answer the next duty slides in */
+.ask[data-enter] .ask__duty { animation: ask-in 260ms var(--ease) both; }
+@keyframes ask-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ask[data-enter] .ask__duty { animation: none; } }
+
+/* nothing waits: one line, no card */
+.mine-calm { display: flex; align-items: center; gap: var(--space-2); min-height: var(--control-m); font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink); }
+.mine-calm:focus { outline: none; }
+.mine-calm__mark { display: inline-flex; flex: none; }
+
+/* Tvoje další služby, Odmítnuté služby */
+.mine-ok { display: inline-flex; }
+.mine-ok > .sym { width: 24px; height: 24px; }
+.mine-next .row-link { margin-top: var(--space-2); }
+.mine-row--quiet .row__title { color: var(--ink-2); }
+.mine-row--quiet:is(:hover, [data-open]) .row__title { color: var(--ink); }
+
+/* ---------- Můj účet ---------- */
+.acct { display: grid; min-width: 0; }
+.acct > * + * { margin-top: var(--section-gap); }
+.acct-who { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+.acct-who__text { display: grid; gap: 2px; min-width: 0; }
+.acct-who__name { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); overflow-wrap: anywhere; }
+.acct-who__role { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.acct .facts { margin: 0; }
+.acct .section > .meta + .list { margin-top: var(--space-2); }
+.acct-switch { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+.acct-out { display: flex; }
+.acct-out__btn { color: var(--no-ink); }
+.acct-out__btn > .icon { color: var(--no-ink); }
+
+/* ---------- Kdy nemůžu (#kdy-nemuzu) ---------- */
+.off-page .page__body > .text { max-width: 34em; color: var(--ink-2); }
+.off-page .page__body > .text + .list { margin-top: var(--space-5); }
+
+/* the clash offer in the add / change sheet: the switch, then the duties it would decline */
+.blockout-clash { display: grid; gap: var(--space-2); }
+.blockout-clash[hidden] { display: none; }
+.blockout-clash__list { display: grid; gap: var(--space-1); margin: 0; padding: var(--space-3) var(--space-4); list-style: none; border-radius: var(--radius-m); background: var(--tint); }
+.blockout-clash__item { display: flex; flex-wrap: wrap; gap: 0 var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); min-width: 0; }
+.blockout-clash__when { flex: none; font-weight: var(--weight-strong); }
+.blockout-clash__what { min-width: 0; color: var(--ink-2); overflow-wrap: anywhere; }
