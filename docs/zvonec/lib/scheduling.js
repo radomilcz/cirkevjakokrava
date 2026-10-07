@@ -176,7 +176,7 @@ export function candidates(data, eventId, roleId, { today, scope = 'skilled', in
     const limits = limitsOf(data, person.id);
 
     // not a problem, just a fact the leader should see (a guest preacher is never in the team)
-    if (!level) reasons.push({ code: 'K4', severity: 'info', text: member ? 'v téhle roli zatím bez zkušenosti' : 'není v týmu' });
+    if (!level) reasons.push({ code: 'K4', severity: 'info', text: member ? 'v téhle roli zatím bez zkušeností' : 'není v týmu' });
     else if (level === 'learning') reasons.push({ code: 'K4b', severity: 'info', text: 'učí se' });
     if (unavailability(data, person.id, mine)) reasons.push({ code: 'K3', severity: 'error', text: 'nemůže' });
     // they already said no to this very duty – offered last, never proposed again

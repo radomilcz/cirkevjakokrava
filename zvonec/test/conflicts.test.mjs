@@ -416,7 +416,7 @@ test('candidates: free people first, reasons on the others; propose fills the ga
   assert.equal(k[0].person.id, 'petr');
   assert.equal(k[0].level, 'trained');
   assert.ok(k.find((x) => x.person.id === 'ota').reasons.some((x) => x.code === 'K3'));
-  assert.deepEqual(k.find((x) => x.person.id === 'jana').reasons.map((x) => `${x.code}:${x.text}`), ['K4:v téhle roli zatím bez zkušenosti']);
+  assert.deepEqual(k.find((x) => x.person.id === 'jana').reasons.map((x) => `${x.code}:${x.text}`), ['K4:v téhle roli zatím bez zkušeností']);
 
   let n = 0;
   const added = proposeRemaining(d, 'a', () => `n${++n}`, { today: TODAY });
@@ -444,7 +444,7 @@ test('candidates: scope pills – skilled, whole team, everybody', () => {
 
   const all = candidates(d, 'a', 'zvuk', { today: TODAY, scope: 'all' });
   assert.deepEqual(all.find((c) => c.person.id === 'ota').reasons.map((r) => `${r.code}:${r.severity}`), ['K4b:info']);
-  assert.equal(all.find((c) => c.person.id === 'iva').reasons[0].text, 'v téhle roli zatím bez zkušenosti');
+  assert.equal(all.find((c) => c.person.id === 'iva').reasons[0].text, 'v téhle roli zatím bez zkušeností');
   assert.equal(all.find((c) => c.person.id === 'jana').reasons[0].severity, 'info', 'not in the team is not a problem');
   assert.equal(all.find((c) => c.person.id === 'jana').reasons[0].text, 'není v týmu');
   assert.equal(all.find((c) => c.person.id === 'jana').inTeam, false);

@@ -396,6 +396,13 @@ function build(p) {
     Object.assign(T, { 'today-bg': rgba(pink, 0.07), 'selected-bg': rgba(pink, 0.13), 'selected-bg-hover': rgba(pink, 0.18),
       'selected-line': rgba(pink, 0.42), 'info-bg': rgba(pink, 0.13) });
   }
+  if (p.ref === 'light') {
+    // the tuned scales of css/tokens.css are alpha twins over the chrome (gray-1); a selected row sits on the
+    // page, where the rose twins turn cold (pinkish purple, hue ≈ 345°). The brand pink as a plain alpha keeps
+    // its warm hue on every light surface (page, card, sheet, chrome).
+    const pink = '#e6acac';
+    Object.assign(T, { 'today-bg': rgba(pink, 0.16), 'selected-bg': rgba(pink, 0.3), 'selected-bg-hover': rgba(pink, 0.4) });
+  }
   // text-3 (dashes in empty cells, other-month days) also sits on a selected or today's row
   const t3bgs = [su.panel, su.app, over(T['surface-sunken'], su.panel), over(T['selected-bg'], su.panel), over(T['selected-bg-hover'], su.panel), over(T['today-bg'], su.panel)];
   if (minC(T['text-3'], t3bgs) < 4.6) {

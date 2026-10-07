@@ -33,7 +33,7 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
      team with the names; the viewer is „Ty“ (capital T).
    - Leader: ○ before a name that has not answered (legend „○ čeká na odpověď“), „+ Role“ under a team
      for an empty slot, › to open the team (roles with ✓ potvrzeno / ○ čeká na odpověď / „+ Doplň“).
-   - **No fill ring** on this screen (the owner removed it); Osnova and „O setkání a místo“ are rows.
+   - **No fill ring** on this screen (the owner removed it); Osnova and „O setkání a místě“ are rows.
    - Editing the event (time, place, Osnova, cancel) is in ⋯. No cover picture, no kind / web pills, no
      recurrence line.
 3. **Kalendář** (`kalendar.html`, approved)
@@ -48,7 +48,7 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
      where events are compared). Under the title: „+ Role“ per empty slot, „○ 2 ještě neodpověděli ›“,
      „● Radomil má dvě služby naráz ›“. Scope chip: the leader's team / „Všechny týmy“ for admins.
    - „+ Klávesy“ opens the picker titled by the role: people of the team who can, longest-rested first;
-     who cannot that day is greyed out with the reason; „Hledej ve všech lidech“.
+     who cannot that day is greyed out with the reason; „Hledej mezi všemi lidmi“.
    - „2 ještě neodpověděli“ opens who waits, with their duty, how long it waits, SMS and call buttons.
 5. **Lidé** (`lide.html`, approved)
    - Search („Hledej jméno nebo tým“) and A–Z with a call button on each row; no filters, chips or table.
@@ -73,3 +73,19 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - The rail keeps the fine bar at the left edge of the current item, as in the live app.
 
 Data and logic stay as they are – only the screens change.
+
+## The build
+
+The owner approved the concept („Ano. Začni.“). It is built at `docs/zvonec/simple/` – a fork of Zvonec Next on
+the shared `docs/zvonec/lib`, next to it, so the two can be compared: https://zvonec.cirkevjakokrava.cz/simple/
+(the demo: https://manifest.cirkevjakokrava.cz/zvonec/simple/). The main address stays on `next/` until the owner
+says otherwise (`docs/zvonec/go.js`).
+
+- Shell (`simple/app.js`, `simple/ui/me-menu.js`): the four tabs, the circle on Moje and the person at the rail's
+  foot open one menu; Next's `#domu` and `#vice` lead to `#moje`, Next's calendar views to `#kalendar`.
+- Screens: `ui/mine.js` (Moje, `#moje[/<event>]`), `ui/event.js` (Setkání), `ui/calendar.js` (Kalendář, the printable
+  roster at `#kalendar/rozpis`), `ui/staffing.js` (Obsazení, `#obsazeni[/<event>]`), `ui/people.js` and
+  `ui/people-card.js` (Lidé, `#osoba/<id>[/udaje]`), `ui/event-duties.js` (`pickFor`: the picker titled by the
+  role). Their styles are in `simple/css/simple.css` (loaded last).
+- The selection tint of the light Krém a hlína palette is now a plain alpha of the brand pink (`zvonec/palettes.mjs`),
+  so it stays warm on the page in all three apps.

@@ -1,0 +1,393 @@
+/* ============================================================
+   Zvonec – one screen, one question (zvonec/design/one-question/): the new screens on top of the Next kit.
+   Loaded last. Covers: rows that light up (no divider touches a fill, no mark bar on a row), the screens
+   that draw their own head (Moje, Obsazení, Kalendář, Lidé), the circle and its menu, Moje, Kdy nemůžu,
+   list | detail on a wide screen.
+   ============================================================ */
+
+/* ---------- rows: a filled row touches no divider, and carries no bar ---------- */
+/* the divider is the ::before of the next row: hide a lit row's own and the one under it */
+.row[aria-selected="true"]::after { content: none; }
+:is(a.row, button.row, .row:has(> .row__stretch)):hover::before,
+:is(a.row, button.row, .row:has(> .row__stretch)):hover + .row::before,
+.row:is([aria-selected="true"], [data-open])::before,
+.row:is([aria-selected="true"], [data-open]) + .row::before { background: transparent; }
+@media (min-width: 1200px) {
+  .row[data-open]::after { content: none; }
+}
+
+/* ---------- a screen with its own head (no top bar) ---------- */
+.mine-head { padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-5); }
+.mine-head > .overline { margin-bottom: 2px; }
+.mine-head__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.mine-head__row > .title { min-width: 0; }
+@media (min-width: 960px) {
+  .mine-head { padding-top: var(--space-7); }
+}
+
+/* ---------- the circle (Moje, phone) and its menu ---------- */
+.me-circle {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%;
+  background: var(--tint); color: var(--ink); font-size: 15px; font-weight: var(--weight-bold); letter-spacing: .01em;
+  transition: background-color var(--dur-state) var(--ease);
+}
+.me-circle:hover { background: var(--tint-2); }
+.me-circle:active { background: var(--press); }
+
+.sheet--me .sheet__body { gap: var(--space-2); padding-bottom: var(--space-4); }
+.sheet--me .sheet__head { display: none; }        /* no title: the first row is the person */
+.me-menu { display: grid; gap: var(--space-2); }
+/* one continuous list: every block's first row gets the same hairline as the rows inside a block */
+.me-menu > :is(.list, .me-colours) + .list > .row:first-child::before {
+  content: ""; position: absolute; top: 0; left: var(--row-rule-start, var(--space-3)); right: var(--space-3); height: 1px; background: var(--hairline);
+}
+.me-menu > .me-menu__heading + .list > .row:first-child::before { content: none; }
+.me-menu__heading {
+  margin: var(--space-3) 0 0; padding-top: var(--space-4); border-top: 1px solid var(--hairline);
+  font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2);
+}
+.me-menu__heading + .list { margin-top: calc(-1 * var(--space-1)); }
+.me-menu__count { font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--wait-ink); }
+.me-menu__out .row__title { color: var(--no-ink); }
+.me-menu__me { min-height: 76px; }
+
+.me-colours {
+  display: flex; align-items: center; gap: var(--space-3);
+  min-height: var(--row-h-single); padding: var(--space-1) 0; border-top: 1px solid var(--hairline);
+}
+.me-colours__label { flex: none; font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
+/* the bullseyes in the row; „Podle zařízení“ wraps under them when the row has no room */
+.me-colours .palette-options { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 2px; }
+.me-colours .palette-options > button:not(.palette-auto) { min-width: 40px; min-height: 44px; }
+.me-colours .palette-options .palette-auto {
+  min-height: 32px; margin: 2px 0 var(--space-1); padding: 0 12px; border-radius: var(--shape-pill);
+  font-size: var(--type-meta); font-weight: var(--weight-strong); background: transparent; color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--edge-control);
+}
+.me-colours .palette-options .palette-auto[aria-checked="true"] { color: var(--ink); background: var(--tint); box-shadow: inset 0 0 0 2px var(--ink); }
+
+@media (min-width: 960px) {
+  /* desktop: the same list as a card above the person at the foot of the rail */
+  .sheet.sheet--me:not(.sheet--inline) {
+    inset: auto auto var(--space-4) calc(var(--rail-w) + var(--space-3)); transform: none;
+    width: 400px; max-height: calc(100dvh - 2 * var(--space-4)); padding-top: var(--space-3);
+  }
+  html:has(.sheet--me) #layers .scrim { background: transparent; }
+}
+
+/* the rail: the person at the foot is a button now (it opens the menu) */
+.rail__bottom > .rail__foot { width: 100%; border: 0; background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+.rail__foot[aria-current="page"] { background: var(--ground); }
+.rail__foot[aria-current="page"] .rail__name { font-weight: var(--weight-bold); }
+
+/* ---------- Moje ---------- */
+.mine-col { display: grid; align-content: start; }
+.mine-col > .home-demo { margin-bottom: var(--space-5); }
+.mine-col > .callout { margin-bottom: var(--space-5); }
+
+/* the answer card: one duty at a time */
+.ask {
+  display: grid; gap: var(--space-4); margin-bottom: var(--space-6); padding: var(--space-5);
+  border-radius: var(--shape-block); background: var(--feature);
+}
+.ask__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.ask__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.ask__n { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); font-feature-settings: var(--numerals); }
+.ask__duty { display: flex; align-items: center; gap: var(--space-4); }
+.ask__body { display: grid; gap: 2px; min-width: 0; }
+.ask__title { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); color: var(--ink); }
+.ask__title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ask__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.ask__body > .row__note { margin-top: var(--space-1); }
+.ask > .btn-row { margin-top: var(--space-1); }
+.ask__dots { display: flex; justify-content: center; gap: 0; margin: calc(-1 * var(--space-2)) 0 calc(-1 * var(--space-3)); }
+.ask__dot {
+  display: grid; place-items: center; width: 22px; height: 32px; padding: 0; border: 0; background: transparent; cursor: pointer;
+}
+.ask__dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--edge-control); transition: background-color var(--dur-state) var(--ease); }
+.ask__dot:hover::before { background: var(--ink-3); }
+.ask__dot[aria-current="true"]::before { background: var(--ink); }
+
+/* nothing waits */
+.mine-calm {
+  display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-6); padding: 18px var(--space-5);
+  border-radius: var(--shape-block); background: var(--feature);
+}
+.mine-calm:focus { outline: none; }
+.mine-calm__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
+.mine-calm__text { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.ok-dot { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ok-solid); color: var(--on-ok); }
+.ok-dot > .icon { width: 18px; height: 18px; stroke-width: 2.5; }
+
+/* Tvoje další služby */
+.mine-next__title { margin-bottom: var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.mine-ok { display: inline-flex; }
+.mine-ok > .sym { width: 24px; height: 24px; }
+.mine-next .row-link { margin-top: var(--space-2); }
+
+/* ---------- Kdy nemůžu (#kdy-nemuzu) ---------- */
+.off-page__lead { max-width: 34em; margin-bottom: var(--space-4); font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); }
+.off-page .list { margin-bottom: var(--space-5); }
+.off-page__add { justify-self: start; }
+
+/* ---------- list | detail on a wide screen (≥ 1200): the list keeps its phone width, the detail beside it ---------- */
+@media (min-width: 1200px) {
+  .screen--wide:is(.mine, .staffing, .people-root) { max-width: none; }
+  .screen--wide:is(.mine, .staffing, .people-root) > .split > .split__aside { top: var(--space-5); margin-top: var(--space-7); }
+  .screen--wide:is(.mine, .staffing, .people-root) > .split {
+    grid-template-columns: minmax(0, 560px) minmax(0, 640px); gap: var(--space-7); justify-content: start;
+  }
+}
+
+/* ---------- the waiting symbol: a plain ring (○), as in the concept – no dashes, no clock ---------- */
+.sym[data-status="waiting"] .sym__disc { stroke-dasharray: none; stroke-width: 3.4; transform: scale(.7); transform-box: fill-box; transform-origin: center; }
+.sym[data-status="waiting"] .sym__glyph { display: none; }
+
+/* ---------- Setkání ---------- */
+.ev-head { gap: var(--space-3); }
+.ev--pane > .ev-head__top { justify-content: flex-end; min-height: 0; margin-bottom: calc(-1 * var(--space-3)); }
+.ev--pane > .ev-head__top:empty { display: none; }
+.ev .facts { gap: var(--space-2); }
+.ev-head > .callout { margin-top: var(--space-2); }
+
+/* Tvoje služba: the one lifted block */
+.ev-you { display: grid; gap: 0; padding: var(--space-4) var(--space-5); border-radius: var(--shape-block); background: var(--feature); }
+.ev-you__item { display: grid; gap: var(--space-4); padding: var(--space-1) 0; }
+.ev-you__item + .ev-you__item { margin-top: var(--space-3); padding-top: var(--space-4); border-top: 1px solid var(--hairline); }
+.ev-you__item--button {
+  grid-template-columns: 1fr auto; align-items: center; width: 100%; margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-3));
+  width: calc(100% + 2 * var(--space-3)); padding: var(--space-2) var(--space-3); border: 0; border-radius: var(--shape-control);
+  background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer;
+}
+.ev-you__item--button:hover { background: var(--wash); }
+.ev-you__item--button > .icon { color: var(--ink-3); }
+.ev-you__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.ev-you__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.ev-you__role { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
+.ev-you__status { display: inline-flex; align-items: center; gap: 6px; flex: none; padding-top: 1px; font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); }
+.ev-you__status[data-status="waiting"] { color: var(--wait-ink); }
+.ev-you__status[data-status="confirmed"] { color: var(--ok-ink); }
+.ev-you__status[data-status="declined"] { color: var(--no-ink); }
+.ev-you__clash { margin-top: calc(-1 * var(--space-2)); }
+
+/* Kdo slouží: one line per team */
+.ev-who { margin-top: var(--space-3); }
+.ev-who__title { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.ev-who__legend { display: flex; flex-wrap: wrap; gap: 2px var(--space-4); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.ev-who__legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.ev-who__lines { display: grid; grid-template-columns: minmax(84px, max-content) 1fr auto; column-gap: var(--space-4); margin-top: var(--space-1); }
+.mark { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.mark--wait { border: 2.5px solid var(--wait-ink); }
+.mark--error { width: 10px; height: 10px; margin: 0 7px 0 1px; vertical-align: 0; background: var(--no-solid); }
+.ev-who__legend .mark { margin-right: 0; }
+
+.team-line {
+  position: relative; display: grid; grid-template-columns: minmax(96px, 28%) 1fr auto; align-items: start; gap: var(--space-2) var(--space-4);
+  padding: var(--space-4) 0; border-bottom: 1px solid var(--hairline);
+}
+.team-line__team { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); overflow-wrap: anywhere; }
+/* every line shares one column for the team names: as wide as the longest one (subgrid) */
+@supports (grid-template-columns: subgrid) {
+  .team-line { grid-column: 1 / -1; grid-template-columns: subgrid; }
+}
+.team-line__body { display: grid; gap: var(--space-3); min-width: 0; }
+.team-line__names { font-size: var(--type-body); line-height: var(--lh-body); }
+.team-line__names:empty { display: none; }
+.team-line__names--none { color: var(--ink-2); }
+.team-line__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.team-line > .icon { align-self: center; color: var(--ink-3); }
+/* a name moves to the next line whole; only a name longer than the line breaks inside */
+.nm { display: inline-block; max-width: 100%; }
+/* a leader's line opens the team: the button covers the line, the chips stay their own tap targets */
+.team-line__open { position: absolute; inset: 0 calc(-1 * var(--space-3)); border: 0; border-radius: var(--shape-control); background: transparent; cursor: pointer; }
+.team-line__open:hover { background: var(--wash); }
+.team-line__open:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.team-line > :not(.team-line__open) { position: relative; pointer-events: none; }
+.team-line .add-chip { pointer-events: auto; }
+.team-line:has(> .team-line__open:hover) { border-bottom-color: transparent; }
+
+.add-chip {
+  position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 16px 0 12px;
+  border: 1.5px dashed var(--edge-control); border-radius: var(--shape-pill); background: var(--ground);
+  color: var(--ink); font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); cursor: pointer;
+}
+.add-chip:hover { border-style: solid; background: var(--wash); }
+.add-chip::after { content: ""; position: absolute; inset: -2px 0; }
+
+/* Osnova ›, O setkání a místě › */
+.ev-rows { display: grid; margin-top: calc(-1 * var(--space-4)); }
+.ev-row {
+  display: flex; align-items: baseline; gap: var(--space-2); min-height: 56px; padding: var(--space-4) 0;
+  border: 0; border-bottom: 1px solid var(--hairline); background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer;
+}
+.ev-row > .icon { align-self: center; margin-left: auto; color: var(--ink-2); }
+.ev-row__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
+.ev-row__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.ev-row:hover .ev-row__title { text-decoration: underline; text-underline-offset: 3px; }
+
+/* the team sheet: each role with who and what they said */
+.tslots { display: grid; }
+.tslot {
+  display: grid; grid-template-columns: minmax(96px, 34%) 1fr auto; align-items: center; gap: var(--space-3);
+  min-height: 64px; padding: var(--space-3) 0; border: 0; border-bottom: 1px solid var(--hairline);
+  background: transparent; color: inherit; text-align: left; font: inherit;
+}
+.tslot:last-child { border-bottom: 0; }
+.tslot--button { cursor: pointer; margin: 0 calc(-1 * var(--space-3)); padding-left: var(--space-3); padding-right: var(--space-3); width: calc(100% + 2 * var(--space-3)); border-radius: var(--shape-control); }
+.tslot--button:hover { background: var(--wash); }
+.tslot__role { font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); }
+.tslot__who { display: grid; gap: 2px; justify-items: start; min-width: 0; }
+.tslot__name { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); }
+.tslot > .icon { color: var(--ink-3); }
+.tslot:not(.tslot--button)::after { content: ""; }
+
+/* O setkání a místě */
+.about-sheet .sheet__body { gap: var(--space-4); }
+.ev-place { display: grid; gap: var(--space-3); }
+.ev-place__name { font-weight: var(--weight-strong); }
+.ev-about-kind { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.ev-about-kind > :is(.tag, .pill) { flex: none; }
+.ev-about-kind__series { flex: 1 1 100%; }
+
+/* ---------- Kalendář ---------- */
+/* phone: the head – the title, „Říjen ▾“, + and ⋯ */
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-4); }
+.cal-head > .title { min-width: 0; }
+.cal-head__tools { display: flex; align-items: center; gap: var(--space-1); margin-right: -10px; }
+.month-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px 0 16px; border: 0; border-radius: var(--shape-pill);
+  background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control); color: var(--ink);
+  font: inherit; font-size: var(--type-meta); font-weight: var(--weight-bold); cursor: pointer; white-space: nowrap;
+}
+.month-chip:hover { background: var(--wash); }
+.month-chip > .icon { color: var(--ink-2); }
+
+/* the list: weeks, one arch per day, the events of the day beside it */
+.cal-list { display: grid; gap: var(--space-4); }
+.cal-week { display: grid; }
+.cal-week__title { padding: var(--space-2) 0 var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.cal-day-row { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid var(--hairline); }
+.cal-week > .cal-day-row:last-child { border-bottom: 0; }
+.cal-day-row__events { display: grid; gap: var(--space-2); min-width: 0; }
+.day-event { display: grid; gap: 2px; padding: 6px var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--shape-control); color: inherit; }
+.day-event:hover { background: var(--wash); }
+.day-event__head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); }
+.day-event__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
+.day-event__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.day-event--cancelled .day-event__title { text-decoration: line-through; color: var(--ink-2); }
+.pill--you { min-height: 26px; padding: 0 10px; font-size: var(--type-meta); background: var(--tint); }
+.cal-screen--list .cal-more { margin-top: var(--space-4); }
+
+/* the mini month (a sheet without a title row: the month and its arrows are the head) */
+.sheet--month .sheet__head { display: none; }
+.sheet--month .sheet__body { gap: var(--space-3); padding-top: var(--space-2); }
+.mini-month__head { display: flex; align-items: center; gap: var(--space-1); }
+.mini-month__title { flex: 1; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
+.sheet--month .day__dots > i { background: var(--ink-2); }
+
+/* desktop: ‹ Říjen 2026 › and Dnes on one line above the grid */
+.cal-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.cal-bar .period__label { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-bold); }
+/* a chip is the title, up to two lines (the time is in its name for a screen reader and in the pane) */
+.cal-chip__time { display: none; }
+.cal-chip__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.cal-chip[data-mine] { font-weight: var(--weight-bold); }
+.sheet--month .day[aria-selected="true"][data-today]::after { box-shadow: none; }
+@media (min-width: 1200px) {
+  .cal--month > .split { grid-template-columns: minmax(0, 1fr) minmax(380px, 440px); }
+  .cal--month > .split > .split__aside { top: var(--space-5); }
+}
+
+/* ---------- Obsazení ---------- */
+.staffing-head { padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-4); }
+.staffing-head__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.staffing-head__row > .title { min-width: 0; }
+.staffing-head__lead { margin-top: var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+@media (min-width: 960px) { .staffing-head { padding-top: var(--space-7); } }
+.scope-chip { min-width: 0; max-width: 60%; }
+.scope-chip__label { overflow: hidden; text-overflow: ellipsis; }
+
+.staff-list { display: grid; }
+.staff-item {
+  position: relative; display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-4);
+  padding: var(--space-4) var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--shape-control);
+}
+.staff-item + .staff-item::before { content: ""; position: absolute; top: 0; left: var(--space-3); right: var(--space-3); height: 1px; background: var(--hairline); }
+.staff-item[data-open] { background: var(--pick); }
+.staff-item[data-open]::before, .staff-item[data-open] + .staff-item::before { background: transparent; }
+.staff-item__body { display: grid; gap: var(--space-2); min-width: 0; }
+.staff-item__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.staff-item__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-bold); color: var(--ink); }
+.staff-item__title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.staff-item__fill { display: inline-flex; align-items: center; gap: var(--space-2); flex: none; font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink-2); font-feature-settings: var(--numerals); }
+.staff-item__fill > .ring { width: 28px; height: 28px; }
+.staff-item__meta { margin-top: -6px; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.staff-item__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-1) 0; }
+.staff-item__line {
+  display: inline-flex; align-items: center; gap: 2px; justify-self: start; min-height: 32px; padding: 0; border: 0; background: none;
+  color: var(--ink); font: inherit; font-size: var(--type-meta); line-height: var(--lh-meta); text-align: left; cursor: pointer;
+}
+.staff-item__line .mark { margin-right: var(--space-2); }
+.staff-item__line > .icon { width: 16px; height: 16px; color: var(--ink-2); }
+.staff-item__line:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* the picker: titled by the role, the team first, who cannot greyed with the reason */
+.sheet--pick .sheet__body { gap: var(--space-2); }
+.pick-heading { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.pick-list { margin-bottom: var(--space-3); }
+.pick-row--off .row__title { color: var(--ink-2); }
+.pick-row--off .avatar { opacity: .55; }
+.pick-row__why { color: var(--no-ink); }
+.pick-none { padding: var(--space-3) 0; }
+
+/* ---------- Lidé ---------- */
+.people-col { display: grid; align-content: start; }
+.people-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: calc(env(safe-area-inset-top) + var(--space-7)) 0 var(--space-4); }
+.people-head__tools { display: flex; align-items: center; gap: var(--space-1); margin-right: -10px; }
+@media (min-width: 960px) { .people-head { padding-top: var(--space-7); } }
+.people-search { margin-bottom: var(--space-2); }
+.people-results .index-letter {
+  padding: var(--space-4) 0 var(--space-1); font-family: var(--font-ui); font-size: var(--type-meta); line-height: var(--lh-meta);
+  font-weight: var(--weight-bold); letter-spacing: 0; color: var(--ink-2);
+}
+@media (min-width: 960px) { .people-head__tools { gap: var(--space-2); } }
+
+/* the card */
+.pcard { display: grid; gap: var(--space-5); }
+.pcard-head { display: grid; gap: var(--space-4); justify-items: start; padding-top: var(--space-2); }
+.pcard-head > .avatar--l {
+  width: 88px; height: 88px; font-family: var(--font-ui); font-weight: var(--weight-bold); font-size: 28px; line-height: 1; letter-spacing: .01em;
+}
+.pcard-head__text { display: grid; gap: var(--space-3); min-width: 0; }
+.pcard-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pcard-chip {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: 34px; padding: 0 12px; border-radius: 10px;
+  background: var(--tint); color: var(--ink); font-size: var(--type-meta); font-weight: var(--weight-strong);
+}
+.pcard-chip--team { padding-left: 6px; }
+.pcard-chip--team:hover { background: var(--tint-2); }
+.pcard-chip > .avatar { width: 24px; height: 24px; border-radius: 7px; font-size: 10px; }
+@media (min-width: 1200px) {
+  .person-card--pane .pcard-head { grid-template-columns: auto 1fr; align-items: center; gap: var(--space-5); }
+}
+
+/* Zavolej · SMS · E-mail as three tiles */
+.pcard .person-reach { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--space-2); }
+.pcard .person-reach > .btn { flex-direction: column; gap: 4px; min-height: 72px; padding: var(--space-2); border-radius: 16px; }
+.pcard .person-reach > .btn > .icon { width: 24px; height: 24px; }
+
+.pcard-missing { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); }
+.pcard-missing__text { flex: 1; min-width: 0; }
+.pcard-missing__fix { flex: none; font-weight: var(--weight-bold); }
+.mark--wait-dot { width: 10px; height: 10px; margin: 0 4px 0 1px; border-radius: 50%; background: var(--wait-ink); }
+
+.pcard-next { display: grid; }
+.pcard-next__title { margin-bottom: var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-bold); color: var(--ink-2); }
+.pcard-next__more { margin-top: var(--space-1); }
+.pcard-status { display: inline-flex; }
+.pcard-rows { margin-top: calc(-1 * var(--space-3)); }
+.pcard-details-head { display: grid; gap: 2px; }
+
+/* 960–1199 (no split): the one column keeps a readable width */
+@media (min-width: 960px) {
+  :is(.mine-col, .staffing-col, .people-col) { max-width: 640px; }
+}
