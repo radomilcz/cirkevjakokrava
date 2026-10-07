@@ -1,29 +1,39 @@
-// Zvonec – Setkání (#setkani/<id>): one event on one screen (zvonec/design/one-question › Setkání).
-//   when and where · event-level warnings (leaders) · „Tvoje služba“ (my duty, Můžu / Nemůžu while it waits) ·
-//   Kdo slouží: one line per team with the names (I am „Ty“); a leader sees ○ before a name that has not
-//   answered, ● where something does not fit, „+ Role“ for an empty slot, and › opens the team (its roles,
-//   who said what, „+ Doplň“) · Upozornění (leaders, upcoming): every ● spelled out with its fixes in one
-//   place · Osnova › · O setkání a místě › (a sheet: description, Pro tým, the map,
-//   Účel, the series, Ukaž na webu) · Kolik lidí přišlo (leaders, past).
-// No cover picture, no kind / web pills, no fill ring here. Editing is in ⋯ (leaders).
-// The same body fills the detail pane beside Moje, Obsazení and Kalendář at ≥ 1200 px (eventBody({ pane: true })).
+// Zvonec – Setkání (#setkani/<id>): one event on one screen (zvonec/design/one-question › Setkání), calm like
+// Simple, with the best of Next:
+//   the head: title · Účel and „na webu“ tags · when · where · the series („Každou neděli do 31. 1. 2027“) ·
+//     the cancelled callout (no cover picture) · event-level warnings (leaders) ·
+//   „Tvoje služba“ (my duty, Můžu / Nemůžu while it waits) ·
+//   Kdo slouží: one line per team with the names (I am „Ty“). A leader sees how full the event is in the head
+//     („◔ 14 z 15 · chybí 1“) and a status at the end of each line – ● something does not fit, ○ someone has not
+//     answered, ✓ everyone confirmed; a tap opens the team in place (its roles, who, „potvrzeno“ / „čeká na
+//     potvrzení“ / „nemůže“, „+ Doplň“ for an empty slot; a person opens Služba). A team with an empty slot or
+//     a ● starts open; what is open is kept per event for the session. Members see the names only ·
+//   Upozornění (leaders, upcoming): every ● spelled out with its fixes in one place ·
+//   Osnova: the first four points (time, name, who leads) and „Celá osnova · 9 bodů · 112 min ›“ (its page);
+//     an empty one gives leaders „Slož osnovu“ ·
+//   O setkání: the description, Pro tým, the place with its address and „Otevři v mapě ↗“, „Ukaž na webu“
+//     (leaders) · Kolik lidí přišlo (leaders, past).
+// Editing is in ⋯ (leaders). The same body fills the detail pane beside Moje, Obsazení and Kalendář at ≥ 1200 px
+// (eventBody({ pane: true })).
 
 import {
   h, icon, screen, topBar, menu, button, buttonRow, section, callout, kindTag, pill, empty, statusNote, statusSymbol,
-  switchRow, stepper, field, openSheet, textArea, toast, detailPane, plural, joinMeta, shortDate, SEP, hasCoords, mapFrame, mapLink,
-  link, uid,
+  switchRow, stepper, field, openSheet, textArea, toast, detailPane, plural, SEP, hasCoords, canMap, mapLink,
+  link, rowLink, fill, clock, uid,
 } from './kit.js';
 import { S, can, myId, change, render } from '../../ui/state.js';
 import { eventById, followingInSeries, seriesFor, seriesSummary } from '../../lib/events.js';
-import { programTimes, programDuration } from '../../lib/program.js';
+import { programTimes, programDuration, itemName, itemLeaders, formatById } from '../../lib/program.js';
+import { personInEvent } from '../../lib/archive.js';
+import { fullName, DELETED_NAME } from '../../lib/people.js';
 import { today, dayOf } from '../../lib/time.js';
 import {
-  whenText, placeText, placesOf, slotsOf, fillOf, myDuties, eventConflicts, eventLevelWarnings, assignmentWarnings,
-  nameOf,
+  whenText, placeText, placesOf, slotsOf, fillOf, waitingWords, missingWords, myDuties, eventConflicts,
+  eventLevelWarnings, assignmentWarnings, nameOf,
 } from './calendar-shared.js';
 import {
   answer, openMyAnswer, openDutySheet, pickFor, fillOpenSlots, sameAsLast, openNeedsSheet, askSeries, warningFor,
-  warningTag, andFollowing, blockoutOn, blockoutNote,
+  warningTag, teamWords, andFollowing, blockoutOn, blockoutNote,
 } from './event-duties.js';
 import { openEditEvent, openExtendSeries, cancelOrRestore, deleteEventFlow } from './event-form.js';
 
@@ -48,14 +58,17 @@ export function eventMenu(event) {
   ].filter(Boolean), { label: 'Další možnosti setkání' });
 }
 
-// ---------- when and where ----------
+// ---------- the head: what, when, where ----------
 
 function head(event, { pane }) {
+  const series = seriesFor(S.data, event);
   return h('div', { class: 'ev-head' },
     h(pane ? 'h2' : 'h1', { class: ['title', pane && 'title--s', event.cancelled && 'is-cancelled'] }, event.title),
+    h('div', { class: 'cluster ev-tags' }, kindTag(event.kind), event.public === true ? pill('na webu') : null),
     h('div', { class: 'facts' },
       h('p', { class: 'fact' }, icon('clock', { size: 's' }), h('span', {}, whenText(event))),
-      placesOf(event).length ? h('p', { class: 'fact' }, icon('pin', { size: 's' }), h('span', {}, placeText(event))) : null),
+      placesOf(event).length ? h('p', { class: 'fact' }, icon('pin', { size: 's' }), h('span', {}, placeText(event))) : null,
+      series ? h('p', { class: 'fact' }, icon('layers', { size: 's' }), h('span', {}, seriesSummary(series, { today: today() }))) : null),
     event.cancelled ? callout({ tone: 'no', title: 'Setkání je zrušené.', text: String(event.note || '').trim() || null }) : null);
 }
 
