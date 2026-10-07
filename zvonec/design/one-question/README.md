@@ -68,6 +68,8 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - The chosen item has only a soft fill, no edge (the owner did not like the dark bar). The fill is a solid
      step of our pink (`--rose-1`): the alpha tint `--pick` is solved over the rail colour, so on the lighter
      page it turns cold and pinkish-purple. The build fixes `--pick` at the source (`zvonec/palettes.mjs`).
+   - No divider touches the fill: the chosen (and the hovered) row hides its own line and the one of the row
+     above it.
    - The rail keeps the fine bar at the left edge of the current item, as in the live app.
 
 Data and logic stay as they are – only the screens change.
