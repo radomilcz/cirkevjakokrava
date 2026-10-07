@@ -730,6 +730,9 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .empty__text { margin-top: var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
 .empty__action { margin-top: var(--space-5); }
 .page__body > .empty:first-child, .pane__body > .empty:first-child { margin-top: 0; }
+/* D's 24 and the empty's own margin would collapse into one 24: the empty takes the rest as padding, so it starts 48
+   under the last control row (CODEX §4, §6.12) */
+.ls__body:not(.page__body) > .empty:first-child { margin-top: 0; padding-top: calc(var(--space-8) - var(--gap-group)); }
 
 /* ---------- motion ---------- */
 @keyframes nx-rise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
