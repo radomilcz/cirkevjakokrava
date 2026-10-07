@@ -383,6 +383,16 @@ span.roster-entry { cursor: default; }
 .plan-done { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4); border-radius: var(--shape-control); background: var(--ok-fill); color: var(--ok-ink); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-medium); }
 .plan-done > span { flex: 1; min-width: 12em; }
 
+/* Kdy nemůžu: the duties in the range, ticked = answer Nemůžu in the same save */
+.blockout-clash { display: grid; gap: var(--space-2); }
+.blockout-clash[hidden] { display: none; }
+.blockout-clash__head { margin: 0; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.blockout-clash__head strong { color: var(--ink); font-weight: var(--weight-strong); }
+.blockout-clash__rows { display: grid; gap: 3px; }
+.blockout-clash .plan-row { grid-template-columns: 24px 5.6em 1fr; }
+.blockout-clash .plan-row[aria-checked="false"] .plan-row__who { text-decoration: none; color: var(--ink); }
+.plan-row__what { font-weight: var(--weight-regular); color: var(--ink-2); }
+
 .needs-team { display: grid; gap: var(--space-2); }
 .needs-team > .team-head { margin-top: 0; }
 .needs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-4) var(--space-3); align-items: start; }

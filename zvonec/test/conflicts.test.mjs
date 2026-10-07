@@ -492,7 +492,7 @@ test('candidates: busy elsewhere, already here, role clash, combinable pair, chi
     .find((c) => c.person.id === personId).reasons.map((r) => `${r.code}:${r.text}`);
   assert.deepEqual(reasons('a', 'kytara', 'petr'), [], 'zpěv + kytara is combinable');
   assert.deepEqual(reasons('a', 'zpev', 'petr'), ['already:už tu je']);
-  assert.deepEqual(reasons('a', 'deti', 'petr'), ['K2:má Zpěv']);
+  assert.deepEqual(reasons('a', 'deti', 'petr'), ['K2:má službu: Zpěv']);
   assert.deepEqual(reasons('a', 'deti', 'jana'), ['K1:jinde: b', 'K7:už 1× v měsíci']);
   assert.deepEqual(reasons('a', 'deti', 'ema'), ['K11:dítě']);
   assert.deepEqual(reasons('c', 'zpev', 'jana'), ['K7:už 1× v měsíci']);

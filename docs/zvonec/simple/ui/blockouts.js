@@ -4,18 +4,25 @@
 
 import {
   h, section, list, row, dateArch, iconButton, button, formSheet, field, dateInput, textInput, fieldError, toast,
-  quiet, dayRange, joinMeta, plural, personName,
+  quiet, dayRange, joinMeta, plural, personName, icon, shortDate, SEP,
 } from './kit.js';
 import { S, can, myId, newId, change } from '../../ui/state.js';
 import { personById, displayName } from '../../lib/people.js';
 import { upcomingDuties } from '../../lib/events.js';
-import { today, inBlockout } from '../../lib/time.js';
+import { roleById } from '../../lib/groups.js';
+import { today, dayOf, inBlockout } from '../../lib/time.js';
 
 /** The person's current and future ranges, soonest first. */
 export const blockoutsOf = (personId) => (S.data.availability || [])
   .filter((v) => v.personId === personId && v.to >= today()).sort((a, b) => a.from.localeCompare(b.from));
 
 const isSelf = (person) => person?.id === myId();
+
+/** The person's duties still to come that a range from–to would clash with (not declined, not cancelled). */
+const clashesOf = (personId, from, to) => (from && to
+  ? upcomingDuties(S.data, personId, { from, to, includeDeclined: false, includeCancelled: false })
+    .filter(({ event }) => dayOf(event.end) >= today() && inBlockout(event, { from, to }))
+  : []);
 /** I change my own ranges; a leader anyone's. */
 export const mayEditBlockouts = (person) => !!person && (isSelf(person) || can('leader'));
 const seesReason = (person) => isSelf(person) || can('leader');
@@ -24,9 +31,39 @@ const seesReason = (person) => isSelf(person) || can('leader');
 export function blockoutSheet(person, record = null) {
   const self = isSelf(person);
   const day = today();
-  const from = dateInput({ name: 'from', value: record?.from || day, label: 'Od kdy', min: record ? null : day });
-  const to = dateInput({ name: 'to', value: record?.to || record?.from || day, label: 'Do kdy', min: day });
+  const from = dateInput({ name: 'from', value: record?.from || day, label: 'Od kdy', min: record ? null : day, onChange: () => drawClashes() });
+  const to = dateInput({ name: 'to', value: record?.to || record?.from || day, label: 'Do kdy', min: day, onChange: () => drawClashes() });
   const reason = textInput({ name: 'reason', value: record?.reason || '', placeholder: 'např. dovolená, směna', maxlength: 80, autocomplete: 'off' });
+  // the duties in the range: ticked ones get „Nemůžu“ in the same save (one Vrať undoes both)
+  const off = new Map();   // assignment id → ticked
+  const clashBox = h('div', { class: 'blockout-clash', 'aria-live': 'polite' });
+  const range = () => [from, to].map((w) => w.querySelector('input[type="hidden"]').value).sort();
+  const drawClashes = () => {
+    const [a, b] = range();
+    const found = clashesOf(person.id, a, b);
+    clashBox.replaceChildren();
+    clashBox.hidden = !found.length;
+    if (!found.length) return;
+    const n = found.length;
+    clashBox.append(
+      h('p', { class: 'blockout-clash__head' },
+        h('strong', {}, n === 1 ? `V té době ${self ? 'máš' : 'má'} službu.` : `V té době ${self ? 'máš' : 'má'} ${plural(n, 'službu', 'služby', 'služeb')}.`), ' ',
+        self ? 'U zaškrtnutých rovnou odpovíš Nemůžu.' : 'U zaškrtnutých rovnou zapíšeš, že nemůže.'),
+      h('div', { class: 'blockout-clash__rows' }, found.map(({ event, assignment }) => {
+        if (!off.has(assignment.id)) off.set(assignment.id, true);
+        const box = h('button', { type: 'button', class: 'plan-row', role: 'checkbox', 'aria-checked': String(off.get(assignment.id)) },
+          h('span', { class: 'plan-row__box', 'aria-hidden': 'true' }, icon('check', { size: 's' })),
+          h('span', { class: 'plan-row__role' }, shortDate(event.start)),
+          h('span', { class: 'plan-row__who' }, roleById(S.data, assignment.roleId)?.name || 'Služba',
+            h('span', { class: 'plan-row__what' }, `${SEP}${event.title}`)));
+        box.addEventListener('click', () => {
+          off.set(assignment.id, !off.get(assignment.id));
+          box.setAttribute('aria-checked', String(off.get(assignment.id)));
+        });
+        return box;
+      })));
+  };
+  drawClashes();
   return formSheet({
     title: self ? 'Kdy nemůžu' : 'Kdy nemůže',
     subtitle: self ? 'Zvonec tě na ty dny nebude navrhovat.' : personName(person),
@@ -34,6 +71,7 @@ export function blockoutSheet(person, record = null) {
     body: [
       h('div', { class: 'form__row form__row--pair' }, field({ label: 'Od', control: from }), field({ label: 'Do', control: to })),
       field({ label: 'Důvod', control: reason, optional: true, hint: self ? 'Uvidí ho jen vedoucí.' : 'Uvidí ho jen vedoucí a ten, koho se týká.' }),
+      clashBox,
     ],
     onSubmit: (form, values) => {
       if (!values.from || !values.to) return 'Vyber, od kdy do kdy.';
@@ -49,18 +87,29 @@ export function blockoutSheet(person, record = null) {
       Object.assign(target, { from: a, to: b });
       const why = String(values.reason || '').trim();
       if (why) target.reason = why; else delete target.reason;
-      const clash = upcomingDuties(S.data, person.id, { from: a, to: b, includeDeclined: false, includeCancelled: false })
-        .filter(({ event }) => inBlockout(event, target)).length;
+      const clashes = clashesOf(person.id, a, b);
+      const declined = clashes.filter(({ assignment }) => off.get(assignment.id))
+        .map(({ event, assignment }) => ({ eventId: event.id, id: assignment.id, was: assignment.status }));
+      for (const { assignment } of clashes) if (off.get(assignment.id)) assignment.status = 'declined';
+      const kept = clashes.length - declined.length;
       const name = displayName(person);
-      change(`${name} nemůže ${dayRange(a, b)}`);
+      const note = `${name} nemůže ${dayRange(a, b)}`;
+      change(declined.length ? `${note}, odmítá ${plural(declined.length, 'službu', 'služby', 'služeb')}` : note);
       const undo = () => {
         const list = S.data.availability || [];
         const i = list.findIndex((x) => x.id === target.id);
         if (before) { if (i >= 0) list[i] = before; } else if (i >= 0) list.splice(i, 1);
-        change(`vráceno: ${name} nemůže ${dayRange(a, b)}`);
+        for (const d of declined) {
+          const again = (S.data.events || []).find((e) => e.id === d.eventId)?.assignments?.find((x) => x.id === d.id);
+          if (again && again.status === 'declined') again.status = d.was;
+        }
+        change(`vráceno: ${note}`);
       };
-      toast(clash ? `V té době ${self ? 'máš' : 'má'} ${plural(clash, 'službu', 'služby', 'služeb')}. Vedoucí to uvidí.` : record ? 'Uloženo.' : 'Zapsáno.',
-        { icon: clash ? 'alert' : 'check', action: undo });
+      const words = declined.length
+        ? (self ? 'Zapsáno. Vedoucí uvidí, že nemůžeš.' : `Zapsáno. ${name}: nemůže, odmítá ${plural(declined.length, 'službu', 'služby', 'služeb')}.`)
+        : kept ? `V té době ${self ? 'máš' : 'má'} ${plural(kept, 'službu', 'služby', 'služeb')}. Vedoucí uvidí, že ${self ? 'nemůžeš' : 'nemůže'}.`
+          : record ? 'Uloženo.' : 'Zapsáno.';
+      toast(words, { icon: kept && !declined.length ? 'alert' : 'check', action: undo });
       return undefined;
     },
   });

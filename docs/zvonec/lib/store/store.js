@@ -255,7 +255,8 @@ export function commitMessage(notes) {
  *
  * Status: 'saved' | 'pending' (changes wait for the timer) | 'saving' | 'error' | 'offline'.
  * `onChange` gets { status, error? } on every status change and { status, reloaded: true } after
- * data in memory were replaced by merged or refreshed data (re-render then).
+ * data in memory were replaced by merged or refreshed data (re-render then); `others: true` when what
+ * came in is what someone else saved (a refresh or a merge), not a restore or a reset here.
  *
  * Sync never mass-deletes (see `mergeSafe`). When it refuses to, `onChange` gets { status, warning }
  * and the warning stays in `sync.warnings`:
@@ -441,7 +442,7 @@ export class Sync {
     const next = { ...part };
     delete next.schema;
     Object.assign(this.data, next);
-    this.onChange({ status: this.status, reloaded: true });
+    this.onChange({ status: this.status, reloaded: true, others: true });
   }
 
   /** Replace all data in place (restore a backup, reset the demo); follow with change(note) to save. */

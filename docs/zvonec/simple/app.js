@@ -21,7 +21,7 @@ import { upcomingDuties } from '../lib/events.js';
 import { today } from '../lib/time.js';
 import {
   h, nodes, icon, badge, avatar, brand, screen, topBar, empty, closeLayers, isLayerOpen,
-  onLayoutChange, assignGroupHues, personName, agree,
+  onLayoutChange, assignGroupHues, personName, agree, toast, undoLast,
 } from './ui/kit.js';
 import { renderKit } from './ui/kit-page.js';
 
@@ -31,7 +31,7 @@ import { openMeMenu, renderBlockoutsPage, renderAccountPage } from './ui/me-menu
 // IMPORTS:mine end
 
 // IMPORTS:staffing
-import { renderStaffing } from './ui/staffing.js';
+import { renderStaffing, staffingCount } from './ui/staffing.js';
 // IMPORTS:staffing end
 
 // IMPORTS:calendar
@@ -264,6 +264,10 @@ function updateShell(route, section, parts) {
   const answers = waitingAnswers();
   const answersLabel = `${answers} ${agree(answers, 'služba čeká', 'služby čekají', 'služeb čeká')} na tvou odpověď`;
   const counts = { moje: [answers, answersLabel] };
+  if (can('leader')) {
+    const open = staffingCount();
+    counts.obsazeni = [open, `Zbývá vyřešit ${open} ${agree(open, 'věc', 'věci', 'věcí')}`];
+  }
   for (const slot of document.querySelectorAll('[data-badge]')) {
     const [n, label] = counts[slot.dataset.badge] || [0, ''];
     slot.replaceChildren(...nodes(badge(n, { label })));
@@ -368,8 +372,14 @@ onLayoutChange(() => { if (!busy()) renderApp(); });
 
 // keyboard: „/“ search, „N“ the main action, Esc closes an open detail pane
 document.addEventListener('keydown', (e) => {
-  if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || isLayerOpen()) return;
+  if (e.defaultPrevented) return;
   const typing = e.target.closest?.('input, textarea, select, [contenteditable]');
+  // Ctrl Z (⌘Z): the „Vrať“ of the toast still on screen; in a text field it stays the field's own undo
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'z' && !typing) {
+    if (undoLast()) { e.preventDefault(); toast('Vráceno.', { icon: 'undo' }); }
+    return;
+  }
+  if (e.metaKey || e.ctrlKey || e.altKey || isLayerOpen()) return;
   if (typing) return;
   if (e.key === '/') {
     const search = viewEl.querySelector('.search input');
@@ -444,6 +454,7 @@ function useStore(store, data) {
       if (event.reloaded) {
         recompute();
         if (!busy()) renderApp();
+        if (event.others) toast('Zvonec načetl, co mezitím uložili ostatní.', { icon: 'info' });
       }
     },
   });

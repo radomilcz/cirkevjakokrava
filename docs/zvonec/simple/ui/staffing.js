@@ -1,8 +1,10 @@
 // Zvonec – Obsazení (#obsazeni[/<eventId>], leaders): whom do we still need? (one-question › Obsazení)
 //   Only events of the next four weeks with something to do, nearest first. Each: the date arch, the title and
 //   the time, „14 z 15“ with the fill ring; under the title „+ Klávesy“ per empty slot (→ the picker),
-//   „○ 2 ještě neodpověděli ›“ (who waits, with SMS and Zavolej) and „● Ondřej má dvě služby naráz ›“ (the duty
-//   sheet with the whole sentence and the fixes). The scope chip: all teams, my teams, or one team.
+//   „○ 2 ještě neodpověděli ›“ (who waits: a tap opens the duty – answer for them there –, SMS and e-mail
+//   carry a ready reminder, Zavolej) and „● Ondřej má dvě služby naráz ›“ (the duty sheet with the whole
+//   sentence and the fixes). The scope chip: all teams, my teams, or one team. The tab's badge counts the
+//   empty places and the errors in the scope the leader starts with.
 //   ≥ 1200 px: the list | the event as a leader sees it (the nearest one when nothing is chosen).
 
 import {
@@ -17,7 +19,7 @@ import { today, addDays, dayOf } from '../../lib/time.js';
 import { teamsWithRoles, placeText, personOf } from './calendar-shared.js';
 import { pickFor, openDutySheet } from './event-duties.js';
 import { eventPane } from './event.js';
-import { smsHref, telHref } from './people-common.js';
+import { smsHref, telHref, mailHref } from './people-common.js';
 
 const DAYS = 28;
 
@@ -93,21 +95,45 @@ function errorLine(c) {
   return who && words ? `${who} ${words}` : c.text;
 }
 
-/** Who has not answered yet: name, role, SMS and Zavolej; a row opens the person. */
+const ON_DAY = ['v neděli', 'v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek', 'v sobotu'];
+
+/** The reminder an SMS or an e-mail starts with (no name, tykání, a link to Moje where the answer is). */
+export function reminderText({ event, role }) {
+  const day = dayOf(event.start);
+  const weekday = ON_DAY[new Date(`${day}T12:00`).getDay()];
+  const link = `${location.origin}${location.pathname}#moje`;
+  return `Ahoj, ${weekday} ${shortDate(day, { weekday: false })} máš v rozpisu službu: ${role?.name || 'služba'} (${event.title}, ${clock(event.start)}). Můžeš? Odpověz prosím ve Zvonci: ${link}`;
+}
+
+/** Who has not answered yet: name, role; a tap opens the duty (answer for them there), SMS / e-mail remind, Zavolej. */
 function waitingSheet(event, waiting) {
-  openSheet({
+  let sheet;
+  const open = (d) => { sheet.close({ restore: false }); openDutySheet(event.id, d.assignment.id); };
+  const remind = (d) => {
+    const p = d.person;
+    if (!p) return null;
+    const text = encodeURIComponent(reminderText(d));
+    const who = personName(p);
+    return [
+      p.phone ? h('a', { class: 'icon-btn icon-btn--tint', href: `${smsHref(p.phone)}?&body=${text}`, 'aria-label': `Připomeň v SMS: ${who}`, title: 'Připomeň v SMS' }, icon('message', { size: 's' })) : null,
+      !p.phone && p.email ? h('a', { class: 'icon-btn icon-btn--tint', href: `${mailHref(p.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomeň e-mailem: ${who}`, title: 'Připomeň e-mailem' }, icon('mail', { size: 's' })) : null,
+      p.phone ? h('a', { class: 'icon-btn icon-btn--tint', href: telHref(p.phone), 'aria-label': `Zavolej: ${who}`, title: 'Zavolej' }, icon('phone', { size: 's' })) : null,
+    ].filter(Boolean);
+  };
+  sheet = openSheet({
     title: 'Čeká na odpověď',
     subtitle: joinMeta([event.title, shortDate(event.start)]),
-    body: list(waiting.map((d) => row({
-      lead: avatar(d.person),
-      title: d.person ? personName(d.person) : 'Smazaný člověk',
-      meta: d.role?.name || 'Služba',
-      href: d.person ? `#osoba/${d.person.id}` : undefined,
-      trail: d.person?.phone ? [
-        h('a', { class: 'icon-btn icon-btn--tint', href: smsHref(d.person.phone), 'aria-label': `Pošli SMS – ${personName(d.person)}`, title: 'Pošli SMS' }, icon('message', { size: 's' })),
-        h('a', { class: 'icon-btn icon-btn--tint', href: telHref(d.person.phone), 'aria-label': `Zavolej – ${personName(d.person)}`, title: 'Zavolej' }, icon('phone', { size: 's' })),
-      ] : null,
-    })), { label: 'Čeká na odpověď' }),
+    body: [
+      h('p', { class: 'meta waiting-lead' }, 'Odpověď zapíšeš i tady: klepni na jméno. Text SMS i e-mailu ti Zvonec připraví.'),
+      list(waiting.map((d) => row({
+        lead: avatar(d.person),
+        title: d.person ? personName(d.person) : 'Smazaný člověk',
+        meta: d.role?.name || 'Služba',
+        onclick: () => open(d),
+        label: `${d.person ? personName(d.person) : 'Smazaný člověk'}, ${d.role?.name || 'služba'}: zapiš odpověď`,
+        trail: remind(d),
+      })), { label: 'Čeká na odpověď' }),
+    ],
   });
 }
 
@@ -168,6 +194,15 @@ function scopeChip(scope, teams) {
     });
   });
   return chip;
+}
+
+/** The tab's badge: empty places and errors in the scope the leader starts with (the next four weeks). */
+export function staffingCount() {
+  if (!S.data || !can('leader')) return 0;
+  const teams = myTeams();
+  const scope = scopeOf(teams);
+  const groupIds = scope === 'all' ? null : scope === 'mine' ? teams.map((g) => g.id) : [scope];
+  return needsFor(groupIds).reduce((n, x) => n + x.slots.reduce((m, s) => m + (s.missing || 0), 0) + x.errors.length, 0);
 }
 
 // ---------- the screen ----------

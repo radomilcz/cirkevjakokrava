@@ -3,19 +3,21 @@
 //     opens the menu (ui/me-menu.js) – on desktop the person at the foot of the rail does that
 //   one answer card at a time: „Čeká na tvou odpověď · 1 ze 3“, the duty, Můžu / Nemůžu, dots; after an
 //     answer the next one comes (toast with Vrať). Nothing waits: „Všechno máš zodpovězené“.
-//   Tvoje další služby: my answered duties from today on (✓ confirmed, a cancelled event struck through);
-//     a tap opens the event – at ≥ 1200 px beside the list (#moje/<eventId>), the nearest one by default.
+//   Tvoje další služby: my answered duties from today on (✓ confirmed, a cancelled event struck through,
+//     a „nemůžeš“ struck through too – a tap on it changes the answer); a tap opens the event – at ≥ 1200 px
+//     beside the list (#moje/<eventId>), the nearest one by default.
+//   Minulé služby ›: the last three months in a sheet, newest first.
 
 import {
   h, screen, icon, dateArch, row, list, rowLink, link, button, buttonRow, pill, callout, avatar, initials,
-  statusSymbol, shortDate, splitView, isSplit, isDesktop, personName, vocative, joinMeta, clock, SEP, uid,
+  statusSymbol, shortDate, splitView, isSplit, isDesktop, personName, vocative, joinMeta, clock, SEP, uid, openSheet,
 } from './kit.js';
 import { S, myId, render, ACCESS_LABELS } from '../../ui/state.js';
 import { DEMO_VIEWERS } from '../../lib/demo.js';
 import { upcomingDuties, eventById } from '../../lib/events.js';
 import { personById } from '../../lib/people.js';
-import { today, dayOf, prettyDayLong } from '../../lib/time.js';
-import { answer, blockoutOn, blockoutNote } from './event-duties.js';
+import { today, dayOf, prettyDayLong, addDays } from '../../lib/time.js';
+import { answer, blockoutOn, blockoutNote, openMyAnswer } from './event-duties.js';
 import { roleName, refocus } from './home-actions.js';
 import { outOf } from './people-common.js';
 import { eventPane } from './event.js';
@@ -118,29 +120,59 @@ const calm = () => h('div', { class: 'mine-calm', role: 'status', tabIndex: -1 }
 
 // ---------- Tvoje další služby ----------
 
-const answeredOf = (person) => upcomingDuties(S.data, person.id, { from: today(), includeDeclined: false, includeCancelled: true })
-  .filter(({ assignment, event }) => assignment.status === 'confirmed' || event.cancelled);
+const answeredOf = (person) => upcomingDuties(S.data, person.id, { from: today(), includeDeclined: true, includeCancelled: true })
+  .filter(({ assignment, event }) => assignment.status !== 'proposed' || event.cancelled);
 
 function nextBlock(duties, openId) {
   if (!duties.length) return null;
   const split = isSplit();
   const shown = state.more ? duties : duties.slice(0, SHOWN);
   const rest = duties.length - shown.length;
-  const rows = shown.map(({ event, assignment }) => row({
-    lead: dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
-    title: roleName(assignment.roleId),
-    meta: eventLine(event),
-    declined: event.cancelled,
-    trail: event.cancelled ? pill('zrušeno')
-      : h('span', { class: 'mine-ok', title: 'potvrzeno' }, statusSymbol('confirmed'), h('span', { class: 'visually-hidden' }, 'potvrzeno')),
-    href: split ? `#moje/${event.id}` : `#setkani/${event.id}`,
-    open: split && event.id === openId,
-    label: `${roleName(assignment.roleId)}, ${event.title} ${shortDate(event.start)}${event.cancelled ? ', zrušeno' : ''}`,
-  }));
+  const rows = shown.map(({ event, assignment }) => {
+    const no = !event.cancelled && assignment.status === 'declined';   // I said I can't: a tap changes it
+    return row({
+      lead: dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
+      title: roleName(assignment.roleId),
+      meta: eventLine(event),
+      declined: event.cancelled || no,
+      trail: event.cancelled ? pill('zrušeno') : no ? pill('nemůžeš')
+        : h('span', { class: 'mine-ok', title: 'potvrzeno' }, statusSymbol('confirmed'), h('span', { class: 'visually-hidden' }, 'potvrzeno')),
+      href: no ? undefined : split ? `#moje/${event.id}` : `#setkani/${event.id}`,
+      onclick: no ? () => openMyAnswer(event.id, assignment.id) : undefined,
+      open: split && event.id === openId,
+      label: `${roleName(assignment.roleId)}, ${event.title} ${shortDate(event.start, { weekday: false })}${event.cancelled ? ', zrušeno' : no ? ', nemůžeš – změň odpověď' : ''}`,
+    });
+  });
   return h('section', { class: 'mine-next', 'aria-labelledby': 'mine-next-title' },
     h('h2', { class: 'mine-next__title', id: 'mine-next-title' }, 'Tvoje další služby'),
     list(rows, { label: 'Tvoje další služby' }),
     rest > 0 ? rowLink(rest === 1 ? 'Ukaž další' : `Ukaž další ${rest}`, { onclick: () => { state.more = true; render(); } }) : null);
+}
+
+// ---------- Minulé služby ----------
+
+const pastOf = (person) => upcomingDuties(S.data, person.id, { from: addDays(today(), -92), to: today(), includeDeclined: false, includeCancelled: false })
+  .filter(({ event }) => dayOf(event.end || event.start) < today()).reverse();
+
+/** „Minulé služby ›“ under the list: the last three months in a sheet, newest first; a row opens the event. */
+function pastLink(past) {
+  if (!past.length) return null;
+  return rowLink('Minulé služby', {
+    onclick: () => {
+      let sheet;
+      sheet = openSheet({
+        title: 'Minulé služby',
+        subtitle: 'Poslední 3 měsíce',
+        body: list(past.map(({ event, assignment }) => row({
+          lead: dateArch(dayOf(event.start), { quiet: true }),
+          title: roleName(assignment.roleId),
+          meta: eventLine(event),
+          onclick: () => { sheet.close({ restore: false }); location.hash = `#setkani/${event.id}`; },
+          label: `${roleName(assignment.roleId)}, ${event.title} ${shortDate(event.start)}`,
+        })), { label: 'Minulé služby' }),
+      });
+    },
+  });
 }
 
 // ---------- the screen ----------
@@ -167,7 +199,8 @@ export function renderMine(parts = []) {
     demoBanner(person),
     noCard,
     person ? (waiting.length ? askCard(person, waiting) : calm()) : null,
-    nextBlock(duties, chosen?.id));
+    nextBlock(duties, chosen?.id),
+    person ? pastLink(pastOf(person)) : null);
 
   return screen({
     topbar: false,
