@@ -23,10 +23,10 @@ export const GROUPS_FILTER = 'skupiny';
 export const MEMBERSHIP_FILTER = [['member', 'Členové'], ['regular', 'Přátelé'], ['guest', 'Hosté'], ['kids', 'Děti']];
 
 /** The old list slugs (#lide/clenove …, bookmarks and the forked apps) → a Filtr preset that replaces the old one. */
-const CLEAR = { clenstvi: null, skupina: null, chybi: null, narozeniny: null, archiv: null };
+const CLEAR = { clenstvi: null, skupina: null, chybi: null, souhlas: null, narozeniny: null, archiv: null };
 export const FILTER_PRESETS = {
   vsichni: {}, clenove: { clenstvi: ['member'] }, pratele: { clenstvi: ['regular'] }, neclenove: { clenstvi: ['regular', 'guest'] },
-  hoste: { clenstvi: ['guest'] }, deti: { clenstvi: ['kids'] }, doplnit: { chybi: true }, 'bez-souhlasu': { chybi: true },
+  hoste: { clenstvi: ['guest'] }, deti: { clenstvi: ['kids'] }, doplnit: { chybi: true }, 'bez-souhlasu': { souhlas: true },
   narozeniny: { narozeniny: true }, archiv: { archiv: true }, nechodi: { archiv: true },
 };
 export const presetOf = (slug) => ({ ...CLEAR, ...FILTER_PRESETS[slug] });
@@ -44,6 +44,7 @@ export function inPeopleFilter(person, state = {}) {
   if (kinds.length && !kinds.some((k) => (k === 'kids' ? isKid(person) && !isFormer(person) : statusOf(person) === k))) return false;
   if (state.skupina && !groupsOf(S.data, person.id).some((g) => g.id === state.skupina)) return false;
   if (leader && state.chybi && !missingOf(person).length) return false;
+  if (leader && state.souhlas && !missingOf(person).includes('consent')) return false;
   return true;
 }
 

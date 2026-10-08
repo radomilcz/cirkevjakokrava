@@ -103,6 +103,7 @@ function peopleFilterGroups() {
     { id: 'clenstvi', title: 'Členství', kind: 'chips', multiple: true, options: MEMBERSHIP_FILTER },
     teams.length ? { id: 'skupina', title: 'Tým', kind: 'chips', options: teams.map((g) => [g.id, g.name]) } : null,
     { id: 'chybi', title: 'Chybí údaje', kind: 'switch', hint: 'Karty bez příjmení, kontaktu, souhlasu nebo domácnosti.' },
+    { id: 'souhlas', title: 'Bez souhlasu', kind: 'switch', hint: 'Dospělí přátelé a hosté, kteří ještě nesouhlasili se zapsáním údajů.' },
     { id: 'narozeniny', title: 'Narozeniny', kind: 'switch', hint: 'Seřadí lidi podle toho, kdo slaví nejdřív.' },
     { id: 'archiv', title: 'Ukaž i archiv', kind: 'switch', hint: 'Lidé, kteří k nám už nechodí.' },
   ].filter(Boolean);

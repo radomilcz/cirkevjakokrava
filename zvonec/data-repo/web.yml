@@ -66,10 +66,10 @@ jobs:
 
       - name: Assemble the site
         run: |
-          # The domain root opens Zvonec Next (index.html + go.js redirect to next/); the previous app stays
-          # at stara.html, the one-screen-one-question build at simple/ and Zvonec One (rebuilt from both) at
-          # one/. The apps load ../assets/…, which on the root resolves to /assets/… – so the icons and fonts
-          # go to site/assets.
+          # The domain root opens Zvonec One (index.html + go.js redirect to one/); the previous app stays at
+          # stara.html. next/ and simple/ are retired: each is only an index.html that sends old links on to
+          # one/ (copied so they keep working). The apps load ../assets/…, which on the root resolves to
+          # /assets/… – so the icons and fonts go to site/assets.
           mkdir -p site/assets
           for f in index.html stara.html go.js app.js style.css imprint.svg; do cp "web/docs/zvonec/$f" site/; done
           cp -r web/docs/zvonec/lib web/docs/zvonec/ui web/docs/zvonec/css web/docs/zvonec/next web/docs/zvonec/simple web/docs/zvonec/one site/

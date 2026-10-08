@@ -12,7 +12,7 @@
 
 import {
   h, icon, avatar, teamMark, detail, detailHead, section, sectionAction, facts, list, row, eventRow, statusSymbol,
-  pill, button, callout, joinMeta, plural, personName, quiet, mapLink, isPhone, missingItem,
+  pill, button, callout, joinMeta, plural, personName, quiet, mapLink, isPhone, missingItem, menuButton,
 } from './kit.js';
 import { S, can, myId, change, isUpcoming } from '../../ui/state.js';
 import { householdById, householdMembers, age, statusOf, displayName, fullName } from '../../lib/people.js';
@@ -28,7 +28,7 @@ import {
 import {
   contactSheet, detailsSheet, consentSheet, limitsSheet, householdChooseSheet, personGroupSheet, deletePerson,
   householdSheet, deleteHousehold, addToHouseholdSheet, archiveSheet, restoreFromArchive,
-  addPersonSheet,
+  addPersonSheet, removeFromHousehold,
 } from './people-forms.js';
 import { memberSheet } from './groups-forms.js';
 import { blockoutSection } from './blockouts.js';
@@ -375,9 +375,13 @@ export function householdDetail(household, { frame = 'pane', back, close } = {})
   }
   const members = householdMembers(S.data, household.id, { today: today() }).filter((p) => !isFormer(p));
   const kids = members.filter(isKid).length;
+  // each person's ⋯: Odeber z domácnosti (with Vrať) – the card itself stays
   const rows = members.map((p) => row({
     lead: avatar(p, { me: p.id === myId() }), title: personName(p),
     meta: isKid(p) ? kidText(p) : MEMBERSHIP_WORDS[statusOf(p)], href: `#lide/${p.id}`,
+    trail: can('leader') ? menuButton([
+      { label: 'Odeber z domácnosti', icon: 'minus', onclick: () => removeFromHousehold(p, household) },
+    ], { title: personName(p), label: `Další možnosti – ${personName(p)}` }) : null,
   }));
   return detail({
     frame, back, close, label: household.name, title: household.name,
