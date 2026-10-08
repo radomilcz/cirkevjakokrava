@@ -1,6 +1,6 @@
-// Zvonec One – Úkoly (#ukoly[/<eventId>], leaders; was Obsazení): what do I have to do now? (DESIGN §6.4)
+// Zvonec One – Obsazení (#obsazeni[/<eventId>], leaders): what is there to resolve? (DESIGN §6.4)
 // Not a third calendar but a list of tasks for the next 4 weeks, by the kind of work (the owner's choice, variant 1):
-// A „Úkoly“ · ⋯ (Vytiskni rozpis) · [Doplň volná místa]. B: „Hledej“ + Filtr (Tým – the teams I lead by default,
+// A „Obsazení“ · ⋯ (Vytiskni rozpis) · [Doplň volná místa]. B: „Hledej“ + Filtr (Tým – the teams I lead by default,
 // so a leader starts at „Filtr 1“ · Stav: Chybí lidi · Čeká na odpověď · Něco nesedí). No C.
 // D, three sections, each only while it has something:
 //   Chybí lidi – a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne 11. 10. 10.00“, [+ Doplň]
@@ -165,6 +165,12 @@ function model() {
   return { all, scoped, shown: bySearch(scoped, q), state, teams, q };
 }
 
+/** Moje's line for a leader: how many of each kind, in the Filtr scope of Obsazení (my team by default). */
+export function staffingSummary() {
+  const t = model().scoped;
+  return { missing: t.missing.length, problems: t.problems.length, waiting: t.waiting.length };
+}
+
 /** The nav's count: the tasks of the next 4 weeks in my Filtr scope („Zbývá vyřešit 5 věcí“). */
 export function staffingCount() {
   if (!S.data || !can('leader')) return 0;
@@ -275,7 +281,7 @@ function errorLine(c) {
 }
 
 const lead = (event) => dateArch(dayOf(event.start), { today: dayOf(event.start) === today() });
-const meetingHref = (event, openId) => (event.id === openId && isSplit() ? '#ukoly' : `#ukoly/${event.id}`);
+const meetingHref = (event, openId) => (event.id === openId && isSplit() ? '#obsazeni' : `#obsazeni/${event.id}`);
 
 /** Chybí lidi: „2× Klávesy“ · „Setkání na pastvě · ne 11. 10. 10.00“ · [+ Doplň]; the row opens the meeting. */
 function missingRow({ event, role, n }, openId) {
@@ -358,7 +364,7 @@ export function renderStaffing(parts = []) {
   const opened = openId ? eventById(S.data, openId) : null;
   // below 1200 a meeting opens as its own page (‹ Obsazení)
   if (openId && !isSplit()) {
-    return opened ? eventDetail(opened, { frame: 'page', back: { href: '#ukoly', label: 'Úkoly' } }) : notFound({ href: '#ukoly', label: 'Úkoly' });
+    return opened ? eventDetail(opened, { frame: 'page', back: { href: '#obsazeni', label: 'Obsazení' } }) : notFound({ href: '#obsazeni', label: 'Obsazení' });
   }
   let m = model();
   const ids = () => [...new Set(m.shown.missing.map((x) => x.event.id))];
@@ -370,7 +376,7 @@ export function renderStaffing(parts = []) {
     unit: (n) => plural(n, 'úkol', 'úkoly', 'úkolů'),
   });
   const main = listScreen({
-    title: 'Úkoly',
+    title: 'Obsazení',
     action: { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: m.teams }) },
     menu: [
       { label: 'Vytiskni rozpis', icon: 'printer', onclick: () => import('./roster.js').then((r) => r.printRoster?.(today().slice(0, 7))) },
@@ -378,7 +384,7 @@ export function renderStaffing(parts = []) {
     search: { key: KEY, placeholder: 'Hledej úkol', onInput: () => { m = model(); main.setBody(body(m, openId)); } },
     filter,
     body: body(m, openId),
-    pane: opened ? eventDetail(opened, { frame: 'pane', close: '#ukoly' }) : openId ? notFoundPane() : null,
+    pane: opened ? eventDetail(opened, { frame: 'pane', close: '#obsazeni' }) : openId ? notFoundPane() : null,
     label: 'Setkání',
     cls: 'staffing',
   });
@@ -387,7 +393,7 @@ export function renderStaffing(parts = []) {
 
 /** A meeting that is gone, in the pane. */
 function notFoundPane() {
-  return missingItem({ frame: 'pane', close: '#ukoly', icon: 'calendar', title: 'Tohle setkání už tu není.', label: 'Setkání' });
+  return missingItem({ frame: 'pane', close: '#obsazeni', icon: 'calendar', title: 'Tohle setkání už tu není.', label: 'Setkání' });
 }
 
 export { SEP };

@@ -43,7 +43,7 @@ export const SHAPES = {
   'arrow-left': ['M19.5 12h-15', 'M10.5 6l-6 6 6 6'],
   'calendar-plus': [rect(3.5, 5, 17, 15.5, 3), 'M3.5 10h17M8 3v4M16 3v4M12 13v5M9.5 15.5h5'],
   'plus-circle': [circle(12, 12, 8.5), 'M12 8v8M8 12h8'],
-  'check-circle': [circle(12, 12, 8.5), 'M8.4 12.3l2.5 2.5 4.8-5'],   // the tab Úkoly
+  'check-circle': [circle(12, 12, 8.5), 'M8.4 12.3l2.5 2.5 4.8-5'],   // the tab Obsazení (a list of what to resolve)
   'user-plus': [circle(10, 8.5, 3.5), 'M3.5 20a6.5 6.5 0 0 1 13 0', 'M19 8v6M16 11h6'],
   // views
   list: ['M9 7h11M9 12h11M9 17h11', dot(4.75, 7), dot(4.75, 12), dot(4.75, 17)],

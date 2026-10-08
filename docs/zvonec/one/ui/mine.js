@@ -7,28 +7,32 @@
 //       Tvoje další služby (confirmed, and cancelled ones struck) · Odmítnuté služby (a quiet section) · Minulé služby ›
 //   A duty opens its meeting: #moje/<id> – beside the list at ≥ 1200 (the pane, only on a click), a page below 1200
 //   (back „‹ Moje“). The detail itself is P3's (eventDetail in ui/event.js).
-// ≥ 1200 two columns (the owner's WIDE plan, like Next's Domů): the left one is all of the above; the right one is
-//   Co je potřeba (leaders: the meetings of Úkoly as the kit's needRow blocks, in the team scope of Úkoly) and Tento
-//   týden (everyone: this week's meetings as agenda rows). A meeting opened from either column takes the right
-//   column's place (the pane, #moje/<id>); ✕ or Esc brings the right column back. Below 1200 nothing of it exists.
+// Everything here is about me (the owner: „what concerns me, the questions to me, my Břemeno, a nice metric“):
+//   the answer card (the questions to me) · Obsazení (leaders: one line, what my team still has to resolve ›) ·
+//   Tvoje břemeno (this month's duties against my limit as a number and pips, a sentence, Sundays in a row, this year,
+//   my most frequent role) · Tvoje další služby · Odmítnuté služby · Kdy nemůžu (my ranges, + Přidej) · Minulé služby.
+//   Nothing about others: the week's meetings are Kalendář's, the tasks are Obsazení's.
+// ≥ 1200 two columns: the left one the answer card and my duties, the right one Obsazení's line, Tvoje břemeno and
+//   Kdy nemůžu. A meeting opened from the left takes the right column's place (the pane, #moje/<id>); ✕ or Esc brings
+//   the column back. Below 1200 one column in the order above.
 
 import {
   h, page, empty, section, list, row, rowLink, button, buttonRow, pill, callout, dateArch, statusSymbol, shortDate,
-  isSplit, vocative, joinMeta, clock, uid, layer, missingItem, needRow, agendaDay, agendaEvent, quiet, agree, plural,
-  filterState, setFilter,
+  isSplit, vocative, joinMeta, clock, uid, layer, missingItem, quiet, agree, plural, sev, icon,
 } from './kit.js';
 import { S, myId, can, render } from '../../ui/state.js';
-import { upcomingDuties, eventById, eventsInRange } from '../../lib/events.js';
+import { upcomingDuties, eventById } from '../../lib/events.js';
 import { personById } from '../../lib/people.js';
-import { ledBy } from '../../lib/groups.js';
+import { limitsOf, monthCount, servingLoad, activeAssignments } from '../../lib/scheduling.js';
 import { today, dayOf, prettyDayLong, addDays } from '../../lib/time.js';
-import { answer, blockoutOn, blockoutNote, pickFor, openDutySheet } from './event-duties.js';
-import { needsFor, waitingSheet, staffingCount } from './staffing.js';
-import {
-  teamsWithRoles, fillOf, waitingWords, missingWords, placeText, kindHue, myDuties, mondayOf,
-} from './calendar-shared.js';
+import { answer, blockoutOn, blockoutNote } from './event-duties.js';
+import { staffingSummary } from './staffing.js';
+import { waitingWords, missingWords } from './calendar-shared.js';
 import { roleName, refocus } from './home-actions.js';
 import { eventDetail } from './event.js';
+import { blockoutSection } from './blockouts.js';
+import { limitsSheet } from './people-forms.js';
+import { inMonth } from './calendar.js';
 
 const SHOWN = 6;              // Tvoje další služby: six rows, then „Ukaž další N“
 const state = { pos: 0, more: false, who: null, enter: false, openId: null };
@@ -222,171 +226,83 @@ function pastLink(past) {
   });
 }
 
-// ---------- the right column (≥ 1200): Co je potřeba (leaders) · Tento týden (everyone) ----------
+// ---------- Obsazení (leaders): one line ----------
 
-const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four meetings, then „Všechny úkoly“
-const WEEK_SHOWN = 6;         // Tento týden: six meetings, then „Celý kalendář (ještě N)“
-const STAFF_KEY = 'obsazeni'; // the Filtr of Úkoly (its key kept from Obsazení): its Tým choice is this column's scope too, both ways
-const ALL_TEAMS = { value: 'all', label: 'Všechny týmy', ids: null };
-
-const ledTeams = () => (myId() ? ledBy(S.data, myId()).filter((g) => g.kind === 'team' && !g.archived) : []);
-
-/** The team scope of the Filtr of Úkoly › Tým (the team I lead by default; „Moje týmy“ when I lead several). */
-function teamScope() {
-  staffingCount();   // tells the kit the Filtr of Úkoly defaults before the first read (the nav does the same)
-  const t = filterState(STAFF_KEY).tym;
-  if (t === 'mine') {
-    const mine = ledTeams();
-    return mine.length ? { value: 'mine', label: 'Moje týmy', ids: mine.map((g) => g.id) } : ALL_TEAMS;
-  }
-  const team = teamsWithRoles().find(({ group }) => group.id === t)?.group;
-  return team ? { value: team.id, label: team.name, ids: [team.id] } : ALL_TEAMS;
-}
-
-/** The scope's menu: Moje týmy (when I lead several) · each team · Všechny týmy. A choice changes the Filtr of Úkoly. */
-function openScope(anchor, current) {
-  const options = [
-    ledTeams().length > 1 ? ['mine', 'Moje týmy'] : null,
-    ...teamsWithRoles().map(({ group }) => [group.id, group.name]),
-    ['all', 'Všechny týmy'],
+/** „Obsazení ● chybí 1 · ● 2 problémy · ○ 3 čekají ›“ – what my team still has to resolve; all done: a quiet tick. */
+function staffLine() {
+  if (!can('leader')) return null;
+  let n;
+  try { n = staffingSummary(); } catch { return null; }
+  const parts = [
+    n.missing ? sev('error', missingWords(n.missing)) : null,
+    n.problems ? sev('error', plural(n.problems, 'problém', 'problémy', 'problémů')) : null,
+    n.waiting ? sev('warning', waitingWords(n.waiting)) : null,
   ].filter(Boolean);
-  let menu;
-  const choose = (value) => {
-    menu.close({ restore: false });
-    setFilter(STAFF_KEY, { tym: value === 'all' ? null : value });
-    render();
-    refocus('.mine-scope');
-  };
-  // the menu's own rows (M 44, r12), one of them chosen: pick + the 3 px bar (CODEX §5)
-  const rows = options.map(([value, label]) => h('button', {
-    type: 'button', role: 'menuitemradio', class: 'menu__row', 'aria-checked': String(value === current), onclick: () => choose(value),
-  }, h('span', { class: 'menu__text' }, h('span', { class: 'menu__label' }, label))));
-  const body = h('div', { class: 'menu mine-scope-menu', role: 'menu', 'aria-label': 'Týmy' }, rows);
-  body.addEventListener('keydown', (e) => {
-    const step = { ArrowDown: 1, ArrowUp: -1 }[e.key];
-    if (!step) return;
-    e.preventDefault();
-    rows[(rows.indexOf(document.activeElement) + step + rows.length) % rows.length]?.focus();
-  });
-  anchor.setAttribute('aria-expanded', 'true');
-  menu = layer.open({
-    kind: 'menu', anchor, label: 'Týmy', body, cls: 'sheet--menu',
-    initialFocus: rows.find((b) => b.getAttribute('aria-checked') === 'true') || rows[0],
-    onClose: () => anchor.setAttribute('aria-expanded', 'false'),
-  });
+  const said = [n.missing ? missingWords(n.missing) : null, n.problems ? plural(n.problems, 'problém', 'problémy', 'problémů') : null,
+    n.waiting ? waitingWords(n.waiting) : null].filter(Boolean).join(', ');
+  return h('a', { class: 'mine-staff', href: '#obsazeni', 'aria-label': `Obsazení: ${said || 'všechno vyřešené'}` },
+    h('span', { class: 'mine-staff__title' }, 'Obsazení'),
+    h('span', { class: 'mine-staff__what' }, parts.length ? parts : h('span', { class: 'mine-staff__done' }, statusSymbol('confirmed'), 'všechno vyřešené')),
+    icon('chevron-right', { size: 's' }));
 }
 
-/** „1 chyba“ goes straight to the duty when there is one; otherwise to the meeting beside the list. */
-function errorAction(event, errors) {
-  const n = errors.length;
-  const words = `${n} ${agree(n, 'chyba', 'chyby', 'chyb')}`;
-  const ids = n === 1 ? errors[0].assignmentIds || [] : [];
-  const duty = ids.find((id) => (event.assignments || []).some((a) => a.id === id));
-  return duty
-    ? ['error', words, { onclick: () => openDutySheet(event.id, duty), label: `${errors[0].text} – oprav to` }]
-    : ['error', words, { href: `#moje/${event.id}`, label: `${words} – ukaž setkání` }];
-}
+// ---------- Tvoje břemeno: this month against my limit, and a little of the year ----------
 
-/** One meeting that wants people (the data and actions of Úkoly) as the kit's needRow: the whole block opens it. */
-function needItem({ event, slots, waiting, errors }) {
+const PIPS_MAX = 12;   // more pips than this would be a ruler, not a glance
+
+/** My numbers: this month's duties and limit, Sundays in a row, this year's duties so far and my most frequent role. */
+function loadOf(person) {
+  const month = today().slice(0, 7);
+  const limits = limitsOf(S.data, person.id);
+  const all = activeAssignments(S.data);
+  const count = monthCount(S.data, person.id, month, { all });
+  const mine = servingLoad(S.data, month, { today: today() }).find((r) => r.person.id === person.id);
+  const year = today().slice(0, 4);
+  const done = all.filter((x) => x.assignment.personId === person.id && !x.event.cancelled
+    && x.event.start.startsWith(year) && dayOf(x.event.end || x.event.start) < today());
   const byRole = new Map();
-  for (const s of slots) byRole.set(s.roleId, { role: s.role, n: (byRole.get(s.roleId)?.n || 0) + (s.missing || 1) });
-  const missing = [...byRole.values()].reduce((n, x) => n + x.n, 0);
-  const f = fillOf(event);
-  const day = dayOf(event.start);
-  return needRow({
-    day,
-    today: day === today(),
-    title: event.title,
-    href: `#moje/${event.id}`,
-    dataset: { event: event.id },
-    summary: [
-      missing ? ['error', missingWords(missing)] : null,
-      waiting.length ? ['warning', waitingWords(waiting.length), { onclick: () => waitingSheet(waiting, { event }), label: `${waitingWords(waiting.length)} na odpověď – ukaž, kdo to je` }] : null,
-      errors.length ? errorAction(event, errors) : null,
-    ].filter(Boolean),
-    filled: f.filled,
-    total: f.needed,
-    slots: [...byRole.values()].map(({ role, n }) => ({
-      label: n > 1 ? `${n}× ${role.name}` : role.name,
-      onclick: () => pickFor(event.id, role.id),
-      aria: `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}`,
-    })),
-  });
+  for (const x of done) byRole.set(x.assignment.roleId, (byRole.get(x.assignment.roleId) || 0) + 1);
+  const top = [...byRole].sort((a, b) => b[1] - a[1])[0];
+  return {
+    month, count, limit: limits.maxPerMonth, paused: !!limits.paused,
+    sundays: mine?.sundaysInRow || 0, maxSundays: limits.maxConsecutiveWeeks,
+    year: new Set(done.map((x) => x.event.id)).size, topRole: top ? roleName(top[0]) : null,
+  };
 }
 
-/** Nothing to do in the scope: „Na příští 4 týdny je všechno obsazené.“ (· „V týmu Chvály je …“ · „V tvých týmech je …“) */
-function allDone(scope) {
-  if (scope.value === 'all') return 'Na příští 4 týdny je všechno obsazené.';
-  return `${scope.value === 'mine' ? 'V tvých týmech' : `V týmu ${scope.label}`} je na příští 4 týdny všechno obsazené.`;
+/** „Ještě máš místo na 1 službu.“ · „Tenhle měsíc máš plno.“ · „O 1 službu víc, než zvládneš.“ · „Máš pauzu od služeb.“ */
+function loadSentence(l) {
+  if (l.paused) return { tone: 'quiet', text: 'Máš pauzu od služeb. Zvonec tě do nich nenavrhne.' };
+  if (l.count > l.limit) return { tone: 'wait', text: `O ${plural(l.count - l.limit, 'službu', 'služby', 'služeb')} víc, než zvládneš.` };
+  if (l.count === l.limit) return { tone: 'quiet', text: 'Tenhle měsíc máš plno.' };
+  return { tone: 'quiet', text: `Ještě máš místo na ${plural(l.limit - l.count, 'službu', 'služby', 'služeb')}.` };
 }
 
-function needSection() {
-  const scope = teamScope();
-  const items = needsFor(scope.ids);
-  const scopeButton = button(scope.label, {
-    variant: 'quiet', size: 's', iconEnd: 'chevron-down', cls: 'section-action mine-scope',
-    label: `Týmy: ${scope.label}`, onclick: (e) => openScope(e.currentTarget, scope.value),
-  });
-  scopeButton.setAttribute('aria-haspopup', 'menu');
-  scopeButton.setAttribute('aria-expanded', 'false');
+function loadCard(person) {
+  const l = loadOf(person);
+  const pips = Math.min(PIPS_MAX, Math.max(l.limit, l.count));
+  const sentence = loadSentence(l);
+  const stat = (value, label, { warn = false } = {}) => h('div', { class: 'load-stat', dataset: { warn: warn ? '' : null } },
+    h('span', { class: 'load-stat__value' }, value), h('span', { class: 'load-stat__label' }, label));
   return section({
-    title: 'Co je potřeba',
-    action: scopeButton,
-    cls: 'mine-need',
-    body: [
-      items.length
-        ? h('div', { class: 'mine-need__list' }, items.slice(0, NEEDS_SHOWN).map(needItem))
-        : quiet(allDone(scope), { icon: 'check' }),
-      rowLink('Všechny úkoly', { href: '#ukoly' }),
-    ],
+    title: 'Tvoje břemeno',
+    cls: 'mine-load',
+    action: can('leader') ? button('Kolik zvládnu', { variant: 'quiet', size: 's', cls: 'section-action', onclick: () => limitsSheet(person), label: 'Nastav, kolik toho zvládneš' }) : null,
+    body: h('div', { class: 'load-card' },
+      h('div', { class: 'load-card__main' },
+        h('p', { class: 'load-card__count' },
+          h('span', { class: 'load-card__n' }, String(l.count)),
+          h('span', { class: 'load-card__of' }, `${outOf(l.limit)} ${l.limit === 1 ? 'služby' : 'služeb'} ${inMonth(l.month)}`)),
+        h('div', { class: 'load-pips', 'aria-hidden': 'true' }, Array.from({ length: pips }, (_, i) => h('span', {
+          class: 'load-pip', dataset: { on: i < l.count ? '' : null, over: i >= l.limit ? '' : null },
+        })))),
+      h('p', { class: 'load-card__say', dataset: { tone: sentence.tone } }, sentence.text),
+      h('div', { class: 'load-stats' },
+        stat(`${l.sundays} ${outOf(l.maxSundays)}`, l.sundays === 1 ? 'neděle v řadě' : 'nedělí po sobě', { warn: l.sundays > l.maxSundays }),
+        stat(String(l.year), `${agree(l.year, 'služba', 'služby', 'služeb')} letos`),
+        l.topRole ? stat(l.topRole, 'nejčastěji') : null)),
   });
 }
-
-/** „ty · Kázání · čeká na odpověď“ under a meeting I serve at. */
-function myDuty(event) {
-  if (event.cancelled) return null;
-  const mine = myDuties(event).filter((d) => d.assignment.status !== 'declined');
-  if (!mine.length) return null;
-  return { role: mine.map((d) => d.role?.name || 'služba').join(' + '), status: mine.some((d) => d.assignment.status === 'proposed') ? 'proposed' : 'confirmed' };
-}
-
-/** Tento týden: the rest of this week (today → Sunday) as the agenda (Kalendář › Seznam's rows), one day per arch. */
-function weekSection() {
-  const day = today();
-  const sunday = addDays(mondayOf(day), 6);
-  const events = eventsInRange(S.data, day, sunday).filter((e) => dayOf(e.end || e.start) >= day);
-  const shown = events.slice(0, WEEK_SHOWN);
-  const days = new Map();
-  for (const e of shown) {
-    const d = dayOf(e.start) < day ? day : dayOf(e.start);
-    if (!days.has(d)) days.set(d, []);
-    days.get(d).push(e);
-  }
-  const tomorrow = addDays(day, 1);
-  const rest = events.length - shown.length;
-  return section({
-    title: 'Tento týden',
-    cls: 'mine-week',
-    body: [
-      events.length
-        ? h('div', { class: 'agenda mine-week__agenda' }, [...days].map(([d, dayEvents]) => agendaDay({
-          day: d,
-          today: d === day,
-          label: d === day ? 'Dnes' : d === tomorrow ? 'Zítra' : null,
-          events: dayEvents.map((e) => agendaEvent({
-            start: e.start, end: e.end, title: e.title, meta: placeText(e) || null, hue: kindHue(e.kind),
-            href: `#moje/${e.id}`, cancelled: !!e.cancelled, duty: myDuty(e),
-          })),
-        })))
-        : quiet('Do konce týdne už tu nic není.'),
-      rowLink(rest > 0 ? `Celý kalendář (ještě ${rest})` : 'Celý kalendář', { href: '#kalendar' }),
-    ],
-  });
-}
-
-/** The right column when no meeting is open: Co je potřeba for leaders, then Tento týden. */
-const sideColumn = () => h('div', { class: 'mine-side' }, can('leader') ? needSection() : null, weekSection());
 
 // ---------- the page ----------
 
@@ -409,6 +325,9 @@ export function renderMine(parts = []) {
   const past = person ? pastOf(person) : [];
   const nothing = person && !waiting.length && !answered.length && !declined.length;
 
+  const staff = staffLine();
+  const load = person ? loadCard(person) : null;
+  const off = person ? blockoutSection(person, { cls: 'mine-off' }) : null;
   const body = h('div', { class: 'mine' },
     h('p', { class: 'mine-date' }, todayLine()),
     !person ? callout({
@@ -423,12 +342,17 @@ export function renderMine(parts = []) {
       text: 'Až tě vedoucí někam zapíše, uvidíš to tady a Zvonec se tě zeptá, jestli můžeš.',
     }) : null,
     person && !nothing ? (waiting.length ? askCard(person, waiting) : calm()) : null,
+    split ? null : [staff, load],
     nextSection(answered, split ? openId : null),
     declinedSection(declined, split ? openId : null),
+    split ? null : off,
     person ? pastLink(past) : null);
 
-  // ≥ 1200 the right column: the meeting when one is open (it takes the column's place), otherwise the overview
-  const pane = !split ? null : openId ? (opened ? eventDetailFor(opened, 'pane') : missingDetail('pane')) : sideColumn();
+  // ≥ 1200 the right column: the meeting when one is open (it takes the column's place), otherwise mine: Obsazení's
+  // line, Tvoje břemeno, Kdy nemůžu
+  // (built only when it is shown: a node lives in one place, so a phone's column must keep them)
+  const side = split && (staff || load || off) ? h('div', { class: 'mine-side' }, staff, load, off) : null;
+  const pane = !split ? null : openId ? (opened ? eventDetailFor(opened, 'pane') : missingDetail('pane')) : side;
   return page({
     title: greeting(person),
     width: 'split',

@@ -57,7 +57,7 @@
 .mine-row--quiet:is(:hover, [data-open]) .row__title { color: var(--ink); }
 
 /* ---------- Moje ≥ 1200: two columns (WIDE plan; like Next's Domů) ----------
-   Left: everything above (max 640). Right: Co je potřeba (leaders) and Tento týden – or, while a meeting is open,
+   Left: the answer card and my duties (max 640). Right: Obsazení's line, Tvoje břemeno, Kdy nemůžu – or, while a meeting is open,
    the pane in its place. Both columns 1fr until the left one reaches 640; 48 apart (64 from 1600); the frame is a list
    screen's (--frame-wide), so a 1920 window is used, not a phone column. Below 1200 none of this applies. */
 @media (min-width: 1200px) {
@@ -75,19 +75,43 @@
 @media (min-width: 1600px) { .mine-page { --mine-gap: var(--space-9); } }
 
 .mine-side { display: grid; align-content: start; min-width: 0; }
-/* the needRow blocks and the agenda's lit events bleed 12 to the sides, so their arches line up with the h2 */
-.mine-need__list { display: grid; margin: 0 calc(-1 * var(--space-3)); }
-.mine-need .row-link, .mine-week .row-link { margin-top: var(--space-2); }
-.mine-week__agenda > .agenda__day:first-child { padding-top: 0; }
-.mine-week__agenda > .agenda__day > .arch { top: var(--space-4); }
-.mine-scope { flex: none; }
-/* the scope's menu (in the layer root): the chosen team has the selected look – pick + the detached 3 px bar */
-.mine-scope-menu .menu__row[aria-checked="true"] { background: var(--pick); }
-.mine-scope-menu .menu__row[aria-checked="true"]:is(:hover, :focus-visible) { background: var(--pick-hover); }
-.mine-scope-menu .menu__row[aria-checked="true"]::after {
-  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); width: 3px; height: var(--mark-h);
-  border-radius: 0 3px 3px 0; background: var(--mark);
+.mine-side > * + * { margin-top: var(--section-gap); }
+.mine-side > .mine-staff + * { margin-top: var(--space-6, 32px); }
+.mine > :is(.mine-staff, .mine-load, .mine-off) { margin-top: var(--section-gap); }
+.mine > .mine-staff + .mine-load { margin-top: var(--space-5); }
+
+/* Obsazení (leaders): one line – the name, what is left (● chybí 1 · ● 2 problémy · ○ 3 čekají), › */
+.mine-staff {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-3);
+  min-height: var(--control-l); padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4); border-radius: var(--radius-l);
+  background: var(--tint); color: var(--ink); text-decoration: none;
+  transition: background-color var(--dur-state) var(--ease);
 }
+.mine-staff:hover { background: var(--tint-2, var(--wash)); }
+.mine-staff:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.mine-staff__title { font-weight: var(--weight-strong); }
+.mine-staff__what { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-3); min-width: 0; }
+.mine-staff__done { display: inline-flex; align-items: center; gap: 6px; font-size: var(--type-meta); color: var(--ink-2); }
+.mine-staff__done .sym { width: 16px; height: 16px; }
+.mine-staff > .icon { color: var(--ink-3); }
+
+/* Tvoje břemeno: the big number of this month against the limit, the pips, one sentence, three small numbers */
+.load-card { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--radius-xl, 20px); background: var(--feature); }
+.load-card__main { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-5); }
+.load-card__count { display: flex; align-items: baseline; gap: var(--space-2); margin: 0; min-width: 0; }
+.load-card__n { font-family: var(--font-title); font-size: 56px; line-height: 48px; color: var(--ink); font-feature-settings: var(--numerals); }
+.load-card__of { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.load-pips { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 6px; }
+.load-pip { width: 18px; height: 18px; border-radius: 6px; box-shadow: inset 0 0 0 2px var(--edge-control); }
+.load-pip[data-on] { background: var(--act); box-shadow: none; }
+.load-pip[data-on][data-over] { background: var(--wait-solid); }
+.load-card__say { margin: 0; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); }
+.load-card__say[data-tone="wait"] { color: var(--wait-ink); font-weight: var(--weight-strong); }
+.load-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+.load-stat { display: grid; gap: 2px; min-width: 0; }
+.load-stat__value { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: anywhere; font-feature-settings: var(--numerals); }
+.load-stat__label { font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); }
+.load-stat[data-warn] .load-stat__value { color: var(--wait-ink); }
 
 /* ---------- Můj účet ---------- */
 .acct { display: grid; min-width: 0; }
