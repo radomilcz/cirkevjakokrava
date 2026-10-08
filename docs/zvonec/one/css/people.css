@@ -26,6 +26,9 @@
 .house-mark > .icon { width: 24px; height: 24px; }
 .row > .house-mark > .icon { width: 20px; height: 20px; }
 
+/* the person's membership (člen / přítel / host): the head's one pill, a shade stronger than a quiet pill */
+.pill--membership { background: var(--tint-2); color: var(--ink); }
+
 /* Zavolej · SMS · E-mail: L 52, equal parts, 8 apart, right under the head */
 .contact-tiles { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--gap-x); }
 .contact-tiles > .btn { min-width: 0; padding: 0 var(--space-2); gap: 6px; white-space: nowrap; }
