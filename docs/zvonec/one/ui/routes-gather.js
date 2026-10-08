@@ -1,4 +1,4 @@
-// Zvonec One – routes of package P5: „Jak se scházíme“ (Šablony, Formáty, Místa – in the sidebar for leaders) and
+// Zvonec One – routes of package P5: „Zdroje“ (Šablony, Formáty, Místa – in the sidebar for leaders) and
 // Správa (Přístupy, Nastavení sboru – in the person's menu). DESIGN §8.
 //   #sablony[/<id>] (leaders) · #formaty[/<id>] · #mista[/<id>] (everyone; members come by a link, read-only)
 //   #pristupy · #nastaveni (leaders)

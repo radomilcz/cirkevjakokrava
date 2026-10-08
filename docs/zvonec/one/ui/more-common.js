@@ -1,4 +1,4 @@
-// Zvonec One – what the screens of package P5 share (Šablony, Formáty, Místa – „Jak se scházíme“; Přístupy,
+// Zvonec One – what the screens of package P5 share (Šablony, Formáty, Místa – „Zdroje“; Přístupy,
 // Nastavení sboru): the marks that lead their rows and details, the search match, the three empty states, the page
 // of a missing item, sorting by Czech names, small words (minutes, times) and the „send this link“ sheet.
 // The frames are the kit's (listScreen / page / detail); nothing here draws a head, a toolbar or a pane of its own.
