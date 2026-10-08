@@ -1,0 +1,28 @@
+/* ============================================================
+   Zvonec One – Obsazení and the picker. Owned by package P3 (DESIGN §6.4).
+   Obsazení (#obsazeni: ui/staffing.js) – the list screen is the kit's (listScreen, Filtr, the pane); here only the
+   Obsazení item anatomy, the horizon line, and the picker / who-waits sheets (ui/event-duties.js, ui/staffing.js).
+   Tokens only (css/palettes.css → css/tokens.css), no raw colours.
+   ============================================================ */
+
+/* ---------- the tasks: Chybí lidi · Něco nesedí · Čeká na odpověď, each a section of rows ---------- */
+.tasks { display: grid; gap: var(--section-gap); }
+.tasks > .section { margin: 0; }
+.task-lead { margin: 0 0 var(--space-2); }
+
+/* the horizon, said once at the end of the list */
+.staff-horizon { margin-top: var(--space-5); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.staff-horizon > .link { display: inline-flex; vertical-align: baseline; }
+
+/* ---------- the picker: titled by the role, the team first, who cannot greyed with the reason ---------- */
+.sheet--pick .sheet__body { gap: var(--space-3); }
+.pick-heading { font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
+.pick-list > :not(.row) { margin-inline: var(--space-3); }   /* headings, hints and buttons line up with the names, the rows bleed */
+.pick-list > .btn { width: auto; margin-top: var(--space-2); }
+.pick-heading--off { margin-top: var(--space-4); padding-bottom: var(--space-1); }
+.pick-row--off .row__title { color: var(--ink-2); }
+.pick-row--off .avatar { opacity: .55; }
+.pick-row__why { color: var(--no-ink); }
+.pick-none { padding: var(--space-3) 0; }
+.waiting-lead { margin: 0 0 var(--space-2); }
+.waiting-remind { margin: 0 0 var(--space-2); }

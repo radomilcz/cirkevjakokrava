@@ -188,13 +188,12 @@ a osnovách zůstane jen jméno. Kontakt a ostatní údaje zmizí. Kde jméno ul
 ### Kód
 
 ```
-docs/zvonec/index.html, go.js   hlavní adresa: pošle tě do one/
-docs/zvonec/one/          aplikace: index.html (CSP: ven jen api.github.com a mapy OpenStreetMap), app.js (start,
-                          přihlášení, adresy obrazovek), ui/ (stavebnice a obrazovky), css/ (vzhled)
+docs/zvonec/              aplikace na hlavní adrese: index.html (CSP: ven jen api.github.com a mapy OpenStreetMap),
+                          app.js (start, přihlášení, adresy obrazovek); one/ jen přesměruje staré odkazy
 docs/zvonec/lib/          logika bez obrazovek: lidé, místa, skupiny, setkání a řady, osnova, plánování, upozornění,
                           kontrola dat, přístupy, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
-docs/zvonec/ui/           sdílený stav (state.js) a volba barev (palette.js)
-docs/zvonec/css/          barevné dvojice (palettes.css – vyrábí je zvonec/palettes.mjs)
+docs/zvonec/ui/           stavebnice a obrazovky, sdílený stav (state.js) a volba barev (palette.js)
+docs/zvonec/css/          vzhled a barevné dvojice (palettes.css – vyrábí je zvonec/palettes.mjs)
 zvonec/check.mjs          kontrola upozornění z příkazové řádky / Actions
 zvonec/build-public.mjs   veřejný výřez dat (zveřejněná setkání a formáty) pro web
 zvonec/palettes.mjs       barevné dvojice: z podkladu a písma dopočítá všechny barvy, ověří kontrast a zapíše

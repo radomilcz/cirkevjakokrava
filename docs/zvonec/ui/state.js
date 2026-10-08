@@ -1,5 +1,5 @@
 // Shared app state and the services every screen uses.
-// One's screens import this module – never one/app.js. app.js fills `S` while booting and plugs itself in
+// One's screens import this module – never app.js. app.js fills `S` while booting and plugs itself in
 // through setHooks() (rendering, signing in), so nothing here imports a screen.
 
 import { findConflicts } from '../lib/conflicts.js';
