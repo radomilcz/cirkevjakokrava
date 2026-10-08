@@ -784,6 +784,10 @@ Arch well 88 with an icon, h2 20/620, one sentence, at most one quiet M action, 
 - Nothing yet: a per-screen title and sentence (see §9).
 - Nothing found: „Nic tomu neodpovídá.“ / „Hledáš „…“.“ / [Vymaž hledání].
 - Filtered empty: „S tímhle filtrem tu nic není.“ / „Filtr skrývá 12 setkání.“ / [Zruš filtr].
+- Lidé, a search that finds no one shown: when the Filtr hides someone who matches – „S tímhle filtrem tu nikdo
+  není.“ / „Hledáš „…“. Filtr skrývá 1 člověka, který tomu odpovídá.“ / [Zruš filtr] (keeps Ukaž i archiv); else,
+  for leaders, when cards in the archive match – „Jen v archivu.“ / „Hledáš „…“. V archivu tomu odpovídá 1 karta.“
+  / [Ukaž i archiv] (turns the Filtr's switch on).
 - Měsíc and Rozpis: one quiet line under the period line.
 - A missing item: the well + „Možná ho někdo smazal, nebo je odkaz starý.“
 

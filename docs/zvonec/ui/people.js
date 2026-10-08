@@ -193,6 +193,25 @@ function overdueLine() {
 function peopleEmpty(q) {
   const leader = can('leader');
   if (q) {
+    // nothing shown, but the Filtr or the archive may hide someone who matches: say so and offer the way there
+    const f = filterState(PEOPLE_FILTER);
+    const hits = (S.data.people || []).filter((p) => matchesQuery(p, q));
+    const hidden = hits.filter((p) => inPeopleFilter(p, { archiv: f.archiv })).length;
+    const archived = leader && !f.archiv ? hits.filter(isFormer).length : 0;
+    if (hidden) {
+      return empty({
+        kind: 'filter', title: 'S tímhle filtrem tu nikdo není.',
+        text: `Hledáš „${q}“. Filtr skrývá ${accusative(hidden)}, ${hidden === 1 ? 'který tomu odpovídá' : 'kteří tomu odpovídají'}.`,
+        action: { label: 'Zruš filtr', onclick: () => { clearFilter(PEOPLE_FILTER); if (f.archiv) setFilter(PEOPLE_FILTER, { archiv: true }); render(); } },
+      });
+    }
+    if (archived) {
+      return empty({
+        kind: 'search', icon: 'archive', title: 'Jen v archivu.',
+        text: `Hledáš „${q}“. V archivu tomu ${archived > 1 && archived < 5 ? 'odpovídají' : 'odpovídá'} ${plural(archived, 'karta', 'karty', 'karet')}.`,
+        action: { label: 'Ukaž i archiv', icon: 'archive', onclick: () => { setFilter(PEOPLE_FILTER, { archiv: true }); render(); } },
+      });
+    }
     return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearch } });
   }
   if (!(S.data.people || []).some((p) => !isFormer(p))) {
