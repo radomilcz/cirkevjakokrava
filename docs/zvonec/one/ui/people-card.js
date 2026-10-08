@@ -2,7 +2,7 @@
 //   personDetail(person, { frame, back, close })   pane beside Lidé (≥ 1200) or a page (< 1200, deep links)
 //   personBody(person, { frame })                  the same body without the frame (Můj účet › Moje karta)
 //   householdDetail(household, { frame, back, close })
-// Člověk: avatar 72 (a pane's top-left corner) → name → facts (membership and teams as the list row says them, the
+// Člověk: avatar 72 (a pane's top-left corner) → membership pill (leaders) → name → facts (the teams as one line, the
 // birthday for leaders and the person) → contact tiles Zavolej · SMS · E-mail (L 52, only those with data, never on
 // your own card). Sections: callouts (archive, what is missing – leaders), Co nesedí (leaders), Příští služby, Kontakt [Uprav], Domácnost, Skupiny
 // [+ Přidej], Kdy nemůže, Údaje [Uprav] and Poznámka (leaders). ⋯: Uprav · Nastav, kolik toho zvládne · Pozvi do
@@ -12,7 +12,7 @@
 
 import {
   h, icon, avatar, teamMark, detail, detailHead, section, sectionAction, facts, list, row, eventRow, statusSymbol,
-  button, callout, joinMeta, plural, personName, quiet, mapLink, isPhone, missingItem, menuButton,
+  pill, button, callout, joinMeta, plural, personName, quiet, mapLink, isPhone, missingItem, menuButton,
 } from './kit.js';
 import { S, can, myId, change, isUpcoming } from '../../ui/state.js';
 import { householdById, householdMembers, age, statusOf, displayName, fullName } from '../../lib/people.js';
@@ -89,23 +89,30 @@ function birthdayFact(person) {
   return { icon: 'cake', text: joinMeta([when, years != null ? yearsText(years) : null]) };
 }
 
-/** Who they are among us, as the list row says it: „člen · Chvály, Technika“ (a member sees only the teams). */
-function teamsFact(person, { birthday } = {}) {
-  let word = can('leader') ? MEMBERSHIP_WORDS[statusOf(person)] : null;
-  // a child's age is already in the birthday fact: „dítě“ here, „17. 3. 2015 · 11 let“ there
-  if (can('leader') && isKid(person) && !isFormer(person)) word = birthday ? kidText(person).split(',')[0] : kidText(person);
+/** Where they stand in the church (leaders): člen / přítel / host, a child „dítě“ (the age is in the birthday fact). */
+function membershipWord(person, { birthday } = {}) {
+  if (!can('leader')) return null;
+  if (isKid(person) && !isFormer(person)) return birthday ? kidText(person).split(',')[0] : kidText(person);
+  return MEMBERSHIP_WORDS[statusOf(person)];
+}
+
+/** The teams as one plain line („Chvály, Pohostinnost, Technika“); the Skupiny section is where they are links. */
+function teamsFact(person) {
   const teams = groupsInOrder(person.id);
-  if (!word && !teams.length) return null;
+  if (!teams.length) return null;
   // a long line breaks between the teams, never inside one („Středeční skupinka“ stays whole)
   const names = teams.flatMap((g, i) => [i ? ', ' : null, h('span', { class: 'fact__part' }, g.name)]);
-  return { icon: 'teams', cls: 'fact--wrap', text: [word, word && teams.length ? ' · ' : null, ...names] };
+  return { icon: 'teams', cls: 'fact--wrap', text: names };
 }
 
 function personHead(person, { cornered = false } = {}) {
   const birthday = birthdayFact(person);
-  const factList = [teamsFact(person, { birthday: !!birthday }), birthday].filter(Boolean);
+  const word = membershipWord(person, { birthday: !!birthday });
+  const factList = [teamsFact(person), birthday].filter(Boolean);
   return detailHead({
     mark: cornered ? null : headAvatar(person, { me: person.id === myId() }),   // in a pane the avatar is the card's corner (detail)
+    // the membership is the one pill: it says the most about where someone stands (the owner)
+    tags: word ? pill(word, { cls: 'pill--membership' }) : null,
     title: personName(person),
     facts: factList.length ? facts(factList) : null,
     after: contactTiles(person),

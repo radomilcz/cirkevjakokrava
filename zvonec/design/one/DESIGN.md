@@ -1,9 +1,10 @@
 # Zvonec One: the design
 
 > **Update – a calm person head (2026-10-08).** The owner found the pills under the corner avatar crammed; a UI and a UX
-> review agreed: the head is avatar → name → facts → contact tiles. Membership and teams are no longer pills but the
-> first fact, worded like the Lidé row („člen · Chvály, Pohostinnost, Technika“, members see only the teams; a long
-> line breaks between teams, never inside one); the „ty“ pill is gone (the avatar's tint and the name say it). The
+> review agreed: the head is avatar → membership pill → name → facts → contact tiles. The teams are no longer pills
+> but the first fact („Chvály, Pohostinnost, Technika“; a long line breaks between teams, never inside one). The
+> membership (člen / přítel / host, leaders only) keeps its own pill, a shade stronger – the owner: „the most valuable
+> status“; the „ty“ pill is gone (the avatar's tint and the name say it). The
 > avatar has 24 below it in a pane and on a page, and its badge is a camera instead of „+“ (a „+“ read as „add a
 > person“).
 
