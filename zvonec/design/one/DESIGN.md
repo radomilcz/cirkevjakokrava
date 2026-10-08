@@ -1,5 +1,10 @@
 # Zvonec One: the design
 
+> **Update – Lidé search points to the archive (2026-10-08).** A search that showed no one said only „Nic tomu
+> neodpovídá.“ even when the person was in the archive or behind the Filtr. Now it says where they are: „Jen v
+> archivu.“ – „V archivu tomu odpovídá 1 karta.“ [Ukaž i archiv] (leaders), or „Filtr skrývá 1 člověka, který tomu
+> odpovídá.“ [Zruš filtr].
+
 > **Update – a template edit reaches planned meetings (2026-10-08).** The usability test found that changing a
 > template left its planned meetings as they were, without a word. Now saving an edit asks „Chceš změnit i
 > naplánovaná setkání?“ and names what changes („Změní se jim čas a osnova.“) – [Změň i 11 setkání] / [Jen šablonu].
