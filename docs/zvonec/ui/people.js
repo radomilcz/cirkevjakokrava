@@ -536,14 +536,17 @@ function bulkBar(redraw) {
 }
 
 /**
- * Every second shown column on a faint band, as in Rozpis. Which columns show is the table's own width (container
- * queries in css/people.css), so the banded ones are counted from the shown head cells: table[data-band="phone groups"].
+ * Every second shown column on a faint band, as in Rozpis, never the first or the last one. Which columns show is the
+ * table's own width (container queries in css/people.css), so the banded ones are counted from the shown head cells:
+ * table[data-band="phone groups"].
  */
 function bandColumns(box) {
   const tableEl = box.querySelector('table.people-table');
   if (!tableEl?.tHead) return;
   const shown = [...tableEl.tHead.rows[0].cells].filter((c) => !c.classList.contains('col-pick') && getComputedStyle(c).display !== 'none');
-  tableEl.dataset.band = shown.filter((_, i) => i % 2 === 1)
+  // never the last shown column: a lit row is rounded at both ends, and a band reaching the edge would meet its
+  // round corner with square ones above and below (the first is never banded anyway)
+  tableEl.dataset.band = shown.filter((_, i) => i % 2 === 1 && i < shown.length - 1)
     .map((c) => [...c.classList].find((x) => x.startsWith('col-'))?.slice(4)).filter(Boolean).join(' ');
 }
 
