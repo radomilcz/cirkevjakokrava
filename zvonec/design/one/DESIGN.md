@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – Rozpis column bands (2026-10-08).** The owner asked for vertical lines or banded columns and chose bands
+> (variant C): every second meeting column sits on a faint band (ink 3.5 % over the ground), its head cell rounded on top
+> like the hover tab; a cell's own fill (the pink „Ty“) still wins. The hover tab is back in its first shape; only the
+> corner's side hairline is gone, so the first column's tab no longer butts a line. In „Nový člověk“ the consent note
+> keeps 12 from the switch above it.
+
 > **Update – Role with its people (2026-10-08).** „Kdo co umí“ (people × roles) needed a sideways scroll in a pane. The
 > owner chose variant B: the team's Role section now shows one folded line per role – its name, „umí 7 · učí se 2“
 > („umí jen 1“ amber), ⌄ – and unfolded (seven chips under every role took the whole card) the people as chips – umí on the ok tint, učí se outlined – with a menu on each chip (Umí to / Učí se to / Neumí to)

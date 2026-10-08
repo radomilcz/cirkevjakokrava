@@ -144,14 +144,17 @@
    legend“) */
 .rt-table { --rt-cover: calc(-1 * var(--gutter)) 0 0 var(--ground); }
 .rt-table .rt-role { font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: normal; box-shadow: inset -1px 0 0 var(--hairline), var(--rt-cover); }
-.rt-table .rt-corner { box-shadow: inset 0 -1px 0 var(--edge), inset -1px 0 0 var(--hairline), var(--rt-cover); }
+.rt-table .rt-corner { box-shadow: inset 0 -1px 0 var(--edge), var(--rt-cover); }   /* no side line in the head: the first column's hover tab would butt it */
+/* every second meeting column on a faint band (the owner chose bands over lines), its head rounded like the hover tab;
+   :where() keeps the band weaker than a cell's own fill („Ty“) */
+.rt-table { --rt-band: color-mix(in srgb, var(--ink) 3.5%, var(--ground)); }
+:where(.rt-table tbody tr:not(.rt-team)) > td:nth-child(odd), :where(.rt-table thead) th.rt-col:nth-child(odd) { background: var(--rt-band); }
+:where(.rt-table thead) th.rt-col:nth-child(odd) { border-radius: var(--radius-m) var(--radius-m) 0 0; }
 /* a column head: the day, the time, leaders' ◯ 14 z 15 – one link to the meeting */
 .rt-col { padding: 0 !important; vertical-align: bottom !important; }
-/* its hover is a rounded block that keeps off the head's line (4 above and beside, 6 below); the text stays where the
-   cells' text is (12 from the column edge) */
 .rt-col__link {
-  display: grid; justify-items: start; gap: 2px; margin: var(--space-1) var(--space-1) 6px; padding: var(--space-1) var(--space-2) 6px;
-  border-radius: var(--radius-m); color: var(--ink); text-decoration: none;
+  display: grid; justify-items: start; gap: 2px; padding: var(--space-2) var(--space-3) var(--space-3); border-radius: var(--radius-m) var(--radius-m) 0 0;
+  color: var(--ink); text-decoration: none;
 }
 .rt-col__link:hover { background: var(--wash); }
 .rt-col__link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }

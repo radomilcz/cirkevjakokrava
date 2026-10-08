@@ -231,3 +231,6 @@
 .skill-chip[data-level="learning"]:hover { filter: none; background: var(--wash); }
 .skill-chip--add { gap: 4px; padding: 0 12px 0 8px; background: none; color: var(--ink-2); font-weight: var(--weight-regular); box-shadow: inset 0 0 0 1px var(--hairline); }
 .skill-chip--add:hover { filter: none; background: var(--wash); color: var(--ink); }
+
+/* Nový člověk: the consent switch and its note („Bez souhlasu smíme mít…“) one gap apart, not glued together */
+.consent-box:not([hidden]) { display: grid; gap: var(--space-3); }
