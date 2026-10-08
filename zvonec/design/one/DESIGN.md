@@ -3,7 +3,8 @@
 > **Update – Lidé Tabulka: banded columns (2026-10-08).** As in Rozpis, every second shown column sits on a faint band
 > (ink 3.5 % over the ground), its head cell rounded on top. Which columns show depends on the table's width, so
 > people.js counts the shown head cells (a ResizeObserver) and names the banded ones in table[data-band]; a lit row's
-> wash and pick still cover the band.
+> wash and pick still cover the band. Never the first or the last shown column: a band at the table's edge met the lit
+> row's round corner with square ones above and below (the owner: „it does not look nice“).
 
 > **Update – the printed Rozpis (2026-10-08).** The print was one table for the whole month (every role of every team
 > as a column) with a status dot at each name – „a heap of text and dots“. It now prints as the screen reads: one
