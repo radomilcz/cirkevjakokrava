@@ -130,6 +130,27 @@
 .people-table tbody tr:is([data-picked], [data-open]) > * { background-color: var(--pick); }
 .people-table tbody tr:is([data-picked], [data-open]):hover > * { background-color: var(--pick-hover); }
 .people-table tbody tr:is([data-picked], [data-open]) .table-quiet { color: var(--ink); }
+/* every second shown column on a faint band, as Rozpis's (people.js counts the shown ones: data-band); its head rounded
+   on top. In :where(), so a lit row's wash and pick still cover it */
+.people-table { --band: color-mix(in srgb, var(--ink) 3.5%, var(--ground)); }
+:where(.people-table[data-band~="name"]) :is(th, td).col-name,
+:where(.people-table[data-band~="status"]) :is(th, td).col-status,
+:where(.people-table[data-band~="household"]) :is(th, td).col-household,
+:where(.people-table[data-band~="phone"]) :is(th, td).col-phone,
+:where(.people-table[data-band~="email"]) :is(th, td).col-email,
+:where(.people-table[data-band~="groups"]) :is(th, td).col-groups,
+:where(.people-table[data-band~="birthday"]) :is(th, td).col-birthday,
+:where(.people-table[data-band~="last"]) :is(th, td).col-last { background-color: var(--band); }
+/* the head over kit's .table thead th (--ground): its banded cells rounded on top, like the hover tab of Rozpis */
+.people-table:where([data-band~="name"]) thead th.col-name,
+.people-table:where([data-band~="status"]) thead th.col-status,
+.people-table:where([data-band~="household"]) thead th.col-household,
+.people-table:where([data-band~="phone"]) thead th.col-phone,
+.people-table:where([data-band~="email"]) thead th.col-email,
+.people-table:where([data-band~="groups"]) thead th.col-groups,
+.people-table:where([data-band~="birthday"]) thead th.col-birthday,
+.people-table:where([data-band~="last"]) thead th.col-last { background: var(--band); }
+:where(.people-table[data-band]) thead th:is(.col-name, .col-status, .col-household, .col-phone, .col-email, .col-groups, .col-birthday, .col-last) { border-radius: var(--radius-m) var(--radius-m) 0 0; }
 /* the open person's mark (a ticked row has its tick, so no mark) */
 .people-table tbody tr[data-open] > :first-child::before {
   content: ""; position: absolute; left: 4px; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 3px; background: var(--mark);
