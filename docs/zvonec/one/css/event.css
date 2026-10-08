@@ -157,6 +157,7 @@
 .ev-public { display: grid; grid-template-columns: var(--icon-s) minmax(0, 1fr); gap: var(--space-3); }
 .ev-public > .icon { margin-top: calc((var(--hit) - var(--icon-s)) / 2); color: var(--ink-2); }
 .ev-public > .switch-row { align-items: flex-start; }
+.ev-public > .switch-row > .switch { margin-top: calc((var(--hit) - var(--switch-h)) / 2); }
 .ev-public > .switch-row > .switch-row__text { padding-top: calc((var(--hit) - var(--lh-body)) / 2); }
 .ev-count { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-6); }
 
