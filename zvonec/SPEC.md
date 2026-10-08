@@ -653,7 +653,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | id | label | icon | route | min level | group | count badge |
 |---|---|---|---|---|---|---|
 | moje | Moje | home | `#moje` | member | main | duties waiting for my answer |
-| ukoly | Úkoly | check-circle | `#ukoly` | leader | main | meetings in 4 weeks with something to do, in my Filtr scope |
+| ukoly | Úkoly | check-circle | `#ukoly` | leader | main | tasks of the next 4 weeks in my Filtr scope |
 | kalendar | Kalendář | calendar | `#kalendar` | member | main | – |
 | lide | Lidé | people | `#lide` | member | main | – |
 | skupiny | Skupiny | teams | `#lide/skupiny` | member | main | – |
