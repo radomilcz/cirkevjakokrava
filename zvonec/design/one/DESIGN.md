@@ -1,5 +1,12 @@
 # Zvonec One: the design
 
+> **Update – One is the only Zvonec (2026-10-08).** Next and Simple are retired: the main address opens One
+> (`go.js`), and `next/` and `simple/` hold only a redirect to `one/`, so old bookmarks and invitation links still
+> work (One's routes understand their slugs). Before that, the last things worth having were brought over: **Kdo co
+> umí** (a team's detail, leaders, ≥ 600: people × roles, a cell steps neumí → učí se → umí, a role's head says „umí
+> to jen 1“ / „nikdo to neumí“), **Odeber z domácnosti** (⋯ on each person of a household) and the Lidé Filtr **Bez
+> souhlasu** (adult friends and guests without consent; `#lide/bez-souhlasu`). The original app stays at stara.html.
+
 > **Update – Moje is about me; Obsazení keeps its name (2026-10-08).** „Úkoly“ suggested a to-do list one writes
 > into, so the page is Obsazení again (`#obsazeni`, the circled tick; `#ukoly` redirects). Moje drops what other
 > screens already show (Co je potřeba = Obsazení, Tento týden = Kalendář) and keeps only what concerns me: the answer

@@ -6,8 +6,9 @@ v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další 
 
 **Ukázka s vymyšlenými lidmi:** https://manifest.cirkevjakokrava.cz/zvonec/
 
-Hlavní adresa otevírá nový Zvonec (s kartami Domů · Kalendář · Lidé · Více). Původní verzi najdeš
-na stejné adrese s `/stara.html` na konci – zatím ji necháváme pro srovnání.
+Hlavní adresa otevírá Zvonec One (Moje · Obsazení · Kalendář · Lidé · Skupiny). Starší odkazy na Next
+a Simple vedou tam taky. Úplně původní verzi najdeš na stejné adrese s `/stara.html` na konci – zatím ji
+necháváme pro srovnání.
 
 ## Barvy
 

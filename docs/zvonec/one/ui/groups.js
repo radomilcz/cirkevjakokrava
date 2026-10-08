@@ -9,7 +9,7 @@
 
 import {
   h, icon, row, list, subhead, teamMark, avatar, avatars, pill, detail, detailHead, section, sectionAction, facts, eventRow,
-  fill, rowLink, joinMeta, plural, quiet, personName, peoplePicker, filterState, missingItem,
+  fill, rowLink, joinMeta, plural, quiet, personName, peoplePicker, filterState, missingItem, table, isPhone,
 } from './kit.js';
 import { S, can, myId } from '../../ui/state.js';
 import { personById, comparePeople } from '../../lib/people.js';
@@ -22,7 +22,7 @@ import {
   capital, andJoin,
 } from './people-common.js';
 import { skillPills } from './people-card.js';
-import { groupSheet, toggleArchive, deleteGroup, addToGroup, roleSheet } from './groups-forms.js';
+import { groupSheet, toggleArchive, deleteGroup, addToGroup, roleSheet, memberSheet, cycleSkill, SKILL_WORDS } from './groups-forms.js';
 import { addPersonSheet } from './people-forms.js';
 
 const WEEKS_AHEAD = 6;
@@ -167,6 +167,42 @@ function rolesSection(group) {
   });
 }
 
+/**
+ * Kdo co umí (teams, leaders, from 600 up; Next's matrix): people × roles. A cell steps neumí → učí se → umí, a role's
+ * head opens the role (and says „umí to jen 1“ / „nikdo to neumí“), a name opens what the person does in the team.
+ */
+function skillSection(group) {
+  if (group.kind !== 'team' || !can('leader') || isPhone()) return null;
+  const { roles } = skillMatrix(S.data, { groupId: group.id });
+  const people = members(group);
+  if (!roles.length || !people.length) return null;
+  const head = h('tr', {},
+    h('th', { scope: 'col', class: 'skills__who' }, 'Člověk'),
+    roles.map(({ role, trained }) => h('th', { scope: 'col', class: 'skills__role' },
+      h('button', { type: 'button', class: 'skills__role-btn', onclick: () => roleSheet(group, role), 'aria-label': `Uprav roli ${role.name}` }, role.name),
+      h('span', { class: 'skills__count', dataset: { scarce: trained <= 1 ? '' : null } },
+        trained ? (trained === 1 ? 'umí to jen 1' : `umí to ${trained}`) : 'nikdo to neumí'))));
+  const rows = people.map(({ m, p }) => h('tr', {},
+    h('th', { scope: 'row', class: 'skills__who' },
+      h('button', { type: 'button', class: 'skills__person', onclick: () => memberSheet(group, p.id), 'aria-label': `${personName(p)}: co dělá v týmu` },
+        avatar(p, { size: 's', me: p.id === myId() }), h('span', { class: 'skills__name' }, personName(p)))),   // who leads: Lidé says
+    roles.map(({ role }) => {
+      const level = m.roles?.[role.id] || '';
+      return h('td', { class: 'skills__cell' }, h('button', {
+        type: 'button', class: 'skill', dataset: { level: level || 'none' },
+        'aria-label': `${personName(p)}, ${role.name}: ${SKILL_WORDS[level]}. Změň.`,
+        onclick: () => cycleSkill(p, role),
+      }, level === 'trained' ? [icon('check', { size: 's' }), 'umí'] : level === 'learning' ? 'učí se' : h('span', { 'aria-hidden': 'true' }, '–')));
+    })));
+  return section({
+    title: 'Kdo co umí', cls: 'group-section', id: 'umi',
+    body: [
+      table({ label: `Kdo co umí v týmu ${group.name}`, cls: 'skills', wrapCls: 'skills-wrap', region: true, head, rows }),
+      h('p', { class: 'meta skills__hint' }, 'Klepni na políčko a změníš, co kdo umí: neumí → učí se → umí.'),
+    ],
+  });
+}
+
 /** A person row of a group: avatar, name, what they do (leaders: skill pills), a call button with a shared phone. */
 function memberRow(group, { m, p }, personHref) {
   const leader = can('leader');
@@ -283,6 +319,7 @@ export function groupDetail(group, { frame = 'pane', back, close, personHref } =
         after: group.description ? h('p', { class: 'text group-about' }, group.description) : null,
       }),
       rolesSection(group),
+      skillSection(group),
       peopleSection(group, href),
       eventsSection(group),
     ].filter(Boolean),

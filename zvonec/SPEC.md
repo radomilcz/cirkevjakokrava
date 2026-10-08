@@ -998,7 +998,8 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   Members' ⋯: Stáhni seznam (+ the view choice at ≥ 1200).
 - B: „Hledej jméno“ (name, nickname, visible phone or e-mail; while searching, up to 3 matching groups appear
   above under „Skupiny“ / „Lidé“) + Filtr. Leaders: **Členství** (Členové · Přátelé · Hosté · Děti) · **Tým** ·
-  **Chybí údaje** · **Narozeniny** (sorts by the next birthday; subheads „Do týdne“ / months / „Bez data
+  **Chybí údaje** · **Bez souhlasu** (adult friends and guests with more than a name and no consent;
+  `#lide/bez-souhlasu`) · **Narozeniny** (sorts by the next birthday; subheads „Do týdne“ / months / „Bez data
   narození“) · **Ukaž i archiv**. Members: Tým only.
 - D: phone first row „Skupiny · 9 skupin ›“; leaders' quiet birthday line „Dnes slaví Eva …, do týdne ještě 2“ →
   Filtr Narozeniny; A–Z list with letter subheads. Row: avatar, name (nickname), call button (visible phone, not
@@ -1022,7 +1023,8 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   Poznámka „Krátce. Nic o zdraví, penězích ani pastoraci.“, Chodí od; submit „Přidej člověka“; a duplicate
   callout) · „Jméno a údaje“ · „Kontakt“ / „Můj kontakt“ · „Kolik toho zvládne“ (two steppers + „Pauza od
   služeb“) · „Souhlas“ · „Domácnost“ · „Do které skupiny?“ · archive and delete confirms.
-- **Domácnost** `#lide/domacnost/<id>` (drill-in, „‹ <person>“): house mark, address, section Lidé [+ Přidej].
+- **Domácnost** `#lide/domacnost/<id>` (drill-in, „‹ <person>“): house mark, address, section Lidé [+ Přidej]; each
+  person's ⋯ (leaders): „Odeber z domácnosti“ (toast with Vrať; the card stays).
   ⋯: Uprav · Přidej člověka · Smaž domácnost.
 
 ### 9.6 Skupiny `#lide/skupiny` (everyone)
@@ -1035,7 +1037,10 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   „V archivu“ stays a row list.
 - **Group detail**: mark 56; pills kind („Tým“) · „ty“ · „v archivu“; h1; fact „9 lidí · vedou …“ (or „zatím bez
   vedoucího“ / „zatím bez předsedy“); description. **Role** (teams, leaders) [+ Přidej]: rows „umí A a B · učí se
-  C“, amber note „Umí to jen jeden člověk“ / „Zatím to nikdo neumí“, a click opens the role sheet. **Lidé**
+  C“, amber note „Umí to jen jeden člověk“ / „Zatím to nikdo neumí“, a click opens the role sheet. **Kdo co umí**
+  (teams, leaders, ≥ 600): a table people × roles; a cell steps neumí → učí se → umí (with Vrať via the toast), a
+  role's head opens the role and says „umí to jen 1“ / „umí to 3“ / „nikdo to neumí“ (amber when ≤ 1), a name opens
+  the member sheet; hint „Klepni na políčko a změníš, co kdo umí: neumí → učí se → umí.“ **Lidé**
   [+ Přidej]: leaders first, meta „vede tým“ + skill pills, call button, „Ukaž všech N“ after 8; a person drills
   in inside the pane („‹ <group>“). **Příští služby / Příští setkání** (six weeks).
   ⋯: Uprav · Přidej člověka · Přesuň do archivu / Vrať z archivu · Smaž.
