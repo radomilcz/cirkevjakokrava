@@ -103,7 +103,7 @@ function columnHead(event, { month, mixed, teams }) {
   const showFill = can('leader') && !event.cancelled && f.needed;
   return h('th', { scope: 'col', class: 'rt-col', dataset: { past: isPast(event) ? '' : null, cancelled: event.cancelled ? '' : null, today: dayOf(event.start) === today() ? '' : null } },
     h('a', { class: 'rt-col__link', href: `#kalendar/rozpis/${month}/${event.id}` },
-      mixed ? h('span', { class: 'rt-col__title' }, event.title) : null,
+      mixed ? h('span', { class: 'rt-col__title', title: event.title }, event.title) : null,
       h('span', { class: 'rt-col__day' }, shortDate(event.start)),
       h('span', { class: 'rt-col__time' }, clock(event.start)),
       event.cancelled ? h('span', { class: 'pill' }, 'zrušeno') : null,
