@@ -254,7 +254,7 @@ export function paneLinks(root, base) {
  *   calendarScreen({ view: 'mesic', month: '2026-10', draw, results, menu, addDay, pane, wide: true })
  * draw() redraws D on search and Filtr; results() is the number of meetings shown (the phone's „Ukaž 12 setkání“).
  */
-export function calendarScreen({ view, month, draw, results, menu, addDay, pane, wide = false, label = 'Setkání', base }) {
+export function calendarScreen({ view, month, period, draw, results, menu, addDay, pane, wide = false, label = 'Setkání', base }) {
   if (month) shownMonth = month;
   const m = currentMonth();
   let main;
@@ -272,6 +272,7 @@ export function calendarScreen({ view, month, draw, results, menu, addDay, pane,
       label: 'Zobrazení kalendáře',
       options: [['seznam', 'Seznam', '#kalendar/seznam'], ['mesic', 'Měsíc', `#kalendar/mesic/${m}`], ['rozpis', 'Rozpis', `#kalendar/rozpis/${m}`]],
       value: view,
+      period,   // Měsíc, Rozpis: [‹ Říjen 2026 › Dnes] on the left of the view row, the switch on its right
     },
     body: draw(),
     pane,

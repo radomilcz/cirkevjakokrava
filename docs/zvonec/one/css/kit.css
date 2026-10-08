@@ -627,7 +627,8 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   .ls.ls--split .frame {
     display: grid; grid-template-columns: var(--list-track) minmax(0, var(--pane-max)); column-gap: var(--split-gap); align-items: start;
   }
-  .ls.ls--split .frame > :is(.ls__list, .ls__controls) { grid-column: 1; min-width: 0; }
+  .ls.ls--split .frame > .ls__list { grid-column: 1; min-width: 0; }
+  .ls.ls--split .frame > .ls__controls { grid-column: 1 / -1; min-width: 0; }   /* C over the list and the pane */
   .ls.ls--split .frame > .head { grid-column: 1 / -1; min-width: 0; container: list-head / inline-size; }
   .head > .toolbar { flex: 0 1 auto; min-width: 0; margin-left: auto; }
   .head > .toolbar > .search { flex: 0 1 var(--search-head-w); min-width: 180px; }
@@ -635,8 +636,7 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   .head:has(> .toolbar) > .head__title { flex: 0 0 auto; }
   .ls.ls--split .frame > .ls__body { grid-column: 1 / -1; }          /* wide: Měsíc, the table */
   .ls.ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
-  /* the period line (Měsíc, Rozpis) keeps „Dnes“ within reach of ‹ › – as wide as a search with its Filtr */
-  .ls.ls--split .ls__body > .period-line { max-width: var(--toolbar-w); }
+  .ls.ls--split .frame:has(> .ls__controls) > .split__pane { grid-row: 3; margin-top: var(--gap-group); }   /* level with D */
   /* D is a query container (a list track of 400–440 at 1200–1279 gets a few narrow-list rules) */
   .ls.ls--split .ls__body { container: list-body / inline-size; }
 }
@@ -690,12 +690,23 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .filter-btn[data-on] .filter-btn__n { visibility: visible; }
 
 /* C: the view row – 12 under B; phone full width, ≥ 600 segments of 120, left-aligned */
-.ls__views { margin-top: var(--gap-y); }
+.ls__views { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-y) var(--gap-x); margin-top: var(--gap-y); }
 .ls__views:first-child { margin-top: 0; }
+/* C: [‹ Říjen 2026 › Dnes] ·········· [Seznam | Měsíc | Rozpis] – the switch at the right edge in every view */
+.ls__views > .seg { margin-left: auto; }
+/* where the month and the switch do not fit one row (a tablet), the switch keeps its place top right and the month
+   goes under it – so the switch never moves between Seznam and Měsíc */
+.ls__controls { container: ls-controls / inline-size; }
+@container ls-controls (max-width: 699.98px) {
+  .ls__views > .period-line { order: 1; flex: 1 1 100%; }
+}
+@media (max-width: 599.98px) {
+  .ls__views > .seg { order: -1; flex: 1 1 100%; margin-left: 0; }   /* a phone: the switch full width, the month under it */
+}
 /* D: 24 under the last control row */
 .ls__body { min-width: 0; margin-top: var(--gap-group); }
 /* no control row between A and D: A's 12 + 12 = the 24 from a control group to its content */
-:is(.head + .ls__body, .ls__list > .ls__body:first-child) { margin-top: calc(var(--gap-group) - var(--gap-y)); }
+:is(.head + .ls__body, .head + .ls__list > .ls__body:first-child) { margin-top: calc(var(--gap-group) - var(--gap-y)); }
 .page__body { margin-top: 0; }
 
 /* the pane track (≥ 1200): its top level with B's top; it sticks while it fits (app.js fitPanes → data-tall) */
@@ -773,9 +784,7 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   flex: none; width: var(--period-label-w); text-align: center;
   font-size: var(--type-period); line-height: var(--lh-period); font-weight: var(--weight-strong); white-space: nowrap;
 }
-.period-line__gap { flex: 1; min-width: var(--gap-x); }
-.period-line__today { flex: none; }
-.period-line + * { margin-top: var(--gap-y); }
+.period-line__today { flex: none; margin-left: var(--gap-x); }
 
 /* the empty state: 48 under the last control row (D starts 24 under it) */
 .empty { display: grid; justify-items: start; margin-top: var(--space-5); text-align: left; max-width: 32em; }

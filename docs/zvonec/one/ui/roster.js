@@ -144,7 +144,6 @@ function rosterBody(month, openId) {
     marks.wait ? h('span', {}, mark('wait'), 'čeká na odpověď') : null,
     marks.error ? h('span', {}, mark('no'), 'něco nesedí') : null) : null;
   return [
-    periodLine({ month, href: (m) => `#kalendar/rozpis/${m}`, todayHref: `#kalendar/rozpis/${thisMonth()}` }),
     note, legend,
     blocks.length ? h('div', { class: 'rlist' }, blocks) : null,
   ];
@@ -290,6 +289,7 @@ export function renderRoster(parts = [], { menu } = {}) {
   const fillable = () => rosterData(month).items.map((x) => x.event).filter((e) => !e.cancelled && !isPast(e)).map((e) => e.id);
   return calendarScreen({
     view: 'rozpis', month,
+    period: periodLine({ month, href: (m) => `#kalendar/rozpis/${m}`, todayHref: `#kalendar/rozpis/${thisMonth()}` }),
     draw: () => rosterBody(month, opened?.id || null),
     results: () => rosterData(month).items.length,
     menu: (menu || calendarMenu)({ month, ids: fillable }),

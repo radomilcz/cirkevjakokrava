@@ -126,9 +126,10 @@ export function listScreen({ title, action, menu, search, filter, views, body, p
   // ≥ 1200 B joins A: [h1 ········ search · Filtr · ⋯ · main action] over the whole frame, C under it (the owner: one
   // calm row instead of three bands); below 1200 B is its own row under A, as on a phone
   const bar = toolbar({ search: search || { placeholder: 'Hledej' }, filter });
+  // C: [period ·········· view switch] – the switch at the right edge, the same place in every view (the owner)
   const controls = [
     split ? null : bar,
-    views ? h('div', { class: 'ls__views' }, segmented(views.options, views.value, null, { label: views.label || 'Zobrazení' })) : null,
+    views ? h('div', { class: 'ls__views' }, views.period || null, segmented(views.options, views.value, null, { label: views.label || 'Zobrazení' })) : null,
   ].filter(Boolean);
   const controlsEl = controls.length ? h('div', { class: 'ls__controls' }, controls) : null;
   const paneEl = split && !wide ? paneSlot(pane, label) : null;
@@ -137,8 +138,9 @@ export function listScreen({ title, action, menu, search, filter, views, body, p
   },
   h('div', { class: 'frame' },
     titleRow({ title, action, menu, tools: split ? bar : null }),
-    wide
-      ? [controlsEl, bodyEl]
+    // ≥ 1200 C spans the frame (above the list and the pane), so the switch sits at the right edge in every view
+    wide || split
+      ? [controlsEl, wide ? bodyEl : h('div', { class: 'ls__list' }, bodyEl), paneEl]
       : [h('div', { class: 'ls__list' }, controlsEl, bodyEl), paneEl]));
   main.setBody = (content) => bodyEl.replaceChildren(...nodes(content));
   main.setPane = (content) => paneEl?.replaceChildren(...nodes(content));
@@ -239,8 +241,8 @@ export function detailHead({ band, mark, tags, title, facts: factsNode, after, i
 }
 
 /**
- * The period line, the first line of D in Měsíc and Rozpis (CODEX §6.3): [‹] [label] [›] ·········· [Dnes].
- * The label has a fixed width (--period-label-w), so a month change never moves ›, and „Dnes“ sits at the right edge.
+ * The period line of Měsíc and Rozpis (CODEX §6.3): [‹] [label] [›] [Dnes] – the left part of the view row (C), the
+ * view switch on its right. The label has a fixed width (--period-label-w), so a month change never moves › or Dnes.
  *   periodLine({ month: '2026-10', href: (m) => `#kalendar/mesic/${m}`, todayHref: '#kalendar/mesic/2026-10/2026-10-07' })
  * ← / → change the month on ≥ 600 when no field has focus (the shell's keyboard).
  */
@@ -252,7 +254,6 @@ export function periodLine({ month, href, todayHref, label: text } = {}) {
     h('a', { class: 'icon-btn period-line__prev', href: href(shift(-1)), 'aria-label': 'Předchozí měsíc', title: 'Předchozí měsíc', dataset: { periodPrev: '' } }, icon('chevron-left')),
     h('h2', { class: 'period-line__label', 'aria-live': 'polite' }, words),
     h('a', { class: 'icon-btn period-line__next', href: href(shift(1)), 'aria-label': 'Další měsíc', title: 'Další měsíc', dataset: { periodNext: '' } }, icon('chevron-right')),
-    h('span', { class: 'period-line__gap' }),
     h('a', { class: 'btn btn--quiet period-line__today', href: todayHref || href(todayMonth()) }, 'Dnes'));
 }
 const MONTHS = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
