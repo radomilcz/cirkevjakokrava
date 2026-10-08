@@ -162,7 +162,7 @@ function renderApp({ toTop = false } = {}) {
 
 // ≥ 1200 a pane that opens or closes changes the list's width, and a wide list's rows lay their lines side by side
 // (css/kit.css): the item that was clicked stays at the same height in the window, so the list does not seem to jump.
-const ROWISH = ':is(.row, .event, .staff, .rblock, tbody tr)';
+const ROWISH = ':is(.row, .event, .staff, .rblock, tbody tr, .group-card)';
 let clicked = null;
 document.addEventListener('click', (e) => {
   const item = e.target.closest?.(`#view .ls__body ${ROWISH}`);
