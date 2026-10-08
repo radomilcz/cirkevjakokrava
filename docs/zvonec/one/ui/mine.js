@@ -8,7 +8,7 @@
 //   A duty opens its meeting: #moje/<id> – beside the list at ≥ 1200 (the pane, only on a click), a page below 1200
 //   (back „‹ Moje“). The detail itself is P3's (eventDetail in ui/event.js).
 // ≥ 1200 two columns (the owner's WIDE plan, like Next's Domů): the left one is all of the above; the right one is
-//   Co je potřeba (leaders: Obsazení's meetings as the kit's needRow blocks, in Obsazení's team scope) and Tento
+//   Co je potřeba (leaders: the meetings of Úkoly as the kit's needRow blocks, in the team scope of Úkoly) and Tento
 //   týden (everyone: this week's meetings as agenda rows). A meeting opened from either column takes the right
 //   column's place (the pane, #moje/<id>); ✕ or Esc brings the right column back. Below 1200 nothing of it exists.
 
@@ -224,16 +224,16 @@ function pastLink(past) {
 
 // ---------- the right column (≥ 1200): Co je potřeba (leaders) · Tento týden (everyone) ----------
 
-const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four meetings, then „Celé obsazení“
+const NEEDS_SHOWN = 4;        // Co je potřeba: the nearest four meetings, then „Všechny úkoly“
 const WEEK_SHOWN = 6;         // Tento týden: six meetings, then „Celý kalendář (ještě N)“
-const STAFF_KEY = 'obsazeni'; // Obsazení's Filtr: its Tým choice is this column's scope too, both ways
+const STAFF_KEY = 'obsazeni'; // the Filtr of Úkoly (its key kept from Obsazení): its Tým choice is this column's scope too, both ways
 const ALL_TEAMS = { value: 'all', label: 'Všechny týmy', ids: null };
 
 const ledTeams = () => (myId() ? ledBy(S.data, myId()).filter((g) => g.kind === 'team' && !g.archived) : []);
 
-/** The team scope of Obsazení's Filtr › Tým (the team I lead by default; „Moje týmy“ when I lead several). */
+/** The team scope of the Filtr of Úkoly › Tým (the team I lead by default; „Moje týmy“ when I lead several). */
 function teamScope() {
-  staffingCount();   // tells the kit Obsazení's Filtr defaults before the first read (the nav does the same)
+  staffingCount();   // tells the kit the Filtr of Úkoly defaults before the first read (the nav does the same)
   const t = filterState(STAFF_KEY).tym;
   if (t === 'mine') {
     const mine = ledTeams();
@@ -243,7 +243,7 @@ function teamScope() {
   return team ? { value: team.id, label: team.name, ids: [team.id] } : ALL_TEAMS;
 }
 
-/** The scope's menu: Moje týmy (when I lead several) · each team · Všechny týmy. A choice changes Obsazení's Filtr. */
+/** The scope's menu: Moje týmy (when I lead several) · each team · Všechny týmy. A choice changes the Filtr of Úkoly. */
 function openScope(anchor, current) {
   const options = [
     ledTeams().length > 1 ? ['mine', 'Moje týmy'] : null,
@@ -287,7 +287,7 @@ function errorAction(event, errors) {
     : ['error', words, { href: `#moje/${event.id}`, label: `${words} – ukaž setkání` }];
 }
 
-/** One meeting that wants people (Obsazení's data and actions) as the kit's needRow: the whole block opens it. */
+/** One meeting that wants people (the data and actions of Úkoly) as the kit's needRow: the whole block opens it. */
 function needItem({ event, slots, waiting, errors }) {
   const byRole = new Map();
   for (const s of slots) byRole.set(s.roleId, { role: s.role, n: (byRole.get(s.roleId)?.n || 0) + (s.missing || 1) });
@@ -324,7 +324,6 @@ function allDone(scope) {
 function needSection() {
   const scope = teamScope();
   const items = needsFor(scope.ids);
-  const hidden = items.length - NEEDS_SHOWN;
   const scopeButton = button(scope.label, {
     variant: 'quiet', size: 's', iconEnd: 'chevron-down', cls: 'section-action mine-scope',
     label: `Týmy: ${scope.label}`, onclick: (e) => openScope(e.currentTarget, scope.value),
@@ -339,7 +338,7 @@ function needSection() {
       items.length
         ? h('div', { class: 'mine-need__list' }, items.slice(0, NEEDS_SHOWN).map(needItem))
         : quiet(allDone(scope), { icon: 'check' }),
-      rowLink(hidden > 0 ? `Celé obsazení (ještě ${plural(hidden, 'setkání', 'setkání', 'setkání')})` : 'Celé obsazení', { href: '#obsazeni' }),
+      rowLink('Všechny úkoly', { href: '#ukoly' }),
     ],
   });
 }

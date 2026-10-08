@@ -75,7 +75,7 @@ Each screen answers one question:
 | screen | question |
 |---|---|
 | Moje | When do I serve, and what do I still have to answer? |
-| Obsazení | Whom do we still need, and what is wrong? (leaders) |
+| Úkoly | Whom do we still need, and what is wrong? (leaders) |
 | Kalendář | What is coming up? |
 | Lidé | How do I reach someone? |
 | Skupiny | Who is in which team, who leads it, who can do what? |
@@ -91,7 +91,7 @@ things and never share a name.
 
 | | člen (member) | vedoucí (leader) | správce (admin) |
 |---|---|---|---|
-| Navigation | Moje, Kalendář, Lidé, Skupiny | + Obsazení, the group „Zdroje“ (Šablony, Formáty, Místa), „Správa“ in the person menu (Přístupy, Nastavení sboru) | the same items as a leader |
+| Navigation | Moje, Kalendář, Lidé, Skupiny | + Úkoly, the group „Zdroje“ (Šablony, Formáty, Místa), „Správa“ in the person menu (Přístupy, Nastavení sboru) | the same items as a leader |
 | Duties | answers own duties (Můžu / Nemůžu); sees the whole Rozpis, read-only | plans everything: meetings, needs, picker, auto-fill, overrides, conflicts, Břemeno | same |
 | People | names and households; phone and e-mail only when the person shared them | edits people, households, groups, roles, archive; invites | same |
 | Formáty, Místa | read-only, reached by links | edit | edit |
@@ -585,7 +585,7 @@ unavailable, or busy elsewhere in that window. New assignments are `proposed`.
 ### 6.6 Overviews
 - `openSlots(days = 21)`: missing slots in upcoming non-cancelled events, essential first.
 - `unconfirmedDuties(days = unconfirmedDaysBefore, groupIds)`: proposed duties of other people.
-- Obsazení (`needsFor`, 28 days): open slots + waiting duties (not mine) + non-overridden errors, per event.
+- Úkoly (`needsFor`, 28 days): open slots + waiting duties (not mine) + non-overridden errors, per event.
 - Moje „waiting“: my own upcoming, non-cancelled, `proposed` duties.
 
 ### 6.7 Series (`lib/time.js recurrences`, `lib/events.js`)
@@ -653,7 +653,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | id | label | icon | route | min level | group | count badge |
 |---|---|---|---|---|---|---|
 | moje | Moje | home | `#moje` | member | main | duties waiting for my answer |
-| obsazeni | Obsazení | plus-circle | `#obsazeni` | leader | main | meetings in 4 weeks with something to do, in my Filtr scope |
+| ukoly | Úkoly | check-circle | `#ukoly` | leader | main | meetings in 4 weeks with something to do, in my Filtr scope |
 | kalendar | Kalendář | calendar | `#kalendar` | member | main | – |
 | lide | Lidé | people | `#lide` | member | main | – |
 | skupiny | Skupiny | teams | `#lide/skupiny` | member | main | – |
@@ -662,7 +662,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | mista | Místa | pin | `#mista` | leader | Zdroje | – |
 
 - **Phone tab bar** (64 + safe area): member [Moje][Kalendář][Lidé][person]; leader
-  [Moje][Obsazení][Kalendář][Lidé][person]. Skupiny is the first row of Lidé; the Lidé tab is lit on Skupiny and
+  [Moje][Úkoly][Kalendář][Lidé][person]. Skupiny is the first row of Lidé; the Lidé tab is lit on Skupiny and
   navigates back to Lidé from there. The person tab shows the avatar + first name or nickname and opens the person
   menu. Badges at the icon's top right; an 8 px dot for waiting invites. Tapping the current tab scrolls to the
   top. The bar hides while the keyboard is up.
@@ -691,7 +691,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | route | screen | access |
 |---|---|---|
 | `#moje[/<eventId>]` | Moje | member |
-| `#obsazeni[/<eventId>]` | Obsazení | leader |
+| `#ukoly[/<eventId>]` | Úkoly | leader |
 | `#kalendar` | the remembered view | member |
 | `#kalendar/seznam[/<eventId>]` | Seznam | member |
 | `#kalendar/mesic/<YYYY-MM>[/<YYYY-MM-DD>]` | Měsíc | member |
@@ -717,7 +717,7 @@ Redirects (old slugs keep working): `prehled|domu|vice` → `moje`; `nemuzu` →
 `pastva`; `jak-se-schazime` → the Pastva anchor; `osoba/<id>` → `lide/<id>`; `tym|skupina/<id>` →
 `lide/skupiny/<id>`; `tymy|skupiny|sluzby` → `lide/skupiny`; `lide/tabulka` → `lide/vypis`;
 `lide/<clenove|pratele|hoste|deti|doplnit|narozeniny|archiv|…>` → `#lide` with that Filtr preset; `udalost/<id>` →
-`setkani/<id>`; `porad|prubeh` → `osnova`; `upozorneni|kolize` → `#obsazeni` with Filtr „Něco nesedí“;
+`setkani/<id>`; `porad|prubeh` → `osnova`; `upozorneni|kolize` → `#ukoly` with Filtr „Něco nesedí“;
 `rozpis[/m]` → `kalendar/rozpis/m`; `lide/bremeno` → Rozpis + Břemeno; `kalendar/<YYYY-MM>` → Měsíc;
 `kalendar/tyden` → Seznam; `sablona/<id>`, `misto/<id>`, `format/<id>` → the plural routes;
 `nastaveni/pristupy` → `pristupy`.
@@ -746,7 +746,7 @@ sets its own size, corner, weight, gap or colour: it uses a token or a kit compo
 ### 8.1 List screen head (`listScreen`)
 Every band is present or absent per screen and role, never per state.
 - **A**: TITLE ······ [⋯] [main action], min height 44.
-  - The h1 is set in capitals by CSS (KALENDÁŘ, OBSAZENÍ, LIDÉ). Moje's greeting stays a sentence. Agrandir 40/44
+  - The h1 is set in capitals by CSS (KALENDÁŘ, ÚKOLY, LIDÉ). Moje's greeting stays a sentence. Agrandir 40/44
     at ≥ 600; on a phone `clamp(22px, 6.4vw, 28px)` so the title and its buttons share one row.
   - ⋯ is a bare icon, aria-label „Další možnosti“, absent when empty.
   - The main action is primary M: icon-only 44 on a phone (the aria-label carries the words), icon 20 + label at
@@ -813,7 +813,7 @@ Always a symbol + a word, never colour alone.
   only where something is missing or waits: a soft capsule with the status ring and the words – [◔ chybí 1] on the
   error tint, [◔ 1 čeká] on the waiting tint, [◔ chybí 1 · 2 čekají] when both hold. A full meeting shows nothing.
   The tag sits in the trail from 600 up and under the words on a phone. The **status ring** has three parts:
-  confirmed (green), waiting (amber), missing (red). Confirmed duties carry no tick. Obsazení keeps its to-do lines.
+  confirmed (green), waiting (amber), missing (red). Confirmed duties carry no tick. Úkoly keeps its to-do lines.
 
 ### 8.8 Colour
 - Ink for text and links. Red (`--no-*`) only for problems. `--ink-accent` only for quiet links.
@@ -872,15 +872,15 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
   „Ukaž další N“.
 - **Odmítnuté služby**: a quiet section. „Minulé služby ›“ opens a sheet „Minulé služby“ / „Poslední 3 měsíce“.
 - No duties: „Zatím tu nemáš žádné služby.“ No card linked: info callout „Zvonec neví, která karta je tvoje.“
-- **≥ 1200**, two columns. Right column: **Co je potřeba** (leaders; the nearest 4 meetings from Obsazení's data,
-  with a quiet S scope button: Moje týmy / each team / Všechny týmy, shared with Obsazení's Filtr › Tým; then
+- **≥ 1200**, two columns. Right column: **Co je potřeba** (leaders; the nearest 4 meetings from Úkoly's data,
+  with a quiet S scope button: Moje týmy / each team / Všechny týmy, shared with Úkoly's Filtr › Tým; then
   „Celé obsazení (ještě N setkání)“) and **Tento týden** (agenda rows until Sunday, then „Celý kalendář“). A
   clicked meeting replaces the right column as the pane; ✕ brings the column back. Below 1200 a duty opens the
   meeting page („‹ Moje“).
 
-### 9.2 Obsazení `#obsazeni[/<id>]` (leaders)
+### 9.2 Úkoly `#ukoly[/<id>]` (leaders; was Obsazení, `#obsazeni` redirects)
 A list of tasks for the next 28 days, by the kind of work (not a third calendar).
-- A: „Obsazení“ · ⋯ (Vytiskni rozpis) · **„Doplň volná místa“** (icon-only on a phone).
+- A: „Úkoly“ · ⋯ (Vytiskni rozpis) · **„Doplň volná místa“** (icon-only on a phone).
 - B: „Hledej úkol“ (role, meeting title, place, Účel, person, the problem's words) + Filtr: **Tým** (chips; default =
   the team I lead, or „Moje týmy“ when I lead several, so a leader starts at „Filtr 1“) · **Stav** (Chybí lidi · Čeká
   na odpověď · Něco nesedí, multi: which sections show).
@@ -1152,14 +1152,14 @@ data repo's `web.yml`:
 ## 11. Notifications
 
 Zvonec sends nothing by itself: GitHub cannot message people without an account.
-- **„Připomeň“** builds a ready message. Obsazení's section „Čeká na odpověď“ (one text per person for all their
+- **„Připomeň“** builds a ready message. Úkoly's section „Čeká na odpověď“ (one text per person for all their
   duties) and the meeting's „○ N čeká“ open the reminders. Per person an `sms:` link (aria „Připomeň v SMS – <jméno>“), or
   without a phone a `mailto:` with subject „Služba ve Zvonci“ (aria „Připomeň e-mailem – <jméno>“), plus „Zavolej“.
   Body (`reminderText`): „Ahoj, v neděli 18. 10. máš v rozpisu službu: Kázání (Setkání na pastvě, 10.00). Můžeš?
   Odpověz prosím ve Zvonci: <app URL>#moje“; several duties: `reminderTextAll` (§9.2).
 - **„Kdy Zvonec bučí“** (settings) sets how many days before a meeting each conflict starts to show (§6.2 K5, K6).
-- **In-app signals**: nav counts (Moje: aria „N služby čekají na tvou odpověď“; Obsazení: „Zbývá vyřešit N věcí“),
-  the invites dot / „1 čeká“, Co nesedí sections, ○ / ● marks, Obsazení to-do lines.
+- **In-app signals**: nav counts (Moje: aria „N služby čekají na tvou odpověď“; Úkoly: „Zbývá vyřešit N věcí“),
+  the invites dot / „1 čeká“, Co nesedí sections, ○ / ● marks, Úkoly to-do lines.
 - **GitHub Actions** `check.yml` (§10.2).
 - **Calendar**: .ics downloads only (§6.10).
 
@@ -1198,7 +1198,7 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 4. **Shell and kit**: tokens and palettes, `h()`, layers, toast, rows, `listScreen`, Filtr, empty states, nav (tab
    bar, rail, sidebar, person menu), routes and redirects, pane, save line, undo.
 5. **Screens** in this order: Setkání (with duty sheet, picker, Osnova), Kalendář (Seznam, Měsíc, Rozpis,
-   Břemeno), Moje, Obsazení, Lidé (+ person, household, Podrobný výpis), Skupiny, Šablony, Formáty, Místa,
+   Břemeno), Moje, Úkoly, Lidé (+ person, household, Podrobný výpis), Skupiny, Šablony, Formáty, Místa,
    Nastavení sboru, Kdy nemůžu, Můj účet, Pastva.
 6. **Data repo workflows**: `build-public.mjs`, `check.mjs`, `web.yml`, `check.yml`.
 7. **QA**: the acceptance list in §12.2, a Czech proofread, print styles.
@@ -1207,7 +1207,7 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 
 ## 14. Open decisions (do not build without the owner's answer)
 
-- **Phone tab bar**: Moje · Kalendář · Lidé · Více (a „Více“ tab replacing the person tab and absorbing Obsazení for
+- **Phone tab bar**: Moje · Kalendář · Lidé · Více (a „Více“ tab replacing the person tab and absorbing Úkoly for
   leaders) instead of today's bar.
 - **Kalendář**: Měsíc opening the pane on a day click; Rozpis starting from today instead of the month's first day.
 - **Members' Setkání detail** without numbers (no „6 z 6“).
