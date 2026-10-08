@@ -111,7 +111,7 @@ function block({ event, lines }, { month, openId, marks, teams }) {
   const open = event.id === openId;
   const href = open && isSplit() ? `#kalendar/rozpis/${month}` : `#kalendar/rozpis/${month}/${event.id}`;
   const f = fillOfTeams(event, teams);
-  const trail = !isPhone() && !event.cancelled && f.needed ? h('span', { class: 'rblock__trail' }, fillLine(f)) : null;
+  const trail = !isPhone() && !event.cancelled && f.needed ? h('span', { class: 'rblock__trail' }, fillLine(f, { quiet: true })) : null;
   return h('article', {
     class: 'rblock', dataset: { open: open ? '' : null, cancelled: event.cancelled ? '' : null, past: isPast(event) ? '' : null, id: event.id },
     'aria-label': `${event.title}, ${shortDate(event.start)}`,

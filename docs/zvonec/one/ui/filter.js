@@ -106,7 +106,7 @@ function fill(btn, n) {
 export function filterButton({ key, groups = [], onChange, results, unit = (n) => String(n), count } = {}) {
   defaults.set(key, groups);
   const btn = h('button', {
-    type: 'button', class: 'filter-btn', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', dataset: { filter: key },
+    type: 'button', class: 'filter-btn', title: 'Filtr', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', dataset: { filter: key },
   }, icon('sliders', { size: 's' }), h('span', { class: 'filter-btn__label' }, 'Filtr'),
   h('span', { class: 'filter-btn__slot' }, h('span', { class: 'filter-btn__n', 'aria-hidden': 'true' }, '0')));
   const counted = () => (typeof count === 'function' ? count(filterState(key)) : typeof count === 'number' ? count : filterCount(key, groups));

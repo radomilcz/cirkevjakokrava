@@ -256,6 +256,8 @@ document.addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey || isLayerOpen()) return;
   if (typing) return;
   if (e.key === '/') {
+    const closed = viewEl.querySelector('.toolbar .search-toggle:not([hidden])');   // the search is a ⌕ until opened
+    if (closed) { e.preventDefault(); closed.click(); return; }
     const search = viewEl.querySelector('.toolbar .search input') || viewEl.querySelector('.search input');
     if (search) { e.preventDefault(); search.scrollIntoView({ block: 'nearest' }); search.focus(); }
   } else if (e.key === 'n' || e.key === 'N') {

@@ -3,8 +3,7 @@
 // všem, kdo neodpověděli · Vytiskni rozpis). B: „Hledej setkání“ + Filtr (Tým – the teams I lead by default, so a
 // leader starts at „Filtr 1“ · Co řešit: Chybí lidi · Čeká na odpověď · Něco nesedí). No C.
 // D: only the meetings of the next 4 weeks with something to do, nearest first, under week subheads. Each is one
-// block (one link → the pane ≥ 1200, the meeting's page below): the date arch, the title and the fill „◯ 6 z 6 · 1 čeká“
-// (the whole meeting, as on Seznam and in the pane),
+// block (one link → the pane ≥ 1200, the meeting's page below): the date arch, the title (no fill ring: its to-do lines say it),
 // „18.30 · Monta, Sál“, „+ Klávesy“ per empty role (→ the picker), „○ 1 člověk ještě neodpověděl ›“ (→ who waits:
 // SMS · Zavolej with a ready text, a tap on a name answers for them) and „● Ondra má dvě služby naráz ›“ (→ the duty
 // sheet with its fixes). The horizon is said at the end of the list („Dál než 4 týdny dopředu: Rozpis ›“).
@@ -12,7 +11,7 @@
 
 import {
   h, icon, listScreen, filterButton, filterState, clearFilter, searchText, empty, list, row, avatar, subhead,
-  dateArch, fill, link, toast, layer, isSplit, clock, joinMeta, shortDate, agree, plural, personName, SEP,
+  dateArch, link, toast, layer, isSplit, clock, joinMeta, shortDate, agree, plural, personName, SEP,
   missingItem,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
@@ -21,7 +20,7 @@ import { openSlots, unconfirmedDuties } from '../../lib/scheduling.js';
 import { roleById, ledBy } from '../../lib/groups.js';
 import { today, addDays, dayOf } from '../../lib/time.js';
 import {
-  teamsWithRoles, placeText, personOf, nameOf, mondayOf, weekRange, fillOf, waitingWords, missingWords,
+  teamsWithRoles, placeText, personOf, nameOf, mondayOf, weekRange,
 } from './calendar-shared.js';
 import { pickFor, openDutySheet, fillOpenSlots } from './event-duties.js';
 import { eventDetail, notFound } from './event.js';
@@ -205,25 +204,13 @@ function errorLine(c) {
 }
 
 /** One meeting as one block: a link to the meeting; its to-do lines (Doplň, who waits, problems) act on their own. */
-/**
- * The meeting's fill: the whole meeting (not the Filtr's teams – those only decide which meetings are listed), drawn
- * with the kit's fill() and the same words as Seznam and the pane: ◯ 6 z 6 · 1 čeká, ◔ 14 z 15 · chybí 1.
- */
-function fillWords(f) {
-  return f.missing ? missingWords(f.missing) : f.waiting ? waitingWords(f.waiting) : null;
-}
-function meetingFill(event) {
-  const f = fillOf(event);
-  return f.needed ? fill(f.filled, f.needed, { words: fillWords(f) }) : null;
-}
-
 function needItem(x, { openId }) {
   const { event, slots, waiting, errors } = x;
   const byRole = new Map();
   for (const s of slots) byRole.set(s.roleId, { role: s.role, n: (byRole.get(s.roleId)?.n || 0) + (s.missing || 1) });
   const day = dayOf(event.start);
   // what is to be done, one line each and all built alike – ● Chybí: Klávesy ··· + Doplň / ● Jiří … ··· › / ○ 2 ještě
-  // neodpověděli ··· › – so the actions stand in one column at the right edge, under the fill
+  // neodpověděli ··· › – so the actions stand in one column at the right edge
   const todo = (mark, words, action, onclick, label) => h('button', { type: 'button', class: 'todo', onclick, 'aria-label': label },
     h('span', { class: ['mark', `mark--${mark}`], 'aria-hidden': 'true' }), h('span', { class: 'todo__words' }, words), action);
   const doIt = () => h('span', { class: 'todo__do' }, icon('plus', { size: 's' }), 'Doplň');
@@ -246,8 +233,7 @@ function needItem(x, { openId }) {
     h('div', { class: 'staff__body' },
       h('div', { class: 'staff__head' },
         // a click on the open item closes it (DESIGN §5)
-        h('a', { class: 'staff__title', href: open ? '#obsazeni' : `#obsazeni/${event.id}`, 'aria-current': open ? 'true' : null }, event.title),
-        meetingFill(event)),
+        h('a', { class: 'staff__title', href: open ? '#obsazeni' : `#obsazeni/${event.id}`, 'aria-current': open ? 'true' : null }, event.title)),   // its to-do lines say what is missing – no fill ring
       h('p', { class: 'staff__meta' }, joinMeta([clock(event.start), placeText(event) || null])),
       todos.length ? h('div', { class: 'staff__todo' }, todos) : null));
 }

@@ -358,7 +358,10 @@ export function sev(severity, word) {
  * Fill ring + its words: fill(10, 15) → ◔ 10 z 15. `words` adds more („· 3 čekají“).
  * `trailing` puts the ring after the words (10 z 15 ◔) for right-aligned columns, so the rings line up.
  */
-export function fill(filled, total, { words, trailing } = {}) {
+export function fill(filled, total, { words, trailing, quiet = false } = {}) {
+  // quiet (lists): only what needs doing – „chybí 1“ in the error ink, „2 čekají“ in the second ink; nothing when
+  // everything is filled (the owner: a list says only what needs attention)
+  if (quiet) return words ? h('span', { class: 'meta fill fill--quiet', dataset: { tone: filled < total ? 'no' : 'wait' } }, words) : null;
   const ring = fillRing(filled, total);
   const text = h('span', { class: 'num' }, `${filled} z ${total}`, words ? [SEP, words] : null);
   return h('span', { class: 'cluster meta fill' }, trailing ? [text, ring] : [ring, text]);
@@ -620,7 +623,7 @@ export const agenda = (children) => h('div', { class: 'agenda' }, children);
  */
 export function agendaEvent({ start, end, title: head, meta: metaText, hue, href, onclick, cancelled = false, duty, extra, open } = {}) {
   const body = [
-    h('span', { class: 'event__time' }, clock(start), end ? h('span', { class: 'event__end' }, clock(end)) : null),
+    h('span', { class: 'event__time' }, clock(start)),   // the end is in the detail (a list stays calm)
     h('span', { class: 'event__body' },
       h('span', { class: 'event__title' }, head),
       metaText ? h('span', { class: 'event__meta' }, metaText) : null,
@@ -653,7 +656,7 @@ export function needRow({ day, today: isToday, title: head, href, summary = [], 
     h('div', { class: 'row__body' },
       href ? h('a', { class: 'row__title need__title need__stretch', href }, head) : h('span', { class: 'row__title' }, head),
       summary.length ? h('span', { class: 'need__sum' }, summary.filter(Boolean).map(sumItem)) : null),
-    total ? fill(filled, total, { trailing: true }) : h('span'),
+    h('span'),   // the summary already says what is missing or waiting – no ring of its own (the owner)
     slots.length ? h('div', { class: 'need__slots' }, slots.map((s) => slot(s.label, s.onclick, { aria: s.aria }))) : null);
 }
 

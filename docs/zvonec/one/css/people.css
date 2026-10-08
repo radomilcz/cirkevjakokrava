@@ -85,6 +85,10 @@
 .duty-mark { display: inline-flex; align-items: center; }
 
 /* ---------- Podrobný výpis ---------- */
+/* the birthday line on top of Lidé: quiet ink, not an accent link */
+.row-link.people-birthdays { color: var(--ink-2); font-weight: var(--weight-regular); }
+.people-birthdays > .icon { color: var(--ink-3); }
+
 /* a phone: Skupiny is the first row of Lidé (the tab bar has no room for it) */
 .groups-entry { margin-bottom: var(--space-4); }
 .groups-entry__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--radius-m); background: var(--tint); color: var(--ink-2); }
