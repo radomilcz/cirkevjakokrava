@@ -925,7 +925,7 @@ A list of tasks for the next 28 days, by the kind of work (not a third calendar)
 ### 9.3 Kalendář (everyone)
 - A: „Kalendář“ · ⋯ · [Přidej setkání] (leaders). ⋯ in every view: „Ukaž minulá setkání“ / „Skryj minulá setkání“
   (Seznam only, last 4 weeks) · „Stáhni do kalendáře“ → sheet „Kalendář v telefonu“ (Moje služby / Celý kalendář)
-  · „Vytiskni rozpis…“ → dialog „Tisk rozpisu“ (month select; A4 landscape table; Filtr applies) · „Doplň volná
+  · „Vytiskni rozpis…“ → dialog „Tisk rozpisu“ (month select; A4 landscape, Filtr applies: one table per kind of meeting as on the screen – meetings across, roles down under their team's line; names only, unconfirmed grey (a key under the title), „chybí“ red, „–“ not needed, faint bands on every second meeting) · „Doplň volná
   místa“ (leaders) · „Ukaž, kdo kolik slouží“ (leaders) → Břemeno.
 - B: „Hledej setkání“ (title, place, Účel, names of who serves; accent-insensitive: „kucer“ finds „Kučera“) +
   Filtr: **Účel** (hue dots) · **Tým** (multi) · **Jen moje služby** · **Ukaž i zrušená**. View switch at the

@@ -14,7 +14,7 @@
 
 import {
   h, slot, list, row, avatar, personName, layer, formSheet, field, selectInput, isPhone,
-  isLayerOpen, shortDate, clock, monthLabel, periodLine, table, plural, statusSymbol, sev, STATUS_KEY, SEP,
+  isLayerOpen, shortDate, clock, monthLabel, periodLine, table, plural, sev, SEP,
   shiftMonth, fillRing, teamMark,
 } from './kit.js';
 import { S, can, myId } from './state.js';
@@ -227,29 +227,33 @@ function columnsOf(items) {
     .map((t) => ({ group: t.group, roles: [...t.roles.values()].sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)) }));
 }
 
-const CELL_WORD = { waiting: 'čeká', declined: 'nemůže' };
-
-function printCell(slotItem) {
-  const a = slotItem.assignment;
-  if (!a) return h('span', { class: 'print-cell__missing' }, 'chybí');
-  const key = STATUS_KEY[a.status] || 'waiting';
-  return h('span', { class: 'print-cell' }, statusSymbol(key), h('span', {}, shortName(a), CELL_WORD[key] ? h('small', {}, ` ${CELL_WORD[key]}`) : null));
+/** Who serves one role at one meeting on paper: the names (unconfirmed ones grey), „chybí“ for a hole, „–“ when not needed. */
+function printCell(event, slots) {
+  if (event.cancelled || !slots) return h('td', { class: 'print-none' }, '–');
+  const people = slots.filter((x) => x.assignment && x.assignment.status !== 'declined')
+    .map(({ assignment: a }) => h('span', { class: 'print-name', dataset: { wait: a.status === 'proposed' ? '' : null } }, nameOf(a)));
+  const holes = slots.length - people.length;
+  return h('td', {}, people, holes ? h('span', { class: 'print-missing' }, holes > 1 ? `chybí ${holes}` : 'chybí') : null);
 }
 
-function printTable(items) {
-  const columns = columnsOf(items);
-  const many = columns.length > 1;
-  const head1 = many ? h('tr', {}, h('th', { rowspan: 2, scope: 'col' }, 'Setkání'),
-    columns.map((c) => h('th', { colspan: c.roles.length, scope: 'colgroup', class: 'print-team' }, c.group.name))) : null;
-  const head2 = h('tr', {}, many ? null : h('th', { scope: 'col' }, 'Setkání'), columns.flatMap((c) => c.roles.map((r) => h('th', { scope: 'col' }, r.name))));
-  const rows = items.map(({ event, lines }) => {
+/** One kind of meeting on paper, as on the screen: meetings across, roles down under their team's line. */
+function printTable(t) {
+  const lines = t.items.map(({ event, lines: ls }) => {
     const byRole = new Map();
-    for (const g of lines) for (const s of g.slots) { if (!byRole.has(s.role.id)) byRole.set(s.role.id, []); byRole.get(s.role.id).push(s); }
-    return h('tr', {},
-      h('th', { scope: 'row' }, h('span', { class: 'print-event' }, `${shortDate(event.start)} ${clock(event.start)}`), h('span', {}, event.title), event.cancelled ? h('small', {}, ' zrušeno') : null),
-      columns.flatMap((c) => c.roles.map((r) => h('td', {}, event.cancelled ? null : (byRole.get(r.id) || []).map(printCell)))));
+    for (const g of ls) for (const x of g.slots) { if (!byRole.has(x.role.id)) byRole.set(x.role.id, []); byRole.get(x.role.id).push(x); }
+    return { event, byRole };
   });
-  return table({ label: 'Rozpis', cls: 'print-roster', head: [head1, head2].filter(Boolean), rows });
+  const head = h('tr', {}, h('td', { class: 'print-corner' }), t.items.map(({ event }) => h('th', { scope: 'col', dataset: { cancelled: event.cancelled ? '' : null } },
+    t.mixed ? h('span', { class: 'print-col__title' }, event.title) : null,
+    h('span', { class: 'print-col__day' }, `${shortDate(event.start)} · ${clock(event.start)}`),
+    event.cancelled ? h('span', { class: 'print-col__note' }, 'zrušeno') : null)));
+  const rows = columnsOf(t.items).flatMap(({ group, roles }) => [
+    h('tr', { class: 'print-team' }, h('th', { scope: 'colgroup', colspan: t.items.length + 1 }, teamMark(group, { size: 's' }), group.name)),
+    ...roles.map((role) => h('tr', {}, h('th', { scope: 'row' }, role.name), lines.map(({ event, byRole }) => printCell(event, byRole.get(role.id))))),
+  ]);
+  return h('section', { class: 'print-block' },
+    h('h2', { class: 'print-block__title' }, t.title, h('span', {}, tableMeta(t))),
+    table({ label: `Rozpis: ${t.title}`, cls: 'print-roster', head, rows }));
 }
 
 /** Print the month's Rozpis (Filtr › Účel and Tým apply; what is cancelled says so). */
@@ -258,7 +262,8 @@ export function printRoster(month) {
   const items = monthEvents(month).filter(passesFilter).map((event) => ({ event, lines: linesOf(event, teams) })).filter((x) => x.lines.length);
   const sheet = h('div', { class: 'print-sheet' },
     h('h1', { class: 'print-sheet__title' }, `Rozpis – ${monthLabel(month)}`),
-    items.length ? printTable(items) : h('p', {}, `${capital(inMonth(month))} nikdo neslouží.`));
+    items.length ? h('p', { class: 'print-key' }, h('span', { class: 'print-name', dataset: { wait: '' } }, 'Šedě'), ' – zatím nepotvrzeno') : null,
+    items.length ? tablesOf(items).map(printTable) : h('p', {}, `${capital(inMonth(month))} nikdo neslouží.`));
   document.body.append(sheet);
   document.documentElement.dataset.print = 'roster';
   const done = () => { sheet.remove(); delete document.documentElement.dataset.print; window.removeEventListener('afterprint', done); };

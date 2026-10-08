@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – the printed Rozpis (2026-10-08).** The print was one table for the whole month (every role of every team
+> as a column) with a status dot at each name – „a heap of text and dots“. It now prints as the screen reads: one
+> table per kind of meeting, meetings across, roles down under the team's line (its mark outlined); names only,
+> unconfirmed grey („Šedě – zatím nepotvrzeno“ under the title), „chybí“ red, faint bands on every second meeting,
+> hairlines between rows. The palettes are screen only, so the sheet carries its own paper colours.
+
 > **Update – Rozpis team lines (2026-10-08).** The team over its roles was a grey caption, hardly apart from the role
 > names. The owner chose B of three (a bigger name; the name with the team's mark; a band in the team's hue): the
 > team's mark 28 (its hue, as in Lidé and Šablony) and its name in body/strong ink, 32 above it.
