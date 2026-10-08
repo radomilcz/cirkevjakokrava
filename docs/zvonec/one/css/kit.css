@@ -63,16 +63,16 @@ a { color: inherit; text-decoration: none; }
 .index-letter { display: block; padding: var(--space-5) 0 var(--space-2); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
 .link {
   position: relative; display: inline-flex; align-items: center; gap: 2px; min-height: var(--hit); padding: 0 4px; margin: 0 -4px;
-  color: var(--ink-accent); font-weight: var(--weight-strong); font-size: var(--type-meta);
+  color: var(--ink); font-weight: var(--weight-strong); font-size: var(--type-meta);   /* ink: red is only for problems */
   border-radius: var(--radius-s); background: none; border: 0; cursor: pointer;
 }
 .link:hover { text-decoration: underline; text-underline-offset: 3px; }
 .row-link {
   display: flex; align-items: center; gap: 6px; min-height: var(--hit); margin-top: var(--space-1);
-  color: var(--ink-accent); font-size: var(--type-meta); font-weight: var(--weight-strong);
+  color: var(--ink); font-size: var(--type-meta); font-weight: var(--weight-strong);
 }
 .row-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-.row-link--button { border: 0; background: none; padding: 0; font: inherit; font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink-accent); text-align: left; cursor: pointer; }
+.row-link--button { border: 0; background: none; padding: 0; font: inherit; font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink); text-align: left; cursor: pointer; }
 .stack { display: grid; gap: var(--space-3); }
 .cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 
@@ -90,8 +90,8 @@ a { color: inherit; text-decoration: none; }
 .btn > .icon { margin-left: -2px; }
 .btn--primary { background: var(--act); color: var(--on-act); }
 .btn--primary:hover { background: var(--act-hover); }
-.btn--quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--edge-control); }
-.btn--quiet:hover { background: var(--wash); }
+.btn--quiet { background: var(--tint); color: var(--ink); }   /* one of three kinds: dark main · soft tint · bare icon */
+.btn--quiet:hover { background: var(--tint-2); }
 .btn--quiet:active { background: var(--press); }
 .btn--danger { background: var(--no-solid); color: var(--on-no); }
 .btn--danger:hover { background: var(--danger-solid-hover, var(--no-solid)); }
@@ -121,7 +121,7 @@ a { color: inherit; text-decoration: none; }
 .icon-btn--tint:hover { background: var(--tint-2); }
 .icon-btn--act { background: var(--act); color: var(--on-act); }
 /* a row's call button: quiet icon M on a phone, S (36, r10) with a 44 hit from 600 up */
-.icon-btn--call { box-shadow: inset 0 0 0 1px var(--edge-control); }
+.icon-btn--call { box-shadow: none; }   /* a bare icon (no ring) */
 .icon-btn--call > .icon { width: var(--icon-s); height: var(--icon-s); }
 @media (min-width: 600px) {
   .icon-btn--call { width: var(--control-s); height: var(--control-s); border-radius: var(--radius-s); }
@@ -580,7 +580,7 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .switch-row__label { font-size: var(--type-body); line-height: var(--lh-body); }
 .disclosure > summary {
   display: inline-flex; align-items: center; gap: 6px; min-height: var(--hit); list-style: none; cursor: pointer;
-  color: var(--ink-accent); font-size: var(--type-meta); font-weight: var(--weight-strong); border-radius: var(--radius-s);
+  color: var(--ink); font-size: var(--type-meta); font-weight: var(--weight-strong); border-radius: var(--radius-s);
 }
 .disclosure > summary::-webkit-details-marker { display: none; }
 .disclosure > summary > .icon { transition: transform var(--dur-state) var(--ease); }
@@ -639,6 +639,9 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   .ls.ls--split .frame > .ls__body { grid-column: 1 / -1; }          /* wide: Měsíc, the table */
   .ls.ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
   .ls.ls--split .frame:has(> .ls__controls) > .split__pane { grid-row: 3; margin-top: var(--gap-group); }   /* level with D */
+  /* nothing open beside the list: the list takes up to 840 (the owner's limit for a readable list) instead of the
+     narrower track it keeps beside a pane (the UI team: at 1280 it was narrower than on a tablet) */
+  .ls.ls--split .frame:has(> .split__pane:empty) { grid-template-columns: minmax(0, 840px) minmax(0, 1fr); }
   /* D is a query container (a list track of 400–440 at 1200–1279 gets a few narrow-list rules) */
   .ls.ls--split .ls__body { container: list-body / inline-size; }
 }
@@ -648,15 +651,11 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .head__title { flex: 1 1 auto; min-width: 0; min-height: var(--control-m); display: flex; align-items: center; }
 .head__actions { display: flex; align-items: center; gap: var(--gap-x); flex: none; margin-left: auto; }
 .head__action { flex: none; }
-/* ⋯ has the quiet button's outline wherever it stands in an action row – the screen head, the pane's action row, the
-   drill-in top bar – so it reads as a button, not as an empty place; the pane's ✕ beside it takes the same shape */
-:is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]) {
-  box-shadow: inset 0 0 0 1px var(--edge-control); border-radius: var(--radius-m);
-}
-/* … except in a list screen's title row, where ⋯ stands among ⌕ and ⚟ as one more quiet icon */
-.head:has(> .toolbar) > .head__actions > .menu-btn { box-shadow: none; }
+/* ⋯ and ✕ are bare icon buttons wherever they stand – the screen head, the pane's action row, the drill-in top bar
+   (the UI team: three kinds of button only – the dark main action, a soft tint, a bare icon) */
+:is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]) { border-radius: var(--radius-m); }
 :is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]):hover { background: var(--wash); }
-:is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]):is(:active, [aria-expanded="true"]) { background: var(--press); }
+:is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]):is(:active, [aria-expanded="true"]) { background: var(--tint); }
 @media (max-width: 599.98px) {
   /* phone: the main action is an icon-only 44 square with its aria-label */
   .head__action:not(.head__action--label) { width: var(--control-m); padding: 0; }
@@ -672,63 +671,50 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 }
 .page .head { margin-bottom: var(--gap-group); }
 
-/* B: in the title row, before ⋯ – [⌕][⚟ⁿ], quiet 44 squares like ⋯ (the owner: calm). ⌕ opens the search field in
-   its place, 320 wide (a phone: a full row under the title); the icons right of it never move. */
-.head > .toolbar { display: flex; align-items: center; gap: 4px; flex: 0 1 auto; min-width: 0; margin-left: auto; }
-.head > .toolbar + .head__actions { margin-left: 0; }
-.head:has(> .toolbar) > .head__title { flex: 0 1 auto; }
-.head > .toolbar > .search { flex: 0 1 var(--search-head-w); min-width: 180px; }
-.head > .toolbar > .search[hidden] { display: none; }
+/* B: [⌕ Hledej …][Filtr] ··········· [Seznam | Měsíc | Rozpis] – 12 under A, on the left above the list (the owner's
+   sketch, the UX and UI teams' spec); the same on every list screen. The search 320 on ≥ 600 (the row's width on a
+   phone), Filtr fixed 120 with its count slot reserved; the view switch at the right end (a phone: its own row). */
+.ls__controls { container: ls-controls / inline-size; }
+.ls__tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-y) var(--gap-x); }
+.toolbar { display: flex; align-items: center; gap: var(--gap-x); min-height: var(--control-m); min-width: 0; }
+.toolbar > .search { flex: 0 1 auto; width: var(--search-head-w); min-width: 160px; }
+.ls__tools > .seg { margin-left: auto; }
+@media (max-width: 599.98px) {
+  .ls__tools > .toolbar { flex: 1 1 100%; }
+  .toolbar > .search { flex: 1 1 auto; width: auto; }
+}
+/* where the search and the switch do not fit one row, the switch takes its own row under it, full width */
+@container ls-controls (max-width: 719.98px) {
+  .ls__tools > .seg { flex: 1 1 100%; margin-left: 0; }
+}
 .filter-btn {
-  position: relative; display: inline-grid; place-items: center; flex: none;
-  width: var(--control-m); height: var(--control-m); padding: 0; border: 0; border-radius: var(--radius-m);
-  background: none; color: var(--ink); cursor: pointer;
+  position: relative; display: inline-flex; align-items: center; gap: var(--space-2); flex: none;
+  width: var(--filter-w); height: var(--control-m); padding: 0 4px 0 12px; border: 0; border-radius: var(--radius-m);
+  background: var(--tint); color: var(--ink);
+  font-size: var(--type-control); line-height: 20px; font-weight: var(--weight-control); white-space: nowrap; cursor: pointer;
   transition: background-color var(--dur-state) var(--ease);
 }
 .filter-btn > .icon { width: var(--icon-s); height: var(--icon-s); }
-.filter-btn:hover { background: var(--wash); }
+.filter-btn:hover { background: var(--tint-2); }
 .filter-btn:active, .filter-btn[aria-expanded="true"] { background: var(--press); }
-.filter-btn__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.filter-btn__slot { position: absolute; top: 3px; right: 1px; }
+.filter-btn__label { flex: none; }
+.filter-btn__slot { display: inline-grid; place-items: center; width: var(--count-slot); flex: none; margin-left: auto; }
 .filter-btn__n {
-  display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--shape-pill);
-  background: var(--act); color: var(--on-act); font-size: 11px; line-height: 1; font-weight: var(--weight-strong);
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--shape-pill);
+  background: var(--ink); color: var(--ground); font-size: var(--type-caption); line-height: 1; font-weight: var(--weight-strong);
   font-feature-settings: var(--numerals); visibility: hidden;
 }
 .filter-btn[data-on] .filter-btn__n { visibility: visible; }
-@media (max-width: 599.98px) {
-  /* a phone: the open search is a full row under the title, the icons stay in their places */
-  .head:has(> .toolbar) { flex-wrap: wrap; row-gap: var(--gap-y); column-gap: 0; }   /* the icons touch: 44 each is room enough */
-  .head:has(> .toolbar) > .head__title { white-space: nowrap; margin-right: var(--gap-x); }
-  .head:has(> .toolbar) > .head__actions { gap: 0; }
-  .head:has(> .toolbar) > .head__actions > .head__action { margin-left: var(--space-1); }
-  .head > .toolbar { display: contents; }
-  .head:has(> .toolbar) > .head__title { flex: 1 1 auto; }
-  .head > .toolbar > :is(.search-toggle, .filter-btn) { order: 1; }
-  .head > .toolbar > .search-toggle { margin-left: auto; }
-  .head > .toolbar > .search-toggle[hidden] + .search + .filter-btn { margin-left: auto; }
-  .head > .head__actions { order: 2; margin-left: 0; }
-  .head > .toolbar > .search { order: 3; flex: 1 1 100%; }
-}
-
-/* C: the view row – 12 under B; phone full width, ≥ 600 segments of 120, left-aligned */
-.ls__views { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-y) var(--gap-x); margin-top: var(--gap-y); }
-.ls__views:first-child { margin-top: 0; }
-/* C: [‹ Říjen 2026 › Dnes] ·········· [Seznam | Měsíc | Rozpis] – the switch at the right edge in every view */
-.ls__views > .seg { margin-left: auto; }
-/* the view switch is quiet: words in the second ink, the chosen one on a soft wash – no track, no lifted thumb */
-.ls__views > .seg { background: none; padding: 0; gap: 4px; }
-.ls__views > .seg > a { color: var(--ink-2); }
-.ls__views > .seg > a[aria-current="page"] { background: var(--tint); color: var(--ink); box-shadow: none; }
-/* where the month and the switch do not fit one row (a tablet), the switch keeps its place top right and the month
-   goes under it – so the switch never moves between Seznam and Měsíc */
-.ls__controls { container: ls-controls / inline-size; }
-@container ls-controls (max-width: 699.98px) {
-  .ls__views > .period-line { order: 1; flex: 1 1 100%; }
-}
-@media (max-width: 599.98px) {
-  .ls__views > .seg { order: -1; flex: 1 1 100%; margin-left: 0; }   /* a phone: the switch full width, the month under it */
-}
+/* „Filtr: Slovo · Zruš filtr“ – one quiet line while a filter is on (a filter that hides work must say so) */
+.filter-note { margin-top: var(--gap-y); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.filter-note[hidden] { display: none; }
+.filter-note > .link { min-height: 0; vertical-align: baseline; }
+/* the view switch is quiet: words in the second ink, the chosen one on a soft tint – no track, no lifted thumb */
+.ls__tools > .seg { background: none; padding: 0; gap: 4px; }
+.ls__tools > .seg > a { color: var(--ink-2); border-radius: var(--radius-m); }
+.ls__tools > .seg > a[aria-current="page"] { background: var(--tint); color: var(--ink); box-shadow: none; }
+/* C: the month (Měsíc, Rozpis) – 12 under B: [‹ Říjen 2026 ›] ··············· Dnes */
+.ls__period { margin-top: var(--gap-y); }
 /* D: 24 under the last control row */
 .ls__body { min-width: 0; margin-top: var(--gap-group); }
 /* no control row between A and D: A's 12 + 12 = the 24 from a control group to its content */
@@ -791,7 +777,7 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .fact--link { margin: 0 calc(-1 * var(--space-3)); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-m); background: none; text-align: left; font: inherit; font-size: 16px; cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
 .fact--link:hover { background: var(--wash); }
 .fact__chevron { margin-left: auto; color: var(--ink-3) !important; }
-.fact__do { flex: none; margin-left: auto; font-weight: var(--weight-control); color: var(--ink-accent); }
+.fact__do { flex: none; margin-left: auto; font-weight: var(--weight-control); color: var(--ink); }
 .fact__link { color: inherit; text-decoration: underline; text-decoration-color: var(--edge-control); text-underline-offset: 3px; }
 
 /* section: h2 20/26 + at most one action or value at its right edge. Proximity says what belongs together: the h2 sits
@@ -810,7 +796,12 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   flex: none; width: var(--period-label-w); text-align: center;
   font-size: var(--type-period); line-height: var(--lh-period); font-weight: var(--weight-strong); white-space: nowrap;
 }
-.period-line__today { flex: none; margin-left: var(--gap-x); }
+.period-line__today {
+  position: relative; flex: none; display: inline-flex; align-items: center; min-height: var(--control-m); margin-left: auto; padding: 0 var(--space-3);
+  border-radius: var(--radius-m); color: var(--ink-2); font-size: var(--type-control); font-weight: var(--weight-control);
+}
+.period-line__today:hover { background: var(--wash); color: var(--ink); }
+.period-line__today[hidden] { display: none; }
 
 /* the empty state: 48 under the last control row (D starts 24 under it) */
 .empty { display: grid; justify-items: start; margin-top: var(--space-5); text-align: left; max-width: 32em; }

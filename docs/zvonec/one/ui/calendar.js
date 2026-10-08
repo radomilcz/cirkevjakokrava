@@ -281,7 +281,7 @@ export function calendarScreen({ view, month, period, draw, results, menu, addDa
     cls: ['cal', `cal--${view}`],
   });
   if (base) paneLinks(main, base);
-  main.querySelector('.ls__views')?.addEventListener('click', (e) => {
+  main.querySelector('.ls__tools .seg')?.addEventListener('click', (e) => {
     const a = e.target.closest?.('a[href^="#kalendar/"]');
     if (a) rememberView(a.getAttribute('href').split('/')[1]);
   });

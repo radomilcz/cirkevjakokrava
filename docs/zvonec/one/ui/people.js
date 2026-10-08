@@ -350,7 +350,7 @@ function keepPlace(main) {
   main.addEventListener('click', (e) => {
     if (!isSplit() || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const a = e.target.closest?.('a[href^="#lide"]');
-    if (!a || !main.contains(a) || a.closest('.ls__views, .head, .toolbar')) return;
+    if (!a || !main.contains(a) || a.closest('.ls__tools, .head, .toolbar')) return;
     const href = a.getAttribute('href');
     if (viewOf(href) !== viewOf(location.hash)) return;
     e.preventDefault();

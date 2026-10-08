@@ -57,7 +57,7 @@ function moreButton(menu, title) {
  * action.phoneMenu: on a phone the action is not an „add“ and has no room for its label (Obsazení: „Doplň volná
  * místa“) → it becomes the first item of ⋯ there.
  */
-export function titleRow({ title, action, menu, headingId, tools } = {}) {
+export function titleRow({ title, action, menu, headingId } = {}) {
   let items = menu;
   let act = action;
   if (act && act.phoneMenu && isPhone()) {
@@ -68,7 +68,6 @@ export function titleRow({ title, action, menu, headingId, tools } = {}) {
   const actions = [moreButton(items, title), act ? mainAction(act) : null].flat().filter(Boolean);   // ⋯ first: the main action ends at the edge
   return h('header', { class: 'head' },
     h('h1', { class: 'title head__title', id: headingId }, title),
-    tools || null,
     actions.length ? h('div', { class: 'head__actions' }, actions) : null);
 }
 
@@ -79,18 +78,15 @@ const searchMemory = new Map();   // the search text per screen, kept for this v
 /** The remembered search text of a list screen (`key`), '' when none. */
 export const searchText = (key) => searchMemory.get(key) || '';
 
-const openSearches = new Set();   // the screens whose search the person opened (kept for the visit)
-
 /**
- * B: [⌕][⚟ⁿ] – two quiet icons in the title row (the owner: calm, nothing that needs no attention). ⌕ opens the search
- * field in its place (on a phone a row under the title); it stays open while it holds text and closes again when it
- * is left empty. ⚟ is Filtr with its count.
+ * B: [⌕ Hledej … ✕][⚟ Filtr ⁿ] – the second row of every list screen, on the left above the list (the owner's sketch,
+ * the UX and UI teams' choice): always visible and labelled, the search 320 wide on ≥ 1200 (the row's width below),
+ * Filtr fixed 120 with its count slot reserved, so nothing moves when a filter is turned on.
  *   toolbar({ search: { key: 'kalendar', placeholder: 'Hledej setkání', onInput }, filter: filterButton({...}) })
  * search.key keeps the text for the visit; search.value overrides it.
  */
 export function toolbar({ search, filter } = {}) {
   let field = null;
-  let toggle = null;
   if (search) {
     const key = search.key || search.placeholder || 'search';
     const value = search.value ?? searchText(key);
@@ -99,25 +95,20 @@ export function toolbar({ search, filter } = {}) {
       onInput: (v, e) => { searchMemory.set(key, v); search.onInput?.(v, e); },
     });
     field.dataset.searchKey = key;
-    const input = field.querySelector('input');
-    toggle = iconButton('search', search.label || search.placeholder || 'Hledej', { cls: 'search-toggle' });
-    const setOpen = (on) => {
-      field.hidden = !on;
-      toggle.hidden = on;
-      if (on) openSearches.add(key); else openSearches.delete(key);
-    };
-    setOpen(!!value || openSearches.has(key));
-    toggle.addEventListener('click', () => { setOpen(true); input.focus(); });
-    const closeIfEmpty = () => { if (field.isConnected && !input.value && !field.contains(document.activeElement)) setOpen(false); };
-    input.addEventListener('blur', () => setTimeout(closeIfEmpty, 0));
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !input.value) { e.stopPropagation(); setOpen(false); toggle.focus(); }
-    });
   }
-  return h('div', { class: 'toolbar', role: 'search' }, toggle, field, filter || null);
+  return h('div', { class: 'toolbar', role: 'search' }, field, filter || null);
 }
 
 // ---------- the frames ----------
+
+/**
+ * „‹ Zpět“ for a screen a phone opens from the person menu (Šablony, Formáty, Místa, Přístupy, Nastavení sboru): it is
+ * not in the tab bar, so it needs a way back (the UX team) – the previous page, or Moje when there is none.
+ */
+export const menuBack = () => ({
+  href: '#moje', label: 'Zpět',
+  onclick: (e) => { if (history.length > 1) { e.preventDefault(); history.back(); } },
+});
 
 /** The pane slot of the desktop grid (track 2). Empty when nothing is open: plain page ground. */
 const paneSlot = (pane, label) => h('aside', { class: 'split__pane', 'aria-label': label || 'Podrobnosti' }, pane || null);
@@ -141,13 +132,16 @@ const paneSlot = (pane, label) => h('aside', { class: 'split__pane', 'aria-label
 export function listScreen({ title, action, menu, search, filter, views, body, pane, wide = false, label, cls, phoneBack } = {}) {
   const split = isSplit();
   const bodyEl = h('div', { class: 'ls__body' }, body);
-  // B joins A at every width: [h1 ········ ⌕ · ⚟ · ⋯ · main action]; C under it
+  // the head of every list screen, the same rows everywhere (the owner's sketch, the UX and UI teams' spec):
+  //   A  TITLE ··················· ⋯ [main action]
+  //   B  [⌕ Hledej …][Filtr] ······ [Seznam | Měsíc | Rozpis]     (the switch only in Kalendář; a phone: its own row)
+  //      „Filtr: Slovo · Zruš filtr“                               (only while a filter is on)
+  //   C  ‹ Říjen 2026 › ··············· Dnes                      (Měsíc and Rozpis)
   const bar = toolbar({ search: search || { placeholder: 'Hledej' }, filter });
-  // C: [period ·········· view switch] – the switch at the right edge, the same place in every view (the owner)
-  const controls = [
-    views ? h('div', { class: 'ls__views' }, views.period || null, segmented(views.options, views.value, null, { label: views.label || 'Zobrazení' })) : null,
-  ].filter(Boolean);
-  const controlsEl = controls.length ? h('div', { class: 'ls__controls' }, controls) : null;
+  const controlsEl = h('div', { class: 'ls__controls' },
+    h('div', { class: 'ls__tools' }, bar, views ? segmented(views.options, views.value, null, { label: views.label || 'Zobrazení' }) : null),
+    filter?.note || null,
+    views?.period ? h('div', { class: 'ls__period' }, views.period) : null);
   const paneEl = split && !wide ? paneSlot(pane, label) : null;
   const main = h('main', {
     class: ['screen', 'ls', wide && 'ls--wide', split && 'ls--split', phoneBack && isPhone() && 'page--drill', cls], id: 'main', tabIndex: -1,
@@ -155,8 +149,8 @@ export function listScreen({ title, action, menu, search, filter, views, body, p
   // phoneBack: a list reached from another screen on a phone (Skupiny from Lidé) gets „‹ Lidé“ on top
   phoneBack && isPhone() ? topBar({ back: phoneBack }) : null,
   h('div', { class: 'frame' },
-    titleRow({ title, action, menu, tools: bar }),
-    // ≥ 1200 C spans the frame (above the list and the pane), so the switch sits at the right edge in every view
+    titleRow({ title, action, menu }),
+    // ≥ 1200 B and C span the frame (above the list and the pane), so the switch sits at the right edge in every view
     wide || split
       ? [controlsEl, wide ? bodyEl : h('div', { class: 'ls__list' }, bodyEl), paneEl]
       : [h('div', { class: 'ls__list' }, controlsEl, bodyEl), paneEl]));
@@ -259,12 +253,12 @@ export function detailHead({ band, mark, tags, title, facts: factsNode, after, i
 }
 
 /**
- * The period line of Měsíc and Rozpis (CODEX §6.3): [‹] [label] [›] [Dnes] – the left part of the view row (C), the
- * view switch on its right. The label has a fixed width (--period-label-w), so a month change never moves › or Dnes.
+ * The period line of Měsíc and Rozpis (CODEX §6.3): [‹] [label] [›] ············ Dnes – row C under the search. The
+ * label has a fixed width (--period-label-w), so a month change never moves ›; `here` hides „Dnes“ (today is shown).
  *   periodLine({ month: '2026-10', href: (m) => `#kalendar/mesic/${m}`, todayHref: '#kalendar/mesic/2026-10/2026-10-07' })
  * ← / → change the month on ≥ 600 when no field has focus (the shell's keyboard).
  */
-export function periodLine({ month, href, todayHref, label: text } = {}) {
+export function periodLine({ month, href, todayHref, label: text, here = false } = {}) {
   const [y, m] = month.split('-').map(Number);
   const shift = (n) => { const d = new Date(y, m - 1 + n, 1, 12); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
   const words = text || `${MONTHS[m - 1]} ${y}`;
@@ -272,7 +266,8 @@ export function periodLine({ month, href, todayHref, label: text } = {}) {
     h('a', { class: 'icon-btn period-line__prev', href: href(shift(-1)), 'aria-label': 'Předchozí měsíc', title: 'Předchozí měsíc', dataset: { periodPrev: '' } }, icon('chevron-left')),
     h('h2', { class: 'period-line__label', 'aria-live': 'polite' }, words),
     h('a', { class: 'icon-btn period-line__next', href: href(shift(1)), 'aria-label': 'Další měsíc', title: 'Další měsíc', dataset: { periodNext: '' } }, icon('chevron-right')),
-    h('a', { class: 'btn btn--quiet period-line__today', href: todayHref || href(todayMonth()) }, 'Dnes'));
+    // „Dnes“ – quiet words at the row's right end (under Rozpis); not shown while today is already on screen (the owner)
+    h('a', { class: 'period-line__today', href: todayHref || href(todayMonth()), hidden: here }, 'Dnes'));
 }
 const MONTHS = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
 const todayMonth = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
