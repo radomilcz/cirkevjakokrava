@@ -51,7 +51,9 @@
 
 /* narrow: the mini month (cells 44) and the chosen day's meetings */
 .cal-mini .month { max-width: 420px; }
-.cal-mini .day { min-height: 52px; }
+/* number 36, the chosen day's mark under it (43–46), the dots under the mark – the mark never covers them */
+.cal-mini .day { min-height: 60px; }
+.cal-mini .day__dots { margin-top: 6px; }
 .cal-dayview { margin-top: var(--space-5); }
 .cal-dayview > .subhead { padding-top: 0; }
 .cal-dayview > .quiet { margin-top: var(--space-1); }

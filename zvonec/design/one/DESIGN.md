@@ -1,5 +1,9 @@
 # Zvonec One: the design
 
+> **Update – the mini month on a phone (2026-10-08).** The chosen day's mark sat on the dots' line and hid them, and
+> the day number's arch was 36 × 32 – wider than tall, so it read as squashed. The number now sits in a 32 × 36 arch
+> (16 16 7 7) like every other arch; in Měsíc the mark is right under it and the dots under the mark (cells 60).
+
 > **Update – Lidé search points to the archive (2026-10-08).** A search that showed no one said only „Nic tomu
 > neodpovídá.“ even when the person was in the archive or behind the Filtr. Now it says where they are: „Jen v
 > archivu.“ – „V archivu tomu odpovídá 1 karta.“ [Ukaž i archiv] (leaders), or „Filtr skrývá 1 člověka, který tomu

@@ -410,8 +410,9 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
   color: var(--ink); font-feature-settings: var(--numerals);
 }
 .day__dow { font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); font-weight: var(--weight-medium); }
+/* an arch taller than wide, as every arch (36 × 32 read as squashed); the number sits a little low in it */
 .day__num {
-  display: inline-grid; place-items: center; width: 36px; height: 32px; border-radius: var(--shape-arch-sm);
+  display: inline-grid; place-items: center; width: 32px; height: 36px; padding-top: 3px; border-radius: 16px 16px 7px 7px;
   font-size: 16px; line-height: 20px; font-weight: var(--weight-regular); transition: background-color var(--dur-state) var(--ease);
 }
 .day:hover .day__num { background: var(--wash); }
@@ -420,7 +421,7 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 .day[data-today] .day__num { background: var(--act); color: var(--on-act); }
 .day[aria-selected="true"] .day__num { background: var(--pick); }
 .day[aria-selected="true"]:hover .day__num { background: var(--pick-hover); }
-.day[aria-selected="true"]::after { content: ""; position: absolute; left: calc(50% - 8px); top: 39px; width: 16px; height: 3px; border-radius: 3px; background: var(--mark); }
+.day[aria-selected="true"]::after { content: ""; position: absolute; left: calc(50% - 8px); top: 43px; width: 16px; height: 3px; border-radius: 3px; background: var(--mark); }
 .day[aria-selected="true"][data-today] .day__num { background: var(--act); }
 .day[data-outside] .day__num { color: var(--ink-3); }
 .day:disabled { cursor: default; }
