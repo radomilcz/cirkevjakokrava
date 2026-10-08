@@ -8,7 +8,7 @@ What wins when sources disagree:
 1. **Code** in `docs/zvonec/lib/**` and `docs/zvonec/one/**`.
 2. **This file.**
 3. The top „Update …“ notes of `zvonec/design/one/DESIGN.md`, then `zvonec/design/one/CODEX.md` (pixel-level UI
-   rules), then the older sections of DESIGN.md and `zvonec/ARCHITECTURE.md`.
+   rules), then the older sections of that DESIGN.md and `zvonec/ARCHITECTURE.md`.
 
 All names in examples are fictional demo people from `docs/zvonec/lib/demo.js` (Radim Kovář, Martina Dvořáková,
 Jana Nováková). Never use real church data for development, examples or tests.

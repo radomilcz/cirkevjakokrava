@@ -16,7 +16,7 @@
 //   gray / accent steps 1–8 = an ink shade over the stage at Radix-like alphas → exact alpha twins.
 //   Status + categorical hues: Radix 12-step scales; text steps re-fitted until they read on this ground;
 //   in dark palettes every solid is light enough to be a 3:1 icon and carries the dark ink.
-// cream-clay and clay-pink ARE the scales of css/tokens.css (read from it, not re-derived); the generator
+// cream-clay and clay-pink ARE the scales of palette-scales.css (read from it, not re-derived); the generator
 // adds the semantic layer and the fixes the verification asks for (reported as notes).
 // Palettes that cannot pass (the two green pairs: no light ink reaches 4.5:1 on #498660) are reported and
 // left out of the CSS.
@@ -64,7 +64,7 @@ function alphaOf(target, bg){
 
 
 // the tuned scales of the two existing themes, read from the live app tokens (light block, dark block)
-const TOKENS = fileURLToPath(new URL('../docs/zvonec/css/tokens.css', import.meta.url));
+const TOKENS = fileURLToPath(new URL('palette-scales.css', import.meta.url));   // the old app's tuned scales (input only)
 const OUT = fileURLToPath(new URL('../docs/zvonec/css/palettes.css', import.meta.url));
 const REF = (() => {
   const css = readFileSync(TOKENS, 'utf8');
@@ -77,7 +77,7 @@ const REF = (() => {
     return { S, contrastText };
   };
   const L = parse(css.slice(lightAt, darkAt)), D = parse(css.slice(darkAt, end));
-  for (const [k, v] of Object.entries({ ...L.S, ...D.S })) if (!v || v.length !== 12) throw new Error(`tokens.css: scale ${k} incomplete`);
+  for (const [k, v] of Object.entries({ ...L.S, ...D.S })) if (!v || v.length !== 12) throw new Error(`palette-scales.css: scale ${k} incomplete`);
   return { S: { light: L.S, dark: D.S }, contrastText: { light: L.contrastText, dark: D.contrastText } };
 })();
 const lch = (hex) => rgb2oklch(hex2rgb(hex));
@@ -397,7 +397,7 @@ function build(p) {
       'selected-line': rgba(pink, 0.42), 'info-bg': rgba(pink, 0.13) });
   }
   if (p.ref === 'light') {
-    // the tuned scales of css/tokens.css are alpha twins over the chrome (gray-1); a selected row sits on the
+    // the tuned scales of palette-scales.css are alpha twins over the chrome (gray-1); a selected row sits on the
     // page, where the rose twins turn cold (pinkish purple, hue ≈ 345°). The brand pink as a plain alpha keeps
     // its warm hue on every light surface (page, card, sheet, chrome).
     const pink = '#e6acac';
@@ -451,7 +451,7 @@ function build(p) {
     if (contrast(fg, bg) < 4.6) { fg = fit(fg, [bg], 4.6, light ? -1 : +1); notes.push(`${c} avatar text adjusted to ${fg}`); }
     T[`${c}-avatar-bg`] = bg; T[`${c}-avatar-fg`] = fg;
   }
-  // the token names of css/tokens.css (the milnik-* names are only working names inside this generator)
+  // the token names of palette-scales.css (the milnik-* names are only working names inside this generator)
   Object.assign(T, { 'hero-bg': su.hero, 'hero-line': su.heroLine, 'accent-solid': T['milnik-accent-solid'],
     'accent-badge-fg': T['milnik-badge-fg'], 'avatar-me-fg': T['milnik-ink-fg'],
     'shadow-tint-a': T['milnik-shadow-a'], 'shadow-tint-b': T['milnik-shadow-b'], 'shadow-tint-c': T['milnik-shadow-c'] });
@@ -541,7 +541,7 @@ function block(P) {
 }
 
 const built = PALETTES.map(build);
-// coverage: every colour-carrying custom property of css/tokens.css is set by every palette block
+// coverage: every colour-carrying custom property of palette-scales.css is set by every palette block
 export const missingTokens = (() => {
   const src = readFileSync(TOKENS, 'utf8');
   const colourish = new Set();
