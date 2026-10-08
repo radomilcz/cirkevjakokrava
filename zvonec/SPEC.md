@@ -361,6 +361,10 @@ program?: [{ formatId, minutes }], groupId?, weekday?: 0..6 (0 = Monday), public
 archived?: true }`
 - `weekday` prefills the calendar; without it, it is inferred from the template's events.
 - An archived template is not offered for new events.
+- Editing a template (name, Účel, time and length, places, group, needs, osnova, description, picture) can reach
+  its planned events (from today, not cancelled): an event takes a changed key only while it still has the old
+  template's value there, so a change made by hand stays. The time keeps each event's day; a new osnova keeps who
+  leads a point and its note where the same format stays (`typeChangePlan`, `applyTypeChange`).
 
 ### 5.9 event
 `{ id: "e…", title, kind, typeId?, start, end, placeIds: [], seriesId?, cancelled?: true, groupId?, note?,
@@ -1075,6 +1079,10 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   ⋯: Uprav šablonu · Naplánuj setkání · Zkopíruj šablonu · Přesuň do archivu / Vrať z archivu · Smaž šablonu.
 - Form „Nová šablona“: Název setkání, Účel, Den (Kdykoli / po–ne), time, Kde (place chips per building, „celá
   budova“), Pro koho.
+- After saving an edit, when planned meetings still follow the old template: „Chceš změnit i naplánovaná
+  setkání?“ – „V plánu je 11 setkání z téhle šablony. Změní se jim čas a osnova.“ (+ „Co někdo u setkání upravil
+  ručně, zůstane.“) · [Změň i 11 setkání] [Jen šablonu]. Then „Uloženo i u 11 setkání v plánu.“ with „Vrať“
+  (template and meetings back), or „Uloženo. Naplánovaná setkání zůstala, jak byla.“
 
 ### 9.8 Formáty `#formaty` (leaders edit; members read via links)
 - A: „Formáty“ · [Přidej formát]. B: „Hledej formát“ only (no Filtr).

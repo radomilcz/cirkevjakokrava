@@ -419,3 +419,52 @@ test('check.mjs: data problems are warnings, they do not fail the check', () => 
     assert.match(r.stdout, /::warning title=Nesedí data::a \(2026-10-11\): počet lidí musí být celé číslo/);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
+
+test('typeChangePlan + applyTypeChange: a template edit reaches planned events that still follow it', async () => {
+  const { typeChangePlan, applyTypeChange } = await import('../../docs/zvonec/lib/events.js');
+  let n = 0;
+  const newId = (p) => `${p}${++n}`;
+  const before = {
+    id: 't1', name: 'Neděle', kind: 'service', startTime: '10:00', minutes: 120, placeIds: ['hall'],
+    needs: [{ roleId: 'r1', count: 2 }], program: [{ formatId: 'f1', minutes: 30 }, { formatId: 'f2', minutes: 90 }],
+  };
+  const data = { events: [], eventTypes: [before], formats: [{ id: 'f1', minutes: 30 }, { id: 'f2', minutes: 90 }, { id: 'f3', minutes: 10 }] };
+  const make = (day) => createFromType(before, day, { newId, data });
+  const past = make('2026-10-04');
+  const plain = make('2026-10-11');
+  const moved = make('2026-10-18');
+  moved.start = '2026-10-18T09:00'; moved.end = '2026-10-18T11:00';
+  moved.placeIds = ['garden'];
+  const led = make('2026-10-25');
+  led.program[1].personId = 'p7';
+  const cancelled = { ...make('2026-11-01'), cancelled: true };
+  const other = { ...make('2026-11-08'), typeId: 't2' };
+  data.events.push(past, plain, moved, led, cancelled, other);
+
+  const after = structuredClone(before);
+  after.startTime = '09:30';
+  after.placeIds = ['small'];
+  after.program = [{ formatId: 'f3', minutes: 10 }, { formatId: 'f2', minutes: 100 }];
+  const plan = typeChangePlan(data, before, after, '2026-10-08');
+  assert.deepEqual(plan.keys, ['time', 'placeIds', 'program']);
+  assert.deepEqual(plan.events.map((x) => [x.event.id, x.keys]), [
+    [plain.id, ['time', 'placeIds', 'program']],
+    [moved.id, ['program']],
+    [led.id, ['time', 'placeIds', 'program']],
+  ]);
+  assert.equal(plan.kept, 1);
+
+  const changed = applyTypeChange(data, after, plan, { newId });
+  assert.equal(changed.length, 3);
+  assert.equal(plain.start, '2026-10-11T09:30');
+  assert.equal(plain.end, '2026-10-11T11:30');
+  assert.deepEqual(plain.placeIds, ['small']);
+  assert.deepEqual(plain.program.map((x) => [x.formatId, x.minutes]), [['f3', 10], ['f2', 100]]);
+  assert.equal(moved.start, '2026-10-18T09:00', 'a time changed by hand stays');
+  assert.deepEqual(moved.placeIds, ['garden'], 'a place changed by hand stays');
+  assert.equal(led.program[1].personId, 'p7', 'who leads a point that stays keeps leading it');
+  assert.equal(past.start, '2026-10-04T10:00', 'past events stay');
+  assert.equal(cancelled.start, '2026-11-01T10:00', 'cancelled events stay');
+
+  assert.deepEqual(typeChangePlan(data, after, structuredClone(after), '2026-10-08').events, [], 'no change, no question');
+});
