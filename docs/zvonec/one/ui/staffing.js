@@ -204,7 +204,7 @@ function errorLine(c) {
   return who && words ? `${who} ${words}` : c.text;
 }
 
-/** One meeting as one block: a link to the meeting; its slots and lines act on their own. */
+/** One meeting as one block: a link to the meeting; its to-do lines (Doplň, who waits, problems) act on their own. */
 /**
  * The meeting's fill: the whole meeting (not the Filtr's teams – those only decide which meetings are listed), drawn
  * with the kit's fill() and the same words as Seznam and the pane: ◯ 6 z 6 · 1 čeká, ◔ 14 z 15 · chybí 1.
@@ -222,13 +222,24 @@ function needItem(x, { openId }) {
   const byRole = new Map();
   for (const s of slots) byRole.set(s.roleId, { role: s.role, n: (byRole.get(s.roleId)?.n || 0) + (s.missing || 1) });
   const day = dayOf(event.start);
-  const chips = [...byRole.values()].map(({ role, n }) => h('button', {
-    type: 'button', class: 'slot', onclick: () => pickFor(event.id, role.id),
-    'aria-label': `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}`,
-  }, icon('plus', { size: 's' }), n > 1 ? `${n}× ${role.name}` : role.name));
+  // what is to be done, one line each and all built alike – ● Chybí: Klávesy ··· + Doplň / ● Jiří … ··· › / ○ 2 ještě
+  // neodpověděli ··· › – so the actions stand in one column at the right edge, under the fill
+  const todo = (mark, words, action, onclick, label) => h('button', { type: 'button', class: 'todo', onclick, 'aria-label': label },
+    h('span', { class: ['mark', `mark--${mark}`], 'aria-hidden': 'true' }), h('span', { class: 'todo__words' }, words), action);
+  const doIt = () => h('span', { class: 'todo__do' }, icon('plus', { size: 's' }), 'Doplň');
+  const more = () => icon('chevron-right', { size: 's' });
+  const missing = [...byRole.values()].map(({ role, n }) => todo('error', `Chybí: ${n > 1 ? `${n}× ` : ''}${role.name}`, doIt(), () => pickFor(event.id, role.id),
+    `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}`));
   const shownErrors = errors.slice(0, 2);
-  const line = (kind, words, onclick, label) => h('button', { type: 'button', class: ['staff__line', `staff__line--${kind}`], onclick, 'aria-label': label },
-    h('span', { class: ['mark', `mark--${kind === 'wait' ? 'wait' : 'error'}`], 'aria-hidden': 'true' }), h('span', {}, words), icon('chevron-right', { size: 's' }));
+  const problems = shownErrors.map((c) => todo('error', errorLine(c), more(), () => {
+    const id = (c.assignmentIds || []).find((a) => (event.assignments || []).some((y) => y.id === a));
+    if (id) openDutySheet(event.id, id); else location.hash = `#obsazeni/${event.id}`;
+  }, `${c.text} – oprav to`));
+  if (errors.length > shownErrors.length) {
+    problems.push(todo('error', `a ${plural(errors.length - shownErrors.length, 'další problém', 'další problémy', 'dalších problémů')}`, more(), () => { location.hash = `#obsazeni/${event.id}`; }));
+  }
+  const waits = waiting.length ? [todo('wait', waitingLine(waiting.length), more(), () => waitingSheet(waiting, { event }), `${waitingLine(waiting.length)} – ukaž, kdo to je`)] : [];
+  const todos = [...missing, ...problems, ...waits];
   const open = event.id === openId;
   return h('article', { class: 'staff', dataset: { open: open ? '' : null } },
     dateArch(day, { today: day === today() }),
@@ -238,15 +249,7 @@ function needItem(x, { openId }) {
         h('a', { class: 'staff__title', href: open ? '#obsazeni' : `#obsazeni/${event.id}`, 'aria-current': open ? 'true' : null }, event.title),
         meetingFill(event)),
       h('p', { class: 'staff__meta' }, joinMeta([clock(event.start), placeText(event) || null])),
-      chips.length ? h('div', { class: 'staff__slots' }, chips) : null,
-      waiting.length ? line('wait', waitingLine(waiting.length), () => waitingSheet(waiting, { event }), `${waitingLine(waiting.length)} – ukaž, kdo to je`) : null,
-      shownErrors.map((c) => line('error', errorLine(c), () => {
-        const id = (c.assignmentIds || []).find((a) => (event.assignments || []).some((y) => y.id === a));
-        if (id) openDutySheet(event.id, id); else location.hash = `#obsazeni/${event.id}`;
-      }, `${c.text} – oprav to`)),
-      errors.length > shownErrors.length
-        ? line('error', `a ${plural(errors.length - shownErrors.length, 'další problém', 'další problémy', 'dalších problémů')}`, () => { location.hash = `#obsazeni/${event.id}`; })
-        : null));
+      todos.length ? h('div', { class: 'staff__todo' }, todos) : null));
 }
 
 /** „Tento týden“ · „Příští týden“ · „19.–25. 10.“ */

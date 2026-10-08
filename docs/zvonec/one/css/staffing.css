@@ -43,21 +43,24 @@
 /* the kit's fill (◯ 6 z 6 · 1 čeká), the same as on Seznam and in the pane; centred on the title's first line */
 .staff__head > .fill { flex: none; min-height: var(--lh-body); }
 .staff__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: break-word; }
-.staff__slots { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--space-2); }
-.staff__slots > .slot, .staff__line { position: relative; z-index: 1; }
-.staff__slots + .staff__line, .staff__meta + .staff__line { margin-top: var(--space-1); }
-/* „○ 1 člověk ještě neodpověděl ›“ / „● Ondra má dvě služby naráz ›“: quiet lines that open their sheet; 36 tall,
-   a 44 hit area */
-.staff__line {
-  display: inline-flex; align-items: center; gap: var(--space-2); justify-self: start; max-width: 100%; min-height: var(--control-s);
-  padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: var(--type-meta); line-height: var(--lh-meta); text-align: left; cursor: pointer;
+/* the to-do lines: [● Chybí: Klávesy ··········· + Doplň] [○ 2 ještě neodpověděli ··· ›] – one anatomy, the words in
+   ink (only the mark carries the colour), the action in one column at the right edge; each line lights up whole and
+   rounded on its own (S 36, hit 44), above the block's stretched link */
+.staff__todo { display: grid; gap: 2px; margin: var(--space-2) calc(-1 * var(--space-2)) 0; }
+.todo {
+  position: relative; z-index: 1; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: var(--space-2);
+  min-height: var(--control-s); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-s); background: none;
+  color: var(--ink); font: inherit; font-size: var(--type-meta); line-height: var(--lh-meta); text-align: left; cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease);
 }
-.staff__line::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2) 0; }
-.staff__line > .mark { margin: 0; }
-.staff__line > span:not(.mark) { min-width: 0; overflow-wrap: break-word; }
-.staff__line > .icon { width: 16px; height: 16px; flex: none; color: var(--ink-3); }
-.staff__line:hover > span:not(.mark) { text-decoration: underline; text-underline-offset: 3px; }
-.staff__line--error { color: var(--no-ink); }
+.todo::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2) 0; }
+.todo:hover { background: var(--wash); }
+.todo:active { background: var(--press); }
+.todo > .mark { margin: 0; justify-self: center; }
+.todo__words { min-width: 0; overflow-wrap: break-word; }
+.todo > .icon { width: 16px; height: 16px; color: var(--ink-3); }
+.todo__do { display: inline-flex; align-items: center; gap: 4px; font-weight: var(--weight-control); color: var(--ink-accent); }
+.todo__do > .icon { width: 16px; height: 16px; }
 
 /* the horizon, said once at the end of the list */
 .staff-horizon { margin-top: var(--space-5); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
