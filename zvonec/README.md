@@ -6,9 +6,7 @@ v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další 
 
 **Ukázka s vymyšlenými lidmi:** https://manifest.cirkevjakokrava.cz/zvonec/
 
-Hlavní adresa otevírá Zvonec One (Moje · Obsazení · Kalendář · Lidé · Skupiny). Starší odkazy na Next
-a Simple vedou tam taky. Úplně původní verzi najdeš na stejné adrese s `/stara.html` na konci – zatím ji
-necháváme pro srovnání.
+Hlavní adresa otevírá Zvonec (Moje · Obsazení · Kalendář · Lidé · Skupiny).
 
 ## Barvy
 
@@ -190,15 +188,13 @@ a osnovách zůstane jen jméno. Kontakt a ostatní údaje zmizí. Kde jméno ul
 ### Kód
 
 ```
-docs/zvonec/index.html, style.css, imprint.svg   kostra stránky (CSP: ven jen api.github.com a mapy OpenStreetMap), základ vzhledu, tisk A4
-docs/zvonec/css/          barvy a rozměry (tokens.css), barevné dvojice (palettes.css – vyrábí je zvonec/palettes.mjs)
-                          a styly jednotlivých částí
-docs/zvonec/app.js        start (ukázka / naostro), přihlášení, adresy obrazovek, menu, stav ukládání
+docs/zvonec/index.html, go.js   hlavní adresa: pošle tě do one/
+docs/zvonec/one/          aplikace: index.html (CSP: ven jen api.github.com a mapy OpenStreetMap), app.js (start,
+                          přihlášení, adresy obrazovek), ui/ (stavebnice a obrazovky), css/ (vzhled)
 docs/zvonec/lib/          logika bez obrazovek: lidé, místa, skupiny, setkání a řady, osnova, plánování, upozornění,
                           kontrola dat, přístupy, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
-docs/zvonec/ui/           obrazovky a stavebnice (kit): Přehled, kalendář, setkání, rozpis, lidé, týmy, Jak se scházíme,
-                          výběr lidí, upozornění, nastavení, Můj účet, veřejná část, přihlášení; stránka #kit ukazuje
-                          všechny součástky v barvách Krém a hlína i Hlína a růžová
+docs/zvonec/ui/           sdílený stav (state.js) a volba barev (palette.js)
+docs/zvonec/css/          barevné dvojice (palettes.css – vyrábí je zvonec/palettes.mjs)
 zvonec/check.mjs          kontrola upozornění z příkazové řádky / Actions
 zvonec/build-public.mjs   veřejný výřez dat (zveřejněná setkání a formáty) pro web
 zvonec/palettes.mjs       barevné dvojice: z podkladu a písma dopočítá všechny barvy, ověří kontrast a zapíše
@@ -207,8 +203,8 @@ zvonec/test/              testy (node --test zvonec/test/*.test.mjs)
 zvonec/data-repo/         vzory workflow pro datové repo (web.yml, check.yml)
 ```
 
-Jak se přidává nová část, je v [ARCHITECTURE.md](ARCHITECTURE.md), pravidla vzhledu
-v [DESIGN.md](DESIGN.md).
+Úplné zadání aplikace je v [SPEC.md](SPEC.md), datové schéma v [ARCHITECTURE.md](ARCHITECTURE.md) a pravidla
+vzhledu v [design/one/DESIGN.md](design/one/DESIGN.md).
 
 Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`build.py`) do
 `docs/zvonec/` nesahá.
