@@ -77,6 +77,13 @@ function householdSelect({ name = 'householdId', value = '', suggest = () => '' 
   return wrap;
 }
 
+/** Does an existing household have someone who may give consent for a child: a member, or an adult with consent? */
+function householdConsents(householdId) {
+  if (!householdId || householdId === '+') return false;
+  return S.data.people.some((p) => p.householdId === householdId && !isFormer(p) && !isChild(p, today(), childAge())
+    && (statusOf(p) === 'member' || !!p.consentDate));
+}
+
 /** The household chosen: an id, a new one (added to data) or ''. */
 function resolveHousehold(id, newName) {
   if (id !== '+') return id || '';
@@ -95,10 +102,11 @@ function resolveHousehold(id, newName) {
  */
 export function addPersonSheet({ firstName = '', lastName = '', householdId = '', after } = {}) {
   let sameNameOk = '';
+  let dropOk = '';   // the fields the person agreed to drop (a guest without consent keeps only the first name)
   let form = null;
   const dupe = h('div', { hidden: true });
   const consentBox = h('div', { hidden: true });
-  const consentNote = callout({ tone: 'info', text: 'Bez souhlasu smíme mít u hosta jen křestní jméno.' });
+  const consentNote = callout({ tone: 'info', text: 'Bez souhlasu smíme mít u hosta jen křestní jméno. U dítěte stačí souhlas rodiče z jeho domácnosti.' });
   const household = householdSelect({ value: householdId, suggest: () => householdNameFor(form?.elements.lastName.value, form?.elements.firstName.value) });
   const consent = switchRow({ label: 'Souhlasí se zpracováním údajů', hint: 'Zvonec zapíše dnešní datum.', name: 'consent', onChange: () => update() });
   consentBox.append(consent, consentNote);
@@ -132,9 +140,23 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
       if (!first) { fieldError(ctl(f, 'firstName'), 'Doplň jméno.'); return false; }
       const status = v('status') || 'guest';
       const consentOn = on(f, 'consent');
-      const restricted = status === 'guest' && !consentOn;
-      const birthDate = restricted ? '' : parseBirth(v('birthDate'));
-      if (birthDate === null) { f.querySelector('details').open = true; fieldError(ctl(f, 'birthDate'), 'Zapiš datum jako 8. 6. 1984, nebo jen rok.'); return false; }
+      const born = parseBirth(v('birthDate'));
+      if (born === null) { f.querySelector('details').open = true; fieldError(ctl(f, 'birthDate'), 'Zapiš datum jako 8. 6. 1984, nebo jen rok.'); return false; }
+      // a child is covered by the consent of a parent in the household it joins
+      const coveredKid = !!born && isChild({ birthDate: born }, today(), childAge()) && householdConsents(v('householdId'));
+      const restricted = status === 'guest' && !consentOn && !coveredKid;
+      // never drop what was typed without saying so: the first „Přidej“ names it and offers „Ulož jen jméno“
+      if (restricted) {
+        const dropped = [['lastName', 'příjmení'], ['phone', 'telefon'], ['email', 'e-mail'], ['birthDate', 'narození'], ['nickname', 'přezdívku'],
+          ['householdId', 'domácnost'], ['note', 'poznámku'], ['since', 'datum, od kdy chodí']].filter(([n]) => v(n)).map(([, w]) => w);
+        const key = dropped.join(',');
+        if (dropped.length && dropOk !== key) {
+          dropOk = key;
+          sheet.foot.querySelector('button[type=submit]').lastChild.textContent = 'Ulož jen jméno';
+          return `Bez souhlasu uložím jen křestní jméno, ${andJoin(dropped)} zahodím. Zapni souhlas, nebo ulož jen jméno.`;
+        }
+      }
+      const birthDate = restricted ? '' : born;
       const kid = !!birthDate && isChild({ birthDate }, today(), childAge());
       const phone = restricted ? '' : v('phone');
       const email = restricted ? '' : v('email');
@@ -190,9 +212,10 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
       tone: 'wait', title: `${fullName(twins[0])} už v seznamu je.`,
       text: householdById(S.data, twins[0].householdId) ? `Domácnost ${householdById(S.data, twins[0].householdId).name}. Není to tentýž člověk?` : 'Není to tentýž člověk?',
     })] : []));
-    if (sameNameOk && sameNameOk !== key) {
-      sameNameOk = '';
-      sheet.foot.querySelector('button[type=submit]').lastChild.textContent = 'Přidej člověka';
+    if ((sameNameOk && sameNameOk !== key) || dropOk) {
+      sameNameOk = sameNameOk === key ? sameNameOk : '';
+      dropOk = '';
+      sheet.foot.querySelector('button[type=submit]').lastChild.textContent = sameNameOk ? 'Přidej přesto' : 'Přidej člověka';
     }
   }
   form.addEventListener('input', update);
