@@ -1,5 +1,9 @@
 # Zvonec One: the design
 
+> **Update – Rozpis head titles on one line (2026-10-08).** In a table of different meetings („Další setkání“) a long
+> name took two lines and made its head taller than the others. The name is now one line ending in „…“ (the full name
+> in its title and for screen readers), so the heads keep one height.
+
 > **Update – the mini month on a phone (2026-10-08).** The chosen day's mark sat on the dots' line and hid them, and
 > the day number's arch was 36 × 32 – wider than tall, so it read as squashed. The number now sits in a 32 × 36 arch
 > (16 16 7 7) like every other arch; in Měsíc the mark is right under it and the dots under the mark (cells 60).

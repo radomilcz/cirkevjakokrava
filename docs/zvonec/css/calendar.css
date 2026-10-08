@@ -167,7 +167,8 @@
 }
 .rt-col__link:hover { background: var(--wash); }
 .rt-col__link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
-.rt-col__title { font-weight: var(--weight-strong); }
+/* one line: a longer name ends in „…“ (the full one in its title), so every head keeps one height */
+.rt-col__title { justify-self: stretch; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: var(--weight-strong); }
 .rt-col__day { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); font-feature-settings: var(--numerals); }
 .rt-col__title + .rt-col__day { font-size: var(--type-meta); line-height: var(--lh-meta); }
 .rt-col__time { font-weight: var(--weight-regular); color: var(--ink-2); font-feature-settings: var(--numerals); }
