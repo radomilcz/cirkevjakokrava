@@ -5,62 +5,10 @@
    Tokens only (css/tokens.css → ../css/palettes.css), no raw colours.
    ============================================================ */
 
-/* ---------- the list: week subheads, then one block per meeting ---------- */
-.staff-list { display: grid; margin: 0 calc(-1 * var(--space-3)); }
-.staff-list > .subhead { padding-left: var(--space-3); padding-right: var(--space-3); }
-.staff-list > .subhead:first-child { padding-top: 0; }
-
-/* one meeting = one link (the title stretched over the block, whole-block hover); its slots and lines act on their
-   own. Lit per CODEX §5: --wash on hover, --pick + a detached 3 px --mark bar when its pane is open. */
-.staff {
-  position: relative; display: grid; grid-template-columns: var(--arch-w) minmax(0, 1fr); gap: 0 var(--space-3);
-  padding: var(--space-3); border-radius: var(--radius-m);
-  transition: background-color var(--dur-state) var(--ease);
-}
-.subhead + .staff { margin-top: 0; }
-.staff + .staff { margin-top: var(--gap-lit); }
-/* the hairline belongs to the block below, inset to the text start, and steps aside for a lit block */
-.staff + .staff::before {
-  content: ""; position: absolute; top: calc(-1 * var(--gap-lit) + 1px); left: calc(var(--space-3) + var(--arch-w) + var(--space-3)); right: var(--space-3);
-  height: 1px; background: var(--hairline);
-}
-.staff:has(.staff__title:hover) { background: var(--wash); }
-.staff:has(.staff__title:active) { background: var(--press); }
-.staff[data-open] { background: var(--pick); --tint: var(--card); }
-.staff[data-open]:has(.staff__title:hover) { background: var(--pick-hover); }
-.staff[data-open]::after {
-  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
-}
-.staff:has(.staff__title:hover)::before, .staff:has(.staff__title:hover) + .staff::before,
-.staff[data-open]::before, .staff[data-open] + .staff::before { background: transparent; }
-.staff > .arch { align-self: start; }
-.staff__body { display: grid; gap: 2px; min-width: 0; align-content: start; }
-.staff__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
-.staff__title { min-width: 0; font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: break-word; }
-.staff__title::after { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
-.staff__title:focus-visible { outline: none; }
-.staff__title:focus-visible::after { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
-/* the kit's fill (◯ 6 z 6 · 1 čeká), the same as on Seznam and in the pane; centred on the title's first line */
-.staff__head > .fill { flex: none; min-height: var(--lh-body); }
-.staff__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: break-word; }
-/* the to-do lines: [● Chybí: Klávesy ··········· + Doplň] [○ 2 ještě neodpověděli ··· ›] – one anatomy, the words in
-   ink (only the mark carries the colour), the action in one column at the right edge; each line lights up whole and
-   rounded on its own (S 36, hit 44), above the block's stretched link */
-.staff__todo { display: grid; gap: 2px; margin: var(--space-2) calc(-1 * var(--space-2)) 0; }
-.todo {
-  position: relative; z-index: 1; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: var(--space-2);
-  min-height: var(--control-s); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-s); background: none;
-  color: var(--ink); font: inherit; font-size: var(--type-meta); line-height: var(--lh-meta); text-align: left; cursor: pointer;
-  transition: background-color var(--dur-state) var(--ease);
-}
-.todo::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2) 0; }
-.todo:hover { background: var(--wash); }
-.todo:active { background: var(--press); }
-.todo > .mark { margin: 0; justify-self: center; }
-.todo__words { min-width: 0; overflow-wrap: break-word; }
-.todo > .icon { width: 16px; height: 16px; color: var(--ink-3); }
-.todo__do { display: inline-flex; align-items: center; gap: 4px; font-weight: var(--weight-control); color: var(--ink); }
-.todo__do > .icon { width: 16px; height: 16px; }
+/* ---------- the tasks: Chybí lidi · Něco nesedí · Čeká na odpověď, each a section of rows ---------- */
+.tasks { display: grid; gap: var(--section-gap); }
+.tasks > .section { margin: 0; }
+.task-lead { margin: 0 0 var(--space-2); }
 
 /* the horizon, said once at the end of the list */
 .staff-horizon { margin-top: var(--space-5); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
@@ -77,3 +25,4 @@
 .pick-row__why { color: var(--no-ink); }
 .pick-none { padding: var(--space-3) 0; }
 .waiting-lead { margin: 0 0 var(--space-2); }
+.waiting-remind { margin: 0 0 var(--space-2); }

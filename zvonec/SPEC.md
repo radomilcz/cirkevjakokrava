@@ -879,22 +879,27 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
   meeting page („‹ Moje“).
 
 ### 9.2 Obsazení `#obsazeni[/<id>]` (leaders)
-- A: „Obsazení“ · ⋯ (Připomeň všem, kdo neodpověděli · Vytiskni rozpis) · **„Doplň volná místa“** (icon-only on a
-  phone).
-- B: „Hledej setkání“ (title, place, Účel, role names, people) + Filtr: **Tým** (chips; default = the team I lead,
-  or „Moje týmy“ when I lead several, so a leader starts at „Filtr 1“) · **Stav** (Chybí lidi · Čeká na odpověď ·
-  Něco nesedí, multi).
-- D: only meetings in the next 28 days with something to do, nearest first, under week subheads („Tento týden“,
-  „Příští týden“, „19.–25. 10.“). A block: date arch, title (a link; a click on the open one closes it),
-  „18.30 · Monta, Sál“, no fill ring, then one to-do line each:
-  - „● Chybí: Klávesy ··· + Doplň“ → picker;
-  - „● Ondra má dvě služby naráz ›“ → duty sheet (at most 2, then „a N dalších problémů“);
-  - „○ 1 člověk ještě neodpověděl ›“ → the waiting sheet.
+A list of tasks for the next 28 days, by the kind of work (not a third calendar).
+- A: „Obsazení“ · ⋯ (Vytiskni rozpis) · **„Doplň volná místa“** (icon-only on a phone).
+- B: „Hledej úkol“ (role, meeting title, place, Účel, person, the problem's words) + Filtr: **Tým** (chips; default =
+  the team I lead, or „Moje týmy“ when I lead several, so a leader starts at „Filtr 1“) · **Stav** (Chybí lidi · Čeká
+  na odpověď · Něco nesedí, multi: which sections show).
+- D: three sections, each only while it has something, each with its count:
+  - **Chybí lidi**: a row per missing role – date arch, „2× Klávesy“, „Setkání na pastvě · ne 11. 10. 10.00“,
+    [+ Doplň] (→ picker). The row opens the meeting (pane ≥ 1200, page below).
+  - **Něco nesedí**: a row per non-overridden error – date arch, „Ondra má dvě služby naráz“, the meeting ›; the row
+    opens the fix (the duty sheet; the meeting when no duty is involved).
+  - **Čeká na odpověď**: lead „Klepni na jméno a zapiš odpověď za ně. Jedna SMS jim připomene všechny služby
+    najednou.“; a row per person (not per duty) – avatar, name, „Zpěv · Setkání na pastvě · ne 11. 10.“ or „3 služby
+    · nejbližší čt 8. 10.“; trail = SMS (or e-mail without a phone) with one text for all their duties + Zavolej. One
+    duty: the row opens the duty sheet; more: a sheet titled by the person („3 služby čekají na odpověď“) with
+    [Připomeň v SMS] [Zavolej] and a row per duty (→ duty sheet).
 - End line: „Dál než 4 týdny dopředu: Rozpis ›“.
-- Empty: „Na příští 4 týdny je všechno obsazené.“ / „Nikde nikdo nechybí, všichni odpověděli a všechno sedí.“
-- **Waiting sheet** „Čeká na odpověď“: lead „Odpověď zapíšeš i za ně: klepni na jméno. Text SMS i e-mailu ti
-  Zvonec připraví.“ Rows: avatar, name, „role · za 3 dny“; trail = SMS (or e-mail without a phone) + call. A row
-  opens the duty sheet.
+- Nothing left: „Všechno je vyřešené.“ / „Na příští 4 týdny nikde nikdo nechybí, všichni odpověděli a všechno sedí.“
+  Filtered: „S tímhle filtrem tu nic není.“ / „Filtr skrývá 5 úkolů.“
+- The nav count is the number of tasks in my Filtr scope („Zbývá vyřešit 5 věcí“).
+- Reminder for several duties: „Ahoj, v rozpisu máš služby: Zpěv (Setkání na pastvě, ne 11. 10. v 10.00), Klávesy
+  (…). Můžeš? Odpověz prosím ve Zvonci: <app URL>#moje“.
 
 ### 9.3 Kalendář (everyone)
 - A: „Kalendář“ · ⋯ · [Přidej setkání] (leaders). ⋯ in every view: „Ukaž minulá setkání“ / „Skryj minulá setkání“
@@ -1147,11 +1152,11 @@ data repo's `web.yml`:
 ## 11. Notifications
 
 Zvonec sends nothing by itself: GitHub cannot message people without an account.
-- **„Připomeň“** builds a ready message. Obsazení ⋯ „Připomeň všem, kdo neodpověděli“ and every „○ N ještě
-  neodpověděli ›“ line open the waiting sheet. Per person an `sms:` link (aria „Připomeň v SMS – <jméno>“), or
+- **„Připomeň“** builds a ready message. Obsazení's section „Čeká na odpověď“ (one text per person for all their
+  duties) and the meeting's „○ N čeká“ open the reminders. Per person an `sms:` link (aria „Připomeň v SMS – <jméno>“), or
   without a phone a `mailto:` with subject „Služba ve Zvonci“ (aria „Připomeň e-mailem – <jméno>“), plus „Zavolej“.
   Body (`reminderText`): „Ahoj, v neděli 18. 10. máš v rozpisu službu: Kázání (Setkání na pastvě, 10.00). Můžeš?
-  Odpověz prosím ve Zvonci: <app URL>#moje“. When nobody waits: toast „Všichni už odpověděli.“
+  Odpověz prosím ve Zvonci: <app URL>#moje“; several duties: `reminderTextAll` (§9.2).
 - **„Kdy Zvonec bučí“** (settings) sets how many days before a meeting each conflict starts to show (§6.2 K5, K6).
 - **In-app signals**: nav counts (Moje: aria „N služby čekají na tvou odpověď“; Obsazení: „Zbývá vyřešit N věcí“),
   the invites dot / „1 čeká“, Co nesedí sections, ○ / ● marks, Obsazení to-do lines.
@@ -1204,8 +1209,6 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 
 - **Phone tab bar**: Moje · Kalendář · Lidé · Více (a „Více“ tab replacing the person tab and absorbing Obsazení for
   leaders) instead of today's bar.
-- **Obsazení as a task list** grouped by kind of task (Chybí lidi / Čeká na odpověď / Něco nesedí), so it stops
-  looking like Kalendář › Seznam.
 - **Kalendář**: Měsíc opening the pane on a day click; Rozpis starting from today instead of the month's first day.
 - **Members' Setkání detail** without numbers (no „6 z 6“).
 - **One glossary** for „chybí / čeká / nesedí“ across all screens.
