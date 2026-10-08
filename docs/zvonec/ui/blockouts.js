@@ -38,11 +38,17 @@ export function blockoutSheet(person, record = null) {
   const self = isSelf(person);
   const day = today();
   let declineToo = true;
-  const from = dateInput({ name: 'from', value: record?.from || day, label: 'Od kdy', min: record ? null : day, onChange: () => drawClashes() });
-  const to = dateInput({ name: 'to', value: record?.to || record?.from || day, label: 'Do kdy', min: day, onChange: () => drawClashes() });
+  const valueOf = (w) => w.querySelector('input[type="hidden"]').value;
+  // „Do“ follows „Od“: a later „Od“ moves „Do“ with it, and „Do“ cannot go before „Od“ (a reversed range once
+  // declined every duty in between – the usability test)
+  const from = dateInput({
+    name: 'from', value: record?.from || day, label: 'Od kdy', min: record ? null : day,
+    onChange: (d) => { if (valueOf(to) < d) to.setValue(d); drawClashes(); },
+  });
+  const to = dateInput({ name: 'to', value: record?.to || record?.from || day, label: 'Do kdy', min: () => (valueOf(from) > day ? valueOf(from) : day), onChange: () => drawClashes() });
   const reason = textInput({ name: 'reason', value: record?.reason || '', placeholder: 'např. dovolená, směna', maxlength: 80, autocomplete: 'off' });
   const clashBox = h('div', { class: 'blockout-clash', 'aria-live': 'polite' });
-  const range = () => [from, to].map((w) => w.querySelector('input[type="hidden"]').value).sort();
+  const range = () => [valueOf(from), valueOf(to)].sort();
   const drawClashes = () => {
     const [a, b] = range();
     const found = clashesOf(person.id, a, b);
@@ -54,7 +60,7 @@ export function blockoutSheet(person, record = null) {
       switchRow({
         label: n === 1 ? 'Odmítni i službu v těch dnech' : 'Odmítni i služby v těch dnech',
         hint: self
-          ? `V té době ${n === 1 ? 'máš službu' : `máš ${plural(n, 'službu', 'služby', 'služeb')}`}. Vedoucí uvidí, že nemůžeš.`
+          ? `V té době ${n === 1 ? 'máš službu' : `máš ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec zapíše, že nemůžeš.`
           : `V té době ${n === 1 ? 'má službu' : `má ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec zapíše, že nemůže.`,
         checked: declineToo,
         onChange: (on) => { declineToo = on; },
@@ -68,6 +74,7 @@ export function blockoutSheet(person, record = null) {
     title: record ? (self ? 'Kdy nemůžu' : 'Kdy nemůže') : (self ? 'Nové dny, kdy nemůžu' : 'Kdy nemůže'),
     subtitle: self ? null : personName(person),
     submitLabel: record ? 'Ulož' : 'Přidej',
+    autofocus: false,   // a phone keyboard would cover the dates (the reason is optional)
     body: [
       h('div', { class: 'form__row form__row--pair' }, field({ label: 'Od', control: from }), field({ label: 'Do', control: to })),
       field({ label: 'Důvod', control: reason, optional: true, hint: self ? 'Uvidí ho jen vedoucí.' : 'Uvidí ho jen vedoucí a ten, koho se týká.' }),
@@ -75,7 +82,8 @@ export function blockoutSheet(person, record = null) {
     ],
     onSubmit: (form, values) => {
       if (!values.from || !values.to) return 'Vyber, od kdy do kdy.';
-      const [a, b] = [values.from, values.to].sort();
+      if (values.to < values.from) { fieldError(to.querySelector('button'), 'Do kdy nemůže být dřív než od kdy.'); return false; }
+      const [a, b] = [values.from, values.to];
       if (b < day) { fieldError(to.querySelector('button'), 'Tohle už bylo. Vyber dnešek nebo pozdější den.'); return false; }
       S.data.availability = S.data.availability || [];
       let target = record ? S.data.availability.find((x) => x.id === record.id) : null;

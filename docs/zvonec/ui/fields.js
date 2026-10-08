@@ -87,6 +87,9 @@ export function selectInput({ name, options = [], value = '', onChange, placehol
  * The ISO value lives in a hidden input `name`. onChange(iso).
  */
 export function dateInput({ name, value = '', onChange, placeholder = 'Vyber den', label = 'Vyber den', min, max } = {}) {
+  // min / max may be functions (read when the sheet opens): „Do“ never before „Od“
+  const lo = () => (typeof min === 'function' ? min() : min) || null;
+  const hi = () => (typeof max === 'function' ? max() : max) || null;
   const hidden = h('input', { type: 'hidden', name, value });
   const words = h('span', { class: 'date-input__text' });
   const btn = h('button', { type: 'button', class: 'input input--button date-input', 'aria-haspopup': 'dialog' }, words, icon('calendar', { size: 's' }));
@@ -96,9 +99,11 @@ export function dateInput({ name, value = '', onChange, placeholder = 'Vyber den
   };
   show();
   btn.addEventListener('click', () => {
-    let month = (hidden.value || todayIso()).slice(0, 7);
+    // opens on the chosen day, else on the first day that may be picked (the „Od“ month for „Do“), else today
+    const start = hidden.value && (!lo() || hidden.value >= lo()) ? hidden.value : lo() && lo() > todayIso() ? lo() : hidden.value || todayIso();
+    let month = start.slice(0, 7);
     let sheet;
-    const draw = () => sheet.setBody([
+    const body = () => sheet.setBody([
       h('div', { class: 'date-sheet__period' },
         iconButton('chevron-left', 'Předchozí měsíc', { onclick: () => { month = shiftMonth(month, -1); draw(); } }),
         h('span', { class: 'date-sheet__label', 'aria-live': 'polite' }, monthLabel(month)),
@@ -107,8 +112,16 @@ export function dateInput({ name, value = '', onChange, placeholder = 'Vyber den
         button('Dnes', { variant: 'quiet', cls: 'date-sheet__today', onclick: () => pick(todayIso()) })),
       monthGrid({ month, selected: hidden.value, today: todayIso(), onPick: pick, label: monthLabel(month) }),
     ]);
+    // the days that may not be picked are shown as such, not silently ignored
+    const off = (d) => (lo() && d < lo()) || (hi() && d > hi());
+    const draw = () => {
+      body();
+      sheet.el.querySelectorAll('.day[data-day]').forEach((b) => { if (off(b.dataset.day)) b.disabled = true; });
+      const now = sheet.el.querySelector('.date-sheet__today');
+      if (now) now.disabled = off(todayIso());
+    };
     const pick = (day) => {
-      if ((min && day < min) || (max && day > max)) return;
+      if (off(day)) return;
       hidden.value = day;
       show();
       sheet.close();
@@ -116,7 +129,7 @@ export function dateInput({ name, value = '', onChange, placeholder = 'Vyber den
     };
     sheet = layer.open({ kind: 'sheet', title: label, body: [], cls: 'date-sheet' });
     draw();
-    requestAnimationFrame(() => (sheet.el.querySelector('.day[aria-selected="true"]') || sheet.el.querySelector('.day[data-today]'))?.focus());
+    requestAnimationFrame(() => (sheet.el.querySelector('.day[aria-selected="true"]:not(:disabled)') || sheet.el.querySelector('.day[data-today]:not(:disabled)') || sheet.el.querySelector('.day:not(:disabled):not([data-outside])'))?.focus());
   });
   const wrap = h('span', { class: 'date-field' }, btn, hidden);
   wrap.setValue = (iso) => { hidden.value = iso || ''; show(); };
