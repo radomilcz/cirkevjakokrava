@@ -119,6 +119,29 @@ export function fillRing(filled, total) {
   return svg;
 }
 
+/**
+ * Status ring: the slots of a meeting as one ring – confirmed (green), waiting for an answer (amber), missing (red),
+ * each part apart by a hair. statusRing({ confirmed: 12, waiting: 2, missing: 1 })
+ */
+export function statusRing({ confirmed = 0, waiting = 0, missing = 0 } = {}) {
+  const total = confirmed + waiting + missing;
+  const C = 2 * Math.PI * 11;
+  const svg = el('svg', { viewBox: '0 0 28 28', class: 'ring ring--status', 'aria-hidden': 'true' });
+  svg.append(el('circle', { class: 'ring__track', cx: 14, cy: 14, r: 11 }));
+  const parts = [[confirmed, 'ok'], [waiting, 'wait'], [missing, 'no']].filter(([n]) => n > 0);
+  const gap = parts.length > 1 ? 1.5 : 0;
+  let off = 0;
+  for (const [n, tone] of parts) {
+    const len = (C * n) / total;
+    svg.append(el('circle', {
+      class: `ring__part ring__part--${tone}`, cx: 14, cy: 14, r: 11,
+      'stroke-dasharray': `${Math.max(0, len - gap).toFixed(2)} ${C.toFixed(2)}`, 'stroke-dashoffset': (-off).toFixed(2),
+    }));
+    off += len;
+  }
+  return svg;
+}
+
 /** Static markup helper (specimen, server-free mockups): <span data-icon="home" data-size="s"></span>
     <span data-sym="waiting"></span> and <span data-ring="12/15"></span> are replaced by the SVG. */
 export function hydrate(root = document) {
