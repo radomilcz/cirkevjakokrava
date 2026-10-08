@@ -6,14 +6,15 @@
 import {
   h, field, textInput, textArea, segmented, segmentedField, switchRow, stepper, disclosure, chipsField,
   fieldError, clearErrors, formSheet, confirmSheet, toast, button, personName, plural, agree, callout, joinMeta,
+  chips, peoplePicker,
 } from './kit.js';
 import { S, newId, change, navigate } from '../../ui/state.js';
-import { personById, displayName } from '../../lib/people.js';
+import { personById, displayName, sortPeople } from '../../lib/people.js';
 import {
   groupById, roleById, rolesOf, membersOf, memberRecord, addMember, removeMember, setLeader, setSkill,
 } from '../../lib/groups.js';
 import { today, dayOf } from '../../lib/time.js';
-import { groupWords, KIND_CHOICES, compareGroups, peopleCount } from './people-common.js';
+import { groupWords, KIND_CHOICES, compareGroups, peopleCount, isFormer } from './people-common.js';
 
 const SKILL_CHOICES = [{ value: '', label: 'Neumí' }, { value: 'learning', label: 'Učí se' }, { value: 'trained', label: 'Umí' }];
 export const SKILL_WORDS = { trained: 'umí', learning: 'učí se', '': 'neumí' };
@@ -75,9 +76,44 @@ const KIND_HINTS = {
   leadership: 'Vedení sboru, třeba rada starších.',
 };
 
+/**
+ * „Kdo vede“ in the group's own sheet (the owner: choosing who leads belongs to the group's settings, not only to each
+ * person's card): the group's people as chips, the leaders pressed; „Přidej vedoucího“ picks anyone (they join the
+ * group as its leader on save). Returns { el, ids() }.
+ */
+function leadersField(group) {
+  const people = group ? membersOf(S.data, group.id).map((m) => personById(S.data, m.personId)).filter((p) => p && !isFormer(p)) : [];
+  const shown = sortPeople(people);
+  let chosen = group ? membersOf(S.data, group.id).filter((m) => m.leader).map((m) => m.personId) : [];
+  const box = h('div', { class: 'leaders-field__chips' });
+  const draw = () => box.replaceChildren(shown.length
+    ? chips(shown.map((p) => ({ value: p.id, label: personName(p) })), chosen, (v) => { chosen = v; }, { multiple: true, label: 'Kdo vede' })
+    : h('p', { class: 'field__hint' }, 'Zatím tu nikdo není – vyber vedoucího ze všech lidí.'));
+  const pick = () => {
+    const inside = new Set(shown.map((p) => p.id));
+    const others = sortPeople(S.data.people.filter((p) => !inside.has(p.id) && !isFormer(p)));
+    peoplePicker({
+      title: 'Kdo ji povede?',
+      pools: [{ id: 'all', label: 'Všichni lidé', items: others.map((p) => ({ person: p })) }],
+      everyone: others,
+      onPick: (p) => { shown.push(p); chosen = [...chosen, p.id]; draw(); },
+    });
+  };
+  draw();
+  // built by hand, not with field(): a <label for> would point at the first chip and press it on a click
+  const labelId = `leaders-${group?.id || 'new'}`;
+  const el = h('div', { class: 'field leaders-field', role: 'group', 'aria-labelledby': labelId },
+    h('p', { class: 'field__label', id: labelId }, 'Kdo vede', h('span', { class: 'field__optional' }, ' (nepovinné)')),
+    box,
+    shown.length ? h('p', { class: 'field__hint' }, 'Vyber jednoho nebo víc lidí ze skupiny.') : null,
+    button('Přidej vedoucího', { variant: 'quiet', size: 's', icon: 'plus', onclick: pick }));
+  return { el, ids: () => [...chosen] };
+}
+
 /** Add (null) or edit a group. Druh skupiny only when new. */
 export function groupSheet(group = null, { kind = 'team' } = {}) {
   const hint = h('p', { class: 'field__hint' }, KIND_HINTS[kind]);
+  const leaders = leadersField(group);
   const sheet = formSheet({
     title: group ? 'Úprava skupiny' : 'Nová skupina',
     submitLabel: group ? 'Ulož' : 'Přidej skupinu',
@@ -86,6 +122,7 @@ export function groupSheet(group = null, { kind = 'team' } = {}) {
         segmentedField({ name: 'kind', label: 'Druh skupiny', value: kind, options: KIND_CHOICES, onChange: (v) => { hint.textContent = KIND_HINTS[v]; } }), hint),
       field({ label: 'Název', control: textInput({ name: 'name', value: group?.name || '', autocomplete: 'off', placeholder: 'např. Uvaděči' }) }),
       field({ label: 'Popis', optional: true, hint: 'Co dělají a kdy se scházejí.', control: textArea({ name: 'description', value: group?.description || '', rows: 3 }) }),
+      leaders.el,
     ],
     onSubmit: (f) => {
       clearErrors(f);
@@ -102,6 +139,10 @@ export function groupSheet(group = null, { kind = 'team' } = {}) {
         S.data.groups.push(target);
       }
       if (description) target.description = description; else delete target.description;
+      // who leads: the chosen ones lead (joining the group when new to it), the others stay members without the flag
+      const lead = new Set(leaders.ids());
+      for (const m of membersOf(S.data, target.id)) if (!lead.has(m.personId) && m.leader) setLeader(S.data, target.id, m.personId, false);
+      for (const id of lead) setLeader(S.data, target.id, id, true);
       if (!group) navigate(`#lide/skupiny/${target.id}`);
       change(group ? `skupina ${name}` : `nová skupina ${name}`);
       toast(group ? 'Uloženo.' : `Přidáno: ${name}.`);
