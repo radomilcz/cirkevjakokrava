@@ -105,7 +105,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
   let dropOk = '';   // the fields the person agreed to drop (a guest without consent keeps only the first name)
   let form = null;
   const dupe = h('div', { hidden: true });
-  const consentBox = h('div', { hidden: true });
+  const consentBox = h('div', { class: 'consent-box', hidden: true });
   const consentNote = callout({ tone: 'info', text: 'Bez souhlasu smíme mít u hosta jen křestní jméno. U dítěte stačí souhlas rodiče z jeho domácnosti.' });
   const household = householdSelect({ value: householdId, suggest: () => householdNameFor(form?.elements.lastName.value, form?.elements.firstName.value) });
   const consent = switchRow({ label: 'Souhlasí se zpracováním údajů', hint: 'Zvonec zapíše dnešní datum.', name: 'consent', onChange: () => update() });
