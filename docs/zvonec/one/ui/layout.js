@@ -57,7 +57,7 @@ function moreButton(menu, title) {
  * action.phoneMenu: on a phone the action is not an „add“ and has no room for its label (Obsazení: „Doplň volná
  * místa“) → it becomes the first item of ⋯ there.
  */
-export function titleRow({ title, action, menu, headingId } = {}) {
+export function titleRow({ title, action, menu, headingId, tools } = {}) {
   let items = menu;
   let act = action;
   if (act && act.phoneMenu && isPhone()) {
@@ -68,6 +68,7 @@ export function titleRow({ title, action, menu, headingId } = {}) {
   const actions = [moreButton(items, title), act ? mainAction(act) : null].flat().filter(Boolean);   // ⋯ first: the main action ends at the edge
   return h('header', { class: 'head' },
     h('h1', { class: 'title head__title', id: headingId }, title),
+    tools || null,
     actions.length ? h('div', { class: 'head__actions' }, actions) : null);
 }
 
@@ -122,19 +123,23 @@ const paneSlot = (pane, label) => h('aside', { class: 'split__pane', 'aria-label
 export function listScreen({ title, action, menu, search, filter, views, body, pane, wide = false, label, cls } = {}) {
   const split = isSplit();
   const bodyEl = h('div', { class: 'ls__body' }, body);
+  // ≥ 1200 B joins A: [h1 ········ search · Filtr · ⋯ · main action] over the whole frame, C under it (the owner: one
+  // calm row instead of three bands); below 1200 B is its own row under A, as on a phone
+  const bar = toolbar({ search: search || { placeholder: 'Hledej' }, filter });
   const controls = [
-    toolbar({ search: search || { placeholder: 'Hledej' }, filter }),
+    split ? null : bar,
     views ? h('div', { class: 'ls__views' }, segmented(views.options, views.value, null, { label: views.label || 'Zobrazení' })) : null,
-  ];
+  ].filter(Boolean);
+  const controlsEl = controls.length ? h('div', { class: 'ls__controls' }, controls) : null;
   const paneEl = split && !wide ? paneSlot(pane, label) : null;
   const main = h('main', {
     class: ['screen', 'ls', wide && 'ls--wide', split && 'ls--split', cls], id: 'main', tabIndex: -1,
   },
   h('div', { class: 'frame' },
-    titleRow({ title, action, menu }),
+    titleRow({ title, action, menu, tools: split ? bar : null }),
     wide
-      ? [h('div', { class: 'ls__controls' }, controls), bodyEl]
-      : [h('div', { class: 'ls__list' }, h('div', { class: 'ls__controls' }, controls), bodyEl), paneEl]));
+      ? [controlsEl, bodyEl]
+      : [h('div', { class: 'ls__list' }, controlsEl, bodyEl), paneEl]));
   main.setBody = (content) => bodyEl.replaceChildren(...nodes(content));
   main.setPane = (content) => paneEl?.replaceChildren(...nodes(content));
   return main;

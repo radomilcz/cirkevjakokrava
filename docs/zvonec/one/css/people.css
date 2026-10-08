@@ -6,7 +6,7 @@
 /* ---------- list ---------- */
 .meta-wait { color: var(--wait-ink); }
 .list-foot { margin-top: var(--gap-y); padding: 0 var(--space-3); }
-.ls__body > .row-link:first-child { margin-bottom: var(--gap-y); }
+.ls__body > .row-link:is(:first-child, .groups-entry + *) { margin-bottom: var(--gap-y); }
 .ls__body > .row-link + .list > .subhead:first-child { padding-top: 0; }
 /* the archive question (Filtr › Ukaž i archiv) closes D, under the count */
 .ls__body > .list-foot + .callout { margin-top: var(--gap-group); }
@@ -85,8 +85,9 @@
 .duty-mark { display: inline-flex; align-items: center; }
 
 /* ---------- Podrobný výpis ---------- */
-.people-mode { margin-bottom: var(--gap-y); }
-.people-mode > .link { display: inline; }
+/* a phone: Skupiny is the first row of Lidé (the tab bar has no room for it) */
+.groups-entry { margin-bottom: var(--space-4); }
+.groups-entry__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--radius-m); background: var(--tint); color: var(--ink-2); }
 
 /* the bulk bar above the table once someone is ticked */
 .people-bulk {

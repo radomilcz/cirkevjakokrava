@@ -22,11 +22,16 @@ export const NAV = [
   ['obsazeni', 'Obsazení', 'plus-circle', '#obsazeni', 'leader', 'main', 'staffing'],
   ['kalendar', 'Kalendář', 'calendar', '#kalendar', 'member', 'main'],
   ['lide', 'Lidé', 'people', '#lide', 'member', 'main'],
+  ['skupiny', 'Skupiny', 'teams', '#lide/skupiny', 'member', 'main'],
   ['sablony', 'Šablony', 'layers', '#sablony', 'leader', 'gather'],
   ['formaty', 'Formáty', 'book', '#formaty', 'leader', 'gather'],
   ['mista', 'Místa', 'pin', '#mista', 'leader', 'gather'],
 ];
 export const GROUP_TITLES = { gather: 'Zdroje' };
+
+/** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab. */
+const NOT_A_TAB = new Set(['skupiny']);
+const TAB_OF = { skupiny: 'lide' };
 
 /** Routes whose nav value is 'me' are the person's menu pages (Můj účet, Kdy nemůžu, Přístupy, Nastavení sboru). */
 const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista']);
@@ -82,7 +87,7 @@ function build() {
   const openMenu = (e) => openMeMenu({ from: e.currentTarget });
 
   // tab bar (< 600): the main group + the person tab
-  const tabs = items.filter(([, , , , , group]) => group === 'main').map(([id, label, iconName, href, , , countKey]) => h('a', {
+  const tabs = items.filter(([id, , , , , group]) => group === 'main' && !NOT_A_TAB.has(id)).map(([id, label, iconName, href, , , countKey]) => h('a', {
     class: 'tab', href, dataset: { nav: id }, onclick: topOnCurrent,
   }, h('span', { class: 'tab__niche' }, icon(iconName), countKey ? h('span', { class: 'tab__badge', dataset: { count: countKey } }) : null),
   h('span', { class: 'tab__label' }, label)));
@@ -119,7 +124,7 @@ function build() {
 
 /**
  * Show or hide the navigation for a route and light its current item. `nav`: the route's nav value ('moje' ·
- * 'obsazeni' · 'kalendar' · 'lide' · 'sablony' · 'formaty' · 'mista' · 'me' for the person's menu pages · null).
+ * 'obsazeni' · 'kalendar' · 'lide' · 'skupiny' · 'sablony' · 'formaty' · 'mista' · 'me' for the person's menu pages · null).
  */
 export function updateNav({ visible, nav }) {
   document.body.classList.toggle('has-nav', visible);
@@ -131,7 +136,7 @@ export function updateNav({ visible, nav }) {
   if (key !== shellKey) { shellKey = key; build(); }
 
   for (const el of document.querySelectorAll('.tabbar [data-nav]')) {
-    const current = el.dataset.nav === 'me' ? PHONE_PERSON.has(nav) : el.dataset.nav === nav;
+    const current = el.dataset.nav === 'me' ? PHONE_PERSON.has(nav) : el.dataset.nav === (TAB_OF[nav] || nav);
     if (current) el.setAttribute('aria-current', 'page'); else el.removeAttribute('aria-current');
   }
   for (const el of document.querySelectorAll('.sidenav [data-nav]')) {

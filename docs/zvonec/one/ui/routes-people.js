@@ -10,7 +10,7 @@ export const ROUTES = {
     render: renderPeopleRoute,
     // Podrobný výpis: leaders from 900, everyone on a desktop (people.js; members see Next's member columns)
     access: (parts) => (parts[0] === 'domacnost' ? 'leader' : 'member'),
-    nav: 'lide',
+    nav: (parts) => (parts[0] === 'skupiny' ? 'skupiny' : 'lide'),   // Skupiny is its own sidebar item
   },
 };
 
