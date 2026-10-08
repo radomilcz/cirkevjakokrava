@@ -421,14 +421,18 @@ export const card = (body, { cls, label, tag: tagName = 'div' } = {}) => h(tagNa
  * Facts under a detail's h1 (CODEX §6.4): rows 32, icon 20 + text, 8 apart; a linked fact ends in › and lights as
  * a row. facts([{ icon: 'clock', text: 'čt 8. 10. · 18.30–20.30' }, { icon: 'pin', text: 'Monta, Sál', href: '#mista/x' },
  * { icon: 'phone', text: '731 204 118', href: 'tel:…', external: true }]) – `external` (tel:, mailto:, a map) has no ›.
- * An `onclick` fact is a button with ›.
+ * An `onclick` fact is a button with ›. A fact opening a new tab (`target: '_blank'`) ends in ↗; `action` puts accent
+ * words at the end instead of the › (`{ icon: 'pencil', text: 'Popis pro web zatím chybí', action: 'Doplň', onclick }`);
+ * `aria` names a linked fact when its words alone do not say where it leads.
  */
 export function facts(items) {
   return h('div', { class: 'facts' }, items.filter(Boolean).map((f) => {
-    const inner = [icon(f.icon || 'info', { size: 's' }), h('span', { class: 'fact__text' }, f.text),
-      (f.href || f.onclick) && !f.external ? icon('chevron-right', { size: 's', cls: 'fact__chevron' }) : null];
-    if (f.href) return h('a', { href: f.href, class: 'fact fact--link', target: f.target, rel: f.target ? 'noopener noreferrer' : null }, inner);
-    if (f.onclick) return h('button', { type: 'button', class: 'fact fact--link', onclick: f.onclick }, inner);
+    const end = f.action ? h('span', { class: 'fact__do' }, f.action)
+      : f.target === '_blank' ? icon('external', { size: 's', cls: 'fact__chevron' })
+        : (f.href || f.onclick) && !f.external ? icon('chevron-right', { size: 's', cls: 'fact__chevron' }) : null;
+    const inner = [icon(f.icon || 'info', { size: 's' }), h('span', { class: 'fact__text' }, f.text), end];
+    if (f.href) return h('a', { href: f.href, class: 'fact fact--link', target: f.target, rel: f.target ? 'noopener noreferrer' : null, 'aria-label': f.aria }, inner);
+    if (f.onclick) return h('button', { type: 'button', class: 'fact fact--link', onclick: f.onclick, 'aria-label': f.aria }, inner);
     return h('p', { class: 'fact' }, inner);
   }));
 }

@@ -737,6 +737,7 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .fact--link { margin: 0 calc(-1 * var(--space-3)); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-m); background: none; text-align: left; font: inherit; font-size: 16px; cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
 .fact--link:hover { background: var(--wash); }
 .fact__chevron { margin-left: auto; color: var(--ink-3) !important; }
+.fact__do { flex: none; margin-left: auto; font-weight: var(--weight-control); color: var(--ink-accent); }
 .fact__link { color: inherit; text-decoration: underline; text-decoration-color: var(--edge-control); text-underline-offset: 3px; }
 
 /* section: h2 20/26 + at most one action or value at its right edge. Proximity says what belongs together: the h2 sits

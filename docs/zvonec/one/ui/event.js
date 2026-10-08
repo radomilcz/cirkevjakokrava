@@ -18,7 +18,7 @@
 import {
   h, icon, detail, detailHead, facts, section, sectionAction, kindTag, pill, button, buttonRow, list, row, fill,
   link, rowLink, switchRow, stepper, field, textArea, formSheet, confirmSheet, layer, toast, statusNote,
-  statusSymbol, STATUS_KEY, teamMark, slot, plural, agree, clock, mapLink, hasCoords, canMap, uid, SEP, missingItem,
+  statusSymbol, STATUS_KEY, teamMark, slot, plural, agree, clock, mapUrl, hasCoords, canMap, uid, SEP, missingItem,
 } from './kit.js';
 import { S, can, myId, change, render } from '../../ui/state.js';
 import { eventById, followingInSeries, seriesFor, seriesSummary } from '../../lib/events.js';
@@ -430,27 +430,36 @@ function osnovaSection(event) {
 
 // ---------- O setkání ----------
 
-/** The description, Pro tým, the address with „Otevři v mapě ↗“, „Ukaž na webu“ (leaders). */
+/**
+ * The description (prose, on top), Pro tým, then one column of facts with the head's icon rail: the missing
+ * description (leaders), the address with a map ↗ (only when it can be mapped – the place itself is in the head),
+ * „Ukaž na webu“ (leaders).
+ */
 function aboutSection(event) {
-  const leader = can('leader');
+  const leader = can('leader') && !event.cancelled;
   const places = placesOf(event);
-  const main = places.find(hasCoords) || places.find(canMap) || places[0];
+  const main = places.find(hasCoords) || places.find(canMap);
   const description = String(event.description || '').trim();
   const note = String(event.note || '').trim();
   const address = main ? [main.building || main.name, main.address].filter(Boolean).join(SEP) : '';
-  if (!leader && !description && !note && !main) return null;
+  const rows = facts([
+    !description && leader ? { icon: 'pencil', text: 'Popis pro web zatím chybí', action: 'Doplň', aria: 'Doplň popis pro web', onclick: () => openEditEvent(event.id) } : null,
+    main ? { icon: 'pin', text: address, href: mapUrl(main), target: '_blank', aria: `Otevři v mapě: ${address}` } : null,
+  ]);
+  if (leader) {
+    rows.append(h('div', { class: 'ev-public' }, icon('globe', { size: 's' }), switchRow({
+      label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
+      onChange: (on) => publish(event.id, on),
+    })));
+  }
+  if (!description && !note && !rows.childElementCount) return null;
   return section({
     title: 'O setkání',
     cls: 'ev-about',
     body: [
-      description ? h('p', { class: 'text ev-text' }, description)
-        : leader && !event.cancelled ? h('p', { class: 'meta ev-missing' }, 'Popis pro web zatím chybí. ', link('Doplň popis', { onclick: () => openEditEvent(event.id) })) : null,
+      description ? h('p', { class: 'text ev-text' }, description) : null,
       note ? h('div', { class: 'ev-note' }, h('p', { class: 'ev-note__label' }, 'Pro tým'), h('p', { class: 'text' }, note)) : null,
-      main ? h('div', { class: 'ev-where' }, h('p', { class: 'ev-where__text' }, address), mapLink(main)) : null,
-      leader && !event.cancelled ? switchRow({
-        label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
-        onChange: (on) => publish(event.id, on),
-      }) : null,
+      rows.childElementCount ? rows : null,
     ],
   });
 }
