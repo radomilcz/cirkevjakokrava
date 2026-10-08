@@ -50,7 +50,7 @@ const need = (x) => { shape(x, { roleId: [true, isStr], count: [true, isInt] }, 
 const SPEC = {
   person: {
     id: [true, (x) => /^p/.test(x)], firstName: [true, isStr], lastName: [false, isStr], nickname: [false, isStr],
-    phone: [false, isStr], email: [false, isStr], householdId: [false, isStr],
+    phone: [false, isStr], email: [false, isStr], householdId: [false, isStr], photo: [false, (x) => /^i-[a-z0-9]{8}\.(webp|jpg)$/.test(x)],
     birthDate: [false, (x) => /^\d{4}$/.test(x) || isDate(x)],
     membership: [true, (x) => {
       shape(x, { status: [true, oneOf('member', 'regular', 'guest', 'former')], since: [false, isDate], until: [false, isDate] }, 'membership');

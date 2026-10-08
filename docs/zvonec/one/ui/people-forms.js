@@ -21,6 +21,7 @@ import {
 import { groupById, memberRecord, addMember } from '../../lib/groups.js';
 import { limitsOf, DEFAULT_LIMITS } from '../../lib/scheduling.js';
 import { archivePerson, restorePerson, deletePersonKeepHistory, futureDutiesOf } from '../../lib/archive.js';
+import { dropPhoto } from './photo.js';
 import { today, now } from '../../lib/time.js';
 import {
   childAge, fold, fullDate, householdNameFor, activeGroups, groupWords, peopleCount, isFormer, isKid,
@@ -579,7 +580,9 @@ export function deletePerson(person) {
     ].filter(Boolean).join(' '),
     confirmLabel: 'Smaž kartu',
     onConfirm: () => {
-      if (!deletePersonKeepHistory(S.data, id, { now: now() })) { toast(gone, { icon: 'alert' }); return; }
+      const done = deletePersonKeepHistory(S.data, id, { now: now() });
+      if (!done) { toast(gone, { icon: 'alert' }); return; }
+      dropPhoto(done.photo);
       revoke(id, `smazaná karta ${displayName(person)}`);
       navigate('#lide');
       change(`smazaná karta ${displayName(person)}`);
@@ -600,7 +603,9 @@ export function deleteOverdueSheet(people) {
     confirmLabel: `Smaž ${what}`,
     onConfirm: () => {
       for (const p of people) {
-        if (!deletePersonKeepHistory(S.data, p.id, { now: now() })) continue;
+        const done = deletePersonKeepHistory(S.data, p.id, { now: now() });
+        if (!done) continue;
+        dropPhoto(done.photo);
         revoke(p.id, `smazaná karta ${displayName(p)}`);
       }
       change(`smazané karty z archivu (${people.length})`);

@@ -21,7 +21,8 @@
 .tpl-outline__foot { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--gap-y); }
 .tpl-description { max-width: 62ch; margin-top: var(--gap-y); }
 .tpl-image:not([hidden]) { display: block; margin-top: var(--gap-y); overflow: hidden; border-radius: var(--shape-block); background: var(--tint); }
-.tpl-image > img { display: block; width: 100%; max-height: 240px; object-fit: cover; }
+.tpl-image:not([hidden]) { max-width: 360px; }
+.tpl-image > img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }   /* 16 : 9 as stored */
 .tpl-image-field .tpl-image:not([hidden]) { margin: 0 0 var(--gap-y); }
 .tpl-image__actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); }
 .tpl-places { display: grid; gap: var(--gap-y); }

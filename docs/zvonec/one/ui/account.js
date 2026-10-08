@@ -8,6 +8,7 @@
 // Without a card in Lidé: a callout instead of Moje karta. Also the demo's „Podívej se očima druhých“ (viewAsSheet)
 // and the demo sign-out (demoSignOut), which the person's menu calls.
 
+import { headAvatar } from './photo.js';
 import {
   S, myId, change, actAs, logout, render, updateLogins, ACCESS_LABELS, ACCESS_VIEW,
 } from '../../ui/state.js';
@@ -188,7 +189,7 @@ function who(person) {
   const live = S.mode === 'live';
   const role = ACCESS_LABELS[S.me?.access] || '';
   return h('div', { class: 'acct-who' },
-    person ? avatar(person, { size: 'xl' }) : h('span', { class: 'avatar avatar--xl', 'aria-hidden': 'true' }, icon('user')),
+    person ? headAvatar(person, { me: true }) : h('span', { class: 'avatar avatar--xl', 'aria-hidden': 'true' }, icon('user')),
     h('div', { class: 'acct-who__text' },
       h('p', { class: 'acct-who__name' }, person ? personName(person) : live ? 'Bez karty v Lidech' : 'Správce bez karty'),
       role ? h('p', { class: 'acct-who__role' }, role) : null));

@@ -20,6 +20,7 @@ import {
 } from './ui/kit.js';
 import { updateNav, resetNav } from './ui/nav.js';
 import { renderKit } from './ui/kit-page.js';
+import './ui/photo.js';   // avatars show people's photos
 import * as MINE from './ui/routes-mine.js';
 import * as CALENDAR from './ui/routes-calendar.js';
 import * as EVENT from './ui/routes-event.js';

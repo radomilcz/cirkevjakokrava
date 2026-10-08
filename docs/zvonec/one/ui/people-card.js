@@ -35,6 +35,7 @@ import { blockoutSection } from './blockouts.js';
 import { inviteSheet, accessOf } from './access.js';
 import { warningFor, openMyAnswer } from './event-duties.js';
 import { downloadDuties } from './calendar-shared.js';
+import { headAvatar } from './photo.js';
 
 const NEXT_SHOWN = 4;
 const ACCESS_WORDS = { admin: 'správce', leader: 'vedoucí', member: 'člen' };
@@ -98,7 +99,8 @@ function personHead(person) {
   const groups = groupsInOrder(person.id);
   const factList = [birthdayFact(person)].filter(Boolean);
   return detailHead({
-    mark: avatar(person, { size: 'xl', me: self }),
+    mark: headAvatar(person, { me: self }),
+    side: true,
     tags: [
       self ? pill('ty') : null,
       word ? pill(word) : null,
