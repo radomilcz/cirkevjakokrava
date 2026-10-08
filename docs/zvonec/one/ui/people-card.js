@@ -92,15 +92,14 @@ function birthdayFact(person) {
   return { icon: 'cake', text: joinMeta([when, years != null ? yearsText(years) : null]) };
 }
 
-function personHead(person) {
+function personHead(person, { cornered = false } = {}) {
   const leader = can('leader');
   const self = person.id === myId();
   const word = leader ? (isKid(person) && !isFormer(person) ? kidText(person) : MEMBERSHIP_WORDS[statusOf(person)]) : null;
   const groups = groupsInOrder(person.id);
   const factList = [birthdayFact(person)].filter(Boolean);
   return detailHead({
-    mark: headAvatar(person, { me: self }),
-    side: true,
+    mark: cornered ? null : headAvatar(person, { me: self }),   // in a pane the avatar is the card's corner (detail)
     tags: [
       self ? pill('ty') : null,
       word ? pill(word) : null,
@@ -340,10 +339,10 @@ function noteSection(person) {
 // ---------- the detail ----------
 
 /** The body of the person's detail (the same in a pane and on a page). */
-export function personBody(person) {
+export function personBody(person, { cornered = false } = {}) {
   const leader = can('leader');
   return [
-    personHead(person),
+    personHead(person, { cornered }),
     leader ? archiveCallout(person) : null,
     leader ? missingCallout(person) : null,
     leader ? problemsSection(person) : null,
@@ -365,7 +364,13 @@ export function personDetail(person, { frame = 'pane', back, close } = {}) {
   if (!person) {
     return missingItem({ frame, back, close, label: 'Člověk', icon: 'user', title: 'Tenhle člověk tu už není.', text: 'Možná někdo kartu smazal, nebo je odkaz starý.' });
   }
-  return detail({ frame, back, close, menu: personMenuItems(person), label: personName(person), title: personName(person), body: personBody(person) });
+  // a pane with nothing on the left of its action row: the avatar takes that top-left corner, level with ⋯ and ✕
+  const cornered = frame === 'pane' && !back;
+  return detail({
+    frame, back, close, menu: personMenuItems(person), label: personName(person), title: personName(person),
+    corner: cornered ? headAvatar(person, { me: person.id === myId() }) : null,
+    body: personBody(person, { cornered }),
+  });
 }
 
 // ---------- Domácnost ----------

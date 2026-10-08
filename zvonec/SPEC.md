@@ -381,7 +381,8 @@ public?: boolean, description?, image? }`
 - `description` = „Popis pro web“. `public` = „Ukaž na webu“; only `true` publishes.
 - Cover image: the event's `image`, else its template's, else a generated arch cover in the kind's hue. An uploaded
   picture is cut to its middle 16 : 9 and scaled to at most 1600 × 900 (`one/ui/cover-image.js`), so the same thumbnail
-  works in the Setkání band (shown whole, 16 : 9) and in a public listing; the generated cover stays a 96 strip.
+  works in a public listing; the Setkání band shows it at 16 : 9 but at most 180 tall (220 on a ≥ 600 page), the generated
+  cover stays a 96 strip.
 - `attendance` („Kolik lidí přišlo“, 0–999 each) is entered after the start. Zeros are dropped. Never per person.
 
 ### 5.10 need
@@ -1012,7 +1013,8 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
 - **Podrobný výpis** `#lide/vypis`: sortable table Jméno, Členství*, Domácnost, Telefon, E-mail, Skupiny,
   Narozeniny*, Poslední služba* (* leaders). Ticks + bulk bar „3 vybraní lidé“ [Zkopíruj e-maily] [Přidej do
   skupiny] [Stáhni seznam] [Zruš výběr]. Spans the frame; compact beside an open pane.
-- **Person detail** `#lide/<id>`: avatar 72 left of the pills and the name (a button with a „+“ badge for leaders and
+- **Person detail** `#lide/<id>`: avatar 72 in the card's top-left corner – in a pane on the row of ⋯ and ✕, on a page
+  first under the top bar (a button with a „+“ badge for leaders and
   the person: sheet „Fotka“ – Vyber fotku / Vyber jinou / Odeber fotku, cut to a 512 square, „Uvidí ji jen přihlášení
   ve Zvonci, na veřejný web se nedostane.“; the same on Můj účet); pills „ty“ / membership (leaders) / team pills; h1; birthday fact
   (leaders and self). Contact tiles [Zavolej] [SMS] [E-mail] L 52 (only those with data, never on my own card).

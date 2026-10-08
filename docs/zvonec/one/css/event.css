@@ -12,10 +12,10 @@
   background: var(--hue-fill, var(--tint));
 }
 @media (min-width: 600px) { .detail--page .dhead__band > .ev-band { height: 120px; } }
-/* a picture is 16 : 9 (ui/cover-image.js crops it so) and the band shows it whole – the same thumbnail a public listing
-   will show; the generated arches stay a 96 strip */
-.ev-band.ev-cover--photo { height: auto; aspect-ratio: 16 / 9; }
-@media (min-width: 600px) { .detail--page .dhead__band > .ev-band.ev-cover--photo { height: auto; } }
+/* a picture is stored 16 : 9 (ui/cover-image.js crops it so – the thumbnail of a public listing); the band shows it
+   at 16 : 9 but never taller than 180 (220 on a ≥ 600 page), so it does not eat the detail; the arches stay a 96 strip */
+.ev-band.ev-cover--photo { height: auto; aspect-ratio: 16 / 9; max-height: 180px; }
+@media (min-width: 600px) { .detail--page .dhead__band > .ev-band.ev-cover--photo { height: auto; max-height: 220px; } }
 .ev-band.ev-cover--photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .ev-band .ev-cover__arch {
   --w: 92px;

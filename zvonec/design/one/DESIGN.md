@@ -1,10 +1,11 @@
 # Zvonec One: the design
 
-> **Update – photos and 16 : 9 pictures (2026-10-08).** A person's avatar stands left of the name (not above it) and can
-> be a photo: leaders and the person themself tap it („+“ badge) → „Fotka“, the middle square is cut to 512 px and saved
+> **Update – photos and 16 : 9 pictures (2026-10-08).** A person's avatar sits in the card's top-left corner (in a pane on
+> the row of ⋯ and ✕; on a page first under the top bar – beside the name was „bad“) and can be a photo: leaders and the person themself tap it („+“ badge) → „Fotka“, the middle square is cut to 512 px and saved
 > in the data repo (`person.photo`); every avatar shows it. Photos are never public. A meeting's or template's picture
-> is cut to its middle 16 : 9 (at most 1600 × 900) and the Setkání band shows it whole, so the thumbnail will look right
-> in a public listing too; without a picture the arches stay a 96 strip.
+> is cut to its middle 16 : 9 (at most 1600 × 900), so the thumbnail will look right in a public listing; the Setkání band
+> shows it at 16 : 9 but at most 180 tall (220 on a page) – whole it took too much room; without a picture the arches
+> stay a 96 strip.
 
 > **Update – One is the only Zvonec (2026-10-08).** Next, Simple and the original app (stara.html, app.js, the old
 > ui/ and css/) are deleted; the main address opens One (`go.js`) and the data repo's web.yml publishes only

@@ -755,6 +755,9 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .pane { position: relative; padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: var(--lift-2); min-width: 0; }
 .pane__actions { display: flex; align-items: center; gap: var(--gap-x); min-height: var(--control-m); }
 .pane__spacer { flex: 1; }
+/* a person's avatar in the card's top-left corner: the row takes its height, ⋯ and ✕ stay at its top */
+.pane__actions--corner { align-items: flex-start; }
+.pane__corner { display: flex; }
 .pane__back, .topbar__back { gap: 4px; padding: 0 14px 0 8px; }
 .pane__back > span, .topbar__back > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 28ch; }
 .pane__actions + .pane__body { margin-top: var(--gap-y); }
@@ -789,12 +792,6 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .dhead__mark { margin-bottom: var(--space-4); }
 .dhead__tags { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-bottom: var(--space-2); }
 .dhead__title { font-size: var(--type-title-pane); line-height: var(--lh-title-pane); }
-.dhead--side { justify-items: stretch; }
-/* a person: the avatar left of the tags and the name, both centred on it */
-.dhead__id { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
-.dhead__id > .dhead__mark { margin-bottom: 0; flex: none; }
-.dhead__name { display: grid; justify-items: start; min-width: 0; }
-.dhead__name > .dhead__title { overflow-wrap: break-word; max-width: 100%; }
 .detail--page .dhead__title { font-size: var(--type-title); line-height: var(--lh-title); }
 .dhead > .facts { justify-self: stretch; margin-top: var(--gap-y); }
 .dhead__after { justify-self: stretch; margin-top: var(--space-5); }
