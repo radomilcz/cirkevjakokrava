@@ -535,14 +535,30 @@ function bulkBar(redraw) {
       button('Zruš výběr', { size: 's', variant: 'quiet', onclick: done })));
 }
 
+/**
+ * Every second shown column on a faint band, as in Rozpis. Which columns show is the table's own width (container
+ * queries in css/people.css), so the banded ones are counted from the shown head cells: table[data-band="phone groups"].
+ */
+function bandColumns(box) {
+  const tableEl = box.querySelector('table.people-table');
+  if (!tableEl?.tHead) return;
+  const shown = [...tableEl.tHead.rows[0].cells].filter((c) => !c.classList.contains('col-pick') && getComputedStyle(c).display !== 'none');
+  tableEl.dataset.band = shown.filter((_, i) => i % 2 === 1)
+    .map((c) => [...c.classList].find((x) => x.startsWith('col-'))?.slice(4)).filter(Boolean).join(' ');
+}
+
 /** Tabulka: compact (a person open beside it) keeps the name and the phone, the open person marked. */
 function tableBody({ openId, compact = false } = {}) {
   const box = h('div', { class: 'people-table-box' });
+  // the bands follow the width: counted once the box is laid out and again whenever its width changes
+  const sized = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { if (box.isConnected) bandColumns(box); else sized.disconnect(); }) : null;
+  sized?.observe(box);
   const redraw = () => {
     const active = document.activeElement;
     const pickId = box.contains(active) ? active.dataset?.pick : null;
     const sortCol = box.contains(active) && active.closest('th') ? [...active.closest('th').classList].find((c) => c.startsWith('col-')) : null;
     box.replaceChildren(...tableParts({ openId, compact, redraw }).filter(Boolean));
+    if (box.isConnected) bandColumns(box);
     if (pickId) box.querySelector(`[data-pick="${CSS.escape(pickId)}"]`)?.focus();
     else if (sortCol) box.querySelector(`th.${sortCol} button`)?.focus();
   };
