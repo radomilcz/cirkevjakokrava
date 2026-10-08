@@ -1,9 +1,9 @@
 # Zvonec One: the codex
 
-The binding rules for every screen, sheet, pane and menu of One (`docs/zvonec/one/`). It is codex v2
+The binding rules for every screen, sheet, pane and menu of One (`docs/zvonec/`). It is codex v2
 (`zvonec/design/one-question/codex.md`) adjusted to `DESIGN.md`. Where v2 and this file differ, this file wins
 for One. A screen never sets its own size, corner, weight, gap or colour: it uses a token or a kit component.
-Tokens live in `one/css/tokens.css` (forked from `simple/css/next-tokens.css`, names kept, values below).
+Tokens live in `docs/zvonec/css/tokens.css` (forked from `simple/css/next-tokens.css`, names kept, values below).
 
 Changes from v2, in one line each:
 1. The toolbar is **one row: search + Filtr**. The view switch is its own row under it; the period is the first line
@@ -112,7 +112,7 @@ Agrandir Grand Heavy (`--font-brand`) only for the wordmark.
 - A block that leads to a detail is **one link** with a whole-block hover; its inner controls (call button, slot,
   „○ … ›“) still work and stop the click from reaching the block.
 
-## 6. The shared components (one build each, in `one/ui/kit/`)
+## 6. The shared components (one build each, in `docs/zvonec/ui/`)
 
 ### 6.1 Screen head – `screenHead({ title, action, menu, back })`
 

@@ -1,0 +1,67 @@
+/* ============================================================
+   Zvonec One – the signed-out pages and Pastva. Owned by package P1.
+   Přihlášení, Nový Zvonec, Pozvánka (.gate) and the public Pastva (.pub). No app chrome on any of them.
+   Tokens only (css/palettes.css → css/tokens.css), no raw colours.
+   ============================================================ */
+
+/* ---------- the gate: a centred column max 400; ≥ 600 a block (r20, --card, padding 32) a fifth of the window down ---------- */
+.screen.gate { display: grid; justify-items: center; align-content: start; padding-top: calc(env(safe-area-inset-top) + var(--space-6)); padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-8)); }
+.gate__box { display: grid; width: 100%; max-width: 400px; min-width: 0; }
+.gate__brand { justify-self: start; font-family: var(--font-brand); text-decoration: none; }
+.gate__brand:hover { text-decoration: none; }
+.gate__title { margin-top: var(--space-5); font-size: var(--type-title-pane); line-height: var(--lh-title-pane); }
+.gate__sentence { margin-top: var(--space-2); font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); }
+.gate__box > :is(.gate__form, .list, .gate__problem, .skeleton-list) { margin-top: var(--gap-group); }
+.gate__form { gap: var(--gap-y); }
+.gate__form > .switch-row { margin-top: var(--space-1); }
+.gate__form > .btn--l { margin-top: var(--space-3); }
+.gate__form > .disclosure { margin-top: var(--space-1); }
+.gate__error[hidden] { display: none; }
+.gate__part { margin-top: var(--space-4); font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.gate__form > .gate__part:first-child { margin-top: 0; }
+.gate__steps { display: grid; gap: var(--space-2); margin: 0; padding-left: 1.3em; color: var(--ink-2); font-size: var(--type-meta); line-height: var(--lh-meta); }
+.gate__problem { display: grid; gap: var(--gap-y); }
+.gate__foot { display: grid; justify-items: start; gap: var(--space-2); margin-top: var(--space-5); }
+.gate__note { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.gate__pastva { min-height: var(--control-m); }
+@media (min-width: 600px) {
+  .screen.gate { padding-top: max(var(--space-7), 20vh); }
+  .gate__box { max-width: 464px; padding: var(--space-6); border-radius: var(--shape-block); background: var(--card); box-shadow: var(--lift-2); }
+}
+
+/* ---------- Pastva: a header 64, then one column 720, centred ---------- */
+.screen.pub { padding-top: 0; }
+.pub-head {
+  display: flex; align-items: center; gap: var(--gap-x); min-height: calc(64px + env(safe-area-inset-top));
+  max-width: 720px; margin: 0 auto; padding-top: env(safe-area-inset-top);
+}
+.pub-head__brand { display: inline-flex; min-width: 0; overflow: hidden; align-items: center; min-height: var(--control-m); color: var(--ink); text-decoration: none; }
+.pub-head__gap { flex: 1; }
+.pub-head__login { flex: none; }
+.pub-head__back { gap: 4px; padding: 0 14px 0 8px; }
+.pub__col { display: grid; align-content: start; max-width: 720px; margin: 0 auto; padding-top: var(--space-4); min-width: 0; }
+.pub__title { font-size: var(--type-title); line-height: var(--lh-title); }
+.pub__lead { margin-top: var(--space-2); font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); max-width: 46ch; }
+.pub__sections { display: grid; min-width: 0; margin-top: var(--section-gap); }
+.pub__sections > * + * { margin-top: var(--section-gap); }
+.pub__col > .empty { margin-top: var(--space-6); }
+.pub-updated { margin-top: var(--section-gap); }
+
+/* Co bude: the week subhead, then its days (arch + Seznam rows) */
+.pub-week + .pub-week { margin-top: var(--space-4); }
+.pub-week > .subhead { padding-top: 0; }
+.pub-coming .disclosure { margin-top: var(--space-3); }
+
+/* Jak se scházíme: a format's words in a sheet */
+.pub-words + .pub-words { margin-top: var(--space-5); }
+.pub-words .section-head { min-height: 0; margin-bottom: var(--space-2); }
+
+/* Kde nás najdeš */
+.pub-find .map { margin-top: var(--space-3); }
+
+/* one meeting */
+.pub .pub-event { padding-top: var(--space-2); }
+/* the band is the app's Setkání band (.ev-band, css/event.css) */
+.pub-photo { overflow: hidden; margin-top: var(--space-4); border-radius: var(--shape-block); background: var(--tint); aspect-ratio: 16 / 9; }
+.pub-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pub-event__actions { display: flex; margin-top: var(--space-4); }

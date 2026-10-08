@@ -1,5 +1,10 @@
 # Zvonec One: the design
 
+> **Update – One at the main address (2026-10-08).** With One the only Zvonec, its files moved from `docs/zvonec/one/`
+> to `docs/zvonec/` (ui/ and css/ now also hold state.js, palette.js and palettes.css). It opens at
+> https://zvonec.cirkevjakokrava.cz/ without a redirect; `one/` is only a redirect for old links (query and hash
+> travel along).
+
 > **Update – a calm person head (2026-10-08).** The owner found the pills under the corner avatar crammed; a UI and a UX
 > review agreed: the head is avatar → membership pill → name → facts → contact tiles. The teams are no longer pills
 > but the first fact („Chvály, Pohostinnost, Technika“; a long line breaks between teams, never inside one). The

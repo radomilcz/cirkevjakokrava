@@ -2,51 +2,14 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!-- Only our own scripts and the GitHub API (plus OpenStreetMap maps in a frame). The token lives in the browser, so nothing foreign may run here. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'">
-<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="robots" content="noindex">
 <title>Zvonec – Církev jako kráva</title>
-<meta name="description" content="Kdo co kdy dělá: kalendář, lidi a služby.">
-<meta name="theme-color" content="#f9e7dd">
 <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="../../assets/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="../../assets/icon-180.png">
-<link rel="preload" href="../../assets/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../../assets/fonts/schibsted-grotesk-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../../assets/fonts/Agrandir-NarrowBlack.woff" as="font" type="font/woff" crossorigin>
-<!-- the palette before the first paint (the same script and storage as Next and Simple: one choice for all), then
-     One's limit to Krém a hlína and Hlína a růžová (a choice One does not offer is shown as its scheme's palette) -->
-<script src="../ui/palette.js"></script>
-<script src="palette-limit.js"></script>
-<!-- order: the brand palettes (every colour token) → tokens → the kit → layers → the shell → the screens -->
-<link rel="stylesheet" href="../css/palettes.css">
-<link rel="stylesheet" href="css/tokens.css">
-<link rel="stylesheet" href="css/kit.css">
-<link rel="stylesheet" href="css/layers.css">
-<link rel="stylesheet" href="css/shell.css">
-<link rel="stylesheet" href="css/mine.css">
-<link rel="stylesheet" href="css/calendar.css">
-<link rel="stylesheet" href="css/event.css">
-<link rel="stylesheet" href="css/staffing.css">
-<link rel="stylesheet" href="css/people.css">
-<link rel="stylesheet" href="css/gather.css">
-<link rel="stylesheet" href="css/public.css">
-<script type="module" src="app.js"></script>
+<script src="go.js"></script>
 </head>
 <body>
-<!-- The shell: app.js fills the side navigation (rail 600–899, sidebar ≥ 900 – one element) and the tab bar (< 600)
-     per role; #view holds the current screen; sheets, dialogs, popovers and menus go into #layers. -->
-<a class="skip-link" href="#main">Přeskoč na obsah</a>
-<p class="save-line" role="status" aria-live="polite" hidden></p>
-<nav class="sidenav" aria-label="Hlavní menu" hidden></nav>
-<div id="view">
-  <main class="screen" id="main" tabindex="-1"><p class="meta loading">Načítám…</p></main>
-  <noscript><p class="text">Zvonec běží v prohlížeči – bez JavaScriptu to nepůjde.</p></noscript>
-</div>
-<nav class="tabbar" aria-label="Hlavní menu" hidden></nav>
-<div class="toasts" aria-live="polite"></div>
-<div id="layers"></div>
+<p><a href="../">Otevři Zvonec</a></p>
 </body>
 </html>
