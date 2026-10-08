@@ -10,14 +10,14 @@
 
 import {
   h, listScreen, empty, filterButton, filterState, clearFilter, filterCount as countFilter, searchText, subhead,
-  dateArch, pill, fill, statusNote, clock, isSplit, isPhone, link, button, plural, missingItem,
+  dateArch, pill, fillRing, sev, statusNote, clock, isSplit, isPhone, link, button, plural, missingItem,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
 import { eventById, eventsInRange, EVENT_KINDS, KIND_LABELS } from '../../lib/events.js';
 import { addDays, dayOf, today } from '../../lib/time.js';
 import {
   placeText, kindHue, myDuties, fillOf, missingWords, waitingWords, mondayOf, weekRange, teamsWithRoles,
-  eventHasTeam, iServe, nameOf, personOf, defaultView, VIEW_KEY,
+  eventHasTeam, iServe, nameOf, personOf, defaultView, VIEW_KEY, eventConflicts,
 } from './calendar-shared.js';
 import { eventDetail } from './event.js';
 import { openAddEvent } from './event-form.js';
@@ -151,17 +151,27 @@ export function emptyLine(c) {
 
 // ---------- the event line (Seznam, Měsíc's day list and popover) ----------
 
-/** A fill as the leader reads it everywhere: ◯ 14 z 15 · chybí 1 (or · 2 čekají). `f`: fillOf / fillOfTeams. */
-export function fillLine(f, { quiet = false } = {}) {
-  if (!f?.needed) return null;
-  const words = f.missing ? missingWords(f.missing) : f.waiting ? waitingWords(f.waiting) : null;
-  return fill(f.filled, f.needed, { words, quiet });
+/** Errors of a meeting other than „Chybí lidi“ (the fill says that one already): „1 chyba“. */
+const errorsOf = (event) => eventConflicts(event.id).filter((c) => c.severity === 'error' && c.code !== 'K5').length;
+const errorWords = (n) => `${n} ${n === 1 ? 'chyba' : n <= 4 ? 'chyby' : 'chyb'}`;
+
+/**
+ * The leader's whole fill, as Simple has it (the owner: it reads better than the quiet words alone):
+ * ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba. `f`: fillOf / fillOfTeams; `errors`: errorsOf.
+ */
+export function fillDetail(f, errors = 0) {
+  if (!f?.needed && !errors) return null;
+  return h('span', { class: 'cal-fill' },
+    f?.needed ? [fillRing(f.filled, f.needed), h('span', { class: 'num' }, `${f.filled} z ${f.needed}`)] : null,
+    f?.missing ? sev('error', missingWords(f.missing)) : null,
+    f?.waiting ? sev('warning', waitingWords(f.waiting)) : null,
+    errors ? sev('error', errorWords(errors)) : null);
 }
 
 /** The leader's fill of a meeting (Seznam, Měsíc's day list and popover). */
 function fillOfEvent(event) {
   if (!can('leader') || event.cancelled) return null;
-  return fillLine(fillOf(event), { quiet: true });
+  return fillDetail(fillOf(event), errorsOf(event));
 }
 
 /** „ty · Kázání · potvrzeno“ when I serve. */
@@ -175,11 +185,11 @@ function myLine(event) {
 }
 
 /**
- * One meeting as a line: time from–to · the Účel bar (its own element) · title, place, my duty; leaders the fill
- * (under the title on a phone, in the trail from 600 up). The whole line is one link.
+ * One meeting as a line: time from–to · the Účel bar (its own element) · title, place, my duty, and for leaders the
+ * whole fill under them (Simple's line). The whole line is one link.
  *   calEvent(event, { href: '#kalendar/seznam/e1', open: true })
  */
-export function calEvent(event, { href, open = false, trail = !isPhone() } = {}) {
+export function calEvent(event, { href, open = false } = {}) {
   const filled = fillOfEvent(event);
   const duty = myLine(event);
   const body = h('span', { class: 'event__body' },
@@ -187,16 +197,15 @@ export function calEvent(event, { href, open = false, trail = !isPhone() } = {})
     placeText(event) ? h('span', { class: 'event__meta' }, placeText(event)) : null,
     event.cancelled ? h('span', { class: 'event__duty' }, pill('zrušeno')) : null,
     duty,
-    filled && !trail ? h('span', { class: 'event__duty' }, filled) : null);
-  const label = [event.title, dayWords(dayOf(event.start)), clock(event.start), placeText(event) || null,
+    filled ? h('span', { class: 'event__duty' }, filled) : null);
+  const label = [event.title, dayWords(dayOf(event.start)), `${clock(event.start)}–${clock(event.end)}`, placeText(event) || null,
     duty ? 'sloužíš' : null, event.cancelled ? 'zrušeno' : null].filter(Boolean).join(', ');
   return h('a', {
-    class: ['event', 'cal-event', filled && trail && 'cal-event--trail'], href, 'aria-label': label,
+    class: ['event', 'cal-event'], href, 'aria-label': label,
     'aria-current': open ? 'true' : null, dataset: { hue: kindHue(event.kind), cancelled: event.cancelled ? '' : null, open: open ? '' : null, id: event.id },
   },
-  h('span', { class: 'event__time' }, clock(event.start)),   // the end is in the detail (a list stays calm)
-  body,
-  filled && trail ? h('span', { class: 'cal-event__trail' }, filled) : null);
+  h('span', { class: 'event__time' }, clock(event.start), h('span', { class: 'event__end' }, clock(event.end))),
+  body);
 }
 
 /** One day: its date arch and its meetings (Seznam, Měsíc's day list). */

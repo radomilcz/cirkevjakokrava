@@ -1,5 +1,15 @@
 # Zvonec One: the design
 
+> **Update – Simple's fill line, Rozpis as a table (2026-10-08).** The owner found Simple's line under a meeting
+> clearer than the quiet words: Seznam (and Měsíc's day list and popover) show again the time from–to and, for leaders,
+> the whole fill under the place – ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba (errors other than „Chybí lidi“).
+> Rozpis is rebuilt as the classic church roster: one table per kind of meeting of the month (the meetings that happen
+> once share „Další setkání“), a column per meeting (the day, the time, leaders' ◯ 14 z 15; a click opens the meeting
+> as a page), a row per role under its team's line, a name a line in the cell („Ty“ on the pick tint), ○ / ● after a
+> name for leaders, „+ Doplň“ (leaders, upcoming) or „chybí“, „–“ where the role is not needed. Read across: who
+> plays the keys this month; read down: who serves on Sunday. The role column stays put while a phone scrolls the
+> meetings sideways (the third peeks in at the edge). Rozpis spans the whole frame and never opens a pane.
+
 > **Update – one system for navigation, the main action, search and Filtr (2026-10-08).** After a UX and a UI review
 > (both chose the owner's sketch), every list screen has the same rows: A = TITLE ······ ⋯ (bare) + the main action
 > (at every width, Obsazení's on a phone too); B = an always visible, labelled search (320 on ≥ 600) + „Filtr“ (soft

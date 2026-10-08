@@ -1,22 +1,24 @@
-// Zvonec One – Kalendář › Rozpis (DESIGN §6.2): who serves when, Simple's plain list of meetings. Package P2.
+// Zvonec One – Kalendář › Rozpis (DESIGN §6.2): who serves when, as the classic church roster – a table.
 //   #kalendar/rozpis/<YYYY-MM>[/<eventId> | /bremeno]
-// D: the period line ‹ Říjen 2026 › ······ Dnes, the legend „○ čeká na odpověď ● něco nesedí“ once (leaders, when
-// a mark appears), then one block per meeting of the month: the date arch, „Setkání na pastvě · 10.00“, from 600 up
-// the fill in the trail as Seznam has it (◯ 6 z 6 · 1 čeká, on the title line only), and one line per team – the team (a column of 96 / 120) and
-// its people, wrapping between people (a name moves to the next line whole), ○ / ● after a name (leaders), and under
-// them the „+ Klávesy“ slots in a row of their own (leaders). Filtr › Tým narrows the lines.
-// A click on a name (leaders) → the duty sheet; on „Ty“ → my answer; on the block → the meeting (pane ≥ 1200, page
-// below). The whole month shows, what is over in --ink-2 (‹ › already walks back; „Ukaž, co už bylo“ is Seznam's).
+// D: the period line ‹ Říjen 2026 › ······ Dnes, the legend „○ čeká na odpověď ● něco nesedí“ once (leaders, when a
+// mark appears), then one table per kind of meeting of the month („Setkání na pastvě“, „Zkouška chval“; the meetings
+// that happen once share „Další setkání“). A column is a meeting (the day, the time, for leaders ◯ 14 z 15; a click
+// opens the meeting as a page), a row is a role under its team's line, a cell says who: one name a line („Ty“ on the
+// pick tint, so I find my Sundays at a glance), ○ / ● after a name (leaders), „+ Doplň“ where someone is missing
+// (leaders, upcoming) or „chybí“, and „–“ where the meeting does not need the role. Read across: who plays the keys
+// this month; read down: who serves on Sunday. The role column stays put while a phone scrolls the meetings sideways.
+// Filtr › Tým narrows the rows, the rest of Filtr and the search narrow the columns. What is over is in --ink-2.
+// A click on a name (leaders) → the duty sheet; on „Ty“ → my answer.
 // Also here: Kalendář's ⋯ (calendarMenu) – Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa · Břemeno –
 // the Břemeno dialog and the print (A4 landscape, a table of every role).
 
 import {
-  h, slot, dateArch, list, row, avatar, personName, layer, formSheet, field, selectInput, isSplit, isPhone,
+  h, slot, list, row, avatar, personName, layer, formSheet, field, selectInput, isPhone,
   isLayerOpen, shortDate, clock, monthLabel, periodLine, table, plural, statusSymbol, sev, STATUS_KEY, SEP,
-  shiftMonth,
+  shiftMonth, fillRing,
 } from './kit.js';
 import { S, can, myId } from '../../ui/state.js';
-import { eventById, eventsInRange, needsOf } from '../../lib/events.js';
+import { eventById, eventsInRange, needsOf, eventTypeById } from '../../lib/events.js';
 import { servingLoad } from '../../lib/scheduling.js';
 import { dayOf, today } from '../../lib/time.js';
 import {
@@ -24,8 +26,8 @@ import {
 } from './calendar-shared.js';
 import { fillOpenSlots, pickFor, openDutySheet, openMyAnswer } from './event-duties.js';
 import {
-  calendarScreen, passesFilter, matchesSearch, shownBy, filterTeams, emptyCase, emptyLine, eventPane, eventPage,
-  missingPage, isMonth, thisMonth, lastDayOf, inMonth, currentMonth, fillLine,
+  calendarScreen, passesFilter, matchesSearch, shownBy, filterTeams, emptyCase, emptyLine, eventPage,
+  missingPage, isMonth, thisMonth, lastDayOf, inMonth, currentMonth,
 } from './calendar.js';
 
 const isPast = (event) => dayOf(event.end) < today();
@@ -56,85 +58,120 @@ function rosterData(month) {
   };
 }
 
-// ---------- one block ----------
+// ---------- the tables: one per kind of meeting ----------
 
+const DOW_LONG = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'];
 const mark = (kind) => h('span', { class: ['cal-mark', `cal-mark--${kind}`], 'aria-hidden': 'true' });
 
-/** A team's people („Ty“ for me), ○ / ● after a name for leaders, then a row of slots, one per empty role (leaders). */
-function teamWho(event, slots, conflicts, marks) {
-  const leader = can('leader');
-  const editable = leader && !event.cancelled && !isPast(event);
-  const byPerson = new Map();
-  for (const s of slots) {
-    const a = s.assignment;
-    if (!a || a.status === 'declined') continue;
-    const key = a.personId || a.id;
-    const seen = byPerson.get(key) || { a, waits: false, bad: false };
-    seen.waits = seen.waits || (leader && a.status === 'proposed');
-    seen.bad = seen.bad || (leader && assignmentWarnings(conflicts, a).some((c) => c.severity === 'error'));
-    byPerson.set(key, seen);
+/**
+ * The month's meetings in tables: a meeting with a template (else its title) shares a table with the others of its
+ * kind; a kind that happens once this month goes to „Další setkání“ (alone there, it keeps its own title).
+ * [{ title, items, mixed }] in the order of each table's first meeting.
+ */
+function tablesOf(items) {
+  const byKey = new Map();
+  for (const it of items) {
+    const key = it.event.typeId ? `t:${it.event.typeId}` : `n:${it.event.title}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push(it);
   }
-  const people = [...byPerson.values()];
-  const names = people.map(({ a, waits, bad }, i) => {
+  const tables = [];
+  const singles = [];
+  for (const group of byKey.values()) {
+    if (group.length < 2) { singles.push(...group); continue; }
+    const type = eventTypeById(S.data, group[0].event.typeId);
+    const title = type?.name || group[0].event.title;
+    tables.push({ title, items: group, mixed: group.some((it) => it.event.title !== title) });
+  }
+  if (singles.length === 1) tables.push({ title: singles[0].event.title, items: singles, mixed: false });
+  else if (singles.length) tables.push({ title: 'Další setkání', items: singles, mixed: true });
+  const first = (t) => t.items[0].event.start;
+  return tables.sort((a, b) => (first(a) < first(b) ? -1 : first(a) > first(b) ? 1 : 0));
+}
+
+/** „neděle · 10.00 · 4 setkání“ (the day and time only when every meeting of the table shares them). */
+function tableMeta({ items }) {
+  const days = new Set(items.map(({ event }) => new Date(`${dayOf(event.start)}T12:00`).getDay()));
+  const times = new Set(items.map(({ event }) => clock(event.start)));
+  return [days.size === 1 ? DOW_LONG[[...days][0]] : null, times.size === 1 ? [...times][0] : null,
+    plural(items.length, 'setkání', 'setkání', 'setkání')].filter(Boolean).join(SEP);
+}
+
+/** A column head: the day, the time (and the title in „Další setkání“), leaders' ◯ 14 z 15. A link to the meeting. */
+function columnHead(event, { month, mixed, teams }) {
+  const f = fillOfTeams(event, teams);
+  const showFill = can('leader') && !event.cancelled && f.needed;
+  return h('th', { scope: 'col', class: 'rt-col', dataset: { past: isPast(event) ? '' : null, cancelled: event.cancelled ? '' : null, today: dayOf(event.start) === today() ? '' : null } },
+    h('a', { class: 'rt-col__link', href: `#kalendar/rozpis/${month}/${event.id}` },
+      mixed ? h('span', { class: 'rt-col__title' }, event.title) : null,
+      h('span', { class: 'rt-col__day' }, shortDate(event.start)),
+      h('span', { class: 'rt-col__time' }, clock(event.start)),
+      event.cancelled ? h('span', { class: 'pill' }, 'zrušeno') : null,
+      showFill ? h('span', { class: 'rt-col__fill' }, fillRing(f.filled, f.needed), h('span', { class: 'num' }, `${f.filled} z ${f.needed}`)) : null));
+}
+
+/** Who serves one role at one meeting: a name a line, „Ty“, ○ / ●, then „+ Doplň“ or „chybí“; „–“ when not needed. */
+function cell(event, role, slots, conflicts, marks) {
+  if (event.cancelled || !slots) {
+    return h('td', { class: 'rt-cell rt-cell--none' }, h('span', { 'aria-hidden': 'true' }, '–'),
+      h('span', { class: 'visually-hidden' }, event.cancelled ? 'zrušeno' : 'není potřeba'));
+  }
+  const leader = can('leader');
+  const editable = leader && !isPast(event);
+  let me = false;
+  const people = slots.filter((x) => x.assignment && x.assignment.status !== 'declined').map(({ assignment: a }) => {
+    const waits = leader && a.status === 'proposed';
+    const bad = leader && assignmentWarnings(conflicts, a).some((c) => c.severity === 'error');
     if (waits) marks.wait = true;
     if (bad) marks.error = true;
-    const me = !!a.personId && a.personId === myId();
+    const mine = !!a.personId && a.personId === myId();
+    if (mine) me = true;
     const said = [waits ? 'čeká na odpověď' : null, bad ? 'něco nesedí' : null].filter(Boolean).join(', ');
-    // a person is one box (css: inline-block), so the line breaks between people; only a name wider than the whole
-    // line breaks inside, and then its last word stays with the mark and the comma (a phone's short „Hedvika S.“)
-    const short = me || isPhone();
-    const parts = short ? [] : String(nameOf(a)).split(' ');
-    const last = short ? (me ? 'Ty' : shortName(a)) : parts.pop();
-    const words = [parts.length ? `${parts.join(' ')} ` : null, h('span', { class: 'cal-who__tail' }, last,
-      bad ? mark('no') : waits ? mark('wait') : null, i < people.length - 1 ? ',' : null),
-    said ? h('span', { class: 'visually-hidden' }, ` (${said})`) : null];
-    let name;
-    if (leader) name = h('button', { type: 'button', class: 'cal-name', onclick: () => openDutySheet(event.id, a.id) }, words);
-    else if (me) name = h('button', { type: 'button', class: 'cal-name', onclick: () => openMyAnswer(event.id, a.id) }, words);
-    else name = h('span', { class: 'cal-name' }, words);
-    // a real space between people: the line may break there (spans alone give the browser no break opportunity)
-    return [h('span', { class: 'cal-who__person' }, name), ' '];
-  }).flat();
-  const emptyRoles = new Map();
-  for (const s of slots) if (!s.assignment) emptyRoles.set(s.role.id, { role: s.role, n: (emptyRoles.get(s.role.id)?.n || 0) + 1 });
-  const holes = [...emptyRoles.values()];
-  // the slots: a row of their own under the names (8 across, 12 down), each one line (a long role ends in „…“)
-  const slotsEl = editable && holes.length ? h('span', { class: 'cal-who__slots' }, holes.map(({ role, n }) => slot(
-    h('span', { class: 'slot__label' }, n > 1 ? `${n}× ${role.name}` : role.name), () => pickFor(event.id, role.id),
-    { aria: `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}` }))) : null;
-  const missing = !editable && holes.length && !event.cancelled ? sev('error', `chybí ${holes.reduce((m, x) => m + x.n, 0)}`) : null;
-  return [names, missing, slotsEl];
+    const words = [h('span', { class: 'rt-name__text' }, mine ? 'Ty' : isPhone() ? shortName(a) : nameOf(a)),
+      bad ? mark('no') : waits ? mark('wait') : null, said ? h('span', { class: 'visually-hidden' }, ` (${said})`) : null];
+    if (leader) return h('button', { type: 'button', class: 'rt-name', onclick: () => openDutySheet(event.id, a.id) }, words);
+    if (mine) return h('button', { type: 'button', class: 'rt-name', onclick: () => openMyAnswer(event.id, a.id) }, words);
+    return h('span', { class: 'rt-name' }, words);
+  });
+  const holes = slots.filter((x) => !x.assignment).length;
+  let gap = null;
+  if (holes && editable) {
+    gap = slot(h('span', { class: 'slot__label' }, holes > 1 ? `Doplň ${holes}` : 'Doplň'), () => pickFor(event.id, role.id),
+      { aria: `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${holes > 1 ? ` (chybí ${holes})` : ''}` });
+  } else if (holes) gap = sev('error', holes > 1 ? `chybí ${holes}` : 'chybí');
+  return h('td', { class: 'rt-cell', dataset: { me: me ? '' : null, past: isPast(event) ? '' : null } }, people, gap);
 }
 
-function block({ event, lines }, { month, openId, marks, teams }) {
-  const conflicts = eventConflicts(event.id);
-  const open = event.id === openId;
-  const href = open && isSplit() ? `#kalendar/rozpis/${month}` : `#kalendar/rozpis/${month}/${event.id}`;
-  const f = fillOfTeams(event, teams);
-  const trail = !isPhone() && !event.cancelled && f.needed ? h('span', { class: 'rblock__trail' }, fillLine(f, { quiet: true })) : null;
-  return h('article', {
-    class: 'rblock', dataset: { open: open ? '' : null, cancelled: event.cancelled ? '' : null, past: isPast(event) ? '' : null, id: event.id },
-    'aria-label': `${event.title}, ${shortDate(event.start)}`,
-  },
-  h('a', { class: 'rblock__link', href, 'aria-current': open ? 'true' : null, 'aria-label': `${event.title}, ${shortDate(event.start)}, ${clock(event.start)}` }),
-  // the grid: arch | head | trail on the title line, then the team lines under head and trail (the full width)
-  dateArch(dayOf(event.start), { today: dayOf(event.start) === today() }),
-  h('p', { class: 'rblock__head' },
-    h('span', { class: 'rblock__title' }, event.title), h('span', { class: 'rblock__time' }, `${SEP}${clock(event.start)}`),
-    event.cancelled ? h('span', { class: 'pill' }, 'zrušeno') : null),
-  trail,
-  event.cancelled ? null : h('div', { class: 'rblock__teams' }, lines.map((g) => h('div', { class: 'rblock__team' },
-    h('span', { class: 'rblock__team-name' }, g.group.name),
-    h('div', { class: 'cal-who' }, teamWho(event, g.slots, conflicts, marks))))));
+function rosterTable(t, { month, teams, marks }) {
+  const lines = t.items.map(({ event, lines: ls }) => {
+    const byRole = new Map();
+    for (const g of ls) for (const x of g.slots) { if (!byRole.has(x.role.id)) byRole.set(x.role.id, []); byRole.get(x.role.id).push(x); }
+    return { event, byRole, conflicts: eventConflicts(event.id) };
+  });
+  const width = t.items.length + 1;
+  const rows = columnsOf(t.items).flatMap(({ group, roles }) => [
+    h('tr', { class: 'rt-team' }, h('th', { scope: 'colgroup', colspan: width }, h('span', { class: 'rt-team__name' }, group.name))),
+    ...roles.map((role) => h('tr', {},
+      h('th', { scope: 'row', class: 'rt-role' }, role.name),
+      lines.map(({ event, byRole, conflicts }) => cell(event, role, byRole.get(role.id), conflicts, marks)))),
+  ]);
+  const head = h('tr', {}, h('td', { class: 'rt-corner' }), t.items.map(({ event }) => columnHead(event, { month, mixed: t.mixed, teams })));
+  const wrap = table({ label: `Rozpis: ${t.title}`, cls: 'rt-table', wrapCls: 'rt-wrap', region: true, head, rows });
+  // the meetings share the width equally, never narrower than a name needs: a phone scrolls them sideways and the
+  // third one peeks in at the edge, so it is plain there is more (CSSOM – a measured value, allowed by the CSP)
+  const [roleW, colW] = isPhone() ? [96, 116] : [120, 144];
+  wrap.querySelector('table').style.width = `max(100%, ${roleW + colW * t.items.length}px)`;
+  return h('section', { class: 'rt', 'aria-label': t.title },
+    h('h2', { class: 'rt__title' }, t.title, h('span', { class: 'rt__meta' }, tableMeta(t))), wrap);
 }
 
-function rosterBody(month, openId) {
+function rosterBody(month) {
   const teams = filterTeams();
   const data = rosterData(month);
   const marks = { wait: false, error: false };
-  const blocks = data.items.map((it) => block(it, { month, openId, marks, teams }));
+  const tables = tablesOf(data.items).map((t) => rosterTable(t, { month, teams, marks }));
   let note = null;
-  if (!blocks.length) {
+  if (!tables.length) {
     note = emptyLine(emptyCase({
       all: data.all, afterFilter: data.afterFilter,
       noneTitle: `${capital(inMonth(month))} tu nic není.`,
@@ -143,10 +180,7 @@ function rosterBody(month, openId) {
   const legend = marks.wait || marks.error ? h('p', { class: 'cal-legend' },
     marks.wait ? h('span', {}, mark('wait'), 'čeká na odpověď') : null,
     marks.error ? h('span', {}, mark('no'), 'něco nesedí') : null) : null;
-  return [
-    note, legend,
-    blocks.length ? h('div', { class: 'rlist' }, blocks) : null,
-  ];
+  return [note, legend, tables.length ? h('div', { class: 'rlist' }, tables) : null];
 }
 
 // ---------- Břemeno (a dialog) ----------
@@ -276,7 +310,7 @@ export function renderRoster(parts = [], { menu } = {}) {
   const id = extra && !bremeno && extra !== 'upozorneni' ? extra : null;
   const opened = id ? eventById(S.data, id) : null;
   if (id && !opened) return missingPage({ href: base, label: 'Rozpis' });
-  if (opened && !isSplit()) return eventPage(opened, { href: base, label: 'Rozpis' });
+  if (opened) return eventPage(opened, { href: base, label: 'Rozpis' });   // the table keeps the whole width
   if (bremeno && can('leader')) {
     if (bremenoShownFor !== location.hash) {
       bremenoShownFor = location.hash;
@@ -290,11 +324,11 @@ export function renderRoster(parts = [], { menu } = {}) {
   return calendarScreen({
     view: 'rozpis', month,
     period: periodLine({ month, href: (m) => `#kalendar/rozpis/${m}`, todayHref: `#kalendar/rozpis/${thisMonth()}`, here: month === thisMonth() }),
-    draw: () => rosterBody(month, opened?.id || null),
+    draw: () => rosterBody(month),
     results: () => rosterData(month).items.length,
     menu: (menu || calendarMenu)({ month, ids: fillable }),
     addDay: () => (month === thisMonth() ? today() : `${month}-01` >= today() ? `${month}-01` : null),
-    pane: opened ? eventPane(opened, base) : null,
+    wide: true,
     base,
   });
 }
