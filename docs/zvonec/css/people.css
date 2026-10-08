@@ -198,19 +198,22 @@
 .leaders-field .chips { flex-wrap: wrap; }
 .leaders-field > .btn, .leaders-field .btn { justify-self: start; width: auto; margin-top: var(--gap-y); }
 
-/* ---------- Role (a team's detail, leaders): each role, its count, the people as chips, + Přidej ---------- */
+/* ---------- Role (a team's detail, leaders): one folded line per role (name · count · ⌄); unfolded: chips ---------- */
 .role-blocks { display: grid; }
-.role-block { display: grid; gap: var(--space-2); padding: var(--space-3) 0; }
 .role-block + .role-block { border-top: 1px solid var(--hairline); }
-.role-block:first-child { padding-top: 0; }
-.role-block__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-width: 0; }
-.role-block__name {
-  min-height: var(--control-s); margin-left: calc(-1 * var(--space-2)); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-s);
-  background: none; color: var(--ink); font: inherit; font-weight: var(--weight-strong); text-align: left; cursor: pointer;
+.role-block__head {
+  display: flex; align-items: center; gap: var(--space-3); width: calc(100% + 2 * var(--space-2)); min-height: 52px;
+  margin: 0 calc(-1 * var(--space-2)); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-m); background: none;
+  color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--dur-state) var(--ease);
 }
-.role-block__name:hover { background: var(--wash); }
-.role-block__count { flex: none; font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); }
+.role-block__head:hover { background: var(--wash); }
+.role-block__head:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.role-block__name { flex: 1; min-width: 0; font-weight: var(--weight-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.role-block__count { flex: none; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); white-space: nowrap; }
 .role-block__count[data-scarce] { color: var(--wait-ink); font-weight: var(--weight-strong); }
+.role-block__chevron { flex: none; color: var(--ink-3); transition: transform var(--dur-state) var(--ease); }
+.role-block__head[aria-expanded="true"] .role-block__chevron { transform: rotate(180deg); }
+.role-block__body { padding: var(--space-1) 0 var(--space-3); }
 .role-block__chips { display: flex; flex-wrap: wrap; gap: 6px; }
 /* a chip: 32 high (hit 40), avatar 24 inside; umí = the ok tint, učí se = an outline, + Přidej = quieter still */
 .skill-chip {

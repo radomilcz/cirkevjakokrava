@@ -175,25 +175,50 @@ function addSkill(group, role) {
   });
 }
 
+const openRoles = new Set();   // roles whose people are unfolded (kept while the app runs, so an edit keeps it open)
+
+/** „umí 7 · učí se 2“, „umí jen 1“, „nikdo to neumí“ – a role's folded line. */
+function roleCountWords(trained, learning) {
+  const can = trained ? (trained === 1 ? 'umí jen 1' : `umí ${trained}`) : 'nikdo to neumí';
+  return joinMeta([can, learning ? `učí se ${learning}` : null]);
+}
+
 /**
- * Role (teams, leaders): each role with who can do it – its name (a tap edits the role) and „umí to 3“ / „umí to jen 1“
- * / „nikdo to neumí“, then the people as chips (umí green, učí se outlined; a tap changes it) and + Přidej. One place
- * for roles and skills: it replaced the people × roles table („Kdo co umí“), which never fit a pane (the owner chose
- * this, variant B). What one person can do stays in Lidé below (skill pills) and in the member sheet.
+ * Role (teams, leaders): one folded line per role – its name, „umí 7 · učí se 2“ (amber
+ * when at most one can) and a chevron. A tap unfolds it: the people as chips (umí on the ok tint, učí se outlined; a
+ * tap on a chip offers Umí to / Učí se to / Neumí to), + Přidej and Uprav roli. It replaced the people × roles table
+ * („Kdo co umí“), which never fit a pane; folded, because seven chips under every role took the whole card (the owner).
+ * What one person can do stays in Lidé below (skill pills) and in the member sheet.
  */
 function rolesSection(group) {
   if (group.kind !== 'team' || !can('leader')) return null;
   const { roles } = skillMatrix(S.data, { groupId: group.id });
   const people = members(group);
   const blocks = roles.map(({ role, trained }) => {
-    const at = (level) => people.filter(({ m }) => m.roles?.[role.id] === level).map(({ p }) => skillChip(group, role, p, level));
-    return h('div', { class: 'role-block' },
-      h('div', { class: 'role-block__head' },
-        h('button', { type: 'button', class: 'role-block__name', onclick: () => roleSheet(group, role), 'aria-label': `Uprav roli ${role.name}` }, role.name),
-        h('span', { class: 'role-block__count', dataset: { scarce: trained <= 1 ? '' : null } },
-          trained ? (trained === 1 ? 'umí to jen 1' : `umí to ${trained}`) : 'nikdo to neumí')),
-      h('div', { class: 'role-block__chips' }, ...at('trained'), ...at('learning'),
-        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => addSkill(group, role), 'aria-label': `Přidej, kdo umí ${role.name}` }, icon('plus', { size: 's' }), 'Přidej')));
+    const at = (level) => people.filter(({ m }) => m.roles?.[role.id] === level);
+    const able = at('trained');
+    const learning = at('learning');
+    const open = openRoles.has(role.id);
+    const bodyId = `role-${role.id}`;
+    const body = h('div', { class: 'role-block__body', id: bodyId, hidden: !open },
+      h('div', { class: 'role-block__chips' },
+        ...able.map(({ p }) => skillChip(group, role, p, 'trained')),
+        ...learning.map(({ p }) => skillChip(group, role, p, 'learning')),
+        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => addSkill(group, role), 'aria-label': `Přidej, kdo umí ${role.name}` }, icon('plus', { size: 's' }), 'Přidej'),
+        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => roleSheet(group, role), 'aria-label': `Uprav roli ${role.name}` }, icon('pencil', { size: 's' }), 'Uprav roli')));
+    const head = h('button', {
+      type: 'button', class: 'role-block__head', 'aria-expanded': String(open), 'aria-controls': bodyId,
+      onclick: () => {
+        const now = !openRoles.has(role.id);
+        if (now) openRoles.add(role.id); else openRoles.delete(role.id);
+        head.setAttribute('aria-expanded', String(now));
+        body.hidden = !now;
+      },
+    },
+    h('span', { class: 'role-block__name' }, role.name),
+    h('span', { class: 'role-block__count', dataset: { scarce: trained <= 1 ? '' : null } }, roleCountWords(trained, learning.length)),
+    icon('chevron-down', { size: 's', cls: 'role-block__chevron' }));
+    return h('div', { class: 'role-block' }, head, body);
   });
   return section({
     title: 'Role', cls: 'group-section', id: 'role',
