@@ -390,6 +390,7 @@ function peopleScreen({ view, body, pane = null, wide = false }) {
     wide,
     label: groups ? 'Skupina' : 'Člověk',
     cls: ['people-screen', view === 'vypis' && 'people-screen--table'].filter(Boolean).join(' '),
+    phoneBack: groups ? { href: '#lide', label: 'Lidé' } : null,   // a phone reaches Skupiny from the first row of Lidé
   });
   keepPlace(main);
   return main;
