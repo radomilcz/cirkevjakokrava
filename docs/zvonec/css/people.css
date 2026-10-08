@@ -1,0 +1,257 @@
+/* Zvonec One – Lidé, Skupiny, Člověk, Domácnost, Skupina, Podrobný výpis (package P4; ui/people*.js, ui/groups*.js).
+   The frames, rows, sections, pills and layers are the kit's (css/kit.css, css/layers.css); this file only draws
+   what is Lidé's own: the marks 56, linked pills, the contact tiles, meta words, skill pills, the table and its bulk
+   bar. Tokens only. */
+
+/* ---------- list ---------- */
+.meta-wait { color: var(--wait-ink); }
+.list-foot { margin-top: var(--gap-y); padding: 0 var(--space-3); }
+.ls__body > .row-link:is(:first-child, .groups-entry + *) { margin-bottom: var(--gap-y); }
+.ls__body > .row-link + .list > .subhead:first-child { padding-top: 0; }
+/* the archive question (Filtr › Ukaž i archiv) closes D, under the count */
+.ls__body > .list-foot + .callout { margin-top: var(--gap-group); }
+
+/* the group meta in a row: what someone does there, then the skill pills; wraps between pills */
+.group-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-2); }
+.skill-pills { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.skill-pill { gap: 4px; }
+.skill-pill > .icon { width: 14px; height: 14px; }
+.skill-pill[data-level="trained"] { background: var(--ok-fill); color: var(--ok-ink); }
+.skill-pill[data-level="learning"] { background: var(--tint); color: var(--ink-2); }
+
+/* ---------- the detail head ---------- */
+/* a mark of 56: the group's team mark and the household's house (CODEX §6.4: mark 56 / 72) */
+.mark-56 { width: 56px; height: 56px; font-size: 20px; }
+.house-mark { color: var(--ink-2); background: var(--tint); }
+.house-mark > .icon { width: 24px; height: 24px; }
+.row > .house-mark > .icon { width: 20px; height: 20px; }
+
+/* the person's membership (člen / přítel / host): the head's one pill, a shade stronger than a quiet pill */
+.pill--membership { background: var(--tint-2); color: var(--ink); }
+
+/* Zavolej · SMS · E-mail: L 52, equal parts, 8 apart, right under the head */
+.contact-tiles { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--gap-x); }
+.contact-tiles > .btn { min-width: 0; padding: 0 var(--space-2); gap: 6px; white-space: nowrap; }
+.contact-tiles > .btn > .icon { flex: none; }
+@media (max-width: 379.98px) {
+  /* three tiles at 360: the icon goes, the word stays whole */
+  .contact-tiles[data-n="3"] > .btn > .icon { display: none; }
+}
+
+.group-about { max-width: 60ch; color: var(--ink-2); }
+
+/* ---------- Skupiny: rows below 900, Next's cards from 900 (people.js draws both, one shows) ---------- */
+@media (max-width: 899.98px) { .groups-cards { display: none; } }
+@media (min-width: 900px) { .groups-rows { display: none; } }
+.groups-cards > .subhead:first-child, .groups-rows > .list:first-child > .subhead:first-child { padding-top: 0; }
+.groups-cards > .list { margin: 0 calc(-1 * var(--space-3)); }
+/* a grid of blocks: min 260 a card, 12 apart (CODEX §4) */
+.group-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--gap-y); }
+.group-cards__item { display: grid; min-width: 0; }
+/* a card is one link, a block (r20): team mark + name + „ty“ · 8 · „9 lidí · vedou …“ · the roles or the
+   description in two lines · the people. Hover lights the whole card; the open one has the pick fill and an
+   outline in --mark (no side bar on a rounded block) */
+.group-card {
+  display: grid; align-content: start; gap: var(--space-2); min-width: 0; min-height: 152px; padding: var(--space-5);
+  border-radius: var(--shape-block); background: var(--card); box-shadow: inset 0 0 0 1px var(--edge); color: var(--ink);
+  transition: background-color var(--dur-state) var(--ease), box-shadow var(--dur-state) var(--ease);
+}
+.group-card:hover { background: var(--wash); box-shadow: inset 0 0 0 1px var(--edge-control); }
+.group-card:active { background: var(--press); }
+.group-card[data-open] { background: var(--pick); box-shadow: inset 0 0 0 2px var(--mark); }
+.group-card[data-open]:hover { background: var(--pick-hover); }
+.group-card[data-open] .group-card__meta, .group-card[data-open] .group-card__about { color: var(--ink); }
+.group-card__head { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.group-card__head > :is(.avatar, .pill) { flex: none; }
+.group-card__name {
+  flex: 1; min-width: 0; font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); overflow-wrap: break-word;
+}
+.group-card__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.group-card__about {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2);
+}
+.group-card > .avatars { margin-top: var(--space-1); }
+.group-card .avatars > .avatar { box-shadow: 0 0 0 2px var(--card); }
+.group-card .avatars > .avatar + .avatar { margin-left: -4px; }   /* the initials stay whole */
+.group-card:hover .avatars > .avatar { box-shadow: 0 0 0 2px var(--ground); }
+.group-card[data-open] .avatars > .avatar { box-shadow: 0 0 0 2px var(--pick); }
+.dhead__after > .map-link { display: inline-flex; }
+.person-note { white-space: pre-wrap; overflow-wrap: anywhere; }
+.person-warnings { display: grid; gap: var(--gap-y); }
+.duty-mark { display: inline-flex; align-items: center; }
+
+/* ---------- Podrobný výpis ---------- */
+/* the birthday line on top of Lidé: quiet ink, not an accent link */
+.row-link.people-birthdays { color: var(--ink-2); font-weight: var(--weight-regular); }
+.people-birthdays > .icon { color: var(--ink-3); }
+
+/* a phone: Skupiny is the first row of Lidé (the tab bar has no room for it) */
+.groups-entry { margin-bottom: var(--space-4); }
+.groups-entry__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--radius-m); background: var(--tint); color: var(--ink-2); }
+
+/* the bulk bar above the table once someone is ticked */
+.people-bulk {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-x) var(--space-4);
+  margin-bottom: var(--gap-y); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: var(--shape-block); background: var(--overlay); box-shadow: var(--lift-3);
+}
+.people-bulk__count { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); }
+.people-bulk__actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-left: auto; }
+
+/* the table: rows 52 with hairlines between them, flush with the frame; fixed layout with
+   widths fitted to what the columns hold, so nothing pushes the page and the columns never jump while searching.
+   Nothing is cut: a name, a household, a group or an e-mail wraps (an e-mail before its „@“), a row grows. */
+.people-table-box { container-type: inline-size; }
+.people-table-box > .table-wrap { margin: 0; padding: 0; overflow-y: hidden; }
+/* sideways it scrolls only when the table really is wider (never from 1200: the columns that do not fit drop out) */
+@media (min-width: 1200px) { .people-table-box > .table-wrap { overflow: hidden; } }
+/* Tabulka reads like Seznam: hairlines between the rows only, the head over an edge line. A frame and column lines
+   were tried and dropped – „an aggressive table“ (the owner) */
+.people-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; }
+.people-table th { white-space: nowrap; height: 44px; padding: 0 var(--space-3); background: var(--ground); }
+.people-table thead th { box-shadow: none; border-bottom: 1px solid var(--edge); }
+.people-table td { height: 52px; padding: 4px var(--space-3); color: var(--ink); background: var(--ground); white-space: normal; overflow-wrap: anywhere; border-bottom: 1px solid var(--hairline); }
+.people-table tbody tr:last-child > td { border-bottom: 0; }
+.people-table td.col-phone, .people-table td.col-birthday { white-space: nowrap; }
+.people-table tbody tr + tr > * { border-top: 0; }
+.people-table tbody tr { cursor: pointer; }
+.people-table tbody tr > * { transition: background-color var(--dur-state) var(--ease); }
+.people-table tbody tr > :first-child { position: relative; }
+/* a lit row (hover, ticked, open) is rounded at both ends, like a lit row of Seznam. The row itself is clipped (the
+   last cell may be a column hidden at this width, so a radius on :last-child would not show); its own line and the
+   one above it step aside, so the corners stay clean */
+/* … and 1.5 px shorter at the top and the bottom, so two lit neighbours keep --gap-lit (3 px) between them and never
+   touch (the rule of every list: CODEX „two lit rows never touch“) */
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) { clip-path: inset(calc(var(--gap-lit) / 2) 0 round var(--radius-m)); }
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) > td,
+.people-table tbody tr:has(+ tr:is(:hover, [data-picked], [data-open])) > td { border-bottom-color: transparent; }
+.people-table tbody tr:hover > * { background-color: var(--wash); }
+.people-table tbody tr:is([data-picked], [data-open]) > * { background-color: var(--pick); }
+.people-table tbody tr:is([data-picked], [data-open]):hover > * { background-color: var(--pick-hover); }
+.people-table tbody tr:is([data-picked], [data-open]) .table-quiet { color: var(--ink); }
+/* every second shown column on a faint band, as Rozpis's (people.js counts the shown ones: data-band); its head rounded
+   on top. In :where(), so a lit row's wash and pick still cover it */
+.people-table { --band: color-mix(in srgb, var(--ink) 3.5%, var(--ground)); }
+:where(.people-table[data-band~="name"]) :is(th, td).col-name,
+:where(.people-table[data-band~="status"]) :is(th, td).col-status,
+:where(.people-table[data-band~="household"]) :is(th, td).col-household,
+:where(.people-table[data-band~="phone"]) :is(th, td).col-phone,
+:where(.people-table[data-band~="email"]) :is(th, td).col-email,
+:where(.people-table[data-band~="groups"]) :is(th, td).col-groups,
+:where(.people-table[data-band~="birthday"]) :is(th, td).col-birthday,
+:where(.people-table[data-band~="last"]) :is(th, td).col-last { background-color: var(--band); }
+/* the head over kit's .table thead th (--ground): its banded cells rounded on top, like the hover tab of Rozpis */
+.people-table:where([data-band~="name"]) thead th.col-name,
+.people-table:where([data-band~="status"]) thead th.col-status,
+.people-table:where([data-band~="household"]) thead th.col-household,
+.people-table:where([data-band~="phone"]) thead th.col-phone,
+.people-table:where([data-band~="email"]) thead th.col-email,
+.people-table:where([data-band~="groups"]) thead th.col-groups,
+.people-table:where([data-band~="birthday"]) thead th.col-birthday,
+.people-table:where([data-band~="last"]) thead th.col-last { background: var(--band); }
+:where(.people-table[data-band]) thead th:is(.col-name, .col-status, .col-household, .col-phone, .col-email, .col-groups, .col-birthday, .col-last) { border-radius: var(--radius-m) var(--radius-m) 0 0; }
+/* the open person's mark (a ticked row has its tick, so no mark) */
+.people-table tbody tr[data-open] > :first-child::before {
+  content: ""; position: absolute; left: 4px; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 3px; background: var(--mark);
+}
+/* the columns by the table's own width: below 680 (a tablet column of 588) Jméno · Telefon · E-mail, then Členství,
+   ≥ 860 Skupiny, ≥ 1100 (desktop 1440 and up) Domácnost and Narozeniny too, ≥ 1300 Poslední služba. E-mail takes
+   what is left. Members have no Členství, Narozeniny and Poslední služba (people.js, as in Next). */
+.people-table .col-pick { width: 44px; padding-right: 0; }
+.people-table th.col-name { width: 200px; }
+.people-table th.col-status { width: 104px; }
+.people-table th.col-household { width: 144px; }
+.people-table th.col-phone { width: 104px; }
+.people-table th.col-email { width: auto; }
+.people-table th.col-groups { width: 152px; }
+.people-table th.col-birthday { width: 120px; }
+@container (max-width: 1099.98px) {
+  .people-table :is(.col-household, .col-birthday) { display: none; }
+}
+@container (max-width: 859.98px) {
+  .people-table .col-groups { display: none; }
+}
+@container (max-width: 679.98px) {
+  .people-table .col-status { display: none; }
+}
+/* beside a pane at 1200–1279 (the list ≈ 360–440): Jméno · Telefon */
+@container (max-width: 479.98px) {
+  .people-table .col-email { display: none; }
+}
+/* the whole desktop width (≥ 1300, a 1920 window): Poslední služba too (leaders, as in Next), and the columns that
+   hold words get the room, so the e-mail does not take it all */
+.people-table th.col-last { width: 128px; }
+@container (max-width: 1299.98px) {
+  .people-table .col-last { display: none; }
+}
+@container (min-width: 1300px) {
+  .people-table th.col-name { width: 260px; }
+  .people-table th.col-household { width: 200px; }
+  .people-table th.col-phone { width: 128px; }
+  .people-table th.col-groups { width: 220px; }
+}
+/* ≥ 1200 with a person open beside it: name · phone in the list track */
+.people-table.people-table--compact th.col-name { width: auto; }
+.people-table.people-table--compact th.col-phone { width: 132px; }
+.table-check { width: 20px; height: 20px; margin: 0; accent-color: var(--act); cursor: pointer; vertical-align: middle; }
+.col-name > * { vertical-align: middle; }
+.table-person { display: inline-flex; vertical-align: middle; align-items: center; gap: var(--space-3); max-width: 100%; min-height: var(--control-m); color: var(--ink); font-weight: var(--weight-strong); }
+.table-person > .avatar { flex: none; }
+.col-name:has(.table-missing) > .table-person { max-width: calc(100% - 32px); }   /* room for the ⚠ beside it */
+.table-person__name { min-width: 0; }
+.table-person:hover .table-person__name { text-decoration: underline; text-underline-offset: 3px; }
+.table-missing { display: inline-flex; margin-left: var(--space-2); color: var(--wait-ink); vertical-align: middle; }
+.table-link { color: inherit; }
+.table-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.table-quiet { color: var(--ink-2); }
+.people-table td > .icon { margin-left: 6px; vertical-align: -4px; color: var(--ink-accent); }
+
+/* ---------- the member sheet (groups-forms.js): one line per role – its name, then Neumí · Učí se · Umí ---------- */
+.skill-rows { display: grid; gap: var(--gap-y); }
+.skill-row { display: grid; gap: var(--space-2); }
+.skill-row__role { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); font-weight: var(--weight-strong); }
+@media (min-width: 600px) {
+  .skill-row { grid-template-columns: 140px minmax(0, 1fr); align-items: center; gap: var(--gap-y); }
+}
+
+/* „Kdo vede“ in the group's sheet: the people as chips, then „+ Přidej vedoucího“ 12 under them, as wide as its words */
+.leaders-field .chips { flex-wrap: wrap; }
+.leaders-field > .btn, .leaders-field .btn { justify-self: start; width: auto; margin-top: var(--gap-y); }
+
+/* ---------- Role (a team's detail, leaders): one folded line per role (name · count · ⌄); unfolded: chips ---------- */
+.role-blocks { display: grid; }
+.role-block + .role-block { border-top: 1px solid var(--hairline); }
+.role-block__head {
+  display: flex; align-items: center; gap: var(--space-3); width: calc(100% + 2 * var(--space-2)); min-height: 52px;
+  margin: 0 calc(-1 * var(--space-2)); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-m); background: none;
+  color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--dur-state) var(--ease);
+}
+.role-block__head:hover { background: var(--wash); }
+.role-block__head:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.role-block__name { flex: 1; min-width: 0; font-weight: var(--weight-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.role-block__count { flex: none; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); white-space: nowrap; }
+.role-block__count[data-scarce] { color: var(--wait-ink); font-weight: var(--weight-strong); }
+.role-block__chevron { flex: none; color: var(--ink-3); transition: transform var(--dur-state) var(--ease); }
+.role-block__head[aria-expanded="true"] .role-block__chevron { transform: rotate(180deg); }
+.role-block__body { padding: var(--space-1) 0 var(--space-3); }
+.role-block__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+/* a chip: 32 high (hit 40), avatar 24 inside; umí = the ok tint, učí se = an outline, + Přidej = quieter still */
+.skill-chip {
+  position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; max-width: 100%; padding: 0 12px 0 4px;
+  border: 0; border-radius: var(--shape-pill); background: var(--ok-fill); color: var(--ok-ink); font: inherit;
+  font-size: var(--type-meta); font-weight: var(--weight-strong); cursor: pointer; transition: filter var(--dur-state) var(--ease);
+}
+.skill-chip::after { content: ""; position: absolute; inset: -4px 0; }
+.skill-chip:hover { filter: brightness(.96); }
+.skill-chip:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.skill-chip > .avatar { flex: none; }
+.skill-chip__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.skill-chip__level { flex: none; font-weight: var(--weight-regular); }
+.skill-chip[data-level="learning"] { background: none; color: var(--ink); font-weight: var(--weight-regular); box-shadow: inset 0 0 0 1px var(--edge-control); }
+.skill-chip[data-level="learning"]:hover { filter: none; background: var(--wash); }
+.skill-chip--add { gap: 4px; padding: 0 12px 0 8px; background: none; color: var(--ink-2); font-weight: var(--weight-regular); box-shadow: inset 0 0 0 1px var(--hairline); }
+.skill-chip--add:hover { filter: none; background: var(--wash); color: var(--ink); }
+
+/* Nový člověk: the consent switch and its note („Bez souhlasu smíme mít…“) one gap apart, not glued together */
+.consent-box:not([hidden]) { display: grid; gap: var(--space-3); }

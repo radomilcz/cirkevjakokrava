@@ -1,0 +1,115 @@
+<!doctype html><html lang="cs" data-palette="cream-clay"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../docs/zvonec/css/palettes.css"><link rel="stylesheet" href="next-tokens.css"><link rel="stylesheet" href="mock.css">
+<style>.nm { white-space: nowrap; }
+.who-head { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 6px; }
+.who-head .sum { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 620; color: var(--ink-2); }
+.ring { width: 26px; height: 26px; }
+.wait-dot { width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid var(--wait-ink); display: inline-block; flex: none; }
+.you.ask { display: block; }
+.you.ask .row1 { display: flex; justify-content: space-between; align-items: baseline; }
+.you.ask .st { display: inline-flex; gap: 6px; align-items: center; font-size: 15px; font-weight: 620; color: var(--wait-ink); }
+.you.ask .btns { margin-top: 14px; }
+.team .names .w { display: inline-flex; align-items: center; gap: 5px; }
+.team .chev { color: var(--ink-3); align-self: center; }
+.team.lead { grid-template-columns: 92px 1fr 20px; }
+.team .adds { margin-top: 8px; }
+.team .add { height: 36px; font-size: 15px; }
+.team .cap2 { display: block; font-size: 14px; color: var(--ink-2); margin-top: 2px; }
+.sheet .sh-title { font-size: 20px; font-weight: 720; margin: 2px 0 2px; }
+.sheet .sh-sub { font-size: 15px; color: var(--ink-2); margin-bottom: 8px; }
+.duty { display: grid; grid-template-columns: 104px 1fr; gap: 12px; align-items: center; min-height: 56px; border-bottom: 1px solid var(--hairline); }
+.duty:last-child { border-bottom: 0; }
+.duty .r { font-size: 15px; color: var(--ink-2); }
+.duty .p { font-size: 17px; font-weight: 620; }
+.duty .s { display: inline-flex; gap: 6px; align-items: center; font-size: 15px; font-weight: 620; margin-top: 2px; }
+.duty .s.ok { color: var(--ok-ink); } .duty .s.wt { color: var(--wait-ink); }
+.duty .s .ok-dot { width: 18px; height: 18px; } .duty .s .ok-dot svg { width: 11px; height: 11px; }
+.legend { display: flex; gap: 16px; font-size: 14px; color: var(--ink-2); margin: -6px 0 6px; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }</style></head><body><svg width="0" height="0" style="position:absolute">
+  <symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></symbol>
+  <symbol id="people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.7.8 2.8 2.5 3 5.2"/></symbol>
+  <symbol id="fill" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="sms" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  <symbol id="down" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+</svg>
+<div class="board"><div class="frame" id="e1"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="topbar"><span class="back"><svg class="i"><use href="#left"/></svg>Kalendář</span><span class="icon-btn"><svg class="i"><use href="#more"/></svg></span></div>
+    <h1 class="ev-title">Setkání na pastvě</h1>
+    <div class="facts">
+      <p class="fact"><svg class="i s"><use href="#clock"/></svg>ne 18. 10. · 10.00–12.00</p>
+      <p class="fact"><svg class="i s"><use href="#pin"/></svg>Monta, Sál</p>
+    </div>
+    <div class="you ask"><div class="row1"><div><p class="l">Tvoje služba</p><p class="t">Kázání</p></div><span class="st"><span class="wait-dot"></span>čeká na tebe</span></div>
+      <div class="btns"><span class="btn solid">Můžu</span><span class="btn soft">Nemůžu</span></div></div>
+    <p class="h2">Kdo slouží</p>
+    <div class="team"><b>Slovo</b><span class="names">Ty, <span class="nm">Jiří Zeman</span></span></div>
+    <div class="team"><b>Chvály</b><span class="names"><span class="nm">Daniel Sýkora</span>, <span class="nm">Hedvika Sedláčková</span>, <span class="nm">Jakub Marek</span></span></div>
+    <div class="team"><b>Technika</b><span class="names"><span class="nm">Petr Novák</span>, <span class="nm">Ondřej Černý</span></span></div>
+    <div class="team"><b>Děti</b><span class="names"><span class="nm">Lucie Svobodová</span>, <span class="nm">Eva Kučerová</span></span></div>
+    <a class="link"><span>Osnova<small>9 bodů · 112 min</small></span><svg class="i s"><use href="#chev"/></svg></a>
+    <a class="link"><span>O setkání a místo</span><svg class="i s"><use href="#chev"/></svg></a>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav></div>
+<p class="cap"><b>A · Člen: tvoje služba čeká na odpověď</b>Můžu a Nemůžu jsou i tady, kdyby ses na setkání proklikl z kalendáře. Tvoje jméno je v týmu jako „ty“. Člen nevidí, kdo neodpověděl ani co chybí. Jen kdo tam bude.</p></div><div class="frame" id="e2"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="topbar"><span class="back"><svg class="i"><use href="#left"/></svg>Kalendář</span><span class="icon-btn"><svg class="i"><use href="#more"/></svg></span></div>
+    <h1 class="ev-title">Setkání na pastvě</h1>
+    <div class="facts">
+      <p class="fact"><svg class="i s"><use href="#clock"/></svg>ne 18. 10. · 10.00–12.00</p>
+      <p class="fact"><svg class="i s"><use href="#pin"/></svg>Monta, Sál</p>
+    </div>
+    <p class="h2">Kdo slouží</p>
+    <p class="legend"><span><span class="wait-dot"></span>čeká na odpověď</span></p>
+    <div class="team lead"><b>Slovo</b><span class="names"><span class="w"><span class="wait-dot"></span><span class="nm">Radomil Martinec</span></span>, <span class="nm">Jiří Zeman</span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+    <div class="team lead"><b>Chvály</b><span class="names"><span class="nm">Daniel Sýkora</span>, <span class="nm">Hedvika Sedláčková</span>, <span class="w"><span class="wait-dot"></span><span class="nm">Jakub Marek</span></span><span class="adds"><span class="add"><svg class="i s"><use href="#plus"/></svg>Klávesy</span></span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+    <div class="team lead"><b>Technika</b><span class="names"><span class="nm">Petr Novák</span><span class="adds"><span class="add"><svg class="i s"><use href="#plus"/></svg>Zvuk</span></span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+    <div class="team lead"><b>Děti</b><span class="names"><span class="nm">Lucie Svobodová</span>, <span class="nm">Eva Kučerová</span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+    <a class="link"><span>Osnova<small>9 bodů · 112 min</small></span><svg class="i s"><use href="#chev"/></svg></a>
+    <a class="link"><span>O setkání a místo</span><svg class="i s"><use href="#chev"/></svg></a>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav></div>
+<p class="cap"><b>B · Vedoucí: stejná obrazovka, jen s tím, co je potřeba udělat</b>Kroužek u jména znamená, že ještě neodpověděl. Pod týmem je „+ Klávesy“ pro místo, které chybí, a jedním ťuknutím vybereš člověka. Úpravy setkání (čas, místo, osnova, zrušení) jsou v ⋯.</p></div><div class="frame" id="e3"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="topbar"><span class="back"><svg class="i"><use href="#left"/></svg>Kalendář</span><span class="icon-btn"><svg class="i"><use href="#more"/></svg></span></div>
+    <h1 class="ev-title">Setkání na pastvě</h1>
+    <div class="facts">
+      <p class="fact"><svg class="i s"><use href="#clock"/></svg>ne 18. 10. · 10.00–12.00</p>
+      <p class="fact"><svg class="i s"><use href="#pin"/></svg>Monta, Sál</p>
+    </div>
+    <p class="h2">Kdo slouží</p>
+    <div class="team lead"><b>Slovo</b><span class="names"><span class="nm">Radomil Martinec</span>, <span class="nm">Jiří Zeman</span></span><svg class="i s chev"><use href="#chev"/></svg></div>
+  </div><nav class="tabbar">
+    <span class="tab"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span>
+    <span class="tab on"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span>
+    <span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span>
+  </nav><div class="dim"></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <p class="sh-title">Chvály</p><p class="sh-sub">Setkání na pastvě · ne 18. 10.</p>
+    <div class="duty"><span class="r">Vedení chval</span><div><p class="p">Daniel Sýkora</p><span class="s ok"><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span>potvrzeno</span></div></div>
+    <div class="duty"><span class="r">Zpěv</span><div><p class="p">Hedvika Sedláčková</p><span class="s ok"><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span>potvrzeno</span></div></div>
+    <div class="duty"><span class="r">Kytara</span><div><p class="p">Daniel Sýkora</p><span class="s ok"><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span>potvrzeno</span></div></div>
+    <div class="duty"><span class="r">Klávesy</span><div><span class="add"><svg class="i s"><use href="#plus"/></svg>Doplň</span></div></div>
+    <div class="duty"><span class="r">Bicí</span><div><p class="p">Jakub Marek</p><span class="s wt"><span class="wait-dot"></span>čeká na odpověď</span></div></div>
+  </div></div>
+<p class="cap"><b>C · Vedoucí ťukne na tým</b>Teprve tady jsou role a stav každého člověka (symbol, barva a slovo). Ťuknutím na jméno ho vyměníš nebo mu zavoláš, „+ Doplň“ obsadí volné místo.</p></div></div></body></html>

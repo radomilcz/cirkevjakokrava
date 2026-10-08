@@ -1,0 +1,87 @@
+<!doctype html><html lang="cs" data-palette="cream-clay"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../docs/zvonec/css/palettes.css"><link rel="stylesheet" href="next-tokens.css"><link rel="stylesheet" href="mock.css">
+<style>.over { font-size: 15px; line-height: 20px; color: var(--ink-2); font-weight: 620; margin: 6px 0 2px; }
+.card .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+.card .top .label { margin: 0; } .card .n { font-size: 15px; font-weight: 620; color: var(--ink-2); }
+.dots { display: flex; gap: 6px; justify-content: center; margin-top: 16px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--edge-control); } .dots i.on { background: var(--ink); }
+.sheet .row { min-height: 56px; } .sheet .row.acc { min-height: 68px; }
+.sheet.tall { top: 70px; overflow: hidden; }
+.sheet .h2 { margin: 12px 0 0; }
+.sheet .cnt { font-size: 15px; font-weight: 620; color: var(--wait-ink); margin-right: 6px; white-space: nowrap; }
+.sheet .t.out { color: var(--ink-accent); }
+.bulls { display: flex; gap: 6px; }
+.bulls i { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line-2); }
+.bulls i.on { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--ink); }
+.b1 { background: radial-gradient(circle, #3b2f2f 40%, #f9e7dd 42%); } .b2 { background: radial-gradient(circle, #e6acac 40%, #3b2f2f 42%); }
+.b3 { background: radial-gradient(circle, #3b2f2f 40%, #e6acac 42%); } .b4 { background: radial-gradient(circle, #2f3b8f 40%, #f9e7dd 42%); } .b5 { background: radial-gradient(circle, #f9e7dd 40%, #2f3b8f 42%); }
+.blk { display: flex; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+.blk .body { flex: 1; } .blk .t { font-size: 17px; font-weight: 620; } .blk .m { font-size: 15px; color: var(--ink-2); }
+.blk .trash { color: var(--ink-2); }
+.hint { font-size: 15px; line-height: 21px; color: var(--ink-2); margin: -8px 0 18px; }
+.addbtn { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px 0 14px; border-radius: 14px; background: var(--tint); font-size: 16px; font-weight: 720; margin-top: 18px; }</style></head><body><svg width="0" height="0" style="position:absolute">
+  <symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></symbol>
+  <symbol id="people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.7.8 2.8 2.5 3 5.2"/></symbol>
+  <symbol id="fill" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="sms" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  <symbol id="down" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+</svg>
+<div class="board"><div class="frame" id="u1"><div class="phone"><div class="sb"></div><div class="scroll">
+    <p class="over">Středa 7. října</p>
+    <div class="head"><h1 class="title">Ahoj, Radomile</h1><span class="me">RM</span></div>
+    <div class="card">
+      <div class="top"><p class="label">Čeká na tvou odpověď</p><span class="n">1 ze 3</span></div>
+      <div class="who"><div class="arch"><b>NE</b><span>18</span></div><div><p class="t">Kázání</p><p class="m">Setkání na pastvě · 10.00</p></div></div>
+      <div class="btns"><span class="btn solid">Můžu</span><span class="btn soft">Nemůžu</span></div>
+      <div class="dots"><i class="on"></i><i></i><i></i></div>
+    </div>
+    <p class="h2">Tvoje další služby</p>
+    <div class="row"><div class="arch"><b>NE</b><span>11</span></div><div class="body"><p class="t">Vedení</p><p class="m">Setkání na pastvě · 10.00</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div><div class="row"><div class="arch"><b>SO</b><span>31</span></div><div class="body"><p class="t">Kázání</p><p class="m">Křest u řeky · 15.00</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div><div class="row"><div class="arch"><b>NE</b><span>8</span></div><div class="body"><p class="t">Vedení</p><p class="m">Setkání na pastvě · 10.00</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div>
+  </div><nav class="tabbar"><span class="tab on"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span><span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span><span class="tab"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span><span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span></nav><div class="dim"></div><div class="sheet"><div class="grab"></div>
+    <div class="row acc"><span class="av p4">RM</span><div class="body"><p class="t">Radomil Martinec</p><p class="m">Můj účet · člen</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Kdy nemůžu</p><p class="m">28.–30. 11. · kurz v Praze</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Barvy</p></div><span class="bulls"><i class="b1 on"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i></span></div><div class="row"><div class="body"><p class="t">Veřejný web</p><p class="m">Pastva, jak ji vidí návštěvníci</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t out">Odhlas se</p></div></div></div></div>
+<p class="cap"><b>A · Ťuknutí na kolečko – člen</b>Tvůj účet, „Kdy nemůžu“ (přestěhované sem z Moje), barvy rovnou k výběru, veřejný web a odhlášení. Nic dalšího člen nepotřebuje.</p></div><div class="frame" id="u2"><div class="phone"><div class="sb"></div><div class="scroll">
+    <p class="over">Středa 7. října</p>
+    <div class="head"><h1 class="title">Ahoj, Radomile</h1><span class="me">RM</span></div>
+    <div class="card">
+      <div class="top"><p class="label">Čeká na tvou odpověď</p><span class="n">1 ze 3</span></div>
+      <div class="who"><div class="arch"><b>NE</b><span>18</span></div><div><p class="t">Kázání</p><p class="m">Setkání na pastvě · 10.00</p></div></div>
+      <div class="btns"><span class="btn solid">Můžu</span><span class="btn soft">Nemůžu</span></div>
+      <div class="dots"><i class="on"></i><i></i><i></i></div>
+    </div>
+    <p class="h2">Tvoje další služby</p>
+    <div class="row"><div class="arch"><b>NE</b><span>11</span></div><div class="body"><p class="t">Vedení</p><p class="m">Setkání na pastvě · 10.00</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div><div class="row"><div class="arch"><b>SO</b><span>31</span></div><div class="body"><p class="t">Kázání</p><p class="m">Křest u řeky · 15.00</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div><div class="row"><div class="arch"><b>NE</b><span>8</span></div><div class="body"><p class="t">Vedení</p><p class="m">Setkání na pastvě · 10.00</p></div><span class="ok-dot"><svg class="i"><use href="#check"/></svg></span></div>
+  </div><nav class="tabbar"><span class="tab on"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span><span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span><span class="tab"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span><span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span></nav><div class="dim"></div><div class="sheet tall"><div class="grab"></div>
+    <div class="row acc"><span class="av p4">RM</span><div class="body"><p class="t">Radomil Martinec</p><p class="m">Můj účet · správce</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Kdy nemůžu</p><p class="m">28.–30. 11. · kurz v Praze</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Barvy</p></div><span class="bulls"><i class="b1 on"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i></span></div><p class="h2">Správa</p>
+    <div class="row"><div class="body"><p class="t">Šablony setkání</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Formáty</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Místa</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Přístupy</p></div><span class="cnt">1 čeká</span><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t">Nastavení sboru</p></div><svg class="i s end"><use href="#chev"/></svg></div><div class="row"><div class="body"><p class="t">Veřejný web</p><p class="m">Pastva, jak ji vidí návštěvníci</p></div><svg class="i s end"><use href="#chev"/></svg></div>
+    <div class="row"><div class="body"><p class="t out">Odhlas se</p></div></div></div></div>
+<p class="cap"><b>B · Totéž pro správce</b>Pod účtem navíc Správa: šablony, formáty, místa, přístupy (s tím, co čeká) a nastavení sboru. Vedoucí týmu tu vidí jen to, k čemu má právo.</p></div><div class="frame" id="u3"><div class="phone"><div class="sb"></div><div class="scroll">
+    <div class="topbar"><span class="back"><svg class="i"><use href="#left"/></svg>Moje</span><span></span></div>
+    <h1 class="ev-title">Kdy nemůžu</h1>
+    <p class="hint">Zapiš si dny, kdy nemůžeš. Zvonec tě na ně nebude navrhovat.</p>
+    <div class="blk"><div class="arch"><b>SO</b><span>28</span></div><div class="body"><p class="t">28.–30. 11.</p><p class="m">kurz v Praze</p></div><svg class="i s trash"><use href="#x"/></svg></div>
+    <div class="blk"><div class="arch"><b>ČT</b><span>24</span></div><div class="body"><p class="t">24. 12. – 1. 1.</p><p class="m">Vánoce u rodiny</p></div><svg class="i s trash"><use href="#x"/></svg></div>
+    <span class="addbtn"><svg class="i s"><use href="#plus"/></svg>Přidej</span>
+  </div><nav class="tabbar"><span class="tab on"><span class="pill"><svg class="i"><use href="#home"/></svg></span>Moje</span><span class="tab"><span class="pill"><svg class="i"><use href="#fill"/></svg></span>Obsazení</span><span class="tab"><span class="pill"><svg class="i"><use href="#cal"/></svg></span>Kalendář</span><span class="tab"><span class="pill"><svg class="i"><use href="#people"/></svg></span>Lidé</span></nav></div>
+<p class="cap"><b>C · Kdy nemůžu</b>Jedna věta, co to dělá, seznam a „Přidej“. Data se vyberou v kalendáři, důvod je nepovinný. Vedoucí uvidí, že ten den nemůžeš, a Zvonec tě nenavrhne.</p></div></div></body></html>

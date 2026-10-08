@@ -1,0 +1,865 @@
+/* ============================================================
+   Zvonec One – the kit (zvonec/design/one/CODEX.md §6). Every component drawn once; screens never restyle it.
+   Needs: palettes.css → tokens.css → this file → layers.css → shell.css. CSP-safe: classes and attributes
+   only; icons are <svg class="icon"> built with createElementNS (ui/icons.js).
+   State lives in ARIA / data attributes, never in extra classes: aria-current (nav, views, the open row),
+   aria-pressed (chip), aria-checked (radio segmented, switch), aria-selected (row, day), data-open (the row whose
+   pane is open), data-today, data-status, data-hue.
+   Sizes: controls 36 (S, ≥ 600 only) · 44 (M) · 52 (L); corners follow: 10 · 12 · 14; values are capsules;
+   blocks 20; phone sheet top 28. One weight per kind (controls 620, nav 500), never changed by a state.
+   ============================================================ */
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--ground); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100dvh;
+  font-family: var(--font-ui);
+  font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-regular);
+  color: var(--ink); background: var(--ground);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+[hidden] { display: none !important; }
+h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-feature-settings: var(--numerals); }
+
+/* ---------- icon ---------- */
+.icon {
+  width: var(--icon-m); height: var(--icon-m); flex: none;
+  fill: none; stroke: currentColor; stroke-width: var(--icon-stroke);
+  stroke-linecap: round; stroke-linejoin: round; vertical-align: middle;
+}
+.icon--s { width: var(--icon-s); height: var(--icon-s); }
+
+/* ---------- type roles ---------- */
+.brand { font-family: var(--font-brand); font-weight: 800; font-size: 17px; line-height: 20px; letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
+.title {
+  font-family: var(--font-title); font-weight: 900; font-size: var(--type-title); line-height: var(--lh-title);
+  letter-spacing: var(--tracking-title); color: var(--ink); overflow-wrap: break-word;
+}
+/* a screen's name in capitals – KALENDÁŘ, OBSAZENÍ (the owner); Moje's greeting stays a sentence */
+.head__title { text-transform: uppercase; }
+.mine-page .head__title { text-transform: none; }
+/* capitals run wider: on a phone the name shrinks with the width, so it and its four icons always share one row */
+@media (max-width: 599.98px) { .head__title { font-size: clamp(22px, 6.4vw, 28px); line-height: 1.15; } .mine-page .head__title { font-size: var(--type-title); line-height: var(--lh-title); } }
+.title--pane, .title--s { font-size: var(--type-title-pane); line-height: var(--lh-title-pane); }
+.lead { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.text { font-size: var(--type-body); line-height: var(--lh-body); }
+.meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.caption { font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); }
+.subhead, .week-label {
+  display: block; padding: var(--space-5) 0 var(--space-2);
+  font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2);
+}
+.list--inset > :is(.subhead, .week-label, .index-letter) { padding-left: var(--space-3); padding-right: var(--space-3); }
+.ls__body > .subhead:first-child, .ls__body > .list:first-child > .subhead:first-child { padding-top: 0; }
+.index-letter { display: block; padding: var(--space-5) 0 var(--space-2); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
+.link {
+  position: relative; display: inline-flex; align-items: center; gap: 2px; min-height: var(--hit); padding: 0 4px; margin: 0 -4px;
+  color: var(--ink); font-weight: var(--weight-strong); font-size: var(--type-meta);   /* ink: red is only for problems */
+  border-radius: var(--radius-s); background: none; border: 0; cursor: pointer;
+}
+.link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.row-link {
+  display: flex; align-items: center; gap: 6px; min-height: var(--hit); margin-top: var(--space-1);
+  color: var(--ink); font-size: var(--type-meta); font-weight: var(--weight-strong);
+}
+.row-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.row-link--button { border: 0; background: none; padding: 0; font: inherit; font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink); text-align: left; cursor: pointer; }
+.stack { display: grid; gap: var(--space-3); }
+.cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+/* ---------- buttons (CODEX §6.8) ---------- */
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--control-m); padding: 0 18px; border: 0; border-radius: var(--radius-m);
+  font-size: var(--type-control); line-height: 20px; font-weight: var(--weight-control); white-space: nowrap;
+  background: var(--tint); color: var(--ink);
+  transition: background-color var(--dur-state) var(--ease), transform var(--dur-press) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { background: var(--tint-2); }
+.btn:active { transform: scale(.98); }
+.btn > .icon { margin-left: -2px; }
+.btn--primary { background: var(--act); color: var(--on-act); }
+.btn--primary:hover { background: var(--act-hover); }
+.btn--quiet { background: var(--tint); color: var(--ink); }   /* one of three kinds: dark main · soft tint · bare icon */
+.btn--quiet:hover { background: var(--tint-2); }
+.btn--quiet:active { background: var(--press); }
+.btn--danger { background: var(--no-solid); color: var(--on-no); }
+.btn--danger:hover { background: var(--danger-solid-hover, var(--no-solid)); }
+.btn--l { min-height: var(--control-l); padding: 0 22px; border-radius: var(--radius-l); font-size: var(--type-control-l); }
+.btn--s { min-height: var(--control-s); padding: 0 14px; border-radius: var(--radius-s); font-size: var(--type-control-s); gap: 6px; }
+.btn--s > .icon { width: 16px; height: 16px; }
+.btn--s::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2) 0; }
+.btn--block { display: flex; width: 100%; }
+.btn[disabled], .btn[aria-disabled="true"] { background: var(--tint); color: var(--ink-3); cursor: not-allowed; transform: none; }
+.btn-row { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--gap-x); }
+/* a phone has no S: what is S from 600 up is M there (CODEX §1) */
+@media (max-width: 599.98px) {
+  .btn--s { min-height: var(--control-m); padding: 0 16px; border-radius: var(--radius-m); font-size: var(--type-control); }
+  .btn--s > .icon { width: var(--icon-s); height: var(--icon-s); }
+  .btn--s::after { content: none; }
+}
+
+.icon-btn {
+  position: relative; display: inline-grid; place-items: center; flex: none;
+  width: var(--control-m); height: var(--control-m); padding: 0; border: 0; border-radius: var(--radius-m);
+  background: transparent; color: var(--ink);
+  transition: background-color var(--dur-state) var(--ease);
+}
+.icon-btn:hover { background: var(--wash); }
+.icon-btn:active, .icon-btn[aria-expanded="true"] { background: var(--press); }
+.icon-btn--tint { background: var(--tint); }
+.icon-btn--tint:hover { background: var(--tint-2); }
+.icon-btn--act { background: var(--act); color: var(--on-act); }
+/* a row's call button: quiet icon M on a phone, S (36, r10) with a 44 hit from 600 up */
+.icon-btn--call { box-shadow: none; }   /* a bare icon (no ring) */
+.icon-btn--call > .icon { width: var(--icon-s); height: var(--icon-s); }
+@media (min-width: 600px) {
+  .icon-btn--call { width: var(--control-s); height: var(--control-s); border-radius: var(--radius-s); }
+  .icon-btn--call::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2); }
+}
+.icon-btn--act:hover { background: var(--act-hover); }
+
+/* ---------- values: count, badge, pill, tag (CODEX §6.7) ---------- */
+.count, .badge {
+  display: inline-grid; place-items: center; flex: none; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--shape-pill);
+  background: var(--act); color: var(--on-act);
+  font-size: var(--type-caption); line-height: 1; font-weight: var(--weight-strong); font-feature-settings: var(--numerals); white-space: nowrap;
+}
+.count--quiet { background: var(--tint); color: var(--ink); }
+.pill {
+  display: inline-flex; align-items: center; flex: none; min-height: 24px; padding: 0 10px; border-radius: var(--shape-pill);
+  background: var(--tint); color: var(--ink-2); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong);
+  white-space: nowrap;
+}
+.pill--no { background: var(--no-fill); color: var(--no-ink); }
+.pill--wait { background: var(--wait-fill); color: var(--wait-ink); }
+.pill--ok { background: var(--ok-fill); color: var(--ok-ink); }
+.tag {
+  display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 24px; padding: 0 10px; border-radius: var(--shape-pill);
+  background: var(--hue-fill, var(--tint)); color: var(--hue-ink, var(--ink));
+  font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); white-space: nowrap;
+}
+
+/* ---------- hues (Next's, DESIGN §7.2): Účel rose · blue · teal · plum; avatars blue · green · plum · amber · teal ---------- */
+[data-hue="rose"]  { --hue-fill: var(--rose-3);  --hue-ink: var(--rose-12);  --hue-mark: var(--rose-11);  --hue-av: var(--rose-avatar-bg);  --hue-av-ink: var(--rose-avatar-fg); }
+[data-hue="blue"]  { --hue-fill: var(--blue-3);  --hue-ink: var(--blue-12);  --hue-mark: var(--blue-11);  --hue-av: var(--blue-avatar-bg);  --hue-av-ink: var(--blue-avatar-fg); }
+[data-hue="green"] { --hue-fill: var(--green-3); --hue-ink: var(--green-12); --hue-mark: var(--green-11); --hue-av: var(--green-avatar-bg); --hue-av-ink: var(--green-avatar-fg); }
+[data-hue="plum"]  { --hue-fill: var(--plum-3);  --hue-ink: var(--plum-12);  --hue-mark: var(--plum-11);  --hue-av: var(--plum-avatar-bg);  --hue-av-ink: var(--plum-avatar-fg); }
+[data-hue="teal"]  { --hue-fill: var(--teal-3);  --hue-ink: var(--teal-12);  --hue-mark: var(--teal-11);  --hue-av: var(--teal-avatar-bg);  --hue-av-ink: var(--teal-avatar-fg); }
+[data-hue="amber"] { --hue-fill: var(--amber-3); --hue-ink: var(--amber-12); --hue-mark: var(--amber-11); --hue-av: var(--amber-avatar-bg); --hue-av-ink: var(--amber-avatar-fg); }
+
+/* ---------- segmented (CODEX §6.3): views as links (C), or a radio group in a form ---------- */
+.seg {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px;   /* a lit segment never touches its neighbour */
+  min-height: var(--control-m); padding: 3px; border-radius: var(--radius-m); background: var(--tint);
+}
+.seg > :is(a, button) {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 0;
+  min-height: 38px; padding: 0 8px; border: 0; border-radius: var(--shape-inner); background: transparent; white-space: nowrap;
+  color: var(--ink); font-size: var(--type-control); line-height: 20px; font-weight: var(--weight-control);
+  transition: background-color var(--dur-state) var(--ease), color var(--dur-state) var(--ease);
+}
+.seg > :is(a, button)::after { content: ""; position: absolute; inset: -3px 0; }
+.seg > :is(a:not([aria-current="page"]), button:not([aria-checked="true"])):hover { background: var(--wash); }
+.seg > :is(a[aria-current="page"], button[aria-checked="true"]) { background: var(--card); color: var(--ink); box-shadow: var(--lift-2); }   /* light: only the main action is dark */
+@media (min-width: 600px) {
+  .seg--views { display: inline-grid; grid-auto-columns: var(--seg-w); }
+}
+
+/* ---------- chips (CODEX §6.7): a choice in Filtr and in forms ---------- */
+.chips { display: flex; gap: var(--gap-x); overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter); scroll-padding: 0 var(--gutter); }
+.chips::-webkit-scrollbar { display: none; }
+.chips--wrap, .field--chips .chips, .sheet .chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; row-gap: var(--gap-y); }
+@media (min-width: 600px) { .chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; row-gap: var(--gap-y); } }
+.chip {
+  position: relative; display: inline-flex; align-items: center; gap: var(--space-2); flex: none;
+  min-height: var(--control-m); padding: 0 16px; border: 0; border-radius: var(--shape-pill);
+  background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control);
+  color: var(--ink); font-size: var(--type-control); line-height: 20px; font-weight: var(--weight-control); white-space: nowrap;
+  transition: background-color var(--dur-state) var(--ease), color var(--dur-state) var(--ease);
+}
+.chip:hover { background: var(--wash); }
+.chip .chip__n { color: var(--ink-2); font-feature-settings: var(--numerals); }
+.chip > .icon { margin-left: -4px; }
+.chip__dot { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--hue-mark, var(--ink-2)); }
+.chip[aria-pressed="true"] { background: var(--act); color: var(--on-act); box-shadow: none; }
+.chip[aria-pressed="true"]:hover { background: var(--act-hover); }
+.chip[aria-pressed="true"] .chip__n { color: inherit; }
+.chip[aria-pressed="true"] .chip__dot { box-shadow: 0 0 0 2px var(--on-act); }
+
+/* ---------- avatars & team marks ---------- */
+.avatar {
+  display: inline-grid; place-items: center; flex: none; overflow: hidden;
+  width: var(--avatar-m); height: var(--avatar-m); border-radius: 50%;
+  background: var(--hue-av, var(--avatar-bg)); color: var(--hue-av-ink, var(--ink));
+  font-size: 15px; font-weight: var(--weight-strong); letter-spacing: .01em; line-height: 1;
+}
+.avatar--xs { width: 24px; height: 24px; font-size: 10px; }
+.avatar--s { width: var(--avatar-s); height: var(--avatar-s); font-size: 12px; }
+.avatar--l { width: var(--avatar-l); height: var(--avatar-l); font-size: 22px; }
+.avatar--xl { width: var(--avatar-xl); height: var(--avatar-xl); font-size: 24px; }
+.avatar--xxl { width: 128px; height: 128px; font-size: 40px; }
+/* the head's avatar of who may change the photo: a button with a small camera badge */
+.photo-btn { position: relative; display: inline-grid; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.photo-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.photo-btn__badge {
+  position: absolute; right: -2px; bottom: -2px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--act); color: var(--on-act); box-shadow: 0 0 0 3px var(--ground);
+}
+.photo-btn__badge > .icon { width: 15px; height: 15px; }
+.photo-btn:hover .avatar { filter: brightness(.96); }
+.photo-field { display: grid; justify-items: start; gap: var(--space-3); }
+.avatar--me { background: var(--tint-2); color: var(--ink); }
+.avatar--photo { background: var(--tint); }
+.avatar--photo > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar--team { border-radius: var(--shape-team); }
+.avatar[data-status="declined"] { background: var(--avatar-bg); color: var(--ink-2); }
+.avatars { display: inline-flex; }
+.avatars > .avatar { box-shadow: 0 0 0 2px var(--ground); }
+.avatars > .avatar + .avatar { margin-left: -8px; }
+
+/* ---------- status: symbol + colour + word ---------- */
+.status {
+  display: inline-flex; align-items: center; gap: 6px; flex: none;
+  min-height: 24px; padding: 0 10px 0 4px; border-radius: var(--shape-pill);
+  font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); white-space: nowrap;
+}
+.status[data-status="confirmed"] { background: var(--ok-fill); color: var(--ok-ink); }
+.status[data-status="waiting"]   { background: var(--wait-fill); color: var(--wait-ink); }
+.status[data-status="declined"]  { background: var(--no-fill); color: var(--no-ink); }
+.status--plain { padding: 0; min-height: 0; background: none !important; }
+.sym { width: 20px; height: 20px; flex: none; }
+.sym--l { width: 24px; height: 24px; }
+.sym .sym__disc { stroke: none; }
+.sym .sym__glyph { fill: none; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+.sym[data-status="confirmed"] .sym__disc { fill: var(--ok-solid); }
+.sym[data-status="confirmed"] .sym__glyph { stroke: var(--on-ok); }
+.sym[data-status="declined"] .sym__disc { fill: var(--no-solid); }
+.sym[data-status="declined"] .sym__glyph { stroke: var(--on-no); }
+/* waiting: a plain ring (○) the size of the full discs */
+.sym[data-status="waiting"] .sym__disc { fill: none; stroke: var(--wait-ink); stroke-width: 2; }
+.sym[data-status="waiting"] .sym__glyph { display: none; }
+.is-declined { text-decoration: line-through; text-decoration-thickness: 1.5px; text-decoration-color: var(--no-ink); }
+.row__note { display: flex; align-items: center; gap: 6px; font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-medium); }
+.row__note[data-tone="ok"] { color: var(--ok-ink); }
+.row__note[data-tone="wait"] { color: var(--wait-ink); }
+.row__note[data-tone="no"] { color: var(--no-ink); }
+.sev { display: inline-flex; align-items: center; gap: 6px; font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); }
+.sev::before { content: ""; width: 10px; height: 10px; flex: none; border-radius: 50%; }
+.sev[data-sev="error"] { color: var(--no-ink); }
+.sev[data-sev="error"]::before { background: var(--no-solid); }
+.sev[data-sev="warn"] { color: var(--wait-ink); }
+.sev[data-sev="warn"]::before { box-shadow: inset 0 0 0 2px var(--wait-ink); }
+.sev[data-sev="info"] { color: var(--info-ink); }
+.sev[data-sev="info"]::before { width: 8px; height: 8px; border-radius: 2px; transform: rotate(45deg); background: var(--info-ink); }
+.ring { width: 20px; height: 20px; flex: none; transform: rotate(-90deg); }
+.ring__track { fill: none; stroke: var(--edge-control); stroke-width: 4; }
+.ring__fill { fill: none; stroke: var(--no-solid); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset var(--dur-state) var(--ease); }
+.ring[data-full] .ring__fill { stroke: var(--ok-solid); }
+/* the status ring (statusRing): confirmed · waiting · missing as parts of one ring */
+.ring__part { fill: none; stroke-width: 4; }
+.ring__part--ok { stroke: var(--ok-solid); }
+.ring__part--wait { stroke: var(--wait-solid); }
+.ring__part--no { stroke: var(--no-solid); }
+/* the status tag (calendar.js fillTag): a soft capsule, the ring and what is missing or waits, never on a full meeting */
+.fill-tag {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: 32px; padding: 0 var(--space-3) 0 var(--space-2);
+  border-radius: var(--shape-pill); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong);
+  white-space: nowrap; font-feature-settings: var(--numerals);
+}
+.fill-tag[data-tone="no"] { background: var(--no-fill); color: var(--no-ink); }
+.fill-tag[data-tone="wait"] { background: var(--wait-fill); color: var(--wait-ink); }
+/* the fill ring is a status: something missing = --no-solid, full = --ok-solid; never the accent (the pink is the brand's) */
+.fill--quiet[data-tone="no"] { color: var(--no-ink); }
+.fill { flex-wrap: nowrap; white-space: nowrap; font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
+
+/* ---------- lists & rows (CODEX §5, §6.6) ---------- */
+.list { display: grid; }
+.list--inset { margin: 0 calc(-1 * var(--space-3)); }
+.row {
+  position: relative; display: flex; align-items: center; gap: var(--space-3);
+  min-height: var(--row-h-single); padding: var(--space-2) var(--space-3); border-radius: var(--radius-m);
+  color: inherit; text-align: left; width: 100%; background: transparent; border: 0; font: inherit;
+  transition: background-color var(--dur-state) var(--ease);
+}
+.row:has(.row__meta, .row__note) { min-height: var(--row-h); }
+.row__body { flex: 1; min-width: 0; display: grid; gap: 2px; align-content: center; }
+.row__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); overflow-wrap: break-word; }
+.row__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: break-word; }
+.row__nick { font-weight: var(--weight-regular); color: var(--ink-2); }
+.row__trail { display: flex; align-items: center; gap: var(--space-2); flex: none; color: var(--ink-3); font-size: var(--type-meta); }
+.row__trail > .icon:last-child, .row > .icon:last-child { color: var(--ink-3); }
+.row > .icon:first-child { color: var(--ink-2); }
+.row--single { min-height: var(--row-h-single); }
+.row__title--wrap, .row__meta--wrap { white-space: normal; }
+.row__stretch { color: inherit; }
+button.row__body.row__stretch { border: 0; background: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.row__stretch::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.row > :is(.icon-btn, .btn, .switch, .slot), .row__trail > :is(a, button, input, select, .switch, .menu-btn) { position: relative; z-index: 1; }
+button.row:disabled { color: var(--ink-3); cursor: not-allowed; }
+/* the hairline belongs to the row below (inset to the text start) and steps aside for a lit row and the row after it */
+.row + .row::before {
+  content: ""; position: absolute; top: calc(-1 * var(--gap-lit) + 1px); left: var(--row-rule-start, var(--space-3)); right: var(--space-3);
+  height: 1px; background: var(--hairline);
+}
+.list > .row + .row { margin-top: var(--gap-lit); }
+.row:has(> .avatar:first-child, > .avatar--team:first-child) { --row-rule-start: calc(var(--space-3) + var(--avatar-m) + var(--space-3)); }
+.row:has(> .arch:first-child, > .arch-shape:first-child) { --row-rule-start: calc(var(--space-3) + var(--arch-w) + var(--space-3)); }
+.row:has(> .icon:first-child) { --row-rule-start: calc(var(--space-3) + var(--icon-m) + var(--space-3)); }
+:is(a.row, button.row, .row:has(> .row__stretch)):hover { background: var(--wash); }
+:is(a.row, button.row):active { background: var(--press); }
+/* a row whose menu is open (Kdy nemůžu, Přístupy): lit like its hover while the menu is open */
+.row:is([aria-expanded="true"], :has(> .row__stretch[aria-expanded="true"])):not([aria-selected="true"], [data-open]) { background: var(--wash); }
+.row:is([aria-expanded="true"], :has(> .row__stretch[aria-expanded="true"]))::before,
+.row:is([aria-expanded="true"], :has(> .row__stretch[aria-expanded="true"])) + .row::before { background: transparent; }
+/* selected / open / current: --pick + a detached 3 px --mark bar, inset 12 top and bottom; selected + hover = --pick-hover */
+.row:is([aria-selected="true"], [data-open]) { background: var(--pick); }
+.row:is([aria-selected="true"], [data-open]):hover { background: var(--pick-hover); }
+.row:is([aria-selected="true"], [data-open]) .row__meta { color: var(--ink); }
+.row:is([aria-selected="true"], [data-open])::after {
+  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+}
+:is(a.row, button.row, .row:has(> .row__stretch)):hover::before,
+:is(a.row, button.row, .row:has(> .row__stretch)):hover + .row::before,
+.row:is([aria-selected="true"], [data-open])::before, .row:is([aria-selected="true"], [data-open]) + .row::before { background: transparent; }
+/* inside a chosen row a soft fill (the date arch) is the card colour: never a second pink */
+.row:is([aria-selected="true"], [data-open]) { --tint: var(--card); }
+
+/* ---------- marks: the lead of a row (40) or a detail (56): Účel arch · minutes block · place (core.js) ---------- */
+.lead-mark {
+  display: inline-grid; place-items: center; place-content: center; flex: none;
+  width: var(--avatar-m); height: var(--avatar-m); border-radius: var(--radius-m);
+  background: var(--tint); color: var(--ink-2);
+}
+.lead-mark > .icon { width: var(--icon-s); height: var(--icon-s); }
+.lead-mark--l { width: 56px; height: 56px; border-radius: var(--radius-l); }
+.lead-mark--l > .icon { width: var(--icon-m); height: var(--icon-m); }
+/* the Účel mark is an arch (the date arch's shape, scaled), in the hue of its Účel */
+.lead-mark--kind { height: 48px; padding-top: 4px; border-radius: var(--shape-arch-sm); background: var(--hue-fill); color: var(--hue-ink); }
+.lead-mark--kind.lead-mark--l { width: 56px; height: 64px; border-radius: var(--shape-arch-l); }
+/* the minutes block: „25 / min“ */
+/* 48 high like the Účel arch, so „25“ and „min“ have room; the Agrandir numerals sit high in their line, so the number
+   gets 2 px above it – otherwise it flies up against the block's top edge */
+.lead-mark--minutes { height: 48px; gap: 1px; color: var(--ink); }
+.lead-mark--minutes > b { padding-top: 2px; font-family: var(--font-title); font-weight: 900; font-size: 18px; line-height: 20px; font-feature-settings: var(--numerals); }
+.lead-mark--minutes > span { font-size: var(--type-caption); line-height: 14px; font-weight: var(--weight-medium); color: var(--ink-2); }
+.lead-mark--minutes.lead-mark--l { height: 64px; }
+.lead-mark--minutes.lead-mark--l > b { font-size: 24px; line-height: 26px; }
+.row:has(> .lead-mark:first-child) { --row-rule-start: calc(var(--space-3) + var(--avatar-m) + var(--space-3)); }
+
+/* ---------- the date arch (CODEX §6.14) ---------- */
+.arch {
+  display: inline-grid; align-content: center; justify-items: center; flex: none;
+  width: var(--arch-w); height: var(--arch-h); padding-top: 6px; border-radius: var(--shape-arch);
+  background: var(--tint); color: var(--ink);
+}
+.arch__dow { font-size: var(--type-caption); line-height: 14px; font-weight: var(--weight-medium); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-2); }
+.arch__num { font-family: var(--font-title); font-weight: 900; font-size: 22px; line-height: 24px; font-feature-settings: var(--numerals); }
+.arch[data-today] { background: var(--act); color: var(--on-act); }
+.arch[data-today] .arch__dow { color: inherit; }
+.arch--quiet { background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control); }
+
+/* ---------- the agenda (the forked Seznam; P2 builds the Seznam event anatomy on it) ---------- */
+.agenda { display: grid; }
+.agenda__day { position: relative; display: grid; grid-template-columns: var(--arch-w) 1fr; gap: 0 var(--space-5); padding: var(--space-4) 0; }
+/* the hairline between days starts at the text (like a row's), never under the date arch */
+.agenda__day + .agenda__day::before {
+  content: ""; position: absolute; top: 0; left: calc(var(--arch-w) + var(--space-5)); right: 0; height: 1px; background: var(--hairline);
+}
+.agenda__day:first-child::before, :is(.week-label, .subhead) + .agenda__day::before { content: none; }
+.agenda__day > .arch { position: sticky; top: var(--space-3); align-self: start; }
+.agenda__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); padding: 2px 0 var(--space-2); }
+.agenda__items { display: grid; gap: var(--gap-lit); min-width: 0; }
+.event {
+  position: relative; display: grid; grid-template-columns: 52px 1fr; gap: 2px var(--space-3);
+  padding: var(--space-2) var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--radius-m);
+  color: inherit; transition: background-color var(--dur-state) var(--ease);
+}
+a.event:hover, button.event--button:hover { background: var(--wash); }
+.event--button { width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+.event__time { font-size: var(--type-meta); line-height: var(--lh-body); font-weight: var(--weight-strong); font-feature-settings: var(--numerals); }
+.event__end { display: block; font-weight: var(--weight-regular); color: var(--ink-2); line-height: var(--lh-meta); }
+/* the Účel bar is its own element (never a coloured side border on a rounded shape) */
+.event__body { position: relative; display: grid; gap: 2px; min-width: 0; padding-left: var(--space-4); }
+.event__body::before { content: ""; position: absolute; left: 0; top: 2px; bottom: 2px; width: 3px; background: var(--hue-mark, var(--edge-control)); }
+.event__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); }
+.event__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.event__duty { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-2); margin-top: var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); }
+.event[data-cancelled] .event__title { text-decoration: line-through; color: var(--ink-2); }
+.event:is([data-open], [aria-current="true"]) { background: var(--pick); }
+.event:is([data-open], [aria-current="true"]):is(:hover, :focus-visible) { background: var(--pick-hover); }   /* never grey (CODEX §5) */
+.event:is([data-open], [aria-current="true"])::after { content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark); }
+.event:is([data-open], [aria-current="true"]) :is(.event__meta, .event__end) { color: var(--ink); }
+
+/* ---------- the month grid as a mini month (date picker, Měsíc narrow) (CODEX §6.14) ---------- */
+.week, .month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; }
+.month__dow { padding: var(--space-2) 0; text-align: center; font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); font-weight: var(--weight-medium); }
+.day {
+  position: relative; display: grid; justify-items: center; align-content: start; gap: 3px;
+  min-height: 52px; padding: 4px 0 0; border: 0; background: transparent; border-radius: var(--radius-m);
+  color: var(--ink); font-feature-settings: var(--numerals);
+}
+.day__dow { font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); font-weight: var(--weight-medium); }
+/* an arch taller than wide, as every arch (36 × 32 read as squashed); the number sits a little low in it. The Měsíc
+   grid's day number (css/calendar.css) is the same arch with the same states. */
+.day__num {
+  display: inline-grid; place-items: center; width: 32px; height: 36px; padding-top: 3px; border-radius: var(--shape-day);
+  font-size: 16px; line-height: 20px; font-weight: var(--weight-regular); transition: background-color var(--dur-state) var(--ease);
+}
+.day:hover .day__num { background: var(--wash); }
+.day__dots { display: flex; gap: 3px; height: 6px; }
+.day__dots > i { width: 6px; height: 6px; border-radius: 50%; background: var(--hue-mark, var(--ink-2)); }
+.day[data-today] .day__num { background: var(--act); color: var(--on-act); }
+.day[aria-selected="true"] .day__num { background: var(--pick); }
+.day[aria-selected="true"]:hover .day__num { background: var(--pick-hover); }
+.day[aria-selected="true"]::after { content: ""; position: absolute; left: calc(50% - 8px); top: 43px; width: 16px; height: 3px; border-radius: 3px; background: var(--mark); }
+.day[aria-selected="true"][data-today] .day__num { background: var(--act); }
+.day[data-outside] .day__num { color: var(--ink-3); }
+.day:disabled { cursor: default; }
+.day:disabled .day__num { color: var(--ink-3); background: none; text-decoration: line-through; text-decoration-color: var(--hairline); opacity: .55; }
+.day[data-mine] .day__num { box-shadow: inset 0 0 0 1.5px currentColor; }
+
+/* ---------- blocks ---------- */
+.card { padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
+.feature { display: grid; gap: var(--space-4); padding: var(--space-5); border-radius: var(--shape-block); background: var(--feature); }
+.feature__head { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink-2); }
+.feature__item { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-4); align-items: center; }
+.feature__item .btn-row { grid-column: 1 / -1; }
+.feature__more { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--hairline); padding-top: var(--space-2); margin-bottom: calc(-1 * var(--space-2)); }
+.callout {
+  display: grid; grid-template-columns: auto 1fr; gap: 2px var(--space-3); align-items: start;
+  padding: 14px var(--space-4); border-radius: var(--radius-m);
+  font-size: var(--type-meta); line-height: var(--lh-meta);
+}
+.callout > .icon { grid-row: span 2; margin-top: -2px; }
+.callout__title { font-weight: var(--weight-strong); }
+.callout__action { grid-column: 2; margin-top: var(--space-2); justify-self: start; }
+.callout[data-tone="wait"] { background: var(--wait-fill); color: var(--wait-body); }
+.callout[data-tone="wait"] > .icon { color: var(--wait-ink); }
+.callout[data-tone="no"] { background: var(--no-fill); color: var(--no-ink); }
+.callout[data-tone="info"] { background: var(--tint); color: var(--ink); }
+.callout[data-tone="info"] > .icon { color: var(--ink-2); }
+.quiet { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-2) 0; }
+.quiet > .icon { flex: none; margin-top: 2px; color: var(--ok-ink); }
+.slot {
+  position: relative; display: inline-flex; align-items: center; gap: 4px; flex: none;
+  min-height: var(--control-s); padding: 0 14px 0 10px; border-radius: var(--shape-pill);
+  background: transparent; border: 1px dashed var(--edge-control); color: var(--ink);
+  font-size: var(--type-control-s); line-height: 20px; font-weight: var(--weight-control); white-space: nowrap;
+  transition: background-color var(--dur-state) var(--ease);
+}
+.slot > .icon { width: 16px; height: 16px; }
+.slot::after { content: ""; position: absolute; inset: calc((var(--control-s) - var(--hit)) / 2) 0; }
+.slot:hover { background: var(--wash); border-style: solid; }
+@media (max-width: 599.98px) {
+  .slot { min-height: var(--control-m); font-size: var(--type-control); padding: 0 16px 0 12px; }
+  .slot::after { content: none; }
+}
+.warning { display: grid; gap: var(--space-2); padding: var(--space-2) 0; }
+.warning__text { font-size: var(--type-meta); line-height: var(--lh-meta); }
+.warning__text > .sev { margin-right: var(--space-1); }
+.team-head { display: flex; align-items: center; gap: var(--space-3); min-height: var(--hit); margin-top: var(--space-4); }
+.team-head > .avatar { width: 28px; height: 28px; font-size: 11px; }
+.team-head > b { flex: 1; font-weight: var(--weight-strong); }
+.team-head > .caption { margin-left: auto; }
+.duty { display: grid; grid-template-columns: 96px 1fr; gap: 2px var(--space-3); align-items: center; min-height: var(--row-h-single); padding: 6px 0; border-top: 1px solid var(--hairline); }
+.duty__role { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); font-weight: var(--weight-medium); }
+.duty__who { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-3); min-width: 0; }
+.duty__who > .name { font-weight: var(--weight-strong); }
+.duty__who--button { border: 0; background: none; padding: 6px 8px; margin: -6px -8px; border-radius: var(--radius-m); font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.duty__who--button:hover, a.duty__who:hover { background: var(--wash); }
+.duty__warn { grid-column: 2; }
+.need {
+  position: relative; display: grid; grid-template-columns: var(--arch-w) 1fr auto; gap: var(--space-1) var(--space-4); align-items: start;
+  padding: var(--space-4) var(--space-3); border-radius: var(--radius-m); transition: background-color var(--dur-state) var(--ease);
+}
+.need + .need { margin-top: var(--gap-lit); }
+.need + .need::before { content: ""; position: absolute; top: -2px; left: calc(var(--space-3) + var(--arch-w) + var(--space-4)); right: var(--space-3); height: 1px; background: var(--hairline); }
+.need__title { color: inherit; }
+.need__stretch::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.need:has(.need__stretch):hover { background: var(--wash); }
+.need:has(.need__stretch):hover::before, .need:has(.need__stretch):hover + .need::before { background: transparent; }
+.need__sum > .need__act, .need__slots > * { position: relative; z-index: 1; }
+.need__slots { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.need__sum { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: var(--type-meta); line-height: var(--lh-meta); }
+.need__sum > .need__act { border: 0; background: none; padding: 0; font: inherit; font-weight: var(--weight-strong); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.feature__done { grid-column: 1 / -1; display: flex; align-items: center; min-height: var(--control-m); margin: 0; }
+.feature__item[data-leaving] { height: 0 !important; padding-top: 0 !important; opacity: 0; overflow: hidden; transition: height 260ms var(--ease), padding-top 260ms var(--ease), opacity 180ms var(--ease); }
+.feature[data-settling] .feature__item { pointer-events: none; }
+button.feature__more { width: 100%; border: 0; border-top: 1px solid var(--hairline); background: none; padding-left: 0; padding-right: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+
+/* map (OpenStreetMap in a frame – the one the CSP allows) */
+.map { position: relative; width: 100%; aspect-ratio: 16 / 9; min-height: 180px; overflow: hidden; border-radius: var(--shape-block); box-shadow: 0 0 0 1px var(--edge); background: var(--tint); }
+.map > iframe { position: relative; display: block; width: 100%; height: 100%; border: 0; transition: opacity var(--dur-state) var(--ease); }
+.map[data-loading] > iframe { opacity: 0; pointer-events: none; }
+.map__fallback { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--space-1); padding: var(--space-4); text-align: center; color: var(--ink); }
+.map__fallback > .icon { color: var(--ink-2); }
+.map__address { font-size: var(--type-meta); line-height: var(--lh-meta); }
+.map:not([data-loading]) > .map__fallback { visibility: hidden; }
+.map-link { align-self: flex-start; }
+
+/* skeleton (loading) */
+.skeleton { border-radius: var(--shape-inner); background: var(--tint); animation: nx-pulse 1.4s ease-in-out infinite; }
+.skeleton-list { display: grid; }
+.skeleton-row { display: flex; align-items: center; gap: var(--space-3); padding: 10px 0; }
+.skeleton--arch { width: var(--arch-w); height: var(--arch-h); border-radius: var(--shape-arch); flex: none; }
+.skeleton-lines { display: grid; gap: var(--space-2); flex: 1; }
+.skel-1 { height: 18px; width: 70%; }
+.skel-2 { height: 14px; width: 45%; }
+
+/* tables (Podrobný výpis): their own sideways scroll box – the page never scrolls sideways */
+.table-wrap { overflow-x: auto; max-width: 100%; margin: 0 calc(-1 * var(--space-3)); padding: 0 var(--space-3); }
+.table { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: var(--type-meta); line-height: var(--lh-meta); }
+.table th { text-align: left; font-weight: var(--weight-strong); color: var(--ink-2); }
+.table tbody th { color: var(--ink); }
+.table thead th { background: var(--ground); box-shadow: inset 0 -1px 0 var(--edge); }
+.table tbody tr + tr > * { border-top: 1px solid var(--hairline); }
+/* the lit sort button is 32 high, so its wash never touches the head's line; the hit stays 44 (::after) */
+.th-sort {
+  position: relative; display: inline-flex; align-items: center; gap: 4px; min-height: 32px; margin: 0 -8px; padding: 0 8px;
+  border: 0; border-radius: var(--radius-m); background: none; color: inherit; font: inherit; font-weight: var(--weight-strong);
+  cursor: pointer;
+}
+.th-sort::after { content: ""; position: absolute; inset: -6px 0; }
+.th-sort:hover { background: var(--wash); color: var(--ink); }
+th[aria-sort] .th-sort { color: var(--ink); }
+
+/* ---------- fields ---------- */
+.form { display: grid; gap: var(--space-5); }
+.form__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--space-5) var(--space-3); align-items: start; }
+.form__row--pair { grid-template-columns: 1fr 1fr !important; gap: var(--space-3) !important; }
+.form__row--pair > .field { min-width: 0; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink); }
+.field__optional { font-weight: var(--weight-regular); color: var(--ink-2); }
+.field__hint { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.field__error { display: flex; gap: 6px; align-items: center; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--no-ink); font-weight: var(--weight-medium); }
+.field__error > span { flex: 1; }
+.input {
+  width: 100%; min-height: var(--control-m); padding: 0 var(--space-4); border: 0; border-radius: var(--radius-m);
+  background: var(--field-bg); box-shadow: inset 0 0 0 1px var(--edge-field);
+  font-size: max(16px, var(--type-control)); color: var(--ink); appearance: none; text-overflow: ellipsis;
+  transition: box-shadow var(--dur-state) var(--ease);
+}
+@media (min-width: 600px) { .input { font-size: var(--type-control); } }
+.input::placeholder { color: var(--ink-3); opacity: 1; }
+.input:hover { box-shadow: inset 0 0 0 1px var(--line-hover); }
+.input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--focus-ring); }
+.input[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--no-ink); }
+textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: var(--lh-body); resize: vertical; }
+.search { position: relative; display: block; min-width: 0; }
+.search__field { display: block; }
+.search__field > .icon { position: absolute; left: 12px; top: 50%; margin-top: -10px; width: var(--icon-s); height: var(--icon-s); color: var(--ink-2); pointer-events: none; }
+/* icon 20 at 12 → text at 40; the right 44 is reserved only while ✕ shows, so „Hledej setkání“ fits at 360 */
+.search .input { padding-left: 40px; padding-right: 12px; text-overflow: ellipsis; background: var(--tint); box-shadow: none; }   /* a soft well, not a form field */
+.search .input:hover { background: var(--tint-2); box-shadow: none; }
+.search .input:focus { background: var(--field-bg); box-shadow: inset 0 0 0 2px var(--focus-ring); }
+.search:has(.search__clear:not([hidden])) .input { padding-right: 44px; }
+.search .input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
+.search__clear { position: absolute; right: 0; top: 0; color: var(--ink-2); }
+.search__clear:hover { color: var(--ink); }
+.password { position: relative; display: block; }
+.password > .input { padding-right: 52px; }
+.password__eye { position: absolute; right: 0; top: 0; color: var(--ink-2); }
+.password__eye[aria-pressed="true"] { color: var(--ink); }
+.select { position: relative; display: block; }
+.select > .input { padding-right: 48px; cursor: pointer; }
+.select > .icon { position: absolute; right: 16px; top: 50%; margin-top: -10px; color: var(--ink-2); pointer-events: none; }
+.input--button { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); text-align: left; cursor: pointer; }
+.input--button > .icon { color: var(--ink-2); }
+.date-input__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.is-placeholder { color: var(--ink-3); }
+.date-field, .time-field { display: block; }
+.input--time { max-width: 8.5em; }
+.time-range { display: flex; align-items: center; gap: var(--space-2); }
+.time-range > .time-field { flex: 1; }
+.time-range .input--time { max-width: none; }
+.time-range__dash { color: var(--ink-2); }
+.stepper { display: inline-flex; align-items: center; gap: 0; border-radius: var(--radius-m); background: var(--tint); justify-self: start; }
+.stepper > .icon-btn:hover { background: var(--tint-2); }
+.stepper > .icon-btn:disabled { color: var(--ink-3); cursor: not-allowed; background: none; }
+.stepper__value { width: 3em; min-height: var(--control-m); border: 0; background: transparent; color: var(--ink); text-align: center; font-size: var(--type-control); font-weight: var(--weight-strong); font-feature-settings: var(--numerals); }
+.stepper__value:focus { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+/* the switch: 40 × 24, a knob of 18 (3 in) – in proportion to a 16–17 px label, not a control of its own; its hit
+   area is still 44. Off: a quiet track with a lifted knob; on: the act colour with the knob 16 to the right. */
+.switch {
+  position: relative; flex: none; width: var(--switch-w); height: var(--switch-h); border: 0; border-radius: var(--shape-pill); padding: 0;
+  background: var(--tint-2); box-shadow: inset 0 0 0 1px var(--edge-control); cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease), box-shadow var(--dur-state) var(--ease);
+}
+.switch::before {
+  content: ""; position: absolute; left: 3px; top: 3px; width: calc(var(--switch-h) - 6px); height: calc(var(--switch-h) - 6px); border-radius: 50%;
+  background: var(--card); box-shadow: 0 0 0 1px var(--line-2), 0 1px 2px var(--shadow-tint-b);
+  transition: transform var(--dur-state) var(--ease), background-color var(--dur-state) var(--ease);
+}
+/* on a dark palette the panel-coloured knob would sink into the track: it takes the second ink */
+:root[data-theme="dark"] .switch:not([aria-checked="true"])::before { background: var(--ink-2); box-shadow: none; }
+.switch::after { content: ""; position: absolute; inset: calc((var(--switch-h) - var(--hit)) / 2) -2px; }
+.switch:hover:not([aria-checked="true"]) { background: var(--tint); }
+.switch[aria-checked="true"] { background: var(--act); box-shadow: none; }
+.switch[aria-checked="true"]::before { transform: translateX(calc(var(--switch-w) - var(--switch-h))); background: var(--on-act); box-shadow: none; }
+.switch-row { display: flex; align-items: center; gap: var(--space-4); min-height: var(--hit); cursor: pointer; }
+.switch-row__text { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.switch-row__label { font-size: var(--type-body); line-height: var(--lh-body); }
+.disclosure > summary {
+  display: inline-flex; align-items: center; gap: 6px; min-height: var(--hit); list-style: none; cursor: pointer;
+  color: var(--ink); font-size: var(--type-meta); font-weight: var(--weight-strong); border-radius: var(--radius-s);
+}
+.disclosure > summary::-webkit-details-marker { display: none; }
+.disclosure > summary > .icon { transition: transform var(--dur-state) var(--ease); }
+.disclosure[open] > summary > .icon { transform: rotate(180deg); }
+.disclosure__body { display: grid; gap: var(--space-5); padding-top: var(--space-3); }
+/* the date picker's month row is the period line (CODEX §6.3): [‹][label 136][›] ········ [Dnes] */
+.date-sheet__period { display: flex; align-items: center; gap: 0; min-height: var(--control-m); }
+.date-sheet__label {
+  flex: none; width: var(--period-label-w); text-align: center; white-space: nowrap;
+  font-size: var(--type-period); line-height: var(--lh-period); font-weight: var(--weight-strong);
+}
+.date-sheet__gap { flex: 1; min-width: var(--gap-x); }
+.date-sheet__today { flex: none; }
+
+/* ============================================================
+   The frames (DESIGN §1, §3, §4, §5; CODEX §6.1–6.5) – ui/layout.js
+   ============================================================ */
+
+/* every screen: the gutter at the sides, the title row 16 / 32 / 40 under the safe area */
+.screen {
+  min-width: 0;
+  padding: calc(var(--title-top) + env(safe-area-inset-top)) var(--gutter) calc(var(--tabbar-h) + var(--space-6) + env(safe-area-inset-bottom));
+}
+@media (min-width: 600px) { .screen { padding-bottom: var(--space-9); } }
+.frame { min-width: 0; }
+@media (min-width: 600px) {
+  .ls .frame, .page--split .frame, .page--wide .frame { max-width: var(--list-col-max); }
+  .page--column .frame { max-width: var(--page-col); }
+  .detail-page .frame { max-width: var(--detail-col); }
+}
+@media (min-width: 1200px) {
+  .page--split .frame, .page--wide .frame { max-width: var(--frame-max); }
+  /* a page's list | pane grid (Moje): both tracks always reserved, so the list keeps its x and width */
+  .page--split.ls--split .frame {
+    display: grid; grid-template-columns: var(--split-list) var(--split-pane); column-gap: var(--split-gap); align-items: start;
+  }
+  .page--split.ls--split .frame > .head, .page--split.ls--split .frame > .ls__list { grid-column: 1; min-width: 0; }
+  .page--split.ls--split .frame > .head { container: list-head / inline-size; }
+  .page--split.ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
+
+  /* a list screen ≥ 1200 (the owner's decisions, WIDE.md and his feedback on it): the frame fills the content area up
+     to 1600 and has two tracks, both always reserved, so nothing moves when a pane opens or the view changes.
+       track 1, the list track: 400–840 (what is left beside a 480 pane, at most 840 – a list stays readable).
+       A and B are ONE row over the whole frame: the h1 left; ⌕, ⚟, ⋯ and the main action at the frame's right edge.
+          C (the month and a view switch) under it, over both tracks.
+       track 2, the pane: what is left, up to 720; its top level with the list's. Plain ground while nothing is open.
+       D: a list (Seznam, Rozpis, Obsazení, Šablony, Formáty, Místa, Přístupy, Lidé, Skupiny) stays in the list
+          track; a view made for the width (Měsíc's grid, Podrobný výpis with nobody open) spans both tracks. */
+  .ls .frame { max-width: var(--frame-wide); }
+  .ls.ls--split .frame {
+    display: grid; grid-template-columns: var(--list-track) minmax(0, var(--pane-max)); column-gap: var(--split-gap); align-items: start;
+  }
+  .ls.ls--split .frame > .ls__list { grid-column: 1; min-width: 0; }
+  .ls.ls--split .frame > .ls__controls { grid-column: 1 / -1; min-width: 0; }   /* C over the list and the pane */
+  .ls.ls--split .frame > .head { grid-column: 1 / -1; min-width: 0; container: list-head / inline-size; }
+  .ls.ls--split .frame > .ls__body { grid-column: 1 / -1; }          /* wide: Měsíc, the table */
+  .ls.ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
+  .ls.ls--split .frame:has(> .ls__controls) > .split__pane { grid-row: 3; margin-top: var(--gap-group); }   /* level with D */
+  /* nothing open beside the list: the list takes up to 840 (the owner's limit for a readable list) instead of the
+     narrower track it keeps beside a pane (the UI team: at 1280 it was narrower than on a tablet) */
+  .ls.ls--split .frame:has(> .split__pane:empty) { grid-template-columns: minmax(0, 840px) minmax(0, 1fr); }
+  /* D is a query container (a list track of 400–440 at 1200–1279 gets a few narrow-list rules) */
+  .ls.ls--split .ls__body { container: list-body / inline-size; }
+}
+
+/* A: the title row – min-height 44, h1 left, the main action then ⋯ at the frame's right edge, 8 apart */
+.head { display: flex; align-items: center; gap: var(--gap-x); min-height: var(--control-m); margin-bottom: var(--gap-y); }
+.head__title { flex: 1 1 auto; min-width: 0; min-height: var(--control-m); display: flex; align-items: center; }
+.head__actions { display: flex; align-items: center; gap: var(--gap-x); flex: none; margin-left: auto; }
+.head__action { flex: none; }
+/* ⋯ and ✕ are bare icon buttons wherever they stand – the screen head, the pane's action row, the drill-in top bar
+   (the UI team: three kinds of button only – the dark main action, a soft tint, a bare icon) */
+:is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]) { border-radius: var(--radius-m); }
+:is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]):hover { background: var(--wash); }
+:is(.head__actions, .pane__actions, .topbar) > :is(.menu-btn, [data-pane-close]):is(:active, [aria-expanded="true"]) { background: var(--tint); }
+@media (max-width: 599.98px) {
+  /* phone: the main action is an icon-only 44 square with its aria-label */
+  .head__action:not(.head__action--label) { width: var(--control-m); padding: 0; }
+  .head__action:not(.head__action--label) > .icon { margin: 0; }
+  .head__action:not(.head__action--label) > .head__action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+/* the list track under 440 (1200–1279): „Kalendář“ or „Obsazení“ + ⋯ + a labelled action do not fit it, so the main
+   action is the icon-only 44 square there too (its aria-label and title keep the words) */
+@container list-head (max-width: 439.98px) {
+  .head__action:not(.head__action--label) { width: var(--control-m); padding: 0; }
+  .head__action:not(.head__action--label) > .icon { margin: 0; }
+  .head__action:not(.head__action--label) > .head__action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+.page .head { margin-bottom: var(--gap-group); }
+
+/* B: [⌕ Hledej …][Filtr] ··········· [Seznam | Měsíc | Rozpis] – 12 under A, on the left above the list (the owner's
+   sketch, the UX and UI teams' spec); the same on every list screen. The search 320 on ≥ 600 (the row's width on a
+   phone), Filtr fixed 120 with its count slot reserved; the view switch at the right end (a phone: its own row). */
+.ls__controls { container: ls-controls / inline-size; }
+.ls__tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-y) var(--gap-x); }
+.toolbar { display: flex; align-items: center; gap: var(--gap-x); min-height: var(--control-m); min-width: 0; }
+.toolbar > .search { flex: 0 1 auto; width: var(--search-head-w); min-width: 160px; }
+.ls__tools > .seg { margin-left: auto; }
+@media (max-width: 599.98px) {
+  .ls__tools > .toolbar { flex: 1 1 100%; }
+  .toolbar > .search { flex: 1 1 auto; width: auto; }
+}
+/* where the search and the switch do not fit one row, the switch takes its own row under it, full width */
+@container ls-controls (max-width: 719.98px) {
+  .ls__tools > .seg { flex: 1 1 100%; margin-left: 0; }
+}
+.filter-btn {
+  position: relative; display: inline-flex; align-items: center; gap: var(--space-2); flex: none;
+  width: var(--filter-w); height: var(--control-m); padding: 0 4px 0 12px; border: 0; border-radius: var(--radius-m);
+  background: var(--tint); color: var(--ink);
+  font-size: var(--type-control); line-height: 20px; font-weight: var(--weight-control); white-space: nowrap; cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease);
+}
+.filter-btn > .icon { width: var(--icon-s); height: var(--icon-s); }
+.filter-btn:hover { background: var(--tint-2); }
+.filter-btn:active, .filter-btn[aria-expanded="true"] { background: var(--press); }
+.filter-btn__label { flex: none; }
+.filter-btn__slot { display: inline-grid; place-items: center; width: var(--count-slot); flex: none; margin-left: auto; }
+.filter-btn__n {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--shape-pill);
+  background: var(--ink); color: var(--ground); font-size: var(--type-caption); line-height: 1; font-weight: var(--weight-strong);
+  font-feature-settings: var(--numerals); visibility: hidden;
+}
+.filter-btn[data-on] .filter-btn__n { visibility: visible; }
+/* „Filtr: Slovo · Zruš filtr“ – one quiet line while a filter is on (a filter that hides work must say so) */
+.filter-note { margin-top: var(--gap-y); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.filter-note[hidden] { display: none; }
+.filter-note > .link { min-height: 0; vertical-align: baseline; }
+/* the view switch is quiet: words in the second ink, the chosen one on a soft tint – no track, no lifted thumb */
+.ls__tools > .seg { background: none; padding: 0; gap: 4px; }
+.ls__tools > .seg > a { color: var(--ink-2); border-radius: var(--radius-m); }
+.ls__tools > .seg > a[aria-current="page"] { background: var(--tint); color: var(--ink); box-shadow: none; }
+/* C: the month (Měsíc, Rozpis) – 12 under B: [‹ Říjen 2026 ›] ··············· Dnes */
+.ls__period { margin-top: var(--gap-y); }
+/* D: 24 under the last control row */
+.ls__body { min-width: 0; margin-top: var(--gap-group); }
+/* no control row between A and D: A's 12 + 12 = the 24 from a control group to its content */
+:is(.head + .ls__body, .head + .ls__list > .ls__body:first-child) { margin-top: calc(var(--gap-group) - var(--gap-y)); }
+.page__body { margin-top: 0; }
+
+/* the pane track (≥ 1200): its top level with B's top; it sticks while it fits (app.js fitPanes → data-tall) */
+.split__pane { min-width: 0; align-self: start; position: sticky; top: var(--pane-top); }
+.split__pane[data-tall] { position: static; }
+.split__pane:empty { position: static; }
+
+/* the pane: a block with an action row 44 at its top (‹ Back left; ⋯ then ✕ right, 8 apart) */
+.pane { position: relative; padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: var(--lift-2); min-width: 0; }
+.pane__actions { display: flex; align-items: center; gap: var(--gap-x); min-height: var(--control-m); }
+.pane__spacer { flex: 1; }
+/* a person's avatar in the card's top-left corner: the row takes its height, ⋯ and ✕ stay at its top */
+.pane__actions--corner { align-items: flex-start; }
+.pane__actions--corner + .pane__body { margin-top: var(--space-5); }   /* the avatar's badge must not touch the name */
+.pane__corner { display: flex; }
+.pane__back, .topbar__back { gap: 4px; padding: 0 14px 0 8px; }
+.pane__back > span, .topbar__back > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 28ch; }
+.pane__actions + .pane__body { margin-top: var(--gap-y); }
+.pane__body, .detail--page { display: grid; min-width: 0; }
+.pane__body > * + *, .detail--page > * + * { margin-top: var(--section-gap); }
+
+/* the drill-in top bar (a detail page, Osnova): 56, sticky at every width, a hairline once scrolled */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: var(--gap-x);
+  min-height: calc(var(--topbar-h) + env(safe-area-inset-top)); padding: env(safe-area-inset-top) var(--gutter) 0;
+  margin: 0 calc(-1 * var(--gutter)); background: var(--ground);
+  transition: box-shadow var(--dur-state) var(--ease);
+}
+.topbar[data-scrolled] { box-shadow: var(--lift-1); }
+.topbar__spacer { flex: 1; }
+.topbar__title { flex: 1; min-width: 0; font-size: var(--type-body); font-weight: var(--weight-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.screen:is(.detail-page, .page--drill) { padding-top: 0; }
+.screen:is(.detail-page, .page--drill) > .topbar + .frame { padding-top: var(--gap-y); }
+/* ≥ 600 the top bar is as wide as its page's column, so ⋯ sits at the column's edge, not at the window's */
+@media (min-width: 600px) {
+  /* the back button starts where a list screen's title does (--title-top), not at the window's top edge;
+     the bar still sticks at 0 once the page scrolls */
+  .screen:is(.detail-page, .page--drill) { padding-top: calc(var(--title-top) - (var(--topbar-h) - var(--control-m)) / 2); }
+  .detail-page > .topbar { max-width: calc(var(--detail-col) + 2 * var(--gutter)); }
+  .page--drill.page--column > .topbar { max-width: calc(var(--page-col) + 2 * var(--gutter)); }
+}
+
+/* the head of every detail: band 96 or mark → 16 → tags → 8 → h1 → 12 → facts (→ 32 → the first section) */
+.dhead { display: grid; justify-items: start; min-width: 0; }
+.dhead__band { justify-self: stretch; min-height: 96px; margin-bottom: var(--space-4); border-radius: var(--shape-block); overflow: hidden; }
+.dhead__mark { margin-bottom: var(--space-5); }
+.dhead__tags { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-bottom: var(--space-2); }
+.dhead__title { font-size: var(--type-title-pane); line-height: var(--lh-title-pane); }
+.detail--page .dhead__title { font-size: var(--type-title); line-height: var(--lh-title); }
+.dhead > .facts { justify-self: stretch; margin-top: var(--gap-y); }
+.dhead__after { justify-self: stretch; margin-top: var(--space-5); }
+@media (min-width: 600px) { .detail--page .dhead__band { min-height: 120px; } }
+
+/* facts: rows 32, icon 20 + text, 8 apart; a linked fact ends in › and lights as a row */
+.facts { display: grid; gap: var(--space-2); min-width: 0; }
+.fact { display: flex; align-items: center; gap: var(--space-3); min-height: 32px; color: var(--ink); font-size: 16px; line-height: 22px; min-width: 0; }
+.fact > .icon { color: var(--ink-2); }
+.fact__text { min-width: 0; overflow-wrap: break-word; }
+/* a fact that may run to two lines: the icon stays level with the first one */
+.fact--wrap { align-items: flex-start; padding-block: 5px; }
+.fact--wrap > .icon { margin-top: 1px; }
+.fact__part { white-space: nowrap; }
+.fact--link { margin: 0 calc(-1 * var(--space-3)); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-m); background: none; text-align: left; font: inherit; font-size: 16px; cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
+.fact--link:hover { background: var(--wash); }
+.fact__chevron { margin-left: auto; color: var(--ink-3) !important; }
+.fact__do { flex: none; margin-left: auto; font-weight: var(--weight-control); color: var(--ink); }
+.fact__link { color: inherit; text-decoration: underline; text-decoration-color: var(--edge-control); text-underline-offset: 3px; }
+
+/* section: h2 20/26 + at most one action or value at its right edge. Proximity says what belongs together: the h2 sits
+   8 above its own content, sections stand 40 apart (--section-gap), so a heading never floats between two blocks.
+   The head is 44 high only when it carries an action or a value; a bare h2 is as tall as its line. */
+.section { margin-top: var(--section-gap); min-width: 0; }
+.section:first-child { margin-top: 0; }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-y); min-height: var(--control-m); margin-bottom: var(--space-2); }
+.section-head:not(:has(> .section-head__end)) { min-height: 0; }
+.section-head > h2 { min-width: 0; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.section-head__end { display: flex; align-items: center; gap: var(--gap-x); flex: none; color: var(--ink-2); }
+
+/* the period line (D's first line in Měsíc and Rozpis): ‹ label › ········ Dnes */
+.period-line { display: flex; align-items: center; gap: 0; min-height: var(--control-m); }
+.period-line__label {
+  flex: none; width: var(--period-label-w); text-align: center;
+  font-size: var(--type-period); line-height: var(--lh-period); font-weight: var(--weight-strong); white-space: nowrap;
+}
+.period-line__today {
+  position: relative; flex: none; display: inline-flex; align-items: center; min-height: var(--control-m); margin-left: auto; padding: 0 var(--space-3);
+  border-radius: var(--radius-m); color: var(--ink-2); font-size: var(--type-control); font-weight: var(--weight-control);
+}
+.period-line__today:hover { background: var(--wash); color: var(--ink); }
+.period-line__today[hidden] { display: none; }
+
+/* the empty state: 48 under the last control row (D starts 24 under it) */
+.empty { display: grid; justify-items: start; margin-top: var(--space-5); text-align: left; max-width: 32em; }
+.empty__well { display: grid; place-items: center; width: 88px; height: 96px; margin-bottom: var(--space-4); border-radius: var(--shape-arch-l); background: var(--tint); color: var(--ink-2); }
+.empty__well > .icon { width: 32px; height: 32px; stroke-width: 1.5; }
+.empty__title { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.empty__text { margin-top: var(--space-2); font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.empty__action { margin-top: var(--space-5); }
+.page__body > .empty:first-child, .pane__body > .empty:first-child { margin-top: 0; }
+/* D's 24 and the empty's own margin would collapse into one 24: the empty takes the rest as padding, so it starts 48
+   under the last control row (CODEX §4, §6.12) */
+.ls__body:not(.page__body) > .empty:first-child { margin-top: 0; padding-top: calc(var(--space-8) - var(--gap-group)); }
+
+/* ---------- motion ---------- */
+@keyframes nx-rise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes nx-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes nx-pulse { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}

@@ -1,0 +1,120 @@
+# Template for the PRIVATE data repo (radomilcz/church-data) – copy to .github/workflows/web.yml.
+#
+# Publishes Zvonec at https://zvonec.cirkevjakokrava.cz: the app is taken from the public website
+# repo, access.json (sealed logins – no names, no readable token) is added, and the result goes to
+# this repo's GitHub Pages. Nothing under data/ (people, phones, duties) is ever published – the app
+# reads it through the GitHub API after sign-in.
+#
+# The exceptions are public.json and the pictures of published events: zvonec/build-public.mjs (from
+# the public repo) cuts public.json out of data/ – only events and formats marked `public: true`,
+# upcoming, with no person data at all – and copies from data/images/ to site/images/ only the
+# pictures those events show. It is what visitors who are not signed in see. The guard below fails
+# the run if a person key slips in, or if any file in site/images/ is not listed in public.json.
+#
+# One-time setup: Settings → Pages → Source: GitHub Actions; Custom domain zvonec.cirkevjakokrava.cz;
+# DNS record CNAME zvonec → radomilcz.github.io. (Pages from a private repo needs GitHub Pro / Team.)
+name: Web
+
+on:
+  push:
+    branches: [main]
+    paths:                                            # new or revoked login, newly published event → live within minutes
+      - access.json
+      - data/events.json                              # events, places and formats (`public`, `description`, `image`)
+      - data/images/**                                # pictures of events
+      - data/settings.json                            # church name and address
+      - .github/workflows/web.yml
+  schedule:
+    - cron: "41 3 * * *"        # daily, so app updates from the public repo get published too
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out access.json and data/ (data/ only feeds public.json and its pictures, it is never copied to the site)
+        uses: actions/checkout@v4
+        with:
+          path: private
+          sparse-checkout: |
+            access.json
+            data
+          sparse-checkout-cone-mode: false
+
+      - name: Check out the app from the public repo
+        uses: actions/checkout@v4
+        with:
+          repository: radomilcz/cirkevjakokrava
+          path: web
+          sparse-checkout: |
+            docs/zvonec
+            zvonec/build-public.mjs
+            docs/assets/fonts
+            docs/assets/favicon.svg
+            docs/assets/favicon-32.png
+            docs/assets/icon-180.png
+          sparse-checkout-cone-mode: false
+
+      - name: Assemble the site
+        run: |
+          # Zvonec opens at the domain root: index.html, app.js, palette-limit.js, ui/, css/, lib/, and one/ (only a
+          # redirect for old /one/ links). It loads ../assets/…, which on the root resolves to /assets/… – so the
+          # icons and fonts go to site/assets.
+          mkdir -p site/assets
+          cp -r web/docs/zvonec/. site/
+          cp -r web/docs/assets/fonts site/assets/
+          cp web/docs/assets/favicon.svg web/docs/assets/favicon-32.png web/docs/assets/icon-180.png site/assets/
+          if [ -f private/access.json ]; then cp private/access.json site/; else echo '{"v":2,"logins":[]}' > site/access.json; fi
+          echo "{\"owner\":\"${GITHUB_REPOSITORY%%/*}\",\"repo\":\"${GITHUB_REPOSITORY#*/}\"}" > site/repo.json
+          echo "zvonec.cirkevjakokrava.cz" > site/CNAME
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build public.json and images/ (published events and formats only)
+        run: node web/zvonec/build-public.mjs private/data site/public.json
+
+      - name: Refuse personal data
+        run: |
+          # nothing from data/ and no JSON except access.json, repo.json and public.json may be published
+          if find site -path '*/data/*' -o -path '*/data' | grep -q .; then echo "::error::data/ must never be published"; exit 1; fi
+          extra=$(find site -name '*.json' ! -name access.json ! -name repo.json ! -name public.json)
+          if [ -n "$extra" ]; then echo "::error::unexpected JSON on the site: $extra"; exit 1; fi
+          if grep -Eq '"(firstName|lastName)"' site/access.json; then echo "::error::access.json contains personal names"; exit 1; fi
+          # public.json is the only file cut out of data/: no person data may be in it
+          [ -f site/public.json ] || { echo "::error::public.json is missing"; exit 1; }
+          if grep -Eq '"(personId|assignments|firstName|lastName|email|phone)"' site/public.json; then echo "::error::public.json contains person data"; exit 1; fi
+          node -e 'const p = JSON.parse(require("fs").readFileSync("site/public.json", "utf8")); if (p.v !== 1 || !Array.isArray(p.events) || !Array.isArray(p.formats)) process.exit(1)' \
+            || { echo "::error::public.json is not a valid public file"; exit 1; }
+          # the only files from data/ on the site: site/images/<name> listed in public.json (pictures of published events)
+          node -e 'const fs = require("fs"); const p = JSON.parse(fs.readFileSync("site/public.json", "utf8")); const ok = new Set(p.events.map((e) => e.image).filter(Boolean)); const bad = []; const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = d + "/" + e.name; if (e.isDirectory() || !ok.has(f.slice(5))) bad.push(f); } }; if (fs.existsSync("site/images")) walk("site/images"); if (bad.length) { console.log("::error::images not listed in public.json: " + bad.join(" ")); process.exit(1); }' \
+            || { echo "::error::site/images contains files that public.json does not list"; exit 1; }
+          node -e 'const a = JSON.parse(require("fs").readFileSync("site/access.json", "utf8")); if (!Array.isArray(a.logins)) process.exit(1)' \
+            || { echo "::error::access.json is not a valid access file"; exit 1; }
+          find site -type f | sort
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
