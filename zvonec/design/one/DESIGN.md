@@ -1,5 +1,13 @@
 # Zvonec One: the design
 
+> **Update – Skupiny in the sidebar, a calmer head (2026-10-08).** The owner found the head of Lidé cluttered
+> (title, search + Filtr, the Lidé | Skupiny switch and the „Podrobný výpis“ line: four bands, „Lidé“ twice, two dark
+> blocks). Now: Skupiny is its own sidebar item (`#lide/skupiny`, title „Skupiny“, main action „Nová skupina“, its
+> own search); on a phone it is the first row of Lidé, the tab bar has no room. ≥ 1200 A and B are one row over the
+> whole frame – h1 left; search 320, Filtr, ⋯ and the main action at the right edge – with C under it. The segmented
+> thumb is light (card + lift), the search and Filtr are soft tint wells: only the main action is dark. „Ukaž
+> jednoduchý seznam“ lives in ⋯ only.
+
 > **Update after launch – the desktop uses the whole screen (≥ 1200).** The owner compared One with Next: One was a
 > phone column on a desktop (29 % of a 1920 window). Now: the frame fills the content area (max 1600); A spans it
 > (⋯ and the main action at its right edge); B keeps a fixed 568 at the left (search 440 + Filtr 120), so it never

@@ -166,7 +166,7 @@ a { color: inherit; text-decoration: none; }
 }
 .seg > :is(a, button)::after { content: ""; position: absolute; inset: -3px 0; }
 .seg > :is(a:not([aria-current="page"]), button:not([aria-checked="true"])):hover { background: var(--wash); }
-.seg > :is(a[aria-current="page"], button[aria-checked="true"]) { background: var(--thumb); color: var(--on-act); box-shadow: var(--lift-2); }
+.seg > :is(a[aria-current="page"], button[aria-checked="true"]) { background: var(--card); color: var(--ink); box-shadow: var(--lift-2); }   /* light: only the main action is dark */
 @media (min-width: 600px) {
   .seg--views { display: inline-grid; grid-auto-columns: var(--seg-w); }
 }
@@ -522,7 +522,9 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .search__field { display: block; }
 .search__field > .icon { position: absolute; left: 12px; top: 50%; margin-top: -10px; width: var(--icon-s); height: var(--icon-s); color: var(--ink-2); pointer-events: none; }
 /* icon 20 at 12 → text at 40; the right 44 is reserved only while ✕ shows, so „Hledej setkání“ fits at 360 */
-.search .input { padding-left: 40px; padding-right: 12px; text-overflow: ellipsis; }
+.search .input { padding-left: 40px; padding-right: 12px; text-overflow: ellipsis; background: var(--tint); box-shadow: none; }   /* a soft well, not a form field */
+.search .input:hover { background: var(--tint-2); box-shadow: none; }
+.search .input:focus { background: var(--field-bg); box-shadow: inset 0 0 0 2px var(--focus-ring); }
 .search:has(.search__clear:not([hidden])) .input { padding-right: 44px; }
 .search .input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
 .search__clear { position: absolute; right: 0; top: 0; color: var(--ink-2); }
@@ -616,21 +618,24 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   /* a list screen ≥ 1200 (the owner's decisions, WIDE.md and his feedback on it): the frame fills the content area up
      to 1600 and has two tracks, both always reserved, so nothing moves when a pane opens or the view changes.
        track 1, the list track: 400–840 (what is left beside a 480 pane, at most 840 – a list stays readable).
-          A, B and C sit in it: the h1 left, ⋯ then the main action at the list's right edge; B = search 440 · 8 ·
-          Filtr 120 (narrower only where the track is: 400 at 1200, 440 at 1280); C under it.
-       track 2, the pane: what is left, up to 720; its top level with B's. Plain ground while nothing is open.
+       A and B are ONE row over the whole frame (the owner: one calm row instead of three bands): the h1 left; the
+          search 320, Filtr, ⋯ and the main action at the frame's right edge. C (a view switch) under it, in track 1.
+       track 2, the pane: what is left, up to 720; its top level with the list's. Plain ground while nothing is open.
        D: a list (Seznam, Rozpis, Obsazení, Šablony, Formáty, Místa, Přístupy, Lidé, Skupiny) stays in the list
           track; a view made for the width (Měsíc's grid, Podrobný výpis with nobody open) spans both tracks. */
   .ls .frame { max-width: var(--frame-wide); }
   .ls.ls--split .frame {
     display: grid; grid-template-columns: var(--list-track) minmax(0, var(--pane-max)); column-gap: var(--split-gap); align-items: start;
   }
-  .ls.ls--split .frame > :is(.head, .ls__list, .ls__controls) { grid-column: 1; min-width: 0; }
-  .ls.ls--split .frame > .head { container: list-head / inline-size; }
+  .ls.ls--split .frame > :is(.ls__list, .ls__controls) { grid-column: 1; min-width: 0; }
+  .ls.ls--split .frame > .head { grid-column: 1 / -1; min-width: 0; container: list-head / inline-size; }
+  .head > .toolbar { flex: 0 1 auto; min-width: 0; margin-left: auto; }
+  .head > .toolbar > .search { flex: 0 1 var(--search-head-w); min-width: 180px; }
+  .head > .toolbar + .head__actions { margin-left: 0; }
+  .head:has(> .toolbar) > .head__title { flex: 0 0 auto; }
   .ls.ls--split .frame > .ls__body { grid-column: 1 / -1; }          /* wide: Měsíc, the table */
   .ls.ls--split .frame > .split__pane { grid-column: 2; grid-row: 2; }
-  .ls.ls--split .toolbar { width: var(--toolbar-w); max-width: 100%; }
-  /* the period line (Měsíc, Rozpis) is as wide as B, so „Dnes“ ends under Filtr's right edge in both views */
+  /* the period line (Měsíc, Rozpis) keeps „Dnes“ within reach of ‹ › – as wide as a search with its Filtr */
   .ls.ls--split .ls__body > .period-line { max-width: var(--toolbar-w); }
   /* D is a query container (a list track of 400–440 at 1200–1279 gets a few narrow-list rules) */
   .ls.ls--split .ls__body { container: list-body / inline-size; }
@@ -669,11 +674,11 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .filter-btn {
   position: relative; display: inline-flex; align-items: center; gap: var(--space-2); flex: none;
   width: var(--filter-w); height: var(--control-m); padding: 0 4px 0 12px; border: 0; border-radius: var(--radius-m);
-  background: transparent; box-shadow: inset 0 0 0 1px var(--edge-control); color: var(--ink);
+  background: var(--tint); color: var(--ink);
   font-size: var(--type-control); line-height: 20px; font-weight: var(--weight-control); white-space: nowrap;
   transition: background-color var(--dur-state) var(--ease);
 }
-.filter-btn:hover { background: var(--wash); }
+.filter-btn:hover { background: var(--tint-2); }
 .filter-btn:active, .filter-btn[aria-expanded="true"] { background: var(--press); }
 .filter-btn__label { flex: none; }
 .filter-btn__slot { display: inline-grid; place-items: center; width: var(--count-slot); flex: none; margin-left: auto; }
@@ -686,8 +691,11 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 
 /* C: the view row – 12 under B; phone full width, ≥ 600 segments of 120, left-aligned */
 .ls__views { margin-top: var(--gap-y); }
+.ls__views:first-child { margin-top: 0; }
 /* D: 24 under the last control row */
 .ls__body { min-width: 0; margin-top: var(--gap-group); }
+/* no control row between A and D: A's 12 + 12 = the 24 from a control group to its content */
+:is(.head + .ls__body, .ls__list > .ls__body:first-child) { margin-top: calc(var(--gap-group) - var(--gap-y)); }
 .page__body { margin-top: 0; }
 
 /* the pane track (≥ 1200): its top level with B's top; it sticks while it fits (app.js fitPanes → data-tall) */

@@ -75,6 +75,7 @@
   --frame-wide: 1600px;      /* desktop list screens: list track + pane track, up to this (Měsíc's grid spans it) */
   --search-w: 440px;         /* desktop: the search beside Filtr – B is search 440 · 8 · Filtr 120, never wider */
   --toolbar-w: calc(var(--search-w) + var(--gap-x) + var(--filter-w));
+  --search-head-w: 320px;    /* ≥ 1200: the search in the title row */
   --list-track: clamp(400px, calc(100% - var(--split-gap) - 480px), 840px);   /* desktop: a list screen's list track */
   --pane-max: 720px;         /* desktop: the pane track takes what is left beside the list track, up to this */
   --page-col: 640px;         /* a one-column page (Můj účet, Kdy nemůžu, Nastavení sboru) */

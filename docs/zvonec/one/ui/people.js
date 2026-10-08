@@ -1,7 +1,7 @@
-// Zvonec One – Lidé (DESIGN §6.5): „How do I reach someone?“ One list screen with two views, Lidé · Skupiny.
-//   A  „Lidé“ · ⋯ · [Nový člověk] (leaders, both views; the owner's wording)
-//   B  „Hledej jméno“ (one search for both views, kept for the visit) + Filtr (key 'lide' / 'skupiny')
-//   C  Lidé · Skupiny
+// Zvonec One – Lidé and Skupiny (DESIGN §6.5): „How do I reach someone?“ Two list screens, each its own item in the
+// sidebar (the owner's decision); on a phone Skupiny is the first row of Lidé (the tab bar has no room for it).
+//   A  „Lidé“ · ⋯ · [Nový člověk] – „Skupiny“ · [Nová skupina] (leaders)
+//   B  „Hledej jméno“ / „Hledej skupinu“ (each screen its own search, kept for the visit) + Filtr ('lide' / 'skupiny')
 //   D  Lidé: the birthday line (leaders, someone within 7 days) as the first line, then A–Z under letters – a phone
 //        row is the avatar, the name and a call button (only with a phone the viewer may see); ≥ 600 a meta line
 //        „člen · Chvály, Technika“ (leaders also „chybí …“). Searching: up to 3 matching groups above the people.
@@ -12,7 +12,7 @@
 // everyone, unless the simple list was chosen): Simple's table under the same A·B·C, the columns as in Next's.
 
 import {
-  h, icon, avatar, row, list, subhead, empty, rowLink, link, button, listScreen, filterButton, filterState, setFilter,
+  h, icon, avatar, row, list, subhead, empty, rowLink, button, listScreen, filterButton, filterState, setFilter,
   clearFilter, searchText, isPhone, callout, isSplit, toast, joinMeta, plural, table, sortHead,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
@@ -31,7 +31,8 @@ import { inviteSheet } from './access.js';
 import { personDetail, householdDetail } from './people-card.js';
 import { groupDetail, groupRow, groupRows, groupCards, groupMatches, groupFilterGroups, shownGroups } from './groups.js';
 
-const SEARCH = 'lide';                                   // one search for both views (survives a view switch)
+const SEARCH = 'lide';
+const GROUP_SEARCH = 'skupiny';
 const WIDE_TABLE = window.matchMedia('(min-width: 900px)');   // Podrobný výpis needs room for its columns
 /** Podrobný výpis can be shown: leaders from 900 (from ⋯), everyone on a desktop (≥ 1200 #lide opens it). */
 const tableFits = () => (can('leader') ? WIDE_TABLE.matches : isSplit());
@@ -43,12 +44,12 @@ const MODE_KEY = 'zvonec-one-people-view';
 const chosenMode = () => { try { return localStorage.getItem(MODE_KEY); } catch { return null; } };
 const chooseMode = (mode) => { try { localStorage.setItem(MODE_KEY, mode); } catch { /* not remembered, that's all */ } };
 const opensTable = () => isSplit() && chosenMode() !== 'list';
-const VIEWS = [['lide', 'Lidé', '#lide'], ['skupiny', 'Skupiny', '#lide/skupiny']];
 const MONTHS = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
 
 let fromPerson = null;   // the person whose detail a household was opened from (its ‹ back)
 
 const query = () => searchText(SEARCH).trim();
+const groupsQuery = () => searchText(GROUP_SEARCH).trim();
 const accusative = (n) => plural(n, 'člověka', 'lidi', 'lidí');
 
 // ---------- who is shown ----------
@@ -251,6 +252,7 @@ function peopleBody({ openId } = {}) {
     }
   }
   return [
+    isPhone() && !q ? groupsEntry() : null,
     birthdayLine(),
     list(rows, { label: 'Lidé' }),
     h('p', { class: 'meta list-foot' }, peopleCount(people.length)),
@@ -258,10 +260,19 @@ function peopleBody({ openId } = {}) {
   ];
 }
 
-// ---------- D of the Skupiny view ----------
+/** A phone has no room for Skupiny in the tab bar: it is the first row of Lidé there. */
+function groupsEntry() {
+  const n = activeGroups().length;
+  return list([row({
+    lead: h('span', { class: 'groups-entry__mark', 'aria-hidden': 'true' }, icon('teams')),
+    title: 'Skupiny', meta: plural(n, 'skupina', 'skupiny', 'skupin'), href: '#lide/skupiny', chevron: true,
+  })], { label: 'Skupiny', cls: 'groups-entry' });
+}
+
+// ---------- D of the Skupiny screen ----------
 
 function groupsBody({ openId } = {}) {
-  const q = query();
+  const q = groupsQuery();
   const rows = groupRows({ openId, query: q });
   // rows below 900, cards from 900 (css/people.css shows one of the two; both are drawn, so crossing 900 needs no redraw)
   if (rows.length) {
@@ -312,9 +323,8 @@ const listMenu = (view) => () => {
     ? { label: 'Ukaž jednoduchý seznam', icon: 'people', onclick: () => { chooseMode('list'); location.hash = 'lide'; } }
     : { label: 'Ukaž podrobný výpis', icon: 'table', onclick: () => { chooseMode('table'); location.hash = 'lide/vypis'; } }) : null;
   if (!can('leader')) return [download, mode].filter(Boolean);
-  const overdue = view === 'skupiny' ? [] : overduePeople();
+  const overdue = overduePeople();
   return [
-    { label: 'Přidej skupinu', icon: 'teams', onclick: () => groupSheet() },
     { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) },
     { label: 'Pozvi do Zvonce', icon: 'log-in', onclick: () => inviteSheet(null) },
     '-',
@@ -350,25 +360,29 @@ function keepPlace(main) {
 /** ✕ of a pane: back to the list without a jump to the top. */
 const closeTo = (href) => () => { history.pushState(null, '', href); render(); };
 
-/** The list screen of both views (and Podrobný výpis). body() draws D; it is called again on a search or a filter. */
+/** The list screen of Lidé (and Podrobný výpis) and of Skupiny. body() draws D; it is called again on a search or a filter. */
 function peopleScreen({ view, body, pane = null, wide = false }) {
   const groups = view === 'skupiny';
   const key = groups ? GROUPS_FILTER : PEOPLE_FILTER;
+  const leader = can('leader');
   let main;
   const filter = filterButton({
     key,
     groups: groups ? groupFilterGroups() : peopleFilterGroups(),
     onChange: () => main?.setBody(body()),
-    results: () => (groups ? (({ active, archived }) => active.length + archived.length)(shownGroups(query())) : shownPeople().length),
+    results: () => (groups ? (({ active, archived }) => active.length + archived.length)(shownGroups(groupsQuery())) : shownPeople().length),
     unit: groups ? (n) => plural(n, 'skupinu', 'skupiny', 'skupin') : accusative,
   });
   main = listScreen({
-    title: 'Lidé',
-    action: can('leader') ? { label: 'Nový člověk', icon: 'user-plus', onclick: () => addPersonSheet() } : null,
-    menu: listMenu(view),
-    search: { key: SEARCH, placeholder: 'Hledej jméno', onInput: () => main.setBody(body()) },
+    title: groups ? 'Skupiny' : 'Lidé',
+    action: !leader ? null : groups
+      ? { label: 'Nová skupina', icon: 'plus', onclick: () => groupSheet() }
+      : { label: 'Nový člověk', icon: 'user-plus', onclick: () => addPersonSheet() },
+    menu: groups ? null : listMenu(view),
+    search: groups
+      ? { key: GROUP_SEARCH, placeholder: 'Hledej skupinu', onInput: () => main.setBody(body()) }
+      : { key: SEARCH, placeholder: 'Hledej jméno', onInput: () => main.setBody(body()) },
     filter,
-    views: { options: VIEWS, value: groups ? 'skupiny' : 'lide', label: 'Lidé nebo skupiny' },
     body: body(),
     pane,
     wide,
@@ -505,17 +519,7 @@ function tableBody({ openId, compact = false } = {}) {
     else if (sortCol) box.querySelector(`th.${sortCol} button`)?.focus();
   };
   redraw();
-  return [
-    h('p', { class: 'meta people-mode' }, 'Podrobný výpis', ' · ', simpleListLink()),
-    box,
-  ];
-}
-
-/** „Ukaž jednoduchý seznam“ – a choice, remembered (so a desktop #lide opens the list from now on). */
-function simpleListLink() {
-  const a = link('Ukaž jednoduchý seznam', { href: '#lide' });
-  a.addEventListener('click', () => chooseMode('list'));
-  return a;
+  return box;   // „Ukaž jednoduchý seznam“ is in ⋯
 }
 
 function tableParts({ openId, compact, redraw }) {
