@@ -97,7 +97,8 @@
   --shape-team: 30%;
   --shape-arch: calc(var(--arch-w) / 2) calc(var(--arch-w) / 2) calc(var(--arch-w) * .22) calc(var(--arch-w) * .22);
   --shape-arch-l: 44px 44px 19px 19px;   /* empty-state well (88 wide) */
-  --shape-arch-sm: 22px 22px 9px 9px;    /* mini-month day, grid day number */
+  --shape-arch-sm: 22px 22px 9px 9px;    /* the Účel lead mark */
+  --shape-day: 16px 16px 7px 7px;        /* the day number's arch, 32 × 36 – one shape in the mini month, the Měsíc grid and the date picker */
 
   /* ---- sizes (CODEX §1): three heights and nothing between ---- */
   --hit: 44px;

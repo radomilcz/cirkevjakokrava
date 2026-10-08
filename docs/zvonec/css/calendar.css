@@ -59,7 +59,8 @@
 .cal-dayview > .quiet { margin-top: var(--space-1); }
 .cal-dayview__add { margin-top: var(--gap-y); }
 
-/* wide: the grid – cells ≥ 100, min-height 112, hairlines; the day number 16/620 in a 28 arch (today --act) */
+/* wide: the grid – cells ≥ 100, min-height 112, hairlines; the day number 16/620 in the mini month's arch (32 × 36) with
+   its states: today --act, a day I serve ringed, the open day (its popover) --pick + the bar under the number */
 .cal-grid { min-width: 0; }
 .cal-grid__head, .cal-grid__body { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .cal-grid__head > span {
@@ -74,14 +75,20 @@
 }
 .cal-cell__num {
   position: relative; display: inline-grid; place-items: center; align-self: flex-start; flex: none;
-  width: 28px; height: 32px; padding: 3px 0 0; border: 0; border-radius: var(--shape-arch-sm); background: transparent;
+  width: 32px; height: 36px; margin-bottom: 6px; padding: 3px 0 0; border: 0; border-radius: var(--shape-day); background: transparent;
   color: var(--ink); font: inherit; font-size: 16px; line-height: 20px; font-weight: var(--weight-strong);
   font-feature-settings: var(--numerals); cursor: pointer; transition: background-color var(--dur-state) var(--ease);
 }
 .cal-cell__num::after { content: ""; position: absolute; inset: -6px -8px; }
 .cal-cell__num:hover { background: var(--wash); }
 .cal-cell[data-outside] .cal-cell__num { color: var(--ink-3); }
+.cal-cell[data-mine] .cal-cell__num { box-shadow: inset 0 0 0 1.5px currentColor; }
+.cal-cell[aria-expanded="true"] .cal-cell__num { background: var(--pick); }
 .cal-cell[data-today] .cal-cell__num { background: var(--act); color: var(--on-act); }
+.cal-cell[aria-expanded="true"]::after {
+  content: ""; position: absolute; left: calc(var(--space-2) + 8px); top: calc(var(--space-2) + 39px); width: 16px; height: 3px;
+  border-radius: 3px; background: var(--mark);
+}
 .cal-cell__chips { display: grid; gap: 3px; min-width: 0; }
 /* the chip: min 24, square left edge with the 3 px Účel bar (its own pseudo-element on a straight edge), right corners
    9; one line of 16 in 4 + 4, a title that does not fit takes a second line (whole words, then „…“) */

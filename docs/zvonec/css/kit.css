@@ -410,9 +410,10 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
   color: var(--ink); font-feature-settings: var(--numerals);
 }
 .day__dow { font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); font-weight: var(--weight-medium); }
-/* an arch taller than wide, as every arch (36 × 32 read as squashed); the number sits a little low in it */
+/* an arch taller than wide, as every arch (36 × 32 read as squashed); the number sits a little low in it. The Měsíc
+   grid's day number (css/calendar.css) is the same arch with the same states. */
 .day__num {
-  display: inline-grid; place-items: center; width: 32px; height: 36px; padding-top: 3px; border-radius: 16px 16px 7px 7px;
+  display: inline-grid; place-items: center; width: 32px; height: 36px; padding-top: 3px; border-radius: var(--shape-day);
   font-size: 16px; line-height: 20px; font-weight: var(--weight-regular); transition: background-color var(--dur-state) var(--ease);
 }
 .day:hover .day__num { background: var(--wash); }
