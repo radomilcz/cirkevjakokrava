@@ -6,7 +6,7 @@
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
 //   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
-//   Správa (leaders)            Přístupy [1 čeká] › · Nastavení sboru ›
+//   Správa (leaders)            Přehled › (phone) · Přístupy [1 čeká] › · Nastavení sboru ›
 //   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
 //   Odhlas se
@@ -77,9 +77,10 @@ export function openMeMenu({ from } = {}) {
     leader ? [
       heading('Správa'),
       list([
+        isPhone() ? page('Přehled', '#prehled') : null,
         page('Přístupy', '#pristupy', { trail: invites ? h('span', { class: 'pill pill--wait' }, `${invites} ${invites === 1 ? 'čeká' : invites <= 4 ? 'čekají' : 'čeká'}`) : null }),
         page('Nastavení sboru', '#nastaveni'),
-      ], { label: 'Správa' }),
+      ].filter(Boolean), { label: 'Správa' }),
     ] : null,
     h('div', { class: 'me-menu__gap' }),
     list([page('Veřejný web', '#pastva', { meta: 'Pastva, jak ji vidí návštěvníci' })], { label: 'Veřejný web' }),

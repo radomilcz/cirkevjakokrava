@@ -23,18 +23,20 @@ export const NAV = [
   ['kalendar', 'Kalendář', 'calendar', '#kalendar', 'member', 'main'],
   ['lide', 'Lidé', 'people', '#lide', 'member', 'main'],
   ['skupiny', 'Skupiny', 'teams', '#lide/skupiny', 'member', 'main'],
+  ['prehled', 'Přehled', 'chart', '#prehled', 'leader', 'main'],
   ['sablony', 'Šablony', 'layers', '#sablony', 'leader', 'gather'],
   ['formaty', 'Formáty', 'book', '#formaty', 'leader', 'gather'],
   ['mista', 'Místa', 'pin', '#mista', 'leader', 'gather'],
 ];
 export const GROUP_TITLES = { gather: 'Zdroje' };
 
-/** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab. */
-const NOT_A_TAB = new Set(['skupiny']);
+/** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab; Přehled is
+    in the person's menu (Správa). */
+const NOT_A_TAB = new Set(['skupiny', 'prehled']);
 const TAB_OF = { skupiny: 'lide' };
 
 /** Routes whose nav value is 'me' are the person's menu pages (Můj účet, Kdy nemůžu, Přístupy, Nastavení sboru). */
-const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista']);
+const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista', 'prehled']);
 
 /** Moje: duties waiting for my answer. */
 export function waitingAnswers() {
