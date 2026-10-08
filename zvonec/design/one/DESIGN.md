@@ -1,5 +1,9 @@
 # Zvonec One: the design
 
+> **Update – Rozpis team lines (2026-10-08).** The team over its roles was a grey caption, hardly apart from the role
+> names. The owner chose B of three (a bigger name; the name with the team's mark; a band in the team's hue): the
+> team's mark 28 (its hue, as in Lidé and Šablony) and its name in body/strong ink, 32 above it.
+
 > **Update – Rozpis head titles on one line (2026-10-08).** In a table of different meetings („Další setkání“) a long
 > name took two lines and made its head taller than the others. The name is now one line ending in „…“ (the full name
 > in its title and for screen readers), so the heads keep one height.
