@@ -1,5 +1,14 @@
 # Zvonec One: the design
 
+> **Update – Obsazení is a list of tasks (2026-10-08).** With Seznam's status tag and the Rozpis table, Obsazení had
+> become a third calendar. The owner chose variant 1: it lists the leader's tasks for the next 4 weeks by the kind of
+> work, not by meeting – **Chybí lidi** (a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne
+> 11. 10. 10.00“, [+ Doplň]; the row opens the meeting), **Něco nesedí** (a row per problem, › opens the fix) and
+> **Čeká na odpověď** (a row per person, not per duty: one SMS or e-mail reminds them of all their duties at once; the
+> row records their answer, a person with several duties gets a sheet with them and the worded reminder buttons).
+> What is done drops out; nothing left: „Všechno je vyřešené.“ The nav count is the number of tasks. Filtr › Stav picks
+> the sections; the search looks for „úkol“.
+
 > **Update – the status tag (2026-10-08).** The owner liked the calm Seznam better than Simple's full line, with a
 > status area where something is missing or waits. Of four proposals they chose A, for its simplicity: the event line
 > is calm again (only the start; a full meeting shows nothing) and a leader sees a soft capsule – [◔ chybí 1] on the

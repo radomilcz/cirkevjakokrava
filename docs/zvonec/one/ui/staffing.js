@@ -1,27 +1,27 @@
-// Zvonec One – Obsazení (#obsazeni[/<eventId>], leaders): whom do we still need? (DESIGN §6.4)
-// The one list screen: A „Obsazení“ · [Doplň volná místa] (≥ 600; on a phone the first item of ⋯) · ⋯ (Připomeň
-// všem, kdo neodpověděli · Vytiskni rozpis). B: „Hledej setkání“ + Filtr (Tým – the teams I lead by default, so a
-// leader starts at „Filtr 1“ · Co řešit: Chybí lidi · Čeká na odpověď · Něco nesedí). No C.
-// D: only the meetings of the next 4 weeks with something to do, nearest first, under week subheads. Each is one
-// block (one link → the pane ≥ 1200, the meeting's page below): the date arch, the title (no fill ring: its to-do lines say it),
-// „18.30 · Monta, Sál“, „+ Klávesy“ per empty role (→ the picker), „○ 1 člověk ještě neodpověděl ›“ (→ who waits:
-// SMS · Zavolej with a ready text, a tap on a name answers for them) and „● Ondra má dvě služby naráz ›“ (→ the duty
-// sheet with its fixes). The horizon is said at the end of the list („Dál než 4 týdny dopředu: Rozpis ›“).
-// staffingCount() – the nav's count: meetings with something to do in my Filtr scope.
+// Zvonec One – Obsazení (#obsazeni[/<eventId>], leaders): what do I have to do now? (DESIGN §6.4)
+// Not a third calendar but a list of tasks for the next 4 weeks, by the kind of work (the owner's choice, variant 1):
+// A „Obsazení“ · ⋯ (Vytiskni rozpis) · [Doplň volná místa]. B: „Hledej“ + Filtr (Tým – the teams I lead by default,
+// so a leader starts at „Filtr 1“ · Stav: Chybí lidi · Čeká na odpověď · Něco nesedí). No C.
+// D, three sections, each only while it has something:
+//   Chybí lidi – a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne 11. 10. 10.00“, [+ Doplň]
+//     (→ the picker); the row opens the meeting (the pane ≥ 1200, its page below).
+//   Něco nesedí – a row per problem: „Ondra má dvě služby naráz“ › (→ the duty sheet with its fixes).
+//   Čeká na odpověď – a row per PERSON, not per duty: „Daniel Sýkora“, „3 služby · nejbližší ne 11. 10.“, and one SMS
+//     (or e-mail) that reminds of all of them at once, plus Zavolej; the row records the answer for them.
+// What is done drops out; nothing left: „Všechno je vyřešené.“ The horizon is said at the end („Dál než 4 týdny…“).
+// staffingCount() – the nav's count: the tasks in my Filtr scope.
 
 import {
-  h, icon, listScreen, filterButton, filterState, clearFilter, searchText, empty, list, row, avatar, subhead,
-  dateArch, link, toast, layer, isSplit, clock, joinMeta, shortDate, agree, plural, personName, SEP,
+  h, icon, listScreen, filterButton, filterState, clearFilter, searchText, empty, list, row, avatar, section, button,
+  dateArch, link, layer, isSplit, clock, joinMeta, shortDate, agree, plural, personName, SEP,
   missingItem,
 } from './kit.js';
 import { S, can, myId, render } from '../../ui/state.js';
-import { eventById, needsOf, KIND_LABELS } from '../../lib/events.js';
+import { eventById, KIND_LABELS } from '../../lib/events.js';
 import { openSlots, unconfirmedDuties } from '../../lib/scheduling.js';
 import { roleById, ledBy } from '../../lib/groups.js';
 import { today, addDays, dayOf } from '../../lib/time.js';
-import {
-  teamsWithRoles, placeText, personOf, nameOf, mondayOf, weekRange,
-} from './calendar-shared.js';
+import { teamsWithRoles, placeText, personOf } from './calendar-shared.js';
 import { pickFor, openDutySheet, fillOpenSlots } from './event-duties.js';
 import { eventDetail, notFound } from './event.js';
 import { smsHref, telHref, mailHref } from './people-common.js';
@@ -102,34 +102,73 @@ function scopeTeams(state) {
   return teamsWithRoles().some(({ group }) => group.id === t) ? [t] : null;
 }
 
-const passesCo = (x, co) => !co?.length
-  || (co.includes('chybi') && x.slots.length > 0) || (co.includes('ceka') && x.waiting.length > 0) || (co.includes('nesedi') && x.errors.length > 0);
-
 const norm = (t) => String(t || '').normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('cs');
+const hit = (words, q) => { const text = norm(words.filter(Boolean).join(' ')); return norm(q).split(/\s+/).filter(Boolean).every((w) => text.includes(w)); };
+/** „ne 11. 10. 10.00“ kept on one line (a phone breaks the meta between its parts, never inside a date). */
+const nb = (t) => t.replace(/ /g, '\u00a0');
+const when = (event) => nb(`${shortDate(event.start)} ${clock(event.start)}`);
 
-/** Search over the meeting (title, place, Účel) and its roles and people. */
-function matches(x, q) {
-  if (!q) return true;
-  const roles = needsOf(S.data, x.event).map((n) => roleById(S.data, n.roleId)?.name);
-  const people = (x.event.assignments || []).filter((a) => a.personId).map((a) => nameOf(a));
-  const text = norm([x.event.title, placeText(x.event), KIND_LABELS[x.event.kind], ...roles, ...people].join(' '));
-  return norm(q).split(/\s+/).filter(Boolean).every((w) => text.includes(w));
+/**
+ * The tasks of needsFor's meetings, by the kind of work:
+ * { missing: [{ event, role, n }], problems: [{ event, c }], waiting: [{ person, duties: [d] }] } – each nearest first;
+ * one waiting entry per person (their duties together), so one reminder covers them all.
+ */
+function tasksOf(items) {
+  const missing = [];
+  const problems = [];
+  const people = new Map();
+  for (const x of items) {
+    const byRole = new Map();
+    for (const sl of x.slots) {
+      const was = byRole.get(sl.roleId);
+      byRole.set(sl.roleId, { event: x.event, role: sl.role, n: (was?.n || 0) + (sl.missing || 1) });
+    }
+    missing.push(...byRole.values());
+    problems.push(...x.errors.map((c) => ({ event: x.event, c })));
+    for (const d of x.waiting) {
+      const key = d.person?.id || d.assignment.id;
+      if (!people.has(key)) people.set(key, { person: d.person, duties: [] });
+      people.get(key).duties.push(d);
+    }
+  }
+  return { missing, problems, waiting: [...people.values()] };
 }
 
-/** Everything the screen and the count need: { all, scoped, shown, state, teams }. */
+const taskCount = (t) => t.missing.length + t.problems.length + t.waiting.length;
+
+/** Filtr › Stav: only the chosen kinds of work (none chosen: all). */
+const byState = (t, co) => (!co?.length ? t : {
+  missing: co.includes('chybi') ? t.missing : [],
+  problems: co.includes('nesedi') ? t.problems : [],
+  waiting: co.includes('ceka') ? t.waiting : [],
+});
+
+/** The search: the role, the meeting (title, place, Účel), the person, the problem's words. */
+function bySearch(t, q) {
+  if (!q) return t;
+  const meeting = (e) => [e.title, placeText(e), KIND_LABELS[e.kind]];
+  return {
+    missing: t.missing.filter((x) => hit([x.role?.name, ...meeting(x.event)], q)),
+    problems: t.problems.filter((x) => hit([errorLine(x.c), x.c.text, ...meeting(x.event)], q)),
+    waiting: t.waiting.filter((x) => hit([x.person ? personName(x.person) : '', ...x.duties.flatMap((d) => [d.role?.name, ...meeting(d.event)])], q)),
+  };
+}
+
+/** Everything the screen and the count need: { all, scoped, shown, state, teams, q } (all three are task sets). */
 function model() {
   const state = stateNow();
   const teams = scopeTeams(state);
-  const all = needsFor(null);
-  const scoped = (teams ? needsFor(teams) : all).filter((x) => passesCo(x, state.co));
+  const allItems = needsFor(null);
+  const all = tasksOf(allItems);
+  const scoped = byState(tasksOf(teams ? needsFor(teams) : allItems), state.co);
   const q = searchText(KEY).trim();
-  return { all, scoped, shown: scoped.filter((x) => matches(x, q)), state, teams, q };
+  return { all, scoped, shown: bySearch(scoped, q), state, teams, q };
 }
 
-/** The nav's count: meetings in the next 4 weeks with something to do, in my Filtr scope. */
+/** The nav's count: the tasks of the next 4 weeks in my Filtr scope („Zbývá vyřešit 5 věcí“). */
 export function staffingCount() {
   if (!S.data || !can('leader')) return 0;
-  try { return model().scoped.length; } catch { return 0; }
+  try { return taskCount(model().scoped); } catch { return 0; }
 }
 
 // ---------- who waits ----------
@@ -144,6 +183,27 @@ export function reminderText({ event, role }) {
   return `Ahoj, ${weekday} ${shortDate(day, { weekday: false })} máš v rozpisu službu: ${role?.name || 'služba'} (${event.title}, ${clock(event.start)}). Můžeš? Odpověz prosím ve Zvonci: ${href}`;
 }
 
+/** One reminder for all of a person's waiting duties: „Ahoj, v rozpisu máš služby: Zpěv (Setkání na pastvě, ne 11. 10.
+ * v 10.00), Klávesy (…). Můžeš? …“ – a single duty keeps reminderText's words. */
+export function reminderTextAll(duties) {
+  if (duties.length === 1) return reminderText(duties[0]);
+  const href = `${location.origin}${location.pathname}#moje`;
+  const items = duties.map((d) => `${d.role?.name || 'služba'} (${d.event.title}, ${shortDate(d.event.start)} v ${clock(d.event.start)})`);
+  return `Ahoj, v rozpisu máš služby: ${items.join(', ')}. Můžeš? Odpověz prosím ve Zvonci: ${href}`;
+}
+
+/** SMS (or e-mail) with the ready text, and Zavolej – the trail of a waiting person. */
+function remindButtons(person, duties) {
+  if (!person) return [];
+  const text = encodeURIComponent(reminderTextAll(duties));
+  const who = personName(person);
+  return [
+    person.phone ? h('a', { class: 'icon-btn icon-btn--call', href: `${smsHref(person.phone)}?&body=${text}`, 'aria-label': `Připomeň v SMS – ${who}`, title: `Připomeň v SMS – ${who}` }, icon('message', { size: 's' })) : null,
+    !person.phone && person.email ? h('a', { class: 'icon-btn icon-btn--call', href: `${mailHref(person.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomeň e-mailem – ${who}`, title: `Připomeň e-mailem – ${who}` }, icon('mail', { size: 's' })) : null,
+    person.phone ? h('a', { class: 'icon-btn icon-btn--call', href: telHref(person.phone), 'aria-label': `Zavolej – ${who}`, title: `Zavolej – ${who}` }, icon('phone', { size: 's' })) : null,
+  ].filter(Boolean);
+}
+
 /** „za 3 dny“, „zítra“, „dnes“ */
 const whenWords = (n) => (n <= 0 ? 'dnes' : n === 1 ? 'zítra' : `za ${n} ${agree(n, 'den', 'dny', 'dní')}`);
 
@@ -151,23 +211,23 @@ const whenWords = (n) => (n <= 0 ? 'dnes' : n === 1 ? 'zítra' : `za ${n} ${agre
  * Who has not answered yet (one meeting or many): person, duty, when; a tap on a row opens the duty (answer for them
  * there), the trail reminds by SMS (or e-mail) with a ready text, or calls.
  */
-export function waitingSheet(waiting, { event } = {}) {
+export function waitingSheet(waiting, { event, person } = {}) {
   let sheet;
   const open = (d) => { sheet.close({ restore: false }); openDutySheet(d.event.id, d.assignment.id); };
-  const remind = (d) => {
-    const p = d.person;
-    if (!p) return null;
-    const text = encodeURIComponent(reminderText(d));
-    const who = personName(p);
-    // the row's call button of Lidé and Skupiny (quiet icon M on a phone, S with a 44 hit from 600 up), for both
-    return [
-      p.phone ? h('a', { class: 'icon-btn icon-btn--call', href: `${smsHref(p.phone)}?&body=${text}`, 'aria-label': `Připomeň v SMS – ${who}`, title: `Připomeň v SMS – ${who}` }, icon('message', { size: 's' })) : null,
-      !p.phone && p.email ? h('a', { class: 'icon-btn icon-btn--call', href: `${mailHref(p.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomeň e-mailem – ${who}`, title: `Připomeň e-mailem – ${who}` }, icon('mail', { size: 's' })) : null,
-      p.phone ? h('a', { class: 'icon-btn icon-btn--call', href: telHref(p.phone), 'aria-label': `Zavolej – ${who}`, title: `Zavolej – ${who}` }, icon('phone', { size: 's' })) : null,
-    ].filter(Boolean);
-  };
+  // the row's call button of Lidé and Skupiny (quiet icon M on a phone, S with a 44 hit from 600 up), for both
+  const remind = (d) => remindButtons(d.person, [d]);
   const rowOf = (d) => {
     const name = d.person ? personName(d.person) : 'Smazaný člověk';
+    // one person's duties (Obsazení's row of a person): the duty is the row, one reminder for all is in the head
+    if (person) {
+      return row({
+        lead: dateArch(dayOf(d.event.start), { today: dayOf(d.event.start) === today() }),
+        title: d.role?.name || 'Služba',
+        meta: joinMeta([d.event.title, clock(d.event.start), whenWords(d.daysUntil ?? 0)]),
+        onclick: () => open(d), chevron: true,
+        label: `${d.role?.name || 'Služba'}, ${d.event.title} ${shortDate(d.event.start)}: zapiš odpověď`,
+      });
+    }
     const what = event ? d.role?.name || 'Služba' : joinMeta([d.role?.name || 'Služba', d.event.title, shortDate(d.event.start)]);
     return row({
       lead: avatar(d.person),
@@ -178,23 +238,34 @@ export function waitingSheet(waiting, { event } = {}) {
       trail: remind(d),
     });
   };
+  // one person's sheet: the reminder for all their duties as worded buttons (S), not bare icons
+  let all = [];
+  if (person) {
+    const text = encodeURIComponent(reminderTextAll(waiting));
+    all = [
+      person.phone ? button('Připomeň v SMS', { size: 's', icon: 'message', href: `${smsHref(person.phone)}?&body=${text}` }) : null,
+      !person.phone && person.email ? button('Připomeň e-mailem', { size: 's', icon: 'mail', href: `${mailHref(person.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}` }) : null,
+      person.phone ? button('Zavolej', { size: 's', icon: 'phone', href: telHref(person.phone) }) : null,
+    ].filter(Boolean);
+  }
   sheet = layer.open({ kind: 'sheet',
-    title: 'Čeká na odpověď',
-    subtitle: event ? joinMeta([event.title, shortDate(event.start)]) : plural(waiting.length, 'služba', 'služby', 'služeb'),
+    title: person ? personName(person) : 'Čeká na odpověď',
+    subtitle: person ? `${plural(waiting.length, 'služba čeká', 'služby čekají', 'služeb čeká')} na odpověď`
+      : event ? joinMeta([event.title, shortDate(event.start)]) : plural(waiting.length, 'služba', 'služby', 'služeb'),
     size: 'm',
     body: [
-      h('p', { class: 'meta waiting-lead' }, 'Odpověď zapíšeš i za ně: klepni na jméno. Text SMS i e-mailu ti Zvonec připraví.'),
+      h('p', { class: 'meta waiting-lead' }, person
+        ? 'Odpověď zapíšeš i za ně: klepni na službu. Text SMS i e-mailu se všemi službami ti Zvonec připraví.'
+        : 'Odpověď zapíšeš i za ně: klepni na jméno. Text SMS i e-mailu ti Zvonec připraví.'),
+      all.length ? h('div', { class: 'cluster waiting-remind' }, all) : null,
       list(waiting.map(rowOf), { label: 'Čeká na odpověď' }),
     ],
   });
 }
 
-// ---------- one meeting ----------
+// ---------- the tasks ----------
 
-/** „4 ještě neodpověděli“ · „1 člověk ještě neodpověděl“ · „5 ještě neodpovědělo“. */
-const waitingLine = (n) => (n === 1 ? '1 člověk ještě neodpověděl' : `${n} ještě ${agree(n, 'neodpověděl', 'neodpověděli', 'neodpovědělo')}`);
-
-/** The short sentence of a problem under a meeting: „Ondřej má dvě služby naráz“. */
+/** The short sentence of a problem: „Ondřej má dvě služby naráz“. */
 const ERROR_WORDS = { K1: 'je na dvou místech naráz', K2: 'má dvě služby naráz', K3: 'v tu dobu nemůže' };
 function errorLine(c) {
   const person = c.personId ? personOf(c.personId) : null;
@@ -203,58 +274,54 @@ function errorLine(c) {
   return who && words ? `${who} ${words}` : c.text;
 }
 
-/** One meeting as one block: a link to the meeting; its to-do lines (Doplň, who waits, problems) act on their own. */
-function needItem(x, { openId }) {
-  const { event, slots, waiting, errors } = x;
-  const byRole = new Map();
-  for (const s of slots) byRole.set(s.roleId, { role: s.role, n: (byRole.get(s.roleId)?.n || 0) + (s.missing || 1) });
-  const day = dayOf(event.start);
-  // what is to be done, one line each and all built alike – ● Chybí: Klávesy ··· + Doplň / ● Jiří … ··· › / ○ 2 ještě
-  // neodpověděli ··· › – so the actions stand in one column at the right edge
-  const todo = (mark, words, action, onclick, label) => h('button', { type: 'button', class: 'todo', onclick, 'aria-label': label },
-    h('span', { class: ['mark', `mark--${mark}`], 'aria-hidden': 'true' }), h('span', { class: 'todo__words' }, words), action);
-  const doIt = () => h('span', { class: 'todo__do' }, icon('plus', { size: 's' }), 'Doplň');
-  const more = () => icon('chevron-right', { size: 's' });
-  const missing = [...byRole.values()].map(({ role, n }) => todo('error', `Chybí: ${n > 1 ? `${n}× ` : ''}${role.name}`, doIt(), () => pickFor(event.id, role.id),
-    `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}`));
-  const shownErrors = errors.slice(0, 2);
-  const problems = shownErrors.map((c) => todo('error', errorLine(c), more(), () => {
-    const id = (c.assignmentIds || []).find((a) => (event.assignments || []).some((y) => y.id === a));
-    if (id) openDutySheet(event.id, id); else location.hash = `#obsazeni/${event.id}`;
-  }, `${c.text} – oprav to`));
-  if (errors.length > shownErrors.length) {
-    problems.push(todo('error', `a ${plural(errors.length - shownErrors.length, 'další problém', 'další problémy', 'dalších problémů')}`, more(), () => { location.hash = `#obsazeni/${event.id}`; }));
-  }
-  const waits = waiting.length ? [todo('wait', waitingLine(waiting.length), more(), () => waitingSheet(waiting, { event }), `${waitingLine(waiting.length)} – ukaž, kdo to je`)] : [];
-  const todos = [...missing, ...problems, ...waits];
-  const open = event.id === openId;
-  return h('article', { class: 'staff', dataset: { open: open ? '' : null } },
-    dateArch(day, { today: day === today() }),
-    h('div', { class: 'staff__body' },
-      h('div', { class: 'staff__head' },
-        // a click on the open item closes it (DESIGN §5)
-        h('a', { class: 'staff__title', href: open ? '#obsazeni' : `#obsazeni/${event.id}`, 'aria-current': open ? 'true' : null }, event.title)),   // its to-do lines say what is missing – no fill ring
-      h('p', { class: 'staff__meta' }, joinMeta([clock(event.start), placeText(event) || null])),
-      todos.length ? h('div', { class: 'staff__todo' }, todos) : null));
+const lead = (event) => dateArch(dayOf(event.start), { today: dayOf(event.start) === today() });
+const meetingHref = (event, openId) => (event.id === openId && isSplit() ? '#obsazeni' : `#obsazeni/${event.id}`);
+
+/** Chybí lidi: „2× Klávesy“ · „Setkání na pastvě · ne 11. 10. 10.00“ · [+ Doplň]; the row opens the meeting. */
+function missingRow({ event, role, n }, openId) {
+  const name = `${n > 1 ? `${n}× ` : ''}${role?.name || 'Služba'}`;
+  return row({
+    lead: lead(event), title: name, meta: joinMeta([event.title, when(event)]),
+    href: meetingHref(event, openId), open: event.id === openId,
+    label: `${name}: ${event.title}, ${when(event)}`,
+    trail: button('Doplň', { size: 's', icon: 'plus', onclick: () => pickFor(event.id, role.id), label: `Doplň: ${role?.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}` }),
+  });
 }
 
-/** „Tento týden“ · „Příští týden“ · „19.–25. 10.“ */
-function weekWords(monday) {
-  const now = mondayOf(today());
-  if (monday === now) return 'Tento týden';
-  if (monday === addDays(now, 7)) return 'Příští týden';
-  return weekRange(monday);
+/** Něco nesedí: „Ondra má dvě služby naráz“ · the meeting ›; the row opens the fix (the duty sheet). */
+function problemRow({ event, c }, openId) {
+  const id = (c.assignmentIds || []).find((a) => (event.assignments || []).some((y) => y.id === a));
+  return row({
+    lead: lead(event), title: errorLine(c), meta: joinMeta([event.title, when(event)]), chevron: true,
+    ...(id ? { onclick: () => openDutySheet(event.id, id) } : { href: meetingHref(event, openId) }),
+    label: `${c.text} – oprav to`,
+  });
 }
 
-function listOf(items, openId) {
-  const out = [];
-  let week = null;
-  for (const x of items) {
-    const monday = mondayOf(dayOf(x.event.start));
-    if (monday !== week) { week = monday; out.push(subhead(weekWords(monday))); }
-    out.push(needItem(x, { openId }));
-  }
-  return h('div', { class: 'staff-list', role: 'list', 'aria-label': 'Setkání, kde něco chybí' }, out);
+/** Čeká na odpověď: one row per person – their duties, one reminder for all; the row records their answers. */
+function waitingRow({ person, duties }) {
+  const name = person ? personName(person) : 'Smazaný člověk';
+  const first = duties[0];
+  const meta = duties.length === 1
+    ? joinMeta([first.role?.name || 'Služba', first.event.title, nb(shortDate(first.event.start))])
+    : joinMeta([plural(duties.length, 'služba', 'služby', 'služeb'), `nejbližší ${nb(shortDate(first.event.start))}`]);
+  return row({
+    lead: avatar(person), title: name, meta,
+    onclick: () => (duties.length === 1 ? openDutySheet(first.event.id, first.assignment.id) : waitingSheet(duties, { person })),
+    label: `${name}, ${meta}: zapiš odpověď`,
+    trail: remindButtons(person, duties),
+  });
+}
+
+function sections(t, openId) {
+  return [
+    t.missing.length ? section({ title: 'Chybí lidi', count: t.missing.length, cls: 'task-section', body: list(t.missing.map((x) => missingRow(x, openId)), { label: 'Chybí lidi' }) }) : null,
+    t.problems.length ? section({ title: 'Něco nesedí', count: t.problems.length, cls: 'task-section', body: list(t.problems.map((x) => problemRow(x, openId)), { label: 'Něco nesedí' }) }) : null,
+    t.waiting.length ? section({ title: 'Čeká na odpověď', count: t.waiting.length, cls: 'task-section', body: [
+      h('p', { class: 'meta task-lead' }, 'Klepni na jméno a zapiš odpověď za ně. Jedna SMS jim připomene všechny služby najednou.'),
+      list(t.waiting.map(waitingRow), { label: 'Čeká na odpověď' }),
+    ] }) : null,
+  ];
 }
 
 /** The horizon, said at the end of the list: „Dál než 4 týdny dopředu: Rozpis ›“. */
@@ -271,19 +338,17 @@ function clearSearchField() {
 }
 
 function body(m, openId) {
-  if (m.shown.length) return [listOf(m.shown, openId), horizon()];
-  if (m.q && m.scoped.length) {
+  if (taskCount(m.shown)) return [h('div', { class: 'tasks' }, sections(m.shown, openId)), horizon()];
+  if (m.q && taskCount(m.scoped)) {
     return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${m.q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearchField } });
   }
-  if (m.scoped.length < m.all.length) {
-    const hidden = m.all.length - m.scoped.length;
-    return [
-      empty({ kind: 'filter', title: 'S tímhle filtrem tu nic není.', text: `Filtr skrývá ${plural(hidden, 'setkání', 'setkání', 'setkání')}.`, action: { label: 'Zruš filtr', onclick: () => { clearFilter(KEY); render(); } } }),
-    ];
+  const hidden = taskCount(m.all) - taskCount(m.scoped);
+  if (hidden > 0) {
+    return empty({ kind: 'filter', title: 'S tímhle filtrem tu nic není.', text: `Filtr skrývá ${plural(hidden, 'úkol', 'úkoly', 'úkolů')}.`, action: { label: 'Zruš filtr', onclick: () => { clearFilter(KEY); render(); } } });
   }
   if (m.q) return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${m.q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearchField } });
   return [
-    empty({ kind: 'none', icon: 'check', title: 'Na příští 4 týdny je všechno obsazené.', text: 'Nikde nikdo nechybí, všichni odpověděli a všechno sedí.' }),
+    empty({ kind: 'none', icon: 'check', title: 'Všechno je vyřešené.', text: 'Na příští 4 týdny nikde nikdo nechybí, všichni odpověděli a všechno sedí.' }),
     horizon(),
   ];
 }
@@ -296,27 +361,21 @@ export function renderStaffing(parts = []) {
     return opened ? eventDetail(opened, { frame: 'page', back: { href: '#obsazeni', label: 'Obsazení' } }) : notFound({ href: '#obsazeni', label: 'Obsazení' });
   }
   let m = model();
-  const ids = () => m.shown.filter((x) => x.slots.length).map((x) => x.event.id);
-  const remindAll = () => {
-    const waiting = m.shown.flatMap((x) => x.waiting);
-    if (!waiting.length) { toast('Všichni už odpověděli.', { icon: 'check' }); return; }
-    waitingSheet(waiting);
-  };
+  const ids = () => [...new Set(m.shown.missing.map((x) => x.event.id))];
   const filter = filterButton({
     key: KEY,
     groups: filterGroups(),
     onChange: () => { m = model(); main.setBody(body(m, openId)); },
-    results: () => m.shown.length,
-    unit: (n) => plural(n, 'setkání', 'setkání', 'setkání'),
+    results: () => taskCount(m.shown),
+    unit: (n) => plural(n, 'úkol', 'úkoly', 'úkolů'),
   });
   const main = listScreen({
     title: 'Obsazení',
     action: { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: m.teams }) },
     menu: [
-      { label: 'Připomeň všem, kdo neodpověděli', icon: 'message', onclick: remindAll },
       { label: 'Vytiskni rozpis', icon: 'printer', onclick: () => import('./roster.js').then((r) => r.printRoster?.(today().slice(0, 7))) },
     ],
-    search: { key: KEY, placeholder: 'Hledej setkání', onInput: () => { m = model(); main.setBody(body(m, openId)); } },
+    search: { key: KEY, placeholder: 'Hledej úkol', onInput: () => { m = model(); main.setBody(body(m, openId)); } },
     filter,
     body: body(m, openId),
     pane: opened ? eventDetail(opened, { frame: 'pane', close: '#obsazeni' }) : openId ? notFoundPane() : null,
