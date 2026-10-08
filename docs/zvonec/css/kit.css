@@ -423,6 +423,8 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 .day[aria-selected="true"]::after { content: ""; position: absolute; left: calc(50% - 8px); top: 39px; width: 16px; height: 3px; border-radius: 3px; background: var(--mark); }
 .day[aria-selected="true"][data-today] .day__num { background: var(--act); }
 .day[data-outside] .day__num { color: var(--ink-3); }
+.day:disabled { cursor: default; }
+.day:disabled .day__num { color: var(--ink-3); background: none; text-decoration: line-through; text-decoration-color: var(--hairline); opacity: .55; }
 .day[data-mine] .day__num { box-shadow: inset 0 0 0 1.5px currentColor; }
 
 /* ---------- blocks ---------- */
