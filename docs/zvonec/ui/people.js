@@ -8,8 +8,8 @@
 //      Skupiny: ui/groups.js – Týmy · Skupinky · Vedení.
 // Routes: #lide[/<person>] · #lide/skupiny[/<group>[/<person>]] · #lide/domacnost/<id> · #lide/vypis[/<person>].
 // A click opens the detail: a pane beside the list ≥ 1200 (the list keeps its place – no jump to the top), a page
-// below. Nothing opens by itself. Podrobný výpis (leaders ≥ 900 from ⋯; on a desktop ≥ 1200 #lide opens it for
-// everyone, unless the simple list was chosen): Simple's table under the same A·B·C, the columns as in Next's.
+// below. Nothing opens by itself. Tabulka (#lide/vypis; leaders ≥ 900, everyone ≥ 1200, picked with the Seznam |
+// Tabulka switch): Simple's table under the same A·B·C, the columns as in Next's.
 
 import {
   h, icon, avatar, row, list, subhead, empty, rowLink, button, listScreen, filterButton, filterState, setFilter,
@@ -33,17 +33,16 @@ import { groupDetail, groupRow, groupRows, groupCards, groupMatches, groupFilter
 
 const SEARCH = 'lide';
 const GROUP_SEARCH = 'skupiny';
-const WIDE_TABLE = window.matchMedia('(min-width: 900px)');   // Podrobný výpis needs room for its columns
-/** Podrobný výpis can be shown: leaders from 900 (from ⋯), everyone on a desktop (≥ 1200 #lide opens it). */
+const WIDE_TABLE = window.matchMedia('(min-width: 900px)');   // Tabulka needs room for its columns
+/** Tabulka can be shown: leaders from 900, everyone on a desktop (≥ 1200). */
 const tableFits = () => (can('leader') ? WIDE_TABLE.matches : isSplit());
 
-// The simple list or the table – the person's choice, remembered in this browser. On a desktop (≥ 1200) #lide opens
-// the table across the whole width unless the simple list was chosen (the owner's decision); below 1200 #lide is the
-// list, as it always was.
+// Seznam or Tabulka – the switch at the right of the search row (as Kalendář's Seznam | Měsíc | Rozpis), shown where
+// the table fits; the choice is remembered in this browser. #lide opens the list unless Tabulka was chosen.
 const MODE_KEY = 'zvonec-one-people-view';
 const chosenMode = () => { try { return localStorage.getItem(MODE_KEY); } catch { return null; } };
 const chooseMode = (mode) => { try { localStorage.setItem(MODE_KEY, mode); } catch { /* not remembered, that's all */ } };
-const opensTable = () => isSplit() && chosenMode() !== 'list';
+const opensTable = () => tableFits() && chosenMode() === 'table';
 const MONTHS = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
 
 let fromPerson = null;   // the person whose detail a household was opened from (its ‹ back)
@@ -320,12 +319,9 @@ function downloadCsv(people) {
 }
 
 /** The head's ⋯ – a function, read when it opens, so it follows the Filtr (Ukaž i archiv) without a redraw. */
-const listMenu = (view) => () => {
+const listMenu = () => {
   const download = { label: 'Stáhni seznam', icon: 'download', onclick: () => downloadCsv(shownPeople()) };
-  const mode = tableFits() ? (view === 'vypis'
-    ? { label: 'Ukaž jednoduchý seznam', icon: 'people', onclick: () => { chooseMode('list'); location.hash = 'lide'; } }
-    : { label: 'Ukaž podrobný výpis', icon: 'table', onclick: () => { chooseMode('table'); location.hash = 'lide/vypis'; } }) : null;
-  if (!can('leader')) return [download, mode].filter(Boolean);
+  if (!can('leader')) return [download];
   const overdue = overduePeople();
   return [
     { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) },
@@ -333,7 +329,6 @@ const listMenu = (view) => () => {
     '-',
     { label: 'Zkopíruj e-maily', icon: 'copy', onclick: () => copyEmails(shownPeople()) },
     download,
-    mode,
     overdue.length ? '-' : null,
     overdue.length ? {
       label: overdue.length === 1 ? 'Smaž starou kartu z archivu' : 'Smaž staré karty z archivu',
@@ -363,7 +358,7 @@ function keepPlace(main) {
 /** ✕ of a pane: back to the list without a jump to the top. */
 const closeTo = (href) => () => { history.pushState(null, '', href); render(); };
 
-/** The list screen of Lidé (and Podrobný výpis) and of Skupiny. body() draws D; it is called again on a search or a filter. */
+/** The list screen of Lidé (Seznam and Tabulka) and of Skupiny. body() draws D; it is called again on a search or a filter. */
 function peopleScreen({ view, body, pane = null, wide = false }) {
   const groups = view === 'skupiny';
   const key = groups ? GROUPS_FILTER : PEOPLE_FILTER;
@@ -381,11 +376,17 @@ function peopleScreen({ view, body, pane = null, wide = false }) {
     action: !leader ? null : groups
       ? { label: 'Nová skupina', icon: 'plus', onclick: () => groupSheet() }
       : { label: 'Nový člověk', icon: 'user-plus', onclick: () => addPersonSheet() },
-    menu: groups ? null : listMenu(view),
+    menu: groups ? null : listMenu,
     search: groups
       ? { key: GROUP_SEARCH, placeholder: 'Hledej skupinu', onInput: () => main.setBody(body()) }
       : { key: SEARCH, placeholder: 'Hledej jméno', onInput: () => main.setBody(body()) },
     filter,
+    // Seznam | Tabulka where the table fits (the switch remembers the choice: a click writes it before #lide opens)
+    views: !groups && tableFits() ? {
+      label: 'Zobrazení lidí',
+      options: [['lide', 'Seznam', '#lide'], ['vypis', 'Tabulka', '#lide/vypis']],
+      value: view,
+    } : null,
     body: body(),
     pane,
     wide,
@@ -394,6 +395,10 @@ function peopleScreen({ view, body, pane = null, wide = false }) {
     phoneBack: groups ? { href: '#lide', label: 'Lidé' } : null,   // a phone reaches Skupiny from the first row of Lidé
   });
   keepPlace(main);
+  main.querySelector('.ls__tools .seg')?.addEventListener('click', (e) => {
+    const a = e.target.closest?.('a[href^="#lide"]');
+    if (a) chooseMode(a.getAttribute('href') === '#lide/vypis' ? 'table' : 'list');
+  });
   return main;
 }
 
@@ -449,7 +454,7 @@ function renderTableView({ personId } = {}) {
   }
   const split = isSplit();
   const person = personId ? visiblePerson(personId) : null;
-  if (personId && !split) return personDetail(person, { frame: 'page', back: { href: '#lide/vypis', label: 'Podrobný výpis' } });
+  if (personId && !split) return personDetail(person, { frame: 'page', back: { href: '#lide/vypis', label: 'Lidé' } });
   const compact = !!personId;
   return peopleScreen({
     view: 'vypis', body: () => tableBody({ openId: personId, compact }),
@@ -472,7 +477,7 @@ export function renderPeopleRoute(parts = []) {
   return renderPeopleView({ personId: first });
 }
 
-// ---------- Podrobný výpis (Simple's table) ----------
+// ---------- Tabulka (Simple's table) ----------
 
 const read = (key) => { try { return localStorage.getItem(key); } catch { return null; } };
 const write = (key, value) => { try { localStorage.setItem(key, value); } catch { /* not remembered, that's all */ } };
@@ -511,7 +516,7 @@ function bulkBar(redraw) {
       button('Zruš výběr', { size: 's', variant: 'quiet', onclick: done })));
 }
 
-/** Podrobný výpis: compact (a person open beside it) keeps the name and the phone, the open person marked. */
+/** Tabulka: compact (a person open beside it) keeps the name and the phone, the open person marked. */
 function tableBody({ openId, compact = false } = {}) {
   const box = h('div', { class: 'people-table-box' });
   const redraw = () => {

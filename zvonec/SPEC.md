@@ -703,7 +703,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | `#setkani/<id>`, `#setkani/<id>/osnova` | Setkání page, Osnova page | member |
 | `#lide[/<personId>]` | Lidé | member |
 | `#lide/skupiny[/<groupId>[/<personId>]]` | Skupiny | member |
-| `#lide/vypis[/<personId>]` | Podrobný výpis | leaders ≥ 900; anyone ≥ 1200 |
+| `#lide/vypis[/<personId>]` | Tabulka | leaders ≥ 900; anyone ≥ 1200 |
 | `#lide/domacnost/<id>` | Domácnost | leader |
 | `#sablony[/<id>]` | Šablony | leader |
 | `#formaty[/<id>]`, `#mista[/<id>]` | Formáty, Místa | member (read-only) |
@@ -714,8 +714,8 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | `#kit` | component specimen | leader |
 
 Defaults: `#kalendar` opens the view last chosen in the switch (`zvonec-one-calendar-choice`); without a choice
-Měsíc at ≥ 1200, Seznam below. `#lide` at ≥ 1200 opens Podrobný výpis unless „Ukaž jednoduchý seznam“ was chosen
-(`zvonec-one-people-view`).
+Měsíc at ≥ 1200, Seznam below. `#lide` opens Seznam unless Tabulka was last chosen in Lidé's switch
+(`zvonec-one-people-view`, only where the table fits).
 
 Redirects (old slugs keep working): `prehled|domu|vice` → `moje`; `nemuzu` → `kdy-nemuzu`; `program[/…]` →
 `pastva`; `jak-se-schazime` → the Pastva anchor; `osoba/<id>` → `lide/<id>`; `tym|skupina/<id>` →
@@ -730,7 +730,7 @@ Redirects (old slugs keep working): `prehled|domu|vice` → `moje`; `nemuzu` →
 - The frame fills the content area up to 1600: list track `clamp(400px, 100% − 32 − 480, 840px)`, pane track up to
   720, gap 32. With no pane open the list takes up to 840.
 - Head rows A, B, C span the frame; the pane starts level with the content.
-- Wide views (Měsíc grid, the Rozpis tables, Podrobný výpis with nobody open, Skupiny cards with nothing open) span
+- Wide views (Měsíc grid, the Rozpis tables, Tabulka with nobody open, Skupiny cards with nothing open) span
   both tracks.
 - When the list track is under 440, the main action is icon-only.
 - **Pane**: `--card`, r20, padding 24, `--lift-2`; sticky 24 under the window top while it fits, otherwise it
@@ -998,8 +998,9 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
 
 ### 9.5 Lidé `#lide` (everyone)
 - A: „Lidé“ · ⋯ · [Nový člověk] (leaders). Leaders' ⋯: Přidej domácnost · Pozvi do Zvonce · — · Zkopíruj e-maily
-  · Stáhni seznam · Ukaž podrobný výpis / Ukaž jednoduchý seznam (≥ 900) · Smaž staré karty z archivu (when due).
-  Members' ⋯: Stáhni seznam (+ the view choice at ≥ 1200).
+  · Stáhni seznam · Smaž staré karty z archivu (when due). Members' ⋯: Stáhni seznam.
+- B: search · Filtr ······ [Seznam | Tabulka] (the same quiet switch as Kalendář's, leaders ≥ 900, everyone ≥ 1200;
+  remembered). Table head sort buttons are 32 high (hit 44), so their hover never touches the head's line.
 - B: „Hledej jméno“ (name, nickname, visible phone or e-mail; while searching, up to 3 matching groups appear
   above under „Skupiny“ / „Lidé“) + Filtr. Leaders: **Členství** (Členové · Přátelé · Hosté · Děti) · **Tým** ·
   **Chybí údaje** · **Bez souhlasu** (adult friends and guests with more than a name and no consent;
@@ -1010,7 +1011,7 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   on my own row). Meta at ≥ 600: leaders „člen · Chvály, Technika“ + amber „chybí příjmení a kontakt“; members
   teams only. Foot „47 lidí“; an archive callout when needed.
 - Empty: „Zatím tu nikdo není.“ / „Tady najdeš, jak se s kým spojit. Přidej první lidi, nebo jim pošli pozvánku.“
-- **Podrobný výpis** `#lide/vypis`: sortable table Jméno, Členství*, Domácnost, Telefon, E-mail, Skupiny,
+- **Tabulka** `#lide/vypis`: sortable table Jméno, Členství*, Domácnost, Telefon, E-mail, Skupiny,
   Narozeniny*, Poslední služba* (* leaders). Ticks + bulk bar „3 vybraní lidé“ [Zkopíruj e-maily] [Přidej do
   skupiny] [Stáhni seznam] [Zruš výběr]. Spans the frame; compact beside an open pane.
 - **Person detail** `#lide/<id>`: avatar 72 in the card's top-left corner – in a pane on the row of ⋯ and ✕, on a page
@@ -1220,7 +1221,7 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 4. **Shell and kit**: tokens and palettes, `h()`, layers, toast, rows, `listScreen`, Filtr, empty states, nav (tab
    bar, rail, sidebar, person menu), routes and redirects, pane, save line, undo.
 5. **Screens** in this order: Setkání (with duty sheet, picker, Osnova), Kalendář (Seznam, Měsíc, Rozpis,
-   Břemeno), Moje, Obsazení, Lidé (+ person, household, Podrobný výpis), Skupiny, Šablony, Formáty, Místa,
+   Břemeno), Moje, Obsazení, Lidé (+ person, household, Tabulka), Skupiny, Šablony, Formáty, Místa,
    Nastavení sboru, Kdy nemůžu, Můj účet, Pastva.
 6. **Data repo workflows**: `build-public.mjs`, `check.mjs`, `web.yml`, `check.yml`.
 7. **QA**: the acceptance list in §12.2, a Czech proofread, print styles.
@@ -1234,7 +1235,7 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 - **Kalendář**: Měsíc opening the pane on a day click; Rozpis starting from today instead of the month's first day.
 - **Members' Setkání detail** without numbers (no „6 z 6“).
 - **One glossary** for „chybí / čeká / nesedí“ across all screens.
-- **Households**: a household filter in Lidé, or a clickable Domácnost column in Podrobný výpis.
+- **Households**: a household filter in Lidé, or a clickable Domácnost column in Tabulka.
 - **Rename the role „U dětí“ to „Péče o děti“** in the demo and in the live data.
 - **Notifications centre**; renaming „Přidej setkání“ to „Nové setkání“ for the main action.
 - **Real notifications** (SMS / e-mail / push) need a server or a third-party service; out of scope for a
