@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – Lidé: Seznam | Tabulka (2026-10-08).** The table no longer opens by itself on a desktop and is no longer
+> picked in ⋯: Lidé has the same quiet switch as Kalendář at the right of the search row – Seznam | Tabulka (leaders
+> ≥ 900, everyone ≥ 1200), remembered in the browser; #lide opens Seznam until Tabulka is chosen. „Podrobný výpis“
+> is called Tabulka. The table head's sort buttons are 32 high (hit 44 kept), so their hover no longer touches the
+> line under the head.
+
 > **Update – One at the main address (2026-10-08).** With One the only Zvonec, its files moved from `docs/zvonec/one/`
 > to `docs/zvonec/` (ui/ and css/ now also hold state.js, palette.js and palettes.css). It opens at
 > https://zvonec.cirkevjakokrava.cz/ without a redirect; `one/` is only a redirect for old links (query and hash
