@@ -1047,11 +1047,12 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   stacked avatars); the open card gets pick + outline; at ≥ 1200 the cards span the frame while nothing is open.
   „V archivu“ stays a row list.
 - **Group detail**: mark 56; pills kind („Tým“) · „ty“ · „v archivu“; h1; fact „9 lidí · vedou …“ (or „zatím bez
-  vedoucího“ / „zatím bez předsedy“); description. **Role** (teams, leaders) [+ Přidej]: rows „umí A a B · učí se
-  C“, amber note „Umí to jen jeden člověk“ / „Zatím to nikdo neumí“, a click opens the role sheet. **Kdo co umí**
-  (teams, leaders, ≥ 600): a table people × roles; a cell steps neumí → učí se → umí (with Vrať via the toast), a
-  role's head opens the role and says „umí to jen 1“ / „umí to 3“ / „nikdo to neumí“ (amber when ≤ 1), a name opens
-  the member sheet; hint „Klepni na políčko a změníš, co kdo umí: neumí → učí se → umí.“ **Lidé**
+  vedoucího“ / „zatím bez předsedy“); description. **Role** (teams, leaders) [+ Přidej]: one folded line per role, hairlines
+  between – its name, „umí 7 · učí se 2“ / „umí jen 1“ / „nikdo to neumí“ (amber when ≤ 1) and ⌄; a tap unfolds it
+  (remembered while the app runs, an edit keeps it open): its people as chips (avatar 24 + „Martina D.“; umí = ok tint, učí se = outline „· učí se“; a tap opens a
+  menu Umí to / Učí se to / Neumí to, with Vrať via the toast) [+ Přidej] (a picker of the team's people who
+  cannot do it yet; the one picked umí) and [Uprav roli]. It replaced the people × roles table „Kdo co umí“, which never fit a pane
+  (the owner chose this). **Lidé**
   [+ Přidej]: leaders first, meta „vede tým“ + skill pills, call button, „Ukaž všech N“ after 8; a person drills
   in inside the pane („‹ <group>“). **Příští služby / Příští setkání** (six weeks).
   ⋯: Uprav · Přidej člověka · Přesuň do archivu / Vrať z archivu · Smaž.
