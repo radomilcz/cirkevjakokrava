@@ -280,12 +280,26 @@ export function initials(person) {
  * Initials in a circle (a person). size 's' 32 · 'm' 40 · 'l' 64. `me`: the viewer (solid ink).
  * `status: 'declined'` turns it neutral. Decorative: put the full name next to it.
  */
+let photoSource = null;   // (fileName) => url | Promise<url> – set by ui/photo.js (the store lives there, not in the kit)
+/** Where avatars get a person's photo from (ui/photo.js). */
+export const setPhotoSource = (fn) => { photoSource = fn; };
+
 export function avatar(person, { size = 'm', me = false, status, hue } = {}) {
-  return h('span', {
+  const el = h('span', {
     class: ['avatar', size !== 'm' && `avatar--${size}`, me && 'avatar--me'],
     dataset: { hue: me || !person || person.deleted ? null : hue || hueOf(person.id), status: status === 'declined' || person?.deleted ? 'declined' : null },
     'aria-hidden': 'true',
   }, initials(person));
+  // a photo replaces the initials once loaded (the store caches it, so a redraw has it at once)
+  const pending = person?.photo && !person.deleted && photoSource ? photoSource(person.photo) : null;
+  if (pending) {
+    Promise.resolve(pending).then((src) => {
+      if (!src) return;
+      el.classList.add('avatar--photo');
+      el.replaceChildren(h('img', { src, alt: '', decoding: 'async' }));
+    }, () => {});
+  }
+  return el;
 }
 
 /** A group's mark: rounded square, one or two letters (Chvály → CH, Mládež Nový Jičín → MN). */

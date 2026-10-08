@@ -238,16 +238,19 @@ export function missingItem({
  * The head of every detail (CODEX §6.4): band 96 or mark 56 / 72 → 16 → tag(s) → 8 → h1 → 12 → facts; the first
  * section follows 32 under it. h1: 34/36 in a pane and on a phone, 40/44 on a ≥ 600 page.
  *   detailHead({ band: node, tags: [kindTag('service')], title: 'Zkouška chval', facts: facts([...]) })
- *   detailHead({ mark: avatar(person, { size: 'xl' }), title: 'Bára', tags: [pill('host')], facts })
+ *   detailHead({ mark: avatar(person, { size: 'xl' }), side: true, title: 'Bára', tags: [pill('host')], facts })
  * `after`: nodes right under the head (the person's contact tiles), still before the first section.
  */
-export function detailHead({ band, mark, tags, title, facts: factsNode, after, id } = {}) {
+export function detailHead({ band, mark, side = false, tags, title, facts: factsNode, after, id } = {}) {
   const tagNodes = nodes(tags);
-  return h('div', { class: 'dhead' },
+  // side: the mark stands left of the tags and the name (a person's avatar), not above them
+  const tagsEl = tagNodes.length ? h('div', { class: 'dhead__tags' }, tagNodes) : null;
+  const titleEl = h('h1', { class: 'title dhead__title', id }, title);
+  return h('div', { class: ['dhead', side && 'dhead--side'] },
     band ? h('div', { class: 'dhead__band' }, band) : null,
-    mark ? h('div', { class: 'dhead__mark' }, mark) : null,
-    tagNodes.length ? h('div', { class: 'dhead__tags' }, tagNodes) : null,
-    h('h1', { class: 'title dhead__title', id }, title),
+    side && mark
+      ? h('div', { class: 'dhead__id' }, h('div', { class: 'dhead__mark' }, mark), h('div', { class: 'dhead__name' }, tagsEl, titleEl))
+      : [mark ? h('div', { class: 'dhead__mark' }, mark) : null, tagsEl, titleEl],
     factsNode || null,
     nodes(after).length ? h('div', { class: 'dhead__after' }, after) : null);
 }

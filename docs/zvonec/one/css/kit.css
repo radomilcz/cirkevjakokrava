@@ -208,7 +208,19 @@ a { color: inherit; text-decoration: none; }
 .avatar--s { width: var(--avatar-s); height: var(--avatar-s); font-size: 12px; }
 .avatar--l { width: var(--avatar-l); height: var(--avatar-l); font-size: 22px; }
 .avatar--xl { width: var(--avatar-xl); height: var(--avatar-xl); font-size: 24px; }
+.avatar--xxl { width: 128px; height: 128px; font-size: 40px; }
+/* the head's avatar of who may change the photo: a button with a small + badge */
+.photo-btn { position: relative; display: inline-grid; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.photo-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.photo-btn__badge {
+  position: absolute; right: -2px; bottom: -2px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--act); color: var(--on-act); box-shadow: 0 0 0 3px var(--ground); font-size: 18px; line-height: 1; font-weight: var(--weight-strong);
+}
+.photo-btn:hover .avatar { filter: brightness(.96); }
+.photo-field { display: grid; justify-items: start; gap: var(--space-3); }
 .avatar--me { background: var(--tint-2); color: var(--ink); }
+.avatar--photo { background: var(--tint); }
+.avatar--photo > img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar--team { border-radius: var(--shape-team); }
 .avatar[data-status="declined"] { background: var(--avatar-bg); color: var(--ink-2); }
 .avatars { display: inline-flex; }
@@ -777,6 +789,12 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .dhead__mark { margin-bottom: var(--space-4); }
 .dhead__tags { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-bottom: var(--space-2); }
 .dhead__title { font-size: var(--type-title-pane); line-height: var(--lh-title-pane); }
+.dhead--side { justify-items: stretch; }
+/* a person: the avatar left of the tags and the name, both centred on it */
+.dhead__id { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+.dhead__id > .dhead__mark { margin-bottom: 0; flex: none; }
+.dhead__name { display: grid; justify-items: start; min-width: 0; }
+.dhead__name > .dhead__title { overflow-wrap: break-word; max-width: 100%; }
 .detail--page .dhead__title { font-size: var(--type-title); line-height: var(--lh-title); }
 .dhead > .facts { justify-self: stretch; margin-top: var(--gap-y); }
 .dhead__after { justify-self: stretch; margin-top: var(--space-5); }

@@ -186,7 +186,7 @@ base-uri 'none'; form-action 'none'
 | `data/groups.json` | `{ schema: 2, groups: [], roles: [], groupMembers: [] }` |
 | `data/events.json` | `{ schema: 2, eventTypes: [], events: [], series: [], formats: [], places: [], availability: [], servingLimits: [] }` |
 | `data/settings.json` | `{ schema: 2, settings: {…} }` |
-| `data/images/<name>` | Pictures. Name matches `/^[A-Za-z0-9][A-Za-z0-9._-]{0,80}\.(webp\|jpe?g\|png)$/`. The app creates `i-xxxxxxxx.webp\|jpg`, at most 1600 px, about 400 kB. Records reference the file name only. Sync never touches images. |
+| `data/images/<name>` | Pictures of meetings and templates (16 : 9, at most 1600 × 900) and people's photos (square, 512). Name matches `/^[A-Za-z0-9][A-Za-z0-9._-]{0,80}\.(webp\|jpe?g\|png)$/`. The app creates `i-xxxxxxxx.webp\|jpg`, at most 1600 px, about 400 kB. Records reference the file name only. Sync never touches images. |
 | `access.json` | `{ v: 2, logins: [] }`: sealed logins, no names. Published to Pages. |
 
 Serialisation: `JSON.stringify(json, null, 1) + "\n"`.
@@ -315,6 +315,7 @@ UI ranges: `maxPerMonth` 1–31 · `maxConsecutiveWeeks` 1–52 · `*DaysBefore`
 | `showInDirectory?` | `true` | Others may see phone and e-mail. Stored only with a phone or e-mail; never for a child. |
 | `needsReview?` | `true` | Quick card created while planning. Cleared when a last name is set or the card is archived. |
 | `note?` | string | Leaders only. |
+| `photo?` | `"i-xxxxxxxx.webp\|jpg"` | A square photo (512 px) in `data/images/`, shown in every avatar instead of the initials. Set by leaders or the person. Never public. |
 
 `membership.status`:
 
@@ -378,7 +379,9 @@ public?: boolean, description?, image? }`
 - `groupId` = „Pro koho“; empty = „Celý sbor“.
 - `note` = „Pro tým“: internal, never public.
 - `description` = „Popis pro web“. `public` = „Ukaž na webu“; only `true` publishes.
-- Cover image: the event's `image`, else its template's, else a generated arch cover in the kind's hue.
+- Cover image: the event's `image`, else its template's, else a generated arch cover in the kind's hue. An uploaded
+  picture is cut to its middle 16 : 9 and scaled to at most 1600 × 900 (`one/ui/cover-image.js`), so the same thumbnail
+  works in the Setkání band (shown whole, 16 : 9) and in a public listing; the generated cover stays a 96 strip.
 - `attendance` („Kolik lidí přišlo“, 0–999 each) is entered after the start. Zeros are dropped. Never per person.
 
 ### 5.10 need
@@ -1009,7 +1012,9 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
 - **Podrobný výpis** `#lide/vypis`: sortable table Jméno, Členství*, Domácnost, Telefon, E-mail, Skupiny,
   Narozeniny*, Poslední služba* (* leaders). Ticks + bulk bar „3 vybraní lidé“ [Zkopíruj e-maily] [Přidej do
   skupiny] [Stáhni seznam] [Zruš výběr]. Spans the frame; compact beside an open pane.
-- **Person detail** `#lide/<id>`: avatar 72; pills „ty“ / membership (leaders) / team pills; h1; birthday fact
+- **Person detail** `#lide/<id>`: avatar 72 left of the pills and the name (a button with a „+“ badge for leaders and
+  the person: sheet „Fotka“ – Vyber fotku / Vyber jinou / Odeber fotku, cut to a 512 square, „Uvidí ji jen přihlášení
+  ve Zvonci, na veřejný web se nedostane.“; the same on Můj účet); pills „ty“ / membership (leaders) / team pills; h1; birthday fact
   (leaders and self). Contact tiles [Zavolej] [SMS] [E-mail] L 52 (only those with data, never on my own card).
   Then: callouts (leaders: archive „Vrať z archivu“, missing data „Doplň“ / „Potvrď údaje“) · Co nesedí (leaders)
   · Příští služby · Kontakt [Uprav] („Kontakt vidí všichni / jen vedoucí.“) · Domácnost · Skupiny [+ Přidej] (skill

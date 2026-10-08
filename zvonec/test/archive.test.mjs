@@ -120,7 +120,7 @@ test('archive: „Vrať z archivu“ brings back the status before, else příte
 test('archive: deleting a card keeps the name in the past and drops everything else', () => {
   const d = data();
   const result = deletePersonKeepHistory(d, 'petr', { now: NOW });
-  assert.deepEqual(result, { name: 'Petr Novák', released: 1, kept: 3 });
+  assert.deepEqual(result, { name: 'Petr Novák', released: 1, kept: 3, photo: null });
   const byId = Object.fromEntries(d.events.map((e) => [e.id, e]));
   assert.deepEqual(byId.past.assignments[0], { id: 'a1', roleId: 'zvuk', personId: 'petr', status: 'confirmed', personName: 'Petr Novák' });
   assert.equal(byId.past.program[0].personName, 'Petr Novák');

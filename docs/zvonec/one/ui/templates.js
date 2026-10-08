@@ -17,6 +17,7 @@ import { formatById, formatNeeds, mergeNeeds } from '../../lib/program.js';
 import { rolesOf, roleById, groupById } from '../../lib/groups.js';
 import { placeById, placeTree } from '../../lib/places.js';
 import { saveImage, loadImageUrl, deleteImage } from '../../lib/store/store.js';
+import { prepareCover } from './cover-image.js';
 import { today, dayOf, weekday } from '../../lib/time.js';
 import {
   h, list, row, empty, pill, plural, toast, formSheet, confirmSheet, field, textInput, textArea, selectInput,
@@ -566,42 +567,8 @@ function itemSheet(program, index, redraw) {
 
 // ----- Na webu: the description and the picture -----
 
-const MAX_SIDE = 1600;
-const MAX_BYTES = 400 * 1024;
-const NOT_AN_IMAGE = 'Tohle není obrázek. Vyber fotku nebo grafiku (JPG, PNG, WebP).';
-
-/** A photo → { dataUrl, ext }: at most 1600 px on the long side, WebP (JPEG where the browser can't). */
-async function prepareImage(file) {
-  if (file.type && !file.type.startsWith('image/')) throw new Error(NOT_AN_IMAGE);
-  let bitmap;
-  try { bitmap = await createImageBitmap(file); } catch { throw new Error(NOT_AN_IMAGE); }
-  const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close?.();
-  let result = null;
-  for (const quality of [0.8, 0.65, 0.5]) {
-    let dataUrl = canvas.toDataURL('image/webp', quality);
-    let ext = 'webp';
-    if (!dataUrl.startsWith('data:image/webp')) {
-      // JPEG has no transparency: flatten onto white first (a property of the file, not a colour of the UI)
-      const flat = document.createElement('canvas');
-      flat.width = canvas.width;
-      flat.height = canvas.height;
-      const ctx = flat.getContext('2d');
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, flat.width, flat.height);
-      ctx.drawImage(canvas, 0, 0);
-      dataUrl = flat.toDataURL('image/jpeg', quality);
-      ext = 'jpg';
-    }
-    result = { dataUrl, ext };
-    if (dataUrl.length * 0.75 <= MAX_BYTES) break;
-  }
-  return result;
-}
+/** A photo → { dataUrl, ext }: its middle 16 : 9, at most 1600 × 900 (ui/cover-image.js). */
+const prepareImage = prepareCover;
 
 const imageInUse = (name, exceptTypeId) => S.data.events.some((e) => e.image === name) || S.data.eventTypes.some((t) => t.id !== exceptTypeId && t.image === name);
 async function dropImage(name, exceptTypeId) {
@@ -621,7 +588,7 @@ function webSheet(type) {
       button(has() ? 'Vyber jiný obrázek' : 'Nahraj obrázek', { variant: 'quiet', size: 's', icon: 'image', onclick: () => file.click() }),
       has() ? button('Odeber obrázek', { variant: 'quiet', size: 's', onclick: () => { img.pending = null; img.removed = true; draw(); } }) : null,
     ].filter(Boolean));
-    message.textContent = has() ? 'Větší obrázek Zvonec zmenší.' : 'Bez obrázku ukáže web jen název, den a místo.';
+    message.textContent = has() ? 'Zvonec z obrázku vyřízne prostředek na šířku (16 : 9), stejně ho uvidí i web.' : 'Bez obrázku ukáže web jen název, den a místo.';
     if (img.pending) { preview.replaceChildren(h('img', { src: img.pending.dataUrl, alt: '' })); preview.hidden = false; return; }
     preview.replaceChildren();
     preview.hidden = true;

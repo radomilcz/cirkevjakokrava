@@ -106,7 +106,7 @@ export function deletePersonKeepHistory(data, personId, { now }) {
   data.groupMembers = (data.groupMembers || []).filter((m) => m.personId !== personId);
   data.availability = (data.availability || []).filter((v) => v.personId !== personId);
   data.servingLimits = (data.servingLimits || []).filter((l) => l.personId !== personId && l.id !== personId);
-  return { name, released, kept };
+  return { name, released, kept, photo: person.photo || null };
 }
 
 /**

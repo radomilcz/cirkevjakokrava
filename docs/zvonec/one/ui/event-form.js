@@ -20,6 +20,7 @@ import {
 } from '../../lib/events.js';
 import { placeTree } from '../../lib/places.js';
 import { saveImage, deleteImage } from '../../lib/store/store.js';
+import { prepareCover, NOT_AN_IMAGE } from './cover-image.js';
 import { addDays, addMinutes, addMonths, dayOf, recurrences, timeOf, today, weekday } from '../../lib/time.js';
 import { cover, kindHue, placeText, backHref, forgetImageUrl } from './calendar-shared.js';
 import { askSeries } from './event-duties.js';
@@ -73,30 +74,10 @@ const groupOptions = () => [{ value: '', label: 'Celý sbor' }, ...(S.data.group
 
 // ---------- the picture ----------
 
-const MAX_IMAGE = 1600;
-const NOT_AN_IMAGE = 'Tohle není obrázek. Vyber fotku nebo grafiku (JPG, PNG, WebP).';
-
+/** A photo → { data, ext }: its middle 16 : 9, at most 1600 × 900 (ui/cover-image.js). */
 async function shrinkImage(file) {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error(NOT_AN_IMAGE));
-      image.src = url;
-    });
-    const scale = Math.min(1, MAX_IMAGE / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
-    canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
-    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-    let data = canvas.toDataURL('image/webp', 0.8);
-    let ext = 'webp';
-    if (!data.startsWith('data:image/webp')) { data = canvas.toDataURL('image/jpeg', 0.8); ext = 'jpg'; }
-    return { data, ext };
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+  const { dataUrl, ext } = await prepareCover(file);
+  return { data: dataUrl, ext };
 }
 
 const imageInUse = (name) => (S.data.events || []).some((e) => e.image === name) || (S.data.eventTypes || []).some((t) => t.image === name);
@@ -120,7 +101,7 @@ function imageField(state, previewEvent) {
     preview.replaceChildren(state.pending ? cover(ev, { url: state.pending.data, cls: 'ev-band' }) : cover({ ...ev, image: state.current || state.typeImage || undefined, typeId: undefined }, { cls: 'ev-band' }));
     pick.lastChild.textContent = state.pending || state.current || state.typeImage ? 'Vyměň obrázek' : 'Nahraj obrázek';
     remove.hidden = !(state.pending || own);
-    hint.textContent = state.pending || own ? 'Uloží se spolu se setkáním.' : state.typeImage ? 'Obrázek je ze šablony.' : 'Bez obrázku Zvonec nakreslí obálku v barvách sboru.';
+    hint.textContent = state.pending || own ? 'Zvonec z obrázku vyřízne prostředek na šířku (16 : 9). Uloží se spolu se setkáním.' : state.typeImage ? 'Obrázek je ze šablony.' : 'Bez obrázku Zvonec nakreslí obálku v barvách sboru.';
   }
   input.addEventListener('change', async () => {
     const file = input.files?.[0];
