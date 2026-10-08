@@ -29,7 +29,7 @@ import { addPersonSheet, householdSheet, bulkGroupSheet, deleteOverdueSheet } fr
 import { groupSheet } from './groups-forms.js';
 import { inviteSheet } from './access.js';
 import { personDetail, householdDetail } from './people-card.js';
-import { groupDetail, groupRow, groupRows, groupMatches, groupFilterGroups, shownGroups } from './groups.js';
+import { groupDetail, groupRow, groupRows, groupCards, groupMatches, groupFilterGroups, shownGroups } from './groups.js';
 
 const SEARCH = 'lide';                                   // one search for both views (survives a view switch)
 const WIDE_TABLE = window.matchMedia('(min-width: 900px)');   // Podrobný výpis needs room for its columns
@@ -263,7 +263,13 @@ function peopleBody({ openId } = {}) {
 function groupsBody({ openId } = {}) {
   const q = query();
   const rows = groupRows({ openId, query: q });
-  if (rows.length) return list(rows, { label: 'Skupiny' });
+  // rows below 900, cards from 900 (css/people.css shows one of the two; both are drawn, so crossing 900 needs no redraw)
+  if (rows.length) {
+    return [
+      h('div', { class: 'groups-rows' }, list(rows, { label: 'Skupiny' })),
+      h('div', { class: 'groups-cards' }, groupCards({ openId, query: q })),
+    ];
+  }
   const leader = can('leader');
   if (q) return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearch } });
   const all = (S.data.groups || []).filter((g) => !g.archived || (leader && filterState(GROUPS_FILTER).archiv));
@@ -412,7 +418,9 @@ function renderGroupsView({ groupId, personId } = {}) {
   const pane = !groupId ? null : personId
     ? personDetail(person, { frame: 'pane', back: toGroup, close: closeTo('#lide/skupiny') })
     : groupDetail(shownGroup, { frame: 'pane', close: closeTo('#lide/skupiny') });
-  return peopleScreen({ view: 'skupiny', body: () => groupsBody({ openId: groupId }), pane });
+  // ≥ 1200 the cards are a view made for the width: with nothing open they span the frame (like Měsíc and the table);
+  // with a group open they keep the list track and the pane sits beside them
+  return peopleScreen({ view: 'skupiny', body: () => groupsBody({ openId: groupId }), pane, wide: split && !groupId });
 }
 
 /** #lide/vypis[/<person>] (leaders ≥ 900, everyone ≥ 1200) – narrower, the simple list. */

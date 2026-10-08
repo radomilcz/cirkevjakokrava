@@ -1,13 +1,14 @@
 // Zvonec One – Skupiny (the second view of Lidé, #lide/skupiny) and Skupina (the ONE detail, DESIGN §5.2).
-//   groupsBody({ openId, query })   D of the Skupiny view: sections Týmy · Skupinky · Vedení (subheads), rows with the team
-//                                    mark, „9 lidí · vedou …“ and a „ty“ pill when I am in it; V archivu (Filtr, leaders)
+//   groupRows / groupCards           D of the Skupiny view: sections Týmy · Skupinky · Vedení (subheads); below 900 rows
+//                                    with the team mark, „9 lidí · vedou …“ and a „ty“ pill when I am in it, from 900
+//                                    Next's cards (roles, avatars); V archivu (Filtr, leaders) stays rows
 //   groupDetail(group, { frame, back, close, openPersonHref })
 //                                    team mark 56 → kind pill → name → „9 lidí · vedou …“; Role (teams, leaders) [+ Přidej];
 //                                    Lidé [+ Přidej] (rows with call); Příští služby / Příští setkání (six weeks)
 // Filtr (key 'skupiny'): Druh · Jen moje · Ukaž i archiv (leaders). Members read names, leaders and the schedule only.
 
 import {
-  h, icon, row, list, subhead, teamMark, avatar, pill, detail, detailHead, section, sectionAction, facts, eventRow,
+  h, icon, row, list, subhead, teamMark, avatar, avatars, pill, detail, detailHead, section, sectionAction, facts, eventRow,
   fill, rowLink, joinMeta, plural, quiet, personName, peoplePicker, filterState, missingItem,
 } from './kit.js';
 import { S, can, myId } from '../../ui/state.js';
@@ -88,6 +89,34 @@ export function groupRows({ openId, query = '' } = {}) {
   for (const { kind, items } of grouped(active)) out.push(subhead(GROUP_WORDS[kind].kinds), ...items.map((g) => groupRow(g, { open: g.id === openId, href: g.id === openId ? '#lide/skupiny' : null })));
   if (archived.length) out.push(subhead('V archivu'), ...archived.map((g) => groupRow(g, { open: g.id === openId, href: g.id === openId ? '#lide/skupiny' : null })));
   return out;
+}
+
+/**
+ * The cards of the Skupiny view (≥ 900, Next's cards – the owner liked them): per kind a subhead and a grid of cards
+ * (auto-fill, min 260); a card is one link – team mark, name, „ty“; „9 lidí · vedou …“; the roles (teams) or the
+ * description in at most two lines; the people as stacked avatars. The open one: pick fill + an outline (a rounded
+ * block never gets a side bar). The archive (Filtr, leaders) stays a quiet row list under them.
+ */
+export function groupCards({ openId, query = '' } = {}) {
+  const { active, archived } = shownGroups(query);
+  const card = (g) => {
+    const open = g.id === openId;
+    const people = peopleIn(g).map((x) => x.p);
+    const roles = g.kind === 'team' ? rolesOf(S.data, g.id) : [];
+    const about = roles.length ? roles.map((r) => r.name).join(' · ') : g.description || null;
+    return h('a', {
+      class: 'group-card', href: open ? '#lide/skupiny' : `#lide/skupiny/${g.id}`, 'aria-current': open ? 'true' : null,
+      dataset: { open: open ? '' : null }, 'aria-label': `${g.name}${isMine(g) ? ', jsi v ní' : ''} – ${groupMeta(g)}`,
+    },
+    h('span', { class: 'group-card__head' }, teamMark(g), h('span', { class: 'group-card__name' }, g.name), isMine(g) ? pill('ty') : null),
+    h('span', { class: 'group-card__meta' }, groupMeta(g)),
+    about ? h('span', { class: 'group-card__about' }, about) : null,
+    people.length ? avatars(people, { max: 6 }) : null);
+  };
+  return [
+    grouped(active).map(({ kind, items }) => [subhead(GROUP_WORDS[kind].kinds), h('div', { class: 'group-cards', role: 'list' }, items.map((g) => h('div', { role: 'listitem', class: 'group-cards__item' }, card(g))))]),
+    archived.length ? [subhead('V archivu'), list(archived.map((g) => groupRow(g, { open: g.id === openId, href: g.id === openId ? '#lide/skupiny' : null })), { label: 'V archivu' })] : null,
+  ].flat(2).filter(Boolean);
 }
 
 // ---------- Skupina ----------

@@ -42,6 +42,43 @@
 }
 
 .group-about { max-width: 60ch; color: var(--ink-2); }
+
+/* ---------- Skupiny: rows below 900, Next's cards from 900 (people.js draws both, one shows) ---------- */
+@media (max-width: 899.98px) { .groups-cards { display: none; } }
+@media (min-width: 900px) { .groups-rows { display: none; } }
+.groups-cards > .subhead:first-child, .groups-rows > .list:first-child > .subhead:first-child { padding-top: 0; }
+.groups-cards > .list { margin: 0 calc(-1 * var(--space-3)); }
+/* a grid of blocks: min 260 a card, 12 apart (CODEX §4) */
+.group-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--gap-y); }
+.group-cards__item { display: grid; min-width: 0; }
+/* a card is one link, a block (r20): team mark + name + „ty“ · 8 · „9 lidí · vedou …“ · the roles or the
+   description in two lines · the people. Hover lights the whole card; the open one has the pick fill and an
+   outline in --mark (no side bar on a rounded block) */
+.group-card {
+  display: grid; align-content: start; gap: var(--space-2); min-width: 0; min-height: 152px; padding: var(--space-5);
+  border-radius: var(--shape-block); background: var(--card); box-shadow: inset 0 0 0 1px var(--edge); color: var(--ink);
+  transition: background-color var(--dur-state) var(--ease), box-shadow var(--dur-state) var(--ease);
+}
+.group-card:hover { background: var(--wash); box-shadow: inset 0 0 0 1px var(--edge-control); }
+.group-card:active { background: var(--press); }
+.group-card[data-open] { background: var(--pick); box-shadow: inset 0 0 0 2px var(--mark); }
+.group-card[data-open]:hover { background: var(--pick-hover); }
+.group-card[data-open] .group-card__meta, .group-card[data-open] .group-card__about { color: var(--ink); }
+.group-card__head { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.group-card__head > :is(.avatar, .pill) { flex: none; }
+.group-card__name {
+  flex: 1; min-width: 0; font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); overflow-wrap: break-word;
+}
+.group-card__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.group-card__about {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2);
+}
+.group-card > .avatars { margin-top: var(--space-1); }
+.group-card .avatars > .avatar { box-shadow: 0 0 0 2px var(--card); }
+.group-card .avatars > .avatar + .avatar { margin-left: -4px; }   /* the initials stay whole */
+.group-card:hover .avatars > .avatar { box-shadow: 0 0 0 2px var(--ground); }
+.group-card[data-open] .avatars > .avatar { box-shadow: 0 0 0 2px var(--pick); }
 .dhead__after > .map-link { display: inline-flex; }
 .person-note { white-space: pre-wrap; overflow-wrap: anywhere; }
 .person-warnings { display: grid; gap: var(--gap-y); }
