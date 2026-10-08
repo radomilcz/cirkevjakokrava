@@ -63,7 +63,10 @@ HEAD_END = '<!--/head-->'
 
 PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS']  # nahradí se až po Jinja
 BLOKY = {'tagline': '<p class="lead">{}</p>', 'nadpis': '<h3>{}</h3>',   # bloky předmluvy (druh → sazba)
-         'odstavec': '<p>{}</p>', 'otazka': '<p class="ask">{}</p>'}
+         'odstavec': '<p>{}</p>', 'otazka': '<p class="ask">{}</p>',
+         'citat': '<blockquote class="verse">{}</blockquote>'}           # jen v rozkliku: verš s odkazem
+ODKAZ = re.compile(r'\[([^\]]+)\]\((https?://[^)\s]+)\)')
+ZLOM = '\ue001'        # konec řádku uvnitř citátu (verš / odkaz pod ním)
 # Otisky (polohy z Figmy, tabulka PRINT v JS). Slajd s polem Otisk = „automaticky“ dostane další z řady.
 OTISKY_AUTO = {                                            # řady podle typu; soused nikdy nedostane stejný
     'vyrok': ['01', '02', '03', '04'],
@@ -100,8 +103,11 @@ def vyrok(radek):
 ESC = '\ue000'          # hvězdička, kterou editor escapoval (\*) – nesmí se z ní stát kurzíva
 
 
-def bloky(md):
+def bloky(md, rozklik=False):
     """Předmluva z editoru Pages CMS (Markdown) → bloky na web.
+
+    V rozkliku (rozklik=True) je navíc citát (> …) jako verš a v něm odkaz [text](https://…),
+    obvykle na místo v Bibli. Řádky citátu zůstanou pod sebou.
 
     Nadpis 1–2 je nadpis, nadpis 3 a menší tagline, citace zvýrazněná otázka, zbytek odstavce.
     Co manifest nesází (seznamy, obrázky, tabulky, odkazy, tučné), build odmítne – ať se na web
@@ -119,14 +125,14 @@ def bloky(md):
         if m:
             druh, radky[0] = ('nadpis' if len(m.group(1)) <= 2 else 'tagline'), m.group(2)
         elif prvni.startswith('>'):
-            druh, radky = 'otazka', [re.sub(r'^\s*>\s?', '', r) for r in radky]
+            druh, radky = ('citat' if rozklik else 'otazka'), [re.sub(r'^\s*>\s?', '', r) for r in radky]
         else:
             druh = 'odstavec'
-        text = ' '.join(r.strip().rstrip('\\').strip() for r in radky)
+        text = (ZLOM if druh == 'citat' else ' ').join(r.strip().rstrip('\\').strip() for r in radky)
         text = re.sub(r'\\([\\`*_{}\[\]()#+\-.!>~|])', lambda z: ESC if z.group(1) == '*' else z.group(1), text)
         if '**' in text or '__' in text:
             chyba(f'Předmluva: tučné písmo manifest nepoužívá, stačí kurzíva – „{text[:40]}…“')
-        if re.search(r'\[[^\]]*\]\([^)]*\)', text):
+        if re.search(r'\[[^\]]*\]\([^)]*\)', text) and not (rozklik and ODKAZ.search(text)):
             chyba(f'Předmluva: odkazy manifest nesází – „{text[:40]}…“')
         text = re.sub(r'(?<![\w])_([^_]+)_(?![\w])', r'*\1*', text)      # _kurzíva_ → *kurzíva*
         vysledek.append({'druh': druh, 'text': text})
@@ -134,7 +140,10 @@ def bloky(md):
 
 
 def blok(b):
-    return Markup(BLOKY[b['druh']].format(txt(b['text'])).replace(ESC, '*'))
+    html = BLOKY[b['druh']].format(txt(b['text'])).replace(ESC, '*').replace(ZLOM, '<br>')
+    # odkaz až po escapování textu; adresa se escapuje znovu do atributu
+    html = ODKAZ.sub(lambda m: f'<a href="{escape(Markup(m.group(2)).unescape())}" target="_blank" rel="noopener">{m.group(1)}</a>', html)
+    return Markup(html)
 
 
 def povinne(f):

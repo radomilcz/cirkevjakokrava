@@ -278,6 +278,18 @@ body{
 /* bez osiřelých slov na konci odstavce a bez rozsypaných řádků */
 .detail .essay p{text-wrap:pretty}
 .detail .essay .lead{font-weight:700}
+/* verš v rozkliku: odsazený linkou, odkaz na Bibli pod ním drobněji a se šipkou */
+.detail .essay .verse{
+  margin:2.2em 0 1.25em;padding-left:.9em;border-left:.12em solid color-mix(in srgb,currentColor 45%,transparent);
+}
+.detail .essay .verse a{
+  display:inline-block;margin-top:.5em;font-size:.72em;color:inherit;
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.3em;
+  text-decoration-color:color-mix(in srgb,currentColor 40%,transparent);transition:text-decoration-color .35s;
+}
+.detail .essay .verse a::after{content:"→";display:inline-block;margin-left:.35em;transition:transform .5s var(--ease)}
+.detail .essay .verse a:hover{text-decoration-color:currentColor}
+.detail .essay .verse a:hover::after{transform:translateX(.25em)}
 .detail .zpet{
   margin:clamp(3rem,12vh,8rem) 0 clamp(2rem,8vh,5rem) min(6.75vw,130px);
   font-family:var(--body);font-weight:400;font-size:clamp(1rem,1.55vw,1.875rem);

@@ -170,7 +170,7 @@
     </div>
     <h2 class="detail-t" id="d-{{ x.id }}-t">{% for v in (x.get('detail_odkaz') or x.nadtitulek)|vety %}<span>{{ v|txt }}</span> {% endfor %}</h2>
     <div class="essay">
-{%- for b in x.detail|bloky %}
+{%- for b in x.detail|bloky(True) %}
       {{ b|blok }}
 {%- endfor %}
     </div>
