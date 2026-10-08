@@ -188,3 +188,7 @@
 @media (min-width: 600px) {
   .skill-row { grid-template-columns: 140px minmax(0, 1fr); align-items: center; gap: var(--gap-y); }
 }
+
+/* „Kdo vede“ in the group's sheet: the people as chips, then „+ Přidej vedoucího“ 12 under them, as wide as its words */
+.leaders-field .chips { flex-wrap: wrap; }
+.leaders-field > .btn, .leaders-field .btn { justify-self: start; width: auto; margin-top: var(--gap-y); }
