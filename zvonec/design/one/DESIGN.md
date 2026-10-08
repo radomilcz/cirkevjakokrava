@@ -1,5 +1,10 @@
 # Zvonec One: the design
 
+> **Update – Role with its people (2026-10-08).** „Kdo co umí“ (people × roles) needed a sideways scroll in a pane. The
+> owner chose variant B: the team's Role section now shows, per role, its name and count („umí to jen 1“ amber) and
+> the people as chips – umí on the ok tint, učí se outlined – with a menu on each chip (Umí to / Učí se to / Neumí to)
+> and + Přidej (the team's people who cannot do it yet). The table is gone; it works on a phone too.
+
 > **Update – Lidé: Seznam | Tabulka (2026-10-08).** The table no longer opens by itself on a desktop and is no longer
 > picked in ⋯: Lidé has the same quiet switch as Kalendář at the right of the search row – Seznam | Tabulka (leaders
 > ≥ 900, everyone ≥ 1200), remembered in the browser; #lide opens Seznam until Tabulka is chosen. „Podrobný výpis“

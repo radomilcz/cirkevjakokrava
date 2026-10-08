@@ -9,20 +9,20 @@
 
 import {
   h, icon, row, list, subhead, teamMark, avatar, avatars, pill, detail, detailHead, section, sectionAction, facts, eventRow,
-  fill, rowLink, joinMeta, plural, quiet, personName, peoplePicker, filterState, missingItem, table, isPhone,
+  fill, rowLink, joinMeta, plural, quiet, personName, peoplePicker, filterState, missingItem, openMenu,
 } from './kit.js';
-import { S, can, myId } from './state.js';
-import { personById, comparePeople } from '../lib/people.js';
-import { rolesOf, membersOf, memberRecord, skillMatrix } from '../lib/groups.js';
+import { S, can, myId, change } from './state.js';
+import { personById, comparePeople, displayName, fullName } from '../lib/people.js';
+import { rolesOf, membersOf, memberRecord, skillMatrix, setSkill } from '../lib/groups.js';
 import { needsOf } from '../lib/events.js';
 import { placesOf } from '../lib/places.js';
 import { today, addDays, dayOf, prettyTime } from '../lib/time.js';
 import {
   groupWords, leadersLine, compareGroups, peopleCount, GROUP_WORDS, GROUPS_FILTER, fold, isFormer, seesContact, telHref,
-  capital, andJoin,
+  capital,
 } from './people-common.js';
 import { skillPills } from './people-card.js';
-import { groupSheet, toggleArchive, deleteGroup, addToGroup, roleSheet, memberSheet, cycleSkill, SKILL_WORDS } from './groups-forms.js';
+import { groupSheet, toggleArchive, deleteGroup, addToGroup, roleSheet, SKILL_WORDS } from './groups-forms.js';
 import { addPersonSheet } from './people-forms.js';
 
 const WEEKS_AHEAD = 6;
@@ -143,63 +143,62 @@ function pickPerson(group) {
   });
 }
 
-/** Role (teams, leaders): role → who can it; a click edits the role. */
-function rolesSection(group) {
-  if (group.kind !== 'team' || !can('leader')) return null;
-  const { roles } = skillMatrix(S.data, { groupId: group.id });
-  const names = (role, level) => peopleIn(group).filter(({ m }) => m.roles?.[role.id] === level).map(({ p }) => personName(p));
-  const rows = roles.map(({ role, trained }) => {
-    const able = names(role, 'trained');
-    const learn = names(role, 'learning');
-    return row({
-      title: role.name,
-      meta: joinMeta([able.length ? `umí ${andJoin(able)}` : 'nikdo to neumí', learn.length ? `učí se ${andJoin(learn)}` : null]),
-      note: trained <= 1 ? h('span', { class: 'row__note', dataset: { tone: 'wait' } }, icon('alert', { size: 's' }), trained ? 'Umí to jen jeden člověk' : 'Zatím to nikdo neumí') : null,
-      wrap: true, chevron: true,
-      onclick: () => roleSheet(group, role),
-      label: `Uprav roli ${role.name}`,
-    });
-  });
-  return section({
-    title: 'Role', cls: 'group-section', id: 'role',
-    action: sectionAction('Přidej', { add: true, onclick: () => roleSheet(group), aria: 'Přidej roli' }),
-    body: rows.length ? list(rows, { label: 'Role' }) : quiet('Tým zatím nemá žádnou roli. Bez rolí se z něj nesloží rozpis.'),
+/** „Martina D.“ – a chip's name (the full name is its label). */
+const shortName = (p) => (p.lastName ? `${p.nickname || p.firstName} ${p.lastName[0]}.` : personName(p));
+
+/** A person's chip in a role: green when they can do it, outlined while learning; a tap offers the other levels. */
+function skillChip(group, role, p, level) {
+  const name = fullName(p);
+  const chip = h('button', {
+    type: 'button', class: 'skill-chip', dataset: { level }, title: name, 'aria-haspopup': 'menu',
+    'aria-label': `${name}, ${role.name}: ${SKILL_WORDS[level]}. Změň.`,
+  }, avatar(p, { size: 'xs', me: p.id === myId() }), h('span', { class: 'skill-chip__name' }, shortName(p)),
+  level === 'learning' ? h('span', { class: 'skill-chip__level' }, '· učí se') : null);
+  const set = (next) => () => { setSkill(S.data, p.id, role.id, next || null); change(`${displayName(p)} ${role.name}: ${SKILL_WORDS[next]}`); };
+  chip.addEventListener('click', () => openMenu([
+    level !== 'trained' ? { label: 'Umí to', icon: 'check', onclick: set('trained') } : null,
+    level !== 'learning' ? { label: 'Učí se to', icon: 'clock', onclick: set('learning') } : null,
+    { label: 'Neumí to', icon: 'minus', onclick: set('') },
+  ].filter(Boolean), { anchor: chip, title: `${name} – ${role.name}`, label: `${name} – ${role.name}` }));
+  return chip;
+}
+
+/** + Přidej in a role: the team's people who cannot do it yet; the one picked can (a tap on the chip makes it „učí se“). */
+function addSkill(group, role) {
+  const people = peopleIn(group).filter(({ m }) => !m.roles?.[role.id]).map(({ p }) => p).sort(comparePeople);
+  peoplePicker({
+    title: `Kdo umí ${role.name}?`,
+    meta: plural(people.length, 'člověk z týmu', 'lidé z týmu', 'lidí z týmu'),
+    pools: [{ id: 'team', label: group.name, items: people.map((p) => ({ person: p })) }],
+    everyone: people,
+    onPick: (p) => { setSkill(S.data, p.id, role.id, 'trained'); change(`${displayName(p)} ${role.name}: umí`); },
   });
 }
 
 /**
- * Kdo co umí (teams, leaders, from 600 up; Next's matrix): people × roles. A cell steps neumí → učí se → umí, a role's
- * head opens the role (and says „umí to jen 1“ / „nikdo to neumí“), a name opens what the person does in the team.
+ * Role (teams, leaders): each role with who can do it – its name (a tap edits the role) and „umí to 3“ / „umí to jen 1“
+ * / „nikdo to neumí“, then the people as chips (umí green, učí se outlined; a tap changes it) and + Přidej. One place
+ * for roles and skills: it replaced the people × roles table („Kdo co umí“), which never fit a pane (the owner chose
+ * this, variant B). What one person can do stays in Lidé below (skill pills) and in the member sheet.
  */
-function skillSection(group) {
-  if (group.kind !== 'team' || !can('leader') || isPhone()) return null;
+function rolesSection(group) {
+  if (group.kind !== 'team' || !can('leader')) return null;
   const { roles } = skillMatrix(S.data, { groupId: group.id });
   const people = members(group);
-  if (!roles.length || !people.length) return null;
-  const head = h('tr', {},
-    h('th', { scope: 'col', class: 'skills__who' }, 'Člověk'),
-    roles.map(({ role, trained }) => h('th', { scope: 'col', class: 'skills__role' },
-      h('button', { type: 'button', class: 'skills__role-btn', onclick: () => roleSheet(group, role), 'aria-label': `Uprav roli ${role.name}` }, role.name),
-      h('span', { class: 'skills__count', dataset: { scarce: trained <= 1 ? '' : null } },
-        trained ? (trained === 1 ? 'umí to jen 1' : `umí to ${trained}`) : 'nikdo to neumí'))));
-  const rows = people.map(({ m, p }) => h('tr', {},
-    h('th', { scope: 'row', class: 'skills__who' },
-      h('button', { type: 'button', class: 'skills__person', onclick: () => memberSheet(group, p.id), 'aria-label': `${personName(p)}: co dělá v týmu` },
-        avatar(p, { size: 's', me: p.id === myId() }), h('span', { class: 'skills__name' }, personName(p)))),   // who leads: Lidé says
-    roles.map(({ role }) => {
-      const level = m.roles?.[role.id] || '';
-      return h('td', { class: 'skills__cell' }, h('button', {
-        type: 'button', class: 'skill', dataset: { level: level || 'none' },
-        'aria-label': `${personName(p)}, ${role.name}: ${SKILL_WORDS[level]}. Změň.`,
-        onclick: () => cycleSkill(p, role),
-      }, level === 'trained' ? [icon('check', { size: 's' }), 'umí'] : level === 'learning' ? 'učí se' : h('span', { 'aria-hidden': 'true' }, '–')));
-    })));
+  const blocks = roles.map(({ role, trained }) => {
+    const at = (level) => people.filter(({ m }) => m.roles?.[role.id] === level).map(({ p }) => skillChip(group, role, p, level));
+    return h('div', { class: 'role-block' },
+      h('div', { class: 'role-block__head' },
+        h('button', { type: 'button', class: 'role-block__name', onclick: () => roleSheet(group, role), 'aria-label': `Uprav roli ${role.name}` }, role.name),
+        h('span', { class: 'role-block__count', dataset: { scarce: trained <= 1 ? '' : null } },
+          trained ? (trained === 1 ? 'umí to jen 1' : `umí to ${trained}`) : 'nikdo to neumí')),
+      h('div', { class: 'role-block__chips' }, ...at('trained'), ...at('learning'),
+        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => addSkill(group, role), 'aria-label': `Přidej, kdo umí ${role.name}` }, icon('plus', { size: 's' }), 'Přidej')));
+  });
   return section({
-    title: 'Kdo co umí', cls: 'group-section', id: 'umi',
-    body: [
-      table({ label: `Kdo co umí v týmu ${group.name}`, cls: 'skills', wrapCls: 'skills-wrap', region: true, head, rows }),
-      h('p', { class: 'meta skills__hint' }, 'Klepni na políčko a změníš, co kdo umí: neumí → učí se → umí.'),
-    ],
+    title: 'Role', cls: 'group-section', id: 'role',
+    action: sectionAction('Přidej', { add: true, onclick: () => roleSheet(group), aria: 'Přidej roli' }),
+    body: blocks.length ? h('div', { class: 'role-blocks' }, blocks) : quiet('Tým zatím nemá žádnou roli. Bez rolí se z něj nesloží rozpis.'),
   });
 }
 
@@ -319,7 +318,6 @@ export function groupDetail(group, { frame = 'pane', back, close, personHref } =
         after: group.description ? h('p', { class: 'text group-about' }, group.description) : null,
       }),
       rolesSection(group),
-      skillSection(group),
       peopleSection(group, href),
       eventsSection(group),
     ].filter(Boolean),

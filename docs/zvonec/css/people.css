@@ -198,34 +198,33 @@
 .leaders-field .chips { flex-wrap: wrap; }
 .leaders-field > .btn, .leaders-field .btn { justify-self: start; width: auto; margin-top: var(--gap-y); }
 
-/* ---------- Kdo co umí (a team's detail, leaders, ≥ 600): people × roles, a cell steps neumí → učí se → umí ---------- */
-.skills-wrap { position: relative; }
-.skills { min-width: 100%; }
-.skills :is(th, td) { padding: 6px var(--space-1); text-align: center; vertical-align: middle; }
-.skills thead th { vertical-align: bottom; padding-bottom: var(--space-2); }
-.skills .skills__who { text-align: left; min-width: 180px; position: sticky; left: 0; z-index: 1; background: var(--card, var(--ground)); }
-.skills__role-btn {
-  display: block; margin: 0 auto; padding: 4px 8px; border: 0; border-radius: var(--radius-s); background: none;
-  color: var(--ink); font: inherit; font-weight: var(--weight-strong); white-space: nowrap; cursor: pointer;
+/* ---------- Role (a team's detail, leaders): each role, its count, the people as chips, + Přidej ---------- */
+.role-blocks { display: grid; }
+.role-block { display: grid; gap: var(--space-2); padding: var(--space-3) 0; }
+.role-block + .role-block { border-top: 1px solid var(--hairline); }
+.role-block:first-child { padding-top: 0; }
+.role-block__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-width: 0; }
+.role-block__name {
+  min-height: var(--control-s); margin-left: calc(-1 * var(--space-2)); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-s);
+  background: none; color: var(--ink); font: inherit; font-weight: var(--weight-strong); text-align: left; cursor: pointer;
 }
-.skills__role-btn:hover { background: var(--wash); }
-.skills__count { display: block; font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-regular); color: var(--ink-2); white-space: nowrap; }
-.skills__count[data-scarce] { color: var(--wait-ink); }
-.skills__person {
-  display: inline-flex; align-items: center; gap: var(--space-2); max-width: 100%; min-height: var(--control-m); padding: 0 var(--space-2);
-  margin-left: calc(-1 * var(--space-2)); border: 0; border-radius: var(--radius-m); background: none; color: var(--ink); font: inherit;
-  font-weight: var(--weight-strong); text-align: left; cursor: pointer;
+.role-block__name:hover { background: var(--wash); }
+.role-block__count { flex: none; font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); }
+.role-block__count[data-scarce] { color: var(--wait-ink); font-weight: var(--weight-strong); }
+.role-block__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+/* a chip: 32 high (hit 40), avatar 24 inside; umí = the ok tint, učí se = an outline, + Přidej = quieter still */
+.skill-chip {
+  position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; max-width: 100%; padding: 0 12px 0 4px;
+  border: 0; border-radius: var(--shape-pill); background: var(--ok-fill); color: var(--ok-ink); font: inherit;
+  font-size: var(--type-meta); font-weight: var(--weight-strong); cursor: pointer; transition: filter var(--dur-state) var(--ease);
 }
-.skills__person:hover { background: var(--wash); }
-.skills__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.skill {
-  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 76px; min-height: var(--control-s);
-  padding: 0 10px; border: 0; border-radius: var(--shape-pill); background: transparent; color: var(--ink-3); font: inherit;
-  font-size: var(--type-meta); cursor: pointer; transition: background-color var(--dur-state) var(--ease);
-}
-.skill::after { content: ""; position: absolute; inset: -4px 0; }
-.skill:hover { background: var(--wash); }
-.skill[data-level="trained"] { background: var(--ok-fill); color: var(--ok-ink); font-weight: var(--weight-strong); }
-.skill[data-level="trained"] > .icon { width: 16px; height: 16px; margin-left: -2px; }
-.skill[data-level="learning"] { color: var(--ink); box-shadow: inset 0 0 0 1px var(--edge-control); }
-.skills__hint { margin-top: var(--space-2); }
+.skill-chip::after { content: ""; position: absolute; inset: -4px 0; }
+.skill-chip:hover { filter: brightness(.96); }
+.skill-chip:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.skill-chip > .avatar { flex: none; }
+.skill-chip__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.skill-chip__level { flex: none; font-weight: var(--weight-regular); }
+.skill-chip[data-level="learning"] { background: none; color: var(--ink); font-weight: var(--weight-regular); box-shadow: inset 0 0 0 1px var(--edge-control); }
+.skill-chip[data-level="learning"]:hover { filter: none; background: var(--wash); }
+.skill-chip--add { gap: 4px; padding: 0 12px 0 8px; background: none; color: var(--ink-2); font-weight: var(--weight-regular); box-shadow: inset 0 0 0 1px var(--hairline); }
+.skill-chip--add:hover { filter: none; background: var(--wash); color: var(--ink); }

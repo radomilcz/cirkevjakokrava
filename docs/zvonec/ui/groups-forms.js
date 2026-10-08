@@ -260,14 +260,6 @@ export function addToGroup(group, person) {
   else toast(`${personName(person)} je ${groupWords(group).in} ${group.name}.`, { action: () => { removeMember(S.data, group.id, person.id); change(`odebráno: ${displayName(person)} (${group.name})`); } });
 }
 
-/** One skill step on the matrix (neumí → učí se → umí → neumí), with „Vrátit“. */
-export function cycleSkill(person, role) {
-  const before = memberRecord(S.data, role.groupId, person.id)?.roles?.[role.id] || '';
-  const next = { '': 'learning', learning: 'trained', trained: '' }[before];
-  setSkill(S.data, person.id, role.id, next || null);
-  change(`${displayName(person)} ${role.name}: ${SKILL_WORDS[next]}`);
-}
-
 // ---------- role ----------
 
 /** Roles this one may be combined with (symmetric – either side may list it). */

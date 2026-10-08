@@ -17,7 +17,7 @@ people     people, households, membership, birthdays,     imports: nothing
            missing data
 places     places, rooms inside buildings                 imports: nothing
 groups     groups, roles (duties a team covers), members, imports: people
-           skill matrix („Kdo co umí“)
+           skills per role (Role: who can do it, who learns it)
 events     event types (templates), events, series,       imports: people, groups
            program, assignments, formats, availability,
            serving limits, fill ratio
