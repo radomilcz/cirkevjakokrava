@@ -343,7 +343,8 @@ from its people.
 `{ id: "r…", groupId, name, count, essential?: true, adultsOnly?: true, childcare?: true,
 window?: { startMin, endMin? }, combinableWith?: [roleId] }`
 - `groupId` must be a `team`. `count`: integer ≥ 1 (UI 1–10), the default people per event.
-- `essential` „Bez toho to nepůjde“ · `adultsOnly` „Jen pro dospělé“ · `childcare` „Je s dětmi“.
+- `essential` „Bez toho to nepůjde“ · `adultsOnly` „Jen pro dospělé“ · `childcare` „Stará se o děti“ (hint „Kdo má tuhle roli, je během setkání s dětmi. Zvonec hlídá, aby u nich
+  byli aspoň dva dospělí.“; it was „Je s dětmi“, which read as a property of the event).
 - `window` „Jen část setkání“: minutes from the event start. `startMin` −60..240; `endMin` 0..300, where 0 or
   missing = until the end; `endMin > startMin`.
 - `combinableWith` „Jde naráz s“: a pair is allowed if either side lists it; the UI writes both sides.
@@ -1062,7 +1063,7 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
 - **Member sheet** (title = person, subtitle = group): „Co umí“ per role (Neumí · Učí se · Umí); switch „Vede tým“
   / „Vede skupinku“ / „Předsedá“; danger „Odeber z týmu“.
 - **Role sheet** „Nová role“ / „Úprava role“: Název, Kolik lidí („Na jedno setkání.“), „Bez toho to nepůjde“;
-  Další možnosti: Jen pro dospělé · Je s dětmi · Jen část setkání (Od / Do minutes) · „Jde naráz s“.
+  Další možnosti: Jen pro dospělé · Stará se o děti · Jen část setkání (Od / Do minutes) · „Jde naráz s“.
 
 ### 9.7 Šablony `#sablony` (leaders)
 - A: „Šablony“ · [Přidej šablonu]. B: „Hledej šablonu“ + Filtr: Účel · Jen na webu · Ukaž i archiv.

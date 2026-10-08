@@ -303,7 +303,7 @@ export function roleSheet(group, role = null) {
       switchRow({ label: 'Bez toho to nepůjde', hint: 'Prázdná role týden před setkáním je chyba.', name: 'essential', checked: !!role?.essential }),
       disclosure([
         switchRow({ label: 'Jen pro dospělé', name: 'adultsOnly', checked: !!role?.adultsOnly }),
-        switchRow({ label: 'Je s dětmi', hint: 'Zvonec pohlídá, aby u dětí byli aspoň dva dospělí.', name: 'childcare', checked: !!role?.childcare }),
+        switchRow({ label: 'Stará se o děti', hint: 'Kdo má tuhle roli, je během setkání s dětmi. Zvonec hlídá, aby u nich byli aspoň dva dospělí.', name: 'childcare', checked: !!role?.childcare }),
         switchRow({ label: 'Jen část setkání', name: 'partial', checked: !!w, onChange: (v) => { windowBox.hidden = !v; } }),
         windowBox,
         others.length ? chipsField({ name: 'partners', label: 'Jde naráz s', hint: 'Jeden člověk zvládne obě role naráz, třeba zpěv a kytaru.', options: others, value: partners, multiple: true }) : null,
