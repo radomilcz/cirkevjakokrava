@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – a template edit reaches planned meetings (2026-10-08).** The usability test found that changing a
+> template left its planned meetings as they were, without a word. Now saving an edit asks „Chceš změnit i
+> naplánovaná setkání?“ and names what changes („Změní se jim čas a osnova.“) – [Změň i 11 setkání] / [Jen šablonu].
+> Only what a meeting still has from the old template changes; what someone changed by hand stays. „Vrať“ in the
+> toast puts the template and the meetings back.
+
 > **Update – Rozpis column bands (2026-10-08).** The owner asked for vertical lines or banded columns and chose bands
 > (variant C): every second meeting column sits on a faint band (ink 3.5 % over the ground), its head cell rounded on top
 > like the hover tab; a cell's own fill (the pink „Ty“) still wins. The hover tab is back in its first shape; only the

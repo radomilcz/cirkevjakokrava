@@ -11,7 +11,7 @@
 
 import { S, change, newId, navigate } from './state.js';
 import {
-  EVENT_KINDS, KIND_LABELS, seriesOfType, seriesSummary, seriesEvents,
+  EVENT_KINDS, KIND_LABELS, seriesOfType, seriesSummary, seriesEvents, typeChangePlan, applyTypeChange, sortEvents,
 } from '../lib/events.js';
 import { formatById, formatNeeds, mergeNeeds } from '../lib/program.js';
 import { rolesOf, roleById, groupById } from '../lib/groups.js';
@@ -315,6 +315,64 @@ export function templateDetail(type, frame = 'pane') {
 
 // ---------- the layers ----------
 
+/** What a template edit changes in a meeting, for the question below. */
+const CHANGE_WORDS = {
+  title: 'název', kind: 'účel', time: 'čas', placeIds: 'místo', groupId: 'skupina', needs: '„Kdo je potřeba“',
+  program: 'osnova', description: 'popis', image: 'obrázek',
+};
+const andWords = (words) => (words.length > 1 ? `${words.slice(0, -1).join(', ')} a ${words[words.length - 1]}` : words[0]);
+
+/**
+ * A saved template edit: change(), then – when planned meetings still follow the old template – the question
+ * „Chceš změnit i naplánovaná setkání?“ (Změň i 16 setkání / Jen šablonu). What someone changed by hand in a
+ * meeting stays; „Vrať“ in the toast puts the template and the meetings back.
+ */
+function savedType(before, target, note) {
+  change(note);
+  const plan = typeChangePlan(S.data, before, target, today());
+  const n = plan.events.length;
+  if (!n) { toast('Uloženo.'); return; }
+  const keys = Object.keys(CHANGE_WORDS).filter((k) => plan.events.some((x) => x.keys.includes(k)));
+  let answered = false;
+  let sheet;
+  const pick = (all) => () => {
+    answered = true;
+    sheet.close();
+    if (!all) { toast('Uloženo. Naplánovaná setkání zůstala, jak byla.'); return; }
+    const type = typeById(target.id);
+    if (!type) return;
+    const fresh = typeChangePlan(S.data, before, type, today());
+    const saved = fresh.events.map((x) => clone(x.event));
+    const changed = applyTypeChange(S.data, type, fresh, { newId });
+    change(`šablona ${type.name}: i ${meetingsWord(changed.length)} v plánu`);
+    toast(`Uloženo i u ${meetingsWord(changed.length)} v plánu.`, {
+      action: () => {
+        for (const old of saved) {
+          const e = S.data.events.find((x) => x.id === old.id);
+          if (!e) continue;
+          for (const key of Object.keys(e)) delete e[key];
+          Object.assign(e, old);
+        }
+        const back = typeById(target.id);
+        if (back) { for (const key of Object.keys(back)) delete back[key]; Object.assign(back, clone(before)); }
+        sortEvents(S.data);
+        change(`vráceno: šablona ${type.name} i setkání v plánu`);
+      },
+    });
+  };
+  sheet = layer.open({ kind: 'sheet',
+    title: 'Chceš změnit i naplánovaná setkání?',
+    body: h('p', { class: 'text' },
+      `V plánu ${n === 1 || n > 4 ? 'je' : 'jsou'} ${meetingsWord(n)} z téhle šablony. Změní se ${n === 1 ? 'mu' : 'jim'} ${andWords(keys.map((k) => CHANGE_WORDS[k]))}.`,
+      plan.kept ? ' Co někdo u setkání upravil ručně, zůstane.' : null),
+    foot: [
+      button(`Změň i ${meetingsWord(n)}`, { variant: 'primary', size: 'l', block: true, onclick: pick(true) }),
+      button('Jen šablonu', { size: 'l', block: true, onclick: pick(false) }),
+    ],
+    onClose: () => { if (!answered) toast('Uloženo. Naplánovaná setkání zůstala, jak byla.'); },
+  });
+}
+
 /** Write `fields` into the stored template (deletes keys whose value is null / '' / []). */
 function writeType(target, fields) {
   for (const [key, value] of Object.entries(fields)) {
@@ -400,6 +458,7 @@ export function basicsSheet(type) {
       if (type && !target) return 'Šablonu mezitím někdo smazal.';
       const created = !target;
       if (!target) { target = { id: newId('t'), needs: [] }; S.data.eventTypes.push(target); }
+      const before = clone(target);
       writeType(target, {
         name: n,
         kind: v.kind || 'service',
@@ -409,9 +468,11 @@ export function basicsSheet(type) {
         weekday: Number.isInteger(v.weekday) ? v.weekday : null,
         groupId: v.groupId || null,
       });
-      if (created) navigate(`${LIST}/${target.id}`);
-      change(`šablona ${n}`);
-      toast(created ? `Přidáno: ${n}. Doplň ještě „Kdo je potřeba“ a osnovu.` : 'Uloženo.');
+      if (created) {
+        navigate(`${LIST}/${target.id}`);
+        change(`šablona ${n}`);
+        toast(`Přidáno: ${n}. Doplň ještě „Kdo je potřeba“ a osnovu.`);
+      } else savedType(before, target, `šablona ${n}`);
       return undefined;
     },
   });
@@ -453,9 +514,9 @@ function needsSheet(type) {
     onSubmit: () => {
       const target = typeById(type.id);
       if (!target) return 'Šablonu mezitím někdo smazal.';
+      const before = clone(target);
       target.needs = needs.filter((n) => n.count > 0 && roleById(S.data, n.roleId)).map(({ roleId, count: c }) => ({ roleId, count: c }));
-      change(`šablona ${target.name}: kdo je potřeba`);
-      toast('Uloženo.');
+      savedType(before, target, `šablona ${target.name}: kdo je potřeba`);
       return undefined;
     },
   });
@@ -505,10 +566,10 @@ function outlineSheet(type) {
     onSubmit: () => {
       const target = typeById(type.id);
       if (!target) return 'Šablonu mezitím někdo smazal.';
+      const before = clone(target);
       const next = program.filter((item) => formatById(S.data, item.formatId)).map(({ formatId, minutes: m }) => ({ formatId, minutes: Number(m) || 0 }));
       if (next.length) target.program = next; else delete target.program;
-      change(`šablona ${target.name}: osnova`);
-      toast('Uloženo.');
+      savedType(before, target, `šablona ${target.name}: osnova`);
       return undefined;
     },
   });
@@ -622,6 +683,7 @@ function webSheet(type) {
     onSubmit: async () => {
       const target = typeById(type.id);
       if (!target) return 'Šablonu mezitím někdo smazal.';
+      const before = clone(target);
       const oldImage = target.image || null;
       let imageName = oldImage;
       if (img.pending) {
@@ -629,8 +691,7 @@ function webSheet(type) {
       } else if (img.removed) imageName = null;
       writeType(target, { description: description.value.trim() || null, image: imageName });
       if (oldImage && oldImage !== imageName) dropImage(oldImage, target.id);
-      change(`šablona ${target.name}: na webu`);
-      toast('Uloženo.');
+      savedType(before, target, `šablona ${target.name}: na webu`);
       return undefined;
     },
   });

@@ -152,6 +152,80 @@ export function updateSeries(data, edited, previousStart = edited.start) {
   return changed;
 }
 
+// ---------- a template edit → its planned events ----------
+
+const outlineOf = (program) => (program || []).map((x) => ({ formatId: x.formatId, minutes: Number(x.minutes) || 0, ...(x.title ? { title: x.title } : {}) }));
+
+/**
+ * What an event takes from its template, read the same way on both sides so they compare:
+ * key → [read the template, read the event]. 'time' is the time of day and the length, 'program' the osnova
+ * without its people and notes.
+ */
+const TYPE_LINKS = {
+  title: [(t) => t.name, (e) => e.title],
+  kind: [(t) => t.kind || 'event', (e) => e.kind || 'event'],
+  time: [(t) => `${String(t.startTime || '10:00').padStart(5, '0')} ${Number(t.minutes) || 60}`, (e) => `${timeOf(e.start)} ${minutesBetween(e.start, e.end)}`],
+  placeIds: [(t) => t.placeIds || [], (e) => e.placeIds || []],
+  groupId: [(t) => t.groupId || null, (e) => e.groupId || null],
+  needs: [(t) => (t.needs || []).map((n) => ({ roleId: n.roleId, count: Number(n.count) || 0 })), (e) => (e.needs || []).map((n) => ({ roleId: n.roleId, count: Number(n.count) || 0 }))],
+  program: [(t) => outlineOf(t.program), (e) => outlineOf(e.program)],
+  description: [(t) => t.description || null, (e) => e.description || null],
+  image: [(t) => t.image || null, (e) => e.image || null],
+};
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+/**
+ * After a template edit (`before` → `after`): its planned events (from day `from`, not cancelled) that can follow.
+ * An event follows a changed key only while it still has the old template's value there – what someone changed by
+ * hand stays. Returns { keys: the changed keys, events: [{ event, keys }], kept: events with some change of their own }.
+ */
+export function typeChangePlan(data, before, after, from) {
+  const keys = Object.keys(TYPE_LINKS).filter((k) => !same(TYPE_LINKS[k][0](before), TYPE_LINKS[k][0](after)));
+  const events = [];
+  let kept = 0;
+  if (!keys.length) return { keys, events, kept };
+  for (const e of data.events || []) {
+    if (e.typeId !== after.id || e.cancelled || dayOf(e.start) < from) continue;
+    const follows = keys.filter((k) => same(TYPE_LINKS[k][1](e), TYPE_LINKS[k][0](before)));
+    if (follows.length < keys.length) kept++;
+    if (follows.length) events.push({ event: e, keys: follows });
+  }
+  return { keys, events, kept };
+}
+
+/**
+ * Carries the template's new values into the planned events of typeChangePlan(). Each keeps its day; a new osnova
+ * keeps who leads a point and its note where the same format stays. Returns the changed events.
+ */
+export function applyTypeChange(data, type, plan, { newId = randomId } = {}) {
+  for (const { event: e, keys } of plan.events) {
+    for (const key of keys) {
+      if (key === 'time') {
+        e.start = `${dayOf(e.start)}T${String(type.startTime || '10:00').padStart(5, '0')}`;
+        e.end = addMinutes(e.start, Number(type.minutes) || 60);
+      } else if (key === 'program') {
+        const old = [...(e.program || [])];
+        copyProgram(data, e, type.program, newId);
+        for (const item of e.program) {
+          const i = old.findIndex((x) => x.formatId === item.formatId);
+          if (i < 0) continue;
+          const [was] = old.splice(i, 1);
+          item.id = was.id;
+          if (was.personId) item.personId = was.personId;
+          if (was.note) item.note = was.note;
+        }
+        if (!e.program.length) delete e.program;
+      } else {
+        const value = TYPE_LINKS[key][0](type);
+        if (value == null || (Array.isArray(value) && !value.length && key !== 'placeIds' && key !== 'needs')) delete e[key];
+        else e[key] = clone(value);
+      }
+    }
+  }
+  sortEvents(data);
+  return plan.events.map((x) => x.event);
+}
+
 /** Events of a series by its id, sorted by start. */
 export function seriesEvents(data, seriesId) {
   if (!seriesId) return [];
