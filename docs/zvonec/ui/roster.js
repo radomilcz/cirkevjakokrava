@@ -15,7 +15,7 @@
 import {
   h, slot, list, row, avatar, personName, layer, formSheet, field, selectInput, isPhone,
   isLayerOpen, shortDate, clock, monthLabel, periodLine, table, plural, statusSymbol, sev, STATUS_KEY, SEP,
-  shiftMonth, fillRing,
+  shiftMonth, fillRing, teamMark,
 } from './kit.js';
 import { S, can, myId } from './state.js';
 import { eventById, eventsInRange, needsOf, eventTypeById } from '../lib/events.js';
@@ -150,7 +150,7 @@ function rosterTable(t, { month, teams, marks }) {
   });
   const width = t.items.length + 1;
   const rows = columnsOf(t.items).flatMap(({ group, roles }) => [
-    h('tr', { class: 'rt-team' }, h('th', { scope: 'colgroup', colspan: width }, h('span', { class: 'rt-team__name' }, group.name))),
+    h('tr', { class: 'rt-team' }, h('th', { scope: 'colgroup', colspan: width }, h('span', { class: 'rt-team__name' }, teamMark(group, { size: 's' }), group.name))),
     ...roles.map((role) => h('tr', {},
       h('th', { scope: 'row', class: 'rt-role' }, role.name),
       lines.map(({ event, byRole, conflicts }) => cell(event, role, byRole.get(role.id), conflicts, marks)))),
