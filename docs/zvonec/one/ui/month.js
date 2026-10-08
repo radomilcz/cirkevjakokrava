@@ -185,7 +185,6 @@ function monthBody(month, day) {
     note = emptyLine(c);
   }
   return [
-    periodLine({ month, href: (m) => `#kalendar/mesic/${m}`, todayHref: `#kalendar/mesic/${thisMonth()}/${today()}` }),
     note,
     h('div', { class: 'cal-mesic' }, narrowForm(month, chosen, days), wideForm(month, days)),
   ];
@@ -198,6 +197,7 @@ export function renderMonth(parts = [], { menu } = {}) {
   const shownInMonth = () => eventsInRange(S.data, `${month}-01`, lastDayOf(month)).filter((e) => dayOf(e.start).startsWith(month) && shownBy(e));
   return calendarScreen({
     view: 'mesic', month, wide: true,
+    period: periodLine({ month, href: (m) => `#kalendar/mesic/${m}`, todayHref: `#kalendar/mesic/${thisMonth()}/${today()}` }),
     draw: () => monthBody(month, day),
     results: () => shownInMonth().length,
     menu: menu?.({ month, ids: () => shownInMonth().map((e) => e.id) }),
