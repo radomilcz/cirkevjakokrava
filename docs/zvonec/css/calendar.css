@@ -147,9 +147,11 @@
 .rt-table .rt-corner { box-shadow: inset 0 -1px 0 var(--edge), inset -1px 0 0 var(--hairline), var(--rt-cover); }
 /* a column head: the day, the time, leaders' ◯ 14 z 15 – one link to the meeting */
 .rt-col { padding: 0 !important; vertical-align: bottom !important; }
+/* its hover is a rounded block that keeps off the head's line (4 above and beside, 6 below); the text stays where the
+   cells' text is (12 from the column edge) */
 .rt-col__link {
-  display: grid; justify-items: start; gap: 2px; padding: var(--space-2) var(--space-3) var(--space-3); border-radius: var(--radius-m) var(--radius-m) 0 0;
-  color: var(--ink); text-decoration: none;
+  display: grid; justify-items: start; gap: 2px; margin: var(--space-1) var(--space-1) 6px; padding: var(--space-1) var(--space-2) 6px;
+  border-radius: var(--radius-m); color: var(--ink); text-decoration: none;
 }
 .rt-col__link:hover { background: var(--wash); }
 .rt-col__link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }

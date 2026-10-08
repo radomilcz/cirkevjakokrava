@@ -480,7 +480,7 @@ Enforced by the demo test (`zvonec/test/demo.test.mjs`) and expected of all data
 place or to a room; a household `address` that is not a string.
 
 ### 5.22 Form rules
-- **Person**: first name required. A guest without consent keeps only the first name. The consent switch stores
+- **Person**: first name required. A guest without consent keeps only the first name. A child joining a household with a member or a consenting adult is covered by that consent. Nothing typed is dropped silently: the first „Přidej člověka“ names what would go („…, příjmení a narození zahodím“) and turns into „Ulož jen jméno“. The consent switch stores
   today as `consentDate`. A duplicate full name needs a second confirmation („Přidej přesto“). A child cannot have
   a phone or e-mail.
 - **Limits** are integers. **Blockout** „Do“ is today or later; optionally the clashing duties become `declined` in
