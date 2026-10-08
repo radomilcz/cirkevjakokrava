@@ -1011,8 +1011,8 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   on my own row). Meta at ≥ 600: leaders „člen · Chvály, Technika“ + amber „chybí příjmení a kontakt“; members
   teams only. Foot „47 lidí“; an archive callout when needed.
 - Empty: „Zatím tu nikdo není.“ / „Tady najdeš, jak se s kým spojit. Přidej první lidi, nebo jim pošli pozvánku.“
-- **Tabulka** `#lide/vypis`: a framed table (rounded edge, head on the card surface, hairlines between rows and
-  columns, rows 48); sortable Jméno, Členství*, Domácnost, Telefon, E-mail, Skupiny,
+- **Tabulka** `#lide/vypis`: rows 52 with hairlines between them like Seznam (no frame, no column lines);
+  sortable Jméno, Členství*, Domácnost, Telefon, E-mail, Skupiny,
   Narozeniny*, Poslední služba* (* leaders). Ticks + bulk bar „3 vybraní lidé“ [Zkopíruj e-maily] [Přidej do
   skupiny] [Stáhni seznam] [Zruš výběr]. Spans the frame; compact beside an open pane.
 - **Person detail** `#lide/<id>`: avatar 72 in the card's top-left corner – in a pane on the row of ⋯ and ✕, on a page

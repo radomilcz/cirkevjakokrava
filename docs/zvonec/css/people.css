@@ -99,21 +99,20 @@
 .people-bulk__count { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); }
 .people-bulk__actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-left: auto; }
 
-/* the table: rows 48 in a rounded frame (lines between rows and columns); fixed layout with
+/* the table: rows 52 with hairlines between them, flush with the frame; fixed layout with
    widths fitted to what the columns hold, so nothing pushes the page and the columns never jump while searching.
    Nothing is cut: a name, a household, a group or an e-mail wraps (an e-mail before its „@“), a row grows. */
 .people-table-box { container-type: inline-size; }
-.people-table-box > .table-wrap { margin: 0; padding: 0; overflow-y: hidden; border: 1px solid var(--edge); border-radius: var(--radius-l); }
+.people-table-box > .table-wrap { margin: 0; padding: 0; overflow-y: hidden; }
 /* sideways it scrolls only when the table really is wider (never from 1200: the columns that do not fit drop out) */
 @media (min-width: 1200px) { .people-table-box > .table-wrap { overflow: hidden; } }
-/* Tabulka is a framed table (the owner: „lines between rows and columns, but beautiful“): a rounded edge, a head on
-   the card surface over an edge line, hairlines between the rows and between the columns (none beside the tick) */
+/* Tabulka reads like Seznam: hairlines between the rows only, the head over an edge line. A frame and column lines
+   were tried and dropped – „an aggressive table“ (the owner) */
 .people-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; }
-.people-table th { white-space: nowrap; height: 44px; padding: 0 var(--space-3); background: var(--card); }
+.people-table th { white-space: nowrap; height: 44px; padding: 0 var(--space-3); background: var(--ground); }
 .people-table thead th { box-shadow: none; border-bottom: 1px solid var(--edge); }
-.people-table td { height: 48px; padding: 4px var(--space-3); color: var(--ink); background: var(--ground); white-space: normal; overflow-wrap: anywhere; border-bottom: 1px solid var(--hairline); }
+.people-table td { height: 52px; padding: 4px var(--space-3); color: var(--ink); background: var(--ground); white-space: normal; overflow-wrap: anywhere; border-bottom: 1px solid var(--hairline); }
 .people-table tbody tr:last-child > td { border-bottom: 0; }
-.people-table :is(th, td) + :is(th, td):not(.col-name) { border-left: 1px solid var(--hairline); }
 .people-table td.col-phone, .people-table td.col-birthday { white-space: nowrap; }
 .people-table tbody tr + tr > * { border-top: 0; }
 .people-table tbody tr { cursor: pointer; }
@@ -123,7 +122,7 @@
 .people-table tbody tr:is([data-picked], [data-open]) > * { background-color: var(--pick); }
 .people-table tbody tr:is([data-picked], [data-open]):hover > * { background-color: var(--pick-hover); }
 .people-table tbody tr:is([data-picked], [data-open]) .table-quiet { color: var(--ink); }
-/* the open person's mark sits inside the frame (a ticked row has its tick, so no mark) */
+/* the open person's mark (a ticked row has its tick, so no mark) */
 .people-table tbody tr[data-open] > :first-child::before {
   content: ""; position: absolute; left: 4px; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 3px; background: var(--mark);
 }
