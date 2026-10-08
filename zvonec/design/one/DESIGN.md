@@ -22,7 +22,7 @@ What the owner asked for, and where this design answers it:
 |---|---|
 | Next's colours and its Setkání detail | §7 (Účel hues as in Next, rose kept), §5.1 (detail kept whole) |
 | Simple's simplicity, its person menu and Správa | §2.4 (the menu, Správa in it), §4 (Simple's Moje, A–Z, Rozpis, mini month) |
-| „some things belong in the sidebar“: Formáty, Šablony, Lidé as screens | §2.2 (group „Jak se scházíme“), §6.9–6.11 |
+| „some things belong in the sidebar“: Formáty, Šablony, Lidé as screens | §2.2 (group „Zdroje“), §6.9–6.11 |
 | search and Filtr in one place, never jumping | §3 (band B, fixed offsets, nothing above it ever varies) |
 | clear and not cluttered | one Filtr button, no chip rows, no lead lines, no FAB, nothing opens by itself |
 | phone, tablet and desktop | §1 (three layout classes), wireframes at 390 / 768 / 1440 |
@@ -58,15 +58,15 @@ What the owner asked for, and where this design answers it:
 | main | Obsazení | `#obsazeni` | – | ✓ | ✓ | meetings in 4 weeks with something to do (in my Filtr scope) |
 | main | Kalendář | `#kalendar` | ✓ | ✓ | ✓ | – |
 | main | Lidé | `#lide` (view Skupiny `#lide/skupiny`) | ✓ | ✓ | ✓ | – |
-| Jak se scházíme | Šablony | `#sablony` | – | ✓ | ✓ | – |
-| Jak se scházíme | Formáty | `#formaty` | link only | ✓ | ✓ | – |
-| Jak se scházíme | Místa | `#mista` | link only | ✓ | ✓ | – |
+| Zdroje | Šablony | `#sablony` | – | ✓ | ✓ | – |
+| Zdroje | Formáty | `#formaty` | link only | ✓ | ✓ | – |
+| Zdroje | Místa | `#mista` | link only | ✓ | ✓ | – |
 | person's menu | Můj účet, Kdy nemůžu, Barvy, Veřejný web, Odhlas se | | ✓ | ✓ | ✓ | – |
 | person's menu › Správa | Přístupy, Nastavení sboru | `#pristupy`, `#nastaveni` | – | ✓ | ✓ (+ záloha, klíč) | invites waiting |
 
 The split rule: **the sidebar holds the places where weekly work happens** (my duties, meetings, people, and
 what meetings are made of). **The person's menu holds you and the system** (your account, your days off,
-colours, access, the church's settings, the public web, sign-out). Members do not see „Jak se scházíme“: they
+colours, access, the church's settings, the public web, sign-out). Members do not see „Zdroje“: they
 open a Formát from an Osnova point and a Místo from a meeting's place line, read-only. Admin and leader see
 the same items; the admin sees more *inside* them (all teams, záloha, klíč, levels), never more items.
 
@@ -81,7 +81,7 @@ the same items; the admin sees more *inside* them (all teams, záloha, klíč, l
 │▌▦  Kalendář              │  current: --pick fill on the whole item + detached 3 px --mark bar at the sidebar's edge
 │ ☺☺ Lidé                  │
 │                          │  24
-│ Jak se scházíme          │  group title 13/620 --ink-2, 8 above its first item (leaders only)
+│ Zdroje                   │  group title 13/620 --ink-2, 8 above its first item (leaders only)
 │ ▤  Šablony               │
 │ ▯  Formáty               │
 │ ⌖  Místa                 │
@@ -130,7 +130,7 @@ leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  
 │ Kdy nemůžu                        ›   │  → #kdy-nemuzu; meta = the next range „24.–26. 10. · dovolená“
 │ Barvy  (◉)(◉)(◉)                      │  Krém a hlína · Hlína a růžová · Podle zařízení; a tap applies, the menu stays
 │                                       │  24
-│ Jak se scházíme          (phone only) │  13/620 heading, leaders: Šablony › · Formáty › · Místa ›
+│ Zdroje                   (phone only) │  13/620 heading, leaders: Šablony › · Formáty › · Místa ›
 │ Správa                                │  leaders: Přístupy [1 čeká] › · Nastavení sboru ›
 │                                       │
 │ Veřejný web                       ›   │  meta „Pastva, jak ji vidí návštěvníci“
@@ -140,7 +140,7 @@ leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  
 └───────────────────────────────────────┘
 ```
 
-- The contents are the same at every width. The only difference: the phone adds „Jak se scházíme“, because it has
+- The contents are the same at every width. The only difference: the phone adds „Zdroje“, because it has
   no sidebar. Rows are the standard row (CODEX §6.6), one weight. A tap on a link row closes the menu, then
   navigates. A row that opens a sheet („Začni ukázku znovu“ → confirm) closes the menu first (layers never stack
   a menu under a sheet).
@@ -664,7 +664,7 @@ below 1200 (its back link goes to `#<list>`).
 | `#kalendar/seznam[/<eventId>]` · `#kalendar/mesic/<YYYY-MM>[/<YYYY-MM-DD>]` · `#kalendar/rozpis/<YYYY-MM>[/<eventId>]` | views | member |
 | `#setkani/<id>` · `#setkani/<id>/osnova` | Setkání page (deep link, Měsíc) · Osnova | member |
 | `#lide[/<personId>]` · `#lide/skupiny[/<groupId>]` · `#lide/vypis` · `#lide/domacnost/<id>` | Lidé | member (vypis: leader) |
-| `#sablony[/<id>]` · `#formaty[/<id>]` · `#mista[/<id>]` | Jak se scházíme | leader · member · member |
+| `#sablony[/<id>]` · `#formaty[/<id>]` · `#mista[/<id>]` | Zdroje | leader · member · member |
 | `#pristupy` · `#nastaveni` | Správa | leader |
 | `#ucet` · `#kdy-nemuzu` | person's menu pages | member |
 | `#prihlaseni` · `#pozvanka/<kód>` · `#pastva[/<id>]` · `#kit` | signed out, public, the specimen | – |
@@ -685,7 +685,7 @@ Redirects (all of Simple's stay): `#osoba/<id>` → `#lide/<id>`; `#tym/<id>`, `
 | Více tab | Next | the person tab (phone), sidebar foot (≥ 600) | „more“ is a junk drawer; the owner likes Simple's menu |
 | the circle only on Moje | Simple | the person tab on every screen | Kdy nemůžu, Barvy, Správa were two taps from anywhere else |
 | sidebar group „Sbor“ (Přístupy, Nastavení, Veřejný web) | both | the person's menu › Správa | rare, system-level; the owner likes Simple's Správa |
-| Šablony, Formáty, Místa under the circle | Simple (phone, 960–1199) | sidebar / rail „Jak se scházíme“ (phone: the menu) | the owner: they belong in the sidebar |
+| Šablony, Formáty, Místa under the circle | Simple (phone, 960–1199) | sidebar / rail „Zdroje“ (phone: the menu) | the owner: they belong in the sidebar |
 | month chip „Říjen ▾“ on the h1, scope chip „Všechny týmy“, Rozpis team chip | Simple | period line in D (Měsíc, Rozpis); Filtr › Tým | they overlapped the h1 and were cut |
 | period in the top bar / toolbar | Next, Simple | the first line of D, fixed-width label | the source of „› over Dnes“ and of every jump |
 | chip rows (Všichni / Členové…, Chybí lidi / Čeká…, team tabs) | Next | one Filtr with a count | „one Filtr, not rows of chips“ |

@@ -1,11 +1,11 @@
 // Zvonec One – the person's menu (DESIGN §2.5): you and the system. One build: a bottom sheet on a phone (from the
 // person tab), a popover 320 at ≥ 600 (above the sidebar foot, or right of the rail's avatar), mounted in the layer
 // root so the scrolling sidebar never clips it. The contents are the same at every width; the phone adds
-// „Jak se scházíme“ (it has no sidebar).
+// „Zdroje“ (it has no sidebar).
 //   (RK) Radim Kovář ›          #ucet, meta „Můj účet · správce“
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
-//   Jak se scházíme (phone)     Šablony › · Formáty › · Místa › (leaders)
+//   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
 //   Správa (leaders)            Přístupy [1 čeká] › · Nastavení sboru ›
 //   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
@@ -71,8 +71,8 @@ export function openMeMenu({ from } = {}) {
     ].filter(Boolean), { label: 'Já' }),
     coloursRow(),
     leader && isPhone() ? [
-      heading('Jak se scházíme'),
-      list([page('Šablony', '#sablony'), page('Formáty', '#formaty'), page('Místa', '#mista')], { label: 'Jak se scházíme' }),
+      heading('Zdroje'),
+      list([page('Šablony', '#sablony'), page('Formáty', '#formaty'), page('Místa', '#mista')], { label: 'Zdroje' }),
     ] : null,
     leader ? [
       heading('Správa'),

@@ -2,7 +2,7 @@
 // (≥ 900); rail ↔ sidebar is CSS only (the same <nav class="sidenav">, the same items).
 //   sidebar: the places where weekly work happens (my duties, meetings, people, what meetings are made of)
 //   the person's menu: you and the system (ui/me-menu.js) – the person tab on a phone, the foot of the sidebar / rail
-// Members do not see „Jak se scházíme“ in the nav (they open a Formát or a Místo by link, read-only).
+// Members do not see „Zdroje“ in the nav (they open a Formát or a Místo by link, read-only).
 
 import { S, can, myId, ACCESS_LABELS } from '../../ui/state.js';
 import { personById } from '../../lib/people.js';
@@ -14,7 +14,7 @@ import { staffingCount } from './staffing.js';
 import { waitingInvites } from './access.js';
 
 /**
- * [id, label, icon, href, minAccess, group, count?] – group 'main' or 'gather' (Jak se scházíme);
+ * [id, label, icon, href, minAccess, group, count?] – group 'main' or 'gather' (Zdroje);
  * count: 'answers' (duties waiting for my answer) · 'staffing' (Obsazení's count).
  */
 export const NAV = [
@@ -26,7 +26,7 @@ export const NAV = [
   ['formaty', 'Formáty', 'book', '#formaty', 'leader', 'gather'],
   ['mista', 'Místa', 'pin', '#mista', 'leader', 'gather'],
 ];
-export const GROUP_TITLES = { gather: 'Jak se scházíme' };
+export const GROUP_TITLES = { gather: 'Zdroje' };
 
 /** Routes whose nav value is 'me' are the person's menu pages (Můj účet, Kdy nemůžu, Přístupy, Nastavení sboru). */
 const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista']);
