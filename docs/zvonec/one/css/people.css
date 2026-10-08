@@ -64,7 +64,11 @@
    widths fitted to what the columns hold, so nothing pushes the page and the columns never jump while searching.
    Nothing is cut: a name, a household, a group or an e-mail wraps (an e-mail before its „@“), a row grows. */
 .people-table-box { container-type: inline-size; }
-.people-table-box > .table-wrap { margin: 0; padding: 0; }
+.people-table-box > .table-wrap { margin: 0; padding: 0; overflow-y: hidden; }
+/* only the page scrolls up and down: the table's 3 px of row spacing above and below (the negative margin) made the
+   sideways box a vertical scroll box of its own, with a second scrollbar on a desktop. Sideways it still scrolls, and
+   only when the table really is wider (never from 1200: the columns that do not fit drop out) */
+@media (min-width: 1200px) { .people-table-box > .table-wrap { overflow: visible; } }
 .people-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0 var(--gap-lit); margin: calc(-1 * var(--gap-lit)) 0; }
 .people-table th { white-space: nowrap; height: 44px; padding: 0 var(--space-3); background: var(--ground); }
 .people-table thead th { box-shadow: inset 0 -1px 0 var(--edge); }

@@ -72,10 +72,11 @@
   --split-pane: minmax(440px, 720px);
   --split-gap: 32px;
   --frame-max: 1312px;       /* desktop pages with a list | pane grid (Moje): list 560 + 32 + pane 720 */
-  --frame-wide: 1600px;      /* desktop list screens: the frame fills the content area up to this */
+  --frame-wide: 1600px;      /* desktop list screens: list track + pane track, up to this (Měsíc's grid spans it) */
   --search-w: 440px;         /* desktop: the search beside Filtr – B is search 440 · 8 · Filtr 120, never wider */
   --toolbar-w: calc(var(--search-w) + var(--gap-x) + var(--filter-w));
-  --pane-w: clamp(480px, 45%, 720px);   /* desktop: the pane beside D, a share of the frame (D takes the rest) */
+  --list-track: clamp(400px, calc(100% - var(--split-gap) - 480px), 840px);   /* desktop: a list screen's list track */
+  --pane-max: 720px;         /* desktop: the pane track takes what is left beside the list track, up to this */
   --page-col: 640px;         /* a one-column page (Můj účet, Kdy nemůžu, Nastavení sboru) */
   --detail-col: 720px;       /* a detail page ≥ 600 */
   --sidebar-w: 248px;
