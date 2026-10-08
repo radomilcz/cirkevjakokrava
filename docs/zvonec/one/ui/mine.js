@@ -160,9 +160,8 @@ const upcomingOf = (person) => upcomingDuties(S.data, person.id, { from: today()
 
 function dutyRow({ event, assignment }, openId, { quietRow = false } = {}) {
   const role = roleName(assignment.roleId);
-  const trail = event.cancelled ? pill('zrušeno')
-    : quietRow ? null
-      : h('span', { class: 'mine-ok', title: 'potvrzeno' }, statusSymbol('confirmed'), h('span', { class: 'visually-hidden' }, 'potvrzeno'));
+  // a confirmed duty needs no mark – the list only says what needs attention (the owner)
+  const trail = event.cancelled ? pill('zrušeno') : null;
   return row({
     lead: dateArch(dayOf(event.start), { today: isToday(event), quiet: quietRow }),
     title: role,

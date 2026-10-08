@@ -79,14 +79,18 @@ const searchMemory = new Map();   // the search text per screen, kept for this v
 /** The remembered search text of a list screen (`key`), '' when none. */
 export const searchText = (key) => searchMemory.get(key) || '';
 
+const openSearches = new Set();   // the screens whose search the person opened (kept for the visit)
+
 /**
- * B: [⌕ search ··········· ✕][⚟ Filtr ⁿ] – one row, 44 high, as wide as the list column. Without a filter the search
- * fills it; the search's left edge, y and height never change.
+ * B: [⌕][⚟ⁿ] – two quiet icons in the title row (the owner: calm, nothing that needs no attention). ⌕ opens the search
+ * field in its place (on a phone a row under the title); it stays open while it holds text and closes again when it
+ * is left empty. ⚟ is Filtr with its count.
  *   toolbar({ search: { key: 'kalendar', placeholder: 'Hledej setkání', onInput }, filter: filterButton({...}) })
  * search.key keeps the text for the visit; search.value overrides it.
  */
 export function toolbar({ search, filter } = {}) {
   let field = null;
+  let toggle = null;
   if (search) {
     const key = search.key || search.placeholder || 'search';
     const value = search.value ?? searchText(key);
@@ -95,8 +99,22 @@ export function toolbar({ search, filter } = {}) {
       onInput: (v, e) => { searchMemory.set(key, v); search.onInput?.(v, e); },
     });
     field.dataset.searchKey = key;
+    const input = field.querySelector('input');
+    toggle = iconButton('search', search.label || search.placeholder || 'Hledej', { cls: 'search-toggle' });
+    const setOpen = (on) => {
+      field.hidden = !on;
+      toggle.hidden = on;
+      if (on) openSearches.add(key); else openSearches.delete(key);
+    };
+    setOpen(!!value || openSearches.has(key));
+    toggle.addEventListener('click', () => { setOpen(true); input.focus(); });
+    const closeIfEmpty = () => { if (field.isConnected && !input.value && !field.contains(document.activeElement)) setOpen(false); };
+    input.addEventListener('blur', () => setTimeout(closeIfEmpty, 0));
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !input.value) { e.stopPropagation(); setOpen(false); toggle.focus(); }
+    });
   }
-  return h('div', { class: 'toolbar', role: 'search' }, field, filter || null);
+  return h('div', { class: 'toolbar', role: 'search' }, toggle, field, filter || null);
 }
 
 // ---------- the frames ----------
@@ -123,12 +141,10 @@ const paneSlot = (pane, label) => h('aside', { class: 'split__pane', 'aria-label
 export function listScreen({ title, action, menu, search, filter, views, body, pane, wide = false, label, cls } = {}) {
   const split = isSplit();
   const bodyEl = h('div', { class: 'ls__body' }, body);
-  // ≥ 1200 B joins A: [h1 ········ search · Filtr · ⋯ · main action] over the whole frame, C under it (the owner: one
-  // calm row instead of three bands); below 1200 B is its own row under A, as on a phone
+  // B joins A at every width: [h1 ········ ⌕ · ⚟ · ⋯ · main action]; C under it
   const bar = toolbar({ search: search || { placeholder: 'Hledej' }, filter });
   // C: [period ·········· view switch] – the switch at the right edge, the same place in every view (the owner)
   const controls = [
-    split ? null : bar,
     views ? h('div', { class: 'ls__views' }, views.period || null, segmented(views.options, views.value, null, { label: views.label || 'Zobrazení' })) : null,
   ].filter(Boolean);
   const controlsEl = controls.length ? h('div', { class: 'ls__controls' }, controls) : null;
@@ -137,7 +153,7 @@ export function listScreen({ title, action, menu, search, filter, views, body, p
     class: ['screen', 'ls', wide && 'ls--wide', split && 'ls--split', cls], id: 'main', tabIndex: -1,
   },
   h('div', { class: 'frame' },
-    titleRow({ title, action, menu, tools: split ? bar : null }),
+    titleRow({ title, action, menu, tools: bar }),
     // ≥ 1200 C spans the frame (above the list and the pane), so the switch sits at the right edge in every view
     wide || split
       ? [controlsEl, wide ? bodyEl : h('div', { class: 'ls__list' }, bodyEl), paneEl]

@@ -152,16 +152,16 @@ export function emptyLine(c) {
 // ---------- the event line (Seznam, Měsíc's day list and popover) ----------
 
 /** A fill as the leader reads it everywhere: ◯ 14 z 15 · chybí 1 (or · 2 čekají). `f`: fillOf / fillOfTeams. */
-export function fillLine(f) {
+export function fillLine(f, { quiet = false } = {}) {
   if (!f?.needed) return null;
   const words = f.missing ? missingWords(f.missing) : f.waiting ? waitingWords(f.waiting) : null;
-  return fill(f.filled, f.needed, { words });
+  return fill(f.filled, f.needed, { words, quiet });
 }
 
 /** The leader's fill of a meeting (Seznam, Měsíc's day list and popover). */
 function fillOfEvent(event) {
   if (!can('leader') || event.cancelled) return null;
-  return fillLine(fillOf(event));
+  return fillLine(fillOf(event), { quiet: true });
 }
 
 /** „ty · Kázání · potvrzeno“ when I serve. */
@@ -194,7 +194,7 @@ export function calEvent(event, { href, open = false, trail = !isPhone() } = {})
     class: ['event', 'cal-event', filled && trail && 'cal-event--trail'], href, 'aria-label': label,
     'aria-current': open ? 'true' : null, dataset: { hue: kindHue(event.kind), cancelled: event.cancelled ? '' : null, open: open ? '' : null, id: event.id },
   },
-  h('span', { class: 'event__time' }, clock(event.start), event.end ? h('span', { class: 'event__end' }, clock(event.end)) : null),
+  h('span', { class: 'event__time' }, clock(event.start)),   // the end is in the detail (a list stays calm)
   body,
   filled && trail ? h('span', { class: 'cal-event__trail' }, filled) : null);
 }
@@ -323,9 +323,7 @@ function seznamBody(openId) {
   const afterFilter = all.filter(passesFilter);
   const events = afterFilter.filter((e) => matchesSearch(e));
   const href = (e) => (e.id === openId && isSplit() ? '#kalendar/seznam' : `#kalendar/seznam/${e.id}`);   // a click on the open one closes it
-  const hasPast = !listState.past && inRange(mondayOf(addDays(today(), -7 * PAST_WEEKS)), addDays(today(), -1)).some(shownBy);
-  const pastLink = hasPast ? h('div', { class: 'cal-past' }, link('Ukaž, co už bylo', { icon: 'chevron-left', onclick: () => { listState.past = true; render(); } })) : null;
-  const later = !query() && inRange(addDays(to, 1), addDays(to, SEARCH_DAYS)).some(shownBy);
+    const later = !query() && inRange(addDays(to, 1), addDays(to, SEARCH_DAYS)).some(shownBy);
   const more = later ? button('Ukaž další týdny', {
     variant: 'quiet', block: true, iconEnd: 'chevron-down', cls: 'cal-more',
     onclick: () => { listState.weeks += WEEKS; render(); },
@@ -340,7 +338,7 @@ function seznamBody(openId) {
     });
     if (c.kind === 'none' && can('leader')) c.action = { label: 'Přidej setkání', icon: 'plus', onclick: () => openAddEvent({}) };
     if (c.kind === 'none' && later) { c.title = 'V příštích týdnech nic není.'; c.text = 'Další setkání jsou až později.'; }
-    return [pastLink, empty(c), more];
+    return [empty(c), more];
   }
 
   const weeks = new Map();
@@ -357,7 +355,14 @@ function seznamBody(openId) {
     out.push(subhead(weekWords(monday), { tag: 'h2' }));
     for (const [day, list] of days) out.push(dayBlock(day, list, { href, openId }));
   }
-  return [pastLink, h('div', { class: 'agenda cal-agenda' }, out), more];
+  return [h('div', { class: 'agenda cal-agenda' }, out), more];
+}
+
+/** ⋯ › „Ukaž minulá setkání“ (the last four weeks above today) / „Skryj minulá setkání“ – not a link on top of the list. */
+function pastItem() {
+  if (listState.past) return { label: 'Skryj minulá setkání', icon: 'chevron-down', onclick: () => { listState.past = false; render(); } };
+  const hasPast = inRange(mondayOf(addDays(today(), -7 * PAST_WEEKS)), addDays(today(), -1)).some(shownBy);
+  return hasPast ? { label: 'Ukaž minulá setkání', icon: 'chevron-left', onclick: () => { listState.past = true; render(); } } : null;
 }
 
 /** #kalendar/seznam[/<eventId>] */
@@ -370,7 +375,7 @@ export function renderSeznam(parts = [], { menu } = {}) {
     view: 'seznam',
     draw: () => seznamBody(opened?.id || null),
     results: () => seznamEvents().length,
-    menu: menu?.({ ids: () => seznamEvents().filter((e) => dayOf(e.start) <= addDays(today(), 27)).map((e) => e.id) }),
+    menu: [pastItem(), ...(menu?.({ ids: () => seznamEvents().filter((e) => dayOf(e.start) <= addDays(today(), 27)).map((e) => e.id) }) || [])].filter(Boolean),
     pane: opened ? eventPane(opened, '#kalendar/seznam') : null,
     base: '#kalendar/seznam',
   });

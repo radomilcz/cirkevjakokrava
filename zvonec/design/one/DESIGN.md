@@ -1,5 +1,14 @@
 # Zvonec One: the design
 
+> **Update – calm lists (2026-10-08).** Still „cluttered“ for the owner. Now: B is two quiet icons in the title row
+> (⌕ opens the search field in place, a full row under the title on a phone; ⚟ Filtr with its count), ⋯ is quiet
+> among them; the view switch is quiet text; a list shows a fill only when something needs doing („chybí 1“ in the
+> error ink, „2 čekají“ in the second ink) – no rings for full meetings, none on Obsazení (its to-do lines say it),
+> no ticks on confirmed duties; lists show only the start time; „Ukaž, co už bylo“ moved into ⋯ („Ukaž minulá
+> setkání“) – no accent links on top of a list (the birthday line on Lidé is quiet ink). Screen names are capitals
+> (KALENDÁŘ, OBSAZENÍ; Moje's greeting stays a sentence); on a phone they scale with the width so the name and its
+> icons share one row.
+
 > **Update – Skupiny in the sidebar, a calmer head (2026-10-08).** The owner found the head of Lidé cluttered
 > (title, search + Filtr, the Lidé | Skupiny switch and the „Podrobný výpis“ line: four bands, „Lidé“ twice, two dark
 > blocks). Now: Skupiny is its own sidebar item (`#lide/skupiny`, title „Skupiny“, main action „Nová skupina“, its

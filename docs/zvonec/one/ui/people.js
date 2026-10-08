@@ -168,7 +168,9 @@ function birthdayLine() {
   const words = soon[0].d === 0
     ? `Dnes slaví ${first}${more ? `, do týdne ještě ${more === 1 ? 'jeden' : more}` : ''}`
     : `Do týdne slaví ${first}${more ? ` a ${more === 1 ? 'ještě jeden' : `další ${more}`}` : ''}`;
-  return rowLink(words, { icon: 'cake', onclick: () => { setFilter(PEOPLE_FILTER, { narozeniny: true }); render(); } });
+  const line = rowLink(words, { icon: 'cake', onclick: () => { setFilter(PEOPLE_FILTER, { narozeniny: true }); render(); } });
+  line.classList.add('people-birthdays');   // a quiet line in ink, not an accent link on top of the list (the owner)
+  return line;
 }
 
 /** The cards over a year in the archive – shown and offered only while Filtr › Ukaž i archiv is on (leaders). */
