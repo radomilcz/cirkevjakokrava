@@ -1,7 +1,13 @@
 # Zvonec One: the design
 
-> **Update – Obsazení is now Úkoly (2026-10-08).** Once it lists tasks, its name says so: the nav item, title and route
-> are „Úkoly“ (`#ukoly`, icon a circled tick); `#obsazeni[/…]` redirects there, its Filtr keeps the stored key.
+> **Update – Moje is about me; Obsazení keeps its name (2026-10-08).** „Úkoly“ suggested a to-do list one writes
+> into, so the page is Obsazení again (`#obsazeni`, the circled tick; `#ukoly` redirects). Moje drops what other
+> screens already show (Co je potřeba = Obsazení, Tento týden = Kalendář) and keeps only what concerns me: the answer
+> card · Obsazení as one line for leaders („Obsazení ● chybí 1 · ● 1 problém · ○ 3 čekají ›“) · **Tvoje břemeno** (this
+> month's duties against my limit as a big number and pips, a sentence – „Ještě máš místo na 1 službu.“ / „Tenhle
+> měsíc máš plno.“ / „O 1 službu víc, než zvládneš.“ / pauza –, Sundays in a row, this year's duties, my most frequent
+> role; leaders get „Kolik zvládnu“) · Tvoje další služby · Odmítnuté · **Kdy nemůžu** (+ Přidej) · Minulé služby. ≥ 1200
+> the right column holds the Obsazení line, Tvoje břemeno and Kdy nemůžu.
 
 > **Update – Obsazení is a list of tasks (2026-10-08).** With Seznam's status tag and the Rozpis table, Obsazení had
 > become a third calendar. The owner chose variant 1: it lists the leader's tasks for the next 4 weeks by the kind of

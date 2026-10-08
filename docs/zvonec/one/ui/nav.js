@@ -15,11 +15,11 @@ import { waitingInvites } from './access.js';
 
 /**
  * [id, label, icon, href, minAccess, group, count?] – group 'main' or 'gather' (Zdroje);
- * count: 'answers' (duties waiting for my answer) · 'staffing' (Úkoly's count).
+ * count: 'answers' (duties waiting for my answer) · 'staffing' (Obsazení's count).
  */
 export const NAV = [
   ['moje', 'Moje', 'home', '#moje', 'member', 'main', 'answers'],
-  ['ukoly', 'Úkoly', 'check-circle', '#ukoly', 'leader', 'main', 'staffing'],
+  ['obsazeni', 'Obsazení', 'check-circle', '#obsazeni', 'leader', 'main', 'staffing'],
   ['kalendar', 'Kalendář', 'calendar', '#kalendar', 'member', 'main'],
   ['lide', 'Lidé', 'people', '#lide', 'member', 'main'],
   ['skupiny', 'Skupiny', 'teams', '#lide/skupiny', 'member', 'main'],
@@ -125,7 +125,7 @@ function build() {
 
 /**
  * Show or hide the navigation for a route and light its current item. `nav`: the route's nav value ('moje' ·
- * 'ukoly' · 'kalendar' · 'lide' · 'skupiny' · 'sablony' · 'formaty' · 'mista' · 'me' for the person's menu pages · null).
+ * 'obsazeni' · 'kalendar' · 'lide' · 'skupiny' · 'sablony' · 'formaty' · 'mista' · 'me' for the person's menu pages · null).
  */
 export function updateNav({ visible, nav }) {
   document.body.classList.toggle('has-nav', visible);
