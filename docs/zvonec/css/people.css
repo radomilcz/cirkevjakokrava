@@ -121,7 +121,9 @@
 /* a lit row (hover, ticked, open) is rounded at both ends, like a lit row of Seznam. The row itself is clipped (the
    last cell may be a column hidden at this width, so a radius on :last-child would not show); its own line and the
    one above it step aside, so the corners stay clean */
-.people-table tbody tr:is(:hover, [data-picked], [data-open]) { clip-path: inset(0 round var(--radius-m)); }
+/* … and 1.5 px shorter at the top and the bottom, so two lit neighbours keep --gap-lit (3 px) between them and never
+   touch (the rule of every list: CODEX „two lit rows never touch“) */
+.people-table tbody tr:is(:hover, [data-picked], [data-open]) { clip-path: inset(calc(var(--gap-lit) / 2) 0 round var(--radius-m)); }
 .people-table tbody tr:is(:hover, [data-picked], [data-open]) > td,
 .people-table tbody tr:has(+ tr:is(:hover, [data-picked], [data-open])) > td { border-bottom-color: transparent; }
 .people-table tbody tr:hover > * { background-color: var(--wash); }
