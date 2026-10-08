@@ -108,7 +108,7 @@
 @container (min-width: 1200px) { .cal-cell { min-height: 132px; } }
 .cal-cell__more {
   position: relative; align-self: flex-start; min-height: 24px; padding: 0 var(--space-1); margin-left: -4px; border: 0;
-  border-radius: var(--radius-s); background: none; color: var(--ink-accent); font: inherit; font-size: var(--type-caption);
+  border-radius: var(--radius-s); background: none; color: var(--ink); font: inherit; font-size: var(--type-caption);
   line-height: var(--lh-caption); font-weight: var(--weight-strong); cursor: pointer; white-space: nowrap;
 }
 .cal-cell__more::after { content: ""; position: absolute; inset: -10px 0; }

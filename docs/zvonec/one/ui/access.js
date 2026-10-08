@@ -17,7 +17,7 @@ import { today, addDays } from '../../lib/time.js';
 import {
   h, list, row, pill, toast, formSheet, confirmSheet, field, textInput, segmentedField, avatar, personName, icon,
   callout, joinMeta, fieldError, clearErrors, listScreen, filterButton, filterState, searchText, openMenu, layer,
-  subhead, plural, text, meta, button, empty,
+  subhead, plural, text, meta, button, empty, menuBack,
 } from './kit.js';
 import {
   secretSheet, demoOnly, dayWithYear, dayShort, matches, searchEmpty, filterEmpty,
@@ -353,6 +353,7 @@ export function renderAccess() {
   const redraw = () => screenEl?.setBody(listBody());
   screenEl = listScreen({
     title: 'Přístupy',
+    phoneBack: menuBack(),   // a phone opens it from the person menu
     action: { label: 'Pozvi člověka', icon: 'user-plus', onclick: () => inviteSheet(null) },
     menu: [
       { label: 'Ukaž, jak se lidé dostanou dovnitř', icon: 'info', onclick: helpSheet },

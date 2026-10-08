@@ -1,7 +1,7 @@
 // Zvonec One – the kit: Filtr (CODEX §6.2, §6.9; DESIGN §3.4). One button, always at the same place (band B, right of
 // the search, fixed 120 wide with its count slot reserved), one layer: a bottom sheet on a phone, a popover 360 under
-// the button on ≥ 600. Choices apply at once. The count on the button is the only sign that a filter is on – there is
-// no filter line and no chip row anywhere else. Filters are remembered per browser and per screen (localStorage,
+// the button on ≥ 600. Choices apply at once. A filter that is on shows its count on the button and one quiet line under
+// band B („Filtr: Slovo · Zruš filtr“, btn.note – the screen places it); no chip row anywhere else. Filters are remembered per browser and per screen (localStorage,
 // key „zvonec-one-filtr-<key>“); a default scope counts (Obsazení starts at „Filtr 1“).
 //
 //   const filter = filterButton({
@@ -110,10 +110,33 @@ export function filterButton({ key, groups = [], onChange, results, unit = (n) =
   }, icon('sliders', { size: 's' }), h('span', { class: 'filter-btn__label' }, 'Filtr'),
   h('span', { class: 'filter-btn__slot' }, h('span', { class: 'filter-btn__n', 'aria-hidden': 'true' }, '0')));
   const counted = () => (typeof count === 'function' ? count(filterState(key)) : typeof count === 'number' ? count : filterCount(key, groups));
+  // what is on, said once under band B („Filtr: Slovo, Klávesy · Zruš filtr“) – a filter that hides work must say so
+  // (the UX team: Obsazení opened filtered to one team and nothing said it)
+  const note = h('p', { class: 'filter-note', hidden: true });
+  const describe = () => {
+    const state = filterState(key);
+    const words = [];
+    for (const g of groups) {
+      const v = state[g.id];
+      if (g.kind === 'switch') { if (v) words.push(g.title); continue; }
+      for (const one of Array.isArray(v) ? v : v != null && v !== '' ? [v] : []) {
+        const opt = (g.options || []).find(([value]) => value === one);
+        if (opt) words.push(opt[1]);
+      }
+    }
+    note.hidden = !words.length;
+    note.replaceChildren(...(words.length ? [
+      h('span', {}, `Filtr: ${words.join(', ')}`), ' · ',
+      h('button', { type: 'button', class: 'link', onclick: () => { clearFilter(key); changed(); } }, 'Zruš filtr'),
+    ] : []));
+  };
   fill(btn, counted());
+  describe();
+  btn.note = note;
 
   const changed = () => {
     fill(btn, counted());
+    describe();
     onChange?.(filterState(key));
     openFilter?.draw();
   };

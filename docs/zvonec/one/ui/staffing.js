@@ -311,7 +311,7 @@ export function renderStaffing(parts = []) {
   });
   const main = listScreen({
     title: 'Obsazení',
-    action: { label: 'Doplň volná místa', icon: 'user-plus', phoneMenu: true, onclick: () => fillOpenSlots(ids(), { teams: m.teams }) },
+    action: { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: m.teams }) },
     menu: [
       { label: 'Připomeň všem, kdo neodpověděli', icon: 'message', onclick: remindAll },
       { label: 'Vytiskni rozpis', icon: 'printer', onclick: () => import('./roster.js').then((r) => r.printRoster?.(today().slice(0, 7))) },

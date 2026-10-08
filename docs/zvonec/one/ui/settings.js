@@ -11,7 +11,7 @@ import { normalize, COLLECTIONS, SCHEMA } from '../../lib/store/store.js';
 import { today } from '../../lib/time.js';
 import {
   h, section, sectionAction, agree, plural, toast, confirmSheet, formSheet, field, textInput, selectInput, stepper,
-  fieldError, clearErrors, download, page, button, meta, pill,
+  fieldError, clearErrors, download, page, button, meta, pill, menuBack, isPhone,
 } from './kit.js';
 
 /** The rules, in the blocks the page shows. `where`: settings.defaults or settings.rules. */
@@ -186,6 +186,7 @@ export function renderSettings() {
   const uprav = (aria, onclick) => sectionAction('Uprav', { aria, onclick });
   return page({
     title: 'Nastavení sboru',
+    back: isPhone() ? menuBack() : null,   // a phone opens it from the person menu
     cls: 'gather cfg-screen',
     body: h('div', { class: 'cfg-blocks' },
       block({ id: 'church', title: 'Sbor', action: uprav('Uprav sbor', churchSheet), body: churchValues() }),

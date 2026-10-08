@@ -23,7 +23,7 @@ import {
   stepper, switchRow, disclosure, chips, chipsField, timeRange, icon, fillRing, clock, joinMeta,
   isSplit, fieldError, clearErrors, quiet, listScreen, detail, detailHead, facts, section, sectionAction, kindTag,
   teamMark, eventRow, clockRange, filterButton, filterState, searchText, layer, openMenu, iconButton, button,
-  count, subhead, rowLink, meta, KIND_HUES,
+  count, subhead, rowLink, meta, KIND_HUES, menuBack,
 } from './kit.js';
 import {
   byName, clone, durationText, clockPlus, minutesBetweenClocks, kindMark, minutesMark, matches, searchEmpty,
@@ -125,6 +125,7 @@ export function renderTemplates(id) {
   const redraw = () => screenEl?.setBody(listBody(type?.id));
   screenEl = listScreen({
     title: 'Šablony',
+    phoneBack: menuBack(),   // a phone opens it from the person menu
     action: { label: 'Přidej šablonu', icon: 'plus', onclick: () => basicsSheet(null) },
     search: { key: KEY, placeholder: 'Hledej šablonu', onInput: redraw },
     filter: filterButton({ key: KEY, groups: FILTER_GROUPS, onChange: redraw, results: () => shown().length, unit: templatesWord }),

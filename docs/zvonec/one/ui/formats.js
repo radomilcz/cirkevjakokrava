@@ -12,7 +12,7 @@ import { today, dayOf } from '../../lib/time.js';
 import {
   h, list, row, empty, section, pill, plural, toast, formSheet, confirmSheet, field, textInput, textArea,
   stepper, switchRow, disclosure, iconButton, isSplit, joinMeta, icon, fieldError, clearErrors, layer, teamMark,
-  listScreen, detail, detailHead, facts, text, link, quiet, searchText,
+  listScreen, detail, detailHead, facts, text, link, quiet, searchText, menuBack,
 } from './kit.js';
 import {
   byName, clone, minutesMark, matches, searchEmpty, missingDetail,
@@ -95,6 +95,7 @@ export function renderFormats(id) {
   let screenEl;
   screenEl = listScreen({
     title: 'Formáty',
+    phoneBack: menuBack(),   // a phone opens it from the person menu
     action: leader ? { label: 'Přidej formát', icon: 'plus', onclick: () => formatSheet() } : null,
     search: { key: SEARCH_KEY, placeholder: 'Hledej formát', onInput: () => screenEl.setBody(listBody(format?.id)) },
     body: listBody(format?.id),

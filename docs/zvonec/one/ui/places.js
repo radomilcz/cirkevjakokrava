@@ -11,7 +11,7 @@ import { today, dayOf } from '../../lib/time.js';
 import {
   h, list, row, empty, section, sectionAction, pill, plural, toast, formSheet, confirmSheet, field, textInput,
   selectInput, switchRow, disclosure, isSplit, joinMeta, icon, eventRow, clockRange, fieldError, clearErrors,
-  mapFrame, mapUrl, mapLink, canMap, quiet, listScreen, detail, detailHead, facts, searchText, layer, button,
+  mapFrame, mapUrl, mapLink, canMap, quiet, listScreen, detail, detailHead, facts, searchText, layer, button, menuBack,
 } from './kit.js';
 import {
   byName, placeMark, matches, searchEmpty, missingDetail, meetingsWord,
@@ -95,6 +95,7 @@ export function renderPlaces(id) {
   let screenEl;
   screenEl = listScreen({
     title: 'Místa',
+    phoneBack: menuBack(),   // a phone opens it from the person menu
     action: leader ? { label: 'Přidej místo', icon: 'plus', onclick: () => placeSheet() } : null,
     search: { key: SEARCH_KEY, placeholder: 'Hledej místo', onInput: () => screenEl.setBody(listBody(openId)) },
     body: listBody(openId),

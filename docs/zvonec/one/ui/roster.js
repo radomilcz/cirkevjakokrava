@@ -289,7 +289,7 @@ export function renderRoster(parts = [], { menu } = {}) {
   const fillable = () => rosterData(month).items.map((x) => x.event).filter((e) => !e.cancelled && !isPast(e)).map((e) => e.id);
   return calendarScreen({
     view: 'rozpis', month,
-    period: periodLine({ month, href: (m) => `#kalendar/rozpis/${m}`, todayHref: `#kalendar/rozpis/${thisMonth()}` }),
+    period: periodLine({ month, href: (m) => `#kalendar/rozpis/${m}`, todayHref: `#kalendar/rozpis/${thisMonth()}`, here: month === thisMonth() }),
     draw: () => rosterBody(month, opened?.id || null),
     results: () => rosterData(month).items.length,
     menu: (menu || calendarMenu)({ month, ids: fillable }),

@@ -1,5 +1,17 @@
 # Zvonec One: the design
 
+> **Update – one system for navigation, the main action, search and Filtr (2026-10-08).** After a UX and a UI review
+> (both chose the owner's sketch), every list screen has the same rows: A = TITLE ······ ⋯ (bare) + the main action
+> (at every width, Obsazení's on a phone too); B = an always visible, labelled search (320 on ≥ 600) + „Filtr“ (soft
+> tint, 120, its count slot reserved) on the left above the list, Kalendář's view switch (quiet words) at the right
+> end (its own full row where it does not fit); while a filter is on, one quiet line „Filtr: Slovo · Zruš filtr“;
+> C (Měsíc, Rozpis) = ‹ Říjen 2026 › ······ „Dnes“ (quiet words at the right end, not shown while today is on screen).
+> The search icons of the calm update are gone. The current nav item (tab bar, rail, sidebar, person) is the page's
+> ground with a hairline and a strong label, as in Next and Simple; --pick stays for selection in the content. Three
+> kinds of button only: the dark main action, a soft tint (quiet buttons, Filtr), a bare icon (⋯, ✕, call). Links
+> are ink – red only for problems. A phone gets „‹ Zpět“ on screens opened from the person menu. ≥ 1200 the list
+> takes up to 840 while no pane is open.
+
 > **Update – calm lists (2026-10-08).** Still „cluttered“ for the owner. Now: B is two quiet icons in the title row
 > (⌕ opens the search field in place, a full row under the title on a phone; ⚟ Filtr with its count), ⋯ is quiet
 > among them; the view switch is quiet text; a list shows a fill only when something needs doing („chybí 1“ in the
