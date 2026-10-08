@@ -1,5 +1,8 @@
 # Zvonec One: the design
 
+> **Update – Obsazení is now Úkoly (2026-10-08).** Once it lists tasks, its name says so: the nav item, title and route
+> are „Úkoly“ (`#ukoly`, icon a circled tick); `#obsazeni[/…]` redirects there, its Filtr keeps the stored key.
+
 > **Update – Obsazení is a list of tasks (2026-10-08).** With Seznam's status tag and the Rozpis table, Obsazení had
 > become a third calendar. The owner chose variant 1: it lists the leader's tasks for the next 4 weeks by the kind of
 > work, not by meeting – **Chybí lidi** (a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne

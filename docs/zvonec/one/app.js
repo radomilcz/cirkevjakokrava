@@ -91,7 +91,7 @@ function resolve() {
 }
 
 /** Where a Setkání page goes back to: the tab (or the person card) it was opened from. */
-const BACK_LABELS = { moje: 'Moje', obsazeni: 'Obsazení', kalendar: 'Kalendář', lide: 'Lidé' };
+const BACK_LABELS = { moje: 'Moje', ukoly: 'Úkoly', kalendar: 'Kalendář', lide: 'Lidé' };
 
 /** Signed in and looking at a public page: „Takhle to vidí návštěvníci · Vrať se do Zvonce“. */
 const publicStrip = () => h('div', { class: 'strip', role: 'note' },
