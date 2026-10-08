@@ -726,7 +726,8 @@ Redirects (old slugs keep working): `prehled|domu|vice` → `moje`; `nemuzu` →
 - The frame fills the content area up to 1600: list track `clamp(400px, 100% − 32 − 480, 840px)`, pane track up to
   720, gap 32. With no pane open the list takes up to 840.
 - Head rows A, B, C span the frame; the pane starts level with the content.
-- Wide views (Měsíc grid, Podrobný výpis with nobody open, Skupiny cards with nothing open) span both tracks.
+- Wide views (Měsíc grid, the Rozpis tables, Podrobný výpis with nobody open, Skupiny cards with nothing open) span
+  both tracks.
 - When the list track is under 440, the main action is icon-only.
 - **Pane**: `--card`, r20, padding 24, `--lift-2`; sticky 24 under the window top while it fits, otherwise it
   scrolls with the page (never inside). Action row 44: „‹ Back“ only when drilled in; ⋯ then ✕ on the right.
@@ -808,9 +809,9 @@ Always a symbol + a word, never colour alone.
 - ✓ green disc „potvrzeno“ · ○ amber ring „čeká na potvrzení“ / „čeká na odpověď“ · ✕ red disc „nemůže“ (name
   struck).
 - List marks: ○ 10 px amber ring = waits; ● red dot = a problem („něco nesedí“).
-- **Lists show a fill only when something needs doing**: „chybí 1“ in the error ink, „2 čekají“ in the second ink.
-  Full meetings show nothing; confirmed duties carry no tick; lists show only the start time. Details still show
-  the ring + „6 z 6“.
+- **The meeting line** (Seznam, Měsíc's day list and popover) shows the time from–to and, for leaders, the whole
+  fill under the place: ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba (errors other than K5). Confirmed duties
+  carry no tick. Obsazení keeps its to-do lines instead of a ring.
 
 ### 8.8 Colour
 - Ink for text and links. Red (`--no-*`) only for problems. `--ink-accent` only for quiet links.
@@ -902,9 +903,9 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
   Filtr: **Účel** (hue dots) · **Tým** (multi) · **Jen moje služby** · **Ukaž i zrušená**. View switch at the
   right; only a click on it is remembered.
 - **Seznam** `#kalendar/seznam`: one continuous list from today, 6 weeks at a time (a search looks 400 days
-  ahead). Week subheads, one date arch per day, „Dnes“ / „Zítra“. A line: start time · Účel bar (3 px) · title ·
-  place · „(ty) Kázání ○ čeká…“ when I serve · leaders' quiet fill · „zrušeno“ pill. [Ukaž další týdny] at the
-  end. A click opens the pane (≥ 1200) or the page („‹ Kalendář“). Empty: „Zatím tu nejsou žádná setkání.“ /
+  ahead). Week subheads, one date arch per day, „Dnes“ / „Zítra“. A line: start over end time · Účel bar (3 px) ·
+  title · place · „(ty) Kázání ○ čeká…“ when I serve · leaders' fill line (◯ 14 z 15 · ● chybí 1 · ○ 2 čekají ·
+  ● 1 chyba) · „zrušeno“ pill. [Ukaž další týdny] at the end. A click opens the pane (≥ 1200) or the page („‹ Kalendář“). Empty: „Zatím tu nejsou žádná setkání.“ /
   „Tady uvidíš, co se chystá: neděle, zkoušky, skupinky i akce.“
 - **Měsíc** `#kalendar/mesic/<m>[/<day>]`: the period line, then a form chosen by content width (container query at
   700).
@@ -916,11 +917,19 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
     the Setkání **page** (never a pane). A day number, „+ N další“ or empty cell space opens the day popover
     („St 7. 10.“, the day's lines, leaders' foot [Přidej setkání]).
   - Empty month: „V říjnu tu nic není.“
-- **Rozpis** `#kalendar/rozpis/<m>[/<id>]`: period line; legend „○ čeká na odpověď ● něco nesedí“ (leaders, when a
-  mark appears). One block per meeting of the month that needs people: date arch, „Setkání na pastvě · 10.00“,
-  quiet fill; per team a name column (96 phone / 120) and the people („Ty“ for me; marks for leaders); then the
-  open slots „+ Klávesy“ / „2× Zvuk“ (leaders, future meetings) or „chybí N“. Past meetings in `--ink-2`. A name
-  (leaders) → duty sheet; „Ty“ → my answer; the block → pane or page. Filtr › Tým narrows the team lines.
+- **Rozpis** `#kalendar/rozpis/<m>[/<id>]`: the classic church roster, spanning the whole frame (never a pane).
+  Period line; legend „○ čeká na odpověď ● něco nesedí“ (leaders, when a mark appears). Then one table per kind of
+  meeting of the month (same template, else same title; kinds that happen once share „Další setkání“), with an h2
+  „Setkání na pastvě“ and meta „neděle · 10.00 · 4 setkání“.
+  - A **column** per meeting: the day („ne 4. 10.“, today on the ink disc), the time (and the title in „Další
+    setkání“), leaders' ◯ 14 z 15, „zrušeno“. The head is a link to the meeting page („‹ Rozpis“).
+  - A **row** per role under its team's line („Chvály“); the role column is sticky.
+  - A **cell**: one name per line (short names on a phone), „Ty“ on the pick tint, ○ / ● after a name (leaders);
+    „+ Doplň“ (leaders, upcoming) or „chybí“ where someone is missing; „–“ where the meeting does not need the role.
+  - Meetings share the width equally (role 120 + at least 144 each; phone 96 + 116). On a phone the table scrolls
+    sideways inside its own wrapper (never the page) and the third column peeks in.
+  - Past meetings in `--ink-2`. A name (leaders) → duty sheet; „Ty“ → my answer; „+ Doplň“ → picker. Filtr › Tým
+    narrows the rows; the rest of Filtr and the search narrow the columns.
 - **Břemeno** (dialog, `/bremeno`, leaders): „Kolik služeb má kdo v říjnu. Nahoře ti, kdo mají nejvíc.“ Rows:
   avatar, name, „3 z 4 · má pauzu · 3 neděle po sobě“, a load bar, „víc, než zvládne“ in amber.
 

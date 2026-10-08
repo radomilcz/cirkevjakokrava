@@ -27,18 +27,12 @@
 .cal-agenda .agenda__day { padding: var(--space-3) 0; }
 .cal-agenda .agenda__day > .arch { top: var(--space-4); }
 .cal-agenda .agenda__label { padding-top: 0; }
-/* from 600 up the leader's fill sits in the trail (a value never inside the meta) */
-.cal-event--trail { grid-template-columns: 52px minmax(0, 1fr) auto; }
-.cal-event__trail { align-self: center; flex: none; padding-left: var(--space-2); white-space: nowrap; }
-.cal-event .fill { flex-wrap: nowrap; }
+/* the leader's whole fill under the words (Simple's line): ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba */
+.cal-fill { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-3); }
+.cal-fill > .ring { width: 24px; height: 24px; margin-right: calc(var(--space-1) - var(--space-3)); }
+.cal-fill > .num { color: var(--ink); font-feature-settings: var(--numerals); }
 .event[data-cancelled] .event__meta { text-decoration: line-through; }
 .cal-more { margin-top: var(--space-5); }
-/* a narrow list track (1200–1279: 400–440): the fill goes under the words, so a title keeps its line */
-@container list-body (max-width: 479.98px) {
-  .cal-event--trail { grid-template-columns: 52px minmax(0, 1fr); }
-  .cal-event__trail { grid-column: 2; justify-self: start; padding-left: var(--space-4); }
-  .rblock .rblock__team { grid-template-columns: 96px minmax(0, 1fr); }   /* Rozpis: the phone's team column */
-}
 
 /* ---------- Měsíc: one of two forms by the content's own width (DESIGN §6.2) ---------- */
 .cal-mesic { container-type: inline-size; min-width: 0; }
@@ -124,68 +118,73 @@
 .cal-daypop__list { display: grid; gap: var(--gap-lit); }
 .cal-daypop__list > .event { margin: 0; }
 
-/* ---------- Rozpis: one block per meeting, one line per team ---------- */
-.rlist { display: grid; }
-.rblock {
-  --rblock-rule-start: calc(var(--space-3) + var(--arch-w) + var(--space-4));
-  position: relative; display: grid; grid-template-columns: var(--arch-w) minmax(0, 1fr) auto; gap: var(--space-2) var(--space-4);
-  grid-template-areas: "arch head trail" "arch teams teams"; grid-template-rows: auto 1fr; align-items: start; padding: var(--space-3); margin: 0 calc(-1 * var(--space-3)); border-radius: var(--radius-m);
-  transition: background-color var(--dur-state) var(--ease);
+/* ---------- Rozpis: one table per kind of meeting (columns = meetings, rows = roles under their team) ---------- */
+.rlist { display: grid; gap: var(--section-gap); }
+.cal-legend + .rlist { margin-top: var(--space-5); }
+.rt__title {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--space-3); margin-bottom: var(--space-3);
+  font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong);
 }
-.rblock + .rblock { margin-top: var(--gap-lit); }
-/* the hairline belongs to the block below and steps aside for a lit block and the one after it */
-.rblock + .rblock::before {
-  content: ""; position: absolute; top: calc(-1 * var(--gap-lit) + 1px); left: var(--rblock-rule-start); right: var(--space-3);
-  height: 1px; background: var(--hairline);
+.rt__meta { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-regular); color: var(--ink-2); font-feature-settings: var(--numerals); }
+/* the table scrolls sideways on its own (never the page: relative, so the hidden words of a cell stay inside it); on a
+   phone it runs to the screen's edges */
+.rt-wrap { position: relative; max-width: none; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); scrollbar-width: thin; }
+.rt-wrap:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.rt-table { table-layout: fixed; font-size: var(--type-meta); line-height: var(--lh-meta); }
+.rt-table :is(th, td) { padding: var(--space-2) var(--space-3); vertical-align: top; text-align: left; }
+/* the role column stays put while the meetings scroll */
+.rt-table :is(.rt-corner, .rt-role) { position: sticky; left: 0; z-index: 1; width: 120px; min-width: 120px; max-width: 160px; background: var(--ground); }
+.rt-table .rt-role { font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: normal; box-shadow: inset -1px 0 0 var(--hairline); }
+.rt-table .rt-corner { box-shadow: inset 0 -1px 0 var(--edge), inset -1px 0 0 var(--hairline); }
+/* a column head: the day, the time, leaders' ◯ 14 z 15 – one link to the meeting */
+.rt-col { padding: 0 !important; vertical-align: bottom !important; }
+.rt-col__link {
+  display: grid; justify-items: start; gap: 2px; padding: var(--space-2) var(--space-3) var(--space-3); border-radius: var(--radius-m) var(--radius-m) 0 0;
+  color: var(--ink); text-decoration: none;
 }
-.rblock:hover { background: var(--wash); }
-.rblock[data-open] { background: var(--pick); --tint: var(--card); }
-.rblock[data-open]:hover { background: var(--pick-hover); }
-.rblock[data-open]::after {
-  content: ""; position: absolute; left: 0; top: calc(50% - var(--mark-h) / 2); height: var(--mark-h); width: 3px; border-radius: 0 3px 3px 0; background: var(--mark);
+.rt-col__link:hover { background: var(--wash); }
+.rt-col__link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.rt-col__title { font-weight: var(--weight-strong); }
+.rt-col__day { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); font-feature-settings: var(--numerals); }
+.rt-col__title + .rt-col__day { font-size: var(--type-meta); line-height: var(--lh-meta); }
+.rt-col__time { font-weight: var(--weight-regular); color: var(--ink-2); font-feature-settings: var(--numerals); }
+.rt-col__fill { display: inline-flex; align-items: center; gap: var(--space-1); margin-top: var(--space-1); font-weight: var(--weight-regular); color: var(--ink); }
+.rt-col__fill .num { font-feature-settings: var(--numerals); }
+.rt-col > .rt-col__link > .pill { margin-top: var(--space-1); }
+.rt-col[data-cancelled] :is(.rt-col__day, .rt-col__title) { text-decoration: line-through; color: var(--ink-2); }
+.rt-col[data-past] :is(.rt-col__day, .rt-col__title, .rt-col__fill) { color: var(--ink-2); }
+/* today's meeting: its day on the ink disc's colours, as the date arch has it */
+.rt-col[data-today] .rt-col__day { padding: 0 var(--space-2); margin-left: calc(-1 * var(--space-2)); border-radius: var(--shape-pill); background: var(--act); color: var(--on-act); }
+/* a team's line over its roles */
+.rt-team > th { padding: var(--space-4) 0 var(--space-1) !important; box-shadow: none; }
+.rt-team__name {
+  position: sticky; left: 0; display: inline-block; padding-left: var(--space-3);
+  font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2);
 }
-.rblock:is(:hover, [data-open])::before, .rblock:is(:hover, [data-open]) + .rblock::before { background: transparent; }
-.rblock[data-open] .rblock__time, .rblock[data-open] .rblock__team-name { color: var(--ink); }
-/* the whole block is one link; the names and slots on it are their own targets */
-.rblock__link { position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
-.rblock__link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
-.rblock :is(button, .slot) { position: relative; z-index: 1; }
-.rblock > .arch { grid-area: arch; }
-/* the fill trail sits on the title line only; the team lines run under it to the list's right edge */
-.rblock__head { grid-area: head; min-width: 0; overflow-wrap: normal; }
-.rblock__head > .pill { margin-left: var(--space-2); vertical-align: 1px; }
-.rblock__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); }
-.rblock__time { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); font-feature-settings: var(--numerals); }
-.rblock[data-cancelled] .rblock__title { text-decoration: line-through; color: var(--ink-2); }
-/* what is over (the whole month shows): quieter, still readable */
-.rblock[data-past] :is(.rblock__title, .cal-who) { color: var(--ink-2); }
-.rblock__trail { grid-area: trail; align-self: start; padding-top: 2px; white-space: nowrap; }
-.rblock__teams { grid-area: teams; display: grid; gap: var(--space-2); min-width: 0; }
-.rblock__team { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-3); align-items: baseline; }
-@media (min-width: 600px) { .rblock__team { grid-template-columns: 120px minmax(0, 1fr); } }
-.rblock__team-name {
-  font-size: var(--type-caption); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2);
-  overflow-wrap: normal; min-width: 0;
+.rt-table tbody tr.rt-team > *, .rt-table tbody tr.rt-team + tr > * { border-top: 0; }
+.rt-table tbody tr.rt-team + tr > * { box-shadow: inset 0 1px 0 var(--edge); }
+.rt-table tbody tr.rt-team + tr > .rt-role { box-shadow: inset 0 1px 0 var(--edge), inset -1px 0 0 var(--hairline); }
+.rt-table tbody tr:first-child > th { padding-top: var(--space-2) !important; }
+/* a cell: a name a line, then „+ Doplň“ or „chybí“; „–“ where the meeting does not need the role */
+.rt-cell { color: var(--ink); }
+.rt-cell > * + * { margin-top: 2px; }
+.rt-cell > .slot { margin-top: var(--space-1); }
+.rt-cell--none { color: var(--ink-3); }
+.rt-cell[data-past] { color: var(--ink-2); }
+.rt-cell[data-me] { background: var(--pick); }
+/* a name is a line of its own; a long one wraps between its words and its ○ / ● stays right after the last word */
+.rt-name {
+  display: block; max-width: 100%; padding: 0; border: 0; background: none;
+  color: inherit; font: inherit; text-align: left; overflow-wrap: normal;
 }
-.cal-who { min-width: 0; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); overflow-wrap: normal; }
-.cal-who__tail { white-space: nowrap; }
-/* a person is one box: the line breaks between people, the same for a member's text and a leader's button */
-.cal-who__person { display: inline-block; max-width: 100%; vertical-align: top; }
-.cal-who__tail > .cal-mark { margin-left: 4px; }
-.cal-name {
-  display: inline; padding: 0; border: 0; border-radius: 4px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+.rt-name > .cal-mark { margin-left: 4px; }
+button.rt-name { cursor: pointer; }
+button.rt-name:hover .rt-name__text { text-decoration: underline; text-underline-offset: 3px; }
+.rt-cell[data-me] .rt-name { font-weight: var(--weight-strong); }
+@media (max-width: 599.98px) {
+  .rt-table :is(.rt-corner, .rt-role) { width: 96px; min-width: 96px; max-width: 112px; }
 }
-button.cal-name:hover { text-decoration: underline; text-underline-offset: 3px; }
-span.cal-name { cursor: default; }
-/* the slots: a row of their own under the names, 8 across and 12 down; from 600 up a slot is one line (S 36) and a
-   role too long for the line ends in „…“ instead of wrapping inside the capsule; on a phone (M 44) a long role
-   („Modlitby po setkání“ in 182) wraps between its words instead: two lines of 20 still fit the 44, nothing is cut */
-.cal-who__slots { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-2); min-width: 0; }
-.cal-who > * ~ .cal-who__slots { margin-top: var(--space-2); }
-.cal-who__slots > .slot { max-width: 100%; min-width: 0; }
 .slot__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 599.98px) { .slot__label { white-space: normal; overflow-wrap: normal; text-align: left; } }
-.cal-who > .sev { margin-left: 2px; }
 
 /* ---------- Břemeno (a dialog) ---------- */
 .load-list .row__trail { gap: var(--space-3); }
