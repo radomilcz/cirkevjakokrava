@@ -138,7 +138,7 @@ const paneSlot = (pane, label) => h('aside', { class: 'split__pane', 'aria-label
  * Desktop: the split grid, both tracks always reserved (the list keeps its x and width with the pane open or not);
  * tablet: one column min(content, 720); phone: the content width. B and C stay in the list column at every width.
  */
-export function listScreen({ title, action, menu, search, filter, views, body, pane, wide = false, label, cls } = {}) {
+export function listScreen({ title, action, menu, search, filter, views, body, pane, wide = false, label, cls, phoneBack } = {}) {
   const split = isSplit();
   const bodyEl = h('div', { class: 'ls__body' }, body);
   // B joins A at every width: [h1 ········ ⌕ · ⚟ · ⋯ · main action]; C under it
@@ -150,8 +150,10 @@ export function listScreen({ title, action, menu, search, filter, views, body, p
   const controlsEl = controls.length ? h('div', { class: 'ls__controls' }, controls) : null;
   const paneEl = split && !wide ? paneSlot(pane, label) : null;
   const main = h('main', {
-    class: ['screen', 'ls', wide && 'ls--wide', split && 'ls--split', cls], id: 'main', tabIndex: -1,
+    class: ['screen', 'ls', wide && 'ls--wide', split && 'ls--split', phoneBack && isPhone() && 'page--drill', cls], id: 'main', tabIndex: -1,
   },
+  // phoneBack: a list reached from another screen on a phone (Skupiny from Lidé) gets „‹ Lidé“ on top
+  phoneBack && isPhone() ? topBar({ back: phoneBack }) : null,
   h('div', { class: 'frame' },
     titleRow({ title, action, menu, tools: bar }),
     // ≥ 1200 C spans the frame (above the list and the pane), so the switch sits at the right edge in every view

@@ -75,6 +75,7 @@ function personBits() {
 /** Tapping the current item scrolls the screen to the top (nothing else); from a drill-in page it goes to its root. */
 function topOnCurrent(e) {
   const a = e.currentTarget;
+  if (a.hasAttribute('data-mapped')) return;   // lit for another screen (Lidé for Skupiny): the tap goes to its own screen
   if (a.getAttribute('aria-current') !== 'page' || e.metaKey || e.ctrlKey || e.shiftKey) return;
   if (document.querySelector('#view .topbar__back')) return;
   e.preventDefault();
@@ -138,6 +139,7 @@ export function updateNav({ visible, nav }) {
   for (const el of document.querySelectorAll('.tabbar [data-nav]')) {
     const current = el.dataset.nav === 'me' ? PHONE_PERSON.has(nav) : el.dataset.nav === (TAB_OF[nav] || nav);
     if (current) el.setAttribute('aria-current', 'page'); else el.removeAttribute('aria-current');
+    el.toggleAttribute('data-mapped', current && el.dataset.nav !== 'me' && el.dataset.nav !== nav);
   }
   for (const el of document.querySelectorAll('.sidenav [data-nav]')) {
     const current = el.dataset.nav === nav;
