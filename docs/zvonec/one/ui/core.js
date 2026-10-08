@@ -5,12 +5,12 @@
 // API: scratchpad/one/F-API.md · living specimen: #kit.
 
 import { h, nodes, uid } from './h.js';
-import { icon, statusSymbol, fillRing } from './icons.js';
+import { icon, statusSymbol, fillRing, statusRing } from './icons.js';
 import { fullName, DELETED_NAME } from '../../lib/people.js';
 import { KIND_LABELS, KIND_ICONS } from '../../lib/events.js';
 
 export { h, append, nodes, uid } from './h.js';
-export { icon, statusSymbol, fillRing, SHAPES as ICONS } from './icons.js';
+export { icon, statusSymbol, fillRing, statusRing, SHAPES as ICONS } from './icons.js';
 
 // ---------- words ----------
 

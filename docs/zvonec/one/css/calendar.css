@@ -27,10 +27,15 @@
 .cal-agenda .agenda__day { padding: var(--space-3) 0; }
 .cal-agenda .agenda__day > .arch { top: var(--space-4); }
 .cal-agenda .agenda__label { padding-top: 0; }
-/* the leader's whole fill under the words (Simple's line): ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba */
-.cal-fill { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-3); }
-.cal-fill > .ring { width: 24px; height: 24px; margin-right: calc(var(--space-1) - var(--space-3)); }
-.cal-fill > .num { color: var(--ink); font-feature-settings: var(--numerals); }
+/* the leader's status tag, only where something is missing or waits: from 600 up in the trail, on a phone under the
+   words (calEvent) */
+.cal-event--trail { grid-template-columns: 52px minmax(0, 1fr) auto; }
+.cal-event__trail { align-self: center; flex: none; padding-left: var(--space-2); }
+/* a narrow list track (1200–1279: 400–440): the tag goes under the words, so a title keeps its line */
+@container list-body (max-width: 479.98px) {
+  .cal-event--trail { grid-template-columns: 52px minmax(0, 1fr); }
+  .cal-event__trail { grid-column: 2; justify-self: start; padding-left: var(--space-4); margin-top: var(--space-1); }
+}
 .event[data-cancelled] .event__meta { text-decoration: line-through; }
 .cal-more { margin-top: var(--space-5); }
 

@@ -809,9 +809,11 @@ Always a symbol + a word, never colour alone.
 - ✓ green disc „potvrzeno“ · ○ amber ring „čeká na potvrzení“ / „čeká na odpověď“ · ✕ red disc „nemůže“ (name
   struck).
 - List marks: ○ 10 px amber ring = waits; ● red dot = a problem („něco nesedí“).
-- **The meeting line** (Seznam, Měsíc's day list and popover) shows the time from–to and, for leaders, the whole
-  fill under the place: ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba (errors other than K5). Confirmed duties
-  carry no tick. Obsazení keeps its to-do lines instead of a ring.
+- **The meeting line** (Seznam, Měsíc's day list and popover) shows only the start time. Leaders get a **status tag**
+  only where something is missing or waits: a soft capsule with the status ring and the words – [◔ chybí 1] on the
+  error tint, [◔ 1 čeká] on the waiting tint, [◔ chybí 1 · 2 čekají] when both hold. A full meeting shows nothing.
+  The tag sits in the trail from 600 up and under the words on a phone. The **status ring** has three parts:
+  confirmed (green), waiting (amber), missing (red). Confirmed duties carry no tick. Obsazení keeps its to-do lines.
 
 ### 8.8 Colour
 - Ink for text and links. Red (`--no-*`) only for problems. `--ink-accent` only for quiet links.
@@ -903,9 +905,9 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
   Filtr: **Účel** (hue dots) · **Tým** (multi) · **Jen moje služby** · **Ukaž i zrušená**. View switch at the
   right; only a click on it is remembered.
 - **Seznam** `#kalendar/seznam`: one continuous list from today, 6 weeks at a time (a search looks 400 days
-  ahead). Week subheads, one date arch per day, „Dnes“ / „Zítra“. A line: start over end time · Účel bar (3 px) ·
-  title · place · „(ty) Kázání ○ čeká…“ when I serve · leaders' fill line (◯ 14 z 15 · ● chybí 1 · ○ 2 čekají ·
-  ● 1 chyba) · „zrušeno“ pill. [Ukaž další týdny] at the end. A click opens the pane (≥ 1200) or the page („‹ Kalendář“). Empty: „Zatím tu nejsou žádná setkání.“ /
+  ahead). Week subheads, one date arch per day, „Dnes“ / „Zítra“. A line: start time · Účel bar (3 px) · title ·
+  place · „(ty) Kázání ○ čeká…“ when I serve · leaders' status tag where something is missing or waits (§8.7) ·
+  „zrušeno“ pill. [Ukaž další týdny] at the end. A click opens the pane (≥ 1200) or the page („‹ Kalendář“). Empty: „Zatím tu nejsou žádná setkání.“ /
   „Tady uvidíš, co se chystá: neděle, zkoušky, skupinky i akce.“
 - **Měsíc** `#kalendar/mesic/<m>[/<day>]`: the period line, then a form chosen by content width (container query at
   700).

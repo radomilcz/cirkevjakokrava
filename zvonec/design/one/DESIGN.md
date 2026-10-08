@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – the status tag (2026-10-08).** The owner liked the calm Seznam better than Simple's full line, with a
+> status area where something is missing or waits. Of four proposals they chose A, for its simplicity: the event line
+> is calm again (only the start; a full meeting shows nothing) and a leader sees a soft capsule – [◔ chybí 1] on the
+> error tint, [◔ 1 čeká] on the waiting tint, both words when both hold – in the trail from 600 up, under the words on
+> a phone. Its ring has three parts: confirmed (green), waiting (amber), missing (red). Rozpis stays the table.
+
 > **Update – Simple's fill line, Rozpis as a table (2026-10-08).** The owner found Simple's line under a meeting
 > clearer than the quiet words: Seznam (and Měsíc's day list and popover) show again the time from–to and, for leaders,
 > the whole fill under the place – ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba (errors other than „Chybí lidi“).

@@ -128,7 +128,7 @@ function openDay(day, list, anchor) {
   layer.open({
     kind: 'popover', anchor, placement: 'below-start', title, cls: 'cal-daypop',
     body: list.length
-      ? h('div', { class: 'agenda__items cal-daypop__list' }, list.map((e) => calEvent(e, { href: eventHref(e) })))
+      ? h('div', { class: 'agenda__items cal-daypop__list' }, list.map((e) => calEvent(e, { href: eventHref(e), trail: false })))
       : quiet('Na tenhle den nic není.'),
     foot: leader ? button('Přidej setkání', { variant: 'quiet', icon: 'plus', onclick: () => openAddEvent({ day }) }) : null,
   });
