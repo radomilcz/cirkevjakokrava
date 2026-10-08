@@ -152,11 +152,12 @@
 .ev-note { display: grid; gap: 2px; padding: var(--space-3) var(--space-4); border-radius: var(--radius-m); background: var(--tint); }
 .ev-note__label { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-2); }
 .ev-note .text { white-space: pre-line; }
-.ev-where { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-4); }
-.ev-where__text { min-width: 0; font-size: var(--type-body); line-height: var(--lh-body); }
-/* „Doplň popis“ inside a sentence: as tall as the line, its tap area 44 */
-.ev-missing > .link { position: relative; min-height: 0; }
-.ev-missing > .link::after { content: ""; position: absolute; inset: calc((var(--lh-meta) - var(--hit)) / 2) 0; }
+/* the facts under the prose: the head's icon rail (20 + 12); „Ukaž na webu“ joins it, its icon on the label's line */
+.ev-about > .facts { gap: var(--space-1); }
+.ev-public { display: grid; grid-template-columns: var(--icon-s) minmax(0, 1fr); gap: var(--space-3); }
+.ev-public > .icon { margin-top: calc((var(--hit) - var(--icon-s)) / 2); color: var(--ink-2); }
+.ev-public > .switch-row { align-items: flex-start; }
+.ev-public > .switch-row > .switch-row__text { padding-top: calc((var(--hit) - var(--lh-body)) / 2); }
 .ev-count { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-6); }
 
 /* ---------- the sheets of the duties and the forms ---------- */
