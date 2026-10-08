@@ -209,13 +209,14 @@ a { color: inherit; text-decoration: none; }
 .avatar--l { width: var(--avatar-l); height: var(--avatar-l); font-size: 22px; }
 .avatar--xl { width: var(--avatar-xl); height: var(--avatar-xl); font-size: 24px; }
 .avatar--xxl { width: 128px; height: 128px; font-size: 40px; }
-/* the head's avatar of who may change the photo: a button with a small + badge */
+/* the head's avatar of who may change the photo: a button with a small camera badge */
 .photo-btn { position: relative; display: inline-grid; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
 .photo-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 .photo-btn__badge {
   position: absolute; right: -2px; bottom: -2px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
-  background: var(--act); color: var(--on-act); box-shadow: 0 0 0 3px var(--ground); font-size: 18px; line-height: 1; font-weight: var(--weight-strong);
+  background: var(--act); color: var(--on-act); box-shadow: 0 0 0 3px var(--ground);
 }
+.photo-btn__badge > .icon { width: 15px; height: 15px; }
 .photo-btn:hover .avatar { filter: brightness(.96); }
 .photo-field { display: grid; justify-items: start; gap: var(--space-3); }
 .avatar--me { background: var(--tint-2); color: var(--ink); }
@@ -757,6 +758,7 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .pane__spacer { flex: 1; }
 /* a person's avatar in the card's top-left corner: the row takes its height, ⋯ and ✕ stay at its top */
 .pane__actions--corner { align-items: flex-start; }
+.pane__actions--corner + .pane__body { margin-top: var(--space-5); }   /* the avatar's badge must not touch the name */
 .pane__corner { display: flex; }
 .pane__back, .topbar__back { gap: 4px; padding: 0 14px 0 8px; }
 .pane__back > span, .topbar__back > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 28ch; }
@@ -789,7 +791,7 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 /* the head of every detail: band 96 or mark → 16 → tags → 8 → h1 → 12 → facts (→ 32 → the first section) */
 .dhead { display: grid; justify-items: start; min-width: 0; }
 .dhead__band { justify-self: stretch; min-height: 96px; margin-bottom: var(--space-4); border-radius: var(--shape-block); overflow: hidden; }
-.dhead__mark { margin-bottom: var(--space-4); }
+.dhead__mark { margin-bottom: var(--space-5); }
 .dhead__tags { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-bottom: var(--space-2); }
 .dhead__title { font-size: var(--type-title-pane); line-height: var(--lh-title-pane); }
 .detail--page .dhead__title { font-size: var(--type-title); line-height: var(--lh-title); }
@@ -802,6 +804,10 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .fact { display: flex; align-items: center; gap: var(--space-3); min-height: 32px; color: var(--ink); font-size: 16px; line-height: 22px; min-width: 0; }
 .fact > .icon { color: var(--ink-2); }
 .fact__text { min-width: 0; overflow-wrap: break-word; }
+/* a fact that may run to two lines: the icon stays level with the first one */
+.fact--wrap { align-items: flex-start; padding-block: 5px; }
+.fact--wrap > .icon { margin-top: 1px; }
+.fact__part { white-space: nowrap; }
 .fact--link { margin: 0 calc(-1 * var(--space-3)); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-m); background: none; text-align: left; font: inherit; font-size: 16px; cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
 .fact--link:hover { background: var(--wash); }
 .fact__chevron { margin-left: auto; color: var(--ink-3) !important; }

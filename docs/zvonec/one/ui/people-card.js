@@ -2,9 +2,9 @@
 //   personDetail(person, { frame, back, close })   pane beside Lidé (≥ 1200) or a page (< 1200, deep links)
 //   personBody(person, { frame })                  the same body without the frame (Můj účet › Moje karta)
 //   householdDetail(household, { frame, back, close })
-// Člověk: avatar 72 → membership pill and team pills (links) → name → facts (birthday, leaders and the person) →
-// contact tiles Zavolej · SMS · E-mail (L 52, only those with data, never on your own card). Sections: callouts
-// (archive, what is missing – leaders), Co nesedí (leaders), Příští služby, Kontakt [Uprav], Domácnost, Skupiny
+// Člověk: avatar 72 (a pane's top-left corner) → name → facts (membership and teams as the list row says them, the
+// birthday for leaders and the person) → contact tiles Zavolej · SMS · E-mail (L 52, only those with data, never on
+// your own card). Sections: callouts (archive, what is missing – leaders), Co nesedí (leaders), Příští služby, Kontakt [Uprav], Domácnost, Skupiny
 // [+ Přidej], Kdy nemůže, Údaje [Uprav] and Poznámka (leaders). ⋯: Uprav · Nastav, kolik toho zvládne · Pozvi do
 // Zvonce · Stáhni do kalendáře · Přesuň do archivu / Vrať z archivu · Smaž kartu.
 // Privacy: a member looking at someone else never sees membership, birth date, notes, consent or logins; the
@@ -12,7 +12,7 @@
 
 import {
   h, icon, avatar, teamMark, detail, detailHead, section, sectionAction, facts, list, row, eventRow, statusSymbol,
-  pill, button, callout, joinMeta, plural, personName, quiet, mapLink, isPhone, missingItem, menuButton,
+  button, callout, joinMeta, plural, personName, quiet, mapLink, isPhone, missingItem, menuButton,
 } from './kit.js';
 import { S, can, myId, change, isUpcoming } from '../../ui/state.js';
 import { householdById, householdMembers, age, statusOf, displayName, fullName } from '../../lib/people.js';
@@ -42,9 +42,6 @@ const ACCESS_WORDS = { admin: 'správce', leader: 'vedoucí', member: 'člen' };
 
 /** The 56 mark of a household (a house in the group-mark shape). */
 export const houseMark = ({ size = 56 } = {}) => h('span', { class: ['avatar', 'avatar--team', 'house-mark', size === 40 ? null : 'mark-56'], 'aria-hidden': 'true' }, icon('home', { size: size === 40 ? 's' : undefined }));
-
-/** A small pill that is a link (the person's teams under the avatar). */
-const pillLink = (word, href) => h('a', { class: 'pill pill--link', href }, word);
 
 // ---------- ⋯ ----------
 
@@ -92,19 +89,23 @@ function birthdayFact(person) {
   return { icon: 'cake', text: joinMeta([when, years != null ? yearsText(years) : null]) };
 }
 
+/** Who they are among us, as the list row says it: „člen · Chvály, Technika“ (a member sees only the teams). */
+function teamsFact(person, { birthday } = {}) {
+  let word = can('leader') ? MEMBERSHIP_WORDS[statusOf(person)] : null;
+  // a child's age is already in the birthday fact: „dítě“ here, „17. 3. 2015 · 11 let“ there
+  if (can('leader') && isKid(person) && !isFormer(person)) word = birthday ? kidText(person).split(',')[0] : kidText(person);
+  const teams = groupsInOrder(person.id);
+  if (!word && !teams.length) return null;
+  // a long line breaks between the teams, never inside one („Středeční skupinka“ stays whole)
+  const names = teams.flatMap((g, i) => [i ? ', ' : null, h('span', { class: 'fact__part' }, g.name)]);
+  return { icon: 'teams', cls: 'fact--wrap', text: [word, word && teams.length ? ' · ' : null, ...names] };
+}
+
 function personHead(person, { cornered = false } = {}) {
-  const leader = can('leader');
-  const self = person.id === myId();
-  const word = leader ? (isKid(person) && !isFormer(person) ? kidText(person) : MEMBERSHIP_WORDS[statusOf(person)]) : null;
-  const groups = groupsInOrder(person.id);
-  const factList = [birthdayFact(person)].filter(Boolean);
+  const birthday = birthdayFact(person);
+  const factList = [teamsFact(person, { birthday: !!birthday }), birthday].filter(Boolean);
   return detailHead({
-    mark: cornered ? null : headAvatar(person, { me: self }),   // in a pane the avatar is the card's corner (detail)
-    tags: [
-      self ? pill('ty') : null,
-      word ? pill(word) : null,
-      ...groups.map((g) => pillLink(g.name, `#lide/skupiny/${g.id}`)),
-    ],
+    mark: cornered ? null : headAvatar(person, { me: person.id === myId() }),   // in a pane the avatar is the card's corner (detail)
     title: personName(person),
     facts: factList.length ? facts(factList) : null,
     after: contactTiles(person),
