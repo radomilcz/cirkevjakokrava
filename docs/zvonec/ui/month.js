@@ -5,7 +5,8 @@
 //   narrow (phone, tablet 768): the mini month (cells 44, up to 3 Účel dots, today = --act disc, the chosen day =
 //          pick + bar) and under it the chosen day's meetings (Simple). A tap on a day only chooses it.
 //   wide (1024 tablet, desktop): the grid with the meetings as chips (min 24, the title in up to two lines of whole
-//          words, the Účel bar on the square left edge, mine in the Účel tint), at most 3 a day, then „+ 2 další“. A chip opens the Setkání page (never a pane beside
+//          words, the Účel bar on the square left edge, mine in the Účel tint), at most 3 a day, then „+ 2 další“. The
+//          day number has the mini month's arch and states (today, a ring on a day I serve, the open day = pick + bar). A chip opens the Setkání page (never a pane beside
 //          the grid); a day number, „+ 2 další“ or the free part of a day opens the day popover.
 // Search hides the chips and dots that do not match, Filtr the same; the month stays, and an empty case is one quiet
 // line under the period line.
@@ -144,7 +145,7 @@ function wideForm(month, days) {
     const open = (e) => { e?.stopPropagation(); openDay(d, list, cell); };
     cell = h('div', {
       class: 'cal-cell', role: 'gridcell',
-      dataset: { day: d, today: d === today() ? '' : null, outside: d.startsWith(month) ? null : '' },
+      dataset: { day: d, today: d === today() ? '' : null, outside: d.startsWith(month) ? null : '', mine: list.some(iServe) ? '' : null },
     },
     h('button', {
       type: 'button', class: 'cal-cell__num', onclick: open,

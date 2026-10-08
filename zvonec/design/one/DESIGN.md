@@ -3,6 +3,9 @@
 > **Update – the mini month on a phone (2026-10-08).** The chosen day's mark sat on the dots' line and hid them, and
 > the day number's arch was 36 × 32 – wider than tall, so it read as squashed. The number now sits in a 32 × 36 arch
 > (16 16 7 7) like every other arch; in Měsíc the mark is right under it and the dots under the mark (cells 60).
+> The owner disliked that a day looked different on a desktop: the Měsíc grid's day number now has the same arch
+> (`--shape-day`) and the same states – today --act, a ring on a day I serve, the open day (its popover) --pick with
+> the bar under the number.
 
 > **Update – Lidé search points to the archive (2026-10-08).** A search that showed no one said only „Nic tomu
 > neodpovídá.“ even when the person was in the archive or behind the Filtr. Now it says where they are: „Jen v
