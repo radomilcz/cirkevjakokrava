@@ -202,7 +202,7 @@ export function topBar({ back, menu, title, actions, cls } = {}) {
  * ⋯ then ✕ right, 8 apart; ✕ = `close`, an href or a function; Esc clicks it). page: the top bar 56 + a column 720.
  * Returns the pane's <article>, or the page's <main>.
  */
-export function detail({ frame = 'pane', back, close, menu, body, label, title, cls } = {}) {
+export function detail({ frame = 'pane', back, close, menu, body, label, title, cls, corner } = {}) {
   if (frame === 'page') {
     return h('main', { class: ['screen', 'detail-page', cls], id: 'main', tabIndex: -1, 'aria-label': label },
       topBar({ back, menu, title: title || label }),
@@ -214,7 +214,9 @@ export function detail({ frame = 'pane', back, close, menu, body, label, title, 
   const backEl = back ? h('a', { class: 'btn btn--quiet pane__back', href: back.href, onclick: back.onclick }, icon('chevron-left', { size: 's' }), h('span', {}, back.label)) : null;
   const more = moreButton(menu, title || label);
   return h('article', { class: ['pane', 'detail', 'detail--pane', cls], 'aria-label': label },
-    backEl || more || closeEl ? h('div', { class: 'pane__actions' }, backEl, h('span', { class: 'pane__spacer' }), more, closeEl) : null,
+    // corner: a mark in the card's top-left corner (a person's avatar) when there is no ‹ back
+    backEl || more || closeEl || corner ? h('div', { class: ['pane__actions', corner && !backEl && 'pane__actions--corner'] },
+      backEl || (corner ? h('div', { class: 'pane__corner' }, corner) : null), h('span', { class: 'pane__spacer' }), more, closeEl) : null,
     h('div', { class: 'pane__body' }, body));
 }
 
@@ -238,19 +240,16 @@ export function missingItem({
  * The head of every detail (CODEX §6.4): band 96 or mark 56 / 72 → 16 → tag(s) → 8 → h1 → 12 → facts; the first
  * section follows 32 under it. h1: 34/36 in a pane and on a phone, 40/44 on a ≥ 600 page.
  *   detailHead({ band: node, tags: [kindTag('service')], title: 'Zkouška chval', facts: facts([...]) })
- *   detailHead({ mark: avatar(person, { size: 'xl' }), side: true, title: 'Bára', tags: [pill('host')], facts })
+ *   detailHead({ mark: avatar(person, { size: 'xl' }), title: 'Bára', tags: [pill('host')], facts })
  * `after`: nodes right under the head (the person's contact tiles), still before the first section.
  */
-export function detailHead({ band, mark, side = false, tags, title, facts: factsNode, after, id } = {}) {
+export function detailHead({ band, mark, tags, title, facts: factsNode, after, id } = {}) {
   const tagNodes = nodes(tags);
-  // side: the mark stands left of the tags and the name (a person's avatar), not above them
   const tagsEl = tagNodes.length ? h('div', { class: 'dhead__tags' }, tagNodes) : null;
   const titleEl = h('h1', { class: 'title dhead__title', id }, title);
-  return h('div', { class: ['dhead', side && 'dhead--side'] },
+  return h('div', { class: 'dhead' },
     band ? h('div', { class: 'dhead__band' }, band) : null,
-    side && mark
-      ? h('div', { class: 'dhead__id' }, h('div', { class: 'dhead__mark' }, mark), h('div', { class: 'dhead__name' }, tagsEl, titleEl))
-      : [mark ? h('div', { class: 'dhead__mark' }, mark) : null, tagsEl, titleEl],
+    mark ? h('div', { class: 'dhead__mark' }, mark) : null, tagsEl, titleEl,
     factsNode || null,
     nodes(after).length ? h('div', { class: 'dhead__after' }, after) : null);
 }
