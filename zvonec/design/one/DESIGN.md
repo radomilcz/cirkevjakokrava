@@ -1,5 +1,12 @@
 # Zvonec One: the design
 
+> **Update – a calm person head (2026-10-08).** The owner found the pills under the corner avatar crammed; a UI and a UX
+> review agreed: the head is avatar → name → facts → contact tiles. Membership and teams are no longer pills but the
+> first fact, worded like the Lidé row („člen · Chvály, Pohostinnost, Technika“, members see only the teams; a long
+> line breaks between teams, never inside one); the „ty“ pill is gone (the avatar's tint and the name say it). The
+> avatar has 24 below it in a pane and on a page, and its badge is a camera instead of „+“ (a „+“ read as „add a
+> person“).
+
 > **Update – photos and 16 : 9 pictures (2026-10-08).** A person's avatar sits in the card's top-left corner (in a pane on
 > the row of ⋯ and ✕; on a page first under the top bar – beside the name was „bad“) and can be a photo: leaders and the person themself tap it („+“ badge) → „Fotka“, the middle square is cut to 512 px and saved
 > in the data repo (`person.photo`); every avatar shows it. Photos are never public. A meeting's or template's picture

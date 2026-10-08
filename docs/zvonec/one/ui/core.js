@@ -450,7 +450,7 @@ export function facts(items) {
     const inner = [icon(f.icon || 'info', { size: 's' }), h('span', { class: 'fact__text' }, f.text), end];
     if (f.href) return h('a', { href: f.href, class: 'fact fact--link', target: f.target, rel: f.target ? 'noopener noreferrer' : null, 'aria-label': f.aria }, inner);
     if (f.onclick) return h('button', { type: 'button', class: 'fact fact--link', onclick: f.onclick, 'aria-label': f.aria }, inner);
-    return h('p', { class: 'fact' }, inner);
+    return h('p', { class: ['fact', f.cls] }, inner);
   }));
 }
 

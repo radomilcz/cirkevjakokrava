@@ -26,12 +26,6 @@
 .house-mark > .icon { width: 24px; height: 24px; }
 .row > .house-mark > .icon { width: 20px; height: 20px; }
 
-/* the person's teams as pills that are links (24 high, hit 44) */
-.pill--link { position: relative; color: var(--ink); text-decoration: none; transition: background-color var(--dur-state) var(--ease); }
-.pill--link:hover { background: var(--tint-2); }
-.pill--link::after { content: ""; position: absolute; inset: -10px 0; }
-.pill--link:focus-visible { outline: 2px solid var(--focus, var(--ink)); outline-offset: 2px; }
-
 /* Zavolej · SMS · E-mail: L 52, equal parts, 8 apart, right under the head */
 .contact-tiles { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--gap-x); }
 .contact-tiles > .btn { min-width: 0; padding: 0 var(--space-2); gap: 6px; white-space: nowrap; }

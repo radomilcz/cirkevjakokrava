@@ -1014,9 +1014,11 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
   Narozeniny*, Poslední služba* (* leaders). Ticks + bulk bar „3 vybraní lidé“ [Zkopíruj e-maily] [Přidej do
   skupiny] [Stáhni seznam] [Zruš výběr]. Spans the frame; compact beside an open pane.
 - **Person detail** `#lide/<id>`: avatar 72 in the card's top-left corner – in a pane on the row of ⋯ and ✕, on a page
-  first under the top bar (a button with a „+“ badge for leaders and
+  first under the top bar, 24 above the name (a button with a camera badge for leaders and
   the person: sheet „Fotka“ – Vyber fotku / Vyber jinou / Odeber fotku, cut to a 512 square, „Uvidí ji jen přihlášení
-  ve Zvonci, na veřejný web se nedostane.“; the same on Můj účet); pills „ty“ / membership (leaders) / team pills; h1; birthday fact
+  ve Zvonci, na veřejný web se nedostane.“; the same on Můj účet); h1; facts: membership and teams as one plain line
+  like the list row (icon teams, „člen · Chvály, Technika“; a child „dítě“ when the birthday shows the age; members see
+  only the teams; a team name never breaks; no pills – the Skupiny section is where teams are links), birthday fact
   (leaders and self). Contact tiles [Zavolej] [SMS] [E-mail] L 52 (only those with data, never on my own card).
   Then: callouts (leaders: archive „Vrať z archivu“, missing data „Doplň“ / „Potvrď údaje“) · Co nesedí (leaders)
   · Příští služby · Kontakt [Uprav] („Kontakt vidí všichni / jen vedoucí.“) · Domácnost · Skupiny [+ Přidej] (skill

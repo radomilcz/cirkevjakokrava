@@ -5,7 +5,7 @@
 // Who may change it: leaders, and anyone their own. The avatar of every list shows it once loaded (kit avatar() asks
 // setPhotoSource; the store caches the image, so a redraw has it at once).
 
-import { h, avatar, button, field, formSheet, toast, setPhotoSource } from './kit.js';
+import { h, icon, avatar, button, field, formSheet, toast, setPhotoSource } from './kit.js';
 import { S, can, myId, change } from '../../ui/state.js';
 import { saveImage, loadImageUrl, deleteImage } from '../../lib/store/store.js';
 import { personById, displayName, fullName } from '../../lib/people.js';
@@ -120,11 +120,11 @@ export function photoSheet(person) {
   });
 }
 
-/** The avatar of a person's head: for who may change it a button „Přidej fotku“ / „Změň fotku“ with a small badge. */
+/** The avatar of a person's head: for who may change it a button „Přidej fotku“ / „Změň fotku“ with a camera badge. */
 export function headAvatar(person, { me = false } = {}) {
   const av = avatar(person, { size: 'xl', me });
   if (!mayChangePhoto(person)) return av;
   const label = person.photo ? 'Změň fotku' : 'Přidej fotku';
   return h('button', { type: 'button', class: 'photo-btn', 'aria-label': label, title: label, onclick: () => photoSheet(person) },
-    av, h('span', { class: 'photo-btn__badge', 'aria-hidden': 'true' }, '+'));
+    av, h('span', { class: 'photo-btn__badge', 'aria-hidden': 'true' }, icon('camera', { size: 's' })));
 }
