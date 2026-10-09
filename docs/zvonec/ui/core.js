@@ -439,10 +439,10 @@ export function amount(text) {
 
 /**
  * The figure block of Tvoje břemeno, for any headline number (CODEX §6.4a): the number in the title face (56/48)
- * with its words beside it in meta („68 000 Kč“ + „darů za rok 2026“; the unit is part of the number, a step smaller), then a bar, one
+ * with its words beside it in meta – the unit too („68 000“ + „Kč darů za rok 2026“) – then an optional bar, one
  * sentence, small figures under a hairline, and the block's one action. r20, padding 24; `feature` = the screen's one
  * feature fill (Moje's card, a sbírka), otherwise the card with its edge.
- *   figures({ n: '68 000', unit: 'Kč', of: 'darů za rok 2026', items: [{ value: 4, label: 'dárci' }, …] })
+ *   figures({ n: '68 000', of: 'Kč darů za rok 2026', items: [{ value: 4, label: 'dárci' }, …] })
  *   figures({ feature: true, n: '34 500', of: 'Kč z 80 000 Kč', bar: .43, action: button('Pošli dar', …) })
  */
 /**
@@ -481,7 +481,7 @@ export function stackBar(parts, { label } = {}) {
     }));
 }
 
-export function figures({ title, aside, n, unit, of, bar, chart, say, items = [], action, feature = false, tone, cls, label } = {}) {
+export function figures({ title, aside, n, of, bar, chart, say, items = [], action, feature = false, tone, cls, label } = {}) {
   let barEl = null;
   if (bar != null) {
     barEl = h('span', { class: 'figures__bar', 'aria-hidden': 'true' }, h('span', { class: 'figures__fill' }));
@@ -495,8 +495,7 @@ export function figures({ title, aside, n, unit, of, bar, chart, say, items = []
   const tid = title ? uid('fig') : null;
   return h(title ? 'section' : 'div', { class: ['figures', feature && 'figures--feature', title && 'figures--titled', cls], dataset: { tone }, 'aria-label': title ? null : label, 'aria-labelledby': tid },
     title ? h('div', { class: 'figures__head' }, h('h2', { class: 'figures__title', id: tid }, title), aside || null) : null,
-    // `unit` (Kč) belongs to the number: the same face, a step smaller, never in the words beside it
-    h('p', { class: 'figures__count' }, h('span', { class: 'figures__n num' }, String(n), unit ? h('span', { class: 'figures__unit' }, '\u00a0', unit) : null), of ? h('span', { class: 'figures__of' }, of) : null),
+    h('p', { class: 'figures__count' }, h('span', { class: 'figures__n num' }, String(n)), of ? h('span', { class: 'figures__of' }, of) : null),
     barEl,
     chart || null,
     say ? h('p', { class: 'figures__say' }, say) : null,

@@ -489,7 +489,7 @@ function yearBlock(year, t, open) {
   return h('div', { class: 'gifts-year' },
     periodLine({ year, href: (y) => `#dary/${y}`, here: year === thisYear() }),
     figures({
-      n: money(t.total).replace(/\s?Kč$/, ''), unit: 'Kč', of: `darů za rok ${year}`,
+      n: money(t.total).replace(/\s?Kč$/, ''), of: `Kč darů za rok ${year}`,
       items: [
         { value: String(t.donors), label: agree(t.donors, 'dárce', 'dárci', 'dárců') },
         { value: String(t.gifts), label: agree(t.gifts, 'dar', 'dary', 'darů') },
@@ -624,7 +624,7 @@ export function giftsOverviewSection() {
     body: [
       figures({
         title: 'Dary',
-        n: money(t.total).replace(/\s?Kč$/, ''), unit: 'Kč', of: `darů za rok ${year}`,
+        n: money(t.total).replace(/\s?Kč$/, ''), of: `Kč darů za rok ${year}`,
         chart: giftMonths(t, year),
         items: [
           { value: String(t.donors), label: agree(t.donors, 'dárce', 'dárci', 'dárců') },
