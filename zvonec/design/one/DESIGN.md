@@ -10,6 +10,8 @@
 > a year) and Služby in a month (obsazeno %, služeb, slouží, čeká, odmítnuto) – each leading to the screen with the
 > detail. Occupancy by team, who serves most and who has not served for long were dropped: Obsazení, Rozpis and
 > Břemeno show those. A Dary section joins when Dary is built.
+> Tile numbers are set in the title face (Agrandir Narrow Black 32/34, as the arch numbers); a label never spills
+> out of its tile (min-width 0, wrapping as the last resort), and „odmítnutých“ became the invariant „odmítnutí“.
 
 > **Update – Lidé Tabulka: banded columns (2026-10-08).** As in Rozpis, every second shown column sits on a faint band
 > (ink 3.5 % over the ground), its head cell rounded on top. Which columns show depends on the table's width, so
