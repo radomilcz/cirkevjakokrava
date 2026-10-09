@@ -32,10 +32,11 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 - **Jádro:** Sami tvoříme dobré a krásné věci, za které ručíme, hlavně pro lidi, kterým je kostel i víra fuk.
 - Pastvu tvoříme my všichni tam, kde žijeme, ne pastoři ani program.
 - Nejen umění: řemeslo, jídlo, péče i sport se počítají stejně.
-- Musí to být dobré samo o sobě, ne návnada. Kvalita je forma lásky.
+- Pastva má lákat (Radomil 9. 10.: „AIDA je princip.“): nejdřív zaujme oči a uši, pak osloví duši a nakonec člověk udělá krok (přijde, zkusí, vrátí se).
+- Láká kvalitou, ne háčkem. Musí to být dobré samo o sobě. Kvalita je forma lásky.
 - Dáváme všem, bez podmínek, jako Bůh, který posílá déšť na každého.
 - Neděle má smysl, ale pastva roste každý den. Hlavně přes týden.
-- Druh: vlastní čin. Hranice: vedu to já a ručím za to; lákání sem nepatří.
+- Druh: vlastní čin. Hranice: je to naše dílo, my ho vymyslíme a my ho uděláme. Když pomáháme s cizím, je to 02.
 - Kotvy: „Pastvu tvoří krávy. Ne pastoři. Ale vy.“ „Pastva roste tam, kde se kráva pase.“ „Neděle není pasé.“ Verše: Mt 5,45 (případně Fp 4,8).
 - Petr: vzít něco, co umí, a udělat z toho něco pro lidi kolem.
 
@@ -46,6 +47,7 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 - Lidi to poznají od souseda, kolegyně nebo spolužáka, ne z kazatelny. Církev jsme, kudy chodíme: každý den, v práci, ve škole, na kole.
 - Úspěch neměříme židlemi ani členy, ale tím, jestli někdo zažil, že je viděný a že o něj Bůh stojí; překonal strach a zažil proměňující vztah.
 - Nikoho nelákáme. Kdo přijde, je vítaný; kdo ne, je pořád náš soused.
+- Otevřené: „Nikoho nelákáme“ vs. AIDA ve 03. Návrh: na pastvu lákáme, ale nikoho nenaháníme a netlačíme. Lákavá pastva ano, nábor ne.
 - Druh: důvod. Hranice: jen tady se mluví o tom, že lidi poznávají Boha.
 - Kotvy: „Nechodíme do církve. Jsme církev, kudy chodíme.“ „Číslo v kravíně. Jméno na pastvě.“ „Toužíme, aby lidé na vlastní kůži poznali…“ Verše: L 19,5, Iz 43,1, J 10,3.
 - Petr: naučit se jméno člověka, kolem kterého chodí každý den.
