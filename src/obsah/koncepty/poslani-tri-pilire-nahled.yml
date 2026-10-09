@@ -1,0 +1,72 @@
+# Pracovní verze: tři pilíře (Radomil 9. 10.) – 01+02 sloučené. Jen náhled, build nečte.
+slajdy:
+- typ: vyrok
+  nazev: Co děláme?
+  nadtitulek: Co děláme?
+  vyrok: |
+    Oslavujeme Boží náturu,
+    kreativitu a lásku -> mezi
+    lidmi na Kravařsku. Přidáváme
+    k tomu naše srdce, slova i ruce.
+  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  otisk: '01'
+  detail_odkaz: Bůh tvoří, my fandíme.
+  detail: |
+    Když lidé tvoří pro druhé něco dobrého, není to náhoda. Vidíme v tom Boží design. Otisk jeho záměru.
+
+    Máme z toho radost až na kost. Tleskáme jim a říkáme to ostatním.
+
+    Protože Boha oslavujeme i tím, komu fandíme. Nejen v kostele. Ale na pastvě.
+
+    > Cokoli je pravdivé, ušlechtilé, spravedlivé, čisté, milé, cokoli má dobrou pověst, je-li nějaká ctnost a nějaká chvála – o tom přemýšlejte.
+    > [Filipským 4,8](https://bible.com/bible/15/php.4.8.B21)
+
+    ### Tráva roste dřív než kráva.
+
+    Bůh ve městě pracoval dávno před námi. Učíme se od něj. Stačí se podívat, co kolem vzniká a kdo o to s láskou pečuje. Do jejich práce pak vložíme své srdce, peníze i ruce. Modlíme se za ně a jdeme do toho s nimi.
+
+    > Usilujte o prospěch města, do něhož jsem vás vystěhoval, a modlete se za ně k Hospodinu, neboť v jeho prospěchu je i váš prospěch.
+    > [Jeremiáš 29,7](https://bible.com/bible/15/jer.29.7.B21)
+- typ: vyrok_ruzovy
+  nazev: Lásko, to je Kravařsko!
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Lásko, to je
+    Kravařsko!
+  podpis: Herzenssache.
+  otisk: '05'
+- typ: kennedy
+  nazev: Ich bin ein Kuhländler
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Ich bin ein
+    Kuhländler
+  otazka: Je Kravařsko i tvoje srdeční záležitost?
+  podpis: Herzenssache.
+  popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
+- typ: vyrok
+  nazev: Pro koho?
+  nadtitulek: Pro koho?
+  vyrok: |
+    Tvoříme pastvu pro oči,
+    uši a duši. Pro publikum,
+    co kostel ani víru neřeší.
+  otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
+  otisk: '03'
+- typ: fotka
+  nazev: Kráva – má Boží design
+  nadtitulek: pastva
+  slovo: kráva
+  dovetek: má Boží design
+  bez_zavorek: true
+  fotka: assets/fotky/krava-manifest.webp
+  popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
+- typ: vyrok
+  nazev: Proč to děláme?
+  nadtitulek: Proč to děláme?
+  vyrok: |
+    Aby lidé poznali, že Bohu
+    na nich záleží. Uprostřed
+    komunity, kam patříš i ty.
+  otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  otisk: '04'
