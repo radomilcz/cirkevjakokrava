@@ -447,6 +447,7 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 .figures__action:has(> .row-link) { padding-top: 0; margin-bottom: calc(-1 * var(--space-2)); }
 .figures__count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); margin: 0; min-width: 0; }
 .figures__n { font-family: var(--font-title); font-size: var(--type-figure); line-height: var(--lh-figure); color: var(--ink); white-space: nowrap; }
+.figures__unit { font-size: .6em; }
 .figures__of { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
 .figures__bar { position: relative; display: block; height: 8px; border-radius: var(--shape-pill); background: var(--edge); overflow: hidden; }
 .figures__fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--ok-solid); }
