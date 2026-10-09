@@ -12,6 +12,7 @@ import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
 import { restore, openFinance, ACCESS_FILE } from './lib/access.js';
 import { resetFinance } from './ui/finance-state.js';
+import { resetGiving } from './ui/giving-state.js';
 import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
 import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
@@ -349,6 +350,7 @@ async function startLive(result) {
   S.me = { login: result.record, priv: result.priv, github: result.github, personId: result.record.personId || null, access: result.record.access };
   S.me.finance = await openFinance(result.record, result.priv);   // Dary: only the treasurer's and admins' logins hold it
   resetFinance();
+  resetGiving();
   S.screen = null;
   S.signInMessage = null;
   const store = new GithubStore(result.github);

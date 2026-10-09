@@ -2,8 +2,8 @@
 //   parseAccount('19-2000145399/0800') → { prefix: '19', number: '2000145399', bank: '0800' } | null (bad checksum too)
 //   formatAccount(account)             → '19-2000145399/0800'
 //   ibanOf(account)                    → 'CZ6508000000192000145399'
-//   spdPayment({ account, vs, message, name }) → 'SPD*1.0*ACC:CZ…*CC:CZK*X-VS:1001*MSG:DAR' (no amount: the donor
-//                                         types it in the bank app)
+//   spdPayment({ account, vs, ss, amount, message, name }) → 'SPD*1.0*ACC:CZ…*AM:500.00*CC:CZK*X-VS:1001*X-SS:101*MSG:DAR'
+//                                         (no amount: the donor types it in the bank app; ss: a fundraiser's code)
 //   nextDonorVs(people)                → the next free symbol, sequential from 1001
 //   validCompanyId('17627681')         → true (IČO: 8 digits, the last one a mod-11 check)
 //   cleanVs(' 0042 ')                  → '42' (a variable symbol: 1–10 digits, leading zeros dropped as banks do) | null
@@ -51,10 +51,13 @@ export function ibanOf(a) {
 const spdText = (s, max) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\*/g, ' ')
   .replace(/\s+/g, ' ').trim().slice(0, max);
 
-/** The Czech QR payment string (Short Payment Descriptor 1.0) for a gift: no amount, so the donor fills it in. */
-export function spdPayment({ account, vs, message, name }) {
-  const parts = ['SPD', '1.0', `ACC:${ibanOf(account)}`, 'CC:CZK'];
+/** The Czech QR payment string (Short Payment Descriptor 1.0) for a gift; without an amount the donor fills it in. */
+export function spdPayment({ account, vs, ss, amount, message, name }) {
+  const parts = ['SPD', '1.0', `ACC:${ibanOf(account)}`];
+  if (Number(amount) > 0) parts.push(`AM:${(Math.round(Number(amount) * 100) / 100).toFixed(2)}`);
+  parts.push('CC:CZK');
   if (vs) parts.push(`X-VS:${String(vs).replace(/\D/g, '').slice(0, 10)}`);
+  if (ss) parts.push(`X-SS:${String(ss).replace(/\D/g, '').slice(0, 10)}`);
   if (name) parts.push(`RN:${spdText(name, 35)}`);
   if (message) parts.push(`MSG:${spdText(message, 60)}`);
   return parts.join('*');

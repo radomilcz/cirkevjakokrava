@@ -158,6 +158,20 @@ export async function openFinance(record, priv) {
   try { return unpack(await unseal(priv, record.fin)); } catch { return null; }
 }
 
+/** A short note (JSON, at most 190 bytes) only this login can open – Dary's „tvůj dar dorazil“ (lib/giving.js). */
+export const sealNote = (pub, note) => seal(pub, JSON.stringify(note));
+
+/** The notes among `boxes` this login can open, in their order; the others belong to someone else. */
+export async function openNotes(priv, boxes = []) {
+  if (!priv || !boxes.length) return [];
+  const k = await subtle().importKey('pkcs8', unb64(priv), { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']);
+  const out = [];
+  for (const box of boxes) {
+    try { out.push(JSON.parse(dec.decode(await subtle().decrypt({ name: 'RSA-OAEP' }, k, unb64(box))))); } catch { /* not mine */ }
+  }
+  return out;
+}
+
 /** Whether a login (an invite) has expired on `today` (YYYY-MM-DD). */
 export const isExpired = (record, today) => !!record?.expires && record.expires < today;
 

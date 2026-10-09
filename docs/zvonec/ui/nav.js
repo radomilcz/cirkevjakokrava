@@ -5,6 +5,7 @@
 // Members do not see „Zdroje“ in the nav (they open a Formát or a Místo by link, read-only).
 
 import { showDary } from './finance-state.js';
+import { showSbirky } from './fundraisers.js';
 import { S, can, myId, ACCESS_LABELS } from './state.js';
 import { personById } from '../lib/people.js';
 import { upcomingDuties } from '../lib/events.js';
@@ -24,6 +25,7 @@ export const NAV = [
   ['kalendar', 'Kalendář', 'calendar', '#kalendar', 'member', 'main'],
   ['lide', 'Lidé', 'people', '#lide', 'member', 'main'],
   ['skupiny', 'Skupiny', 'teams', '#lide/skupiny', 'member', 'main'],
+  ['sbirky', 'Sbírky', 'heart', '#sbirky', showSbirky, 'main'],   // leaders and the treasurer; everyone while one is open
   ['prehled', 'Přehled', 'chart', '#prehled', 'leader', 'main'],
   ['dary', 'Dary', 'gift', '#dary', showDary, 'main'],   // the treasurer and the admins (a function, not a level)
   ['sablony', 'Šablony', 'layers', '#sablony', 'leader', 'gather'],
@@ -33,9 +35,9 @@ export const NAV = [
 export const GROUP_TITLES = { gather: 'Zdroje' };
 
 /** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab; Přehled is
-    in the person's menu (Správa). */
-const NOT_A_TAB = new Set(['skupiny', 'prehled', 'dary']);
-const TAB_OF = { skupiny: 'lide' };
+    in the person's menu (Správa); Sbírky are reached from Moje (and Správa for leaders) and light Moje. */
+const NOT_A_TAB = new Set(['skupiny', 'prehled', 'dary', 'sbirky']);
+const TAB_OF = { skupiny: 'lide', sbirky: 'moje' };
 
 /** Routes whose nav value is 'me' are the person's menu pages (Můj účet, Kdy nemůžu, Přístupy, Nastavení sboru). */
 const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista', 'prehled', 'dary']);
@@ -137,7 +139,7 @@ export function updateNav({ visible, nav }) {
   sidenavEl().hidden = !visible;
   tabbarEl().hidden = !visible;
   if (!visible) return;
-  const key = `${can('leader')}-${showDary()}-${myId()}-${S.me?.access}-${S.data ? personName(personById(S.data, myId())) : ''}`;
+  const key = `${can('leader')}-${showDary()}-${showSbirky()}-${myId()}-${S.me?.access}-${S.data ? personName(personById(S.data, myId())) : ''}`;
   if (key !== shellKey) { shellKey = key; build(); }
 
   for (const el of document.querySelectorAll('.tabbar [data-nav]')) {

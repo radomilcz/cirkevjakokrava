@@ -1,16 +1,19 @@
 # Template for the PRIVATE finance repo (radomilcz/church-finance) – copy to .github/workflows/bank.yml.
 #
-# Every morning it fetches the incoming payments from the bank into dary.json (zvonec/bank.mjs) and commits
+# Every hour by day it fetches the incoming payments from the bank into dary.json (zvonec/bank.mjs) and commits
 # them; Dary in Zvonec then shows them and assigns the ones it knows. The token stays a repo secret here.
 # Secrets (Settings › Secrets and variables › Actions):
-#   MONETA_TOKEN  the API token from MONETA Internet Banka (Nastavení › Správa API tokenů), read rights only
-#   MONETA_IBAN   optional – the IBAN of the account for gifts, when the token sees more than one account
+#   MONETA_TOKEN       the API token from MONETA Internet Banka (Nastavení › Správa API tokenů), read rights only
+#   MONETA_IBAN        optional – the IBAN of the account for gifts, when the token sees more than one account
+#   ZVONEC_DATA_TOKEN  optional – a fine-grained token to the main data repo (church-data), Contents: Read and write.
+#                      With it the run assigns payments by the people's symbols and the sbírky's codes, writes what
+#                      each sbírka has collected and „tvůj dar dorazil“ for the givers (data/giving.json, sealed).
 # A run that cannot fetch still saves why (Dary shows it) and turns red – GitHub e-mails the repo's admins.
 name: Bank
 
 on:
   schedule:
-    - cron: "23 4 * * *"        # every day 5:23 / 6:23 Prague time
+    - cron: "23 4-20 * * *"     # every hour from 5:23 / 6:23 to 21:23 / 22:23 Prague time
   workflow_dispatch:
 
 permissions:
@@ -45,6 +48,7 @@ jobs:
         env:
           MONETA_TOKEN: ${{ secrets.MONETA_TOKEN }}
           MONETA_IBAN: ${{ secrets.MONETA_IBAN }}
+          ZVONEC_DATA_TOKEN: ${{ secrets.ZVONEC_DATA_TOKEN }}
         # The treasurer may save in Dary at the same moment: on a refused push start again from the fresh file
         # (a payment seen twice is stored once, so running the script again is safe).
         run: |

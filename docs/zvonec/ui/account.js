@@ -6,6 +6,7 @@
 //   Dary                once the church's account is set (Nastavení sboru › Úřední údaje): the account and my
 //                       variable symbol (each with copy), a QR payment with the symbol and no amount; on a phone the
 //                       QR behind „Ukaž QR kód“. My symbol (person.donorVs) is given the first time I see this.
+//                       „Pošli mimořádný dar“ (ui/give.js) and the gifts that arrived lately (sealed notes).
 //   Barvy               the three bullseyes (Krém a hlína · Hlína a růžová · Podle zařízení)
 //   „Odhlas se“         quiet M in --no-ink at the end
 // Without a card in Lidé: a callout instead of Moje karta. Also the demo's „Podívej se očima druhých“ (viewAsSheet)
@@ -25,7 +26,10 @@ import {
 } from './kit.js';
 import { contactSheet } from './people-forms.js';
 import { calendarExportRows, CALENDAR_EXPORT_NOTE } from './calendar-shared.js';
-import { parseAccount, spdPayment, nextDonorVs, vsOwner } from '../lib/bank.js';
+import { parseAccount, spdPayment, vsOwner } from '../lib/bank.js';
+import { money } from '../lib/gifts.js';
+import { copyValue, ensureDonorVs, giveSheet } from './give.js';
+import { G, loadGiving } from './giving-state.js';
 import { vsSheet } from './donor-vs.js';
 import { qrCode } from './qr.js';
 
@@ -191,10 +195,6 @@ export function viewAsSheet() {
 
 // ---------- Dary (SPEC 15.1) ----------
 
-async function copyValue(value, done) {
-  try { await navigator.clipboard.writeText(value); toast(done); } catch { toast('Kopírování nefunguje. Opiš si to.'); }
-}
-
 /** „Změň variabilní symbol“: someone who already sends gifts with their own symbol keeps it. */
 function changeMyVs(person) {
   vsSheet({
@@ -211,15 +211,19 @@ function changeMyVs(person) {
   });
 }
 
-/** Gives me a donor symbol the first time I see Dary (one change, after this render). */
-function ensureDonorVs(person) {
-  if (!person || person.donorVs) return;
-  queueMicrotask(() => {
-    const target = personById(S.data, person.id);
-    if (!target || target.donorVs) return;
-    target.donorVs = nextDonorVs(S.data.people);
-    change(`variabilní symbol pro dary: ${displayName(target)}`);
-  });
+const dayMonth = (d) => `${Number(d.slice(8, 10))}. ${Number(d.slice(5, 7))}.`;
+
+/** My gifts the bank has seen lately (the sealed notes, ui/giving-state.js). */
+function arrived() {
+  loadGiving();
+  if (!G.notes.length) return null;
+  const sbirka = (n) => (n.f ? (S.data.fundraisers || []).find((x) => x.id === n.f)?.name : null);
+  return [
+    h('h3', { class: 'gift-month' }, 'Dary, které dorazily'),
+    list(G.notes.map((n) => row({
+      lead: icon('heart'), title: money(n.a), meta: [dayMonth(n.d), sbirka(n) ? `sbírka ${sbirka(n)}` : null].filter(Boolean).join(' · '),
+    })), { label: 'Dary, které dorazily' }),
+  ];
 }
 
 function giveSection(person) {
@@ -250,6 +254,8 @@ function giveSection(person) {
         h('div', {}, rows, h('div', { class: 'give-qr-toggle' }, disclosure([h('p', { class: 'meta' }, 'Hodí se, když platíš z jiného zařízení.'), qrBlock()], { label: 'Ukaž QR kód' }))),
         qrBlock()),
       h('p', { class: 'meta give-foot' }, 'Pravidelný dar zadáš ve své bance jako trvalý příkaz.'),
+      h('div', { class: 'gift-actions' }, button('Pošli mimořádný dar', { icon: 'heart', onclick: () => giveSheet() })),
+      arrived(),
     ],
   });
 }
