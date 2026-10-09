@@ -3,6 +3,9 @@
 //   Moje karta          my contact facts and who sees them, „Uprav“ → the contact form (a layer)
 //   Přihlášení          live: the name I sign in with, „Změň heslo“ → a layer; demo: one sentence
 //   Kalendář v telefonu my duties / the whole calendar as .ics
+//   Dary                once the church's account is set (Nastavení sboru › Úřední údaje): the account and my
+//                       variable symbol (each with copy), a QR payment with the symbol and no amount; on a phone the
+//                       QR behind „Ukaž QR kód“. My symbol (person.donorVs) is given the first time I see this.
 //   Barvy               the three bullseyes (Krém a hlína · Hlína a růžová · Podle zařízení)
 //   „Odhlas se“         quiet M in --no-ink at the end
 // Without a card in Lidé: a callout instead of Moje karta. Also the demo's „Podívej se očima druhých“ (viewAsSheet)
@@ -18,9 +21,12 @@ import { DEMO_VIEWERS } from '../lib/demo.js';
 import {
   h, page, button, list, row, avatar, personName, toast, formSheet, layer, field, textInput, switchRow, segmented,
   peoplePicker, section, sectionAction, facts, fieldError, clearErrors, rowLink, icon, callout, meta, paletteChoices,
+  disclosure, iconButton,
 } from './kit.js';
 import { contactSheet } from './people-forms.js';
 import { calendarExportRows, CALENDAR_EXPORT_NOTE } from './calendar-shared.js';
+import { parseAccount, spdPayment, nextDonorVs } from '../lib/bank.js';
+import { qrCode } from './qr.js';
 
 // ---------- my card ----------
 
@@ -182,6 +188,52 @@ export function viewAsSheet() {
   });
 }
 
+// ---------- Dary (SPEC 15.1) ----------
+
+async function copyValue(value, done) {
+  try { await navigator.clipboard.writeText(value); toast(done); } catch { toast('Kopírování nefunguje. Opiš si to.'); }
+}
+
+/** Gives me a donor symbol the first time I see Dary (one change, after this render). */
+function ensureDonorVs(person) {
+  if (!person || person.donorVs) return;
+  queueMicrotask(() => {
+    const target = personById(S.data, person.id);
+    if (!target || target.donorVs) return;
+    target.donorVs = nextDonorVs(S.data.people);
+    change(`variabilní symbol pro dary: ${displayName(target)}`);
+  });
+}
+
+function giveSection(person) {
+  const s = S.data.settings || {};
+  const account = parseAccount(s.bankAccount);
+  if (!account) return null;
+  ensureDonorVs(person);
+  const vs = person?.donorVs || '';
+  const value = (text) => h('span', { class: 'give-value' }, text);
+  const rows = list([
+    row({ title: value(s.bankAccount), meta: 'Účet sboru', trail: iconButton('copy', 'Zkopíruj číslo účtu', { onclick: () => copyValue(s.bankAccount, 'Číslo účtu je zkopírované.') }) }),
+    vs ? row({ title: value(vs), meta: 'Tvůj variabilní symbol', trail: iconButton('copy', 'Zkopíruj variabilní symbol', { onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') }) }) : null,
+  ].filter(Boolean), { label: 'Kam poslat dar' });
+  const payment = spdPayment({ account, vs, name: s.legalName || s.churchName, message: 'Dar' });
+  const qrBlock = () => h('div', { class: 'give-qr' },
+    qrCode(payment, { label: 'QR platba na účet sboru' }),
+    h('p', { class: 'meta' }, 'Naskenuj v bankovní aplikaci, doplníš jen částku.'));
+  return section({
+    title: 'Dary',
+    body: [
+      h('p', { class: 'meta give-intro' }, vs
+        ? 'Posílej dar na účet sboru se svým variabilním symbolem. Podle něj ti Zvonec vždy v lednu připraví potvrzení o daru do daňového přiznání.'
+        : 'Dar můžeš poslat na účet sboru.'),
+      h('div', { class: 'give' },
+        h('div', {}, rows, h('div', { class: 'give-qr-toggle' }, disclosure([h('p', { class: 'meta' }, 'Hodí se, když platíš z jiného zařízení.'), qrBlock()], { label: 'Ukaž QR kód' }))),
+        qrBlock()),
+      h('p', { class: 'meta give-foot' }, 'Pravidelný dar zadáš ve své bance jako trvalý příkaz.'),
+    ],
+  });
+}
+
 // ---------- the page ----------
 
 /** The head of the page: avatar 72, the name, the level. */
@@ -209,6 +261,7 @@ export function renderAccountPage() {
         title: 'Kalendář v telefonu',
         body: [meta(CALENDAR_EXPORT_NOTE), calendarExportRows()],
       }),
+      giveSection(person),
       section({ title: 'Barvy', body: paletteChoices({ label: 'Barvy' }) }),
       h('div', { class: 'acct-out' },
         button('Odhlas se', { variant: 'quiet', icon: 'log-out', cls: 'acct-out__btn', onclick: signOut }))),

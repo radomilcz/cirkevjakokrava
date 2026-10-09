@@ -1118,6 +1118,10 @@ or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upra
 ### 9.11 Nastavení sboru `#nastaveni` (leaders)
 One 640 column of value blocks (r20 cards) with „label — value“ rows, each with an S „Uprav“ opening a dialog:
 - **Sbor**: Název sboru, Hlavní místo, Adresa.
+- **Úřední údaje** (Dary, 15.1): Úřední název, IČO (8 digits, mod-11 check: „Tohle IČO nesedí. …“), Sídlo, Účet pro
+  dary (`prefix-number/bank`, the mod-11 checksums: „Tohle číslo účtu nesedí. …“) – `settings.legalName`,
+  `companyId`, `legalAddress`, `bankAccount`. None reaches public.json yet (Pastva will show the account with the
+  public web redesign).
 - **Pravidla**: Nejvíc služeb za měsíc; Nejvíc nedělí po sobě („I kráva potřebuje volnou neděli na pastvě.“).
 - **Kdy Zvonec bučí**: Prázdná nezbytná role · Ostatní prázdná místa · Nepotvrzená služba, each „N dní předem“
   („Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.“).
@@ -1133,7 +1137,10 @@ One 640 column of value blocks (r20 cards) with „label — value“ rows, each
 ### 9.13 Můj účet `#ucet`
 Avatar 72, name, level word. **Moje karta** [Uprav] (phone, e-mail, „Říkají ti …“, switch „Telefon a e-mail smí
 vidět i ostatní“ applied at once with Vrať) · **Přihlášení** [Změň heslo] → „Nové heslo“ (min 8 characters, twice)
-· **Kalendář v telefonu** (.ics rows) · **Barvy** · [Odhlas se]. Demo: „Očima druhých“ sheet.
+· **Kalendář v telefonu** (.ics rows) · **Dary** (once `settings.bankAccount` is set; 15.1 „The donor's own view“: the
+account and my symbol with copy buttons, a QR payment – SPD with the IBAN, `X-VS`, the recipient and „Dar“, no
+amount, black on white – on the right, behind „Ukaž QR kód“ on a phone; my `donorVs` is given the first time I
+see it, sequential from 1001, `lib/bank.js`) · **Barvy** · [Odhlas se]. Demo: „Očima druhých“ sheet.
 
 ### 9.14 Sign-in, first run, invite
 - No app chrome. Centred column, max 400; at ≥ 600 a card r20. Wordmark → h1 „Přihlášení“ → Jméno („Diakritika a
@@ -1271,7 +1278,11 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 ## 15. Roadmap (agreed direction, not built yet)
 
 ### 15.1 Dary (donations) – Moneta now, Fio later
-Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock was shown (Dary for the treasurer).
+Agreed with the owner on 2026-10-09; the owner said go the same day. Built in three steps:
+**A** (built) Úřední údaje in Nastavení sboru, `donorVs` and Můj účet › Dary with the QR payment; **B** the finance
+repo with a second token sealed only into the treasurer's logins, the Dary screen (donors, gifts by hand and from a
+bank statement, matching, certificates, Nastavení darů) and Přehled › Dary; **C** the bank Action (Moneta, later
+Fio) and the token renewal. The QR encoder is vendored (`lib/vendor/qrcode.js`, qrcode-generator 2.0.4, MIT).
 - **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
 - **Přehled**: a Dary section beside Lidé and Služby (see 9.15) – headline sums only, never names.
 - **Access**: a treasurer level (pokladník, at most one deputy). Gifts live in a separate private finance repo that
