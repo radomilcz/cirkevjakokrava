@@ -6,7 +6,7 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 ## 01 · Co děláme? → Oslavujeme
 - **Jádro:** Bůh je tvořivý a laskavý a jeho povahu vidíme v dobrých věcech, které dělají lidi kolem nás, i ti, kdo o něm nevědí.
 - Bůh nepracuje jen v kostele, ale i ve městě, v lidech, v jejich práci a nápadech.
-- Dobro kolem nás nebereme jako samozřejmost ani jako konkurenci: všimneme si ho, máme z něj radost a řekneme to nahlas (jim do očí i ostatním).
+- Dobré věci kolem nás nebereme jako samozřejmost ani jako konkurenci. Všimneme si jich, máme z nich radost a řekneme to nahlas: lidem do očí i ostatním. (Radomil 9. 10.)
 - Oslavujeme Boha i tím, komu fandíme. Bohoslužba nekončí u dveří kostela.
 - Druh: postoj (oči a pusa). Hranice: přiložená ruka = 02.
 - Kotvy: „Bůh tvoří, my fandíme.“ Princip „Když lidé tvoří pro druhé něco dobrého, není to náhoda…“. Verše: Fp 4,8, Gn 1,31.
