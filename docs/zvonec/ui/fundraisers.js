@@ -153,7 +153,8 @@ function fundDetail(f, frame) {
           figures({
             feature: true,
             n: known ? money(c.total).replace(/\s?Kč$/, '') : '…',
-            of: f.target ? `Kč z ${money(f.target)}` : 'Kč',
+            unit: 'Kč',
+            of: f.target ? `z ${money(f.target)}` : null,
             bar: f.target ? c.total / f.target : null,
             say: known ? (c.gifts ? `${darů(c.gifts)}${f.closed ? '. Děkujeme všem, kdo přispěli.' : ''}` : 'Zatím žádný dar.') : null,
             action: give,

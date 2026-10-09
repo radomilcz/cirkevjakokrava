@@ -1,5 +1,8 @@
 # Zvonec One: the design
 
+> **Update – Kč with the number (2026-10-09).** The owner: „Kč by mělo být součást té částky“ – `figures({ unit })`
+> sets „39 000 Kč“ in the title face, the unit at .6em, never in the meta words beside it.
+
 > **Update – Přehled with small charts (2026-10-09).** The owner: „pořád myslím, že si to zaslouží rethink. A třeba
 > graf?“ Each figure block now carries one chart that says what a single number cannot (kit `columns()`, `stackBar()`;
 > the dataviz method: emphasis, not categorical; thin columns ≤ 24 with a 4 px rounded top on one hairline baseline;
@@ -16,7 +19,7 @@
 > **Update – the design audit of Dary and Sbírky (2026-10-09).** The owner: „ty mnou navržené jsou esteticky jinde“.
 > Four auditors (typography, spacing, composition, the system) agreed; the new parts now use the house blocks only:
 > - **Kit pieces added:** `figures()` (Tvoje břemeno's anatomy for any headline number: the title-face figure 56/48
->   with its words – the unit too – in meta, a bar, a sentence, small figures under a hairline, one action; --card or
+>   with its words in meta, a bar, a sentence, small figures under a hairline, one action; --card or
 >   the --feature fill), `amount()` (strong tabular figures, „Kč“ in --ink-2), `periodLine({ year })` (‹ 2026 ›
 >   Letos), `callout({ onDismiss })` (a quiet ✕). Tokens `--type-figure`, `--qr`, `--qr-poster`.
 > - **Dary** is a split page like Moje: Nepřiřazené and Dárci on the left, the year (period line, figures, the
