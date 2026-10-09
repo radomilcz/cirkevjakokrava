@@ -8,6 +8,9 @@ import { GithubStore } from '../lib/store/github.js';
 import { LocalStore } from '../lib/store/local.js';
 import { FINANCE_FILE, emptyFinance, normalizeFinance, giftStatus, matchGift, autoAssign, fundraiserOf, assignFundraisers } from '../lib/gifts.js';
 import { publishTotals } from './giving-state.js';
+import { createDemoFinance } from '../lib/demo-gifts.js';
+import { DEMO_VIEWERS } from '../lib/demo.js';
+import { today } from '../lib/time.js';
 import { toast } from './kit.js';
 
 export const DEMO_FINANCE_KEY = 'zvonec-demo-dary';
@@ -35,6 +38,14 @@ export function loadFinance() {
   F.state = 'loading';
   F.store = S.mode === 'demo' ? new LocalStore({ key: DEMO_FINANCE_KEY }) : new GithubStore({ ...S.me.finance, path: '' });
   F.store.read(FINANCE_FILE)
+    .then(async (file) => {
+      // the demo's first visit: a year of made-up gifts (lib/demo-gifts.js)
+      if (!file && S.mode === 'demo') {
+        await F.store.update(FINANCE_FILE, (j) => Object.assign(j, createDemoFinance(S.data, today(), { me: DEMO_VIEWERS.admin })), 'Zvonec – ukázka darů', emptyFinance());
+        file = await F.store.read(FINANCE_FILE);
+      }
+      return file;
+    })
     .then((file) => { F.data = normalizeFinance(file?.json); F.state = 'ready'; render(); assignKnown(); })
     .catch((error) => { F.state = 'error'; F.error = error; render(); });
 }

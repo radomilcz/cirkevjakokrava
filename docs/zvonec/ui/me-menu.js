@@ -17,7 +17,10 @@ import { S, can, myId, replaceAll, logout, ACCESS_LABELS } from './state.js';
 import { showDary } from './finance-state.js';
 import { canRunFundraisers } from './fundraisers.js';
 import { personById } from '../lib/people.js';
-import { createDemo } from '../lib/demo.js';
+import { createDemo, DEMO_VIEWERS } from '../lib/demo.js';
+import { addDemoGiving } from '../lib/demo-gifts.js';
+import { resetFinance, DEMO_FINANCE_KEY } from './finance-state.js';
+import { resetGiving } from './giving-state.js';
 import { emptyData } from '../lib/store/store.js';
 import { today } from '../lib/time.js';
 import { h, list, row, avatar, personName, icon, joinMeta, dayRange, uid } from './core.js';
@@ -60,7 +63,12 @@ export function openMeMenu({ from } = {}) {
 
   const resetDemo = () => confirmSheet({
     title: 'Chceš začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začni znovu',
-    onConfirm: () => { replaceAll(createDemo(today()), 'nová ukázka'); toast('Ukázka je zpátky.'); },
+    onConfirm: () => {
+      try { localStorage.removeItem(DEMO_FINANCE_KEY); } catch { /* private window */ }
+      resetFinance(); resetGiving();
+      replaceAll(addDemoGiving(createDemo(today()), today(), { me: DEMO_VIEWERS.admin }), 'nová ukázka');
+      toast('Ukázka je zpátky.');
+    },
   });
   const emptyDemo = () => confirmSheet({
     title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Vrátíš ji tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
