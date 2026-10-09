@@ -19,8 +19,8 @@ export function statTile(value, label, { onclick, href, tone, aria, fill, wide: 
   }
   return h(tag, {
     class: ['stat', wide && 'stat--wide'], type: onclick ? 'button' : null, href, onclick, dataset: { tone },
-    'aria-label': aria || (onclick || href ? `${value} ${label}` : null),
-  }, h('span', { class: 'stat__value' }, String(value)),
+    'aria-label': aria || (onclick || href ? `${value instanceof Node ? value.textContent : value} ${label}` : null),
+  }, h('span', { class: 'stat__value' }, value instanceof Node ? value : String(value)),
   wide ? h('span', { class: 'stat__text' }, h('span', { class: 'stat__label' }, label), bar) : h('span', { class: 'stat__label' }, label));
 }
 

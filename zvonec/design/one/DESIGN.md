@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – Dary, a calmer screen (2026-10-09).** The owner: „stránka Dary není tak hezká jako jiné stránky“. Sums
+> read as figures: the number strong, „Kč“ small and quiet (tiles and rows alike). Nepřiřazené look like the rest of
+> Zvonec – month subheads, the day arch on the left, the sender's name readable (not the bank's CAPITALS), „VS · zpráva“
+> under it, the amount and › on the right, the whole row tappable (no S button crowding the row). The donor page lists
+> the gifts plainly: the day as the title, purpose · source · note, the amount and ⋯.
+
 > **Update – Dary, step C (2026-10-09).** Under the year's tiles one line says when the bank last sent payments
 > („Platby z banky stažené 9. 10. 2026.“), a wait callout when the daily fetch has been quiet for three days, an error
 > callout when the bank refuses the token – with what to do and that nothing is lost.

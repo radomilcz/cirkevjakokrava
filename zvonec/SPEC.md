@@ -1189,13 +1189,15 @@ fresh `dary.json`); nothing reaches the main data except `person.donorVs`.
   pill; a level change or a new password re-seals or drops the key (`holdsFinance`).
 - **The year** (‹ 2026 › „Letos“): a wide tile with the sum („10 150 Kč darů za rok 2026“), then dárců · darů ·
   anonymně (sum) · nepřiřazené (› the section).
-- **Nepřiřazené**: payments with no known donor – amount, day, sender, VS, message, [Přiřaď] → „Přiřazení daru“:
+- **Nepřiřazené**: payments with no known donor, grouped by month (newest first) – the day arch, the sender (the bank's
+  CAPITALS made readable, `senderName`), „VS 20 · message“, the amount ›; the whole row opens „Přiřazení daru“:
   Člověk z Lidí (the picker; a person without a symbol gets one), the donors outside the church, Nový dárce mimo sbor,
   Anonymní dar, Vyřaď z darů. Matching (`matchGift`): the person's or outside donor's VS, else a sender account assigned
   before.
 - **Dárci**: avatar, name, „VS 1001 · 10 darů“, the year's sum › the donor page: facts (symbol, address, birth date or
   IČO – a missing one says „Doplň“ and leads to the card in Lidé or the donor sheet), ‹ year ›, „Dary za rok 2026“
-  with the sum, each gift (amount; day · purpose · hotově/na účet · note; ⋯ Uprav · Přiřaď jinému · Smaž – cash only)
+  with the sum, each gift (the day „5. 10.“; purpose · hotově/na účet · note; the amount and ⋯ Uprav · Přiřaď jinému ·
+  Smaž – cash only)
   and [Vytiskni potvrzení za rok 2026]. ⋯ Přidej dar (for this donor) · Uprav dárce (outside donors).
 - **⋯**: Přidej dar (date, amount, purpose „Provoz“, note → then „Přiřazení daru“) · Přidej dárce mimo sbor (name,
   address, IČO; a symbol from the same sequence as people's) · Vytiskni potvrzení za rok … · Nastavení darů (Místo
