@@ -1,15 +1,16 @@
 // Zvonec One – Přístupy (#pristupy, leaders; from the person's menu › Správa; DESIGN §6.9). Who can sign in, the
 // invites, and logins whose card is gone. Each change rewrites access.json in the data repo (lib/access.js) and
 // starts to work in a few minutes, after the repo's workflow publishes it. Demo: the prepared list, nothing changes.
-//   A „Přístupy“ · [Pozvi člověka] · ⋯ (Jak se lidé dostanou dovnitř · Vyměň klíč – admin)
+//   A „Přístupy“ · [Pozvi člověka] · ⋯ (Jak se lidé dostanou dovnitř · Vyměň klíč · Klíč k darům – admin)
 //   B „Hledej člověka“ + Filtr (Úroveň · Jen pozvánky)   D one column, no pane: subheads Pozvánky · Správci ·
 //   Vedoucí · Členové · Přístupy bez karty; trail = the level pill. A row has only actions, so it opens its menu.
 // Also exported for other screens: inviteSheet(person), accessOf(personId), waitingInvites(), loginSheet(person).
 
 import { S, can, myId, newId, render, loginList, updateLogins, ACCESS_LABELS } from './state.js';
 import {
-  createLogin, newPassword, resealAll, isExpired, INVITE_NAME, ACCESS_FILE, ACCESS_VERSION, emptyAccess,
+  createLogin, newPassword, resealAll, isExpired, INVITE_NAME, ACCESS_FILE, ACCESS_VERSION, emptyAccess, sealFinance, holdsFinance,
 } from '../lib/access.js';
+import { financeKeySheet } from './gifts.js';
 import { GithubStore } from '../lib/store/github.js';
 import { createDemoAccess } from '../lib/demo.js';
 import { personById, fullName, displayName } from '../lib/people.js';
@@ -97,6 +98,44 @@ export function accessOf(personId) {
   return { login, invite, expired: !!invite && isExpired(invite, today()) };
 }
 
+// ---------- the finance key (Dary): admins and the treasurer ----------
+
+/**
+ * After a login's level or treasurer mark changes: seal the finance key to it, or take it away. An admin who does not
+ * hold the key yet cannot seal it – then a login that may keep it keeps what it has.
+ */
+async function refreshFinance(record) {
+  if (S.me?.finance) await sealFinance(record, S.me.finance);
+  else if (!holdsFinance(record)) delete record.fin;
+}
+
+/** Udělej pokladníkem / Zruš pokladníka (admins): the mark on the login, and with it the key to Dary. */
+function treasurerToggle(login) {
+  if (S.mode !== 'live') { demoOnly('V ukázce se přístupy nemění.'); return; }
+  const person = personById(S.data, login.personId);
+  const on = !login.treasurer;
+  confirmSheet({
+    title: on ? 'Má být pokladníkem?' : 'Chceš odebrat pokladníka?',
+    text: on
+      ? `${person ? fullName(person) : 'Tenhle člověk'} uvidí Dary: dárce, částky a potvrzení. ${S.me?.finance ? '' : 'Klíč k darům dostane, až ho vložíš. '}${SOON}`
+      : `${person ? fullName(person) : 'Tenhle člověk'} přestane vidět Dary. ${SOON}`,
+    confirmLabel: on ? 'Udělej pokladníkem' : 'Odeber pokladníka',
+    danger: !on,
+    onConfirm: async () => {
+      try {
+        await updateLogins(async (logins) => {
+          const hit = logins.find((l) => l.id === login.id);
+          if (!hit) return;
+          if (on) hit.treasurer = true; else delete hit.treasurer;
+          await refreshFinance(hit);
+        }, `${on ? 'pokladník' : 'už není pokladník'}: ${person ? displayName(person) : ''}`);
+        render();
+        toast(on ? 'Pokladníkem bude za pár minut.' : 'Už není pokladníkem.');
+      } catch (error) { toast(`Nepodařilo se to uložit. ${error.message}`, { icon: 'alert' }); }
+    },
+  });
+}
+
 // ---------- level and password ----------
 
 const LEVELS = [{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }];
@@ -117,7 +156,7 @@ function levelSheet(login) {
       const next = values.access;
       if (!LEVELS.some((l) => l.value === next) || next === login.access) return undefined;
       try {
-        await updateLogins((logins) => { const hit = logins.find((l) => l.id === login.id); if (hit) hit.access = next; }, `přístup ${person ? displayName(person) : ''}: ${ACCESS_LABELS[next]}`);
+        await updateLogins(async (logins) => { const hit = logins.find((l) => l.id === login.id); if (hit) { hit.access = next; await refreshFinance(hit); } }, `přístup ${person ? displayName(person) : ''}: ${ACCESS_LABELS[next]}`);
         render();
         toast(`Přístup se změní na „${ACCESS_LABELS[next]}“ za pár minut.`);
         return undefined;
@@ -151,6 +190,8 @@ export function loginSheet(person) {
       try {
         const password = newPassword();
         const record = await createLogin({ name: login, password, personId: person.id, access: values.access || 'member', github: S.me.github, id: newId('k'), today: today() });
+        if (existing?.treasurer) record.treasurer = true;   // a new password keeps the treasurer mark…
+        await refreshFinance(record);                       // …and the key to Dary
         await updateLogins((logins) => {
           for (let i = logins.length - 1; i >= 0; i--) if (logins[i].personId === person.id && logins[i].access !== 'invite') logins.splice(i, 1);
           logins.push(record);
@@ -255,6 +296,7 @@ function rowItems(login) {
     manage && invite ? { label: 'Pošli pozvánku znovu', icon: 'share', onclick: () => createInvite(person, { replace: login }) } : null,
     manage && !invite && can('admin') ? { label: 'Změň přístup', icon: 'key', onclick: () => levelSheet(login) } : null,
     manage && !invite && person ? { label: 'Nastav nové heslo', icon: 'lock', onclick: () => loginSheet(person) } : null,
+    !invite && can('admin') && person ? { label: login.treasurer ? 'Odeber pokladníka' : 'Udělej pokladníkem', icon: 'gift', onclick: () => treasurerToggle(login) } : null,
     manage ? '-' : null,
     manage ? { label: invite ? 'Zruš pozvánku' : 'Odeber přístup', icon: 'x', danger: true, onclick: () => revokeLogin(login) } : null,
   ].filter(Boolean);
@@ -299,7 +341,7 @@ function loginRow(login) {
     lead: avatar(person, { me }),
     title: personName(person),
     meta: joinMeta([me ? 'to jsi ty' : null, `přístup od ${dayWithYear(login.created)}`]),
-    trail: pill(ACCESS_LABELS[login.access]),
+    trail: [login.treasurer ? pill('pokladník') : null, pill(ACCESS_LABELS[login.access])],
   });
 }
 
@@ -358,6 +400,7 @@ export function renderAccess() {
     menu: [
       { label: 'Ukaž, jak se lidé dostanou dovnitř', icon: 'info', onclick: helpSheet },
       can('admin') ? { label: 'Vyměň klíč', icon: 'key', onclick: keySheet } : null,
+      can('admin') ? { label: 'Klíč k darům', icon: 'gift', onclick: financeKeySheet } : null,
     ].filter(Boolean),
     search: { key: KEY, placeholder: 'Hledej člověka', onInput: redraw },
     filter: filterButton({

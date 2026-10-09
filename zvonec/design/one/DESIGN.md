@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – Dary, step B (2026-10-09).** A new screen for the treasurer and the admins (SPEC 9.16), built from the
+> kit only: the year line (‹ 2026 › Letos), number tiles (the wide sum tile of Přehled), „Nepřiřazené“ rows with an S
+> „Přiřaď“, „Dárci“ rows (avatar 32, VS and count, the sum in strong figures, ›), a donor page with facts and the gift
+> rows (⋯). The certificate prints as the owner approved it: wordmark, the otisk in the corner, stamp left of the
+> signature line, the signature over it. Gifts never touch the person card.
+
 > **Update – Dary, step A (2026-10-09).** Nastavení sboru gets „Úřední údaje“ (úřední název, IČO, sídlo, účet pro
 > dary – each checked). Once the account is set, Můj účet shows „Dary“ as the owner approved it in the mock: the
 > account and the person's variable symbol in a framed block (20/28 strong figures, a copy button each), a 176 QR

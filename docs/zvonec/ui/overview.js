@@ -5,6 +5,7 @@
 //              joined and whose card went to the archive in the last year, „V archivu 3 karty ›“
 //   Služby     ‹ Říjen 2026 › · a wide tile „96 % obsazeno · 103 ze 107 míst“ with a bar (› Rozpis), then
 //              Služeb · Slouží · Čeká na odpověď (› Obsazení) · Odmítnutí
+//   Dary       the treasurer and the admins only: the year's sum, donors, what waits for a donor (› Dary)
 //   Tiles: two columns on a phone, four from 600 – one even grid, every label on one line.
 // Pure numbers come from lib/stats.js.
 
@@ -13,6 +14,8 @@ import { S, navigate } from './state.js';
 import { peopleStats, serviceStats } from '../lib/stats.js';
 import { today } from '../lib/time.js';
 import { isMonth, thisMonth, inMonth } from './calendar.js';
+import { statTile as tile } from './stat-tile.js';
+import { giftsOverviewSection } from './gifts.js';
 
 const lidi = (n) => plural(n, 'člověk', 'lidé', 'lidí');
 /** „z 13“ / „ze 47“: „ze“ where the number is spoken from s/z/č/t/d (dvou, tří, čtyř, sedmi, sta, dvanácti, třiceti…). */
@@ -22,25 +25,6 @@ function outOf(n) {
   return `${ze ? 'ze' : 'z'} ${n}`;
 }
 const cap = (s) => s.charAt(0).toLocaleUpperCase('cs') + s.slice(1);
-
-/**
- * A number tile: the value big, a word under it; a link when there is somewhere to go. `fill` (0–1) makes it the
- * wide tile of its grid: the value on the left, the word and a bar on the right.
- */
-function tile(value, label, { onclick, href, tone, aria, fill } = {}) {
-  const tag = onclick ? 'button' : href ? 'a' : 'div';
-  const wide = fill != null;
-  let bar = null;
-  if (wide) {
-    bar = h('span', { class: 'stat__bar', 'aria-hidden': 'true' }, h('span', { class: 'stat__fill' }));
-    bar.firstChild.style.width = `${Math.round(Math.max(0, Math.min(1, fill)) * 100)}%`;   // CSSOM – a measured value, allowed by the CSP
-  }
-  return h(tag, {
-    class: ['stat', wide && 'stat--wide'], type: onclick ? 'button' : null, href, onclick, dataset: { tone },
-    'aria-label': aria || (onclick || href ? `${value} ${label}` : null),
-  }, h('span', { class: 'stat__value' }, String(value)),
-  wide ? h('span', { class: 'stat__text' }, h('span', { class: 'stat__label' }, label), bar) : h('span', { class: 'stat__label' }, label));
-}
 
 /** Lidé under one Filtr choice (the rest of the Filtr cleared). */
 const openPeople = (patch) => () => { clearFilter('lide'); setFilter('lide', patch); navigate('#lide'); };
@@ -89,6 +73,6 @@ export function renderOverview(parts = []) {
   const month = isMonth(parts[0]) ? parts[0] : thisMonth();
   return page({
     title: 'Přehled',
-    body: h('div', { class: 'overview' }, peopleSection(), serviceSection(month)),
+    body: h('div', { class: 'overview' }, peopleSection(), serviceSection(month), giftsOverviewSection()),
   });
 }
