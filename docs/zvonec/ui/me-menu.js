@@ -6,7 +6,7 @@
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
 //   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
-//   Správa (leaders)            Přehled › (phone) · Dary › (phone; the treasurer too) · Přístupy [1 čeká] › ·
+//   Správa (leaders)            Přehled › (phone) · Dary › (phone; the treasurer too) · Sbírky › (phone) · Přístupy [1 čeká] › ·
 //                               Nastavení sboru ›
 //   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
@@ -15,6 +15,7 @@
 
 import { S, can, myId, replaceAll, logout, ACCESS_LABELS } from './state.js';
 import { showDary } from './finance-state.js';
+import { canRunFundraisers } from './fundraisers.js';
 import { personById } from '../lib/people.js';
 import { createDemo } from '../lib/demo.js';
 import { emptyData } from '../lib/store/store.js';
@@ -76,11 +77,12 @@ export function openMeMenu({ from } = {}) {
       heading('Zdroje'),
       list([page('Šablony', '#sablony'), page('Formáty', '#formaty'), page('Místa', '#mista')], { label: 'Zdroje' }),
     ] : null,
-    leader || (showDary() && isPhone()) ? [
+    leader || (isPhone() && (showDary() || canRunFundraisers())) ? [
       heading('Správa'),
       list([
         leader && isPhone() ? page('Přehled', '#prehled') : null,
         showDary() && isPhone() ? page('Dary', '#dary') : null,
+        canRunFundraisers() && isPhone() ? page('Sbírky', '#sbirky') : null,
         leader ? page('Přístupy', '#pristupy', { trail: invites ? h('span', { class: 'pill pill--wait' }, `${invites} ${invites === 1 ? 'čeká' : invites <= 4 ? 'čekají' : 'čeká'}`) : null }) : null,
         leader ? page('Nastavení sboru', '#nastaveni') : null,
       ].filter(Boolean), { label: 'Správa' }),

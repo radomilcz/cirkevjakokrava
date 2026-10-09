@@ -12,7 +12,7 @@ import { S, can, change, render, navigate, newId, updateLogins } from './state.j
 import { F, canSeeDary, financeMissing, loadFinance, changeFinance, resetFinance } from './finance-state.js';
 import {
   FINANCE_FILE, DEFAULT_PURPOSE, emptyFinance, normalizeFinance, giftStatus, matchGift, autoAssign, donorName,
-  yearTotals, senderName, donorsOfYear, certificateOf, money,
+  yearTotals, senderName, donorsOfYear, certificateOf, money, fundraiserTotals,
 } from '../lib/gifts.js';
 import { nextDonorVs, validCompanyId, vsOwner } from '../lib/bank.js';
 import { vsSheet } from './donor-vs.js';
@@ -26,7 +26,7 @@ import { printCertificates } from './certificate.js';
 import {
   h, page, section, list, row, avatar, personName, quiet, callout, button, toast, formSheet, confirmSheet, field,
   textInput, plural, agree, facts, peoplePicker, layer, icon, meta, text, fieldError, clearErrors, openMenu, iconButton,
-  dateArch,
+  dateArch, selectInput,
 } from './kit.js';
 
 const thisYear = () => Number(today().slice(0, 4));
@@ -215,6 +215,13 @@ export function giftSheet(gift, { forKey } = {}) {
   const date = textInput({ name: 'date', type: 'date', value: gift?.date || today() });
   const amount = textInput({ name: 'amount', value: gift ? String(gift.amount).replace('.', ',') : '', inputmode: 'decimal', placeholder: 'např. 500' });
   const purpose = textInput({ name: 'purpose', value: gift?.purpose || DEFAULT_PURPOSE, autocomplete: 'off' });
+  const funds = (S.data.fundraisers || []).filter((f) => !f.closed || f.id === gift?.fundraiserId);
+  let fundId = gift?.fundraiserId || '';
+  const fund = funds.length ? selectInput({
+    name: 'fundraiser', value: fundId, label: 'Sbírka',
+    options: [{ value: '', label: 'Žádná' }, ...funds.map((f) => ({ value: f.id, label: f.name }))],
+    onChange: (v) => { fundId = v; },
+  }) : null;
   const note = textInput({ name: 'message', value: gift?.message || '', autocomplete: 'off', placeholder: 'např. sbírka na misie' });
   formSheet({
     title: gift ? 'Úprava daru' : 'Nový dar',
@@ -223,6 +230,7 @@ export function giftSheet(gift, { forKey } = {}) {
       editingBank ? meta('Platba je z výpisu z banky, datum a částku tu změnit nejde.') : meta('Dar v hotovosti nebo platba, která zatím není ve výpisu z banky.'),
       editingBank ? null : field({ label: 'Datum', control: date }),
       editingBank ? null : field({ label: 'Částka v Kč', control: amount }),
+      fund ? field({ label: 'Sbírka', control: fund, hint: 'U daru do sbírky se jako účel zapíše její název.' }) : null,
       field({ label: 'Účel', control: purpose, hint: 'Když nevíš, nech „Provoz“.' }),
       field({ label: 'Poznámka', control: note, optional: true }),
     ],
@@ -231,19 +239,26 @@ export function giftSheet(gift, { forKey } = {}) {
       const value = editingBank ? gift.amount : parseAmount(amount.value);
       if (!editingBank && !value) { fieldError(amount, 'Napiš částku, třeba 500.'); return false; }
       if (!editingBank && !/^\d{4}-\d{2}-\d{2}$/.test(date.value)) { fieldError(date, 'Vyber datum.'); return false; }
+      const chosen = funds.find((f) => f.id === fundId) || null;
       const values = {
         ...(editingBank ? {} : { date: date.value, amount: value }),
-        purpose: purpose.value.trim() || DEFAULT_PURPOSE,
+        purpose: chosen ? chosen.name : (purpose.value.trim() || DEFAULT_PURPOSE),
         message: note.value.trim() || undefined,
+        fundraiserId: chosen ? chosen.id : undefined,
       };
       if (gift) {
-        await changeFinance((f) => { const g = f.gifts.find((x) => x.id === gift.id); if (g) Object.assign(g, values); }, 'úprava daru');
+        await changeFinance((f) => {
+          const g = f.gifts.find((x) => x.id === gift.id);
+          if (!g) return;
+          Object.assign(g, values);
+          for (const k of ['message', 'fundraiserId']) if (values[k] === undefined) delete g[k];
+        }, 'úprava daru');
         toast('Uloženo.');
         return undefined;
       }
       const id = newId('g');
       const who = forKey ? (forKey.startsWith('p:') ? { personId: forKey.slice(2) } : { donorId: forKey.slice(2) }) : {};
-      await changeFinance((f) => { if (!f.gifts.some((g) => g.id === id)) f.gifts.push({ id, source: 'cash', ...values, ...who }); }, 'dar v hotovosti');
+      await changeFinance((f) => { if (!f.gifts.some((g) => g.id === id)) f.gifts.push(JSON.parse(JSON.stringify({ id, source: 'cash', ...values, ...who }))); }, 'dar v hotovosti');
       if (!forKey) setTimeout(() => { const g = F.data.gifts.find((x) => x.id === id); if (g) assignSheet(g); });
       else toast('Dar je zapsaný.');
       return undefined;
@@ -457,6 +472,24 @@ function openRow(g) {
   });
 }
 
+/** Sbírky with what each has collected (from the gifts themselves – the treasurer sees them first). */
+function fundsSection() {
+  const all = (S.data.fundraisers || []).filter((f) => !f.closed);
+  if (!all.length) return null;
+  const totals = fundraiserTotals(F.data);
+  return section({
+    title: 'Sbírky', count: all.length,
+    body: list(all.map((f) => {
+      const t = totals[f.id] || { total: 0, gifts: 0 };
+      return row({
+        lead: icon('heart'), title: f.name,
+        meta: [`SS ${f.code}`, daru(t.gifts), f.target ? `cíl ${money(f.target)}` : null].filter(Boolean).join(' · '),
+        trail: amountEl(t.total), href: `#sbirky/${f.id}`, chevron: true,
+      });
+    }), { label: 'Sbírky' }),
+  });
+}
+
 function overview(year) {
   const t = yearTotals(F.data, year);
   const donors = donorsOfYear(F.data, S.data.people, year);
@@ -466,7 +499,7 @@ function overview(year) {
     statTile(sumValue(t.total), `darů za rok ${year}`, { wide: true }),
     statTile(t.donors, agree(t.donors, 'dárce', 'dárci', 'dárců')),
     statTile(t.gifts, agree(t.gifts, 'dar', 'dary', 'darů')),
-    statTile(sumValue(t.anonymous), 'anonymně', { tone: 'quiet' }),
+    statTile(money(t.anonymous).split('\u00a0Kč')[0], 'Kč anonymně', { tone: 'quiet' }),
     statTile(open.length, 'nepřiřazené', { tone: open.length ? 'wait' : 'quiet', href: open.length ? '#dary-neprirazene' : null }));
   return page({
     title: 'Dary',
@@ -478,6 +511,7 @@ function overview(year) {
         id: 'dary-neprirazene', title: 'Nepřiřazené', count: open.length,
         body: [meta('Platby, u kterých Zvonec nepoznal dárce. Klepni a přiřaď je – další platby ze stejného účtu už pozná sám.'), byMonth(open, openRow, 'Nepřiřazené platby')],
       }) : null,
+      fundsSection(),
       section({
         title: 'Dárci', count: donors.length || null,
         body: donors.length ? list(donors.map((d) => row({

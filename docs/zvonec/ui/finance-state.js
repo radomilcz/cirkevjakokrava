@@ -6,7 +6,8 @@
 import { S, render } from './state.js';
 import { GithubStore } from '../lib/store/github.js';
 import { LocalStore } from '../lib/store/local.js';
-import { FINANCE_FILE, emptyFinance, normalizeFinance, giftStatus, matchGift, autoAssign } from '../lib/gifts.js';
+import { FINANCE_FILE, emptyFinance, normalizeFinance, giftStatus, matchGift, autoAssign, fundraiserOf, assignFundraisers } from '../lib/gifts.js';
+import { publishTotals } from './giving-state.js';
 import { toast } from './kit.js';
 
 export const DEMO_FINANCE_KEY = 'zvonec-demo-dary';
@@ -39,13 +40,16 @@ export function loadFinance() {
 }
 
 /**
- * Payments from the bank arrive open (the bank's Action cannot read Lidé): the ones whose symbol belongs to a person
- * are assigned the first time the treasurer opens Dary.
+ * Payments the bank's Action could not assign (it runs without the church's data unless it has ZVONEC_DATA_TOKEN):
+ * the ones whose symbol belongs to a person, or whose specific symbol is a sbírka's code, are assigned the first time
+ * the treasurer opens Dary. Then what each sbírka has collected goes to data/giving.json.
  */
 function assignKnown() {
   const people = S.data?.people || [];
-  if (!F.data.gifts.some((g) => giftStatus(g) === 'open' && matchGift(g, F.data, people))) return;
-  changeFinance((f) => autoAssign(f, people), 'dary přiřazené podle variabilního symbolu');
+  const fundraisers = S.data?.fundraisers || [];
+  const known = F.data.gifts.some((g) => (giftStatus(g) === 'open' && matchGift(g, F.data, people)) || (!g.fundraiserId && fundraiserOf(g, fundraisers)));
+  if (!known) { publishTotals(F.data); return; }
+  changeFinance((f) => { autoAssign(f, people); assignFundraisers(f, fundraisers); }, 'dary přiřazené podle symbolů');
 }
 
 /**
@@ -64,6 +68,7 @@ export async function changeFinance(mutate, note) {
       mutate(fresh);
     }, `Zvonec – dary: ${note}`, emptyFinance());
     F.data = normalizeFinance(json);
+    publishTotals(F.data);
   } catch (error) {
     toast(`Dary se nepodařilo uložit. ${error.message}`, { icon: 'alert' });
     try { F.data = normalizeFinance((await F.store.read(FINANCE_FILE))?.json); } catch { /* keep what is on screen */ }

@@ -37,6 +37,7 @@ export const FILES = {
   places: 'data/events.json',
   availability: 'data/events.json',
   servingLimits: 'data/events.json',
+  fundraisers: 'data/settings.json',      // Sbírky (Dary, SPEC 15.1) – no amounts, those are in data/giving.json
   settings: 'data/settings.json',
 };
 

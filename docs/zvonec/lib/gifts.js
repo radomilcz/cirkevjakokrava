@@ -2,12 +2,16 @@
 // Pure, no DOM. The data lives in the finance repo (`dary.json`), never in the main data repo:
 //   { schema: 1,
 //     gifts:  [{ id, date: 'YYYY-MM-DD', amount, source: 'cash' | 'bank' | 'moneta' | 'fio', bankId?,
-//                vs?, account?, name?, message?, purpose?,
+//                vs?, ss?, account?, name?, message?, purpose?, fundraiserId?,   – ss: a fundraiser's code
 //                personId? | donorId?   – whose gift (a person in Lidé, or a donor outside the church)
 //                kind?: 'anonymous' | 'notGift' }],   – neither set and no donor: still open („Nepřiřazené“)
 //     donors: [{ id, name, address?, companyId?, vs? }],   – donors outside Lidé (a friend, a company)
 //     settings: { signerName?, signerTitle?, stamp?, signature? } }   – stamp/signature: image data URLs
 // A person's variable symbol is person.donorVs (main data repo; it says nothing on its own).
+// Sbírky (fundraisers) live in the main data (data/settings.json › fundraisers – everyone sees them):
+//   [{ id, name, code, note?, target?, until?, closed?, created, createdBy? }]   – code: the specific symbol (SS)
+// A payment with a fundraiser's code as its SS belongs to the fundraiser (gift.fundraiserId, purpose = its name);
+// who sent it is decided as for any gift (the VS), so it also counts on the donor's certificate.
 
 export const FINANCE_FILE = 'dary.json';
 export const FINANCE_SCHEMA = 1;
@@ -85,8 +89,48 @@ export function addGifts(finance, gifts, people = [], { newId }) {
   return { added, assigned: autoAssign(finance, people) };
 }
 
-const inYear = (g, year) => String(g.date || '').startsWith(`${year}-`);
 const round2 = (n) => Math.round(n * 100) / 100;
+
+// ---------- Sbírky ----------
+
+export const FIRST_FUNDRAISER_CODE = 101;
+
+/** The next free code (specific symbol) for a new fundraiser: one above the highest, from 101. */
+export function nextFundraiserCode(fundraisers = []) {
+  const taken = fundraisers.map((f) => Number(f.code)).filter((n) => Number.isFinite(n) && n > 0);
+  return String(Math.max(FIRST_FUNDRAISER_CODE - 1, ...taken) + 1);
+}
+
+/** The fundraiser whose code a payment carries as its specific symbol, or null. */
+export function fundraiserOf(gift, fundraisers = []) {
+  const ss = digits(gift.ss);
+  return ss ? fundraisers.find((f) => digits(f.code) === ss) || null : null;
+}
+
+/** Gives every payment with a fundraiser's code that fundraiser (and its name as the purpose); returns how many. */
+export function assignFundraisers(finance, fundraisers = []) {
+  let n = 0;
+  for (const g of finance.gifts) {
+    if (g.fundraiserId) continue;
+    const f = fundraiserOf(g, fundraisers);
+    if (f) { g.fundraiserId = f.id; g.purpose = f.name; n++; }
+  }
+  return n;
+}
+
+/** What each fundraiser has collected: { [id]: { total, gifts } } – every payment for it except „Není dar“. */
+export function fundraiserTotals(finance) {
+  const out = {};
+  for (const g of finance.gifts) {
+    if (!g.fundraiserId || giftStatus(g) === 'notGift') continue;
+    const t = out[g.fundraiserId] ||= { total: 0, gifts: 0 };
+    t.total = round2(t.total + (Number(g.amount) || 0));
+    t.gifts++;
+  }
+  return out;
+}
+
+const inYear = (g, year) => String(g.date || '').startsWith(`${year}-`);
 
 /** The donor's name: the person's full name, the outside donor's name, or the sender's name from the bank. */
 export function donorName(key, finance, people = []) {

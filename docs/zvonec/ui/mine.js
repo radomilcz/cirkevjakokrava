@@ -33,6 +33,9 @@ import { eventDetail } from './event.js';
 import { blockoutSection } from './blockouts.js';
 import { limitsSheet } from './people-forms.js';
 import { inMonth } from './calendar.js';
+import { loadGiving, unseenNotes, markSeen } from './giving-state.js';
+import { fundraisersOnMine } from './fundraisers.js';
+import { money } from '../lib/gifts.js';
 
 const SHOWN = 6;              // Tvoje další služby: six rows, then „Ukaž další N“
 const state = { pos: 0, more: false, who: null, enter: false, openId: null };
@@ -304,6 +307,28 @@ function loadCard(person) {
   });
 }
 
+// ---------- Dary: thank you ----------
+
+const dayMonth = (d) => `${Number(d.slice(8, 10))}. ${Number(d.slice(5, 7))}.`;
+
+/** „Tvůj dar 2 000 Kč dorazil. Děkujeme!“ – my gifts the bank has seen since I last looked (ui/giving-state.js). */
+function thanks(person) {
+  if (!person) return null;
+  loadGiving();
+  const notes = unseenNotes();
+  if (!notes.length) return null;
+  const sbirka = (n) => (n.f ? (S.data.fundraisers || []).find((x) => x.id === n.f)?.name : null);
+  const one = notes[0];
+  return callout({
+    tone: 'info', icon: 'heart',
+    title: notes.length === 1 ? `Tvůj dar ${money(one.a)} dorazil. Děkujeme!` : 'Tvoje dary dorazily. Děkujeme!',
+    text: notes.length === 1
+      ? `Na účet sboru přišel ${dayMonth(one.d)}${sbirka(one) ? ` do sbírky ${sbirka(one)}.` : ''}`
+      : notes.slice(0, 4).map((n) => `${money(n.a)} (${dayMonth(n.d)}${sbirka(n) ? `, ${sbirka(n)}` : ''})`).join(' · '),
+    actions: [button('Skryj', { size: 's', variant: 'quiet', onclick: () => markSeen(notes) })],
+  });
+}
+
 // ---------- the page ----------
 
 export function renderMine(parts = []) {
@@ -341,11 +366,13 @@ export function renderMine(parts = []) {
       icon: 'calendar', title: 'Zatím tu nemáš žádné služby.',
       text: 'Až tě vedoucí někam zapíše, uvidíš to tady a Zvonec se tě zeptá, jestli můžeš.',
     }) : null,
+    thanks(person),
     person && !nothing ? (waiting.length ? askCard(person, waiting) : calm()) : null,
     split ? null : [staff, load],
     nextSection(answered, split ? openId : null),
     declinedSection(declined, split ? openId : null),
     split ? null : off,
+    fundraisersOnMine(),
     person ? pastLink(past) : null);
 
   // ≥ 1200 the right column: the meeting when one is open (it takes the column's place), otherwise mine: Obsazení's

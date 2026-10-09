@@ -97,6 +97,7 @@ things and never share a name.
 | Formáty, Místa | read-only, reached by links | edit | edit |
 | Access | – | invites; manages member and invite logins | + „Změň přístup“, „Vyměň klíč“, „Nahraj zálohu“ |
 | Dary (15.1) | own account, symbol and QR in Můj účet | the same | + the Dary screen and Přehled › Dary, like the treasurer |
+| Sbírky (9.17) | the open ones, how much they have collected, a gift by QR | + found and run them | the same |
 
 **Pokladník** (treasurer, Dary 15.1) is not a level but a mark on a login, given by an admin in Přístupy – a člen or a
 vedoucí can be the treasurer, with at most one deputy. The treasurer (and every admin) gets the Dary screen,
@@ -106,6 +107,8 @@ Nastavení darů and Přehled › Dary. Agreed with the owner on 2026-10-09:
   only into the logins of the treasurer and the admins. People, events and settings stay under the one shared
   token, hidden from members by the UI only (below).
 - The sums in Přehled › Dary (without names) are seen only by the treasurer and the admins.
+- Sbírky (agreed 2026-10-09): leaders, the treasurer and the admins found them; everyone sees what each has collected
+  (data/giving.json, no names); who gave stays in Dary. „Tvůj dar dorazil“ is sealed to the giver's own logins.
 
 Privacy rules (GDPR; membership of a church reveals religion, GDPR Art. 9):
 - A member never sees another person's membership, birth date, note, consent or access. Membership is never printed.
@@ -1207,7 +1210,38 @@ fresh `dary.json`); nothing reaches the main data except `person.donorVs`.
   donors' gaps („U 2 dárců něco chybí … Vytiskni i tak“). The certificate as 15.1 describes, one A4 page per donor
   (`@page dary`, margin 0, the otisk an <img> from `css/otisk.svg`); more than 12 gifts print one line per month.
 - **Přehled › Dary** (9.15): the year's sum (wide), dárců, nepřiřazené – each › Dary.
+- **Sbírky** in Dary: the open ones with what each has collected (SS · darů · cíl, the sum ›  #sbirky/<id>); in „Nový
+  dar“ / „Úprava daru“ a „Sbírka“ select (its name becomes the purpose).
 - Demo: the admin sees Dary, kept in this browser (`zvonec-demo-dary`); Přístupy changes stay demo-only.
+
+### 9.17 Sbírky `#sbirky[/<id>]` (everyone signed in; leaders, the treasurer and the admins run them; 15.1)
+`ui/fundraisers.js`, `ui/give.js`, `ui/giving-state.js`, `lib/giving.js`. A sbírka is a gift for one purpose with its
+own code – the specific symbol (101, 102, … `nextFundraiserCode`). Stored in the main data (`settings.json ›
+fundraisers`: `{ id, code, name, note?, target?, until?, closed?, created, createdBy? }`), the sums in
+`data/giving.json` (below). Agreed with the owner 2026-10-09: leaders, the treasurer and the admins found them;
+everyone sees the name, the QR and how much was collected; who gave stays with the treasurer and the admins.
+- **Nav**: sidebar „Sbírky“ (heart) for whoever runs them, for everyone while one is open; on a phone from Moje (a
+  „Sbírky“ section of the open ones) and Správa (leaders) – it lights Moje.
+- **List**: the open ones as cards (name, the sum in strong figures „z 80 000 Kč“, a bar when there is a target,
+  „4 dary · do 31. 12. 2026 · specifický symbol 101“), 2 columns ≥ 900; „Skončené“ rows below. [+ Založ sbírku].
+- **Detail**: the note, the big card, [Pošli dar] (primary) · [Ukaž QR pro plakát] (those who run it: a big QR without a
+  VS, the account and the code to copy, „Chceš potvrzení o daru …? Napiš do platby svůj variabilní symbol ze Zvonce.“);
+  ⋯ Uprav · Ukonči sbírku / Obnov sbírku (with Vrať) · Smaž (only with no gift). „Kdo dal kolik, vidí jen pokladník a
+  správci v Darech.“
+- **Nová sbírka**: Název, Na co, Kolik potřebujeme (optional), Do kdy (optional) → „Sbírka má specifický symbol 101.“
+- **Mimořádný dar** (Můj účet › Dary [Pošli mimořádný dar], a sbírka's [Pošli dar]): Kolik (optional), Na co (Provoz
+  sboru or an open sbírka) → [Ukaž platbu] → the payment: the QR (`spdPayment` with AM, X-VS = my donorVs, X-SS = the
+  code, MSG „Sbírka …“) and the details to copy; on a phone the details first, the QR behind „Ukaž QR kód“. „Až dar
+  dorazí na účet sboru, poděkujeme ti na stránce Moje. Zvonec se do banky dívá přes den každou hodinu.“
+- **Tvůj dar dorazil**: Moje shows „Tvůj dar 2 000 Kč dorazil. Děkujeme!“ (info, heart, [Skryj]) for my gifts the bank
+  has seen since I last hid it; Můj účet › Dary lists them („Dary, které dorazily“).
+- **data/giving.json** (main data repo, read by everyone, never published): `{ v: 1, fundraisers: { <id>: { total,
+  gifts } }, receipts: [{ until, box }] }`. The bank's Action writes it (with ZVONEC_DATA_TOKEN, 15.1), the treasurer's
+  Zvonec keeps the totals fresh after every change in Dary. A receipt is a note `{ g, d, a, f? }` sealed (RSA-OAEP, as
+  the GitHub token) to the public half of each login of the person who gave – for gifts of the last 14 days, kept 30
+  days; the list is shuffled and keyed by nobody, a person opens what their private half can. Which gifts already
+  have a note: `dary.json › noted`.
+- Demo: the sums and „dorazil“ come straight from the demo's gifts in this browser.
 
 ## 10. Public web and public.json
 
@@ -1335,7 +1369,10 @@ added, fetchedTo, failedSince?, error? }). Dary shows „Platby z banky stažen�
 wait callout, after a failure „Zvonec od 7. 10. 2026 nestahuje platby z banky. Banka klíč nepoznala – … Nic se
 neztratí …“ with where to put a new token (the repo secret MONETA_TOKEN; pasting it in Zvonec would need a vendored
 sealed-box library – later). Payments whose symbol belongs to a person are assigned when Dary opens (the Action cannot
-read Lidé). Fio later as a second adapter. The QR encoder is vendored (`lib/vendor/qrcode.js`, qrcode-generator 2.0.4, MIT).
+read Lidé). Fio later as a second adapter.
+**D** (built, see 9.17) Sbírky and Mimořádný dar: with the repo secret ZVONEC_DATA_TOKEN (a fine-grained token to the
+main data repo, Contents: Read and write) the Action – now every hour 6–22 Prague time, a 429 from the bank waits for
+the next run – also assigns payments by the people's symbols and the sbírky's codes and writes `data/giving.json`. The QR encoder is vendored (`lib/vendor/qrcode.js`, qrcode-generator 2.0.4, MIT).
 - **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
 - **Přehled**: a Dary section beside Lidé and Služby (see 9.15) – headline sums only, never names.
 - **Access** (agreed 2026-10-09, see 2): a treasurer mark on a login (pokladník, at most one deputy), not a level.

@@ -1,5 +1,12 @@
 # Zvonec One: the design
 
+> **Update – Sbírky and Mimořádný dar (2026-10-09).** A new screen `#sbirky` (SPEC 9.17), kit only: a sbírka is a
+> card on the tint (the name 20/26, the sum in the title face 32 with a quiet „Kč“, „z 80 000 Kč“, the stat bar, a meta
+> line); the detail makes the card big (48) with [Pošli dar] and [Ukaž QR pro plakát]. The payment sheet puts the QR
+> first and the details to copy under it (no wrapping of the account); on a phone the details first and the QR behind
+> „Ukaž QR kód“ – the bank app is on the same phone. Moje thanks with an info callout with a heart; the heart is the
+> icon of Sbírky (the gift stays Dary's). In Dary the anonymous tile says „28 500 / Kč anonymně“ so five figures fit.
+
 > **Update – Dary, a calmer screen (2026-10-09).** The owner: „stránka Dary není tak hezká jako jiné stránky“. Sums
 > read as figures: the number strong, „Kč“ small and quiet (tiles and rows alike). Nepřiřazené look like the rest of
 > Zvonec – month subheads, the day arch on the left, the sender's name readable (not the bank's CAPITALS), „VS · zpráva“
