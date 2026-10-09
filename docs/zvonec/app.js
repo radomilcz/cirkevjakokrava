@@ -14,6 +14,7 @@ import { restore, openFinance, ACCESS_FILE } from './lib/access.js';
 import { resetFinance } from './ui/finance-state.js';
 import { resetGiving } from './ui/giving-state.js';
 import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
+import { addDemoGiving } from './lib/demo-gifts.js';
 import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
@@ -430,8 +431,13 @@ async function boot() {
   // the demo starts as an admin who is also in Lidé (Radim), as in Next and Simple – the same demo data
   S.me = { login: null, priv: null, github: null, personId: DEMO_VIEWERS.admin, access: 'admin' };
   const store = new LocalStore({ key: DEMO_KEY });
-  if (!store.hasData()) await saveAll(store, createDemo(today()), 'Zvonec: ukázka');
-  const data = (await load(store)) || emptyData();
+  if (!store.hasData()) await saveAll(store, addDemoGiving(createDemo(today()), today(), { me: DEMO_VIEWERS.admin }), 'Zvonec: ukázka');
+  let data = (await load(store)) || emptyData();
+  // a demo saved before Dary and Sbírky gets their made-up content once (lib/demo-gifts.js)
+  if (data.people?.length && !data.settings?.bankAccount && !data.fundraisers?.length) {
+    await saveAll(store, addDemoGiving(data, today(), { me: DEMO_VIEWERS.admin }), 'Zvonec: ukázka darů');
+    data = (await load(store)) || data;
+  }
   if (!personById(data, DEMO_VIEWERS.admin)) S.me.personId = null;
   useStore(store, data);
 }

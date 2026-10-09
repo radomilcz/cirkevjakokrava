@@ -9,6 +9,8 @@ import { GIVING_FILE, normalizeGiving, sameTotals, emptyGiving, noteOf, RECENT_D
 import { normalizeFinance, fundraiserTotals, assignFundraisers } from '../lib/gifts.js';
 import { openNotes } from '../lib/access.js';
 import { today } from '../lib/time.js';
+import { createDemoFinance } from '../lib/demo-gifts.js';
+import { DEMO_VIEWERS } from '../lib/demo.js';
 
 const SEEN_KEY = 'zvonec-seen-gifts';
 const FRESH_MS = 5 * 60 * 1000;
@@ -20,7 +22,10 @@ export function resetGiving() { Object.assign(G, { data: null, notes: [], state:
 
 /** The demo's gifts (Dary's demo store in this browser). */
 function demoFinance() {
-  try { return normalizeFinance(JSON.parse(localStorage.getItem(DEMO_FINANCE_KEY) || 'null')?.files?.['dary.json']?.json); } catch { return normalizeFinance(null); }
+  let json = null;
+  try { json = JSON.parse(localStorage.getItem(DEMO_FINANCE_KEY) || 'null')?.files?.['dary.json']?.json; } catch { /* private window */ }
+  // before Dary has been opened the demo's gifts are not stored yet: the same made-up year (lib/demo-gifts.js)
+  return normalizeFinance(json || createDemoFinance(S.data, today(), { me: DEMO_VIEWERS.admin }));
 }
 
 /** One note per gift (a run repeated after a refused push may seal one twice), newest first. */
