@@ -1274,8 +1274,10 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
   symbol brings them the donation certificate every year. The symbol is assigned by Zvonec (sequential, unique), is
   not sensitive on its own and lives on the person record in the main data repo (`donorVs`), so a member sees it
   without reading the finance repo; amounts never reach the member's view.
-- **The treasurer on a person card**: a Dary section (symbol, this year and last year, the latest gifts, „Vytiskni
-  potvrzení za rok …“).
+- **Never on the person card** (the owner): the card stays about contact and serving – no Dary section, no link, not
+  even for the treasurer. Donations live only on the Dary screen: Dary › Dárci (the donors) → a donor's detail
+  (symbol, this year and last year, the gifts, „Vytiskni potvrzení za rok …“). The symbol is shown to the person
+  in Můj účet and to the treasurer in Dary, nowhere else.
 - **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
 - **Out**: the yearly donation certificate per donor (print), sums per month and purpose without names (for the
   board), the donors list for the treasurer. Tax details to be confirmed with the church's accountant.
