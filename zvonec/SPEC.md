@@ -1303,7 +1303,8 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
   in Můj účet and to the treasurer in Dary, nowhere else.
 - **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
 - **Out**: the yearly donation certificate per donor (print, A4 portrait, one donor per page: the church's brand
-  name as a wordmark in the top left corner (no symbol, the owner), title, year, recipient and donor, the gifts and the sum; at the bottom
+  name as a wordmark in the top left corner (no symbol, the owner), the Manifest's otisk (the fingerprint lines
+  of the slides) in pale pink bleeding off the top right corner, behind nothing but white space, title, year, recipient and donor, the gifts and the sum; at the bottom
   the place and date on the left, the stamp and the signature on the right – the stamp just left of the signature
   line, the signature over the line, the signer's name and „pastor sboru“ centred under it; the church's name,
   company ID and account in the page footer), sums per month and purpose without names (for the board), the
