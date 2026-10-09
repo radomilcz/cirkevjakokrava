@@ -17,7 +17,9 @@ Pilíř 2 je na webu krátký výrok (výše, neměnit). Pod ním je odkaz, kter
 
 ## Co má pilíř 2 říct
 
-Pilíř 1 je o tom, co dělají druzí. Pilíř 2 je o tom, **co přineseme my sami**. Pastva je to, čeho se lidi kolem nás nají: dobré, krásné a užitečné věci, které dáváme městu. Hlavně lidem, co kostel ani víru neřeší.
+**Cíl podle autora:** „Říct, že lidi mají hodnotu, jejich práce má hodnotu a že k tomu přidáváme hodnotu, protože v tom vidíme Boží věci.“ (Slovo „hodnota“ je tu cíl, ne doporučené slovo do textu. V textu ho nepoužívej, zní korporátně.)
+
+Jinými slovy: obyčejná práce lidí (elektrikáře, učitelky, kuchaře, sestry, prodavačky) není jen „práce na chleba“. Bůh v ní je. My to vidíme, bereme ji vážně a přidáváme k ní to svoje. Tak vzniká pastva: to, čeho se lidi kolem nás nají. Hlavně lidi, co kostel ani víru neřeší.
 
 Autor (Radomil) dal tyhle tipy. Jsou to jen tipy, ne hotové věty:
 - „Pastva roste zkrátka tam, kde se kráva pase.“ (Pastva vzniká tam, kde žiješ, pracuješ a chodíš.)
