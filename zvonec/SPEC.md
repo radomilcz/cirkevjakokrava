@@ -1255,3 +1255,21 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 - **Notifications centre**; renaming „Přidej setkání“ to „Nové setkání“ for the main action.
 - **Real notifications** (SMS / e-mail / push) need a server or a third-party service; out of scope for a
   GitHub-only platform.
+
+## 15. Roadmap (agreed direction, not built yet)
+
+### 15.1 Dary (donations) – Fio only
+Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock was shown (Dary for the treasurer).
+- **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
+- **Access**: a treasurer level (pokladník, at most one deputy). Gifts live in a separate private finance repo that
+  only the treasurer can read; the main data repo and public.json never hold them.
+- **Fio**: a read-only Fio API token as a secret of the finance repo; a daily GitHub Action fetches incoming
+  payments and stores them as one record shape `{ id, date, amount, account, name, vs, ks, ss, message, source }`
+  (source `fio` · `cash`); a payment seen twice is stored once. Cash gifts are entered by hand.
+- **Matching**: the donor's variable symbol (per person – a tax certificate is per donor; visible to the treasurer
+  only) → the person; else a sender account matched before → the same person; else „Nepřiřazené“, where the
+  treasurer picks a person, „Anonymní dar“ or „Není dar“ (rent, a grant, a refund).
+- **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
+- **Out**: the yearly donation certificate per donor (print), sums per month and purpose without names (for the
+  board), the donors list for the treasurer. Tax details to be confirmed with the church's accountant.
+- Open: purposes beyond Provoz; who the treasurer and the deputy are.
