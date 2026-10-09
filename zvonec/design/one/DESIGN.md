@@ -12,6 +12,10 @@
 > Břemeno show those. A Dary section joins when Dary is built.
 > Tile numbers are set in the title face (Agrandir Narrow Black 32/34, as the arch numbers); a label never spills
 > out of its tile (min-width 0, wrapping as the last resort), and „odmítnutých“ became the invariant „odmítnutí“.
+> On a phone the 3-wide auto grid left a tile alone on a row and broke labels (the owner: „na mobilu to prostě
+> nevypadá dobře“). Now one even grid – 2 columns on a phone, 4 from 600: Lidé has four tiles (the archive became
+> the link „V archivu 3 karty ›“ under the year's line), Služby a wide tile – 40 px „96 %“ left, „obsazeno 103 ze
+> 107“ and an 8 px bar right (ok colour, amber while places are empty) – over four tiles.
 
 > **Update – Lidé Tabulka: banded columns (2026-10-08).** As in Rozpis, every second shown column sits on a faint band
 > (ink 3.5 % over the ground), its head cell rounded on top. Which columns show depends on the table's width, so

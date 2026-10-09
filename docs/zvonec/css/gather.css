@@ -70,21 +70,30 @@
 
 /* ---------- Přehled (#prehled, leaders; ui/overview.js) ---------- */
 .overview > .section + .section { margin-top: var(--section-gap); }
-/* number tiles: the value big, a word under it; a tile that leads somewhere lights like a row */
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: var(--space-2); }
+/* number tiles: the value big, a word under it; a tile that leads somewhere lights like a row. One even grid – two
+   columns on a phone, four from 600 – so no tile is left alone on a row and every label stays on one line */
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+@media (min-width: 600px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .stat {
-  display: grid; align-content: start; gap: 4px; min-width: 0; min-height: 84px; padding: var(--space-3) var(--space-4); border: 0;
+  display: grid; align-content: start; gap: 2px; min-width: 0; padding: var(--space-3) var(--space-4) var(--space-4); border: 0;
   border-radius: var(--radius-m); background: var(--tint); color: var(--ink); font: inherit; text-align: left; text-decoration: none;
   transition: background-color var(--dur-state) var(--ease);
 }
 :is(button, a).stat { cursor: pointer; }
 :is(button, a).stat:hover { background: var(--tint-2); }
 :is(button, a).stat:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.stat__value { font-family: var(--font-title); font-weight: 900; font-size: 32px; line-height: 34px; font-feature-settings: var(--numerals); }
-/* a long word („odmítnutých“) in a narrow tile or with a big system font: hyphenate, never spill out */
-.stat__label { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); hyphens: auto; overflow-wrap: anywhere; }
-@media (max-width: 599px) { .stat { padding: var(--space-3); } }
+.stat__value { font-family: var(--font-title); font-weight: 900; font-size: 32px; line-height: 36px; font-feature-settings: var(--numerals); }
+/* a big system font: wrap inside the tile rather than spill out */
+.stat__label { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: anywhere; }
 .stat[data-tone="wait"] .stat__value { color: var(--wait-ink); }
 .stat[data-tone="quiet"] .stat__value { color: var(--ink-2); }
+/* the wide tile (Služby › obsazeno): the whole row, the value left, the words and a bar right */
+.stat--wide { grid-column: 1 / -1; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-4); padding: var(--space-4); }
+.stat--wide .stat__value { font-size: 40px; line-height: 40px; }
+.stat__text { display: grid; gap: var(--space-2); min-width: 0; }
+.stat__bar { position: relative; display: block; height: 8px; border-radius: var(--shape-pill); background: var(--tint-2); overflow: hidden; }
+.stat__fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--ok-solid); }
+.stat[data-tone="wait"] .stat__fill { background: var(--wait-ink); }
+.overview .row-link { margin-top: var(--space-2); }
 .stats-note { margin-top: var(--space-3); }
 .overview .period-line { margin-bottom: var(--space-4); }
