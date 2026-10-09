@@ -363,9 +363,36 @@ function setupPage() {
 
 function waitingPage() {
   if (F.state === 'error') {
-    return page({ title: 'Dary', body: callout({ tone: 'error', title: 'Dary se nepodařilo načíst.', text: F.error?.message || '', actions: [button('Zkus to znovu', { onclick: () => { resetFinance(); render(); } })] }) });
+    return page({ title: 'Dary', body: callout({ tone: 'no', title: 'Dary se nepodařilo načíst.', text: F.error?.message || '', actions: [button('Zkus to znovu', { onclick: () => { resetFinance(); render(); } })] }) });
   }
   return page({ title: 'Dary', body: quiet('Načítám dary…') });
+}
+
+const BANK_STALE_DAYS = 3;
+const daysBetween = (a, b) => Math.round((new Date(`${b}T12:00`) - new Date(`${a}T12:00`)) / 86400000);
+
+/** „401: banka klíč nepoznala – … (UNAUTHORISED)“ → „Banka klíč nepoznala – ….“ (the code stays in the Action's log). */
+function bankWords(error) {
+  const s = String(error || '').replace(/^\d+:\s*/, '').replace(/\s*\([A-Z_]+\)$/, '').trim();
+  if (!s) return '';
+  return `${s.charAt(0).toLocaleUpperCase('cs')}${s.slice(1)}${/[.!?]$/.test(s) ? '' : '.'}`;
+}
+
+/** How the bank's daily fetch is doing (settings.bank, written by zvonec/bank.mjs); nothing before the first run. */
+function bankLine() {
+  const b = F.data.settings?.bank;
+  if (!b) return null;
+  if (b.ok === false) {
+    return callout({
+      tone: 'no',
+      title: `Zvonec od ${dayWithYear(b.failedSince || b.checked)} nestahuje platby z banky.`,
+      text: `${bankWords(b.error)} Nic se neztratí – až bude klíč zase platit, Zvonec chybějící dny dostáhne. Nový klíč z Internet Banky vlož v repozitáři darů do Settings › Secrets › MONETA_TOKEN.`,
+    });
+  }
+  const late = b.checked && daysBetween(b.checked, today()) > BANK_STALE_DAYS;
+  return late
+    ? callout({ tone: 'wait', title: `Platby z banky naposledy ${dayWithYear(b.checked)}.`, text: 'Denní stahování se pár dní nespustilo. Podívej se do repozitáře darů na záložku Actions.' })
+    : meta(`Platby z banky stažené ${dayWithYear(b.checked)}.`);
 }
 
 function openRow(g) {
@@ -391,7 +418,7 @@ function overview(year) {
     menu: screenMenu(year),
     cls: 'gifts',
     body: h('div', { class: 'overview' },
-      h('div', { class: 'gifts-year' }, yearLine(year, (y) => `#dary/${y}`), tiles),
+      h('div', { class: 'gifts-year' }, yearLine(year, (y) => `#dary/${y}`), tiles, bankLine()),
       open.length ? section({
         id: 'dary-neprirazene', title: 'Nepřiřazené', count: open.length,
         body: [meta('Platby, u kterých Zvonec nepoznal dárce. Přiřaď je – další platby ze stejného účtu už pozná sám.'), list(open.map(openRow), { label: 'Nepřiřazené platby' })],

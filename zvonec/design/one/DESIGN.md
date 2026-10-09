@@ -1,5 +1,9 @@
 # Zvonec One: the design
 
+> **Update – Dary, step C (2026-10-09).** Under the year's tiles one line says when the bank last sent payments
+> („Platby z banky stažené 9. 10. 2026.“), a wait callout when the daily fetch has been quiet for three days, an error
+> callout when the bank refuses the token – with what to do and that nothing is lost.
+
 > **Update – Dary, step B (2026-10-09).** A new screen for the treasurer and the admins (SPEC 9.16), built from the
 > kit only: the year line (‹ 2026 › Letos), number tiles (the wide sum tile of Přehled), „Nepřiřazené“ rows with an S
 > „Přiřaď“, „Dárci“ rows (avatar 32, VS and count, the sum in strong figures, ›), a donor page with facts and the gift

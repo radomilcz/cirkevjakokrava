@@ -1322,8 +1322,18 @@ Agreed with the owner on 2026-10-09; the owner said go the same day. Built in th
 **A** (built) Úřední údaje in Nastavení sboru, `donorVs` and Můj účet › Dary with the QR payment; **B** (built, see
 9.16) the finance repo (`<owner>/church-finance`, file `dary.json`) with a second token sealed only into the
 treasurer's and the admins' logins, the Dary screen (donors, gifts by hand, matching, certificates, Nastavení darů)
-and Přehled › Dary – a bank statement upload waits for the format Moneta exports; **C** the bank Action (Moneta, later
-Fio) and the token renewal. The QR encoder is vendored (`lib/vendor/qrcode.js`, qrcode-generator 2.0.4, MIT).
+and Přehled › Dary – a bank statement upload waits for the format Moneta exports; **C** (built, waits for the token)
+MONETA's business API (VIP API, the Czech Banking Standard's shape: `https://api.moneta.cz/api/v4/vip/aisp/my/accounts`
+and `…/accounts/<id>/transactions?fromDate&toDate&page&size`, `Authorization: Bearer <token from Internet Banka ›
+Nastavení › Správa API tokenů>`) fetched every morning by the finance repo's Action (`zvonec/finance-repo/bank.yml` →
+`zvonec/bank.mjs`, mapping `lib/bank-moneta.js`): incoming booked payments (CRDT, BOOK) become open gifts (bankId
+`moneta:<entryReference>`, VS/KS/SS from the structured reference, sender name and account, message); the first run
+takes 90 days, later runs from the last good day minus a week; the result goes to `settings.bank` ({ checked, ok,
+added, fetchedTo, failedSince?, error? }). Dary shows „Platby z banky stažené 9. 10. 2026.“, after three quiet days a
+wait callout, after a failure „Zvonec od 7. 10. 2026 nestahuje platby z banky. Banka klíč nepoznala – … Nic se
+neztratí …“ with where to put a new token (the repo secret MONETA_TOKEN; pasting it in Zvonec would need a vendored
+sealed-box library – later). Payments whose symbol belongs to a person are assigned when Dary opens (the Action cannot
+read Lidé). Fio later as a second adapter. The QR encoder is vendored (`lib/vendor/qrcode.js`, qrcode-generator 2.0.4, MIT).
 - **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
 - **Přehled**: a Dary section beside Lidé and Služby (see 9.15) – headline sums only, never names.
 - **Access** (agreed 2026-10-09, see 2): a treasurer mark on a login (pokladník, at most one deputy), not a level.
