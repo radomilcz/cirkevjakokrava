@@ -1,5 +1,16 @@
 # Zvonec One: the design
 
+> **Update – Přehled with small charts (2026-10-09).** The owner: „pořád myslím, že si to zaslouží rethink. A třeba
+> graf?“ Each figure block now carries one chart that says what a single number cannot (kit `columns()`, `stackBar()`;
+> the dataviz method: emphasis, not categorical; thin columns ≤ 24 with a 4 px rounded top on one hairline baseline;
+> the current column in `--chart-now`, the others in `--chart-ctx` – both ≥ 3:1 on --card in all five palettes, checked;
+> the value only on the current column's cap, every column a CSS tooltip and an aria-label):
+> - **Lidé** – one stacked bar členové · přátelé · hosté in three steps of one ramp, 2 px gaps; the figures below carry
+>   the matching swatch.
+> - **Služby** – obsazenost for the twelve months up to the chosen one; a column opens that month.
+> - **Dary** – the year's sums by month, this month lit, the months to come empty.
+> On a phone every third month is labelled and the cap is left to the tooltip.
+
 > **Update – the design audit of Dary and Sbírky (2026-10-09).** The owner: „ty mnou navržené jsou esteticky jinde“.
 > Four auditors (typography, spacing, composition, the system) agreed; the new parts now use the house blocks only:
 > - **Kit pieces added:** `figures()` (Tvoje břemeno's anatomy for any headline number: the title-face figure 56/48
