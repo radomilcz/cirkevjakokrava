@@ -1,5 +1,10 @@
 # Zvonec One: the design
 
+> **Update – Dary, step A (2026-10-09).** Nastavení sboru gets „Úřední údaje“ (úřední název, IČO, sídlo, účet pro
+> dary – each checked). Once the account is set, Můj účet shows „Dary“ as the owner approved it in the mock: the
+> account and the person's variable symbol in a framed block (20/28 strong figures, a copy button each), a 176 QR
+> payment on the right (black on white on every palette, so a bank app reads it), on a phone behind „Ukaž QR kód“.
+
 > **Update – Přehled, headline numbers only (2026-10-09).** The owner: „v přehledu jen přehledy, žádné detailní
 > informace“. Přehled (`#prehled`, leaders) keeps the tiles – Lidé (by membership, the archive, who joined and left in
 > a year) and Služby in a month (obsazeno %, služeb, slouží, čeká, odmítnuto) – each leading to the screen with the
