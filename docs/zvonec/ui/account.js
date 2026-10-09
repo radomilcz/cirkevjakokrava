@@ -25,7 +25,8 @@ import {
 } from './kit.js';
 import { contactSheet } from './people-forms.js';
 import { calendarExportRows, CALENDAR_EXPORT_NOTE } from './calendar-shared.js';
-import { parseAccount, spdPayment, nextDonorVs } from '../lib/bank.js';
+import { parseAccount, spdPayment, nextDonorVs, vsOwner } from '../lib/bank.js';
+import { vsSheet } from './donor-vs.js';
 import { qrCode } from './qr.js';
 
 // ---------- my card ----------
@@ -194,6 +195,22 @@ async function copyValue(value, done) {
   try { await navigator.clipboard.writeText(value); toast(done); } catch { toast('Kopírování nefunguje. Opiš si to.'); }
 }
 
+/** „Změň variabilní symbol“: someone who already sends gifts with their own symbol keeps it. */
+function changeMyVs(person) {
+  vsSheet({
+    current: person.donorVs,
+    intro: 'Posíláš už dary s jiným symbolem? Napiš ho sem a Zvonec tvoje platby pozná.',
+    isTaken: (vs) => { const o = vsOwner(vs, S.data.people); return !!o && o.personId !== person.id; },
+    onSave: (vs) => {
+      const target = personById(S.data, person.id);
+      if (!target) return;
+      target.donorVs = vs;
+      change(`variabilní symbol pro dary: ${displayName(target)}`);
+      toast('Variabilní symbol je změněný.');
+    },
+  });
+}
+
 /** Gives me a donor symbol the first time I see Dary (one change, after this render). */
 function ensureDonorVs(person) {
   if (!person || person.donorVs) return;
@@ -214,7 +231,10 @@ function giveSection(person) {
   const value = (text) => h('span', { class: 'give-value' }, text);
   const rows = list([
     row({ title: value(s.bankAccount), meta: 'Účet sboru', trail: iconButton('copy', 'Zkopíruj číslo účtu', { onclick: () => copyValue(s.bankAccount, 'Číslo účtu je zkopírované.') }) }),
-    vs ? row({ title: value(vs), meta: 'Tvůj variabilní symbol', trail: iconButton('copy', 'Zkopíruj variabilní symbol', { onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') }) }) : null,
+    vs ? row({ title: value(vs), meta: 'Tvůj variabilní symbol', trail: [
+      iconButton('pencil', 'Změň variabilní symbol', { onclick: () => changeMyVs(person) }),
+      iconButton('copy', 'Zkopíruj variabilní symbol', { onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') }),
+    ] }) : null,
   ].filter(Boolean), { label: 'Kam poslat dar' });
   const payment = spdPayment({ account, vs, name: s.legalName || s.churchName, message: 'Dar' });
   const qrBlock = () => h('div', { class: 'give-qr' },

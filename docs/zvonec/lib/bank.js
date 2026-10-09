@@ -6,6 +6,8 @@
 //                                         types it in the bank app)
 //   nextDonorVs(people)                → the next free symbol, sequential from 1001
 //   validCompanyId('17627681')         → true (IČO: 8 digits, the last one a mod-11 check)
+//   cleanVs(' 0042 ')                  → '42' (a variable symbol: 1–10 digits, leading zeros dropped as banks do) | null
+//   vsOwner('42', people, donors)      → { personId } | { donorId } | null – who already has this symbol
 
 const NUMBER_WEIGHTS = [6, 3, 7, 9, 10, 5, 8, 4, 2, 1];
 const PREFIX_WEIGHTS = [10, 5, 8, 4, 2, 1];
@@ -71,4 +73,22 @@ export function validCompanyId(text) {
   const d = digits.padStart(8, '0');
   const sum = [...d.slice(0, 7)].reduce((s, x, i) => s + Number(x) * (8 - i), 0);
   return (11 - (sum % 11)) % 10 === Number(d[7]);
+}
+
+/** A variable symbol as banks compare it: digits only, at most 10, leading zeros dropped. Null when not valid. */
+export function cleanVs(text) {
+  const s = String(text ?? '').replace(/\s+/g, '');
+  if (!/^\d{1,10}$/.test(s)) return null;
+  const v = s.replace(/^0+/, '');
+  return v || null;
+}
+
+/** Who already has this symbol: a person (donorVs) or a donor outside the church (vs). → { personId } | { donorId } | null */
+export function vsOwner(vs, people = [], donors = []) {
+  const v = cleanVs(vs);
+  if (!v) return null;
+  const p = people.find((x) => cleanVs(x.donorVs) === v);
+  if (p) return { personId: p.id };
+  const d = donors.find((x) => cleanVs(x.vs) === v);
+  return d ? { donorId: d.id } : null;
 }
