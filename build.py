@@ -140,7 +140,7 @@ def bloky(md, rozklik=False):
             druh, radky = ('citat' if rozklik else 'otazka'), [re.sub(r'^\s*>\s?', '', r) for r in radky]
         else:
             druh = 'odstavec'
-        text = (ZLOM if druh == 'citat' else ' ').join(r.strip().rstrip('\\').strip() for r in radky)
+        text = (ZLOM if druh in ('citat', 'titul') else ' ').join(r.strip().rstrip('\\').strip() for r in radky)
         text = re.sub(r'\\([\\`*_{}\[\]()#+\-.!>~|])', lambda z: ESC if z.group(1) == '*' else z.group(1), text)
         if '**' in text or '__' in text:
             chyba(f'Předmluva: tučné písmo manifest nepoužívá, stačí kurzíva – „{text[:40]}…“')
@@ -206,7 +206,10 @@ def zkontroluj(pole, data, cesta):
 
 
 def vety(text):
-    """Nadpis rozkliku: každá věta i půlka za čárkou na vlastní řádek („Bůh tvoří, / my fandíme.“)."""
+    """Nadpis rozkliku: každá věta i půlka za čárkou na vlastní řádek („Bůh tvoří, / my fandíme.“).
+    Má-li velký nadpis v rozkliku víc řádků, láme se přesně podle nich („Pastvu tvoří krávy. / Ne pastoři. Ale vy.“)."""
+    if ZLOM in str(text or ''):
+        return [v.strip() for v in str(text).split(ZLOM) if v.strip()]
     return [v for v in re.split(r'(?<=[.!?,])\s+', str(text or '').strip()) if v]
 
 

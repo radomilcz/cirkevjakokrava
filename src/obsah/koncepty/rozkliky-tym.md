@@ -45,7 +45,8 @@ Proto se přidáváme. Šéfů je všude dost, my chodíme na brigádu. Jejich d
 ## 03
 odkaz: Pro koho děláme pastvu
 ---
-# Pastvu dělají krávy. Ne pastoři.
+# Pastvu tvoří krávy.
+Ne pastoři. Ale vy.
 
 @ Pátek, 17:00. Parkoviště za panelákem.
 
