@@ -1302,7 +1302,9 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
   (symbol, this year and last year, the gifts, „Vytiskni potvrzení za rok …“). The symbol is shown to the person
   in Můj účet and to the treasurer in Dary, nowhere else.
 - **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
-- **Out**: the yearly donation certificate per donor (print; the church's stamp and the pastor's signature – stamped
+- **Out**: the yearly donation certificate per donor (print, A4 portrait, one donor per page: title, year, recipient
+  and donor, the gifts and the sum, place and date, the stamp beside the signature right under it, the church's
+  address, company ID and account in the page footer; the church's stamp and the pastor's signature – stamped
   and signed by hand, or both uploaded as images in Nastavení darů and placed by Zvonec), sums per month and purpose without names (for the
   board), the donors list for the treasurer. Tax details to be confirmed with the church's accountant.
 - Open: purposes beyond Provoz; who the treasurer and the deputy are.
