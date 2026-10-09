@@ -866,6 +866,8 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
 .dhead { display: grid; justify-items: start; min-width: 0; }
 .dhead__band { justify-self: stretch; min-height: 96px; margin-bottom: var(--space-4); border-radius: var(--shape-block); overflow: hidden; }
 .dhead__mark { margin-bottom: var(--space-5); }
+/* optical alignment (the owner): a round mark reads as set in from the edge the text starts at – nudge it out */
+.dhead__mark > :is(.avatar, .photo-btn), .pane__corner > :is(.avatar, .photo-btn) { margin-left: -4px; }
 .dhead__tags { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-bottom: var(--space-2); }
 .dhead__title { font-size: var(--type-title-pane); line-height: var(--lh-title-pane); }
 .detail--page .dhead__title { font-size: var(--type-title); line-height: var(--lh-title); }
