@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { normalizeFinance, emptyFinance, addGifts } from '../docs/zvonec/lib/gifts.js';
-import { MONETA_API, giftFromTransaction, pickAccount } from '../docs/zvonec/lib/bank-moneta.js';
+import { MONETA_API, giftFromTransaction, pickAccount, cleanGift } from '../docs/zvonec/lib/bank-moneta.js';
 
 const args = process.argv.slice(2);
 const option = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
@@ -55,6 +55,7 @@ async function fetchPayments(from, to) {
 }
 
 const finance = normalizeFinance(existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : emptyFinance());
+finance.gifts = finance.gifts.map((g) => (g.source === 'moneta' ? cleanGift(g) : g));   // rules added later apply to what is stored
 const before = finance.settings.bank || {};
 const from = before.fetchedTo ? addDays(before.fetchedTo, -7) : addDays(today, -90);
 let status;
