@@ -96,6 +96,16 @@ things and never share a name.
 | People | names and households; phone and e-mail only when the person shared them | edits people, households, groups, roles, archive; invites | same |
 | Formáty, Místa | read-only, reached by links | edit | edit |
 | Access | – | invites; manages member and invite logins | + „Změň přístup“, „Vyměň klíč“, „Nahraj zálohu“ |
+| Dary (15.1) | own account, symbol and QR in Můj účet | the same | + the Dary screen and Přehled › Dary, like the treasurer |
+
+**Pokladník** (treasurer, Dary 15.1) is not a level but a mark on a login, given by an admin in Přístupy – a člen or a
+vedoucí can be the treasurer, with at most one deputy. The treasurer (and every admin) gets the Dary screen,
+Nastavení darů and Přehled › Dary. Agreed with the owner on 2026-10-09:
+- A leader plans everything, as now – no per-team rights.
+- Only Dary are separated for real: gifts live in their own private repo, read with a second token that is sealed
+  only into the logins of the treasurer and the admins. People, events and settings stay under the one shared
+  token, hidden from members by the UI only (below).
+- The sums in Přehled › Dary (without names) are seen only by the treasurer and the admins.
 
 Privacy rules (GDPR; membership of a church reveals religion, GDPR Art. 9):
 - A member never sees another person's membership, birth date, note, consent or access. Membership is never printed.
@@ -1285,8 +1295,9 @@ bank statement, matching, certificates, Nastavení darů) and Přehled › Dary;
 Fio) and the token renewal. The QR encoder is vendored (`lib/vendor/qrcode.js`, qrcode-generator 2.0.4, MIT).
 - **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
 - **Přehled**: a Dary section beside Lidé and Služby (see 9.15) – headline sums only, never names.
-- **Access**: a treasurer level (pokladník, at most one deputy). Gifts live in a separate private finance repo that
-  only the treasurer can read; the main data repo and public.json never hold them.
+- **Access** (agreed 2026-10-09, see 2): a treasurer mark on a login (pokladník, at most one deputy), not a level.
+  Gifts live in a separate private finance repo read with a second token sealed only into the treasurer's and the
+  admins' logins; the main data repo and public.json never hold them.
 - **Bank**: one record shape for every payment `{ id, date, amount, account, name, vs, ks, ss, message, source }`
   (source `moneta` · `fio` · `cash`) and a small adapter per bank. Moneta first (its API with a token from internet
   banking – the owner confirmed it works for the church's account), Fio later as a second adapter; both can run at
