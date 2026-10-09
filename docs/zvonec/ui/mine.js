@@ -1,5 +1,5 @@
 // Zvonec One – Moje (#moje[/<eventId>]): when do I serve? A page (DESIGN §4, §6.1), the same for members and leaders.
-//   A   „Ahoj, Radime“ (the vocative; no main action, no ⋯, no circle – the person tab / sidebar foot opens the menu)
+//   A   „Ahoj, Radime“ (the vocative; no main action, no ⋯, no circle – „Více“ / the sidebar foot opens the menu)
 //   D   the date („Středa 7. října“) as its first line, then:
 //       one answer card at a time („Čeká na tvou odpověď · 1 ze 4“, the duty, Můžu / Nemůžu L 52, dots); after an
 //         answer the next one slides in, toast „Díky, máš to potvrzené. · Vrať“ (Ctrl Z too). Nothing waiting: one

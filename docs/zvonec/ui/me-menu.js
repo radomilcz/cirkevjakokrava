@@ -1,5 +1,5 @@
 // Zvonec One – the person's menu (DESIGN §2.5): you and the system. One build: a bottom sheet on a phone (from the
-// person tab), a popover 320 at ≥ 600 (above the sidebar foot, or right of the rail's avatar), mounted in the layer
+// „Více“ tab), a popover 320 at ≥ 600 (above the sidebar foot, or right of the rail's avatar), mounted in the layer
 // root so the scrolling sidebar never clips it. The contents are the same at every width; the phone adds
 // „Zdroje“ (it has no sidebar).
 //   (RK) Radim Kovář ›          #ucet, meta „Můj účet · správce“
