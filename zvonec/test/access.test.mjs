@@ -5,7 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   createLogin, signIn, restore, changePassword, resealAll, newPassword, foldName, normalizeName, isExpired,
-  emptyAccess, INVITE_NAME, ITERATIONS, ACCESS_FILE,
+  emptyAccess, INVITE_NAME, ITERATIONS, ACCESS_FILE, holdsFinance, sealFinance, sealFinanceAll, openFinance,
 } from '../../docs/zvonec/lib/access.js';
 
 const TODAY = '2026-10-04';
@@ -81,4 +81,22 @@ test('invite: the code is the password for INVITE_NAME, expiry, then a member lo
   access.logins = [...access.logins.filter((l) => l.id !== 'ki'), member];
   assert.equal(await signIn(access.logins, INVITE_NAME, code, FAST), null, 'a used invite no longer works');
   assert.equal((await signIn(access.logins, 'petr novy', 'own-password', FAST)).record.personId, 'p9');
+});
+
+test('access: only admins and the treasurer hold the finance key (Dary)', async () => {
+  const FIN = { token: 'github_pat_fin', owner: 'radomilcz', repo: 'church-finance' };
+  const admin = await createLogin({ name: 'Anna', password: 'pw-a', access: 'admin', github: GH, id: 'ka', today: TODAY, iterations: FAST });
+  const member = await createLogin({ name: 'Bára', password: 'pw-b', access: 'member', github: GH, id: 'kb', today: TODAY, iterations: FAST });
+  const treasurer = await createLogin({ name: 'Cyril', password: 'pw-c', access: 'member', github: GH, id: 'kc', today: TODAY, iterations: FAST });
+  treasurer.treasurer = true;
+  assert.deepEqual([admin, member, treasurer].map(holdsFinance), [true, false, true]);
+  await sealFinanceAll([admin, member, treasurer], FIN);
+  assert.equal(member.fin, undefined, 'a member never gets the finance key');
+  const opened = await signIn([admin, member, treasurer], 'Cyril', 'pw-c', FAST);
+  assert.equal((await openFinance(opened.record, opened.priv)).repo, 'church-finance');
+  const b = await signIn([admin, member, treasurer], 'Bára', 'pw-b', FAST);
+  assert.equal(await openFinance(b.record, b.priv), null);
+  treasurer.treasurer = false;
+  await sealFinance(treasurer, FIN);
+  assert.equal(treasurer.fin, undefined, 'no longer the treasurer: the key is gone');
 });

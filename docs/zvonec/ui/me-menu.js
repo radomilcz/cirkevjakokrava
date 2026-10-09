@@ -6,13 +6,15 @@
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
 //   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
-//   Správa (leaders)            Přehled › (phone) · Přístupy [1 čeká] › · Nastavení sboru ›
+//   Správa (leaders)            Přehled › (phone) · Dary › (phone; the treasurer too) · Přístupy [1 čeká] › ·
+//                               Nastavení sboru ›
 //   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
 //   Odhlas se
 // A tap on a link row closes the menu, then navigates; a row that opens a sheet closes the menu first.
 
 import { S, can, myId, replaceAll, logout, ACCESS_LABELS } from './state.js';
+import { showDary } from './finance-state.js';
 import { personById } from '../lib/people.js';
 import { createDemo } from '../lib/demo.js';
 import { emptyData } from '../lib/store/store.js';
@@ -74,12 +76,13 @@ export function openMeMenu({ from } = {}) {
       heading('Zdroje'),
       list([page('Šablony', '#sablony'), page('Formáty', '#formaty'), page('Místa', '#mista')], { label: 'Zdroje' }),
     ] : null,
-    leader ? [
+    leader || (showDary() && isPhone()) ? [
       heading('Správa'),
       list([
-        isPhone() ? page('Přehled', '#prehled') : null,
-        page('Přístupy', '#pristupy', { trail: invites ? h('span', { class: 'pill pill--wait' }, `${invites} ${invites === 1 ? 'čeká' : invites <= 4 ? 'čekají' : 'čeká'}`) : null }),
-        page('Nastavení sboru', '#nastaveni'),
+        leader && isPhone() ? page('Přehled', '#prehled') : null,
+        showDary() && isPhone() ? page('Dary', '#dary') : null,
+        leader ? page('Přístupy', '#pristupy', { trail: invites ? h('span', { class: 'pill pill--wait' }, `${invites} ${invites === 1 ? 'čeká' : invites <= 4 ? 'čekají' : 'čeká'}`) : null }) : null,
+        leader ? page('Nastavení sboru', '#nastaveni') : null,
       ].filter(Boolean), { label: 'Správa' }),
     ] : null,
     h('div', { class: 'me-menu__gap' }),

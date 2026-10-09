@@ -1175,8 +1175,37 @@ numbers from `lib/stats.js` (`peopleStats`, `serviceStats`). No attendance – t
 - **Služby** (a period line ‹ Říjen 2026 ›): a wide tile „96 %“ with „obsazeno 103 ze 107“ and a bar (› Rozpis of
   that month), then služeb · lidí slouží · čeká na odpověď (› Obsazení) · odmítnutí. Who serves most stays in Břemeno, open places in
   Obsazení and Rozpis.
-- **Dary** (later, with 15.1; treasurer and admins only): the sum this year and last year, the number of donors,
-  sums per month and purpose – no names.
+- **Dary** (the treasurer and the admins only, 9.16): the year's sum, donors, nepřiřazené – no names.
+
+### 9.16 Dary `#dary[/<year>]`, `#dary/darce/<key>[/<year>]` (the treasurer and the admins; 15.1)
+`ui/gifts.js`, `ui/certificate.js`, `ui/finance-state.js`, `lib/gifts.js`. In the sidebar under Přehled (a function
+gate, not a level: `showDary()`), on a phone in the person's menu › Správa – a treasurer who is a člen gets Správa
+with Dary alone. The gifts are read and written only through the finance store (one `store.update` per change on the
+fresh `dary.json`); nothing reaches the main data except `person.donorVs`.
+- **Setup** (a live admin without the finance key): a callout „Dary zatím nemají kam se ukládat.“ with [Vlož klíč k
+  darům] → „Klíč k darům“ (repo name, default church-finance; a fine-grained token, Contents: Read and write). Zvonec
+  creates `dary.json` (proving it can write) and seals the key into every admin's and treasurer's login (`fin`).
+  Also in Přístupy ⋯ (admins). Přístupy: a row's menu „Udělej pokladníkem / Odeber pokladníka“ (admins), a „pokladník“
+  pill; a level change or a new password re-seals or drops the key (`holdsFinance`).
+- **The year** (‹ 2026 › „Letos“): a wide tile with the sum („10 150 Kč darů za rok 2026“), then dárců · darů ·
+  anonymně (sum) · nepřiřazené (› the section).
+- **Nepřiřazené**: payments with no known donor – amount, day, sender, VS, message, [Přiřaď] → „Přiřazení daru“:
+  Člověk z Lidí (the picker; a person without a symbol gets one), the donors outside the church, Nový dárce mimo sbor,
+  Anonymní dar, Vyřaď z darů. Matching (`matchGift`): the person's or outside donor's VS, else a sender account assigned
+  before.
+- **Dárci**: avatar, name, „VS 1001 · 10 darů“, the year's sum › the donor page: facts (symbol, address, birth date or
+  IČO – a missing one says „Doplň“ and leads to the card in Lidé or the donor sheet), ‹ year ›, „Dary za rok 2026“
+  with the sum, each gift (amount; day · purpose · hotově/na účet · note; ⋯ Uprav · Přiřaď jinému · Smaž – cash only)
+  and [Vytiskni potvrzení za rok 2026]. ⋯ Přidej dar (for this donor) · Uprav dárce (outside donors).
+- **⋯**: Přidej dar (date, amount, purpose „Provoz“, note → then „Přiřazení daru“) · Přidej dárce mimo sbor (name,
+  address, IČO; a symbol from the same sequence as people's) · Vytiskni potvrzení za rok … · Nastavení darů (Místo
+  „V Novém Jičíně“, Podepisuje, Funkce „pastor sboru“, Razítko and Podpis – SVG or PNG ≤ 400 kB, stored as data URLs in
+  `dary.json`) · Klíč k darům (admins).
+- **Printing** checks first: the church's Úřední údaje (else „Chybí úřední údaje sboru“ → Nastavení sboru), then the
+  donors' gaps („U 2 dárců něco chybí … Vytiskni i tak“). The certificate as 15.1 describes, one A4 page per donor
+  (`@page dary`, margin 0, the otisk an <img> from `css/otisk.svg`); more than 12 gifts print one line per month.
+- **Přehled › Dary** (9.15): the year's sum (wide), dárců, nepřiřazené – each › Dary.
+- Demo: the admin sees Dary, kept in this browser (`zvonec-demo-dary`); Přístupy changes stay demo-only.
 
 ## 10. Public web and public.json
 
@@ -1290,9 +1319,10 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 
 ### 15.1 Dary (donations) – Moneta now, Fio later
 Agreed with the owner on 2026-10-09; the owner said go the same day. Built in three steps:
-**A** (built) Úřední údaje in Nastavení sboru, `donorVs` and Můj účet › Dary with the QR payment; **B** the finance
-repo with a second token sealed only into the treasurer's logins, the Dary screen (donors, gifts by hand and from a
-bank statement, matching, certificates, Nastavení darů) and Přehled › Dary; **C** the bank Action (Moneta, later
+**A** (built) Úřední údaje in Nastavení sboru, `donorVs` and Můj účet › Dary with the QR payment; **B** (built, see
+9.16) the finance repo (`<owner>/church-finance`, file `dary.json`) with a second token sealed only into the
+treasurer's and the admins' logins, the Dary screen (donors, gifts by hand, matching, certificates, Nastavení darů)
+and Přehled › Dary – a bank statement upload waits for the format Moneta exports; **C** the bank Action (Moneta, later
 Fio) and the token renewal. The QR encoder is vendored (`lib/vendor/qrcode.js`, qrcode-generator 2.0.4, MIT).
 - **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
 - **Přehled**: a Dary section beside Lidé and Služby (see 9.15) – headline sums only, never names.
@@ -1324,7 +1354,7 @@ Fio) and the token renewal. The QR encoder is vendored (`lib/vendor/qrcode.js`, 
   lets the treasurer fill it in there.
 - **Matching**: the donor's variable symbol (per person – a tax certificate is per donor; visible to the treasurer
   only) → the person; else a sender account matched before → the same person; else „Nepřiřazené“, where the
-  treasurer picks a person, „Anonymní dar“ or „Není dar“ (rent, a grant, a refund).
+  treasurer picks a person, „Anonymní dar“ or „Vyřaď z darů“ (rent, a grant, a refund).
 - **The donor's own view** (Můj účet › Dary, everyone): „Posílej dar na účet sboru se svým variabilním symbolem.
   Podle něj ti Zvonec vždy v lednu připraví potvrzení o daru do daňového přiznání.“; a framed block with two rows –
   the account („Účet sboru“) and the symbol („Tvůj variabilní symbol“), each with a copy icon – and on the right a
