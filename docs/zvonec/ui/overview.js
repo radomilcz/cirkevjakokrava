@@ -3,7 +3,7 @@
 //   Lidé       tiles Členové · Přátelé · Hosté · z toho děti · V archivu (a tile opens Lidé under that Filtr), then
 //              who joined and whose card went to the archive in the last year
 //   Služby     ‹ Říjen 2026 › · tiles Obsazeno 97 % · Služeb · Slouží · Čeká na odpověď · Odmítnuto;
-//              Obsazenost po týmech (a team's mark, „chybí 2“, a bar) › the team
+//              Obsazenost po týmech (a team's mark, „obsazeno 14 z 19“, „5 volných míst“, a bar) › the team
 //   Kdo slouží nejvíc   the five busiest of the month (Břemeno's bars) · „Celé břemeno“ opens it
 //   Dlouho nesloužili   people with a skill, three months without a duty and nothing planned › the person
 // Pure numbers come from lib/stats.js; servingLoad() is Břemeno's.
@@ -31,6 +31,8 @@ function outOf(n) {
     : [2, 3, 4, 7, 12, 13, 14, 17].includes(n) || (n >= 30 && n < 50) || (n >= 70 && n < 80);
   return `${ze ? 'ze' : 'z'} ${n}`;
 }
+/** „1 volné místo“, „3 volná místa“, „5 volných míst“ – the places nobody has yet (the words of „Doplň volná místa“). */
+const freeWords = (n) => plural(n, 'volné místo', 'volná místa', 'volných míst');
 const cap = (s) => s.charAt(0).toLocaleUpperCase('cs') + s.slice(1);
 
 /** A number tile: the value big, a word under it; a link when there is somewhere to go. */
@@ -84,17 +86,19 @@ function serviceSection(month) {
     bar.firstChild.style.width = `${Math.round((t.filled / t.needed) * 100)}%`;   // CSSOM – a measured value, allowed by the CSP
     return row({
       lead: teamMark(group, { size: 's' }), title: group.name,
-      meta: `${t.filled} ${outOf(t.needed)} míst`,
-      note: gap ? sev('warning', gap > 1 ? `chybí ${gap}` : 'chybí 1') : null,
+      meta: `obsazeno ${t.filled} ${outOf(t.needed)}`,
+      note: gap ? sev('error', freeWords(gap)) : null,
       trail: bar, href: group.id ? `#lide/skupiny/${group.id}` : null,
-      label: `${group.name}: ${t.filled} ${outOf(t.needed)} míst${gap ? `, chybí ${gap}` : ''}`,
+      label: `${group.name}: obsazeno ${t.filled} ${outOf(t.needed)}${gap ? `, ${freeWords(gap)}` : ''}`,
     });
   });
   return section({
     title: 'Služby',
     body: [
       periodLine({ month, href: (m) => `#prehled/${m}`, todayHref: `#prehled/${thisMonth()}`, here: month === thisMonth() }),
-      s.meetings ? [tiles, teams.length ? [h('h3', { class: 'stats-sub' }, 'Obsazenost po týmech'), list(teams, { label: 'Obsazenost po týmech' })] : null]
+      s.meetings ? [tiles, teams.length ? [h('h3', { class: 'stats-sub' }, 'Obsazenost po týmech'),
+        h('p', { class: 'meta stats-note stats-note--top' }, `Kolik míst ve službě má na setkáních ${inMonth(month)} svého člověka.`),
+        list(teams, { label: 'Obsazenost po týmech' })] : null]
         : quiet(`${cap(inMonth(month))} není v plánu žádné setkání.`),
     ],
   });
