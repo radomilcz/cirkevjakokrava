@@ -1,7 +1,7 @@
 # Čtyři pilíře – obsah, ne copy (9. 10. 2026)
 Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah = co znamená ten pilíř, co vyjadřuje, a pak pro to budeme hledat formu.“
 
-**Kráva stojí na všech čtyřech.** (Radomil 9. 10.)
+**Kráva chodí po čtyřech.** (Radomil 9. 10.)
 
 **Osa:** vidíme, co Bůh dělá v lidech kolem → přidáváme se k tomu → sami tvoříme → protože toužíme, aby lidi poznali, že jim na nich Bůh záleží.
 
