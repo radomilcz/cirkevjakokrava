@@ -162,6 +162,9 @@
   --mark: var(--indicator);            /* the detached 3 px selection bar */
   --mark-h: 16px;                      /* its height, centred on the item (the owner: a taller bar looked too tall) */
   --focus-ring: var(--focus);
+  --chart-now: var(--primary-bg);     /* the one column that is the point (this month) – ≥ 6:1 on --card */
+  --chart-ctx: var(--line-field);     /* the context columns – ≥ 3:1 on --card in every palette */
+  --chart-3: var(--line-control);     /* the third, lightest step of a part-to-whole */
 
   --ok-ink: var(--confirmed-fg);   --ok-fill: var(--confirmed-bg);   --ok-solid: var(--confirmed-solid);   --on-ok: var(--text-on-confirmed);
   --wait-ink: var(--waiting-fg);   --wait-fill: var(--waiting-bg);   --wait-solid: var(--waiting-solid);   --wait-body: var(--warning-text);

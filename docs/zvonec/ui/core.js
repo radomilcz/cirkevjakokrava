@@ -445,19 +445,56 @@ export function amount(text) {
  *   figures({ n: '68 000', of: 'Kč darů za rok 2026', items: [{ value: 4, label: 'dárci' }, …] })
  *   figures({ feature: true, n: '34 500', of: 'Kč z 80 000 Kč', bar: .43, action: button('Pošli dar', …) })
  */
-export function figures({ n, of, bar, say, items = [], action, feature = false, tone, cls, label } = {}) {
+/**
+ * A small column chart inside a figure block (Přehled › Služby, Dary): one value per month, the current one in the
+ * accent (--chart-now), the rest as context (--chart-ctx) – emphasis, never categorical. Columns ≤ 24 wide with a 4 px
+ * rounded top on one baseline; the current column carries its value on the cap, every column a tooltip and an
+ * aria-label; a column with `href` is a link (Služby: that month). Heights are CSSOM (a measured value, CSP-safe).
+ *   columns([{ value: .93, label: 'zář', tip: 'Září 2026: obsazeno 93 %', cap: '93 %', now: true, href }], { label })
+ * `value` is 0–1 of the chart's height; null = no data (an empty slot on the baseline).
+ */
+export function columns(items, { label } = {}) {
+  return h('div', { class: 'chart', role: 'group', 'aria-label': label },
+    items.map((c) => {
+      const bar = h('span', { class: 'chart__bar', 'aria-hidden': 'true' });
+      bar.style.height = `${c.value == null ? 0 : Math.max(c.value > 0 ? 3 : 0, Math.round(Math.min(1, c.value) * 100))}%`;
+      return h(c.href ? 'a' : 'span', {
+        class: 'chart__col', href: c.href, dataset: { now: c.now ? '' : null, tip: c.tip, empty: c.value == null ? '' : null, show: c.show ? '' : null },
+        'aria-label': c.tip, role: c.href ? null : 'img',
+      },
+      h('span', { class: 'chart__plot' }, c.now && c.cap ? h('span', { class: 'chart__cap num' }, c.cap) : null, bar),
+      h('span', { class: 'chart__label', 'aria-hidden': 'true' }, c.label));
+    }));
+}
+
+/**
+ * One horizontal stacked bar for a part-to-whole of ordered parts (Přehled › Lidé: členové · přátelé · hosté), in
+ * three steps of one ramp, 2 px surface gaps between segments; the figure items below it carry the matching swatch.
+ */
+export function stackBar(parts, { label } = {}) {
+  const total = parts.reduce((s, p) => s + (p.value || 0), 0) || 1;
+  return h('div', { class: 'stackbar', role: 'img', 'aria-label': label },
+    parts.filter((p) => p.value > 0).map((p) => {
+      const seg = h('span', { class: 'stackbar__seg', dataset: { step: p.step } });
+      seg.style.flexGrow = String(p.value / total);   // CSSOM – a measured share
+      return seg;
+    }));
+}
+
+export function figures({ n, of, bar, chart, say, items = [], action, feature = false, tone, cls, label } = {}) {
   let barEl = null;
   if (bar != null) {
     barEl = h('span', { class: 'figures__bar', 'aria-hidden': 'true' }, h('span', { class: 'figures__fill' }));
     barEl.firstChild.style.width = `${Math.round(Math.max(0, Math.min(1, bar)) * 100)}%`;   // CSSOM – a measured value
   }
-  const item = ({ value, label: words, href, onclick, tone, aria }) => h(href ? 'a' : onclick ? 'button' : 'div', {
+  const item = ({ value, label: words, href, onclick, tone, aria, swatch }) => h(href ? 'a' : onclick ? 'button' : 'div', {
     class: 'figure', href, onclick, type: onclick ? 'button' : null, dataset: { tone }, 'aria-label': aria,
-  }, h('span', { class: 'figure__value num' }, typeof value === 'number' ? String(value) : value), h('span', { class: 'figure__label' }, words));
+  }, h('span', { class: 'figure__value num' }, swatch ? h('span', { class: 'figure__swatch', dataset: { step: swatch }, 'aria-hidden': 'true' }) : null, typeof value === 'number' ? String(value) : value), h('span', { class: 'figure__label' }, words));
   const list = items.filter(Boolean);
   return h('div', { class: ['figures', feature && 'figures--feature', cls], dataset: { tone }, 'aria-label': label },
     h('p', { class: 'figures__count' }, h('span', { class: 'figures__n num' }, String(n)), of ? h('span', { class: 'figures__of' }, of) : null),
     barEl,
+    chart || null,
     say ? h('p', { class: 'figures__say' }, say) : null,
     list.length ? h('div', { class: 'figures__items' }, list.map(item)) : null,
     nodes(action).length ? h('div', { class: 'figures__action' }, action) : null);

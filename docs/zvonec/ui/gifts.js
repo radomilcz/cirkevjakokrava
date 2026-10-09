@@ -29,7 +29,7 @@ import {
   h, page, section, list, row, avatar, personName, quiet, callout, button, toast, formSheet, confirmSheet, field,
   textInput, plural, agree, facts, peoplePicker, layer, icon, meta, text, fieldError, clearErrors, openMenu,
   dateArch, selectInput, subhead, pill, placeMark, amount, figures, periodLine, detail, detailHead, missingItem, skeleton,
-  rowLink, isPhone, isSplit, menuBack,
+  rowLink, isPhone, isSplit, menuBack, columns,
 } from './kit.js';
 
 const thisYear = () => Number(today().slice(0, 4));
@@ -595,6 +595,23 @@ export function renderDary(parts = []) {
   return overview(isYear(parts[0]) ? Number(parts[0]) : thisYear());
 }
 
+const MONTHS_SHORT = ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'];
+
+/** The year's gifts by month (Přehled › Dary): a column per month, this month lit, the months to come empty. */
+function giftMonths(t, year) {
+  const now = today();
+  const max = Math.max(...t.byMonth, 1);
+  return columns(t.byMonth.map((sum, i) => {
+    const m = `${year}-${String(i + 1).padStart(2, '0')}`;
+    const future = m > now.slice(0, 7);
+    return {
+      value: future ? null : sum / max, label: MONTHS_SHORT[i], now: m === now.slice(0, 7), show: i % 3 === 2,
+      cap: m === now.slice(0, 7) ? money(sum) : null,
+      tip: `${MONTHS[i]}: ${future ? 'teprve přijde' : money(sum)}`,
+    };
+  }), { label: `Dary po měsících za rok ${year}` });
+}
+
 /** Přehled › Dary (the treasurer and the admins): the year's sum as a figure block, donors, what waits (› Dary). */
 export function giftsOverviewSection() {
   if (!canSeeDary()) return null;
@@ -607,6 +624,7 @@ export function giftsOverviewSection() {
     body: [
       figures({
         n: money(t.total).replace(/\s?Kč$/, ''), of: `Kč darů za rok ${year}`,
+        chart: giftMonths(t, year),
         items: [
           { value: String(t.donors), label: agree(t.donors, 'dárce', 'dárci', 'dárců') },
           { value: String(t.gifts), label: agree(t.gifts, 'dar', 'dary', 'darů') },
