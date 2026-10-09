@@ -41,6 +41,8 @@
   --type-lead: 20px;     --lh-lead: 26px;      /* h2: section, sheet / dialog title */
   --type-title: 34px;    --lh-title: 36px;     /* h1 of a screen or a page (Agrandir) */
   --type-title-pane: 34px; --lh-title-pane: 36px;   /* h1 in a pane (and on a phone page) */
+  --type-figure: 56px;   --lh-figure: 48px;    /* the one big number of a block (Tvoje břemeno, Dary, a sbírka) */
+  --qr: 176px;           --qr-poster: 280px;   /* a QR payment: in a page or sheet · for a poster or the screen */
   --type-display: 26px;  --lh-display: 30px;   /* the empty-state headline (Agrandir) */
   --type-nav: 15px;      --lh-nav: 20px;       /* sidebar item */
   --type-period: 17px;   --lh-period: 24px;    /* the period label (fixed width) */

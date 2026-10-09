@@ -41,14 +41,35 @@ export const parseAmount = (s) => {
   return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null;
 };
 
-const value = (text) => h('span', { class: 'give-value' }, text);
+/** A detail to copy: the value as the row title (the row-title role), what it is in meta, one copy button. */
 const copyRow = (text, label, words, done) => row({
-  title: value(text), meta: label, trail: iconButton('copy', words, { onclick: () => copyValue(String(text).replace(/\s+Kč$/, '').replace(/\s/g, ''), done) }),
+  title: h('span', { class: 'num' }, text), meta: label,
+  trail: iconButton('copy', words, { onclick: () => copyValue(String(text).replace(/\s+Kč$/, '').replace(/\s/g, ''), done) }),
 });
 
-function qrBlock(payment, hint) {
-  return h('div', { class: 'give-qr' }, qrCode(payment, { label: 'QR platba na účet sboru' }), hint ? h('p', { class: 'meta' }, hint) : null);
+function qrBlock(payment, hint, { poster = false } = {}) {
+  return h('div', { class: ['give-qr', poster && 'give-qr--poster'] }, qrCode(payment, { label: 'QR platba na účet sboru' }), hint ? h('p', { class: 'meta' }, hint) : null);
 }
+
+/**
+ * The one payment block (Můj účet, the payment sheet, the poster): the details to copy on the left, the QR on the
+ * right; on a phone – where the bank app is – the details, then the QR behind „Ukaž QR kód“ (not on a poster).
+ */
+export function paymentBlock({ rows, payment, hint, poster = false }) {
+  const details = list(rows.filter(Boolean), { label: 'Platba' });
+  return h('div', { class: ['give', poster && 'give--poster'] },
+    h('div', { class: 'give__details' }, details,
+      poster ? null : h('div', { class: 'give-qr-toggle' }, disclosure([qrBlock(payment, 'Hodí se, když platíš z jiného zařízení.')], { label: 'Ukaž QR kód' }))),
+    qrBlock(payment, hint, { poster }));
+}
+
+/** The rows of a payment, in the order a bank app asks for them. */
+export const paymentRows = ({ account, amount, vs, fundraiser }) => [
+  copyRow(account, 'Účet sboru', 'Zkopíruj číslo účtu', 'Číslo účtu je zkopírované.'),
+  amount ? copyRow(money(amount), 'Částka', 'Zkopíruj částku', 'Částka je zkopírovaná.') : null,
+  vs ? copyRow(vs, 'Tvůj variabilní symbol', 'Zkopíruj variabilní symbol', 'Variabilní symbol je zkopírovaný.') : null,
+  fundraiser ? copyRow(fundraiser.code, 'Specifický symbol sbírky', 'Zkopíruj specifický symbol', 'Specifický symbol je zkopírovaný.') : null,
+];
 
 /**
  * The payment to send: the QR and the details. `vs` – the giver's symbol (none on a poster); `fundraiser` – its code
@@ -60,32 +81,19 @@ export function paymentSheet({ amount, fundraiser, vs, poster = false }) {
   if (!account) { toast('Sbor zatím nemá vyplněný účet pro dary.'); return; }
   const message = fundraiser ? `Sbírka ${fundraiser.name}` : 'Dar';
   const payment = spdPayment({ account, vs, ss: fundraiser?.code, amount, message, name: s.legalName || s.churchName });
-  const details = list([
-    copyRow(s.bankAccount, 'Účet sboru', 'Zkopíruj číslo účtu', 'Číslo účtu je zkopírované.'),
-    amount ? copyRow(money(amount), 'Částka', 'Zkopíruj částku', 'Částka je zkopírovaná.') : null,
-    vs ? copyRow(vs, 'Tvůj variabilní symbol', 'Zkopíruj variabilní symbol', 'Variabilní symbol je zkopírovaný.') : null,
-    fundraiser ? copyRow(fundraiser.code, 'Specifický symbol sbírky', 'Zkopíruj specifický symbol', 'Specifický symbol je zkopírovaný.') : null,
-  ].filter(Boolean), { label: 'Platba' });
   const hint = amount ? 'Naskenuj v bankovní aplikaci.' : 'Naskenuj v bankovní aplikaci, doplníš jen částku.';
   const after = poster
-    ? meta('Chceš potvrzení o daru do daňového přiznání? Napiš do platby svůj variabilní symbol ze Zvonce.')
-    : vs ? meta('Až dar dorazí na účet sboru, poděkujeme ti na stránce Moje. Zvonec se do banky dívá přes den každou hodinu.')
-      : meta('Bez variabilního symbolu zůstane dar anonymní a potvrzení o něm nedostaneš.');
+    ? 'Chceš potvrzení o daru do daňového přiznání? Napiš do platby svůj variabilní symbol ze Zvonce.'
+    : vs ? 'Až dar dorazí na účet sboru, poděkujeme ti na stránce Moje. Zvonec se do banky dívá přes den každou hodinu.'
+      : 'Bez variabilního symbolu zůstane dar anonymní a potvrzení o něm nedostaneš.';
   const sheet = layer.open({
     kind: 'sheet',
-    size: poster ? 'l' : 'm',
-    title: fundraiser ? fundraiser.name : 'Mimořádný dar',
-    subtitle: poster ? 'Sbírka · QR platba pro plakát nebo plátno' : amount ? `Dar ${money(amount)}` : null,
-    cls: poster ? 'give-sheet give-sheet--poster' : 'give-sheet',
-    body: poster
-      ? [h('div', { class: 'give-poster' }, qrBlock(payment, hint), details), after]
-      : [
-        h('div', { class: 'give give--sheet' },
-          h('div', {}, details, h('div', { class: 'give-qr-toggle' }, disclosure([qrBlock(payment, 'Hodí se, když platíš z jiného zařízení.')], { label: 'Ukaž QR kód' }))),
-          qrBlock(payment, hint)),
-        after,
-      ],
-    foot: [button('Hotovo', { variant: poster ? 'tint' : 'primary', size: 'l', block: true, onclick: () => sheet.close() })],
+    size: 'l',
+    title: fundraiser ? (poster ? `Sbírka ${fundraiser.name}` : `Dar do sbírky ${fundraiser.name}`) : 'Mimořádný dar',
+    subtitle: poster ? 'QR platba pro plakát nebo plátno' : null,
+    cls: 'give-sheet',
+    body: [paymentBlock({ rows: paymentRows({ account: s.bankAccount, amount, vs, fundraiser }), payment, hint, poster }), meta(after)],
+    foot: [button('Hotovo', { variant: 'primary', size: 'l', block: true, onclick: () => sheet.close() })],
   });
   return sheet;
 }

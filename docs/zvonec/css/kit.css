@@ -431,6 +431,30 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 
 /* ---------- blocks ---------- */
 .card { padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
+
+/* A sum of money (amount()): strong figures, the unit in the second ink; tabular, so a column of trails lines up */
+.amount { font-weight: var(--weight-strong); color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.amount__unit { font-weight: var(--weight-regular); color: var(--ink-2); }
+
+/* The figure block (figures()): Tvoje břemeno's anatomy for every headline number */
+.figures { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
+.figures--feature { background: var(--feature); box-shadow: none; }
+.figures__count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); margin: 0; min-width: 0; }
+.figures__n { font-family: var(--font-title); font-size: var(--type-figure); line-height: var(--lh-figure); color: var(--ink); white-space: nowrap; }
+.figures__of { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.figures__bar { position: relative; display: block; height: 8px; border-radius: var(--shape-pill); background: var(--edge); overflow: hidden; }
+.figures__fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--ok-solid); }
+.figures__say { margin: 0; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); }
+.figures__items { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+.figure { display: grid; align-content: start; gap: 2px; min-width: 0; color: inherit; text-decoration: none; font: inherit; text-align: left; background: none; border: 0; }
+:is(a, button).figure { margin: calc(-1 * var(--space-2)); padding: var(--space-2); border-radius: var(--radius-m); cursor: pointer; transition: background-color var(--dur-state) var(--ease); }
+:is(a, button).figure:hover { background: var(--wash); }
+:is(a, button).figure:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 0; }
+.figure__value { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: anywhere; }
+.figure__label { font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); }
+.figure[data-tone="wait"] .figure__value { color: var(--wait-ink); }
+.figures__action { display: flex; flex-wrap: wrap; gap: var(--gap-x); padding-top: var(--space-1); }
+@media (max-width: 599px) { .figures__action > .btn { flex: 1 1 100%; } }
 .feature { display: grid; gap: var(--space-4); padding: var(--space-5); border-radius: var(--shape-block); background: var(--feature); }
 .feature__head { display: flex; align-items: center; gap: var(--space-2); font-size: var(--type-meta); font-weight: var(--weight-strong); color: var(--ink-2); }
 .feature__item { display: grid; grid-template-columns: var(--arch-w) 1fr; gap: var(--space-4); align-items: center; }
@@ -444,6 +468,9 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 .callout > .icon { grid-row: span 2; margin-top: -2px; }
 .callout__title { font-weight: var(--weight-strong); }
 .callout__action { grid-column: 2; margin-top: var(--space-2); justify-self: start; }
+.callout--dismiss { grid-template-columns: auto 1fr auto; padding-right: var(--space-1); }
+.callout--dismiss > :is(p, .callout__action) { grid-column: 2; }
+.callout__dismiss { grid-column: 3; grid-row: 1 / span 2; align-self: start; margin: -10px 0 -10px; color: var(--ink-2); }
 .callout[data-tone="wait"] { background: var(--wait-fill); color: var(--wait-body); }
 .callout[data-tone="wait"] > .icon { color: var(--wait-ink); }
 .callout[data-tone="no"] { background: var(--no-fill); color: var(--no-ink); }

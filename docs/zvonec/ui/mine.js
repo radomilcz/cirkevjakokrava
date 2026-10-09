@@ -319,13 +319,13 @@ function thanks(person) {
   if (!notes.length) return null;
   const sbirka = (n) => (n.f ? (S.data.fundraisers || []).find((x) => x.id === n.f)?.name : null);
   const one = notes[0];
+  // one sentence, a quiet ✕ – a thank-you is not a task, so it comes after the answer card
   return callout({
     tone: 'info', icon: 'heart',
-    title: notes.length === 1 ? `Tvůj dar ${money(one.a)} dorazil. Děkujeme!` : 'Tvoje dary dorazily. Děkujeme!',
     text: notes.length === 1
-      ? `Na účet sboru přišel ${dayMonth(one.d)}${sbirka(one) ? ` do sbírky ${sbirka(one)}.` : ''}`
-      : notes.slice(0, 4).map((n) => `${money(n.a)} (${dayMonth(n.d)}${sbirka(n) ? `, ${sbirka(n)}` : ''})`).join(' · '),
-    actions: [button('Skryj', { size: 's', variant: 'quiet', onclick: () => markSeen(notes) })],
+      ? `Tvůj dar ${money(one.a)}${sbirka(one) ? ` do sbírky ${sbirka(one)}` : ''} dorazil ${dayMonth(one.d)} Děkujeme!`
+      : `Tvoje dary dorazily: ${notes.slice(0, 4).map((n) => `${money(n.a)} (${dayMonth(n.d)}${sbirka(n) ? `, ${sbirka(n)}` : ''})`).join(' · ')}. Děkujeme!`,
+    onDismiss: () => markSeen(notes),
   });
 }
 
@@ -353,6 +353,7 @@ export function renderMine(parts = []) {
   const staff = staffLine();
   const load = person ? loadCard(person) : null;
   const off = person ? blockoutSection(person, { cls: 'mine-off' }) : null;
+  const funds = fundraisersOnMine();   // church news, not my duties: the right column ≥ 1200
   const body = h('div', { class: 'mine' },
     h('p', { class: 'mine-date' }, todayLine()),
     !person ? callout({
@@ -366,19 +367,19 @@ export function renderMine(parts = []) {
       icon: 'calendar', title: 'Zatím tu nemáš žádné služby.',
       text: 'Až tě vedoucí někam zapíše, uvidíš to tady a Zvonec se tě zeptá, jestli můžeš.',
     }) : null,
-    thanks(person),
     person && !nothing ? (waiting.length ? askCard(person, waiting) : calm()) : null,
+    thanks(person),
     split ? null : [staff, load],
     nextSection(answered, split ? openId : null),
     declinedSection(declined, split ? openId : null),
     split ? null : off,
-    fundraisersOnMine(),
-    person ? pastLink(past) : null);
+    person ? pastLink(past) : null,
+    split ? null : funds);
 
   // ≥ 1200 the right column: the meeting when one is open (it takes the column's place), otherwise mine: Obsazení's
   // line, Tvoje břemeno, Kdy nemůžu
   // (built only when it is shown: a node lives in one place, so a phone's column must keep them)
-  const side = split && (staff || load || off) ? h('div', { class: 'mine-side' }, staff, load, off) : null;
+  const side = split && (staff || load || off || funds) ? h('div', { class: 'mine-side' }, staff, load, off, funds) : null;
   const pane = !split ? null : openId ? (opened ? eventDetailFor(opened, 'pane') : missingDetail('pane')) : side;
   return page({
     title: greeting(person),
