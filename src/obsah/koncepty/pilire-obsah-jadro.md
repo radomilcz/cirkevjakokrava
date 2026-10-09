@@ -29,7 +29,7 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 - Otevřené: na slajdu „lidi“, nebo stačí „město“?
 
 ## 03 · Pro koho? → Tvoříme
-- **Jádro:** Sami tvoříme dobré a krásné věci, za které ručíme, hlavně pro lidi, kterým je kostel i víra fuk.
+- **Jádro:** Sami tvoříme dobré a krásné věci, hlavně pro lidi, kterým je kostel i víra fuk.
 - Pastvu tvoříme my všichni tam, kde žijeme, ne pastoři ani program.
 - Nejen umění: řemeslo, jídlo, péče i sport se počítají stejně.
 - Pastva má lákat (Radomil 9. 10.: „AIDA je princip.“): nejdřív zaujme oči a uši, pak osloví duši a nakonec člověk udělá krok (přijde, zkusí, vrátí se).
