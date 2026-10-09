@@ -34,7 +34,7 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 - Nejen umění: řemeslo, jídlo, péče i sport se počítají stejně.
 - Musí to být dobré samo o sobě, ne návnada. Kvalita je forma lásky.
 - Dáváme všem, bez podmínek, jako Bůh, který posílá déšť na každého.
-- Neděle má smysl, ale pastva roste hlavně v týdnu.
+- Neděle má smysl, ale pastva roste každý den. Hlavně přes týden.
 - Druh: vlastní čin. Hranice: vedu to já a ručím za to; lákání sem nepatří.
 - Kotvy: „Pastvu tvoří krávy. Ne pastoři. Ale vy.“ „Pastva roste tam, kde se kráva pase.“ „Neděle není pasé.“ Verše: Mt 5,45 (případně Fp 4,8).
 - Petr: vzít něco, co umí, a udělat z toho něco pro lidi kolem.
