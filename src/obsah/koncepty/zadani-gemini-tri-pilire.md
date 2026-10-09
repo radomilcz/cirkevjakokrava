@@ -40,7 +40,7 @@ Pilíře se nesmí překrývat: 1 je cizí dobro, 2 je vlastní tvorba, 3 je dů
 
 **Pilíř 2**
 - Nadpis A: **Krása je Boží jazyk.** Verš: Filipským 4,8: „Cokoli je pravdivé, ušlechtilé, spravedlivé, čisté, milé, cokoli má dobrou pověst, je-li nějaká ctnost a nějaká chvála – o tom přemýšlejte.“
-- Nadpis B: **Mluvíme o nebi tak, že dává smysl životu na zemi.**
+- Nadpis B: **zatím není.** Navrhni 3 varianty.
 
 **Pilíř 3**
 - Nadpis A: **Nechodíme do církve. Jsme církev, kudy chodíme.**
@@ -52,9 +52,11 @@ Pilíře se nesmí překrývat: 1 je cizí dobro, 2 je vlastní tvorba, 3 je dů
 
 **1B Fandíme:** „Když lidé dělají něco dobrého pro někoho jiného, není to náhoda. Vidíme v tom Boží design. Otisk jeho záměru. Máme z toho radost až na kost. Tleskáme jim. Říkáme to ostatním. Protože Boha oslavujeme i tím, komu fandíme. Nejen v kostele. Ale na pastvě.“
 
-**2A Krása:** „Hlavně pro lidi, co kostel ani víru neřeší. Tvoříme pastvu pro oči, uši a duši našeho města. Místo, kde se může každý nadechnout, najíst a růst. Děláme to poctivě i tam, kde se nikdo nekouká.“ Z jeho poznámek: „Přemýšlíme, co o Bohu říká naše hudba, prostor, design, jídlo, video, text, humor, ticho i celková atmosféra. Tvořivost nepatří jen pár lidem na pódiu.“ „Jeden napíše hit, druhá uvaří polévku pro celý barák, třetí sousedce opraví zásuvku.“ „Člověk díky ní může zahlédnout Boha tak, že ho to nezahltí, ale probudí.“
+**2A Krása:** „Hlavně pro lidi, co kostel ani víru neřeší. Tvoříme pastvu pro oči, uši a duši našeho města. Místo, kde se může každý nadechnout, najíst a růst. Děláme to poctivě i tam, kde se nikdo nekouká.“ Z jeho chatu: „Jeden napíše hit, druhá uvaří polévku pro celý barák, třetí sousedce opraví zásuvku. Každý přidá hodnotu tím, co umí.“
 
-**2B Nebe a země:** z jeho poznámek: „Srozumitelnost je základ. Ale srozumitelný je i návod k pračce.“ „Mluvíme o Bohu tak, aby to obstálo v práci, doma, u piva i v pondělí ráno.“ „Slova jako milost, hřích nebo naděje neschováváme za kostelštinu. Vracíme je do života.“ „Neředíme pravdu. Ostříme ji.“ „Člověk si má odnést větu, která mu začne svítit v běžném dni.“
+**2B:** zatím nic. Napiš od nuly.
+
+**Pozor na hodnoty.** Manifest má i sekci Kultura s deseti hodnotami (otevřená přitažlivě, srozumitelná pronikavě, štědrá bytostně, tvořivá nespoutaně, zdravá vnitřně, radostná hluboce, odvážná radikálně, blízká důvěrně, opravdová přirozeně, jednoduchá nadpřirozeně). Hodnoty mají vlastní texty. **Pilíře z nich nesmí přebírat věty ani je převyprávět.** Pilíř říká, *co* děláme a *pro koho*. Hodnota říká, *jak* se přitom chováme. Myšlenka se smí potkat, věta ne.
 
 **3A + 3B:** „Doma. V práci. Ve škole. V hospodě. U plotu se sousedem. Uprostřed komunity, kam patříš i ty. Bohu na každém z těch lidí záleží. Poznají to od souseda, kolegyně nebo spolužáka, ne z kazatelny. Bůh zná každého jménem. My se ta jména teprve učíme. Láska mění kolemjdoucí v kumpány, tanečníky a gurmány. Není to o nás. Je to o nich a o Něm.“
 
