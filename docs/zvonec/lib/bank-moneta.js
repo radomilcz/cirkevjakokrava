@@ -35,14 +35,33 @@ export function giftFromTransaction(t) {
     'relatedParties.debtorAccount.identification.other.identification',
     'relatedParties.debtorAccount.identification.iban',
   ]);
-  const message = first(details, ['remittanceInformation.unstructured', 'additionalTransactionInformation', 'references.transactionDescription']);
-  return {
+  const message = first(details, ['remittanceInformation.unstructured', 'additionalTransactionInformation']);
+  const label = first(details, ['references.transactionDescription']);
+  return cleanGift({
     bankId: `moneta:${id}`, source: 'moneta', date, amount: Math.round(amount * 100) / 100,
     ...(vs ? { vs } : {}), ...(ks ? { ks } : {}), ...(ss ? { ss } : {}),
     ...(name ? { name: String(name).trim() } : {}),
     ...(account ? { account: String(account).replace(/\s+/g, '') } : {}),
     ...(message ? { message: String(message).trim() } : {}),
-  };
+    ...(label ? { label: String(label).trim() } : {}),
+  });
+}
+
+/** The bank's own words for a kind of payment – never a message from the sender. */
+const BANK_LABELS = /^(okamžitá úhrada|příchozí (úhrada|platba)( z jiné banky)?|úhrada|platba|kreditní úroky|připsané úroky)$/i;
+const INTEREST = /úrok/i;
+
+/**
+ * A gift as Zvonec keeps it: the bank's label for the kind of payment is not a message, and the bank's interest is
+ * not a gift („Není dar“ at once). Also tidies gifts stored before this rule (zvonec/bank.mjs runs it on all).
+ */
+export function cleanGift(g) {
+  const out = { ...g };
+  const words = [out.message, out.label].filter(Boolean).join(' ');
+  if (out.message && BANK_LABELS.test(out.message.trim())) delete out.message;
+  if (!out.account && !out.name && INTEREST.test(words) && !out.personId && !out.donorId && !out.kind) out.kind = 'notGift';
+  delete out.label;
+  return out;
 }
 
 /** The account to read: the one with this IBAN, else the only CZK account. → id or null. */
