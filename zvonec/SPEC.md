@@ -1289,9 +1289,12 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
 - **Matching**: the donor's variable symbol (per person – a tax certificate is per donor; visible to the treasurer
   only) → the person; else a sender account matched before → the same person; else „Nepřiřazené“, where the
   treasurer picks a person, „Anonymní dar“ or „Není dar“ (rent, a grant, a refund).
-- **The donor's own view** (Můj účet › Dary, everyone): the church account, their variable symbol, a QR payment
-  with the symbol filled in (amount left to the bank app), „Zkopíruj číslo účtu / symbol“, and the sentence that the
-  symbol brings them the donation certificate every year. The symbol is assigned by Zvonec (sequential, unique), is
+- **The donor's own view** (Můj účet › Dary, everyone): „Posílej dar na účet sboru se svým variabilním symbolem.
+  Podle něj ti Zvonec vždy v lednu připraví potvrzení o daru do daňového přiznání.“; a framed block with two rows –
+  the account („Účet sboru“) and the symbol („Tvůj variabilní symbol“), each with a copy icon – and on the right a
+  QR payment with the symbol filled in („Naskenuj v bankovní aplikaci, doplníš jen částku.“); under the block
+  „Pravidelný dar zadáš ve své bance jako trvalý příkaz.“ On a phone the QR hides behind „Ukaž QR kód“ (one cannot
+  scan one's own screen; „Hodí se, když platíš z jiného zařízení.“). The symbol is assigned by Zvonec (sequential, unique), is
   not sensitive on its own and lives on the person record in the main data repo (`donorVs`), so a member sees it
   without reading the finance repo; amounts never reach the member's view.
 - **Never on the person card** (the owner): the card stays about contact and serving – no Dary section, no link, not
@@ -1299,6 +1302,7 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
   (symbol, this year and last year, the gifts, „Vytiskni potvrzení za rok …“). The symbol is shown to the person
   in Můj účet and to the treasurer in Dary, nowhere else.
 - **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
-- **Out**: the yearly donation certificate per donor (print), sums per month and purpose without names (for the
+- **Out**: the yearly donation certificate per donor (print; the church's stamp and the pastor's signature – stamped
+  and signed by hand, or both uploaded as images in Nastavení darů and placed by Zvonec), sums per month and purpose without names (for the
   board), the donors list for the treasurer. Tax details to be confirmed with the church's accountant.
 - Open: purposes beyond Provoz; who the treasurer and the deputy are.
