@@ -1308,6 +1308,8 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
   and signed by hand, or both uploaded as images in Nastavení darů and placed by Zvonec), sums per month and purpose without names (for the
   board), the donors list for the treasurer. Tax details to be confirmed with the church's accountant.
 - **The recipient on the certificate** comes from Nastavení sboru, not from the brand name: two new optional fields
-  „Úřední název“ (`legalName`, e.g. „Apoštolská církev, sbor Nový Jičín“) and „IČO“ (`companyId`), with the
-  existing `address`; certificates are not offered until both are filled in.
+  „Úřední název“ (`legalName`, e.g. „Apoštolská církev, sbor Nový Jičín“), „IČO“ (`companyId`) and „Sídlo“
+  (`legalAddress` – the registered seat from the Ministry of Culture's register / ARES, which can differ from
+  `address`, the place people come to and Pastva shows); certificates are not offered until all three are filled
+  in. A „Načti z ARES“ button could fill the name and the seat from the IČO (ARES has a public REST API).
 - Open: purposes beyond Provoz; who the treasurer and the deputy are.
