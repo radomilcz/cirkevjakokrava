@@ -292,6 +292,27 @@ body{
 .detail .essay .verse a::after{content:"→";display:inline-block;margin-left:.35em;transition:transform .5s var(--ease)}
 .detail .essay .verse a:hover{text-decoration-color:currentColor}
 .detail .essay .verse a:hover::after{transform:translateX(.25em)}
+/* rozklik jako série: štítek scény → scéna → obrat → proč → verš → rámeček kroku → pointa */
+.detail .essay .stitek{
+  margin:0 0 .6em;font-family:var(--display);font-weight:800;font-size:.5em;letter-spacing:.08em;text-transform:uppercase;
+  opacity:.75;
+}
+.detail .essay .obrat{
+  margin:1.4em 0 1.2em;font-family:var(--display);font-weight:800;font-size:1.25em;line-height:1.2;letter-spacing:-.01em;
+  text-wrap:balance;
+}
+.detail .essay .krok{
+  margin:2.2em 0 1.25em;padding:.9em 1em 1em;border-radius:.4em;
+  background:color-mix(in srgb,currentColor 9%,transparent);
+}
+.detail .essay .krok p{margin:0}
+.detail .essay .krok .krok-l{
+  margin:0 0 .35em;font-family:var(--display);font-weight:800;font-size:.5em;letter-spacing:.08em;text-transform:uppercase;
+}
+.detail .essay .pointa{
+  margin:1.8em 0 0;font-family:var(--display);font-weight:800;font-size:1.8em;line-height:1.18;letter-spacing:-.01em;
+  text-wrap:balance;
+}
 .detail .zpet{
   margin:clamp(3rem,12vh,8rem) 0 clamp(2rem,8vh,5rem) min(6.75vw,130px);
   font-family:var(--body);font-weight:400;font-size:clamp(1rem,1.55vw,1.875rem);

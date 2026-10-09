@@ -165,12 +165,15 @@
 <dialog class="detail" id="d-{{ x.id }}" aria-labelledby="d-{{ x.id }}-t">
   <div class="detail-in" tabindex="-1" autofocus>
     <div class="detail-head">
-      <p class="eyebrow">{{ x.nadtitulek }}</p>
+      <p class="eyebrow">{% if x.get('otisk') %}{{ x.otisk }} · {% endif %}{{ x.nadtitulek }}</p>
       <button type="button" class="zavrit" aria-label="Zavřít">×</button>
     </div>
-    <h2 class="detail-t" id="d-{{ x.id }}-t">{% for v in (x.get('detail_odkaz') or x.nadtitulek)|vety %}<span>{{ v|txt }}</span> {% endfor %}</h2>
+    {#- Začíná-li text velkým nadpisem (# …), je to nadpis stránky; jinak jím je text odkazu. #}
+    {%- set bb = x.detail|bloky(True) %}
+    {%- set prvni = bb[0] if bb and bb[0].druh == 'titul' else None %}
+    <h2 class="detail-t" id="d-{{ x.id }}-t">{% for v in (prvni.text if prvni else x.get('detail_odkaz') or x.nadtitulek)|vety %}<span>{{ v|txt }}</span> {% endfor %}</h2>
     <div class="essay">
-{%- for b in x.detail|bloky(True) %}
+{%- for b in (bb[1:] if prvni else bb) %}
       {{ b|blok }}
 {%- endfor %}
     </div>
