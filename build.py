@@ -64,7 +64,8 @@ HEAD_END = '<!--/head-->'
 PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS']  # nahradí se až po Jinja
 BLOKY = {'tagline': '<p class="lead">{}</p>', 'nadpis': '<h3>{}</h3>',   # bloky předmluvy (druh → sazba)
          'odstavec': '<p>{}</p>', 'otazka': '<p class="ask">{}</p>',
-         'citat': '<blockquote class="verse">{}</blockquote>'}           # jen v rozkliku: verš s odkazem
+         'citat': '<blockquote class="verse">{}</blockquote>',           # jen v rozkliku: verš s odkazem
+         'titul': '<h2 class="detail-t">{}</h2>'}                        # jen v rozkliku: velký nadpis (# …)
 ODKAZ = re.compile(r'\[([^\]]+)\]\((https?://[^)\s]+)\)')
 ZLOM = '\ue001'        # konec řádku uvnitř citátu (verš / odkaz pod ním)
 # Otisky (polohy z Figmy, tabulka PRINT v JS). Slajd s polem Otisk = „automaticky“ dostane další z řady.
@@ -123,7 +124,8 @@ def bloky(md, rozklik=False):
             chyba(f'Předmluva: seznamy, tabulky, obrázky ani čáry manifest nesází – „{prvni[:40]}…“')
         m = re.match(r'(#{1,6})\s+(.*)', prvni)
         if m:
-            druh, radky[0] = ('nadpis' if len(m.group(1)) <= 2 else 'tagline'), m.group(2)
+            druh, radky[0] = ('titul' if rozklik and len(m.group(1)) == 1 else
+                              'nadpis' if len(m.group(1)) <= 2 else 'tagline'), m.group(2)
         elif prvni.startswith('>'):
             druh, radky = ('citat' if rozklik else 'otazka'), [re.sub(r'^\s*>\s?', '', r) for r in radky]
         else:
@@ -140,6 +142,8 @@ def bloky(md, rozklik=False):
 
 
 def blok(b):
+    if b['druh'] == 'titul':        # velký nadpis v rozkliku se láme po větách jako nadpis rozkliku
+        return Markup(BLOKY['titul'].format(''.join(f'<span>{txt(v)}</span> ' for v in vety(b['text']))))
     html = BLOKY[b['druh']].format(txt(b['text'])).replace(ESC, '*').replace(ZLOM, '<br>')
     # odkaz až po escapování textu; adresa se escapuje znovu do atributu
     html = ODKAZ.sub(lambda m: f'<a href="{escape(Markup(m.group(2)).unescape())}" target="_blank" rel="noopener">{m.group(1)}</a>', html)
