@@ -1373,6 +1373,12 @@ read Lidé). Fio later as a second adapter. The QR encoder is vendored (`lib/ven
   scan one's own screen; „Hodí se, když platíš z jiného zařízení.“). The symbol is assigned by Zvonec (sequential, unique), is
   not sensitive on its own and lives on the person record in the main data repo (`donorVs`), so a member sees it
   without reading the finance repo; amounts never reach the member's view.
+- **Changing the symbol** (the owner): a person changes their own in Můj účet › Dary (✎ beside the symbol – „Posíláš
+  už dary s jiným symbolem? Napiš ho sem a Zvonec tvoje platby pozná.“); the treasurer and the admins change anyone's
+  on the donor page in Dary (fact „Variabilní symbol …“ › Změň), a donor outside the church's too. Digits only, at most
+  ten, compared as banks do (leading zeros dropped, `cleanVs`), never one somebody else has (`vsOwner` – a member's
+  check sees people only; the treasurer's sees outside donors too). Gifts already assigned stay; open payments with
+  the new symbol are assigned at once.
 - **Never on the person card** (the owner): the card stays about contact and serving – no Dary section, no link, not
   even for the treasurer. Donations live only on the Dary screen: Dary › Dárci (the donors) → a donor's detail
   (symbol, this year and last year, the gifts, „Vytiskni potvrzení za rok …“). The symbol is shown to the person

@@ -11,10 +11,11 @@
 import { S, can, change, render, navigate, newId, updateLogins } from './state.js';
 import { F, canSeeDary, financeMissing, loadFinance, changeFinance, resetFinance } from './finance-state.js';
 import {
-  FINANCE_FILE, DEFAULT_PURPOSE, emptyFinance, normalizeFinance, giftStatus,
+  FINANCE_FILE, DEFAULT_PURPOSE, emptyFinance, normalizeFinance, giftStatus, matchGift, autoAssign, donorName,
   yearTotals, donorsOfYear, certificateOf, money,
 } from '../lib/gifts.js';
-import { nextDonorVs, validCompanyId } from '../lib/bank.js';
+import { nextDonorVs, validCompanyId, vsOwner } from '../lib/bank.js';
+import { vsSheet } from './donor-vs.js';
 import { sealFinanceAll } from '../lib/access.js';
 import { GithubStore } from '../lib/store/github.js';
 import { personById, sortPeople, statusOf } from '../lib/people.js';
@@ -169,6 +170,34 @@ export function assignSheet(gift) {
         row({ lead: icon('x'), title: 'Vyřaď z darů', meta: 'Nájem, grant, vrácené peníze… Do darů se nepočítá.', onclick: close(() => assign(gift, { kind: 'notGift' }, 'platba, která není dar')) }),
       ], { label: 'Jinak' }),
     ],
+  });
+}
+
+// ---------- the donor's symbol (the treasurer, the admins) ----------
+
+/** Změň variabilní symbol of a person (main data) or of a donor outside the church (finance); then assign what matches. */
+function changeVs(key) {
+  const id = key.slice(2);
+  const isPerson = key.startsWith('p:');
+  vsSheet({
+    subtitle: donorName(key, F.data, S.data.people),
+    current: vsOf(key),
+    isTaken: (vs) => { const o = vsOwner(vs, S.data.people, F.data.donors); return !!o && (isPerson ? o.personId : o.donorId) !== id; },
+    onSave: async (vs) => {
+      if (isPerson) {
+        const p = personById(S.data, id);
+        if (!p) return;
+        p.donorVs = vs;
+        change(`variabilní symbol pro dary: ${personName(p)}`);
+      } else {
+        await changeFinance((f) => { const d = f.donors.find((x) => x.id === id); if (d) d.vs = vs; }, 'variabilní symbol dárce');
+      }
+      const people = S.data.people || [];
+      if (F.data.gifts.some((g) => giftStatus(g) === 'open' && matchGift(g, F.data, people))) {
+        await changeFinance((f) => autoAssign(f, people), 'dary přiřazené podle variabilního symbolu');
+      }
+      toast('Variabilní symbol je změněný.');
+    },
   });
 }
 
@@ -461,7 +490,7 @@ function donorPage(key, year) {
     ].filter(Boolean),
     body: [
       facts([
-        vsOf(key) ? { icon: 'key', text: `Variabilní symbol ${vsOf(key)}` } : null,
+        { icon: 'key', text: vsOf(key) ? `Variabilní symbol ${vsOf(key)}` : 'Variabilní symbol zatím nemá', action: 'Změň', aria: 'Změň variabilní symbol', onclick: () => changeVs(key) },
         c.address ? { icon: 'pin', text: c.address } : { icon: 'pin', text: 'Adresa chybí', action: 'Doplň', onclick: () => (person ? navigate(`#lide/${person.id}`) : donorSheet(outside)) },
         person ? (born ? { icon: 'cake', text: born } : { icon: 'cake', text: 'Datum narození chybí', action: 'Doplň', onclick: () => navigate(`#lide/${person.id}`) }) : null,
         outside?.companyId ? { icon: 'info', text: `IČO ${outside.companyId}` } : null,

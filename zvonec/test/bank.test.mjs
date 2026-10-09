@@ -3,7 +3,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseAccount, formatAccount, ibanOf, spdPayment, nextDonorVs, validCompanyId } from '../../docs/zvonec/lib/bank.js';
+import { parseAccount, formatAccount, ibanOf, spdPayment, nextDonorVs, validCompanyId, cleanVs, vsOwner } from '../../docs/zvonec/lib/bank.js';
 
 test('bank: a Czech account is parsed, checked and formatted', () => {
   assert.deepEqual(parseAccount('19-2000145399/0800'), { prefix: '19', number: '2000145399', bank: '0800' });
@@ -37,4 +37,14 @@ test('bank: IČO check digit', () => {
   assert.equal(validCompanyId('17627682'), false);
   assert.equal(validCompanyId('25596641'), true);
   assert.equal(validCompanyId('abc'), false);
+});
+
+test('bank: a symbol of one\'s own – digits only, compared as banks do, never twice', () => {
+  assert.equal(cleanVs(' 0042 '), '42');
+  assert.equal(cleanVs('12345678901'), null, 'at most 10 digits');
+  assert.equal(cleanVs('12a'), null);
+  assert.equal(cleanVs('000'), null);
+  assert.deepEqual(vsOwner('0042', [{ id: 'p', donorVs: '42' }]), { personId: 'p' });
+  assert.deepEqual(vsOwner('7', [], [{ id: 'd', vs: '007' }]), { donorId: 'd' });
+  assert.equal(vsOwner('8', [{ id: 'p', donorVs: '42' }]), null);
 });
