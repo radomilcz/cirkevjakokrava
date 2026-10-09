@@ -22,16 +22,15 @@ import { DEMO_VIEWERS } from '../lib/demo.js';
 import {
   h, page, button, list, row, avatar, personName, toast, formSheet, layer, field, textInput, switchRow, segmented,
   peoplePicker, section, sectionAction, facts, fieldError, clearErrors, rowLink, icon, callout, meta, paletteChoices,
-  disclosure, iconButton,
+  disclosure, iconButton, dateArch, amount, stack, menuButton,
 } from './kit.js';
 import { contactSheet } from './people-forms.js';
 import { calendarExportRows, CALENDAR_EXPORT_NOTE } from './calendar-shared.js';
 import { parseAccount, spdPayment, vsOwner } from '../lib/bank.js';
 import { money } from '../lib/gifts.js';
-import { copyValue, ensureDonorVs, giveSheet } from './give.js';
+import { copyValue, ensureDonorVs, giveSheet, paymentBlock, paymentRows } from './give.js';
 import { G, loadGiving } from './giving-state.js';
 import { vsSheet } from './donor-vs.js';
-import { qrCode } from './qr.js';
 
 // ---------- my card ----------
 
@@ -211,19 +210,22 @@ function changeMyVs(person) {
   });
 }
 
-const dayMonth = (d) => `${Number(d.slice(8, 10))}. ${Number(d.slice(5, 7))}.`;
-
-/** My gifts the bank has seen lately (the sealed notes, ui/giving-state.js). */
-function arrived() {
+/** My gifts the bank has seen lately (the sealed notes, ui/giving-state.js) – rows as in Dary: arch, what for, amount. */
+function arrivedSection() {
   loadGiving();
   if (!G.notes.length) return null;
   const sbirka = (n) => (n.f ? (S.data.fundraisers || []).find((x) => x.id === n.f)?.name : null);
-  return [
-    h('h3', { class: 'gift-month' }, 'Dary, které dorazily'),
-    list(G.notes.map((n) => row({
-      lead: icon('heart'), title: money(n.a), meta: [dayMonth(n.d), sbirka(n) ? `sbírka ${sbirka(n)}` : null].filter(Boolean).join(' · '),
-    })), { label: 'Dary, které dorazily' }),
-  ];
+  return section({
+    title: 'Tvoje dary', count: G.notes.length,
+    body: [
+      list(G.notes.map((n) => row({
+        lead: dateArch(n.d, { quiet: true }),
+        title: sbirka(n) ? `Sbírka ${sbirka(n)}` : 'Provoz sboru',
+        meta: 'dorazil na účet sboru',
+        trail: amount(money(n.a)),
+      })), { label: 'Tvoje dary' }),
+    ],
+  });
 }
 
 function giveSection(person) {
@@ -232,31 +234,26 @@ function giveSection(person) {
   if (!account) return null;
   ensureDonorVs(person);
   const vs = person?.donorVs || '';
-  const value = (text) => h('span', { class: 'give-value' }, text);
-  const rows = list([
-    row({ title: value(s.bankAccount), meta: 'Účet sboru', trail: iconButton('copy', 'Zkopíruj číslo účtu', { onclick: () => copyValue(s.bankAccount, 'Číslo účtu je zkopírované.') }) }),
-    vs ? row({ title: value(vs), meta: 'Tvůj variabilní symbol', trail: [
-      iconButton('pencil', 'Změň variabilní symbol', { onclick: () => changeMyVs(person) }),
-      iconButton('copy', 'Zkopíruj variabilní symbol', { onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') }),
-    ] }) : null,
-  ].filter(Boolean), { label: 'Kam poslat dar' });
+  const rows = paymentRows({ account: s.bankAccount, vs });
+  // my own symbol can be changed: the copy row gets a ⋯ instead of two icon buttons
+  if (vs) {
+    rows[2] = row({
+      title: h('span', { class: 'num' }, vs), meta: 'Tvůj variabilní symbol',
+      trail: menuButton([
+        { label: 'Zkopíruj', icon: 'copy', onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') },
+        { label: 'Změň variabilní symbol', icon: 'pencil', onclick: () => changeMyVs(person) },
+      ], { label: 'Možnosti variabilního symbolu' }),
+    });
+  }
   const payment = spdPayment({ account, vs, name: s.legalName || s.churchName, message: 'Dar' });
-  const qrBlock = () => h('div', { class: 'give-qr' },
-    qrCode(payment, { label: 'QR platba na účet sboru' }),
-    h('p', { class: 'meta' }, 'Naskenuj v bankovní aplikaci, doplníš jen částku.'));
   return section({
     title: 'Dary',
-    body: [
-      h('p', { class: 'meta give-intro' }, vs
-        ? 'Posílej dar na účet sboru se svým variabilním symbolem. Podle něj ti Zvonec vždy v lednu připraví potvrzení o daru do daňového přiznání.'
+    action: sectionAction('Pošli dar', { icon: 'heart', onclick: () => giveSheet(), aria: 'Pošli mimořádný dar' }),
+    body: stack(
+      meta(vs
+        ? 'Posílej dar se svým variabilním symbolem, pravidelný třeba trvalým příkazem. Podle symbolu ti Zvonec v lednu připraví potvrzení o daru do daňového přiznání.'
         : 'Dar můžeš poslat na účet sboru.'),
-      h('div', { class: 'give' },
-        h('div', {}, rows, h('div', { class: 'give-qr-toggle' }, disclosure([h('p', { class: 'meta' }, 'Hodí se, když platíš z jiného zařízení.'), qrBlock()], { label: 'Ukaž QR kód' }))),
-        qrBlock()),
-      h('p', { class: 'meta give-foot' }, 'Pravidelný dar zadáš ve své bance jako trvalý příkaz.'),
-      h('div', { class: 'gift-actions' }, button('Pošli mimořádný dar', { icon: 'heart', onclick: () => giveSheet() })),
-      arrived(),
-    ],
+      paymentBlock({ rows, payment, hint: 'Naskenuj v bankovní aplikaci, doplníš jen částku.' })),
   });
 }
 
@@ -288,6 +285,7 @@ export function renderAccountPage() {
         body: [meta(CALENDAR_EXPORT_NOTE), calendarExportRows()],
       }),
       giveSection(person),
+      arrivedSection(),
       section({ title: 'Barvy', body: paletteChoices({ label: 'Barvy' }) }),
       h('div', { class: 'acct-out' },
         button('Odhlas se', { variant: 'quiet', icon: 'log-out', cls: 'acct-out__btn', onclick: signOut }))),

@@ -1,5 +1,21 @@
 # Zvonec One: the design
 
+> **Update – the design audit of Dary and Sbírky (2026-10-09).** The owner: „ty mnou navržené jsou esteticky jinde“.
+> Four auditors (typography, spacing, composition, the system) agreed; the new parts now use the house blocks only:
+> - **Kit pieces added:** `figures()` (Tvoje břemeno's anatomy for any headline number: the title-face figure 56/48
+>   with its words – the unit too – in meta, a bar, a sentence, small figures under a hairline, one action; --card or
+>   the --feature fill), `amount()` (strong tabular figures, „Kč“ in --ink-2), `periodLine({ year })` (‹ 2026 ›
+>   Letos), `callout({ onDismiss })` (a quiet ✕). Tokens `--type-figure`, `--qr`, `--qr-poster`.
+> - **Dary** is a split page like Moje: Nepřiřazené and Dárci on the left, the year (period line, figures, the
+>   bank line) and Sbírky on the right; one column below 1200 with Nepřiřazené first. The donor and the sbírka are
+>   details (`detail()` + `detailHead()`, a mark, mixed-case h1, facts), never screens with a caps title.
+> - **One row anatomy**: a 40 lead (avatar m, the heart lead-mark) or the 44 arch, the amount as the only trail,
+>   no ›; month subheads are the kit's `subhead()` inside the list. Sbírky are rows everywhere (list, Moje, Dary).
+> - **One payment block** (`paymentBlock`) in Můj účet, the payment sheet (L) and the poster: details left, QR
+>   right; on a phone the QR behind „Ukaž QR kód“. --card, r20, padding 24.
+> - Moje: the thank-you comes after the answer card, one sentence with a ✕; Sbírky go to the right column ≥ 1200.
+> - Rhythm: 8 (h2 → content) · 12 (stacked parts) · 24 (a control row → content) · 40 (sections); no 16/32 joins.
+
 > **Update – Sbírky and Mimořádný dar (2026-10-09).** A new screen `#sbirky` (SPEC 9.17), kit only: a sbírka is a
 > card on the tint (the name 20/26, the sum in the title face 32 with a quiet „Kč“, „z 80 000 Kč“, the stat bar, a meta
 > line); the detail makes the card big (48) with [Pošli dar] and [Ukaž QR pro plakát]. The payment sheet puts the QR

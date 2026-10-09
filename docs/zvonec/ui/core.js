@@ -384,12 +384,14 @@ export function fill(filled, total, { words, trailing, quiet = false } = {}) {
 /**
  * A warning in context. tone: 'wait' (pozor) · 'no' (chyba) · 'info'. `actions`: the fix button(s).
  */
-export function callout({ tone = 'info', title: head, text: body, icon: iconName, actions } = {}) {
-  return h('div', { class: 'callout', dataset: { tone }, role: tone === 'no' ? 'alert' : null },
+export function callout({ tone = 'info', title: head, text: body, icon: iconName, actions, onDismiss, dismissLabel = 'Skryj' } = {}) {
+  return h('div', { class: ['callout', onDismiss && 'callout--dismiss'], dataset: { tone }, role: tone === 'no' ? 'alert' : null },
     icon(iconName || (tone === 'info' ? 'info' : 'alert')),
     head ? h('p', { class: 'callout__title' }, head) : null,
     body ? h('p', {}, body) : null,
-    actions ? h('div', { class: 'callout__action cluster' }, actions) : null);
+    actions ? h('div', { class: 'callout__action cluster' }, actions) : null,
+    // `onDismiss`: a notice the person may put away (a thank-you) – a quiet ✕ in the corner, never a button row
+    onDismiss ? iconButton('x', dismissLabel, { onclick: onDismiss, cls: 'callout__dismiss' }) : null);
 }
 
 /**
@@ -427,6 +429,38 @@ export function section({ title: head, count: n, action, value, id, body, cls, l
  */
 export function sectionAction(label, { onclick, href, add = false, icon: iconName, aria } = {}) {
   return button(label, { variant: add ? 'tint' : 'quiet', size: 's', icon: iconName || (add ? 'plus' : null), onclick, href, label: aria, cls: 'section-action' });
+}
+
+/** A sum of money: strong figures, „Kč“ in the second ink – one span, so a trail or a fact keeps one weight. */
+export function amount(text) {
+  const [num, unit] = String(text).split(/\s(?=Kč$)/);
+  return h('span', { class: 'num amount' }, num, unit ? h('span', { class: 'amount__unit' }, '\u00a0', unit) : null);
+}
+
+/**
+ * The figure block of Tvoje břemeno, for any headline number (CODEX §6.4a): the number in the title face (56/48)
+ * with its words beside it in meta – the unit too („68 000“ + „Kč darů za rok 2026“) – then an optional bar, one
+ * sentence, small figures under a hairline, and the block's one action. r20, padding 24; `feature` = the screen's one
+ * feature fill (Moje's card, a sbírka), otherwise the card with its edge.
+ *   figures({ n: '68 000', of: 'Kč darů za rok 2026', items: [{ value: 4, label: 'dárci' }, …] })
+ *   figures({ feature: true, n: '34 500', of: 'Kč z 80 000 Kč', bar: .43, action: button('Pošli dar', …) })
+ */
+export function figures({ n, of, bar, say, items = [], action, feature = false, cls, label } = {}) {
+  let barEl = null;
+  if (bar != null) {
+    barEl = h('span', { class: 'figures__bar', 'aria-hidden': 'true' }, h('span', { class: 'figures__fill' }));
+    barEl.firstChild.style.width = `${Math.round(Math.max(0, Math.min(1, bar)) * 100)}%`;   // CSSOM – a measured value
+  }
+  const item = ({ value, label: words, href, onclick, tone, aria }) => h(href ? 'a' : onclick ? 'button' : 'div', {
+    class: 'figure', href, onclick, type: onclick ? 'button' : null, dataset: { tone }, 'aria-label': aria,
+  }, h('span', { class: 'figure__value num' }, value), h('span', { class: 'figure__label' }, words));
+  const list = items.filter(Boolean);
+  return h('div', { class: ['figures', feature && 'figures--feature', cls], 'aria-label': label },
+    h('p', { class: 'figures__count' }, h('span', { class: 'figures__n num' }, String(n)), of ? h('span', { class: 'figures__of' }, of) : null),
+    barEl,
+    say ? h('p', { class: 'figures__say' }, say) : null,
+    list.length ? h('div', { class: 'figures__items' }, list.map(item)) : null,
+    nodes(action).length ? h('div', { class: 'figures__action' }, action) : null);
 }
 
 export const stack = (...children) => h('div', { class: 'stack' }, children);

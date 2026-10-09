@@ -260,7 +260,14 @@ export function detailHead({ band, mark, tags, title, facts: factsNode, after, i
  *   periodLine({ month: '2026-10', href: (m) => `#kalendar/mesic/${m}`, todayHref: '#kalendar/mesic/2026-10/2026-10-07' })
  * ← / → change the month on ≥ 600 when no field has focus (the shell's keyboard).
  */
-export function periodLine({ month, href, todayHref, label: text, here = false } = {}) {
+export function periodLine({ month, year, href, todayHref, label: text, here = false } = {}) {
+  if (year != null) {   // a year (Dary): ‹ 2026 › ··· Letos
+    return h('div', { class: 'period-line', role: 'group', 'aria-label': 'Rok' },
+      h('a', { class: 'icon-btn period-line__prev', href: href(year - 1), 'aria-label': 'Předchozí rok', title: 'Předchozí rok' }, icon('chevron-left')),
+      h('h2', { class: 'period-line__label', 'aria-live': 'polite' }, text || String(year)),
+      h('a', { class: 'icon-btn period-line__next', href: href(year + 1), 'aria-label': 'Další rok', title: 'Další rok' }, icon('chevron-right')),
+      h('a', { class: 'period-line__today', href: todayHref || href(new Date().getFullYear()), hidden: here }, 'Letos'));
+  }
   const [y, m] = month.split('-').map(Number);
   const shift = (n) => { const d = new Date(y, m - 1 + n, 1, 12); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
   const words = text || `${MONTHS[m - 1]} ${y}`;

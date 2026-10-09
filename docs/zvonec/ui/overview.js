@@ -9,7 +9,7 @@
 //   Tiles: two columns on a phone, four from 600 – one even grid, every label on one line.
 // Pure numbers come from lib/stats.js.
 
-import { h, page, section, quiet, plural, periodLine, setFilter, clearFilter, rowLink } from './kit.js';
+import { h, page, section, quiet, plural, periodLine, setFilter, clearFilter, rowLink, pill, isPhone, menuBack } from './kit.js';
 import { S, navigate } from './state.js';
 import { peopleStats, serviceStats } from '../lib/stats.js';
 import { today } from '../lib/time.js';
@@ -39,7 +39,7 @@ function peopleSection() {
   const joined = s.joined.length ? `přibyl${s.joined.length === 1 ? '' : 'o'} ${lidi(s.joined.length)}` : 'nikdo nový nepřibyl';
   const left = s.left.length ? `${plural(s.left.length, 'karta šla', 'karty šly', 'karet šlo')} do archivu` : 'do archivu nešel nikdo';
   return section({
-    title: 'Lidé', value: h('span', { class: 'meta' }, lidi(s.active)),
+    title: 'Lidé', value: pill(lidi(s.active)),
     body: [
       tiles,
       h('p', { class: 'meta stats-note' }, `Za poslední rok ${joined}, ${left}.`),
@@ -57,7 +57,7 @@ function serviceSection(month) {
     tile(s.duties, plural(s.duties, 'služba', 'služby', 'služeb').replace(/^\d+ /, '')),
     tile(s.people, `${s.people === 1 ? 'člověk slouží' : s.people >= 2 && s.people <= 4 ? 'lidé slouží' : 'lidí slouží'}`),
     tile(s.waiting, 'čeká na odpověď', { href: '#obsazeni', tone: s.waiting ? 'wait' : null }),
-    tile(s.declined, 'odmítnutí', { tone: 'quiet' }));   // the noun: „1 · 3 · 7 odmítnutí“, short enough for a phone tile
+    tile(s.declined, 'odmítnutí', { tone: s.declined ? null : 'quiet' }));   // the noun: „1 · 3 · 7 odmítnutí“, short enough for a phone tile
   return section({
     title: 'Služby',
     body: [
@@ -73,6 +73,7 @@ export function renderOverview(parts = []) {
   const month = isMonth(parts[0]) ? parts[0] : thisMonth();
   return page({
     title: 'Přehled',
+    back: isPhone() ? menuBack() : null,   // a phone opens it from the person menu
     body: h('div', { class: 'overview' }, peopleSection(), serviceSection(month), giftsOverviewSection()),
   });
 }

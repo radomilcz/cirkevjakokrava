@@ -82,37 +82,33 @@
 :is(button, a).stat { cursor: pointer; }
 :is(button, a).stat:hover { background: var(--tint-2); }
 :is(button, a).stat:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.stat__value { font-family: var(--font-title); font-weight: 900; font-size: 32px; line-height: 36px; font-feature-settings: var(--numerals); }
+.stat__value { font-family: var(--font-title); font-weight: 900; font-size: var(--type-title-pane); line-height: var(--lh-title-pane); font-feature-settings: var(--numerals); white-space: nowrap; }
 /* a big system font: wrap inside the tile rather than spill out */
 .stat__label { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: anywhere; }
 .stat[data-tone="wait"] .stat__value { color: var(--wait-ink); }
 .stat[data-tone="quiet"] .stat__value { color: var(--ink-2); }
 /* the wide tile (Služby › obsazeno): the whole row, the value left, the words and a bar right */
 .stat--wide { grid-column: 1 / -1; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-4); padding: var(--space-4); }
-.stat--wide .stat__value { font-size: 40px; line-height: 40px; }
+.stat--wide .stat__value { font-size: var(--type-figure); line-height: var(--lh-figure); }
 .stat__text { display: grid; gap: var(--space-2); min-width: 0; }
 .stat__bar { position: relative; display: block; height: 8px; border-radius: var(--shape-pill); background: var(--tint-2); overflow: hidden; }
 .stat__fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--ok-solid); }
 .stat[data-tone="wait"] .stat__fill { background: var(--wait-ink); }
 .overview .row-link { margin-top: var(--space-2); }
 .stats-note { margin-top: var(--space-3); }
-.overview .period-line { margin-bottom: var(--space-4); }
+.overview .period-line { margin-bottom: var(--gap-group); }
 
-/* ---------- Dary (#dary, the treasurer and the admins; ui/gifts.js) ---------- */
-.gift-sum { font-weight: var(--weight-strong); font-feature-settings: var(--numerals); white-space: nowrap; }
-.gift-sum__unit { font-weight: var(--weight-medium); color: var(--ink-2); }
-.stat__unit { font-family: var(--font-ui); font-size: .5em; font-weight: var(--weight-strong); color: var(--ink-2); letter-spacing: 0; }
-/* the agenda's rhythm: payments under month subheads, a date arch on each row */
-.gift-month { margin: var(--space-5) 0 var(--space-1); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
-.gifts .section .meta + .gift-month { margin-top: var(--space-4); }
-.gift-actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--space-4); }
+/* ---------- Dary (#dary, the treasurer and the admins; ui/gifts.js) – the kit's blocks, only the joins here ---------- */
+/* the year: ‹ 2026 › then 24 to the figure block, the bank line 12 under it */
+.gifts-year { display: grid; gap: var(--gap-y); }
+.gifts-year > .period-line { margin-bottom: calc(var(--gap-group) - var(--gap-y)); }
+.gifts-main { display: grid; align-content: start; gap: var(--section-gap); min-width: 0; }
+.gifts-main > .section { margin-top: 0; }
+.gift-list + .meta { margin-top: var(--gap-y); }
+.gift-print { display: flex; margin-top: var(--gap-y); }
 .gift-img__row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3); }
-.gift-img { display: grid; place-items: center; width: 96px; height: 64px; border-radius: var(--radius-m); background: #fff; box-shadow: inset 0 0 0 1px var(--edge); }
-.gift-img img { max-width: 88px; max-height: 56px; }
-.gifts .overview > * + * { margin-top: var(--section-gap); }
-.gifts .period-line { margin-bottom: var(--space-4); }
-.gifts-year > .stats + * { margin-top: var(--space-3); }
-.gifts .facts + .period-line { margin-top: var(--section-gap); }
+.gift-img { display: grid; place-items: center; width: calc(1.5 * var(--space-9)); height: var(--space-9); border-radius: var(--radius-m); background: var(--card); box-shadow: inset 0 0 0 1px var(--edge); }
+.gift-img img { max-width: calc(100% - var(--space-2)); max-height: calc(100% - var(--space-2)); }
 
 /* ---------- the donation certificate (print, A4 portrait, one donor per page; ui/certificate.js) ---------- */
 @page dary { size: A4 portrait; margin: 0; }
@@ -153,33 +149,5 @@
   .cert__foot { padding-top: 3.5mm; border-top: .5pt solid var(--p-line); color: var(--p-ink-3); font-size: 8pt; text-align: center; }
 }
 
-/* ---------- Sbírky (ui/fundraisers.js, ui/give.js) ---------- */
-.funds { display: grid; gap: var(--space-3); }
-@media (min-width: 900px) { .funds { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.fund { display: grid; gap: var(--space-2); padding: var(--space-4) var(--space-5); border-radius: var(--radius-m); background: var(--tint); color: var(--ink); text-decoration: none; min-width: 0; }
-a.fund:hover { background: var(--tint-2); }
-a.fund:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.fund__name { font-size: 20px; line-height: 26px; font-weight: var(--weight-strong); overflow-wrap: anywhere; }
-.fund__figures { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); }
-.fund__sum { font-family: var(--font-title); font-weight: 900; font-size: 32px; line-height: 36px; font-feature-settings: var(--numerals); white-space: nowrap; }
-.fund__sum strong { font-weight: inherit; }
-.fund__unit { font-family: var(--font-ui); font-size: .5em; font-weight: var(--weight-strong); color: var(--ink-2); }
-.fund__of { color: var(--ink-2); font-weight: var(--weight-medium); }
-.fund__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
-.fund--big { padding: var(--space-5); margin-top: var(--space-4); }
-.fund--big .fund__sum { font-size: 48px; line-height: 48px; }
-.fund--closed .stat__fill { background: var(--ink-3); }
-.funds-page .page__body > p:first-child { margin-top: 0; white-space: pre-line; }
-.funds + .section { margin-top: var(--space-6); }
-.give-poster { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-6); align-items: center; }
-.give-poster .give-qr { width: auto; }
-.give-poster .give-qr .qr { width: 280px; height: 280px; }
-@media (max-width: 599px) {
-  .give-poster { grid-template-columns: 1fr; gap: var(--space-4); }
-  .give-poster .give-qr .qr { width: 240px; height: 240px; }
-}
-.give-sheet .give-value { white-space: nowrap; font-size: 18px; line-height: 26px; }
-.give-sheet .give { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); box-shadow: none; padding: 0; }
-.give-sheet .give > .give-qr { order: -1; margin: 0 auto; }
-.give-sheet .give + .meta { margin-top: var(--space-4); }
-.gift-actions + .meta { margin-top: var(--space-3); }
+/* ---------- Sbírky (ui/fundraisers.js) – rows, a detail and the figure block from the kit ---------- */
+.fund-detail .figures + * { margin-top: var(--gap-y); }

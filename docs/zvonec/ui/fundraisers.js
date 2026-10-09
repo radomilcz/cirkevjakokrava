@@ -1,8 +1,10 @@
 // Zvonec One – Sbírky (Dary, SPEC 9.17, 15.1): a gift for one purpose („Nový zvuk“), with its own code – the specific
 // symbol – so the bank's payments find it. Leaders, the treasurer and the admins found them; everyone signed in sees
 // the open ones, how much they have collected (never who gave) and sends a gift with their own symbol.
-//   #sbirky        the open ones as cards (name, collected of the target, a bar, gifts · until), then the finished
-//   #sbirky/<id>   the card, „Pošli dar“, the QR for a poster or the screen in church (leaders), ⋯ Uprav · Ukonči · Smaž
+//   #sbirky        rows (the heart mark 40, the name, „vybráno 34 500 Kč z 80 000 Kč · do 31. 12.“), then „Skončené“;
+//                  ≥ 1200 a split page with the open sbírka in the pane (the newest when none is chosen)
+//   #sbirky/<id>   a detail: the heart mark, the name, facts (until, the code); the feature figure block with the bar
+//                  and [Pošli dar]; „Na co se vybírá“; „Na plakát“ (those who run it); ⋯ Uprav · Ukonči · Smaž
 // The sbírky live in the main data (settings.json › fundraisers); the sums in data/giving.json (ui/giving-state.js).
 
 import { S, can, myId, change, navigate, newId } from './state.js';
@@ -13,8 +15,9 @@ import { money, nextFundraiserCode } from '../lib/gifts.js';
 import { today } from '../lib/time.js';
 import { dayWithYear } from './more-common.js';
 import {
-  h, page, section, list, row, quiet, callout, button, toast, formSheet, confirmSheet, field, textInput, textArea,
-  dateInput, meta, text, fieldError, clearErrors, agree, empty, icon,
+  h, page, section, list, row, callout, button, toast, formSheet, confirmSheet, field, textInput, textArea,
+  dateInput, meta, text, fieldError, clearErrors, agree, empty, placeMark, pill, facts, figures, detail, detailHead,
+  missingItem, rowLink, isSplit, isPhone,
 } from './kit.js';
 
 /** Who founds and runs sbírky: leaders, the treasurer and the admins. */
@@ -26,34 +29,22 @@ export const showSbirky = () => !!S.data && (canRunFundraisers() || openFundrais
 const fundraiserById = (id) => (S.data?.fundraisers || []).find((f) => f.id === id) || null;
 const darů = (n) => `${n} ${agree(n, 'dar', 'dary', 'darů')}`;
 
-/** „34 000 Kč“ as strong figures with a quiet unit. */
-function sumEl(n) {
-  const [num] = money(n).split(' Kč');
-  return h('span', { class: 'fund__sum' }, h('strong', {}, num), h('span', { class: 'fund__unit' }, ' Kč'));
+const NB = '\u00a0';
+const short = (d) => `${Number(d.slice(8, 10))}.${NB}${Number(d.slice(5, 7))}.`;
+
+/** „vybráno 34 500 Kč z 80 000 Kč · do 31. 12.“ – one meta line, the same in every list. */
+function fundMeta(f) {
+  const c = collected(f.id);
+  return [
+    `vybráno ${money(c.total)}${f.target ? ` z ${money(f.target)}` : ''}`,
+    f.closed ? `skončila ${short(f.closed)}` : f.until ? `do ${short(f.until)}` : null,
+  ].filter(Boolean).join(' · ');
 }
 
-/** One sbírka as a card: the name, collected (of the target, with a bar), gifts · until. A link unless `big`. */
-function fundCard(f, { big = false } = {}) {
-  const c = collected(f.id);
-  const known = G.state === 'ready' || G.data;
-  const bar = f.target ? h('span', { class: 'stat__bar fund__bar', 'aria-hidden': 'true' }, h('span', { class: 'stat__fill' })) : null;
-  if (bar) bar.firstChild.style.width = `${Math.round(Math.min(1, c.total / f.target) * 100)}%`;   // CSSOM, allowed by the CSP
-  const metaWords = [
-    known ? (c.gifts ? darů(c.gifts) : 'zatím žádný dar') : null,
-    f.closed ? 'skončila' : f.until ? `do ${dayWithYear(f.until)}` : null,
-    `specifický symbol ${f.code}`,
-  ].filter(Boolean).join(' · ');
-  const body = [
-    big ? null : h('span', { class: 'fund__name' }, f.name),
-    h('span', { class: 'fund__figures' }, known ? sumEl(c.total) : h('span', { class: 'fund__sum' }, '…'),
-      f.target ? h('span', { class: 'fund__of' }, `z ${money(f.target)}`) : h('span', { class: 'fund__of' }, 'vybráno')),
-    bar,
-    h('span', { class: 'fund__meta' }, metaWords),
-  ];
-  return big
-    ? h('div', { class: ['fund', 'fund--big', f.closed && 'fund--closed'] }, body)
-    : h('a', { class: ['fund', f.closed && 'fund--closed'], href: `#sbirky/${f.id}`, 'aria-label': `${f.name}: vybráno ${money(c.total)}${f.target ? ` z ${money(f.target)}` : ''}` }, body);
-}
+/** One sbírka as a row – the same anatomy here, on Moje and in Dary. */
+export const fundRow = (f, { selected = false } = {}) => row({
+  lead: placeMark('heart'), title: f.name, meta: fundMeta(f), href: `#sbirky/${f.id}`, selected,
+});
 
 // ---------- founding and editing ----------
 
@@ -124,81 +115,107 @@ function removeFundraiser(f) {
 
 // ---------- the screens ----------
 
-function listPage() {
-  const all = S.data.fundraisers || [];
-  const open = openFundraisers();
-  const done = all.filter((f) => f.closed).sort((a, b) => String(b.closed).localeCompare(String(a.closed)));
-  const run = canRunFundraisers();
-  return page({
-    title: 'Sbírky',
-    action: run ? { label: 'Založ sbírku', icon: 'plus', onclick: () => fundraiserSheet(null) } : null,
-    cls: 'funds-page',
-    body: [
-      open.length ? h('div', { class: 'funds' }, open.map((f) => fundCard(f))) : empty({
-        icon: 'heart', title: 'Teď neběží žádná sbírka.',
-        text: run ? 'Když sbor potřebuje peníze na něco konkrétního, založ sbírku. Dostane vlastní QR platbu.' : 'Až nějaká začne, uvidíš ji tady.',
-      }),
-      done.length ? section({ title: 'Skončené', count: done.length, body: list(done.map((f) => row({
-        title: f.name, meta: [`vybráno ${money(collected(f.id).total)}`, `skončila ${dayWithYear(f.closed)}`].join(' · '),
-        href: `#sbirky/${f.id}`, chevron: true,
-      })), { label: 'Skončené sbírky' }) }) : null,
-    ],
-  });
-}
-
-function detailPage(f) {
+/** The sbírka as a detail (a pane ≥ 1200, a page below): the head, the figure block with [Pošli dar], what for, a poster. */
+function fundDetail(f, frame) {
   const run = canRunFundraisers();
   const c = collected(f.id);
   const account = giftAccount();
-  return page({
-    title: f.name,
-    back: { href: '#sbirky', label: 'Sbírky' },
-    cls: 'funds-page',
+  const known = G.state === 'ready' || !!G.data;
+  const give = account && !f.closed
+    ? button('Pošli dar', { variant: 'primary', size: 'l', icon: 'heart', onclick: () => giveSheet({ fundraiserId: f.id }) })
+    : null;
+  return detail({
+    frame,
+    back: frame === 'page' ? { href: '#sbirky', label: 'Sbírky' } : null,
+    close: frame === 'pane' ? null : undefined,
+    label: f.name, title: f.name,
     menu: run ? [
       { label: 'Uprav', icon: 'pencil', onclick: () => fundraiserSheet(f) },
+      run ? { label: 'Ukaž QR pro plakát', icon: 'image', onclick: () => paymentSheet({ fundraiser: f, poster: true }) } : null,
       f.closed ? { label: 'Obnov sbírku', icon: 'undo', onclick: () => setClosed(f, false) } : { label: 'Ukonči sbírku', icon: 'check', onclick: () => setClosed(f, true) },
       c.gifts ? null : '-',
       c.gifts ? null : { label: 'Smaž', icon: 'trash', danger: true, onclick: () => removeFundraiser(f) },
     ].filter(Boolean) : null,
+    cls: 'fund-detail',
     body: [
-      f.note ? text(f.note) : null,
-      fundCard(f, { big: true }),
-      f.closed ? callout({ tone: 'info', title: `Sbírka skončila ${dayWithYear(f.closed)}.`, text: 'Děkujeme všem, kdo přispěli.' }) : null,
-      !account ? callout({ tone: 'wait', title: 'Sbor zatím nemá vyplněný účet pro dary.', text: 'Správce ho doplní v Nastavení sboru › Úřední údaje.' }) : null,
-      account && !f.closed ? h('div', { class: 'gift-actions' },
-        button('Pošli dar', { variant: 'primary', icon: 'heart', onclick: () => giveSheet({ fundraiserId: f.id }) }),
-        run ? button('Ukaž QR pro plakát', { icon: 'image', onclick: () => paymentSheet({ fundraiser: f, poster: true }) }) : null) : null,
-      run ? meta('Kdo dal kolik, vidí jen pokladník a správci v Darech.') : null,
+      detailHead({
+        mark: placeMark('heart', { size: 'l' }),
+        tags: f.closed ? [pill(`skončila ${dayWithYear(f.closed)}`)] : null,
+        title: f.name,
+        facts: facts([
+          f.until && !f.closed ? { icon: 'calendar', text: `Do ${dayWithYear(f.until)}` } : null,
+          { icon: 'key', text: `Specifický symbol ${f.code}` },
+        ]),
+      }),
+      section({
+        title: 'Vybráno',
+        body: [
+          figures({
+            feature: true,
+            n: known ? money(c.total).replace(/\s?Kč$/, '') : '…',
+            of: f.target ? `Kč z ${money(f.target)}` : 'Kč',
+            bar: f.target ? c.total / f.target : null,
+            say: known ? (c.gifts ? `${darů(c.gifts)}${f.closed ? '. Děkujeme všem, kdo přispěli.' : ''}` : 'Zatím žádný dar.') : null,
+            action: give,
+          }),
+          !account && !f.closed ? callout({ tone: 'wait', title: 'Sbor zatím nemá vyplněný účet pro dary.', text: 'Správce ho doplní v Nastavení sboru › Úřední údaje.' }) : null,
+          run ? meta('Kdo dal kolik, vidí jen pokladník a správci v Darech.') : null,
+        ],
+      }),
+      f.note ? section({ title: 'Na co se vybírá', body: text(f.note) }) : null,
+      run && account ? section({
+        title: 'Na plakát',
+        body: list([row({ lead: placeMark('image'), title: 'QR platba pro plakát nebo plátno', meta: 'Bez variabilního symbolu, s kódem sbírky.', onclick: () => paymentSheet({ fundraiser: f, poster: true }), chevron: true })], { label: 'Na plakát' }),
+      }) : null,
     ],
   });
+}
+
+function listBody(chosenId) {
+  const all = S.data.fundraisers || [];
+  const open = openFundraisers();
+  const done = all.filter((f) => f.closed).sort((a, b) => String(b.closed).localeCompare(String(a.closed)));
+  const run = canRunFundraisers();
+  return [
+    open.length ? list(open.map((f) => fundRow(f, { selected: f.id === chosenId })), { label: 'Probíhající sbírky' }) : empty({
+      icon: 'heart', title: 'Teď neběží žádná sbírka.',
+      text: run ? 'Když sbor potřebuje peníze na něco konkrétního, založ sbírku. Dostane vlastní QR platbu.' : 'Až nějaká začne, uvidíš ji tady.',
+    }),
+    done.length ? section({ title: 'Skončené', count: done.length, body: list(done.map((f) => fundRow(f, { selected: f.id === chosenId })), { label: 'Skončené sbírky' }) }) : null,
+  ];
 }
 
 /** #sbirky · #sbirky/<id> */
 export function renderSbirky(parts = []) {
   loadGiving();
-  if (parts[0]) {
-    const f = fundraiserById(parts[0]);
-    if (!f) return page({ title: 'Sbírka', back: { href: '#sbirky', label: 'Sbírky' }, body: quiet('Tahle sbírka už tu není.') });
-    return detailPage(f);
-  }
-  return listPage();
+  const id = parts[0] || null;
+  const f = id ? fundraiserById(id) : null;
+  const split = isSplit();
+  if (id && !split) return f ? fundDetail(f, 'page') : missingItem({ frame: 'page', back: { href: '#sbirky', label: 'Sbírky' }, icon: 'heart', label: 'Sbírka', title: 'Tahle sbírka už tu není.' });
+  // ≥ 1200 the pane is never empty: the chosen sbírka, else the newest open one
+  const shown = id ? f : openFundraisers()[0] || null;
+  return page({
+    title: 'Sbírky',
+    action: canRunFundraisers() ? { label: 'Založ sbírku', icon: 'plus', onclick: () => fundraiserSheet(null) } : null,
+    back: isPhone() ? { href: '#moje', label: 'Moje' } : null,
+    width: 'split',
+    label: 'Sbírka',
+    cls: 'funds-page',
+    body: listBody(shown?.id),
+    pane: split ? (id && !f ? missingItem({ frame: 'pane', close: '#sbirky', icon: 'heart', title: 'Tahle sbírka už tu není.' }) : shown ? fundDetail(shown, 'pane') : null) : null,
+  });
 }
 
-/** Moje: the open sbírky as rows (name, collected), nothing when none is open. */
+/** Moje: the open sbírky as the same rows, nothing when none is open. */
 export function fundraisersOnMine() {
   const open = openFundraisers();
   if (!open.length) return null;
   loadGiving();
   return section({
     title: 'Sbírky',
-    body: list(open.slice(0, 3).map((f) => {
-      const c = collected(f.id);
-      return row({
-        lead: icon('heart'),
-        title: f.name,
-        meta: `vybráno ${money(c.total)}${f.target ? ` z ${money(f.target)}` : ''}`,
-        href: `#sbirky/${f.id}`, chevron: true,
-      });
-    }), { label: 'Sbírky' }),
+    body: [
+      list(open.slice(0, 3).map((f) => fundRow(f)), { label: 'Sbírky' }),
+      open.length > 3 ? rowLink('Všechny sbírky', { href: '#sbirky' }) : null,
+    ],
   });
 }
