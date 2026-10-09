@@ -18,7 +18,7 @@ Fandit umí každý. Stačí oči a pusa. Všimneš si, máš z toho radost a ř
 
 [V úterý] Pochval jednoho člověka za konkrétní věc, kterou dělá dobře. Třeba učitelku, se kterou tvůj kluk konečně pochopil zlomky. Do očí a pak i za zády.
 
-## Dílo chválí mistra. Dobré dílo i Mistra.
+## Boha oslavujeme i tím, komu fandíme.
 
 ## 02
 odkaz: Kde Bůh maká dřív než my
