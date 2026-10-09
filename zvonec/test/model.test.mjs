@@ -469,8 +469,8 @@ test('typeChangePlan + applyTypeChange: a template edit reaches planned events t
   assert.deepEqual(typeChangePlan(data, after, structuredClone(after), '2026-10-08').events, [], 'no change, no question');
 });
 
-test('stats: people by membership, serving in a month, quiet servers', async () => {
-  const { peopleStats, serviceStats, quietServers } = await import('../../docs/zvonec/lib/stats.js');
+test('stats: people by membership, serving in a month', async () => {
+  const { peopleStats, serviceStats } = await import('../../docs/zvonec/lib/stats.js');
   const data = {
     settings: {},
     people: [
@@ -494,6 +494,4 @@ test('stats: people by membership, serving in a month, quiet servers', async () 
   assert.deepEqual(p.left.map((x) => x.id), ['f']);
   const s = serviceStats(data, '2026-10');
   assert.deepEqual([s.meetings, s.needed, s.filled, s.duties, s.people, s.declined], [1, 2, 1, 1, 1, 1]);
-  assert.deepEqual(s.teams, [{ groupId: 't', needed: 2, filled: 1 }]);
-  assert.deepEqual(quietServers(data, { today: '2026-10-08' }).map((x) => [x.person.id, x.last]), [['b', null]]);
 });

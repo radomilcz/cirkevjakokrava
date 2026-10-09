@@ -1,28 +1,17 @@
-// Zvonec One – Přehled (#prehled[/<YYYY-MM>], leaders): the numbers Zvonec knows for sure, each leading where
-// something can be done about it. No attendance – the church does not count who came (the owner).
-//   Lidé       tiles Členové · Přátelé · Hosté · z toho děti · V archivu (a tile opens Lidé under that Filtr), then
-//              who joined and whose card went to the archive in the last year
-//   Služby     ‹ Říjen 2026 › · tiles Obsazeno 97 % · Služeb · Slouží · Čeká na odpověď · Odmítnuto;
-//              Obsazenost po týmech (a team's mark, „chybí 2“, a bar) › the team
-//   Kdo slouží nejvíc   the five busiest of the month (Břemeno's bars) · „Celé břemeno“ opens it
-//   Dlouho nesloužili   people with a skill, three months without a duty and nothing planned › the person
-// Pure numbers come from lib/stats.js; servingLoad() is Břemeno's.
+// Zvonec One – Přehled (#prehled[/<YYYY-MM>], leaders): only the headline numbers Zvonec knows for sure, each tile
+// leading to the screen where the detail lives (the owner: „v přehledu jen přehledy, žádné detailní informace“).
+// No attendance – the church does not count who came (the owner).
+//   Lidé       tiles Členové · Přátelé · Hosté · z toho děti · V archivu (a tile opens Lidé under that Filtr), then one
+//              line on who joined and whose card went to the archive in the last year
+//   Služby     ‹ Říjen 2026 › · tiles Obsazeno 97 % (› Rozpis) · Služeb · Slouží · Čeká na odpověď (› Obsazení) ·
+//              Odmítnuto
+// Pure numbers come from lib/stats.js.
 
-import {
-  h, page, section, sectionAction, list, row, avatar, personName, teamMark, quiet, plural, periodLine, rowLink,
-  setFilter, clearFilter, sev,
-} from './kit.js';
+import { h, page, section, quiet, plural, periodLine, setFilter, clearFilter } from './kit.js';
 import { S, navigate } from './state.js';
-import { peopleStats, serviceStats, quietServers } from '../lib/stats.js';
-import { servingLoad } from '../lib/scheduling.js';
-import { groupById } from '../lib/groups.js';
+import { peopleStats, serviceStats } from '../lib/stats.js';
 import { today } from '../lib/time.js';
-import { dayMonth } from './people-common.js';
 import { isMonth, thisMonth, inMonth } from './calendar.js';
-import { openLoad } from './roster.js';
-
-const QUIET_SHOWN = 6;
-const state = { quietAll: false };
 
 const lidi = (n) => plural(n, 'člověk', 'lidé', 'lidí');
 /** „z 13“ / „ze 47“: „ze“ where the number is spoken from s/z/č/t/d (dvou, tří, čtyř, sedmi, sta, dvanácti, třiceti…). */
@@ -60,9 +49,6 @@ function peopleSection() {
     body: [
       tiles,
       h('p', { class: 'meta stats-note' }, `Za poslední rok ${joined}, ${left}.`),
-      s.joined.length ? list(s.joined.slice(0, 5).map((p) => row({
-        lead: avatar(p, { size: 's' }), title: personName(p), meta: `s námi od ${dayMonth(p.membership.since)}`, href: `#lide/${p.id}`,
-      })), { label: 'Kdo přibyl' }) : null,
     ],
   });
 }
@@ -77,62 +63,12 @@ function serviceSection(month) {
     tile(s.people, `${s.people === 1 ? 'člověk slouží' : s.people >= 2 && s.people <= 4 ? 'lidé slouží' : 'lidí slouží'}`),
     tile(s.waiting, 'čeká na odpověď', { href: '#obsazeni', tone: s.waiting ? 'wait' : null }),
     tile(s.declined, s.declined === 1 ? 'odmítnutá' : s.declined >= 2 && s.declined <= 4 ? 'odmítnuté' : 'odmítnutých', { tone: 'quiet' }));
-  const teams = s.teams.map((t) => {
-    const group = groupById(S.data, t.groupId) || { id: t.groupId, name: 'Bez týmu' };
-    const gap = t.needed - t.filled;
-    const bar = h('span', { class: 'stat-bar', dataset: { full: gap ? null : '' }, 'aria-hidden': 'true' }, h('span', { class: 'stat-bar__fill' }));
-    bar.firstChild.style.width = `${Math.round((t.filled / t.needed) * 100)}%`;   // CSSOM – a measured value, allowed by the CSP
-    return row({
-      lead: teamMark(group, { size: 's' }), title: group.name,
-      meta: `${t.filled} ${outOf(t.needed)} míst`,
-      note: gap ? sev('warning', gap > 1 ? `chybí ${gap}` : 'chybí 1') : null,
-      trail: bar, href: group.id ? `#lide/skupiny/${group.id}` : null,
-      label: `${group.name}: ${t.filled} ${outOf(t.needed)} míst${gap ? `, chybí ${gap}` : ''}`,
-    });
-  });
   return section({
     title: 'Služby',
     body: [
       periodLine({ month, href: (m) => `#prehled/${m}`, todayHref: `#prehled/${thisMonth()}`, here: month === thisMonth() }),
-      s.meetings ? [tiles, teams.length ? [h('h3', { class: 'stats-sub' }, 'Obsazenost po týmech'), list(teams, { label: 'Obsazenost po týmech' })] : null]
+      s.meetings ? tiles
         : quiet(`${cap(inMonth(month))} není v plánu žádné setkání.`),
-    ],
-  });
-}
-
-function busySection(month) {
-  const rows = servingLoad(S.data, month, { today: today() }).filter((r) => r.count > 0)
-    .sort((a, b) => b.count - a.count || (b.over - a.over)).slice(0, 5);
-  if (!rows.length) return null;
-  return section({
-    title: 'Kdo slouží nejvíc',
-    action: sectionAction('Celé břemeno', { aria: `Otevři Břemeno ${inMonth(month)}`, onclick: () => openLoad(month) }),
-    body: list(rows.map((r) => {
-      const bar = h('span', { class: 'load-bar', dataset: { over: r.over ? '' : null }, 'aria-hidden': 'true' }, h('span', { class: 'load-bar__fill' }));
-      bar.firstChild.style.width = `${r.limit > 0 ? Math.min(100, Math.round((r.count / r.limit) * 100)) : 100}%`;   // CSSOM
-      return row({
-        lead: avatar(r.person, { size: 's' }), title: personName(r.person),
-        meta: `${r.count} ${outOf(r.limit)} ${inMonth(month)}`,
-        note: r.over ? sev('warning', 'víc, než zvládne') : null, trail: bar, href: `#lide/${r.person.id}`,
-      });
-    }), { label: 'Kdo slouží nejvíc' }),
-  });
-}
-
-function quietSection() {
-  const all = quietServers(S.data, { today: today() });
-  if (!all.length) return null;
-  const shown = state.quietAll ? all : all.slice(0, QUIET_SHOWN);
-  const more = all.length - shown.length;
-  return section({
-    title: 'Dlouho nesloužili', value: h('span', { class: 'meta' }, lidi(all.length)),
-    body: [
-      h('p', { class: 'meta stats-note stats-note--top' }, 'Umí něco v týmu, tři měsíce nesloužili a nic nemají v plánu.'),
-      list(shown.map(({ person, last }) => row({
-        lead: avatar(person, { size: 's' }), title: personName(person),
-        meta: last ? `naposledy ${dayMonth(last)}` : 'zatím bez služby', href: `#lide/${person.id}`,
-      })), { label: 'Dlouho nesloužili' }),
-      more > 0 ? rowLink(`Ukaž další ${more}`, { onclick: () => { state.quietAll = true; navigate(location.hash); } }) : null,
     ],
   });
 }
@@ -142,6 +78,6 @@ export function renderOverview(parts = []) {
   const month = isMonth(parts[0]) ? parts[0] : thisMonth();
   return page({
     title: 'Přehled',
-    body: h('div', { class: 'overview' }, peopleSection(), serviceSection(month), busySection(month), quietSection()),
+    body: h('div', { class: 'overview' }, peopleSection(), serviceSection(month)),
   });
 }
