@@ -6,7 +6,7 @@
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
 //   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
-//   Správa (leaders)            Přehled › (phone) · Dary › (phone; the treasurer too) · Sbírky › (phone) · Přístupy [1 čeká] › ·
+//   Správa (leaders)            Sbírky › (phone) · Dary › (phone; the treasurer too) · Přehled › (phone) · Přístupy [1 čeká] › ·
 //                               Nastavení sboru ›
 //   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
@@ -80,9 +80,9 @@ export function openMeMenu({ from } = {}) {
     leader || (isPhone() && (showDary() || canRunFundraisers())) ? [
       heading('Správa'),
       list([
-        leader && isPhone() ? page('Přehled', '#prehled') : null,
-        showDary() && isPhone() ? page('Dary', '#dary') : null,
         canRunFundraisers() && isPhone() ? page('Sbírky', '#sbirky') : null,
+        showDary() && isPhone() ? page('Dary', '#dary') : null,
+        leader && isPhone() ? page('Přehled', '#prehled') : null,
         leader ? page('Přístupy', '#pristupy', { trail: invites ? h('span', { class: 'pill pill--wait' }, `${invites} ${invites === 1 ? 'čeká' : invites <= 4 ? 'čekají' : 'čeká'}`) : null }) : null,
         leader ? page('Nastavení sboru', '#nastaveni') : null,
       ].filter(Boolean), { label: 'Správa' }),
