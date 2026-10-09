@@ -73,15 +73,17 @@
 /* number tiles: the value big, a word under it; a tile that leads somewhere lights like a row */
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: var(--space-2); }
 .stat {
-  display: grid; align-content: start; gap: 2px; min-height: 84px; padding: var(--space-3) var(--space-4); border: 0;
+  display: grid; align-content: start; gap: 4px; min-width: 0; min-height: 84px; padding: var(--space-3) var(--space-4); border: 0;
   border-radius: var(--radius-m); background: var(--tint); color: var(--ink); font: inherit; text-align: left; text-decoration: none;
   transition: background-color var(--dur-state) var(--ease);
 }
 :is(button, a).stat { cursor: pointer; }
 :is(button, a).stat:hover { background: var(--tint-2); }
 :is(button, a).stat:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.stat__value { font-size: 28px; line-height: 34px; font-weight: var(--weight-strong); font-feature-settings: var(--numerals); }
-.stat__label { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.stat__value { font-family: var(--font-title); font-weight: 900; font-size: 32px; line-height: 34px; font-feature-settings: var(--numerals); }
+/* a long word („odmítnutých“) in a narrow tile or with a big system font: hyphenate, never spill out */
+.stat__label { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); hyphens: auto; overflow-wrap: anywhere; }
+@media (max-width: 599px) { .stat { padding: var(--space-3); } }
 .stat[data-tone="wait"] .stat__value { color: var(--wait-ink); }
 .stat[data-tone="quiet"] .stat__value { color: var(--ink-2); }
 .stats-note { margin-top: var(--space-3); }

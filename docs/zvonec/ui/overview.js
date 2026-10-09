@@ -62,7 +62,7 @@ function serviceSection(month) {
     tile(s.duties, plural(s.duties, 'služba', 'služby', 'služeb').replace(/^\d+ /, '')),
     tile(s.people, `${s.people === 1 ? 'člověk slouží' : s.people >= 2 && s.people <= 4 ? 'lidé slouží' : 'lidí slouží'}`),
     tile(s.waiting, 'čeká na odpověď', { href: '#obsazeni', tone: s.waiting ? 'wait' : null }),
-    tile(s.declined, s.declined === 1 ? 'odmítnutá' : s.declined >= 2 && s.declined <= 4 ? 'odmítnuté' : 'odmítnutých', { tone: 'quiet' }));
+    tile(s.declined, 'odmítnutí', { tone: 'quiet' }));   // the noun: „1 · 3 · 7 odmítnutí“, short enough for a phone tile
   return section({
     title: 'Služby',
     body: [
