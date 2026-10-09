@@ -1258,14 +1258,22 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 
 ## 15. Roadmap (agreed direction, not built yet)
 
-### 15.1 Dary (donations) – Fio only
+### 15.1 Dary (donations) – Moneta now, Fio later
 Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock was shown (Dary for the treasurer).
 - **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
 - **Access**: a treasurer level (pokladník, at most one deputy). Gifts live in a separate private finance repo that
   only the treasurer can read; the main data repo and public.json never hold them.
-- **Fio**: a read-only Fio API token as a secret of the finance repo; a daily GitHub Action fetches incoming
-  payments and stores them as one record shape `{ id, date, amount, account, name, vs, ks, ss, message, source }`
-  (source `fio` · `cash`); a payment seen twice is stored once. Cash gifts are entered by hand.
+- **Bank**: one record shape for every payment `{ id, date, amount, account, name, vs, ks, ss, message, source }`
+  (source `moneta` · `fio` · `cash`) and a small adapter per bank. Moneta first (its API with a token from internet
+  banking – the owner confirmed it works for the church's account), Fio later as a second adapter; both can run at
+  once, history stays, a payment seen twice is stored once. The token is a secret of the finance repo; a daily
+  GitHub Action fetches incoming payments. Cash gifts are entered by hand.
+- **Token renewal** (Moneta's token expires): Zvonec keeps the expiry date when the bank gives it; a week before,
+  Dary shows „Klíč k bance vyprší 20. 10. Obnov ho.“ and the nav item a badge; once it fails, the line turns red
+  („Zvonec od 20. 10. nestahuje platby, klíč k bance už neplatí.“) – nothing is lost. The treasurer pastes a new
+  token in Dary › Nastavení darů › „Vlož nový klíč“; Zvonec stores it as a GitHub secret (sealed with the repo's
+  public key, so a small vendored crypto library is needed; fallback: exact steps for the repo settings) and at
+  once fetches the days it missed.
 - **Becoming a donor** – nobody registers; a person becomes a donor by sending a gift. The symbol is given by Zvonec
   and typed (or scanned) in the person's own bank, never entered into Zvonec:
   1. with access to Zvonec: Můj účet › Dary shows the account, their symbol and a QR payment with the symbol filled
