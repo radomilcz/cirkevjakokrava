@@ -1302,11 +1302,18 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
   (symbol, this year and last year, the gifts, „Vytiskni potvrzení za rok …“). The symbol is shown to the person
   in Můj účet and to the treasurer in Dary, nowhere else.
 - **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
-- **Out**: the yearly donation certificate per donor (print, A4 portrait, one donor per page: title, year, recipient
-  and donor, the gifts and the sum, place and date, the stamp beside the signature right under it, the church's
-  address, company ID and account in the page footer; the church's stamp and the pastor's signature – stamped
-  and signed by hand, or both uploaded as images in Nastavení darů and placed by Zvonec), sums per month and purpose without names (for the
-  board), the donors list for the treasurer. Tax details to be confirmed with the church's accountant.
+- **Out**: the yearly donation certificate per donor (print, A4 portrait, one donor per page: the church's logo
+  and brand name in the top left corner, title, year, recipient and donor, the gifts and the sum; at the bottom
+  the place and date on the left, the stamp and the signature on the right – the stamp just left of the signature
+  line, the signature over the line, the signer's name and „pastor sboru“ centred under it; the church's name,
+  company ID and account in the page footer), sums per month and purpose without names (for the board), the
+  donors list for the treasurer. Tax details to be confirmed with the church's accountant.
+- **Stamp and signature** (the owner): uploaded once in Nastavení darů as images (SVG or PNG with a transparent
+  background; an Illustrator/PDF file is converted to SVG before upload), with the signer's name and title.
+  They are stored only in the private data repo, never in this public repo or `public.json`, and only the
+  treasurer and the admins can see or change them. Printed with `mix-blend-mode: multiply` so they sit on the
+  paper like ink. Without them the certificate leaves room to stamp and sign by hand. The logo comes from the
+  brand (Nastavení sboru), not from this setting.
 - **The recipient on the certificate** comes from Nastavení sboru, not from the brand name: two new optional fields
   „Úřední název“ (`legalName`, e.g. „Apoštolská církev, sbor Nový Jičín“), „IČO“ (`companyId`) and „Sídlo“
   (`legalAddress` – the registered seat from the Ministry of Culture's register / ARES, which can differ from
