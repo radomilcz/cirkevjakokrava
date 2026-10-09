@@ -106,6 +106,7 @@
 .gift-img img { max-width: 88px; max-height: 56px; }
 .gifts .overview > * + * { margin-top: var(--section-gap); }
 .gifts .period-line { margin-bottom: var(--space-4); }
+.gifts-year > .stats + * { margin-top: var(--space-3); }
 .gifts .facts + .period-line { margin-top: var(--section-gap); }
 
 /* ---------- the donation certificate (print, A4 portrait, one donor per page; ui/certificate.js) ---------- */

@@ -1,0 +1,63 @@
+# Template for the PRIVATE finance repo (radomilcz/church-finance) – copy to .github/workflows/bank.yml.
+#
+# Every morning it fetches the incoming payments from the bank into dary.json (zvonec/bank.mjs) and commits
+# them; Dary in Zvonec then shows them and assigns the ones it knows. The token stays a repo secret here.
+# Secrets (Settings › Secrets and variables › Actions):
+#   MONETA_TOKEN  the API token from MONETA Internet Banka (Nastavení › Správa API tokenů), read rights only
+#   MONETA_IBAN   optional – the IBAN of the account for gifts, when the token sees more than one account
+# A run that cannot fetch still saves why (Dary shows it) and turns red – GitHub e-mails the repo's admins.
+name: Bank
+
+on:
+  schedule:
+    - cron: "23 4 * * *"        # every day 5:23 / 6:23 Prague time
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bank
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the gifts
+        uses: actions/checkout@v4
+
+      - name: Check out the script from the public repo
+        uses: actions/checkout@v4
+        with:
+          repository: radomilcz/cirkevjakokrava
+          path: web
+          sparse-checkout: |
+            docs/zvonec/lib
+            zvonec
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch the payments and save them
+        env:
+          MONETA_TOKEN: ${{ secrets.MONETA_TOKEN }}
+          MONETA_IBAN: ${{ secrets.MONETA_IBAN }}
+        # The treasurer may save in Dary at the same moment: on a refused push start again from the fresh file
+        # (a payment seen twice is stored once, so running the script again is safe).
+        run: |
+          git config user.name "Zvonec"
+          git config user.email "zvonec@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch -q origin "$GITHUB_REF_NAME" && git reset -q --hard "origin/$GITHUB_REF_NAME"
+            node web/zvonec/bank.mjs dary.json; code=$?
+            git add dary.json
+            if git diff --cached --quiet; then exit $code; fi
+            git commit -qm "Zvonec – dary: platby z banky"
+            if git push -q; then exit $code; fi
+            sleep $((attempt * 5))
+          done
+          exit 1
+        shell: bash {0}

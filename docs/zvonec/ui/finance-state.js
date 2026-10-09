@@ -6,7 +6,7 @@
 import { S, render } from './state.js';
 import { GithubStore } from '../lib/store/github.js';
 import { LocalStore } from '../lib/store/local.js';
-import { FINANCE_FILE, emptyFinance, normalizeFinance } from '../lib/gifts.js';
+import { FINANCE_FILE, emptyFinance, normalizeFinance, giftStatus, matchGift, autoAssign } from '../lib/gifts.js';
 import { toast } from './kit.js';
 
 export const DEMO_FINANCE_KEY = 'zvonec-demo-dary';
@@ -34,8 +34,18 @@ export function loadFinance() {
   F.state = 'loading';
   F.store = S.mode === 'demo' ? new LocalStore({ key: DEMO_FINANCE_KEY }) : new GithubStore({ ...S.me.finance, path: '' });
   F.store.read(FINANCE_FILE)
-    .then((file) => { F.data = normalizeFinance(file?.json); F.state = 'ready'; render(); })
+    .then((file) => { F.data = normalizeFinance(file?.json); F.state = 'ready'; render(); assignKnown(); })
     .catch((error) => { F.state = 'error'; F.error = error; render(); });
+}
+
+/**
+ * Payments from the bank arrive open (the bank's Action cannot read Lidé): the ones whose symbol belongs to a person
+ * are assigned the first time the treasurer opens Dary.
+ */
+function assignKnown() {
+  const people = S.data?.people || [];
+  if (!F.data.gifts.some((g) => giftStatus(g) === 'open' && matchGift(g, F.data, people))) return;
+  changeFinance((f) => autoAssign(f, people), 'dary přiřazené podle variabilního symbolu');
 }
 
 /**
