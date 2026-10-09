@@ -326,18 +326,18 @@ gets the current look instead.
 └──────┘
 ```
 
-### 2.4 Phone < 600: the tab bar, and the person tab
+### 2.4 Phone < 600: the tab bar, and „Více“
 
 ```
-member:  [ ⌂ Moje ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ (RK) Radim ]
-leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ (RK) Radim ]
+member:  [ ⌂ Moje ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ ⋯ Více ]
+leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ ⋯ Více ]
 ```
 
 - 64 + safe area, `--bar`, a hairline on top. Each tab: icon 24 in a 56 × 32 niche, label 13/500 under it.
   Current: the niche gets `--pick`; the label keeps its weight and colour.
-- The last tab is **the person**: avatar 24 + the first name (ellipsis at 72; „Účet“ without a card). It opens the
-  person's menu as a bottom sheet from every screen. Its count dot = invites waiting (leaders). It is the current
-  tab on Můj účet, Kdy nemůžu, Šablony, Formáty, Místa, Přístupy and Nastavení sboru. Never the word „Více“.
+- The last tab is **Více**: the ⋯ icon and the word „Více“ (the owner's call: a small face among line icons read as
+  noise). It opens the person's menu as a bottom sheet from every screen; the avatar lives in the menu's first row. Its count dot = invites waiting (leaders). It is the current
+  tab on Můj účet, Kdy nemůžu, Šablony, Formáty, Místa, Přístupy and Nastavení sboru.
 - Counts: a capsule 20 high, 13/620, `--act` / `--on-act`, at the icon's top right.
 - Tapping the current tab scrolls the screen to the top (nothing else). The tab bar hides while the keyboard is up.
 
@@ -901,8 +901,8 @@ Redirects (all of Simple's stay): `#osoba/<id>` → `#lide/<id>`; `#tym/<id>`, `
 
 | removed / merged | was in | now | why |
 |---|---|---|---|
-| Více tab | Next | the person tab (phone), sidebar foot (≥ 600) | „more“ is a junk drawer; the owner likes Simple's menu |
-| the circle only on Moje | Simple | the person tab on every screen | Kdy nemůžu, Barvy, Správa were two taps from anywhere else |
+| person tab (avatar + name) | Simple | „Více“ (phone), sidebar foot (≥ 600) | the face read as noise among the line icons; the menu behind it is unchanged |
+| the circle only on Moje | Simple | „Více“ on every screen | Kdy nemůžu, Barvy, Správa were two taps from anywhere else |
 | sidebar group „Sbor“ (Přístupy, Nastavení, Veřejný web) | both | the person's menu › Správa | rare, system-level; the owner likes Simple's Správa |
 | Šablony, Formáty, Místa under the circle | Simple (phone, 960–1199) | sidebar / rail „Zdroje“ (phone: the menu) | the owner: they belong in the sidebar |
 | month chip „Říjen ▾“ on the h1, scope chip „Všechny týmy“, Rozpis team chip | Simple | period line in D (Měsíc, Rozpis); Filtr › Tým | they overlapped the h1 and were cut |

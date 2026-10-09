@@ -1,7 +1,7 @@
 // Zvonec One – navigation (DESIGN §2). ONE table drives the tab bar (< 600), the rail (600–899) and the sidebar
 // (≥ 900); rail ↔ sidebar is CSS only (the same <nav class="sidenav">, the same items).
 //   sidebar: the places where weekly work happens (my duties, meetings, people, what meetings are made of)
-//   the person's menu: you and the system (ui/me-menu.js) – the person tab on a phone, the foot of the sidebar / rail
+//   the person's menu: you and the system (ui/me-menu.js) – the „Více“ tab on a phone, the foot of the sidebar / rail
 // Members do not see „Zdroje“ in the nav (they open a Formát or a Místo by link, read-only).
 
 import { showDary } from './finance-state.js';
@@ -72,10 +72,9 @@ const shown = () => NAV.filter(([, , , , level]) => (typeof level === 'function'
 function personBits() {
   const person = personById(S.data || {}, myId());
   const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
-  const first = person ? (person.nickname || person.firstName || name) : 'Účet';
   const role = ACCESS_LABELS[S.me?.access] || '';
   const face = (size) => (person ? avatar(person, { size }) : h('span', { class: ['avatar', `avatar--${size}`], 'aria-hidden': 'true' }, icon('user', { size: 's' })));
-  return { person, name, first, role, face };
+  return { person, name, role, face };
 }
 
 /** Tapping the current item scrolls the screen to the top (nothing else); from a drill-in page it goes to its root. */
@@ -90,18 +89,18 @@ function topOnCurrent(e) {
 
 function build() {
   const items = shown();
-  const { name, first, role, face } = personBits();
+  const { name, role, face } = personBits();
   const openMenu = (e) => openMeMenu({ from: e.currentTarget });
 
-  // tab bar (< 600): the main group + the person tab
+  // tab bar (< 600): the main group + „Více“ (the person's menu)
   const tabs = items.filter(([id, , , , , group]) => group === 'main' && !NOT_A_TAB.has(id)).map(([id, label, iconName, href, , , countKey]) => h('a', {
     class: 'tab', href, dataset: { nav: id }, onclick: topOnCurrent,
   }, h('span', { class: 'tab__niche' }, icon(iconName), countKey ? h('span', { class: 'tab__badge', dataset: { count: countKey } }) : null),
   h('span', { class: 'tab__label' }, label)));
   const personTab = h('button', {
-    type: 'button', class: 'tab tab--person', dataset: { nav: 'me' }, 'aria-haspopup': 'dialog', 'aria-label': `${name} – můj účet a nastavení`, onclick: openMenu,
-  }, h('span', { class: 'tab__niche' }, face('xs'), h('span', { class: 'tab__dot', dataset: { invites: '' }, hidden: true })),
-  h('span', { class: 'tab__label' }, first));
+    type: 'button', class: 'tab tab--more', dataset: { nav: 'me' }, 'aria-haspopup': 'dialog', 'aria-label': 'Více – můj účet, nastavení a správa', onclick: openMenu,
+  }, h('span', { class: 'tab__niche' }, icon('more'), h('span', { class: 'tab__dot', dataset: { invites: '' }, hidden: true })),
+  h('span', { class: 'tab__label' }, 'Více'));
   tabbarEl().replaceChildren(...tabs, personTab);
 
   // sidebar / rail (≥ 600)

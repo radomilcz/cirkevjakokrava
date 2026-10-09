@@ -1,5 +1,5 @@
 // Zvonec One (zvonec/design/one/) – the app: boot (demo or live, the same flow and data as Next and Simple),
-// session, router, the shell (phone < 600: the tab bar with the person tab; 600–899: the rail; ≥ 900: the sidebar;
+// session, router, the shell (phone < 600: the tab bar with „Více“; 600–899: the rail; ≥ 900: the sidebar;
 // ≥ 1200: list | pane), the save line, the keyboard. No framework and no build.
 //
 // Screens live in ui/*.js and import the kit from ./ui/kit.js, the shared state from ../ui/state.js (S, can, change,

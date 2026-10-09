@@ -683,10 +683,10 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | formaty | Formáty | book | `#formaty` | leader | Zdroje | – |
 | mista | Místa | pin | `#mista` | leader | Zdroje | – |
 
-- **Phone tab bar** (64 + safe area): member [Moje][Kalendář][Lidé][person]; leader
-  [Moje][Obsazení][Kalendář][Lidé][person]. Skupiny is the first row of Lidé; the Lidé tab is lit on Skupiny and
-  navigates back to Lidé from there. The person tab shows the avatar + first name or nickname and opens the person
-  menu. Badges at the icon's top right; an 8 px dot for waiting invites. Tapping the current tab scrolls to the
+- **Phone tab bar** (64 + safe area): member [Moje][Kalendář][Lidé][Více]; leader
+  [Moje][Obsazení][Kalendář][Lidé][Více]. Skupiny is the first row of Lidé; the Lidé tab is lit on Skupiny and
+  navigates back to Lidé from there. „Více“ (the ⋯ icon) opens the person
+  menu; the avatar stays in the menu's first row, not in the bar. Badges at the icon's top right; an 8 px dot for waiting invites. Tapping the current tab scrolls to the
   top. The bar hides while the keyboard is up.
 - **Rail** (600–899): „ck“ mark; cells 88 × 64 (icon 24 + label 13/500); a 32 × 1 divider before Zdroje; avatar
   40 at the foot opens the person menu as a popover.
@@ -1340,8 +1340,7 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 
 ## 14. Open decisions (do not build without the owner's answer)
 
-- **Phone tab bar**: Moje · Kalendář · Lidé · Více (a „Více“ tab replacing the person tab and absorbing Obsazení for
-  leaders) instead of today's bar.
+- **Phone tab bar**: whether „Více“ should also absorb Obsazení for leaders (Moje · Kalendář · Lidé · Více).
 - **Kalendář**: Měsíc opening the pane on a day click; Rozpis starting from today instead of the month's first day.
 - **Members' Setkání detail** without numbers (no „6 z 6“).
 - **One glossary** for „chybí / čeká / nesedí“ across all screens.
