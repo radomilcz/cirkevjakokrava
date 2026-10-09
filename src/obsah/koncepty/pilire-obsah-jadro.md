@@ -9,7 +9,8 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 - Dobré věci kolem nás nebereme jako samozřejmost ani jako konkurenci. Všimneme si jich, máme z nich radost a řekneme to nahlas: lidem do očí i ostatním. (Radomil 9. 10.)
 - Oslavujeme Boha i tím, komu fandíme. Bohoslužba nekončí u dveří kostela.
 - Druh: postoj (oči a pusa). Hranice: přiložená ruka = 02.
-- Kotvy: „Bůh tvoří, my fandíme.“ Princip „Když lidé tvoří pro druhé něco dobrého, není to náhoda…“. Verše: Fp 4,8, Gn 1,31.
+- Kotvy: „Bůh tvoří, my fandíme.“ Princip „Když lidé tvoří pro druhé něco dobrého, není to náhoda…“. Verše: **Jk 1,17** (Radomil 9. 10.; B21: „Všechno dobré a dokonalé je dar shůry od Otce světel, u něhož není žádná změna, žádný proměnlivý stín.“ – ověřeno na bible.com), Fp 4,8, Gn 1,31.
+- Teologický základ 01: dobré věci u lidí jsou Boží dary, i když dárce neznají. Proto oslavou dobrých věcí oslavujeme Dárce. Totéž řeší „když“ ve 02: Bůh je v každé dobré práci, povolání je to, že o tom víš.
 - Petr: všimnout si a pochválit.
 
 ## 02 · Jak to děláme? → Přidáváme
