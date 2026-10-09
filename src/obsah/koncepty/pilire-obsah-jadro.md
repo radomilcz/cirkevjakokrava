@@ -15,7 +15,9 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 ## 02 · Jak to děláme? → Přidáváme
 - **Jádro:** Bůh ve městě pracoval dřív než my. Lidi a jejich práce mají cenu, protože v ní vidíme Boží věci, a tak k ní přidáváme to svoje.
 - Pokora: nepřicházíme s hotovým plánem, učíme se od toho, co město a jeho lidi umí skvěle.
-- Obyčejná práce není jen práce na chleba, Bůh v ní je.
+- Obyčejná práce (elektrikář, učitelka, sestra) není jen práce na chleba. Bůh v ní je, když ji děláš jako povolání. (Radomil 9. 10.)
+- Z toho plyne: i moje práce v zaměstnání je přidávání. Vede ji někdo jiný (firma, škola, nemocnice) a já do ní dávám srdce, slova i ruce. Hranice s 03 platí dál.
+- Otevřené: podmínka „když“ (Bůh je v práci, jen když ji dělám jako povolání?) vs. 01 (Boží rukopis vidíme i u lidí, kteří o něm nevědí).
 - Přidáváme srdce, slova i ruce jako hosté: jejich dílo, jejich pravidla, jejich tempo.
 - Dobro města je i naše dobro.
 - Druh: čin s druhými. Hranice: vede to někdo jiný (vedu já = 03).
