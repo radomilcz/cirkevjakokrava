@@ -1169,10 +1169,11 @@ see it, sequential from 1001, `lib/bank.js`) · **Barvy** · [Odhlas se]. Demo: 
 Only the headline numbers, no detail (the owner: „v přehledu jen přehledy, žádné detailní informace“); each tile
 leads to the screen where the detail lives. Sidebar under Skupiny; on a phone the person's menu › Správa. Pure
 numbers from `lib/stats.js` (`peopleStats`, `serviceStats`). No attendance – the church does not count who came.
-- **Lidé** (count of active people): tiles Členové · Přátelé · Hosté · z toho děti · V archivu (a tile opens Lidé
-  under that Filtr), then one line „Za poslední rok přibylo N lidí, N karet šlo do archivu.“
-- **Služby** (a period line ‹ Říjen 2026 ›): tiles „96 % obsazeno, 103 ze 107“ (› Rozpis of that month) · služeb ·
-  lidí slouží · čeká na odpověď (› Obsazení) · odmítnutých. Who serves most stays in Břemeno, open places in
+- Tiles in one even grid: two columns on a phone, four from 600, every label on one line; numbers in the title face.
+- **Lidé** (count of active people): tiles Členové · Přátelé · Hosté · z toho děti (a tile opens Lidé under that
+  Filtr), one line „Za poslední rok přibylo N lidí, N karet šlo do archivu.“ and the link „V archivu 3 karty ›“.
+- **Služby** (a period line ‹ Říjen 2026 ›): a wide tile „96 %“ with „obsazeno 103 ze 107“ and a bar (› Rozpis of
+  that month), then služeb · lidí slouží · čeká na odpověď (› Obsazení) · odmítnutí. Who serves most stays in Břemeno, open places in
   Obsazení and Rozpis.
 - **Dary** (later, with 15.1; treasurer and admins only): the sum this year and last year, the number of donors,
   sums per month and purpose – no names.
