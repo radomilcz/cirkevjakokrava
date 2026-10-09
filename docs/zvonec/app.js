@@ -45,7 +45,7 @@ const ROUTES = Object.assign({}, ...PACKAGES.map((p) => p.ROUTES), SHELL_ROUTES)
  * after the render (an element with that id); a filter is set before it (ui/filter.js setFilter).
  */
 const REDIRECTS = [
-  [/^(?:prehled|domu|vice)$/, () => 'moje'],   // Next's Domů and Více
+  [/^(?:domu|vice)$/, () => 'moje'],   // Next's Domů and Více (Next's #prehled is now Přehled, ui/overview.js)
   ...PACKAGES.flatMap((p) => p.REDIRECTS || []),
 ];
 

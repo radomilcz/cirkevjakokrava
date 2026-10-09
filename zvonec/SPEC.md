@@ -1255,3 +1255,69 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 - **Notifications centre**; renaming „Přidej setkání“ to „Nové setkání“ for the main action.
 - **Real notifications** (SMS / e-mail / push) need a server or a third-party service; out of scope for a
   GitHub-only platform.
+
+## 15. Roadmap (agreed direction, not built yet)
+
+### 15.1 Dary (donations) – Moneta now, Fio later
+Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock was shown (Dary for the treasurer).
+- **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
+- **Access**: a treasurer level (pokladník, at most one deputy). Gifts live in a separate private finance repo that
+  only the treasurer can read; the main data repo and public.json never hold them.
+- **Bank**: one record shape for every payment `{ id, date, amount, account, name, vs, ks, ss, message, source }`
+  (source `moneta` · `fio` · `cash`) and a small adapter per bank. Moneta first (its API with a token from internet
+  banking – the owner confirmed it works for the church's account), Fio later as a second adapter; both can run at
+  once, history stays, a payment seen twice is stored once. The token is a secret of the finance repo; a daily
+  GitHub Action fetches incoming payments. Cash gifts are entered by hand.
+- **Token renewal** (Moneta's token expires): Zvonec keeps the expiry date when the bank gives it; a week before,
+  Dary shows „Klíč k bance vyprší 20. 10. Obnov ho.“ and the nav item a badge; once it fails, the line turns red
+  („Zvonec od 20. 10. nestahuje platby, klíč k bance už neplatí.“) – nothing is lost. The treasurer pastes a new
+  token in Dary › Nastavení darů › „Vlož nový klíč“; Zvonec stores it as a GitHub secret (sealed with the repo's
+  public key, so a small vendored crypto library is needed; fallback: exact steps for the repo settings) and at
+  once fetches the days it missed.
+- **Becoming a donor** – nobody registers; a person becomes a donor by sending a gift. The symbol is given by Zvonec
+  and typed (or scanned) in the person's own bank, never entered into Zvonec:
+  1. with access to Zvonec: Můj účet › Dary shows the account, their symbol and a QR payment with the symbol filled
+     in; the symbol is assigned when the page is first opened;
+  2. without access: the treasurer picks the person from Lidé in Dary › Dárci › „Přidej dárce“; Zvonec assigns the
+     symbol and prints (or sends) a small card – account, symbol, QR, the sentence about the yearly certificate;
+  3. a gift without a symbol lands in „Nepřiřazené“; assigned once, the sender account is remembered and the person
+     gets a symbol the treasurer can hand over;
+  4. a donor outside the church (a friend, a company) is created in Dary only – name, address, company ID – never
+     in Lidé.
+  Before printing certificates, Zvonec says whose address or birth date is missing („U 3 dárců chybí adresa“) and
+  lets the treasurer fill it in there.
+- **Matching**: the donor's variable symbol (per person – a tax certificate is per donor; visible to the treasurer
+  only) → the person; else a sender account matched before → the same person; else „Nepřiřazené“, where the
+  treasurer picks a person, „Anonymní dar“ or „Není dar“ (rent, a grant, a refund).
+- **The donor's own view** (Můj účet › Dary, everyone): „Posílej dar na účet sboru se svým variabilním symbolem.
+  Podle něj ti Zvonec vždy v lednu připraví potvrzení o daru do daňového přiznání.“; a framed block with two rows –
+  the account („Účet sboru“) and the symbol („Tvůj variabilní symbol“), each with a copy icon – and on the right a
+  QR payment with the symbol filled in („Naskenuj v bankovní aplikaci, doplníš jen částku.“); under the block
+  „Pravidelný dar zadáš ve své bance jako trvalý příkaz.“ On a phone the QR hides behind „Ukaž QR kód“ (one cannot
+  scan one's own screen; „Hodí se, když platíš z jiného zařízení.“). The symbol is assigned by Zvonec (sequential, unique), is
+  not sensitive on its own and lives on the person record in the main data repo (`donorVs`), so a member sees it
+  without reading the finance repo; amounts never reach the member's view.
+- **Never on the person card** (the owner): the card stays about contact and serving – no Dary section, no link, not
+  even for the treasurer. Donations live only on the Dary screen: Dary › Dárci (the donors) → a donor's detail
+  (symbol, this year and last year, the gifts, „Vytiskni potvrzení za rok …“). The symbol is shown to the person
+  in Můj účet and to the treasurer in Dary, nowhere else.
+- **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
+- **Out**: the yearly donation certificate per donor (print, A4 portrait, one donor per page: the church's brand
+  name as a wordmark in the top left corner (no symbol, the owner), the Manifest's otisk (the fingerprint lines
+  of the slides) in pale pink bleeding off the top right corner, behind nothing but white space, title, year, recipient and donor, the gifts and the sum; at the bottom
+  the place and date on the left, the stamp and the signature on the right – the stamp just left of the signature
+  line, the signature over the line, the signer's name and „pastor sboru“ centred under it; the church's name,
+  company ID and account in the page footer), sums per month and purpose without names (for the board), the
+  donors list for the treasurer. Tax details to be confirmed with the church's accountant.
+- **Stamp and signature** (the owner): uploaded once in Nastavení darů as images (SVG or PNG with a transparent
+  background; an Illustrator/PDF file is converted to SVG before upload), with the signer's name and title.
+  They are stored only in the private data repo, never in this public repo or `public.json`, and only the
+  treasurer and the admins can see or change them. Printed with `mix-blend-mode: multiply` so they sit on the
+  paper like ink. Without them the certificate leaves room to stamp and sign by hand. The wordmark comes from
+  the brand (Nastavení sboru), not from this setting.
+- **The recipient on the certificate** comes from Nastavení sboru, not from the brand name: two new optional fields
+  „Úřední název“ (`legalName`, e.g. „Apoštolská církev, sbor Nový Jičín“), „IČO“ (`companyId`) and „Sídlo“
+  (`legalAddress` – the registered seat from the Ministry of Culture's register / ARES, which can differ from
+  `address`, the place people come to and Pastva shows); certificates are not offered until all three are filled
+  in. A „Načti z ARES“ button could fill the name and the seat from the IČO (ARES has a public REST API).
+- Open: purposes beyond Provoz; who the treasurer and the deputy are.

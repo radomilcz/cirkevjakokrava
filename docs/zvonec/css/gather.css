@@ -67,3 +67,28 @@
 .cfg-unit { color: var(--ink-2); min-width: 4.5em; }
 .cfg-actions { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-top: var(--gap-y); }
 .cfg-admin { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--gap-y); }
+
+/* ---------- Přehled (#prehled, leaders; ui/overview.js) ---------- */
+.overview > .section + .section { margin-top: var(--section-gap); }
+/* number tiles: the value big, a word under it; a tile that leads somewhere lights like a row */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: var(--space-2); }
+.stat {
+  display: grid; align-content: start; gap: 2px; min-height: 84px; padding: var(--space-3) var(--space-4); border: 0;
+  border-radius: var(--radius-m); background: var(--tint); color: var(--ink); font: inherit; text-align: left; text-decoration: none;
+  transition: background-color var(--dur-state) var(--ease);
+}
+:is(button, a).stat { cursor: pointer; }
+:is(button, a).stat:hover { background: var(--tint-2); }
+:is(button, a).stat:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.stat__value { font-size: 28px; line-height: 34px; font-weight: var(--weight-strong); font-feature-settings: var(--numerals); }
+.stat__label { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.stat[data-tone="wait"] .stat__value { color: var(--wait-ink); }
+.stat[data-tone="quiet"] .stat__value { color: var(--ink-2); }
+.stats-note { margin-top: var(--space-3); }
+.stats-note--top { margin: 0 0 var(--space-2); }
+.overview .period-line { margin-bottom: var(--space-4); }
+.stats-sub { margin: var(--space-6) 0 var(--space-1); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong); color: var(--ink-2); }
+/* a team's places: filled of needed (ink-2), full in the ok colour */
+.stat-bar { position: relative; display: block; width: 96px; height: 8px; border-radius: var(--shape-pill); background: var(--tint-2); overflow: hidden; }
+.stat-bar__fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--ink-2); }
+.stat-bar[data-full] .stat-bar__fill { background: var(--ok-solid, var(--ink-2)); }
