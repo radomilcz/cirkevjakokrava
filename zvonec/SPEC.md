@@ -1307,4 +1307,7 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
   address, company ID and account in the page footer; the church's stamp and the pastor's signature – stamped
   and signed by hand, or both uploaded as images in Nastavení darů and placed by Zvonec), sums per month and purpose without names (for the
   board), the donors list for the treasurer. Tax details to be confirmed with the church's accountant.
+- **The recipient on the certificate** comes from Nastavení sboru, not from the brand name: two new optional fields
+  „Úřední název“ (`legalName`, e.g. „Apoštolská církev, sbor Nový Jičín“) and „IČO“ (`companyId`), with the
+  existing `address`; certificates are not offered until both are filled in.
 - Open: purposes beyond Provoz; who the treasurer and the deputy are.
