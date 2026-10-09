@@ -26,8 +26,8 @@ export const NAV = [
   ['lide', 'Lidé', 'people', '#lide', 'member', 'main'],
   ['skupiny', 'Skupiny', 'teams', '#lide/skupiny', 'member', 'main'],
   ['sbirky', 'Sbírky', 'heart', '#sbirky', showSbirky, 'main'],   // leaders and the treasurer; everyone while one is open
-  ['prehled', 'Přehled', 'chart', '#prehled', 'leader', 'main'],
   ['dary', 'Dary', 'gift', '#dary', showDary, 'main'],   // the treasurer and the admins (a function, not a level)
+  ['prehled', 'Přehled', 'chart', '#prehled', 'leader', 'main'],
   ['sablony', 'Šablony', 'layers', '#sablony', 'leader', 'gather'],
   ['formaty', 'Formáty', 'book', '#formaty', 'leader', 'gather'],
   ['mista', 'Místa', 'pin', '#mista', 'leader', 'gather'],
