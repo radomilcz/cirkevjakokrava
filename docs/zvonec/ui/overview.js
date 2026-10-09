@@ -1,20 +1,19 @@
 // Zvonec One – Přehled (#prehled[/<YYYY-MM>], leaders): only the headline numbers Zvonec knows for sure, each tile
 // leading to the screen where the detail lives (the owner: „v přehledu jen přehledy, žádné detailní informace“).
 // No attendance – the church does not count who came (the owner).
-//   Lidé       tiles Členové · Přátelé · Hosté · z toho děti (a tile opens Lidé under that Filtr), one line on who
-//              joined and whose card went to the archive in the last year, „V archivu 3 karty ›“
-//   Služby     ‹ Říjen 2026 › · a wide tile „96 % obsazeno · 103 ze 107 míst“ with a bar (› Rozpis), then
-//              Služeb · Slouží · Čeká na odpověď (› Obsazení) · Odmítnutí
-//   Dary       the treasurer and the admins only: the year's sum, donors, what waits for a donor (› Dary)
-//   Tiles: two columns on a phone, four from 600 – one even grid, every label on one line.
+//   Each section is one figure block (the kit's figures(), Tvoje břemeno's anatomy – DESIGN audit 2026-10-09):
+//   Lidé       „71 lidí ve sboru“, who joined and left in a year, then členové · přátelé · hosté · z toho děti (each
+//              opens Lidé under that Filtr); „V archivu 3 karty ›“
+//   Služby     ‹ Říjen 2026 ›, „96 % obsazeno 103 ze 107 míst“ with a bar, služeb · slouží · čeká na odpověď
+//              (› Obsazení) · odmítnutí; „Otevři rozpis ›“
+//   Dary       the treasurer and the admins only: the year's sum, dárci, nepřiřazené (› Dary)
 // Pure numbers come from lib/stats.js.
 
-import { h, page, section, quiet, plural, periodLine, setFilter, clearFilter, rowLink, pill, isPhone, menuBack } from './kit.js';
+import { h, page, section, quiet, plural, periodLine, setFilter, clearFilter, rowLink, figures, isPhone, menuBack } from './kit.js';
 import { S, navigate } from './state.js';
 import { peopleStats, serviceStats } from '../lib/stats.js';
 import { today } from '../lib/time.js';
 import { isMonth, thisMonth, inMonth } from './calendar.js';
-import { statTile as tile } from './stat-tile.js';
 import { giftsOverviewSection } from './gifts.js';
 
 const lidi = (n) => plural(n, 'člověk', 'lidé', 'lidí');
@@ -31,18 +30,22 @@ const openPeople = (patch) => () => { clearFilter('lide'); setFilter('lide', pat
 
 function peopleSection() {
   const s = peopleStats(S.data, { today: today() });
-  const tiles = h('div', { class: 'stats' },
-    tile(s.member, s.member === 1 ? 'člen' : s.member >= 2 && s.member <= 4 ? 'členové' : 'členů', { onclick: openPeople({ clenstvi: ['member'] }) }),
-    tile(s.regular, s.regular === 1 ? 'přítel' : s.regular >= 2 && s.regular <= 4 ? 'přátelé' : 'přátel', { onclick: openPeople({ clenstvi: ['regular'] }) }),
-    tile(s.guest, s.guest === 1 ? 'host' : s.guest >= 2 && s.guest <= 4 ? 'hosté' : 'hostů', { onclick: openPeople({ clenstvi: ['guest'] }) }),
-    tile(s.kids, s.kids === 1 ? 'z toho dítě' : s.kids >= 2 && s.kids <= 4 ? 'z toho děti' : 'z toho dětí', { onclick: openPeople({ clenstvi: ['kids'] }) }));
+  const word = (n, one, few, many) => (n === 1 ? one : n >= 2 && n <= 4 ? few : many);
   const joined = s.joined.length ? `přibyl${s.joined.length === 1 ? '' : 'o'} ${lidi(s.joined.length)}` : 'nikdo nový nepřibyl';
   const left = s.left.length ? `${plural(s.left.length, 'karta šla', 'karty šly', 'karet šlo')} do archivu` : 'do archivu nešel nikdo';
   return section({
-    title: 'Lidé', value: pill(lidi(s.active)),
+    title: 'Lidé',
     body: [
-      tiles,
-      h('p', { class: 'meta stats-note' }, `Za poslední rok ${joined}, ${left}.`),
+      figures({
+        n: s.active, of: `${word(s.active, 'člověk', 'lidé', 'lidí')} ve sboru`,
+        say: `Za poslední rok ${joined}, ${left}.`,
+        items: [
+          { value: s.member, label: word(s.member, 'člen', 'členové', 'členů'), onclick: openPeople({ clenstvi: ['member'] }) },
+          { value: s.regular, label: word(s.regular, 'přítel', 'přátelé', 'přátel'), onclick: openPeople({ clenstvi: ['regular'] }) },
+          { value: s.guest, label: word(s.guest, 'host', 'hosté', 'hostů'), onclick: openPeople({ clenstvi: ['guest'] }) },
+          { value: s.kids, label: word(s.kids, 'z toho dítě', 'z toho děti', 'z toho dětí'), onclick: openPeople({ clenstvi: ['kids'] }) },
+        ],
+      }),
       s.former ? rowLink(`V archivu ${plural(s.former, 'karta', 'karty', 'karet')}`, { onclick: openPeople({ archiv: true }) }) : null,
     ],
   });
@@ -52,18 +55,21 @@ function serviceSection(month) {
   const s = serviceStats(S.data, month);
   const pct = s.needed ? Math.round((s.filled / s.needed) * 100) : 100;
   const missing = s.needed - s.filled;
-  const tiles = h('div', { class: 'stats' },
-    tile(`${pct} %`, `obsazeno ${s.filled} ${outOf(s.needed)}`, { fill: s.needed ? s.filled / s.needed : 1, tone: missing ? 'wait' : null, href: `#kalendar/rozpis/${month}`, aria: `Obsazeno ${pct} %, ${s.filled} ${outOf(s.needed)} míst. Otevři Rozpis.` }),
-    tile(s.duties, plural(s.duties, 'služba', 'služby', 'služeb').replace(/^\d+ /, '')),
-    tile(s.people, `${s.people === 1 ? 'člověk slouží' : s.people >= 2 && s.people <= 4 ? 'lidé slouží' : 'lidí slouží'}`),
-    tile(s.waiting, 'čeká na odpověď', { href: '#obsazeni', tone: s.waiting ? 'wait' : null }),
-    tile(s.declined, 'odmítnutí', { tone: s.declined ? null : 'quiet' }));   // the noun: „1 · 3 · 7 odmítnutí“, short enough for a phone tile
   return section({
     title: 'Služby',
     body: [
       periodLine({ month, href: (m) => `#prehled/${m}`, todayHref: `#prehled/${thisMonth()}`, here: month === thisMonth() }),
-      s.meetings ? tiles
-        : quiet(`${cap(inMonth(month))} není v plánu žádné setkání.`),
+      s.meetings ? figures({
+        n: `${pct}\u00a0%`, of: `obsazeno ${s.filled} ${outOf(s.needed)} míst`,
+        bar: s.needed ? s.filled / s.needed : 1, tone: missing ? 'wait' : null,
+        items: [
+          { value: s.duties, label: plural(s.duties, 'služba', 'služby', 'služeb').replace(/^\d+ /, '') },
+          { value: s.people, label: s.people === 1 ? 'člověk slouží' : s.people >= 2 && s.people <= 4 ? 'lidé slouží' : 'lidí slouží' },
+          { value: s.waiting, label: 'čeká na odpověď', href: s.waiting ? '#obsazeni' : null, tone: s.waiting ? 'wait' : null },
+          { value: s.declined, label: 'odmítnutí' },
+        ],
+      }) : quiet(`${cap(inMonth(month))} není v plánu žádné setkání.`),
+      s.meetings ? rowLink('Otevři rozpis', { href: `#kalendar/rozpis/${month}` }) : null,
     ],
   });
 }

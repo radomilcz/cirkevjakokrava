@@ -445,7 +445,7 @@ export function amount(text) {
  *   figures({ n: '68 000', of: 'Kč darů za rok 2026', items: [{ value: 4, label: 'dárci' }, …] })
  *   figures({ feature: true, n: '34 500', of: 'Kč z 80 000 Kč', bar: .43, action: button('Pošli dar', …) })
  */
-export function figures({ n, of, bar, say, items = [], action, feature = false, cls, label } = {}) {
+export function figures({ n, of, bar, say, items = [], action, feature = false, tone, cls, label } = {}) {
   let barEl = null;
   if (bar != null) {
     barEl = h('span', { class: 'figures__bar', 'aria-hidden': 'true' }, h('span', { class: 'figures__fill' }));
@@ -453,9 +453,9 @@ export function figures({ n, of, bar, say, items = [], action, feature = false, 
   }
   const item = ({ value, label: words, href, onclick, tone, aria }) => h(href ? 'a' : onclick ? 'button' : 'div', {
     class: 'figure', href, onclick, type: onclick ? 'button' : null, dataset: { tone }, 'aria-label': aria,
-  }, h('span', { class: 'figure__value num' }, value), h('span', { class: 'figure__label' }, words));
+  }, h('span', { class: 'figure__value num' }, typeof value === 'number' ? String(value) : value), h('span', { class: 'figure__label' }, words));
   const list = items.filter(Boolean);
-  return h('div', { class: ['figures', feature && 'figures--feature', cls], 'aria-label': label },
+  return h('div', { class: ['figures', feature && 'figures--feature', cls], dataset: { tone }, 'aria-label': label },
     h('p', { class: 'figures__count' }, h('span', { class: 'figures__n num' }, String(n)), of ? h('span', { class: 'figures__of' }, of) : null),
     barEl,
     say ? h('p', { class: 'figures__say' }, say) : null,

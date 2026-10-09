@@ -24,7 +24,6 @@ import { GithubStore } from '../lib/store/github.js';
 import { personById, sortPeople, statusOf } from '../lib/people.js';
 import { today } from '../lib/time.js';
 import { dayWithYear } from './more-common.js';
-import { statTile } from './stat-tile.js';
 import { printCertificates } from './certificate.js';
 import {
   h, page, section, list, row, avatar, personName, quiet, callout, button, toast, formSheet, confirmSheet, field,
@@ -596,7 +595,7 @@ export function renderDary(parts = []) {
   return overview(isYear(parts[0]) ? Number(parts[0]) : thisYear());
 }
 
-/** Přehled › Dary (the treasurer and the admins): the year's sum as one wide tile, what waits as a link. */
+/** Přehled › Dary (the treasurer and the admins): the year's sum as a figure block, donors, what waits (› Dary). */
 export function giftsOverviewSection() {
   if (!canSeeDary()) return null;
   loadFinance();
@@ -606,9 +605,16 @@ export function giftsOverviewSection() {
   return section({
     title: 'Dary',
     body: [
-      h('div', { class: 'stats' },
-        statTile(money(t.total).replace(/\s?Kč$/, ''), `Kč darů za rok ${year} · ${t.donors} ${agree(t.donors, 'dárce', 'dárci', 'dárců')}`, { wide: true, href: '#dary' })),
-      t.open ? rowLink(`Čeká na přiřazení: ${t.open} ${agree(t.open, 'platba', 'platby', 'plateb')}`, { href: '#dary-neprirazene' }) : null,
+      figures({
+        n: money(t.total).replace(/\s?Kč$/, ''), of: `Kč darů za rok ${year}`,
+        items: [
+          { value: String(t.donors), label: agree(t.donors, 'dárce', 'dárci', 'dárců') },
+          { value: String(t.gifts), label: agree(t.gifts, 'dar', 'dary', 'darů') },
+          { value: amountEl(t.anonymous), label: 'anonymně' },
+          { value: String(t.open), label: 'nepřiřazené', tone: t.open ? 'wait' : null, href: t.open ? '#dary-neprirazene' : null },
+        ],
+      }),
+      rowLink('Otevři Dary', { href: '#dary' }),
     ],
   });
 }

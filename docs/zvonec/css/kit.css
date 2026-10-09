@@ -453,6 +453,8 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 .figure__value { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); color: var(--ink); overflow-wrap: anywhere; }
 .figure__label { font-size: var(--type-caption); line-height: var(--lh-caption); color: var(--ink-2); }
 .figure[data-tone="wait"] .figure__value { color: var(--wait-ink); }
+.figures[data-tone="wait"] .figures__n { color: var(--wait-ink); }
+.figures[data-tone="wait"] .figures__fill { background: var(--wait-ink); }
 .figures__action { display: flex; flex-wrap: wrap; gap: var(--gap-x); padding-top: var(--space-1); }
 @media (max-width: 599px) { .figures__action > .btn { flex: 1 1 100%; } }
 .feature { display: grid; gap: var(--space-4); padding: var(--space-5); border-radius: var(--shape-block); background: var(--feature); }

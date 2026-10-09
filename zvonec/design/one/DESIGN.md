@@ -15,6 +15,9 @@
 >   right; on a phone the QR behind „Ukaž QR kód“. --card, r20, padding 24.
 > - Moje: the thank-you comes after the answer card, one sentence with a ✕; Sbírky go to the right column ≥ 1200.
 > - Rhythm: 8 (h2 → content) · 12 (stacked parts) · 24 (a control row → content) · 40 (sections); no 16/32 joins.
+> - **Přehled** (the owner: „Přehled mi taky nesedí“): the grey tile grids are gone – each section is one figure
+>   block (Lidé „71 lidí ve sboru“, Služby „96 % obsazeno“ with the bar, Dary the year's sum) with its small figures
+>   under the hairline (each still opens Lidé, Obsazení or Dary) and one quiet link after it. stat-tile.js is deleted.
 
 > **Update – Sbírky and Mimořádný dar (2026-10-09).** A new screen `#sbirky` (SPEC 9.17), kit only: a sbírka is a
 > card on the tint (the name 20/26, the sum in the title face 32 with a quiet „Kč“, „z 80 000 Kč“, the stat bar, a meta
