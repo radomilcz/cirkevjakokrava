@@ -1266,6 +1266,18 @@ Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock w
 - **Fio**: a read-only Fio API token as a secret of the finance repo; a daily GitHub Action fetches incoming
   payments and stores them as one record shape `{ id, date, amount, account, name, vs, ks, ss, message, source }`
   (source `fio` · `cash`); a payment seen twice is stored once. Cash gifts are entered by hand.
+- **Becoming a donor** – nobody registers; a person becomes a donor by sending a gift. The symbol is given by Zvonec
+  and typed (or scanned) in the person's own bank, never entered into Zvonec:
+  1. with access to Zvonec: Můj účet › Dary shows the account, their symbol and a QR payment with the symbol filled
+     in; the symbol is assigned when the page is first opened;
+  2. without access: the treasurer picks the person from Lidé in Dary › Dárci › „Přidej dárce“; Zvonec assigns the
+     symbol and prints (or sends) a small card – account, symbol, QR, the sentence about the yearly certificate;
+  3. a gift without a symbol lands in „Nepřiřazené“; assigned once, the sender account is remembered and the person
+     gets a symbol the treasurer can hand over;
+  4. a donor outside the church (a friend, a company) is created in Dary only – name, address, company ID – never
+     in Lidé.
+  Before printing certificates, Zvonec says whose address or birth date is missing („U 3 dárců chybí adresa“) and
+  lets the treasurer fill it in there.
 - **Matching**: the donor's variable symbol (per person – a tax certificate is per donor; visible to the treasurer
   only) → the person; else a sender account matched before → the same person; else „Nepřiřazené“, where the
   treasurer picks a person, „Anonymní dar“ or „Není dar“ (rent, a grant, a refund).
