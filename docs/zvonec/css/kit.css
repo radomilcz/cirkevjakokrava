@@ -439,6 +439,12 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 /* The figure block (figures()): Tvoje břemeno's anatomy for every headline number */
 .figures { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
 .figures--feature { background: var(--feature); box-shadow: none; }
+/* a titled block is a whole section: the h2 inside, at the card's top, its control (a period line) on the right */
+.figures__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); min-height: var(--control-m); margin: calc(-1 * var(--space-2)) 0 var(--space-1); }
+.figures__title { margin: 0; font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.figures__head .period-line { margin: 0 calc(-1 * var(--space-2)) 0 0; }
+.figures__action .row-link { margin: 0; }
+.figures__action:has(> .row-link) { padding-top: 0; margin-bottom: calc(-1 * var(--space-2)); }
 .figures__count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); margin: 0; min-width: 0; }
 .figures__n { font-family: var(--font-title); font-size: var(--type-figure); line-height: var(--lh-figure); color: var(--ink); white-space: nowrap; }
 .figures__of { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }

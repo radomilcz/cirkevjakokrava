@@ -620,9 +620,10 @@ export function giftsOverviewSection() {
   const year = thisYear();
   const t = yearTotals(F.data, year);
   return section({
-    title: 'Dary',
+    label: 'Dary',
     body: [
       figures({
+        title: 'Dary',
         n: money(t.total).replace(/\s?Kč$/, ''), of: `Kč darů za rok ${year}`,
         chart: giftMonths(t, year),
         items: [
@@ -631,8 +632,8 @@ export function giftsOverviewSection() {
           { value: amountEl(t.anonymous), label: 'anonymně' },
           { value: String(t.open), label: 'nepřiřazené', tone: t.open ? 'wait' : null, href: t.open ? '#dary-neprirazene' : null },
         ],
+        action: rowLink('Otevři Dary', { href: '#dary' }),
       }),
-      rowLink('Otevři Dary', { href: '#dary' }),
     ],
   });
 }

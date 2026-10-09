@@ -69,8 +69,6 @@
 .cfg-admin { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--gap-y); }
 
 /* ---------- Přehled (#prehled, leaders; ui/overview.js) – one figure block per section (kit figures()) ---------- */
-.overview .period-line { margin-bottom: var(--gap-group); }
-.overview .figures + .row-link { margin-top: var(--space-2); }
 
 /* ---------- Dary (#dary, the treasurer and the admins; ui/gifts.js) – the kit's blocks, only the joins here ---------- */
 /* the year: ‹ 2026 › then 24 to the figure block, the bank line 12 under it */

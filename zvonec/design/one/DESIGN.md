@@ -9,7 +9,9 @@
 >   the matching swatch.
 > - **Služby** – obsazenost for the twelve months up to the chosen one; a column opens that month.
 > - **Dary** – the year's sums by month, this month lit, the months to come empty.
-> On a phone every third month is labelled and the cap is left to the tooltip.
+> On a phone every third month is labelled and the cap is left to the tooltip. The section titles live inside the
+> cards (figures({ title, aside })) with the period line on the right and the „Otevři …“ link at the card's foot – the
+> owner: the titles above the cards looked detached.
 
 > **Update – the design audit of Dary and Sbírky (2026-10-09).** The owner: „ty mnou navržené jsou esteticky jinde“.
 > Four auditors (typography, spacing, composition, the system) agreed; the new parts now use the house blocks only:

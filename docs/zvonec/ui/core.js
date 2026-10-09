@@ -481,7 +481,7 @@ export function stackBar(parts, { label } = {}) {
     }));
 }
 
-export function figures({ n, of, bar, chart, say, items = [], action, feature = false, tone, cls, label } = {}) {
+export function figures({ title, aside, n, of, bar, chart, say, items = [], action, feature = false, tone, cls, label } = {}) {
   let barEl = null;
   if (bar != null) {
     barEl = h('span', { class: 'figures__bar', 'aria-hidden': 'true' }, h('span', { class: 'figures__fill' }));
@@ -491,7 +491,10 @@ export function figures({ n, of, bar, chart, say, items = [], action, feature = 
     class: 'figure', href, onclick, type: onclick ? 'button' : null, dataset: { tone }, 'aria-label': aria,
   }, h('span', { class: 'figure__value num' }, swatch ? h('span', { class: 'figure__swatch', dataset: { step: swatch }, 'aria-hidden': 'true' }) : null, typeof value === 'number' ? String(value) : value), h('span', { class: 'figure__label' }, words));
   const list = items.filter(Boolean);
-  return h('div', { class: ['figures', feature && 'figures--feature', cls], dataset: { tone }, 'aria-label': label },
+  // `title` (+ `aside`, e.g. the period line): the block's own head, so a section is one card (Přehled)
+  const tid = title ? uid('fig') : null;
+  return h(title ? 'section' : 'div', { class: ['figures', feature && 'figures--feature', title && 'figures--titled', cls], dataset: { tone }, 'aria-label': title ? null : label, 'aria-labelledby': tid },
+    title ? h('div', { class: 'figures__head' }, h('h2', { class: 'figures__title', id: tid }, title), aside || null) : null,
     h('p', { class: 'figures__count' }, h('span', { class: 'figures__n num' }, String(n)), of ? h('span', { class: 'figures__of' }, of) : null),
     barEl,
     chart || null,

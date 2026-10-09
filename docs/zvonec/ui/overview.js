@@ -36,9 +36,10 @@ function peopleSection() {
   const joined = s.joined.length ? `přibyl${s.joined.length === 1 ? '' : 'o'} ${lidi(s.joined.length)}` : 'nikdo nový nepřibyl';
   const left = s.left.length ? `${plural(s.left.length, 'karta šla', 'karty šly', 'karet šlo')} do archivu` : 'do archivu nešel nikdo';
   return section({
-    title: 'Lidé',
+    label: 'Lidé',
     body: [
       figures({
+        title: 'Lidé',
         n: s.active, of: `${word(s.active, 'člověk', 'lidé', 'lidí')} ve sboru`,
         chart: stackBar([{ value: s.member, step: 1 }, { value: s.regular, step: 2 }, { value: s.guest, step: 3 }],
           { label: `Složení sboru: ${s.member} členů, ${s.regular} přátel, ${s.guest} hostů` }),
@@ -49,8 +50,8 @@ function peopleSection() {
           { value: s.guest, swatch: 3, label: word(s.guest, 'host', 'hosté', 'hostů'), onclick: openPeople({ clenstvi: ['guest'] }) },
           { value: s.kids, label: word(s.kids, 'z toho dítě', 'z toho děti', 'z toho dětí'), onclick: openPeople({ clenstvi: ['kids'] }) },
         ],
+        action: s.former ? rowLink(`V archivu ${plural(s.former, 'karta', 'karty', 'karet')}`, { onclick: openPeople({ archiv: true }) }) : null,
       }),
-      s.former ? rowLink(`V archivu ${plural(s.former, 'karta', 'karty', 'karet')}`, { onclick: openPeople({ archiv: true }) }) : null,
     ],
   });
 }
@@ -73,11 +74,12 @@ function serviceSection(month) {
   const s = serviceStats(S.data, month);
   const pct = s.needed ? Math.round((s.filled / s.needed) * 100) : 100;
   const missing = s.needed - s.filled;
+  const period = periodLine({ month, href: (m) => `#prehled/${m}`, todayHref: `#prehled/${thisMonth()}`, here: month === thisMonth() });
   return section({
-    title: 'Služby',
+    label: 'Služby',
     body: [
-      periodLine({ month, href: (m) => `#prehled/${m}`, todayHref: `#prehled/${thisMonth()}`, here: month === thisMonth() }),
       s.meetings ? figures({
+        title: 'Služby', aside: period,
         n: `${pct}\u00a0%`, of: `obsazeno ${s.filled} ${outOf(s.needed)} míst`,
         tone: missing ? 'wait' : null,
         chart: serviceTrend(month),
@@ -87,8 +89,8 @@ function serviceSection(month) {
           { value: s.waiting, label: 'čeká na odpověď', href: s.waiting ? '#obsazeni' : null, tone: s.waiting ? 'wait' : null },
           { value: s.declined, label: 'odmítnutí' },
         ],
-      }) : quiet(`${cap(inMonth(month))} není v plánu žádné setkání.`),
-      s.meetings ? rowLink('Otevři rozpis', { href: `#kalendar/rozpis/${month}` }) : null,
+        action: rowLink('Otevři rozpis', { href: `#kalendar/rozpis/${month}` }),
+      }) : figures({ title: 'Služby', aside: period, n: '–', of: `${cap(inMonth(month))} není v plánu žádné setkání.` }),
     ],
   });
 }
