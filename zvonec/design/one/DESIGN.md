@@ -1,5 +1,11 @@
 # Zvonec One: the design
 
+> **Update – Přehled, headline numbers only (2026-10-09).** The owner: „v přehledu jen přehledy, žádné detailní
+> informace“. Přehled (`#prehled`, leaders) keeps the tiles – Lidé (by membership, the archive, who joined and left in
+> a year) and Služby in a month (obsazeno %, služeb, slouží, čeká, odmítnuto) – each leading to the screen with the
+> detail. Occupancy by team, who serves most and who has not served for long were dropped: Obsazení, Rozpis and
+> Břemeno show those. A Dary section joins when Dary is built.
+
 > **Update – Lidé Tabulka: banded columns (2026-10-08).** As in Rozpis, every second shown column sits on a faint band
 > (ink 3.5 % over the ground), its head cell rounded on top. Which columns show depends on the table's width, so
 > people.js counts the shown head cells (a ResizeObserver) and names the banded ones in table[data-band]; a lit row's
@@ -818,7 +824,7 @@ below 1200 (its back link goes to `#<list>`).
 
 Redirects (all of Simple's stay): `#osoba/<id>` → `#lide/<id>`; `#tym/<id>`, `#skupina/<id>`, `#skupiny`, `#tymy` →
 `#lide/skupiny[/<id>]`; `#domacnost/<id>` → `#lide/domacnost/<id>`; `#sablona/<id>` → `#sablony/<id>`; `#misto/<id>` →
-`#mista/<id>`; `#domu`, `#vice`, `#prehled` → `#moje`; `#kalendar/<YYYY-MM>` → `#kalendar/mesic/<YYYY-MM>`;
+`#mista/<id>`; `#domu`, `#vice` → `#moje`; `#kalendar/<YYYY-MM>` → `#kalendar/mesic/<YYYY-MM>`;
 `#kalendar/<YYYY-MM-DD>` → `#kalendar/mesic/<YYYY-MM>/<day>`; `#rozpis[/<m>]` → `#kalendar/rozpis/<m>`;
 `…/bremeno` → Rozpis + the Břemeno dialog; `#upozorneni`, `#kolize` → `#obsazeni` with Filtr „Něco nesedí“;
 `#lide/<filter slug>` (clenove, pratele, hoste, deti, doplnit, narozeniny, archiv) → `#lide` with that filter set.

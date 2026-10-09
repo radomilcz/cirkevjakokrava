@@ -722,7 +722,7 @@ Defaults: `#kalendar` opens the view last chosen in the switch (`zvonec-one-cale
 Měsíc at ≥ 1200, Seznam below. `#lide` opens Seznam unless Tabulka was last chosen in Lidé's switch
 (`zvonec-one-people-view`, only where the table fits).
 
-Redirects (old slugs keep working): `prehled|domu|vice` → `moje`; `nemuzu` → `kdy-nemuzu`; `program[/…]` →
+Redirects (old slugs keep working): `domu|vice` → `moje`; `nemuzu` → `kdy-nemuzu`; `program[/…]` →
 `pastva`; `jak-se-schazime` → the Pastva anchor; `osoba/<id>` → `lide/<id>`; `tym|skupina/<id>` →
 `lide/skupiny/<id>`; `tymy|skupiny|sluzby` → `lide/skupiny`; `lide/tabulka` → `lide/vypis`;
 `lide/<clenove|pratele|hoste|deti|doplnit|narozeniny|archiv|…>` → `#lide` with that Filtr preset; `udalost/<id>` →
@@ -1148,6 +1148,18 @@ vidět i ostatní“ applied at once with Vrať) · **Přihlášení** [Změň h
 
 ---
 
+### 9.15 Přehled `#prehled[/<YYYY-MM>]` (leaders)
+Only the headline numbers, no detail (the owner: „v přehledu jen přehledy, žádné detailní informace“); each tile
+leads to the screen where the detail lives. Sidebar under Skupiny; on a phone the person's menu › Správa. Pure
+numbers from `lib/stats.js` (`peopleStats`, `serviceStats`). No attendance – the church does not count who came.
+- **Lidé** (count of active people): tiles Členové · Přátelé · Hosté · z toho děti · V archivu (a tile opens Lidé
+  under that Filtr), then one line „Za poslední rok přibylo N lidí, N karet šlo do archivu.“
+- **Služby** (a period line ‹ Říjen 2026 ›): tiles „96 % obsazeno, 103 ze 107“ (› Rozpis of that month) · služeb ·
+  lidí slouží · čeká na odpověď (› Obsazení) · odmítnutých. Who serves most stays in Břemeno, open places in
+  Obsazení and Rozpis.
+- **Dary** (later, with 15.1; treasurer and admins only): the sum this year and last year, the number of donors,
+  sums per month and purpose – no names.
+
 ## 10. Public web and public.json
 
 ### 10.1 public.json
@@ -1261,6 +1273,7 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 ### 15.1 Dary (donations) – Moneta now, Fio later
 Agreed with the owner on 2026-10-09; parked until the owner says go. A UI mock was shown (Dary for the treasurer).
 - **Web**: the account number and a QR payment (SPD) on Pastva – with the public web redesign.
+- **Přehled**: a Dary section beside Lidé and Služby (see 9.15) – headline sums only, never names.
 - **Access**: a treasurer level (pokladník, at most one deputy). Gifts live in a separate private finance repo that
   only the treasurer can read; the main data repo and public.json never hold them.
 - **Bank**: one record shape for every payment `{ id, date, amount, account, name, vs, ks, ss, message, source }`
