@@ -12,7 +12,7 @@ import { S, can, change, render, navigate, newId, updateLogins } from './state.j
 import { F, canSeeDary, financeMissing, loadFinance, changeFinance, resetFinance } from './finance-state.js';
 import {
   FINANCE_FILE, DEFAULT_PURPOSE, emptyFinance, normalizeFinance, giftStatus, matchGift, autoAssign, donorName,
-  yearTotals, donorsOfYear, certificateOf, money,
+  yearTotals, senderName, donorsOfYear, certificateOf, money,
 } from '../lib/gifts.js';
 import { nextDonorVs, validCompanyId, vsOwner } from '../lib/bank.js';
 import { vsSheet } from './donor-vs.js';
@@ -26,6 +26,7 @@ import { printCertificates } from './certificate.js';
 import {
   h, page, section, list, row, avatar, personName, quiet, callout, button, toast, formSheet, confirmSheet, field,
   textInput, plural, agree, facts, peoplePicker, layer, icon, meta, text, fieldError, clearErrors, openMenu, iconButton,
+  dateArch,
 } from './kit.js';
 
 const thisYear = () => Number(today().slice(0, 4));
@@ -424,11 +425,35 @@ function bankLine() {
     : meta(`Platby z banky stažené ${dayWithYear(b.checked)}.`);
 }
 
+const MONTHS = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
+const monthOf = (day) => `${MONTHS[Number(day.slice(5, 7)) - 1]}${day.slice(0, 4) === String(thisYear()) ? '' : ` ${day.slice(0, 4)}`}`;
+/** The amount as a row's trail: strong figures, „Kč“ quiet. */
+const amountEl = (n) => { const [num] = money(n).split('\u00a0Kč'); return h('span', { class: 'gift-sum' }, num, h('span', { class: 'gift-sum__unit' }, '\u00a0Kč')); };
+
+/** Rows under month subheads („Říjen“, „Září 2025“) – the agenda's rhythm. */
+function byMonth(gifts, toRow, label) {
+  const out = [];
+  let month = null;
+  let rows = [];
+  const flush = () => { if (rows.length) out.push(h('h3', { class: 'gift-month' }, month), list(rows, { label: `${label} – ${month}` })); rows = []; };
+  for (const g of gifts) {
+    const m = monthOf(g.date);
+    if (m !== month) { flush(); month = m; }
+    rows.push(toRow(g));
+  }
+  flush();
+  return out;
+}
+
+/** A payment nobody is known for: date arch, the sender, symbol and message; a tap opens „Přiřazení daru“. */
 function openRow(g) {
-  const bits = [dayWithYear(g.date), g.name || null, g.vs ? `VS ${g.vs}` : null, g.message || null].filter(Boolean);
   return row({
-    title: money(g.amount), meta: bits.join(' · '), wrap: true,
-    trail: button('Přiřaď', { size: 's', onclick: () => assignSheet(g) }),
+    lead: dateArch(g.date, { quiet: true }),
+    title: senderName(g) || 'Bez jména',
+    meta: [g.vs ? `VS ${g.vs}` : null, g.message || null].filter(Boolean).join(' · ') || 'bez zprávy',
+    trail: amountEl(g.amount), chevron: true,
+    onclick: () => assignSheet(g),
+    label: `${money(g.amount)} od ${senderName(g) || 'neznámého'} – přiřaď`,
   });
 }
 
@@ -436,11 +461,12 @@ function overview(year) {
   const t = yearTotals(F.data, year);
   const donors = donorsOfYear(F.data, S.data.people, year);
   const open = F.data.gifts.filter((g) => giftStatus(g) === 'open').sort((a, b) => b.date.localeCompare(a.date));
+  const sumValue = (n) => { const [num] = money(n).split('\u00a0Kč'); return h('span', {}, num, h('span', { class: 'stat__unit' }, ' Kč')); };
   const tiles = h('div', { class: 'stats' },
-    statTile(money(t.total), `darů za rok ${year}`, { wide: true }),
+    statTile(sumValue(t.total), `darů za rok ${year}`, { wide: true }),
     statTile(t.donors, agree(t.donors, 'dárce', 'dárci', 'dárců')),
     statTile(t.gifts, agree(t.gifts, 'dar', 'dary', 'darů')),
-    statTile(money(t.anonymous), 'anonymně', { tone: 'quiet' }),
+    statTile(sumValue(t.anonymous), 'anonymně', { tone: 'quiet' }),
     statTile(open.length, 'nepřiřazené', { tone: open.length ? 'wait' : 'quiet', href: open.length ? '#dary-neprirazene' : null }));
   return page({
     title: 'Dary',
@@ -450,14 +476,14 @@ function overview(year) {
       h('div', { class: 'gifts-year' }, yearLine(year, (y) => `#dary/${y}`), tiles, bankLine()),
       open.length ? section({
         id: 'dary-neprirazene', title: 'Nepřiřazené', count: open.length,
-        body: [meta('Platby, u kterých Zvonec nepoznal dárce. Přiřaď je – další platby ze stejného účtu už pozná sám.'), list(open.map(openRow), { label: 'Nepřiřazené platby' })],
+        body: [meta('Platby, u kterých Zvonec nepoznal dárce. Klepni a přiřaď je – další platby ze stejného účtu už pozná sám.'), byMonth(open, openRow, 'Nepřiřazené platby')],
       }) : null,
       section({
         title: 'Dárci', count: donors.length || null,
         body: donors.length ? list(donors.map((d) => row({
           lead: donorLead(d.key), title: d.name || 'Bez jména',
           meta: [vsOf(d.key) ? `VS ${vsOf(d.key)}` : null, daru(d.gifts.length)].filter(Boolean).join(' · '),
-          trail: h('span', { class: 'gift-sum' }, money(d.total)), href: `#dary/darce/${d.key}/${year}`, chevron: true,
+          trail: amountEl(d.total), href: `#dary/darce/${d.key}/${year}`, chevron: true,
         })), { label: 'Dárci' }) : quiet(`Za rok ${year} tu zatím žádný dar od známého dárce není.`),
       })),
   });
@@ -470,15 +496,14 @@ function donorPage(key, year) {
   if (!person && !outside) return page({ title: 'Dárce', back: { href: `#dary/${year}`, label: 'Dary' }, body: quiet('Tenhle dárce tu už není.') });
   const born = c.birthDate ? `nar. ${dayWithYear(c.birthDate)}` : null;
   const giftRow = (g) => row({
-    title: money(g.amount),
-    meta: [dayWithYear(g.date), g.purpose || DEFAULT_PURPOSE, SOURCE_WORDS[g.source] || null, g.message || null].filter(Boolean).join(' · '),
-    wrap: true,
-    trail: iconButton('more', 'Otevři možnosti daru', { onclick: (e) => openMenu([
+    title: `${Number(g.date.slice(8, 10))}. ${Number(g.date.slice(5, 7))}.`,
+    meta: [g.purpose || DEFAULT_PURPOSE, SOURCE_WORDS[g.source] || null, g.message || null].filter(Boolean).join(' · '),
+    trail: [amountEl(g.amount), iconButton('more', 'Otevři možnosti daru', { onclick: (e) => openMenu([
       { label: 'Uprav', icon: 'pencil', onclick: () => giftSheet(g) },
       { label: 'Přiřaď jinému', icon: 'user', onclick: () => assignSheet(g) },
       g.source === 'cash' ? '-' : null,
       g.source === 'cash' ? { label: 'Smaž', icon: 'trash', danger: true, onclick: () => removeGift(g) } : null,
-    ].filter(Boolean), { anchor: e.currentTarget }) }),
+    ].filter(Boolean), { anchor: e.currentTarget }) })],
   });
   return page({
     title: c.name || 'Dárce',
@@ -498,9 +523,9 @@ function donorPage(key, year) {
       ]),
       yearLine(year, (y) => `#dary/darce/${key}/${y}`),
       section({
-        title: `Dary za rok ${year}`, value: h('span', { class: 'gift-sum' }, money(c.total)),
+        title: `Dary za rok ${year}`, value: amountEl(c.total),
         body: [
-          c.gifts.length ? list(c.gifts.map(giftRow), { label: `Dary za rok ${year}` }) : quiet(`Za rok ${year} tu od něj žádný dar není.`),
+          c.gifts.length ? list(c.gifts.slice().reverse().map(giftRow), { label: `Dary za rok ${year}` }) : quiet(`Za rok ${year} tu od něj žádný dar není.`),
           c.gifts.length ? h('div', { class: 'gift-actions' }, button(`Vytiskni potvrzení za rok ${year}`, { icon: 'printer', onclick: () => printFor([key], year) })) : null,
         ],
       }),

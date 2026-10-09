@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  emptyFinance, normalizeFinance, giftStatus, matchGift, addGifts, yearTotals, donorsOfYear, certificateOf, money,
+  emptyFinance, normalizeFinance, giftStatus, matchGift, addGifts, yearTotals, donorsOfYear, certificateOf, money, senderName,
 } from '../../docs/zvonec/lib/gifts.js';
 
 const people = [
@@ -67,4 +67,11 @@ test('gifts: money in Czech', () => {
   assert.equal(money(1000), '1 000 Kč');
   assert.equal(money(1250.5), '1 250,50 Kč');
   assert.equal(money(0), '0 Kč');
+});
+
+test('gifts: the bank\'s capitals made readable', () => {
+  assert.equal(senderName({ name: 'NOVAK PETR' }), 'Novak Petr');
+  assert.equal(senderName({ name: 'UKAZKA S.R.O.' }), 'Ukazka s.r.o.');
+  assert.equal(senderName({ name: 'Jana Nováková' }), 'Jana Nováková', 'mixed case stays');
+  assert.equal(senderName({}), '');
 });

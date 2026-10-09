@@ -176,3 +176,11 @@ export function money(n) {
   const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   return `${v < 0 ? '−' : ''}${grouped}${cents === '00' ? '' : `,${cents}`} Kč`;
 }
+
+/** The sender as the bank writes it, made readable: „NOVAK PETR“ → „Novak Petr“ (mixed case is left alone). */
+export function senderName(g) {
+  const s = String(g?.name || '').trim().replace(/\s+/g, ' ');
+  if (!s || s !== s.toLocaleUpperCase('cs')) return s;
+  return s.toLocaleLowerCase('cs').replace(/(^|[\s,-])(\p{L})/gu, (m, sep, ch) => sep + ch.toLocaleUpperCase('cs'))
+    .replace(/\b(s\.r\.o|a\.s|z\.s|o\.p\.s|z\.ú|spol)\b\.?/giu, (m) => m.toLocaleLowerCase('cs'));
+}
