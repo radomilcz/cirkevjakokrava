@@ -1,20 +1,26 @@
 // Zvonec One – the person's menu (DESIGN §2.5): you and the system. One build: a bottom sheet on a phone (from the
-// person tab), a popover 320 at ≥ 600 (above the sidebar foot, or right of the rail's avatar), mounted in the layer
+// „Více“ tab), a popover 320 at ≥ 600 (above the sidebar foot, or right of the rail's avatar), mounted in the layer
 // root so the scrolling sidebar never clips it. The contents are the same at every width; the phone adds
 // „Zdroje“ (it has no sidebar).
 //   (RK) Radim Kovář ›          #ucet, meta „Můj účet · správce“
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
 //   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
-//   Správa (leaders)            Přístupy [1 čeká] › · Nastavení sboru ›
+//   Správa (leaders)            Sbírky › (phone) · Dary › (phone; the treasurer too) · Přehled › (phone) · Přístupy [1 čeká] › ·
+//                               Nastavení sboru ›
 //   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
 //   Odhlas se
 // A tap on a link row closes the menu, then navigates; a row that opens a sheet closes the menu first.
 
 import { S, can, myId, replaceAll, logout, ACCESS_LABELS } from './state.js';
+import { showDary } from './finance-state.js';
+import { canRunFundraisers } from './fundraisers.js';
 import { personById } from '../lib/people.js';
-import { createDemo } from '../lib/demo.js';
+import { createDemo, DEMO_VIEWERS } from '../lib/demo.js';
+import { addDemoGiving } from '../lib/demo-gifts.js';
+import { resetFinance, DEMO_FINANCE_KEY } from './finance-state.js';
+import { resetGiving } from './giving-state.js';
 import { emptyData } from '../lib/store/store.js';
 import { today } from '../lib/time.js';
 import { h, list, row, avatar, personName, icon, joinMeta, dayRange, uid } from './core.js';
@@ -57,7 +63,12 @@ export function openMeMenu({ from } = {}) {
 
   const resetDemo = () => confirmSheet({
     title: 'Chceš začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začni znovu',
-    onConfirm: () => { replaceAll(createDemo(today()), 'nová ukázka'); toast('Ukázka je zpátky.'); },
+    onConfirm: () => {
+      try { localStorage.removeItem(DEMO_FINANCE_KEY); } catch { /* private window */ }
+      resetFinance(); resetGiving();
+      replaceAll(addDemoGiving(createDemo(today()), today(), { me: DEMO_VIEWERS.admin }), 'nová ukázka');
+      toast('Ukázka je zpátky.');
+    },
   });
   const emptyDemo = () => confirmSheet({
     title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Vrátíš ji tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
@@ -74,12 +85,15 @@ export function openMeMenu({ from } = {}) {
       heading('Zdroje'),
       list([page('Šablony', '#sablony'), page('Formáty', '#formaty'), page('Místa', '#mista')], { label: 'Zdroje' }),
     ] : null,
-    leader ? [
+    leader || (isPhone() && (showDary() || canRunFundraisers())) ? [
       heading('Správa'),
       list([
-        page('Přístupy', '#pristupy', { trail: invites ? h('span', { class: 'pill pill--wait' }, `${invites} ${invites === 1 ? 'čeká' : invites <= 4 ? 'čekají' : 'čeká'}`) : null }),
-        page('Nastavení sboru', '#nastaveni'),
-      ], { label: 'Správa' }),
+        canRunFundraisers() && isPhone() ? page('Sbírky', '#sbirky') : null,
+        showDary() && isPhone() ? page('Dary', '#dary') : null,
+        leader && isPhone() ? page('Přehled', '#prehled') : null,
+        leader ? page('Přístupy', '#pristupy', { trail: invites ? h('span', { class: 'pill pill--wait' }, `${invites} ${invites === 1 ? 'čeká' : invites <= 4 ? 'čekají' : 'čeká'}`) : null }) : null,
+        leader ? page('Nastavení sboru', '#nastaveni') : null,
+      ].filter(Boolean), { label: 'Správa' }),
     ] : null,
     h('div', { class: 'me-menu__gap' }),
     list([page('Veřejný web', '#pastva', { meta: 'Pastva, jak ji vidí návštěvníci' })], { label: 'Veřejný web' }),

@@ -1,5 +1,77 @@
 # Zvonec One: the design
 
+> **Update – Přehled with small charts (2026-10-09).** The owner: „pořád myslím, že si to zaslouží rethink. A třeba
+> graf?“ Each figure block now carries one chart that says what a single number cannot (kit `columns()`, `stackBar()`;
+> the dataviz method: emphasis, not categorical; thin columns ≤ 24 with a 4 px rounded top on one hairline baseline;
+> the current column in `--chart-now`, the others in `--chart-ctx` – both ≥ 3:1 on --card in all five palettes, checked;
+> the value only on the current column's cap, every column a CSS tooltip and an aria-label):
+> - **Lidé** – one stacked bar členové · přátelé · hosté in three steps of one ramp, 2 px gaps; the figures below carry
+>   the matching swatch.
+> - **Služby** – obsazenost for the twelve months up to the chosen one; a column opens that month.
+> - **Dary** – the year's sums by month, this month lit, the months to come empty.
+> On a phone every third month is labelled and the cap is left to the tooltip. The section titles live inside the
+> cards (figures({ title, aside })) with the period line on the right and the „Otevři …“ link at the card's foot – the
+> owner: the titles above the cards looked detached.
+
+> **Update – the design audit of Dary and Sbírky (2026-10-09).** The owner: „ty mnou navržené jsou esteticky jinde“.
+> Four auditors (typography, spacing, composition, the system) agreed; the new parts now use the house blocks only:
+> - **Kit pieces added:** `figures()` (Tvoje břemeno's anatomy for any headline number: the title-face figure 56/48
+>   with its words – the unit too – in meta, a bar, a sentence, small figures under a hairline, one action; --card or
+>   the --feature fill), `amount()` (strong tabular figures, „Kč“ in --ink-2), `periodLine({ year })` (‹ 2026 ›
+>   Letos), `callout({ onDismiss })` (a quiet ✕). Tokens `--type-figure`, `--qr`, `--qr-poster`.
+> - **Dary** is a split page like Moje: Nepřiřazené and Dárci on the left, the year (period line, figures, the
+>   bank line) and Sbírky on the right; one column below 1200 with Nepřiřazené first. The donor and the sbírka are
+>   details (`detail()` + `detailHead()`, a mark, mixed-case h1, facts), never screens with a caps title.
+> - **One row anatomy**: a 40 lead (avatar m, the heart lead-mark) or the 44 arch, the amount as the only trail,
+>   no ›; month subheads are the kit's `subhead()` inside the list. Sbírky are rows everywhere (list, Moje, Dary).
+> - **One payment block** (`paymentBlock`) in Můj účet, the payment sheet (L) and the poster: details left, QR
+>   right; on a phone the QR behind „Ukaž QR kód“. --card, r20, padding 24.
+> - Moje: the thank-you comes after the answer card, one sentence with a ✕; Sbírky go to the right column ≥ 1200.
+> - Rhythm: 8 (h2 → content) · 12 (stacked parts) · 24 (a control row → content) · 40 (sections); no 16/32 joins.
+> - **Přehled** (the owner: „Přehled mi taky nesedí“): the grey tile grids are gone – each section is one figure
+>   block (Lidé „71 lidí ve sboru“, Služby „96 % obsazeno“ with the bar, Dary the year's sum) with its small figures
+>   under the hairline (each still opens Lidé, Obsazení or Dary) and one quiet link after it. stat-tile.js is deleted.
+
+> **Update – Sbírky and Mimořádný dar (2026-10-09).** A new screen `#sbirky` (SPEC 9.17), kit only: a sbírka is a
+> card on the tint (the name 20/26, the sum in the title face 32 with a quiet „Kč“, „z 80 000 Kč“, the stat bar, a meta
+> line); the detail makes the card big (48) with [Pošli dar] and [Ukaž QR pro plakát]. The payment sheet puts the QR
+> first and the details to copy under it (no wrapping of the account); on a phone the details first and the QR behind
+> „Ukaž QR kód“ – the bank app is on the same phone. Moje thanks with an info callout with a heart; the heart is the
+> icon of Sbírky (the gift stays Dary's). In Dary the anonymous tile says „28 500 / Kč anonymně“ so five figures fit.
+
+> **Update – Dary, a calmer screen (2026-10-09).** The owner: „stránka Dary není tak hezká jako jiné stránky“. Sums
+> read as figures: the number strong, „Kč“ small and quiet (tiles and rows alike). Nepřiřazené look like the rest of
+> Zvonec – month subheads, the day arch on the left, the sender's name readable (not the bank's CAPITALS), „VS · zpráva“
+> under it, the amount and › on the right, the whole row tappable (no S button crowding the row). The donor page lists
+> the gifts plainly: the day as the title, purpose · source · note, the amount and ⋯.
+
+> **Update – Dary, step C (2026-10-09).** Under the year's tiles one line says when the bank last sent payments
+> („Platby z banky stažené 9. 10. 2026.“), a wait callout when the daily fetch has been quiet for three days, an error
+> callout when the bank refuses the token – with what to do and that nothing is lost.
+
+> **Update – Dary, step B (2026-10-09).** A new screen for the treasurer and the admins (SPEC 9.16), built from the
+> kit only: the year line (‹ 2026 › Letos), number tiles (the wide sum tile of Přehled), „Nepřiřazené“ rows with an S
+> „Přiřaď“, „Dárci“ rows (avatar 32, VS and count, the sum in strong figures, ›), a donor page with facts and the gift
+> rows (⋯). The certificate prints as the owner approved it: wordmark, the otisk in the corner, stamp left of the
+> signature line, the signature over it. Gifts never touch the person card.
+
+> **Update – Dary, step A (2026-10-09).** Nastavení sboru gets „Úřední údaje“ (úřední název, IČO, sídlo, účet pro
+> dary – each checked). Once the account is set, Můj účet shows „Dary“ as the owner approved it in the mock: the
+> account and the person's variable symbol in a framed block (20/28 strong figures, a copy button each), a 176 QR
+> payment on the right (black on white on every palette, so a bank app reads it), on a phone behind „Ukaž QR kód“.
+
+> **Update – Přehled, headline numbers only (2026-10-09).** The owner: „v přehledu jen přehledy, žádné detailní
+> informace“. Přehled (`#prehled`, leaders) keeps the tiles – Lidé (by membership, the archive, who joined and left in
+> a year) and Služby in a month (obsazeno %, služeb, slouží, čeká, odmítnuto) – each leading to the screen with the
+> detail. Occupancy by team, who serves most and who has not served for long were dropped: Obsazení, Rozpis and
+> Břemeno show those. A Dary section joins when Dary is built.
+> Tile numbers are set in the title face (Agrandir Narrow Black 32/34, as the arch numbers); a label never spills
+> out of its tile (min-width 0, wrapping as the last resort), and „odmítnutých“ became the invariant „odmítnutí“.
+> On a phone the 3-wide auto grid left a tile alone on a row and broke labels (the owner: „na mobilu to prostě
+> nevypadá dobře“). Now one even grid – 2 columns on a phone, 4 from 600: Lidé has four tiles (the archive became
+> the link „V archivu 3 karty ›“ under the year's line), Služby a wide tile – 40 px „96 %“ left, „obsazeno 103 ze
+> 107“ and an 8 px bar right (ok colour, amber while places are empty) – over four tiles.
+
 > **Update – Lidé Tabulka: banded columns (2026-10-08).** As in Rozpis, every second shown column sits on a faint band
 > (ink 3.5 % over the ground), its head cell rounded on top. Which columns show depends on the table's width, so
 > people.js counts the shown head cells (a ResizeObserver) and names the banded ones in table[data-band]; a lit row's
@@ -254,18 +326,18 @@ gets the current look instead.
 └──────┘
 ```
 
-### 2.4 Phone < 600: the tab bar, and the person tab
+### 2.4 Phone < 600: the tab bar, and „Více“
 
 ```
-member:  [ ⌂ Moje ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ (RK) Radim ]
-leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ (RK) Radim ]
+member:  [ ⌂ Moje ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ ⋯ Více ]
+leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ ⋯ Více ]
 ```
 
 - 64 + safe area, `--bar`, a hairline on top. Each tab: icon 24 in a 56 × 32 niche, label 13/500 under it.
   Current: the niche gets `--pick`; the label keeps its weight and colour.
-- The last tab is **the person**: avatar 24 + the first name (ellipsis at 72; „Účet“ without a card). It opens the
-  person's menu as a bottom sheet from every screen. Its count dot = invites waiting (leaders). It is the current
-  tab on Můj účet, Kdy nemůžu, Šablony, Formáty, Místa, Přístupy and Nastavení sboru. Never the word „Více“.
+- The last tab is **Více**: the ⋯ icon and the word „Více“ (the owner's call: a small face among line icons read as
+  noise). It opens the person's menu as a bottom sheet from every screen; the avatar lives in the menu's first row. Its count dot = invites waiting (leaders). It is the current
+  tab on Můj účet, Kdy nemůžu, Šablony, Formáty, Místa, Přístupy and Nastavení sboru.
 - Counts: a capsule 20 high, 13/620, `--act` / `--on-act`, at the icon's top right.
 - Tapping the current tab scrolls the screen to the top (nothing else). The tab bar hides while the keyboard is up.
 
@@ -818,7 +890,7 @@ below 1200 (its back link goes to `#<list>`).
 
 Redirects (all of Simple's stay): `#osoba/<id>` → `#lide/<id>`; `#tym/<id>`, `#skupina/<id>`, `#skupiny`, `#tymy` →
 `#lide/skupiny[/<id>]`; `#domacnost/<id>` → `#lide/domacnost/<id>`; `#sablona/<id>` → `#sablony/<id>`; `#misto/<id>` →
-`#mista/<id>`; `#domu`, `#vice`, `#prehled` → `#moje`; `#kalendar/<YYYY-MM>` → `#kalendar/mesic/<YYYY-MM>`;
+`#mista/<id>`; `#domu`, `#vice` → `#moje`; `#kalendar/<YYYY-MM>` → `#kalendar/mesic/<YYYY-MM>`;
 `#kalendar/<YYYY-MM-DD>` → `#kalendar/mesic/<YYYY-MM>/<day>`; `#rozpis[/<m>]` → `#kalendar/rozpis/<m>`;
 `…/bremeno` → Rozpis + the Břemeno dialog; `#upozorneni`, `#kolize` → `#obsazeni` with Filtr „Něco nesedí“;
 `#lide/<filter slug>` (clenove, pratele, hoste, deti, doplnit, narozeniny, archiv) → `#lide` with that filter set.
@@ -829,8 +901,8 @@ Redirects (all of Simple's stay): `#osoba/<id>` → `#lide/<id>`; `#tym/<id>`, `
 
 | removed / merged | was in | now | why |
 |---|---|---|---|
-| Více tab | Next | the person tab (phone), sidebar foot (≥ 600) | „more“ is a junk drawer; the owner likes Simple's menu |
-| the circle only on Moje | Simple | the person tab on every screen | Kdy nemůžu, Barvy, Správa were two taps from anywhere else |
+| person tab (avatar + name) | Simple | „Více“ (phone), sidebar foot (≥ 600) | the face read as noise among the line icons; the menu behind it is unchanged |
+| the circle only on Moje | Simple | „Více“ on every screen | Kdy nemůžu, Barvy, Správa were two taps from anywhere else |
 | sidebar group „Sbor“ (Přístupy, Nastavení, Veřejný web) | both | the person's menu › Správa | rare, system-level; the owner likes Simple's Správa |
 | Šablony, Formáty, Místa under the circle | Simple (phone, 960–1199) | sidebar / rail „Zdroje“ (phone: the menu) | the owner: they belong in the sidebar |
 | month chip „Říjen ▾“ on the h1, scope chip „Všechny týmy“, Rozpis team chip | Simple | period line in D (Měsíc, Rozpis); Filtr › Tým | they overlapped the h1 and were cut |

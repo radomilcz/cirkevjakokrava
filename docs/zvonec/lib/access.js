@@ -13,6 +13,8 @@
 //                      gh }] }          – GitHub token sealed to the public half
 // Replacing the GitHub token needs no passwords: the new token is sealed to every public half.
 // `access` (admin, leader, member, invite) is enforced only by the app – any login holds the token.
+// Dary (SPEC 2, 15.1) are the one exception: the finance repo has its own token, sealed as `fin` only into the
+// logins of the admins and the treasurer (`treasurer: true`), so nobody else can open the gifts at all.
 
 export const ITERATIONS = 310000;   // as Playbook
 export const ACCESS_FILE = 'access.json';
@@ -132,6 +134,42 @@ export async function changePassword(record, priv, name, password, iterations) {
 export async function resealAll(logins, github) {
   for (const l of logins) l.gh = await seal(l.pub, pack(github));
   return logins;
+}
+
+/** Whether a login may hold the finance key: an admin or the treasurer. */
+export const holdsFinance = (record) => record?.access === 'admin' || !!record?.treasurer;
+
+/** Seal the finance repo's config (`{ token, owner, repo }`) to a login that may hold it; drop it from any other. */
+export async function sealFinance(record, finance) {
+  if (finance && holdsFinance(record)) record.fin = await seal(record.pub, pack(finance));
+  else delete record.fin;
+  return record;
+}
+
+/** The same for every login (a new finance token, a new treasurer). Mutates the records. */
+export async function sealFinanceAll(logins, finance) {
+  for (const l of logins) await sealFinance(l, finance);
+  return logins;
+}
+
+/** The finance repo's config this login holds, or null. */
+export async function openFinance(record, priv) {
+  if (!record?.fin) return null;
+  try { return unpack(await unseal(priv, record.fin)); } catch { return null; }
+}
+
+/** A short note (JSON, at most 190 bytes) only this login can open – Dary's „tvůj dar dorazil“ (lib/giving.js). */
+export const sealNote = (pub, note) => seal(pub, JSON.stringify(note));
+
+/** The notes among `boxes` this login can open, in their order; the others belong to someone else. */
+export async function openNotes(priv, boxes = []) {
+  if (!priv || !boxes.length) return [];
+  const k = await subtle().importKey('pkcs8', unb64(priv), { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']);
+  const out = [];
+  for (const box of boxes) {
+    try { out.push(JSON.parse(dec.decode(await subtle().decrypt({ name: 'RSA-OAEP' }, k, unb64(box))))); } catch { /* not mine */ }
+  }
+  return out;
 }
 
 /** Whether a login (an invite) has expired on `today` (YYYY-MM-DD). */

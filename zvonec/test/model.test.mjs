@@ -468,3 +468,30 @@ test('typeChangePlan + applyTypeChange: a template edit reaches planned events t
 
   assert.deepEqual(typeChangePlan(data, after, structuredClone(after), '2026-10-08').events, [], 'no change, no question');
 });
+
+test('stats: people by membership, serving in a month', async () => {
+  const { peopleStats, serviceStats } = await import('../../docs/zvonec/lib/stats.js');
+  const data = {
+    settings: {},
+    people: [
+      { id: 'a', firstName: 'A', membership: { status: 'member', since: '2026-03-01' }, birthDate: '1980' },
+      { id: 'b', firstName: 'B', membership: { status: 'regular' }, birthDate: '1990' },
+      { id: 'k', firstName: 'K', membership: { status: 'member' }, birthDate: '2018' },
+      { id: 'g', firstName: 'G', membership: { status: 'guest' } },
+      { id: 'f', firstName: 'F', membership: { status: 'former', until: '2026-06-01' } },
+    ],
+    groups: [{ id: 't', name: 'Tým', kind: 'team' }],
+    groupMembers: [{ groupId: 't', personId: 'a', roles: { r: 'trained' } }, { groupId: 't', personId: 'b', roles: { r: 'trained' } }],
+    roles: [{ id: 'r', groupId: 't', name: 'Role' }],
+    events: [
+      { id: 'e1', start: '2026-10-04T10:00', end: '2026-10-04T12:00', needs: [{ roleId: 'r', count: 2 }], assignments: [{ id: 'x', roleId: 'r', personId: 'a', status: 'confirmed' }, { id: 'y', roleId: 'r', personId: 'b', status: 'declined' }] },
+      { id: 'e2', start: '2026-10-11T10:00', end: '2026-10-11T12:00', cancelled: true, needs: [{ roleId: 'r', count: 1 }], assignments: [] },
+    ],
+  };
+  const p = peopleStats(data, { today: '2026-10-08' });
+  assert.deepEqual([p.member, p.regular, p.guest, p.kids, p.former, p.active], [2, 1, 1, 1, 1, 4]);
+  assert.deepEqual(p.joined.map((x) => x.id), ['a']);
+  assert.deepEqual(p.left.map((x) => x.id), ['f']);
+  const s = serviceStats(data, '2026-10');
+  assert.deepEqual([s.meetings, s.needed, s.filled, s.duties, s.people, s.declined], [1, 2, 1, 1, 1, 1]);
+});

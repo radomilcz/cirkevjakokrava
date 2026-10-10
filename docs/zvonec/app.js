@@ -1,5 +1,5 @@
 // Zvonec One (zvonec/design/one/) – the app: boot (demo or live, the same flow and data as Next and Simple),
-// session, router, the shell (phone < 600: the tab bar with the person tab; 600–899: the rail; ≥ 900: the sidebar;
+// session, router, the shell (phone < 600: the tab bar with „Více“; 600–899: the rail; ≥ 900: the sidebar;
 // ≥ 1200: list | pane), the save line, the keyboard. No framework and no build.
 //
 // Screens live in ui/*.js and import the kit from ./ui/kit.js, the shared state from ../ui/state.js (S, can, change,
@@ -10,8 +10,11 @@ import { S, setHooks, can, recompute, loadRemembered, forgetRemembered } from '.
 import { GithubStore } from './lib/store/github.js';
 import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
-import { restore, ACCESS_FILE } from './lib/access.js';
+import { restore, openFinance, ACCESS_FILE } from './lib/access.js';
+import { resetFinance } from './ui/finance-state.js';
+import { resetGiving } from './ui/giving-state.js';
 import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
+import { addDemoGiving } from './lib/demo-gifts.js';
 import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
@@ -45,7 +48,7 @@ const ROUTES = Object.assign({}, ...PACKAGES.map((p) => p.ROUTES), SHELL_ROUTES)
  * after the render (an element with that id); a filter is set before it (ui/filter.js setFilter).
  */
 const REDIRECTS = [
-  [/^(?:prehled|domu|vice)$/, () => 'moje'],   // Next's Domů and Více
+  [/^(?:domu|vice)$/, () => 'moje'],   // Next's Domů and Více (Next's #prehled is now Přehled, ui/overview.js)
   ...PACKAGES.flatMap((p) => p.REDIRECTS || []),
 ];
 
@@ -346,6 +349,9 @@ function useStore(store, data) {
 /** Signed in (or restored): open the data repo with the unsealed token. */
 async function startLive(result) {
   S.me = { login: result.record, priv: result.priv, github: result.github, personId: result.record.personId || null, access: result.record.access };
+  S.me.finance = await openFinance(result.record, result.priv);   // Dary: only the treasurer's and admins' logins hold it
+  resetFinance();
+  resetGiving();
   S.screen = null;
   S.signInMessage = null;
   const store = new GithubStore(result.github);
@@ -425,8 +431,13 @@ async function boot() {
   // the demo starts as an admin who is also in Lidé (Radim), as in Next and Simple – the same demo data
   S.me = { login: null, priv: null, github: null, personId: DEMO_VIEWERS.admin, access: 'admin' };
   const store = new LocalStore({ key: DEMO_KEY });
-  if (!store.hasData()) await saveAll(store, createDemo(today()), 'Zvonec: ukázka');
-  const data = (await load(store)) || emptyData();
+  if (!store.hasData()) await saveAll(store, addDemoGiving(createDemo(today()), today(), { me: DEMO_VIEWERS.admin }), 'Zvonec: ukázka');
+  let data = (await load(store)) || emptyData();
+  // a demo saved before Dary and Sbírky gets their made-up content once (lib/demo-gifts.js)
+  if (data.people?.length && !data.settings?.bankAccount && !data.fundraisers?.length) {
+    await saveAll(store, addDemoGiving(data, today(), { me: DEMO_VIEWERS.admin }), 'Zvonec: ukázka darů');
+    data = (await load(store)) || data;
+  }
   if (!personById(data, DEMO_VIEWERS.admin)) S.me.personId = null;
   useStore(store, data);
 }

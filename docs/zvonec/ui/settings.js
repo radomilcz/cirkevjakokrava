@@ -1,14 +1,15 @@
 // Zvonec One – Nastavení sboru (#nastaveni, leaders; from the person's menu › Správa; DESIGN §6.10). A page, one
 // column of 640: value blocks (r20, --card, padding 24), each a section with quiet S „Uprav“ → a dialog (a sheet on
 // a phone) that saves at once through the save line. No inline fields, no form foot.
-//   Sbor (název, hlavní místo, adresa) · Pravidla (Nejvíc služeb za měsíc, Nejvíc nedělí po sobě) · Kdy Zvonec bučí ·
-//   Děti (Dospělý je od) · Záloha (Stáhni zálohu; admin: Nahraj zálohu – it replaces everything, asks first).
+//   Sbor (název, hlavní místo, adresa) · Úřední údaje (úřední název, IČO, sídlo, účet pro dary – SPEC 15.1) ·
+//   Pravidla (Nejvíc služeb za měsíc, Nejvíc nedělí po sobě) · Kdy Zvonec bučí · Děti (Dospělý je od) · Záloha (Stáhni zálohu; admin: Nahraj zálohu – it replaces everything, asks first).
 
 import { S, can, change, replaceAll } from './state.js';
 import { placeTree, placeById, resolvePlace } from '../lib/places.js';
 import { DEFAULT_LIMITS, DEFAULT_RULES } from '../lib/scheduling.js';
 import { normalize, COLLECTIONS, SCHEMA } from '../lib/store/store.js';
 import { today } from '../lib/time.js';
+import { parseAccount, formatAccount, validCompanyId } from '../lib/bank.js';
 import {
   h, section, sectionAction, agree, plural, toast, confirmSheet, formSheet, field, textInput, selectInput, stepper,
   fieldError, clearErrors, download, page, button, meta, pill, menuBack, isPhone,
@@ -103,6 +104,56 @@ function churchSheet() {
   });
 }
 
+// ---------- Úřední údaje (Dary, SPEC 15.1) ----------
+
+function legalValues() {
+  const s = S.data.settings || {};
+  return values([
+    ['Úřední název', s.legalName || '—'],
+    ['IČO', s.companyId || '—'],
+    ['Sídlo', s.legalAddress || '—'],
+    ['Účet pro dary', s.bankAccount || '—'],
+  ]);
+}
+
+function legalSheet() {
+  const s = S.data.settings || {};
+  const input = (name, placeholder, extra = {}) => textInput({ name, value: s[name] || '', autocomplete: 'off', placeholder, ...extra });
+  const legalName = input('legalName', 'např. Apoštolská církev, sbor Nový Jičín');
+  const companyId = input('companyId', 'např. 12345679', { inputmode: 'numeric' });
+  const legalAddress = input('legalAddress', 'např. Ulice 1, 741 01 Město');
+  const bankAccount = input('bankAccount', 'např. 19-2000145399/0800', { inputmode: 'numeric' });
+  formSheet({
+    title: 'Úřední údaje',
+    size: 'm',
+    body: [
+      meta('Objeví se na potvrzení o daru. Číslo účtu uvidí každý ve Zvonci v Můj účet › Dary.'),
+      field({ label: 'Úřední název', control: legalName, optional: true, hint: 'Jak je sbor zapsaný v rejstříku.' }),
+      field({ label: 'IČO', control: companyId, optional: true }),
+      field({ label: 'Sídlo', control: legalAddress, optional: true, hint: 'Adresa z rejstříku. Může být jiná než adresa, kde se scházíme.' }),
+      field({ label: 'Účet pro dary', control: bankAccount, optional: true, hint: 'Číslo účtu i s kódem banky.' }),
+    ],
+    onSubmit: (form) => {
+      clearErrors(form);
+      const id = companyId.value.replace(/\s+/g, '');
+      const account = bankAccount.value.trim() ? parseAccount(bankAccount.value) : null;
+      let ok = true;
+      if (id && !validCompanyId(id)) { fieldError(companyId, 'Tohle IČO nesedí. Má osm číslic, zkontroluj je.'); ok = false; }
+      if (bankAccount.value.trim() && !account) { fieldError(bankAccount, 'Tohle číslo účtu nesedí. Zkontroluj číslice a kód banky za lomítkem.'); ok = false; }
+      if (!ok) return false;
+      const target = S.data.settings;
+      const set = (key, value) => { if (value) target[key] = value; else delete target[key]; };
+      set('legalName', legalName.value.trim());
+      set('companyId', id ? id.padStart(8, '0') : '');
+      set('legalAddress', legalAddress.value.trim());
+      set('bankAccount', formatAccount(account));
+      change('nastavení sboru: úřední údaje');
+      toast('Uloženo.');
+      return undefined;
+    },
+  });
+}
+
 // ---------- the rule blocks ----------
 
 function rulesSheet(group) {
@@ -190,6 +241,7 @@ export function renderSettings() {
     cls: 'gather cfg-screen',
     body: h('div', { class: 'cfg-blocks' },
       block({ id: 'church', title: 'Sbor', action: uprav('Uprav sbor', churchSheet), body: churchValues() }),
+      block({ id: 'legal', title: 'Úřední údaje', action: uprav('Uprav úřední údaje', legalSheet), body: legalValues() }),
       RULES.map((g) => block({
         id: g.id, title: g.title, action: uprav(`Uprav: ${g.title}`, () => rulesSheet(g)),
         body: values(g.rules.map((r) => [r.label, ruleWords(r, valueOf(r))])),

@@ -1,9 +1,11 @@
 // Zvonec One – navigation (DESIGN §2). ONE table drives the tab bar (< 600), the rail (600–899) and the sidebar
 // (≥ 900); rail ↔ sidebar is CSS only (the same <nav class="sidenav">, the same items).
 //   sidebar: the places where weekly work happens (my duties, meetings, people, what meetings are made of)
-//   the person's menu: you and the system (ui/me-menu.js) – the person tab on a phone, the foot of the sidebar / rail
+//   the person's menu: you and the system (ui/me-menu.js) – the „Více“ tab on a phone, the foot of the sidebar / rail
 // Members do not see „Zdroje“ in the nav (they open a Formát or a Místo by link, read-only).
 
+import { showDary } from './finance-state.js';
+import { showSbirky } from './fundraisers.js';
 import { S, can, myId, ACCESS_LABELS } from './state.js';
 import { personById } from '../lib/people.js';
 import { upcomingDuties } from '../lib/events.js';
@@ -23,18 +25,22 @@ export const NAV = [
   ['kalendar', 'Kalendář', 'calendar', '#kalendar', 'member', 'main'],
   ['lide', 'Lidé', 'people', '#lide', 'member', 'main'],
   ['skupiny', 'Skupiny', 'teams', '#lide/skupiny', 'member', 'main'],
+  ['sbirky', 'Sbírky', 'heart', '#sbirky', showSbirky, 'main'],   // leaders and the treasurer; everyone while one is open
+  ['dary', 'Dary', 'gift', '#dary', showDary, 'main'],   // the treasurer and the admins (a function, not a level)
+  ['prehled', 'Přehled', 'chart', '#prehled', 'leader', 'main'],
   ['sablony', 'Šablony', 'layers', '#sablony', 'leader', 'gather'],
   ['formaty', 'Formáty', 'book', '#formaty', 'leader', 'gather'],
   ['mista', 'Místa', 'pin', '#mista', 'leader', 'gather'],
 ];
 export const GROUP_TITLES = { gather: 'Zdroje' };
 
-/** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab. */
-const NOT_A_TAB = new Set(['skupiny']);
-const TAB_OF = { skupiny: 'lide' };
+/** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab; Přehled is
+    in the person's menu (Správa); Sbírky are reached from Moje (and Správa for leaders) and light Moje. */
+const NOT_A_TAB = new Set(['skupiny', 'prehled', 'dary', 'sbirky']);
+const TAB_OF = { skupiny: 'lide', sbirky: 'moje' };
 
 /** Routes whose nav value is 'me' are the person's menu pages (Můj účet, Kdy nemůžu, Přístupy, Nastavení sboru). */
-const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista']);
+const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista', 'prehled', 'dary']);
 
 /** Moje: duties waiting for my answer. */
 export function waitingAnswers() {
@@ -61,15 +67,14 @@ let shellKey = null;
 /** Forget the built shell (a sign-in, „Podívej se očima druhých“): the next updateNav() builds it again. */
 export function resetNav() { shellKey = null; }
 
-const shown = () => NAV.filter(([, , , , level]) => can(level));
+const shown = () => NAV.filter(([, , , , level]) => (typeof level === 'function' ? level() : can(level)));
 
 function personBits() {
   const person = personById(S.data || {}, myId());
   const name = person ? personName(person) : S.mode === 'demo' ? 'Ukázka' : 'Můj účet';
-  const first = person ? (person.nickname || person.firstName || name) : 'Účet';
   const role = ACCESS_LABELS[S.me?.access] || '';
   const face = (size) => (person ? avatar(person, { size }) : h('span', { class: ['avatar', `avatar--${size}`], 'aria-hidden': 'true' }, icon('user', { size: 's' })));
-  return { person, name, first, role, face };
+  return { person, name, role, face };
 }
 
 /** Tapping the current item scrolls the screen to the top (nothing else); from a drill-in page it goes to its root. */
@@ -84,18 +89,18 @@ function topOnCurrent(e) {
 
 function build() {
   const items = shown();
-  const { name, first, role, face } = personBits();
+  const { name, role, face } = personBits();
   const openMenu = (e) => openMeMenu({ from: e.currentTarget });
 
-  // tab bar (< 600): the main group + the person tab
+  // tab bar (< 600): the main group + „Více“ (the person's menu)
   const tabs = items.filter(([id, , , , , group]) => group === 'main' && !NOT_A_TAB.has(id)).map(([id, label, iconName, href, , , countKey]) => h('a', {
     class: 'tab', href, dataset: { nav: id }, onclick: topOnCurrent,
   }, h('span', { class: 'tab__niche' }, icon(iconName), countKey ? h('span', { class: 'tab__badge', dataset: { count: countKey } }) : null),
   h('span', { class: 'tab__label' }, label)));
   const personTab = h('button', {
-    type: 'button', class: 'tab tab--person', dataset: { nav: 'me' }, 'aria-haspopup': 'dialog', 'aria-label': `${name} – můj účet a nastavení`, onclick: openMenu,
-  }, h('span', { class: 'tab__niche' }, face('xs'), h('span', { class: 'tab__dot', dataset: { invites: '' }, hidden: true })),
-  h('span', { class: 'tab__label' }, first));
+    type: 'button', class: 'tab tab--more', dataset: { nav: 'me' }, 'aria-haspopup': 'dialog', 'aria-label': 'Více – můj účet, nastavení a správa', onclick: openMenu,
+  }, h('span', { class: 'tab__niche' }, icon('more'), h('span', { class: 'tab__dot', dataset: { invites: '' }, hidden: true })),
+  h('span', { class: 'tab__label' }, 'Více'));
   tabbarEl().replaceChildren(...tabs, personTab);
 
   // sidebar / rail (≥ 600)
@@ -133,7 +138,7 @@ export function updateNav({ visible, nav }) {
   sidenavEl().hidden = !visible;
   tabbarEl().hidden = !visible;
   if (!visible) return;
-  const key = `${can('leader')}-${myId()}-${S.me?.access}-${S.data ? personName(personById(S.data, myId())) : ''}`;
+  const key = `${can('leader')}-${showDary()}-${showSbirky()}-${myId()}-${S.me?.access}-${S.data ? personName(personById(S.data, myId())) : ''}`;
   if (key !== shellKey) { shellKey = key; build(); }
 
   for (const el of document.querySelectorAll('.tabbar [data-nav]')) {

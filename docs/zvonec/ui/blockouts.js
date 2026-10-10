@@ -141,19 +141,36 @@ export function deleteBlockout(person, record) {
   });
 }
 
+const DAY_MS = 86400000;
+const daysBetween = (a, b) => Math.round((new Date(`${b}T12:00`) - new Date(`${a}T12:00`)) / DAY_MS);
+
+/** „právě teď“ · „zítra“ · „za 5 dní“ · „za 3 týdny“ · „za 2 měsíce“. */
+function whenWords(v) {
+  const now = today();
+  if (v.from <= now) return 'právě teď';
+  const n = daysBetween(now, v.from);
+  const words = n === 1 ? 'zítra' : n < 14 ? `za ${plural(n, 'den', 'dny', 'dní')}` : n < 60
+    ? (Math.round(n / 7) === 1 ? 'za týden' : `za ${plural(Math.round(n / 7), 'týden', 'týdny', 'týdnů')}`)
+    : (Math.round(n / 30) === 1 ? 'za měsíc' : `za ${plural(Math.round(n / 30), 'měsíc', 'měsíce', 'měsíců')}`);
+  return words;   // the year, when it is not this one, is in the dates beside it
+}
+
 /**
- * One range: its first day as an arch (filled while it runs), the dates, the reason. Who may change it gets a row that
- * opens a menu (Uprav · Smaž); everyone else a plain row.
+ * One range: its first day as an arch (filled while it runs), the reason as the title (else the dates), the dates and
+ * when it comes („za 11 dní“), its length as a pill. Who may change it gets a row that opens a menu (Uprav · Smaž);
+ * everyone else a plain row.
  */
 export function blockoutRow(person, v) {
   const editable = mayEditBlockouts(person);
   const running = v.from <= today();
   const words = dayRange(v.from, v.to);
   const reason = seesReason(person) ? v.reason : null;
+  const length = daysBetween(v.from, v.to) + 1;
   return row({
     lead: dateArch(v.from, { today: running }),
-    title: words,
-    meta: joinMeta([reason, running ? 'právě teď' : v.from === v.to ? 'jeden den' : null]) || null,
+    title: reason || words,
+    meta: joinMeta([reason ? words : null, whenWords(v)]),
+    trail: h('span', { class: 'pill' }, plural(length, 'den', 'dny', 'dní')),
     onclick: editable ? (e) => openMenu([
       { label: 'Uprav', icon: 'pencil', onclick: () => blockoutSheet(person, v) },
       { label: 'Smaž', icon: 'trash', danger: true, onclick: () => deleteBlockout(person, v) },

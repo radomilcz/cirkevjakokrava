@@ -96,7 +96,7 @@
 .mine-staff > .icon { color: var(--ink-3); }
 
 /* Tvoje břemeno: the big number of this month against the limit, the pips, one sentence, three small numbers */
-.load-card { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--radius-xl, 20px); background: var(--feature); }
+.load-card { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--shape-block); background: var(--feature); }
 .load-card__main { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-5); }
 .load-card__count { display: flex; align-items: baseline; gap: var(--space-2); margin: 0; min-width: 0; }
 .load-card__n { font-family: var(--font-title); font-size: 56px; line-height: 48px; color: var(--ink); font-feature-settings: var(--numerals); }
@@ -123,6 +123,28 @@
 .acct .facts { margin: 0; }
 .acct .section > .meta + .list { margin-top: var(--space-2); }
 .acct-switch { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+/* The payment block (ui/give.js paymentBlock – Můj účet, the payment sheet, the poster): the details to copy on the
+   left, the QR on the right; on a phone the QR waits behind „Ukaž QR kód“ (one cannot scan one's own screen). The QR
+   stays black on white on every palette so a bank app reads it. Block geometry: --card, r20, padding 24. */
+.give { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: start; padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
+.give__details { min-width: 0; }
+.give-qr { display: grid; justify-items: center; gap: var(--space-2); width: calc(var(--qr) + var(--space-5)); }
+.give-qr .qr { display: block; width: var(--qr); height: var(--qr); border-radius: var(--radius-m); box-shadow: inset 0 0 0 1px var(--edge); }
+.give-qr--poster { width: var(--qr-poster); }
+.give-qr--poster .qr { width: var(--qr-poster); height: var(--qr-poster); }
+.give-qr p { margin: 0; text-align: center; }
+.give-qr-toggle { display: none; }
+.give-sheet .give { padding: 0; background: none; box-shadow: none; }
+.give--poster { align-items: center; }
+@media (max-width: 599px) {
+  .give { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); }
+  .give:not(.give--poster) > .give-qr { display: none; }
+  .give-qr-toggle { display: block; }
+  .give-qr-toggle .give-qr { margin: var(--space-3) auto 0; }
+  .give--poster > .give-qr { justify-self: center; }
+  .give-qr--poster { width: calc(var(--qr-poster) - var(--space-7)); }
+  .give-qr--poster .qr { width: calc(var(--qr-poster) - var(--space-7)); height: calc(var(--qr-poster) - var(--space-7)); }
+}
 .acct-out { display: flex; }
 .acct-out__btn { color: var(--no-ink); }
 .acct-out__btn > .icon { color: var(--no-ink); }

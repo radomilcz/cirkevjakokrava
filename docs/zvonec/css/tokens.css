@@ -41,6 +41,8 @@
   --type-lead: 20px;     --lh-lead: 26px;      /* h2: section, sheet / dialog title */
   --type-title: 34px;    --lh-title: 36px;     /* h1 of a screen or a page (Agrandir) */
   --type-title-pane: 34px; --lh-title-pane: 36px;   /* h1 in a pane (and on a phone page) */
+  --type-figure: 56px;   --lh-figure: 48px;    /* the one big number of a block (Tvoje břemeno, Dary, a sbírka) */
+  --qr: 176px;           --qr-poster: 280px;   /* a QR payment: in a page or sheet · for a poster or the screen */
   --type-display: 26px;  --lh-display: 30px;   /* the empty-state headline (Agrandir) */
   --type-nav: 15px;      --lh-nav: 20px;       /* sidebar item */
   --type-period: 17px;   --lh-period: 24px;    /* the period label (fixed width) */
@@ -160,6 +162,9 @@
   --mark: var(--indicator);            /* the detached 3 px selection bar */
   --mark-h: 16px;                      /* its height, centred on the item (the owner: a taller bar looked too tall) */
   --focus-ring: var(--focus);
+  --chart-now: var(--primary-bg);     /* the one column that is the point (this month) – ≥ 6:1 on --card */
+  --chart-ctx: var(--line-field);     /* the context columns – ≥ 3:1 on --card in every palette */
+  --chart-3: var(--line-control);     /* the third, lightest step of a part-to-whole */
 
   --ok-ink: var(--confirmed-fg);   --ok-fill: var(--confirmed-bg);   --ok-solid: var(--confirmed-solid);   --on-ok: var(--text-on-confirmed);
   --wait-ink: var(--waiting-fg);   --wait-fill: var(--waiting-bg);   --wait-solid: var(--waiting-solid);   --wait-body: var(--warning-text);

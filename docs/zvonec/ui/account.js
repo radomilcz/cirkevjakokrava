@@ -3,6 +3,10 @@
 //   Moje karta          my contact facts and who sees them, „Uprav“ → the contact form (a layer)
 //   Přihlášení          live: the name I sign in with, „Změň heslo“ → a layer; demo: one sentence
 //   Kalendář v telefonu my duties / the whole calendar as .ics
+//   Dary                once the church's account is set (Nastavení sboru › Úřední údaje): the account and my
+//                       variable symbol (each with copy), a QR payment with the symbol and no amount; on a phone the
+//                       QR behind „Ukaž QR kód“. My symbol (person.donorVs) is given the first time I see this.
+//                       „Pošli mimořádný dar“ (ui/give.js) and the gifts that arrived lately (sealed notes).
 //   Barvy               the three bullseyes (Krém a hlína · Hlína a růžová · Podle zařízení)
 //   „Odhlas se“         quiet M in --no-ink at the end
 // Without a card in Lidé: a callout instead of Moje karta. Also the demo's „Podívej se očima druhých“ (viewAsSheet)
@@ -18,9 +22,15 @@ import { DEMO_VIEWERS } from '../lib/demo.js';
 import {
   h, page, button, list, row, avatar, personName, toast, formSheet, layer, field, textInput, switchRow, segmented,
   peoplePicker, section, sectionAction, facts, fieldError, clearErrors, rowLink, icon, callout, meta, paletteChoices,
+  disclosure, iconButton, dateArch, amount, stack, menuButton,
 } from './kit.js';
 import { contactSheet } from './people-forms.js';
 import { calendarExportRows, CALENDAR_EXPORT_NOTE } from './calendar-shared.js';
+import { parseAccount, spdPayment, vsOwner } from '../lib/bank.js';
+import { money } from '../lib/gifts.js';
+import { copyValue, ensureDonorVs, giveSheet, paymentBlock, paymentRows } from './give.js';
+import { G, loadGiving } from './giving-state.js';
+import { vsSheet } from './donor-vs.js';
 
 // ---------- my card ----------
 
@@ -182,6 +192,71 @@ export function viewAsSheet() {
   });
 }
 
+// ---------- Dary (SPEC 15.1) ----------
+
+/** „Změň variabilní symbol“: someone who already sends gifts with their own symbol keeps it. */
+function changeMyVs(person) {
+  vsSheet({
+    current: person.donorVs,
+    intro: 'Posíláš už dary s jiným symbolem? Napiš ho sem a Zvonec tvoje platby pozná.',
+    isTaken: (vs) => { const o = vsOwner(vs, S.data.people); return !!o && o.personId !== person.id; },
+    onSave: (vs) => {
+      const target = personById(S.data, person.id);
+      if (!target) return;
+      target.donorVs = vs;
+      change(`variabilní symbol pro dary: ${displayName(target)}`);
+      toast('Variabilní symbol je změněný.');
+    },
+  });
+}
+
+/** My gifts the bank has seen lately (the sealed notes, ui/giving-state.js) – rows as in Dary: arch, what for, amount. */
+function arrivedSection() {
+  loadGiving();
+  if (!G.notes.length) return null;
+  const sbirka = (n) => (n.f ? (S.data.fundraisers || []).find((x) => x.id === n.f)?.name : null);
+  return section({
+    title: 'Tvoje dary', count: G.notes.length,
+    body: [
+      list(G.notes.map((n) => row({
+        lead: dateArch(n.d, { quiet: true }),
+        title: sbirka(n) ? `Sbírka ${sbirka(n)}` : 'Provoz sboru',
+        meta: 'dorazil na účet sboru',
+        trail: amount(money(n.a)),
+      })), { label: 'Tvoje dary' }),
+    ],
+  });
+}
+
+function giveSection(person) {
+  const s = S.data.settings || {};
+  const account = parseAccount(s.bankAccount);
+  if (!account) return null;
+  ensureDonorVs(person);
+  const vs = person?.donorVs || '';
+  const rows = paymentRows({ account: s.bankAccount, vs });
+  // my own symbol can be changed: the copy row gets a ⋯ instead of two icon buttons
+  if (vs) {
+    rows[2] = row({
+      title: h('span', { class: 'num' }, vs), meta: 'Tvůj variabilní symbol',
+      trail: menuButton([
+        { label: 'Zkopíruj', icon: 'copy', onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') },
+        { label: 'Změň variabilní symbol', icon: 'pencil', onclick: () => changeMyVs(person) },
+      ], { label: 'Možnosti variabilního symbolu' }),
+    });
+  }
+  const payment = spdPayment({ account, vs, name: s.legalName || s.churchName, message: 'Dar' });
+  return section({
+    title: 'Dary',
+    action: sectionAction('Pošli dar', { icon: 'heart', onclick: () => giveSheet(), aria: 'Pošli mimořádný dar' }),
+    body: stack(
+      meta(vs
+        ? 'Posílej dar se svým variabilním symbolem, pravidelný třeba trvalým příkazem. Podle symbolu ti Zvonec v lednu připraví potvrzení o daru do daňového přiznání.'
+        : 'Dar můžeš poslat na účet sboru.'),
+      paymentBlock({ rows, payment, hint: 'Naskenuj v bankovní aplikaci, doplníš jen částku.' })),
+  });
+}
+
 // ---------- the page ----------
 
 /** The head of the page: avatar 72, the name, the level. */
@@ -209,6 +284,8 @@ export function renderAccountPage() {
         title: 'Kalendář v telefonu',
         body: [meta(CALENDAR_EXPORT_NOTE), calendarExportRows()],
       }),
+      giveSection(person),
+      arrivedSection(),
       section({ title: 'Barvy', body: paletteChoices({ label: 'Barvy' }) }),
       h('div', { class: 'acct-out' },
         button('Odhlas se', { variant: 'quiet', icon: 'log-out', cls: 'acct-out__btn', onclick: signOut }))),
