@@ -330,14 +330,14 @@ gets the current look instead.
 
 ```
 member:  [ ⌂ Moje ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ ⋯ Více ]
-leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  [ ⋯ Více ]
+leader:  the same – Obsazení is „Více › Správa › Obsazení“ on a phone; its count rides on „Více“
 ```
 
 - 64 + safe area, `--bar`, a hairline on top. Each tab: icon 24 in a 56 × 32 niche, label 13/500 under it.
   Current: the niche gets `--pick`; the label keeps its weight and colour.
 - The last tab is **Více**: the ⋯ icon and the word „Více“ (the owner's call: a small face among line icons read as
-  noise). It opens the person's menu as a bottom sheet from every screen; the avatar lives in the menu's first row. Its count dot = invites waiting (leaders). It is the current
-  tab on Můj účet, Kdy nemůžu, Šablony, Formáty, Místa, Přístupy and Nastavení sboru.
+  noise). It opens the person's menu as a bottom sheet from every screen; the avatar lives in the menu's first row. For leaders it carries Obsazení's count, or else a dot for invites waiting. It is the current
+  tab on Obsazení, Můj účet, Kdy nemůžu, Šablony, Formáty, Místa, Přístupy and Nastavení sboru.
 - Counts: a capsule 20 high, 13/620, `--act` / `--on-act`, at the icon's top right.
 - Tapping the current tab scrolls the screen to the top (nothing else). The tab bar hides while the keyboard is up.
 

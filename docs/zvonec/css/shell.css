@@ -59,6 +59,7 @@ body.has-nav #view { padding-left: var(--nav-w); }
 .tab[aria-current="page"] .tab__label { color: var(--ink); font-weight: var(--weight-strong); }
 .tab__badge { position: absolute; top: -4px; left: calc(50% + 6px); }
 .tab__badge:empty { display: none; }
+.tab__badge:not(:empty) ~ .tab__dot { display: none; }   /* „Více“: the count says it already */
 .tab__dot { position: absolute; top: 2px; right: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--act); box-shadow: 0 0 0 2px var(--bar); }
 html[data-keyboard] .tabbar { display: none; }
 html[data-keyboard] .screen { padding-bottom: var(--space-6); }
