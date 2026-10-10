@@ -111,6 +111,15 @@ components:
           - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
           - {name: text, component: text}
+          - name: verse
+            label: Verše (pilulky pod textem)
+            type: object
+            list:
+              collapsible: {collapsed: true, summary: '{odkaz}'}
+            fields:
+              - {name: odkaz, type: string, label: 'Místo v Bibli (např. Efezským 2,10)', pattern: {regex: '\S', message: Doplň místo v Bibli}}
+              - {name: text, type: text, label: Znění verše (B21), pattern: {regex: '\S', message: Doplň znění verše}}
+              - {name: url, type: string, label: 'Odkaz na bible.com (nepovinný)'}
       - name: uvod
         label: Úvod
         fields:

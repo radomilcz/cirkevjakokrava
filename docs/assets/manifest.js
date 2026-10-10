@@ -247,6 +247,16 @@
     if(r&&!reduced&&r.inner>1){setInner(slides[cur],r.inner-deck.clientHeight*.55);return}
     go(cur-1);
   }
+  /* verše pod odstavcem: pilulka rozbalí znění verše pod sebou, otevřený je vždy jen jeden;
+     slajd tím změní výšku, tak se přeměří */
+  document.querySelectorAll('.pil').forEach(b=>b.addEventListener('click',()=>{
+    const open=b.getAttribute('aria-expanded')!=='true';
+    b.closest('.verse-blok').querySelectorAll('.pil').forEach(o=>{
+      const on=o===b&&open;o.setAttribute('aria-expanded',String(on));
+      document.getElementById(o.getAttribute('aria-controls')).hidden=!on;
+    });
+    measure();
+  }));
   measure();
   addEventListener('resize',()=>{measure();go(cur,true);startPaint()});
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{measure();go(cur,true)});
