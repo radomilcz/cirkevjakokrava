@@ -310,8 +310,10 @@ function open({
   requestAnimationFrame(() => {
     reposition();
     placeToasts();
+    // a touch screen: a field that takes the focus by itself pops the keyboard over the sheet – the field waits for a tap
+    const touch = window.matchMedia('(pointer: coarse)').matches;
     const target = typeof initialFocus === 'string' ? el.querySelector(initialFocus) : initialFocus
-      || (autofocus ? el.querySelector('.sheet__body :is(input:not([type=hidden]), textarea, select)') : null)
+      || (autofocus && !touch ? el.querySelector('.sheet__body :is(input:not([type=hidden]), textarea, select)') : null)
       || el.querySelector('.sheet__body [role="menuitem"], .sheet__body .menu__row')
       || (headEl ? closeBtn : null) || el.querySelector(FOCUSABLE);
     if (target) target.focus({ preventScroll: true });
