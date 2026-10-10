@@ -326,6 +326,7 @@ UI ranges: `maxPerMonth` 1–31 · `maxConsecutiveWeeks` 1–52 · `*DaysBefore`
 | `consentDate?` | date | Consent to keep the data. |
 | `registeredAt?` | date | Came in through an invite. |
 | `showInDirectory?` | `true` | Others may see phone and e-mail. Stored only with a phone or e-mail; never for a child. |
+| `digest?` | `false` | The person turned the Monday e-mail off (§11). Absent = on. |
 | `needsReview?` | `true` | Quick card created while planning. Cleared when a last name is set or the card is archived. |
 | `note?` | string | Leaders only. |
 | `photo?` | `"i-xxxxxxxx.webp\|jpg"` | A square photo (512 px) in `data/images/`, shown in every avatar instead of the initials. Set by leaders or the person. Never public. |
@@ -1284,7 +1285,17 @@ data repo's `web.yml`:
 
 ## 11. Notifications
 
-Zvonec sends nothing by itself: GitHub cannot message people without an account.
+Zvonec sends one thing by itself – the Monday e-mail; everything else a leader sends by hand.
+- **The Monday e-mail** (`lib/digest.js`, `zvonec/digest.mjs`, the data repo's `digest.yml`, Monday ~7.00 Prague). To
+  everyone with a login (not an invite, not expired), an e-mail and `digest` not false, and only when something waits:
+  „Čeká na tvou odpověď“ (my proposed duties of the next 4 weeks, [Odpověz ve Zvonci] → #moje), „Tento týden sloužíš“
+  (my confirmed duties of the next 7 days), and for leaders and admins „V Obsazení zbývá vyřešit“ in the teams they
+  lead (every team when they lead none): the three nearest missing roles named, the rest, the people who have not
+  answered and the conflicts in one sentence, [Otevři Obsazení]. Subject = the most pressing part („2 služby čekají
+  na tvou odpověď“ · „V neděli máš službu: Kázání“ · „V Obsazení zbývá vyřešit 3 věci“). Greeting in the vocative.
+  Sent over SMTP from the church's mailbox (secrets SMTP_HOST, SMTP_USER, SMTP_PASS, optional SMTP_PORT, MAIL_FROM);
+  the log has counts only. Můj účet › Moje karta has the switch „Pondělní e-mail“ (off without an e-mail address).
+  SMS stays manual („Připomeň“); a notifications centre is not planned (everything has its place on Moje / Obsazení).
 - **„Připomeň“** builds a ready message. Obsazení's section „Čeká na odpověď“ (one text per person for all their
   duties) and the meeting's „○ N čeká“ open the reminders. Per person an `sms:` link (aria „Připomeň v SMS – <jméno>“), or
   without a phone a `mailto:` with subject „Služba ve Zvonci“ (aria „Připomeň e-mailem – <jméno>“), plus „Zavolej“.
@@ -1346,9 +1357,8 @@ Zvonec sends nothing by itself: GitHub cannot message people without an account.
 - **One glossary** for „chybí / čeká / nesedí“ across all screens.
 - **Households**: a household filter in Lidé, or a clickable Domácnost column in Tabulka.
 - **Rename the role „U dětí“ to „Péče o děti“** in the demo and in the live data.
-- **Notifications centre**; renaming „Přidej setkání“ to „Nové setkání“ for the main action.
-- **Real notifications** (SMS / e-mail / push) need a server or a third-party service; out of scope for a
-  GitHub-only platform.
+- Renaming „Přidej setkání“ to „Nové setkání“ for the main action.
+- **SMS** reminders sent by Zvonec (a paid gateway, ~1 Kč per SMS) – only if the Monday e-mail is not enough.
 
 ## 15. Roadmap (agreed direction, not built yet)
 

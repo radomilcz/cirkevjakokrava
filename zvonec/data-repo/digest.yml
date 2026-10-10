@@ -1,0 +1,62 @@
+# Template for the PRIVATE data repo (radomilcz/church-data) – copy to .github/workflows/digest.yml.
+#
+# Every Monday morning Zvonec e-mails each person with a login and an e-mail what waits for them (SPEC §11):
+# duties to answer, their duties that week, and for leaders what Obsazení still has to solve. Nothing waits → no
+# e-mail. The code comes from the public website repo; the data never leaves this repo; the log shows only counts.
+#
+# Secrets (Settings → Secrets and variables → Actions): SMTP_HOST (smtp.gmail.com, smtp.seznam.cz, …),
+# SMTP_USER (the mailbox), SMTP_PASS (an app password, not the mailbox's own one); optional SMTP_PORT (465)
+# and MAIL_FROM. Run it by hand with „only“ set to your address to see your own e-mail first.
+name: Weekly e-mail
+
+on:
+  schedule:
+    - cron: "7 5 * * 1"         # Monday 6:07 / 7:07 Prague time
+  workflow_dispatch:
+    inputs:
+      only:
+        description: Pošli jen na tuhle adresu (zkouška)
+        required: false
+      dry_run:
+        description: Jen spočítej, nic neposílej
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the data
+        uses: actions/checkout@v4
+
+      - name: Check out Zvonec from the public repo
+        uses: actions/checkout@v4
+        with:
+          repository: radomilcz/cirkevjakokrava
+          path: web
+          sparse-checkout: |
+            docs/zvonec
+            zvonec
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Send the e-mails
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          ONLY: ${{ inputs.only }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -- .
+          if [ -n "$ONLY" ]; then set -- "$@" --only "$ONLY"; fi
+          if [ "$DRY_RUN" = "true" ]; then set -- "$@" --dry-run; fi
+          node web/zvonec/digest.mjs "$@"
