@@ -9,7 +9,7 @@
 //                    titleRow, topBar, periodLine
 // filter.js          filterButton, filterState, setFilter, clearFilter, filterCount
 // palette-choices.js paletteChoices (Krém a hlína · Hlína a růžová · Podle zařízení)
-// vocative.js        vocative('Jana') → 'Jano', welcome(name)
+// lib/vocative.js    vocative('Jana') → 'Jano', welcome(name)
 // API for the screen builders: scratchpad/one/F-API.md · living specimen: #kit.
 
 export * from './core.js';
@@ -17,5 +17,5 @@ export * from './layers.js';
 export * from './fields.js';
 export * from './layout.js';
 export * from './filter.js';
-export * from './vocative.js';
+export * from '../lib/vocative.js';
 export { paletteChoices, PALETTE_CHOICES } from './palette-choices.js';
