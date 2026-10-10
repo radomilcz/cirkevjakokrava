@@ -8,6 +8,7 @@ import { openSlots, unconfirmedDuties } from './scheduling.js';
 import { ledBy } from './groups.js';
 import { vocative } from './vocative.js';
 import { isArchived } from './people.js';
+import { digestSignature } from './messages.js';
 import { addDays, dayOf, prettyDay, prettyTime, weekday } from './time.js';
 
 /** How far ahead the e-mail looks (Obsazení's four weeks), and what counts as „this week“. */
@@ -159,7 +160,8 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
   }
 
   const foot = 'Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? Vypni si ho v Můj účet.';
-  text.push('Díky, že sloužíš.', church, '', '—', foot, link('#ucet'));
+  const signature = digestSignature(data.settings);
+  text.push(signature, church, '', '—', foot, link('#ucet'));
   const subject = subjectOf(items);
   const html = `<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(subject)}</title></head>
 <body style="margin:0;padding:0;background:${C.ground}">
@@ -169,7 +171,7 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
 <tr><td style="font:700 26px/32px ${FONT};color:${C.ink}">${esc(hello)}</td></tr>
 <tr><td style="padding:6px 0 0;font:400 16px/23px ${FONT};color:${C.ink2}">Tohle na tebe ve Zvonci čeká.</td></tr>
 ${rows.join('\n')}
-<tr><td style="padding:32px 0 0;font:400 16px/23px ${FONT};color:${C.ink}">Díky, že sloužíš.<br>${esc(church)}</td></tr>
+<tr><td style="padding:32px 0 0;font:400 16px/23px ${FONT};color:${C.ink}">${esc(signature).replace(/\n/g, '<br>')}<br>${esc(church)}</td></tr>
 <tr><td style="padding:32px 0 0;border-bottom:1px solid ${C.line}"></td></tr>
 <tr><td style="padding:16px 0 0;font:400 13px/19px ${FONT};color:${C.ink2}">Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? <a href="${esc(link('#ucet'))}" style="color:${C.ink2}">Vypni si ho v Můj účet</a>.</td></tr>
 </table></td></tr></table></body></html>`;

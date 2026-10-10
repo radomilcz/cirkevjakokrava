@@ -2,16 +2,18 @@
 // column of 640: value blocks (r20, --card, padding 24), each a section with quiet S „Uprav“ → a dialog (a sheet on
 // a phone) that saves at once through the save line. No inline fields, no form foot.
 //   Sbor (název, hlavní místo, adresa) · Úřední údaje (úřední název, IČO, sídlo, účet pro dary – SPEC 15.1) ·
+//   Zprávy (the reminder behind „Připomeň“, the Monday e-mail's signature – SPEC §11) ·
 //   Pravidla (Nejvíc služeb za měsíc, Nejvíc nedělí po sobě) · Kdy Zvonec bučí · Děti (Dospělý je od) · Záloha (Stáhni zálohu; admin: Nahraj zálohu – it replaces everything, asks first).
 
 import { S, can, change, replaceAll } from './state.js';
 import { placeTree, placeById, resolvePlace } from '../lib/places.js';
 import { DEFAULT_LIMITS, DEFAULT_RULES } from '../lib/scheduling.js';
 import { normalize, COLLECTIONS, SCHEMA } from '../lib/store/store.js';
-import { today } from '../lib/time.js';
+import { today, addDays } from '../lib/time.js';
+import { DEFAULT_REMINDER, DEFAULT_SIGNATURE, REMINDER_MARKS, fillReminder, reminderTemplate, digestSignature, unknownMarks } from '../lib/messages.js';
 import { parseAccount, formatAccount, validCompanyId } from '../lib/bank.js';
 import {
-  h, section, sectionAction, agree, plural, toast, confirmSheet, formSheet, field, textInput, selectInput, stepper,
+  h, section, sectionAction, agree, plural, toast, confirmSheet, formSheet, field, textInput, textArea, selectInput, stepper, shortDate,
   fieldError, clearErrors, download, page, button, meta, pill, menuBack, isPhone,
 } from './kit.js';
 
@@ -154,6 +156,71 @@ function legalSheet() {
   });
 }
 
+// ---------- Zprávy (SPEC §11): the reminder behind „Připomeň“ and the Monday e-mail's signature ----------
+
+/** A made-up duty for the preview: Kázání at the next Sunday's meeting. */
+function sampleDuty() {
+  let day = today();
+  while (new Date(`${day}T12:00`).getDay() !== 0) day = addDays(day, 1);
+  return `Kázání (Setkání na pastvě, ${shortDate(day)} v 10.00)`;
+}
+const sampleReminder = (template) => fillReminder(template, { firstName: 'Jana', duties: [sampleDuty()], link: `${location.origin}${location.pathname}#moje` });
+
+/** A message as it will look: a quiet bubble, the lines kept. */
+const bubble = (text, cls) => h('p', { class: ['msg-bubble', cls] }, text);
+
+function messagesValues() {
+  const s = S.data.settings || {};
+  return h('div', { class: 'msg-values' },
+    h('div', { class: 'msg-value' },
+      h('p', { class: 'msg-value__label' }, 'Připomínka v SMS a e-mailu'),
+      bubble(sampleReminder(reminderTemplate(s))),
+      meta(s.reminderText ? 'Vlastní text sboru. Takhle ji dostane Jana.' : 'Výchozí text Zvonce. Takhle ji dostane Jana.')),
+    h('div', { class: 'msg-value' },
+      h('p', { class: 'msg-value__label' }, 'Podpis pondělního e-mailu'),
+      bubble(`${digestSignature(s)}\n${s.churchName || 'Zvonec'}`)));
+}
+
+function messagesSheet() {
+  const s = S.data.settings || {};
+  const preview = bubble('', 'msg-bubble--live');
+  const show = (t) => { preview.textContent = sampleReminder(t.trim() || DEFAULT_REMINDER); };
+  const reminder = textArea({ name: 'reminderText', value: reminderTemplate(s), rows: 4, onInput: show });
+  const signature = textArea({ name: 'digestSignature', value: digestSignature(s), rows: 2 });
+  show(reminder.value);
+  const reset = button('Vrať výchozí text', {
+    variant: 'quiet', size: 's',
+    onclick: (e) => { e.preventDefault(); reminder.value = DEFAULT_REMINDER; show(reminder.value); reminder.focus(); },
+  });
+  formSheet({
+    title: 'Zprávy',
+    size: 'm',
+    body: [
+      field({
+        label: 'Připomínka v SMS a e-mailu',
+        control: reminder,
+        hint: `Zvonec doplní ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
+      }),
+      h('div', { class: 'msg-preview' }, h('p', { class: 'msg-value__label' }, 'Takhle ji dostane Jana'), preview, reset),
+      field({ label: 'Podpis pondělního e-mailu', control: signature, hint: 'Pod ním bude název sboru.' }),
+    ],
+    onSubmit: (form) => {
+      clearErrors(form);
+      const text = reminder.value.trim();
+      const unknown = unknownMarks(text);
+      if (unknown.length) { fieldError(reminder, `Tuhle značku Zvonec nezná: ${unknown.join(', ')}. Zkontroluj ji podle nápovědy.`); return false; }
+      if (text && !/\{(služby|sluzby|služba|sluzba)\}/i.test(text)) { fieldError(reminder, 'Doplň {služby}, jinak ve zprávě nebude, o kterou službu jde.'); return false; }
+      const target = S.data.settings;
+      const set = (key, value, fallback) => { if (value && value !== fallback) target[key] = value; else delete target[key]; };
+      set('reminderText', text, DEFAULT_REMINDER);
+      set('digestSignature', signature.value.trim(), DEFAULT_SIGNATURE);
+      change('nastavení sboru: zprávy');
+      toast('Uloženo.');
+      return undefined;
+    },
+  });
+}
+
 // ---------- the rule blocks ----------
 
 function rulesSheet(group) {
@@ -242,6 +309,7 @@ export function renderSettings() {
     body: h('div', { class: 'cfg-blocks' },
       block({ id: 'church', title: 'Sbor', action: uprav('Uprav sbor', churchSheet), body: churchValues() }),
       block({ id: 'legal', title: 'Úřední údaje', action: uprav('Uprav úřední údaje', legalSheet), body: legalValues() }),
+      block({ id: 'messages', title: 'Zprávy', action: uprav('Uprav zprávy', messagesSheet), body: messagesValues() }),
       RULES.map((g) => block({
         id: g.id, title: g.title, action: uprav(`Uprav: ${g.title}`, () => rulesSheet(g)),
         body: values(g.rules.map((r) => [r.label, ruleWords(r, valueOf(r))])),

@@ -25,6 +25,7 @@ import { teamsWithRoles, placeText, personOf } from './calendar-shared.js';
 import { pickFor, openDutySheet, fillOpenSlots } from './event-duties.js';
 import { eventDetail, notFound } from './event.js';
 import { smsHref, telHref, mailHref } from './people-common.js';
+import { fillReminder, reminderTemplate } from '../lib/messages.js';
 
 const DAYS = 28;
 const KEY = 'obsazeni';
@@ -179,23 +180,20 @@ export function staffingCount() {
 
 // ---------- who waits ----------
 
-const ON_DAY = ['v neděli', 'v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek', 'v sobotu'];
+/** „Kázání (Setkání na pastvě, ne 18. 10. v 10.00)“ – one duty in a reminder. */
+export const dutyLine = (d) => `${d.role?.name || 'služba'} (${d.event.title}, ${shortDate(d.event.start)} v ${clock(d.event.start)})`;
 
-/** The reminder an SMS or an e-mail starts with (no name, tykání, a link to Moje where the answer is). */
-export function reminderText({ event, role }) {
-  const day = dayOf(event.start);
-  const weekday = ON_DAY[new Date(`${day}T12:00`).getDay()];
-  const href = `${location.origin}${location.pathname}#moje`;
-  return `Ahoj, ${weekday} ${shortDate(day, { weekday: false })} máš v rozpisu službu: ${role?.name || 'služba'} (${event.title}, ${clock(event.start)}). Můžeš? Odpověz prosím ve Zvonci: ${href}`;
-}
-
-/** One reminder for all of a person's waiting duties: „Ahoj, v rozpisu máš služby: Zpěv (Setkání na pastvě, ne 11. 10.
- * v 10.00), Klávesy (…). Můžeš? …“ – a single duty keeps reminderText's words. */
+/**
+ * The reminder an SMS or an e-mail starts with, for all of a person's waiting duties at once: the church's text from
+ * Nastavení sboru › Zprávy (lib/messages.js) with the name, the duties and the link to Moje filled in.
+ */
 export function reminderTextAll(duties) {
-  if (duties.length === 1) return reminderText(duties[0]);
-  const href = `${location.origin}${location.pathname}#moje`;
-  const items = duties.map((d) => `${d.role?.name || 'služba'} (${d.event.title}, ${shortDate(d.event.start)} v ${clock(d.event.start)})`);
-  return `Ahoj, v rozpisu máš služby: ${items.join(', ')}. Můžeš? Odpověz prosím ve Zvonci: ${href}`;
+  const person = duties[0]?.person;
+  return fillReminder(reminderTemplate(S.data?.settings), {
+    firstName: person?.nickname || person?.firstName,
+    duties: duties.map(dutyLine),
+    link: `${location.origin}${location.pathname}#moje`,
+  });
 }
 
 /** SMS (or e-mail) with the ready text, and Zavolej – the trail of a waiting person. */
