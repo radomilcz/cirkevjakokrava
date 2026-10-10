@@ -1,7 +1,7 @@
 // Zvonec One – Přehled (#prehled[/<YYYY-MM>], leaders): only the headline numbers Zvonec knows for sure, each tile
 // leading to the screen where the detail lives (the owner: „v přehledu jen přehledy, žádné detailní informace“).
 // No attendance – the church does not count who came (the owner).
-//   Each section is one figure block (the kit's figures(), Tvoje břemeno's anatomy – DESIGN audit 2026-10-09):
+//   Each section is one figure block (the kit's figures(), Tvoje vytížení's anatomy – DESIGN audit 2026-10-09):
 //   Lidé       „71 lidí ve sboru“, who joined and left in a year, then členové · přátelé · hosté · z toho děti (each
 //              opens Lidé under that Filtr); „V archivu 3 karty ›“
 //   Služby     ‹ Říjen 2026 ›, „96 % obsazeno 103 ze 107 míst“ with a bar, služeb · slouží · čeká na odpověď

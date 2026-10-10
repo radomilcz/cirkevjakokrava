@@ -521,7 +521,7 @@ function fundsSection() {
   });
 }
 
-/** The year: ‹ 2026 ›, the figure block (Tvoje břemeno's anatomy), how the bank is doing. */
+/** The year: ‹ 2026 ›, the figure block (Tvoje vytížení's anatomy), how the bank is doing. */
 function yearBlock(year, t, open) {
   return h('div', { class: 'gifts-year' },
     periodLine({ year, href: (y) => `#dary/${y}`, here: year === thisYear() }),

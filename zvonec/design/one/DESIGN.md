@@ -15,7 +15,7 @@
 
 > **Update – the design audit of Dary and Sbírky (2026-10-09).** The owner: „ty mnou navržené jsou esteticky jinde“.
 > Four auditors (typography, spacing, composition, the system) agreed; the new parts now use the house blocks only:
-> - **Kit pieces added:** `figures()` (Tvoje břemeno's anatomy for any headline number: the title-face figure 56/48
+> - **Kit pieces added:** `figures()` (Tvoje vytížení's anatomy for any headline number: the title-face figure 56/48
 >   with its words – the unit too – in meta, a bar, a sentence, small figures under a hairline, one action; --card or
 >   the --feature fill), `amount()` (strong tabular figures, „Kč“ in --ink-2), `periodLine({ year })` (‹ 2026 ›
 >   Letos), `callout({ onDismiss })` (a quiet ✕). Tokens `--type-figure`, `--qr`, `--qr-poster`.
@@ -159,11 +159,11 @@
 > **Update – Moje is about me; Obsazení keeps its name (2026-10-08).** „Úkoly“ suggested a to-do list one writes
 > into, so the page is Obsazení again (`#obsazeni`, the circled tick; `#ukoly` redirects). Moje drops what other
 > screens already show (Co je potřeba = Obsazení, Tento týden = Kalendář) and keeps only what concerns me: the answer
-> card · Obsazení as one line for leaders („Obsazení ● chybí 1 · ● 1 problém · ○ 3 čekají ›“) · **Tvoje břemeno** (this
+> card · Obsazení as one line for leaders („Obsazení ● chybí 1 · ● 1 problém · ○ 3 čekají ›“) · **Tvoje vytížení** (this
 > month's duties against my limit as a big number and pips, a sentence – „Ještě máš místo na 1 službu.“ / „Tenhle
 > měsíc máš plno.“ / „O 1 službu víc, než zvládneš.“ / pauza –, Sundays in a row, this year's duties, my most frequent
 > role; leaders get „Kolik zvládnu“) · Tvoje další služby · Odmítnuté · **Kdy nemůžu** (+ Přidej) · Minulé služby. ≥ 1200
-> the right column holds the Obsazení line, Tvoje břemeno and Kdy nemůžu.
+> the right column holds the Obsazení line, Tvoje vytížení and Kdy nemůžu.
 
 > **Update – Obsazení is a list of tasks (2026-10-08).** With Seznam's status tag and the Rozpis table, Obsazení had
 > become a third calendar. The owner chose variant 1: it lists the leader's tasks for the next 4 weeks by the kind of
