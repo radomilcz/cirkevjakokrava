@@ -247,11 +247,14 @@
     if(r&&!reduced&&r.inner>1){setInner(slides[cur],r.inner-deck.clientHeight*.55);return}
     go(cur-1);
   }
-  /* verše pod odstavcem: pilulka se rozjede do znění verše; slajd tím vyroste, tak se přeměří */
-  document.querySelectorAll('.pil>button').forEach(b=>b.addEventListener('click',()=>{
-    const p=b.parentElement,open=!p.classList.contains('open');
-    p.classList.toggle('open',open);b.setAttribute('aria-expanded',String(open));
-    p.querySelector('.pil-v').hidden=!open;
+  /* verše pod odstavcem: pilulka rozbalí znění verše pod sebou, otevřený je vždy jen jeden;
+     slajd tím změní výšku, tak se přeměří */
+  document.querySelectorAll('.pil').forEach(b=>b.addEventListener('click',()=>{
+    const open=b.getAttribute('aria-expanded')!=='true';
+    b.closest('.verse-blok').querySelectorAll('.pil').forEach(o=>{
+      const on=o===b&&open;o.setAttribute('aria-expanded',String(on));
+      document.getElementById(o.getAttribute('aria-controls')).hidden=!on;
+    });
     measure();
   }));
   measure();

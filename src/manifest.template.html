@@ -138,18 +138,20 @@
   {{ sekce(x, 'read') }}
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <p class="text">{{ x.text|txt }}</p>
-    {#- Verše pod odstavcem: pilulka s odkazem, po kliknutí se rozjede a ukáže znění. #}
+    {#- Verše pod odstavcem: pilulky s odkazem, kliknutím se pod nimi rozbalí znění (vždy jen jeden). #}
     {%- if x.get('verse') %}
-    <div class="pilulky">
-    {%- for v in x.verse %}
-      <div class="pil">
-        <button type="button" aria-expanded="false" aria-controls="{{ x.id }}-v{{ loop.index }}">{{ v.odkaz }}</button>
-        <div class="pil-v" id="{{ x.id }}-v{{ loop.index }}" hidden>
-          <p>„{{ v.text|txt }}“</p>
-          {%- if v.get('url') %}<a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.odkaz }} · B21</a>{% endif %}
-        </div>
+    <div class="verse-blok">
+      <div class="pilulky">
+      {%- for v in x.verse %}
+        <button type="button" class="pil" aria-expanded="false" aria-controls="{{ x.id }}-v{{ loop.index }}">{{ v.odkaz }}</button>
+      {%- endfor %}
       </div>
-    {%- endfor %}
+      {%- for v in x.verse %}
+      <blockquote class="pil-v" id="{{ x.id }}-v{{ loop.index }}" hidden>
+        <p>„{{ v.text|txt }}“</p>
+        {%- if v.get('url') %}<a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.odkaz }}, Bible21</a>{% endif %}
+      </blockquote>
+      {%- endfor %}
     </div>
     {%- endif %}
     {{ pata(None, None) }}
