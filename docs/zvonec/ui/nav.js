@@ -34,13 +34,13 @@ export const NAV = [
 ];
 export const GROUP_TITLES = { gather: 'Zdroje' };
 
-/** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab; Obsazení,
-    Přehled and Dary are in „Více“ (Správa); Sbírky are reached from Moje (and Správa for leaders) and light Moje. */
-const NOT_A_TAB = new Set(['skupiny', 'obsazeni', 'prehled', 'dary', 'sbirky']);
+/** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab; Přehled is
+    in the person's menu (Správa); Sbírky are reached from Moje (and Správa for leaders) and light Moje. */
+const NOT_A_TAB = new Set(['skupiny', 'prehled', 'dary', 'sbirky']);
 const TAB_OF = { skupiny: 'lide', sbirky: 'moje' };
 
 /** Routes whose nav value is 'me' are the person's menu pages (Můj účet, Kdy nemůžu, Přístupy, Nastavení sboru). */
-const PHONE_PERSON = new Set(['me', 'obsazeni', 'sablony', 'formaty', 'mista', 'prehled', 'dary']);
+const PHONE_PERSON = new Set(['me', 'sablony', 'formaty', 'mista', 'prehled', 'dary']);
 
 /** Moje: duties waiting for my answer. */
 export function waitingAnswers() {
@@ -99,10 +99,7 @@ function build() {
   h('span', { class: 'tab__label' }, label)));
   const personTab = h('button', {
     type: 'button', class: 'tab tab--more', dataset: { nav: 'me' }, 'aria-haspopup': 'dialog', 'aria-label': 'Více – můj účet, nastavení a správa', onclick: openMenu,
-  }, h('span', { class: 'tab__niche' }, icon('more'),
-    // Obsazení lives here on a phone: its count rides on „Více“ (as iOS's More carries its tabs' badges)
-    can('leader') ? h('span', { class: 'tab__badge', dataset: { count: 'staffing' } }) : null,
-    h('span', { class: 'tab__dot', dataset: { invites: '' }, hidden: true })),
+  }, h('span', { class: 'tab__niche' }, icon('more'), h('span', { class: 'tab__dot', dataset: { invites: '' }, hidden: true })),
   h('span', { class: 'tab__label' }, 'Více'));
   tabbarEl().replaceChildren(...tabs, personTab);
 

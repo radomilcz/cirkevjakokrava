@@ -862,10 +862,10 @@ textarea.input { min-height: 112px; padding: 12px var(--space-4); line-height: v
   .page--drill.page--column > .topbar { max-width: calc(var(--page-col) + 2 * var(--gutter)); }
 }
 
-/* the head of every detail: band 96 → 16 or mark → 32 → tags → 8 → h1 → 12 → facts (→ 32 → the first section) */
+/* the head of every detail: band 96 or mark → 16 → tags → 8 → h1 → 12 → facts (→ 32 → the first section) */
 .dhead { display: grid; justify-items: start; min-width: 0; }
 .dhead__band { justify-self: stretch; min-height: 96px; margin-bottom: var(--space-4); border-radius: var(--shape-block); overflow: hidden; }
-.dhead__mark { margin-bottom: var(--space-6); }   /* 32: the photo button's camera overhangs the circle */
+.dhead__mark { margin-bottom: var(--space-5); }
 /* optical alignment (the owner): a round mark reads as set in from the edge the text starts at – nudge it out */
 .dhead__mark > :is(.avatar, .photo-btn), .pane__corner > :is(.avatar, .photo-btn) { margin-left: -4px; }
 .dhead__tags { display: flex; flex-wrap: wrap; gap: var(--gap-x); margin-bottom: var(--space-2); }
