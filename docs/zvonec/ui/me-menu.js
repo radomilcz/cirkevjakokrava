@@ -6,7 +6,7 @@
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
 //   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
-//   Správa (leaders)            Sbírky › (phone) · Dary › (phone; the treasurer too) · Přehled › (phone) · Přístupy [1 čeká] › ·
+//   Správa (leaders)            Obsazení [3] › (phone) · Sbírky › (phone) · Dary › (phone; the treasurer too) · Přehled › (phone) · Přístupy [1 čeká] › ·
 //                               Nastavení sboru ›
 //   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
@@ -23,7 +23,8 @@ import { resetFinance, DEMO_FINANCE_KEY } from './finance-state.js';
 import { resetGiving } from './giving-state.js';
 import { emptyData } from '../lib/store/store.js';
 import { today } from '../lib/time.js';
-import { h, list, row, avatar, personName, icon, joinMeta, dayRange, uid } from './core.js';
+import { h, list, row, avatar, personName, icon, joinMeta, dayRange, uid, badge } from './core.js';
+import { staffingCount } from './staffing.js';
 import { layer, toast, confirmSheet } from './layers.js';
 import { isPhone } from './layout.js';
 import { paletteChoices } from './palette-choices.js';
@@ -48,6 +49,8 @@ export function openMeMenu({ from } = {}) {
   const role = ACCESS_LABELS[S.me?.access] || '';
   const next = person ? blockoutsOf(person.id)[0] : null;
   const invites = leader ? waitingInvites() : 0;
+  let staffing = 0;
+  if (leader && isPhone()) try { staffing = staffingCount(); } catch { staffing = 0; }
   let sheet;
   const then = (fn) => () => { sheet.close({ restore: false }); fn(); };
   const page = (title, href, { meta, trail } = {}) => row({ title, meta, single: !meta, href, trail, chevron: true });
@@ -88,6 +91,7 @@ export function openMeMenu({ from } = {}) {
     leader || (isPhone() && (showDary() || canRunFundraisers())) ? [
       heading('Správa'),
       list([
+        leader && isPhone() ? page('Obsazení', '#obsazeni', { trail: staffing ? badge(staffing, { label: `Zbývá vyřešit ${staffing}` }) : null }) : null,
         canRunFundraisers() && isPhone() ? page('Sbírky', '#sbirky') : null,
         showDary() && isPhone() ? page('Dary', '#dary') : null,
         leader && isPhone() ? page('Přehled', '#prehled') : null,
