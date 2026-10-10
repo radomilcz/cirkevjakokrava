@@ -149,7 +149,7 @@
       {%- for v in x.verse %}
       <blockquote class="pil-v" id="{{ x.id }}-v{{ loop.index }}" hidden>
         <p>„{{ v.text|txt }}“</p>
-        {%- if v.get('url') %}<a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.odkaz }}, Bible21</a>{% endif %}
+        {%- if v.get('url') %}<a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.odkaz }}: Bible21</a>{% endif %}
       </blockquote>
       {%- endfor %}
     </div>
