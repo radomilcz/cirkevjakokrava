@@ -7,7 +7,7 @@
 //       Tvoje další služby (confirmed, and cancelled ones struck) · Odmítnuté služby (a quiet section) · Minulé služby ›
 //   A duty opens its meeting: #moje/<id> – beside the list at ≥ 1200 (the pane, only on a click), a page below 1200
 //   (back „‹ Moje“). The detail itself is P3's (eventDetail in ui/event.js).
-// Everything here is about me (the owner: „what concerns me, the questions to me, my Břemeno, a nice metric“):
+// Everything here is about me (the owner: „what concerns me, the questions to me, my Břemeno (now „Tvoje vytížení“), a nice metric“):
 //   the answer card (the questions to me) · Obsazení (leaders: one line, what my team still has to resolve ›) ·
 //   Tvoje vytížení (this month's duties against my limit as a number and pips, a sentence, Sundays in a row, this year,
 //   my most frequent role) · Tvoje další služby · Odmítnuté služby · Kdy nemůžu (my ranges, + Přidej) · Minulé služby.

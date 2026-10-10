@@ -1,5 +1,5 @@
 // Zvonec One – Kalendář › Rozpis (DESIGN §6.2): who serves when, as the classic church roster – a table.
-//   #kalendar/rozpis/<YYYY-MM>[/<eventId> | /bremeno]
+//   #kalendar/rozpis/<YYYY-MM>[/<eventId> | /vytizeni]
 // D: the period line ‹ Říjen 2026 › ······ Dnes, the legend „○ čeká na odpověď ● něco nesedí“ once (leaders, when a
 // mark appears), then one table per kind of meeting of the month („Setkání na pastvě“, „Zkouška chval“; the meetings
 // that happen once share „Další setkání“). A column is a meeting (the day, the time, for leaders ◯ 14 z 15; a click
@@ -9,8 +9,8 @@
 // this month; read down: who serves on Sunday. The role column stays put while a phone scrolls the meetings sideways.
 // Filtr › Tým narrows the rows, the rest of Filtr and the search narrow the columns. What is over is in --ink-2.
 // A click on a name (leaders) → the duty sheet; on „Ty“ → my answer.
-// Also here: Kalendář's ⋯ (calendarMenu) – Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa · Břemeno –
-// the Břemeno dialog and the print (A4 landscape, a table of every role).
+// Also here: Kalendář's ⋯ (calendarMenu) – Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa · Vytížení –
+// the Vytížení dialog and the print (A4 landscape, a table of every role).
 
 import {
   h, slot, list, row, avatar, personName, layer, formSheet, field, selectInput, isPhone,
@@ -183,7 +183,7 @@ function rosterBody(month) {
   return [note, legend, tables.length ? h('div', { class: 'rlist' }, tables) : null];
 }
 
-// ---------- Břemeno (a dialog) ----------
+// ---------- Vytížení (a dialog) ----------
 
 function loadRows(month) {
   const rows = servingLoad(S.data, month, { today: today() });
@@ -199,14 +199,14 @@ function loadRows(month) {
       trail: bar,
       label: `${personName(r.person)}: ${meta}${r.over ? ', víc, než zvládne' : ''}`,
     });
-  }), { label: 'Břemeno', cls: 'load-list' });
+  }), { label: 'Vytížení', cls: 'load-list' });
 }
 
-/** Břemeno: how many duties each person has in the month, the busiest first. */
+/** Vytížení: how many duties each person has in the month, the busiest first. */
 export function openLoad(month, { onClose } = {}) {
   if (!can('leader')) return;
   layer.open({
-    kind: 'sheet', size: 'm', title: 'Břemeno', subtitle: `Kolik služeb má kdo ${inMonth(month)}. Nahoře ti, kdo mají nejvíc.`,
+    kind: 'sheet', size: 'm', title: 'Vytížení', subtitle: `Kolik služeb má kdo ${inMonth(month)}. Nahoře ti, kdo mají nejvíc.`,
     body: loadRows(month), onClose,
   });
 }
@@ -289,7 +289,7 @@ function openPrint(month) {
 // ---------- Kalendář's ⋯ (the same in every view) ----------
 
 /**
- * ⋯ of Kalendář: Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa (leaders) · Břemeno (leaders).
+ * ⋯ of Kalendář: Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa (leaders) · Ukaž, kdo kolik slouží (Vytížení, leaders).
  * `month`: the shown month (Měsíc, Rozpis); `ids()`: the meetings „Doplň volná místa“ works on.
  */
 export function calendarMenu({ month = currentMonth(), ids = () => [] } = {}) {
@@ -304,27 +304,27 @@ export function calendarMenu({ month = currentMonth(), ids = () => [] } = {}) {
 
 // ---------- the view ----------
 
-let bremenoShownFor = null;   // the URL whose Břemeno dialog was opened (a redraw does not open it again)
+let loadShownFor = null;   // the URL whose Vytížení dialog was opened (a redraw does not open it again)
 
-/** #kalendar/rozpis/<YYYY-MM>[/<eventId> | /bremeno] */
+/** #kalendar/rozpis/<YYYY-MM>[/<eventId> | /vytizeni] */
 export function renderRoster(parts = [], { menu } = {}) {
   const month = isMonth(parts[0]) ? parts[0] : thisMonth();
   const base = `#kalendar/rozpis/${month}`;
   const extra = parts[1] || null;
-  const bremeno = extra === 'bremeno';
-  const id = extra && !bremeno && extra !== 'upozorneni' ? extra : null;
+  const load = extra === 'vytizeni';
+  const id = extra && !load && extra !== 'upozorneni' ? extra : null;
   const opened = id ? eventById(S.data, id) : null;
   if (id && !opened) return missingPage({ href: base, label: 'Rozpis' });
   if (opened) return eventPage(opened, { href: base, label: 'Rozpis' });   // the table keeps the whole width
-  if (bremeno && can('leader')) {
-    if (bremenoShownFor !== location.hash) {
-      bremenoShownFor = location.hash;
+  if (load && can('leader')) {
+    if (loadShownFor !== location.hash) {
+      loadShownFor = location.hash;
       queueMicrotask(() => {
         if (isLayerOpen()) return;
-        openLoad(month, { onClose: () => { if (location.hash.endsWith('/bremeno')) history.replaceState(history.state, '', base); bremenoShownFor = null; } });
+        openLoad(month, { onClose: () => { if (location.hash.endsWith('/vytizeni')) history.replaceState(history.state, '', base); loadShownFor = null; } });
       });
     }
-  } else bremenoShownFor = null;
+  } else loadShownFor = null;
   const fillable = () => rosterData(month).items.map((x) => x.event).filter((e) => !e.cancelled && !isPast(e)).map((e) => e.id);
   return calendarScreen({
     view: 'rozpis', month,
