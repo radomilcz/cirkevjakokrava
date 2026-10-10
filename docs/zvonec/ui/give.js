@@ -15,7 +15,7 @@ import {
 } from './kit.js';
 
 export async function copyValue(value, done) {
-  try { await navigator.clipboard.writeText(value); toast(done); } catch { toast('Kopírování nefunguje. Opiš si to.'); }
+  try { await navigator.clipboard.writeText(value); toast(done); } catch { toast('Kopírování se nepovedlo. Opiš si to.'); }
 }
 
 /** Gives me a donor symbol the first time I need one (one change, after this render). */
@@ -59,7 +59,7 @@ export function paymentBlock({ rows, payment, hint, poster = false }) {
   const details = list(rows.filter(Boolean), { label: 'Platba' });
   return h('div', { class: ['give', poster && 'give--poster'] },
     h('div', { class: 'give__details' }, details,
-      poster ? null : h('div', { class: 'give-qr-toggle' }, disclosure([qrBlock(payment, 'Hodí se, když platíš z jiného zařízení.')], { label: 'Ukaž QR kód' }))),
+      poster ? null : h('div', { class: 'give-qr-toggle' }, disclosure([qrBlock(payment, 'Naskenuj ho v bankovní aplikaci v telefonu.')], { label: 'Ukaž QR kód' }))),
     qrBlock(payment, hint, { poster }));
 }
 
@@ -84,7 +84,7 @@ export function paymentSheet({ amount, fundraiser, vs, poster = false }) {
   const hint = amount ? 'Naskenuj v bankovní aplikaci.' : 'Naskenuj v bankovní aplikaci, doplníš jen částku.';
   const after = poster
     ? 'Chceš potvrzení o daru do daňového přiznání? Napiš do platby svůj variabilní symbol ze Zvonce.'
-    : vs ? 'Až dar dorazí na účet sboru, poděkujeme ti na stránce Moje. Zvonec se do banky dívá přes den každou hodinu.'
+    : vs ? 'Až dar dorazí na účet sboru, poděkujeme ti na stránce Moje. Zvonec se přes den každou hodinu dívá do banky.'
       : 'Bez variabilního symbolu zůstane dar anonymní a potvrzení o něm nedostaneš.';
   const sheet = layer.open({
     kind: 'sheet',
@@ -116,7 +116,7 @@ export function giveSheet({ fundraiserId } = {}) {
     submitLabel: 'Ukaž platbu',
     size: 's',
     body: [
-      field({ label: 'Kolik', control: amount, optional: true, hint: 'Můžeš ji nechat prázdnou a doplnit v bance.' }),
+      field({ label: 'Kolik', control: amount, optional: true, hint: 'Částku můžeš nechat prázdnou a doplnit v bance.' }),
       purpose ? field({ label: 'Na co', control: purpose }) : null,
     ],
     onSubmit: (form) => {

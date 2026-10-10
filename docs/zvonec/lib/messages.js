@@ -11,7 +11,7 @@ export const DEFAULT_SIGNATURE = 'Díky, že sloužíš.';
 export const REMINDER_MARKS = [
   ['{jméno}', 'křestní jméno v 5. pádě (Jano, Petře)'],
   ['{služby}', 'služby s dnem a časem'],
-  ['{odkaz}', 'odkaz na Moje, kde se odpovídá'],
+  ['{odkaz}', 'odkaz na stránku Moje, kde se dá odpovědět'],
 ];
 
 /** The church's reminder text, or the default one. */

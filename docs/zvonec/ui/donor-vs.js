@@ -23,9 +23,9 @@ export function vsSheet({ subtitle, current, intro, isTaken, onSave }) {
     onSubmit: async (form) => {
       clearErrors(form);
       const vs = cleanVs(input.value);
-      if (!vs) { fieldError(input, 'Variabilní symbol jsou jen číslice, nejvýš deset.'); return false; }
+      if (!vs) { fieldError(input, 'Variabilní symbol má jen číslice, nejvýš deset.'); return false; }
       if (vs === cleanVs(current)) return undefined;
-      if (isTaken(vs)) { fieldError(input, 'Tenhle symbol už má někdo jiný. Vyber jiný.'); return false; }
+      if (isTaken(vs)) { fieldError(input, 'Tenhle symbol už má někdo jiný. Zkus jiné číslo.'); return false; }
       await onSave(vs);
       return undefined;
     },

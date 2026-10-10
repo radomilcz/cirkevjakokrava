@@ -102,7 +102,7 @@ function setClosed(f, closed) {
 function removeFundraiser(f) {
   confirmSheet({
     title: `Chceš smazat sbírku ${f.name}?`,
-    text: 'Zatím do ní nepřišel žádný dar. Kdyby někdo poslal platbu s jejím symbolem, Zvonec ji už nepozná.',
+    text: 'Zatím do ní nepřišel žádný dar. Kdyby pak někdo poslal platbu s jejím symbolem, Zvonec už nebude vědět, kam patří.',
     confirmLabel: 'Smaž sbírku',
     onConfirm: () => {
       S.data.fundraisers = (S.data.fundraisers || []).filter((x) => x.id !== f.id);
@@ -159,13 +159,13 @@ function fundDetail(f, frame) {
             action: give,
           }),
           !account && !f.closed ? callout({ tone: 'wait', title: 'Sbor zatím nemá vyplněný účet pro dary.', text: 'Správce ho doplní v Nastavení sboru › Úřední údaje.' }) : null,
-          run ? meta('Kdo dal kolik, vidí jen pokladník a správci v Darech.') : null,
+          run ? meta('Kdo dal kolik, vidí jen pokladník a správci.') : null,
         ],
       }),
       f.note ? section({ title: 'Na co se vybírá', body: text(f.note) }) : null,
       run && account ? section({
         title: 'Na plakát',
-        body: list([row({ lead: placeMark('image'), title: 'QR platba pro plakát nebo plátno', meta: 'Bez variabilního symbolu, s kódem sbírky.', onclick: () => paymentSheet({ fundraiser: f, poster: true }), chevron: true })], { label: 'Na plakát' }),
+        body: list([row({ lead: placeMark('image'), title: 'QR platba pro plakát nebo plátno', meta: 'Bez variabilního symbolu, se specifickým symbolem sbírky.', onclick: () => paymentSheet({ fundraiser: f, poster: true }), chevron: true })], { label: 'Na plakát' }),
       }) : null,
     ],
   });
@@ -179,7 +179,7 @@ function listBody(chosenId) {
   return [
     open.length ? list(open.map((f) => fundRow(f, { selected: f.id === chosenId })), { label: 'Probíhající sbírky' }) : empty({
       icon: 'heart', title: 'Teď neběží žádná sbírka.',
-      text: run ? 'Když sbor potřebuje peníze na něco konkrétního, založ sbírku. Dostane vlastní QR platbu.' : 'Až nějaká začne, uvidíš ji tady.',
+      text: run ? 'Když sbor potřebuje peníze na něco konkrétního, založ sbírku. Sbírka dostane vlastní QR platbu.' : 'Až nějaká začne, uvidíš ji tady.',
     }),
     done.length ? section({ title: 'Skončené', count: done.length, body: list(done.map((f) => fundRow(f, { selected: f.id === chosenId })), { label: 'Skončené sbírky' }) }) : null,
   ];

@@ -91,7 +91,7 @@ function subjectOf({ answer, week, obsazeni }) {
     return `${ON_DAY[weekday(d.start)][0].toUpperCase()}${ON_DAY[weekday(d.start)].slice(1)} máš službu: ${week[0].role}`;
   }
   const n = obsazeni.missing.length + obsazeni.problems + obsazeni.waiting;
-  return `V Obsazení ${agree(n, 'zbývá', 'zbývají', 'zbývá')} vyřešit ${n} ${agree(n, 'věc', 'věci', 'věcí')}`;
+  return `V Obsazení zbývá vyřešit ${n} ${agree(n, 'věc', 'věci', 'věcí')}`;
 }
 
 // ---------- the e-mail ----------
@@ -146,9 +146,9 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
       text.push(`– ${what}: ${m.event.title}, ${when(m.event)}`);
     }
     const more = [
-      missing.length > 3 ? `ještě ${missing.length - 3} ${agree(missing.length - 3, 'místo chybí', 'místa chybí', 'míst chybí')}` : null,
-      waiting ? `${waiting} ${agree(waiting, 'člověk ještě neodpověděl', 'lidé ještě neodpověděli', 'lidí ještě neodpovědělo')}` : null,
-      problems ? `${problems} ${agree(problems, 'věc nesedí', 'věci nesedí', 'věcí nesedí')}` : null,
+      missing.length > 3 ? `chybí ještě ${missing.length - 3} ${agree(missing.length - 3, 'místo', 'místa', 'míst')}` : null,
+      waiting ? `${waiting} ${agree(waiting, 'člověk neodpověděl', 'lidé neodpověděli', 'lidí neodpovědělo')}` : null,
+      problems ? `${problems} ${agree(problems, 'věc v rozpisu nesedí', 'věci v rozpisu nesedí', 'věcí v rozpisu nesedí')}` : null,
     ].filter(Boolean);
     if (more.length) {
       const t = `${more.join(', ')}.`.replace(/^./, (c) => c.toUpperCase());
@@ -159,7 +159,7 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
     text.push(`Otevři Obsazení: ${link('#obsazeni')}`, '');
   }
 
-  const foot = 'Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? Vypni si ho v Můj účet.';
+  const foot = 'Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? Vypni si ho na stránce Můj účet.';
   const signature = digestSignature(data.settings);
   text.push(signature, church, '', '—', foot, link('#ucet'));
   const subject = subjectOf(items);
@@ -173,7 +173,7 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
 ${rows.join('\n')}
 <tr><td style="padding:32px 0 0;font:400 16px/23px ${FONT};color:${C.ink}">${esc(signature).replace(/\n/g, '<br>')}<br>${esc(church)}</td></tr>
 <tr><td style="padding:32px 0 0;border-bottom:1px solid ${C.line}"></td></tr>
-<tr><td style="padding:16px 0 0;font:400 13px/19px ${FONT};color:${C.ink2}">Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? <a href="${esc(link('#ucet'))}" style="color:${C.ink2}">Vypni si ho v Můj účet</a>.</td></tr>
+<tr><td style="padding:16px 0 0;font:400 13px/19px ${FONT};color:${C.ink2}">Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? <a href="${esc(link('#ucet'))}" style="color:${C.ink2}">Vypni si ho na stránce Můj účet</a>.</td></tr>
 </table></td></tr></table></body></html>`;
   return { subject, text: text.join('\n'), html };
 }

@@ -191,7 +191,7 @@ function nextSection(duties, openId) {
     cls: 'mine-next',
     body: [
       list(shown.map((d) => dutyRow(d, openId)), { label: 'Tvoje další služby' }),
-      rest > 0 ? rowLink(rest === 1 ? 'Ukaž další' : `Ukaž další ${rest}`, { onclick: () => { state.more = true; render(); } }) : null,
+      rest > 0 ? rowLink(rest === 1 ? 'Ukaž další' : `Ukaž ${agree(rest, 'další', 'další', 'dalších')} ${rest}`, { onclick: () => { state.more = true; render(); } }) : null,
     ],
   });
 }
@@ -290,7 +290,7 @@ function loadCard(person) {
   return section({
     title: 'Tvoje břemeno',
     cls: 'mine-load',
-    action: can('leader') ? button('Kolik zvládnu', { variant: 'quiet', size: 's', cls: 'section-action', onclick: () => limitsSheet(person), label: 'Nastav, kolik toho zvládneš' }) : null,
+    action: can('leader') ? button('Uprav', { variant: 'quiet', size: 's', cls: 'section-action', onclick: () => limitsSheet(person), label: 'Nastav, kolik toho zvládneš' }) : null,
     body: h('div', { class: 'load-card' },
       h('div', { class: 'load-card__main' },
         h('p', { class: 'load-card__count' },
@@ -301,7 +301,7 @@ function loadCard(person) {
         })))),
       h('p', { class: 'load-card__say', dataset: { tone: sentence.tone } }, sentence.text),
       h('div', { class: 'load-stats' },
-        stat(`${l.sundays} ${outOf(l.maxSundays)}`, l.sundays === 1 ? 'neděle v řadě' : 'nedělí po sobě', { warn: l.sundays > l.maxSundays }),
+        stat(`${l.sundays} ${outOf(l.maxSundays)}`, l.sundays === 1 ? 'neděle po sobě' : 'nedělí po sobě', { warn: l.sundays > l.maxSundays }),
         stat(String(l.year), `${agree(l.year, 'služba', 'služby', 'služeb')} letos`),
         l.topRole ? stat(l.topRole, 'nejčastěji') : null)),
   });
@@ -360,8 +360,8 @@ export function renderMine(parts = []) {
       tone: 'info',
       title: 'Zvonec neví, která karta je tvoje.',
       text: S.mode === 'live'
-        ? 'Bez ní tu nevidíš svoje služby. Řekni vedoucímu, ať ji propojí s tvým přístupem.'
-        : 'Teď se díváš jako správce bez karty v Lidech. Někoho jiného si vybereš v menu pod svým jménem.',
+        ? 'Bez ní tu nevidíš svoje služby. Řekni vedoucímu, ať ji propojí s tvým přihlášením.'
+        : 'Teď se díváš jako správce bez vlastní karty. Někoho jiného si vybereš v menu pod svým jménem.',
     }) : null,
     nothing ? empty({
       icon: 'calendar', title: 'Zatím tu nemáš žádné služby.',

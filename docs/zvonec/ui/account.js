@@ -85,10 +85,10 @@ function cardSection(person) {
   if (!person) {
     return callout({
       tone: 'info',
-      title: 'Zvonec neví, která karta v Lidech je tvoje.',
+      title: 'Zvonec neví, která karta je tvoje.',
       text: live
-        ? 'Řekni vedoucímu, ať ji propojí s tvým přístupem. Pak tu uvidíš svůj kontakt a služby.'
-        : 'Teď se díváš jako správce bez karty v Lidech. Někoho jiného si vybereš v menu pod svým jménem.',
+        ? 'Řekni vedoucímu, ať ji propojí s tvým přihlášením. Pak tu uvidíš svůj kontakt a služby.'
+        : 'Teď se díváš jako správce bez vlastní karty. Někoho jiného si vybereš v menu pod svým jménem.',
     });
   }
   return section({
@@ -206,11 +206,11 @@ export function viewAsSheet() {
         onclick: () => pick(p.id, level),
       })), { label: 'Lidé z ukázky' }),
       field({
-        label: 'Někdo jiný jako',
+        label: 'Jako kdo se díváš',
         control: segmented([{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }], access, (v) => { access = v; }, { label: 'Přístup' }),
       }),
       button('Vyber člověka', { icon: 'search', block: true, onclick: others }),
-      rowLink('Správce bez karty v Lidech', { onclick: () => pick(null, 'admin') }),
+      rowLink('Správce bez karty', { onclick: () => pick(null, 'admin') }),
     ],
   });
 }
@@ -244,7 +244,7 @@ function arrivedSection() {
       list(G.notes.map((n) => row({
         lead: dateArch(n.d, { quiet: true }),
         title: sbirka(n) ? `Sbírka ${sbirka(n)}` : 'Provoz sboru',
-        meta: 'dorazil na účet sboru',
+        meta: 'dar dorazil na účet sboru',
         trail: amount(money(n.a)),
       })), { label: 'Tvoje dary' }),
     ],
@@ -274,7 +274,7 @@ function giveSection(person) {
     action: sectionAction('Pošli dar', { icon: 'heart', onclick: () => giveSheet(), aria: 'Pošli mimořádný dar' }),
     body: stack(
       meta(vs
-        ? 'Posílej dar se svým variabilním symbolem, pravidelný třeba trvalým příkazem. Podle symbolu ti Zvonec v lednu připraví potvrzení o daru do daňového přiznání.'
+        ? 'Dary posílej se svým variabilním symbolem, pravidelné třeba trvalým příkazem. Podle symbolu ti Zvonec v lednu připraví potvrzení o daru do daňového přiznání.'
         : 'Dar můžeš poslat na účet sboru.'),
       paymentBlock({ rows, payment, hint: 'Naskenuj v bankovní aplikaci, doplníš jen částku.' })),
   });
@@ -289,7 +289,7 @@ function who(person) {
   return h('div', { class: 'acct-who' },
     person ? headAvatar(person, { me: true }) : h('span', { class: 'avatar avatar--xl', 'aria-hidden': 'true' }, icon('user')),
     h('div', { class: 'acct-who__text' },
-      h('p', { class: 'acct-who__name' }, person ? personName(person) : live ? 'Bez karty v Lidech' : 'Správce bez karty'),
+      h('p', { class: 'acct-who__name' }, person ? personName(person) : live ? 'Bez karty' : 'Správce bez karty'),
       role ? h('p', { class: 'acct-who__role' }, role) : null));
 }
 

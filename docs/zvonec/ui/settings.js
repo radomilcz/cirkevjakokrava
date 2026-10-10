@@ -20,7 +20,7 @@ import {
 /** The rules, in the blocks the page shows. `where`: settings.defaults or settings.rules. */
 const RULES = [
   {
-    id: 'rules', title: 'Pravidla', hint: 'Platí pro každého, kdo nemá na své kartě jiná čísla.',
+    id: 'rules', title: 'Pravidla', hint: 'Platí pro každého, kdo nemá na své kartě nastavené něco jiného.',
     rules: [
       { key: 'maxPerMonth', where: 'defaults', label: 'Nejvíc služeb za měsíc', hint: 'Zkoušky se nepočítají.', min: 1, max: 31, units: ['služba', 'služby', 'služeb'] },
       { key: 'maxConsecutiveWeeks', where: 'defaults', label: 'Nejvíc nedělí po sobě', hint: 'I kráva potřebuje volnou neděli na pastvě.', min: 1, max: 52, units: ['neděle', 'neděle', 'nedělí'] },
@@ -35,7 +35,7 @@ const RULES = [
     ],
   },
   {
-    id: 'children', title: 'Děti', hint: 'Mladší jsou pro Zvonec děti. Když dítě dostane službu jen pro dospělé, Zvonec to ohlásí.',
+    id: 'children', title: 'Děti', hint: 'Kdo ještě není dospělý, je pro Zvonec dítě. Když dítě dostane službu jen pro dospělé, Zvonec to ohlásí.',
     rules: [
       { key: 'childAge', where: 'rules', label: 'Dospělý je od', hint: null, min: 1, max: 25, units: ['roku', 'let', 'let'] },
     ],
@@ -64,7 +64,7 @@ function churchValues() {
   const address = s.address || (main ? resolvePlace(S.data, main)?.address : '');
   return values([
     ['Název sboru', s.churchName || '—'],
-    ['Hlavní místo', main ? main.name : 'nevybrané'],
+    ['Hlavní místo', main ? main.name : 'Nevybráno'],
     ['Adresa', address || '—'],
   ]);
 }
@@ -86,9 +86,9 @@ function churchSheet() {
           name: 'mainPlaceId', value: s.mainPlaceId || '',
           options: [{ value: '', label: 'Nevybráno' }, ...placeTree(S.data).map(({ place }) => ({ value: place.id, label: place.name }))],
         }),
-        hint: 'Kde se obvykle scházíme. Nové šablony ho dostanou předvyplněné.',
+        hint: 'Kde se obvykle scházíme. V nových šablonách bude předvyplněné.',
       }),
-      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Ukáže se na Pastvě v „Kde nás najdeš“. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
+      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Ukáže se na Pastvě v části „Kde nás najdeš“. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
     ],
     onSubmit: (form, v) => {
       clearErrors(form);
@@ -129,7 +129,7 @@ function legalSheet() {
     title: 'Úřední údaje',
     size: 'm',
     body: [
-      meta('Objeví se na potvrzení o daru. Číslo účtu uvidí každý ve Zvonci v Můj účet › Dary.'),
+      meta('Objeví se na potvrzení o daru. Číslo účtu uvidí každý ve Zvonci na stránce Můj účet › Dary.'),
       field({ label: 'Úřední název', control: legalName, optional: true, hint: 'Jak je sbor zapsaný v rejstříku.' }),
       field({ label: 'IČO', control: companyId, optional: true }),
       field({ label: 'Sídlo', control: legalAddress, optional: true, hint: 'Adresa z rejstříku. Může být jiná než adresa, kde se scházíme.' }),
@@ -140,7 +140,7 @@ function legalSheet() {
       const id = companyId.value.replace(/\s+/g, '');
       const account = bankAccount.value.trim() ? parseAccount(bankAccount.value) : null;
       let ok = true;
-      if (id && !validCompanyId(id)) { fieldError(companyId, 'Tohle IČO nesedí. Má osm číslic, zkontroluj je.'); ok = false; }
+      if (id && !validCompanyId(id)) { fieldError(companyId, 'Tohle IČO nesedí. IČO má osm číslic, zkontroluj je.'); ok = false; }
       if (bankAccount.value.trim() && !account) { fieldError(bankAccount, 'Tohle číslo účtu nesedí. Zkontroluj číslice a kód banky za lomítkem.'); ok = false; }
       if (!ok) return false;
       const target = S.data.settings;
@@ -175,7 +175,7 @@ function messagesValues() {
     h('div', { class: 'msg-value' },
       h('p', { class: 'msg-value__label' }, 'Připomínka v SMS a e-mailu'),
       bubble(sampleReminder(reminderTemplate(s))),
-      meta(s.reminderText ? 'Vlastní text sboru. Takhle ji dostane Jana.' : 'Výchozí text Zvonce. Takhle ji dostane Jana.')),
+      meta(s.reminderText ? 'Vlastní text sboru. Takhle ji dostane třeba Jana.' : 'Výchozí text Zvonce. Takhle ji dostane třeba Jana.')),
     h('div', { class: 'msg-value' },
       h('p', { class: 'msg-value__label' }, 'Podpis pondělního e-mailu'),
       bubble(`${digestSignature(s)}\n${s.churchName || 'Zvonec'}`)));
@@ -199,17 +199,17 @@ function messagesSheet() {
       field({
         label: 'Připomínka v SMS a e-mailu',
         control: reminder,
-        hint: `Zvonec doplní ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
+        hint: `Místo značek Zvonec doplní: ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
       }),
-      h('div', { class: 'msg-preview' }, h('p', { class: 'msg-value__label' }, 'Takhle ji dostane Jana'), preview, reset),
+      h('div', { class: 'msg-preview' }, h('p', { class: 'msg-value__label' }, 'Takhle ji dostane třeba Jana'), preview, reset),
       field({ label: 'Podpis pondělního e-mailu', control: signature, hint: 'Pod ním bude název sboru.' }),
     ],
     onSubmit: (form) => {
       clearErrors(form);
       const text = reminder.value.trim();
       const unknown = unknownMarks(text);
-      if (unknown.length) { fieldError(reminder, `Tuhle značku Zvonec nezná: ${unknown.join(', ')}. Zkontroluj ji podle nápovědy.`); return false; }
-      if (text && !/\{(služby|sluzby|služba|sluzba)\}/i.test(text)) { fieldError(reminder, 'Doplň {služby}, jinak ve zprávě nebude, o kterou službu jde.'); return false; }
+      if (unknown.length) { fieldError(reminder, unknown.length === 1 ? `Tuhle značku Zvonec nezná: ${unknown[0]}. Zkontroluj ji podle nápovědy.` : `Tyhle značky Zvonec nezná: ${unknown.join(', ')}. Zkontroluj je podle nápovědy.`); return false; }
+      if (text && !/\{(služby|sluzby|služba|sluzba)\}/i.test(text)) { fieldError(reminder, 'Doplň {služby}, jinak ze zprávy nebude jasné, o kterou službu jde.'); return false; }
       const target = S.data.settings;
       const set = (key, value, fallback) => { if (value && value !== fallback) target[key] = value; else delete target[key]; };
       set('reminderText', text, DEFAULT_REMINDER);
@@ -245,7 +245,7 @@ function rulesSheet(group) {
       target.rules = { ...target.rules };
       for (const rule of group.rules) target[rule.where][rule.key] = Number(next[rule.key]);
       change(`nastavení sboru: ${group.title.toLowerCase()}`);
-      toast('Uloženo. Upozornění se přepočítala.');
+      toast('Uloženo. Zvonec přepočítal upozornění.');
       return undefined;
     },
   });
@@ -277,7 +277,7 @@ function backupBody() {
     const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'skupina', 'skupiny', 'skupin'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
     confirmSheet({
       title: 'Chceš nahradit všechna data zálohou?',
-      text: `V souboru: ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii repa.' : ''}`,
+      text: `V souboru: ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii na GitHubu.' : ''}`,
       confirmLabel: 'Nahraj zálohu',
       onConfirm: () => { replaceAll(data, `nahraná záloha ${chosen.name}`); toast('Záloha je nahraná.'); },
     });
@@ -288,7 +288,7 @@ function backupBody() {
   };
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   return [
-    meta(`Všechno v jednom souboru: ${counts}${live ? ', bez přístupů' : ''}.${live ? ' Každá změna se navíc ukládá do soukromého repa na GitHubu i s historií.' : ''}`),
+    meta(`Všechno v jednom souboru: ${counts}${live ? ', bez přihlašovacích údajů' : ''}.${live ? ' Každá změna se navíc ukládá do soukromého úložiště na GitHubu i s historií.' : ''}`),
     h('div', { class: 'cfg-actions' },
       button('Stáhni zálohu', { variant: 'quiet', size: 's', icon: 'download', onclick: backup }),
       can('admin') ? button('Nahraj zálohu', { variant: 'quiet', size: 's', icon: 'undo', onclick: () => file.click() }) : null),
