@@ -3,7 +3,7 @@ odkaz: Komu fandíme a proč
 ---
 # Bůh tvoří, my fandíme.
 
-Když lidé tvoří pro druhé něco dobrého, není to náhoda. Vidíme v tom Boží design. Otisk jeho záměru.
+Když lidé tvoří pro druhé něco dobrého, není to náhoda. Vidíme v tom Boží design. Otisk původního záměru.
 
 Máme z toho radost až na kost. Tleskáme jim a říkáme to ostatním.
 
