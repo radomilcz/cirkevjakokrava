@@ -24,7 +24,7 @@ slajdy:
         url: https://www.bible.com/bible/15/EPH.2.10.B21
   - typ: fotka
     nazev: Motivace – PROČ?
-    nadtitulek: motivace
+    nadtitulek: manifest
     slovo: proč?
     bez_zavorek: true
     fotka: assets/fotky/proc.webp
