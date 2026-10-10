@@ -45,3 +45,34 @@ test('text in the HTML is escaped', () => {
   assert.match(html, /&lt;b&gt;Sbor &amp; spol\./);
   assert.doesNotMatch(html, /<b>Sbor/);
 });
+
+test('recipients: a login and an e-mail, not an invite, not expired, not turned off; leaders marked', async () => {
+  const { digestRecipients } = await import('../../docs/zvonec/lib/digest.js');
+  const people = [
+    { id: 'a', firstName: 'A', email: 'a@x.cz' },
+    { id: 'b', firstName: 'B', email: 'b@x.cz', digest: false },
+    { id: 'c', firstName: 'C' },
+    { id: 'd', firstName: 'D', email: 'd@x.cz' },
+    { id: 'e', firstName: 'E', email: 'e@x.cz' },
+    { id: 'f', firstName: 'F', email: 'f@x.cz' },
+  ];
+  const logins = [
+    { personId: 'a', access: 'member' }, { personId: 'a', access: 'leader' },
+    { personId: 'b', access: 'member' }, { personId: 'c', access: 'member' },
+    { personId: 'd', access: 'invite' },
+    { personId: 'e', access: 'member', expires: '2026-10-01' },
+  ];
+  const got = digestRecipients({ people }, { v: 2, logins }, { today: '2026-10-12' });
+  assert.deepEqual(got.map((r) => [r.person.id, r.leader]), [['a', true]]);
+});
+
+test('the MIME message has both parts in UTF-8 and an encoded subject', async () => {
+  const { mimeMessage } = await import('../smtp.mjs');
+  const m = mimeMessage({ from: 'sbor@x.cz', fromName: 'Zvonec – Sbor', to: 'a@x.cz', subject: 'Čeká na tebe', text: 'Ahoj', html: '<p>Ahoj</p>', unsubscribe: 'https://z/#ucet' });
+  assert.match(m, /^From: =\?UTF-8\?B\?/m);
+  assert.match(m, /^Subject: =\?UTF-8\?B\?/m);
+  assert.match(m, /Content-Type: text\/plain; charset=utf-8/);
+  assert.match(m, /Content-Type: text\/html; charset=utf-8/);
+  assert.match(m, /^List-Unsubscribe: <https:\/\/z\/#ucet>/m);
+  assert.ok(!/[^\x00-\x7f]/.test(m), 'only ASCII on the wire');
+});

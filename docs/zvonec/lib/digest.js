@@ -7,6 +7,7 @@ import { upcomingDuties } from './events.js';
 import { openSlots, unconfirmedDuties } from './scheduling.js';
 import { ledBy } from './groups.js';
 import { vocative } from './vocative.js';
+import { isArchived } from './people.js';
 import { addDays, dayOf, prettyDay, prettyTime, weekday } from './time.js';
 
 /** How far ahead the e-mail looks (Obsazení's four weeks), and what counts as „this week“. */
@@ -18,6 +19,22 @@ const ON_DAY = ['v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pát
 
 /** Does the person want the e-mail? On unless they turned it off (`digest: false`); an e-mail address is needed. */
 export const wantsDigest = (person) => !!person?.email && person.digest !== false;
+
+/**
+ * Who gets the e-mail: people with a login (access.json, not an invite, not expired) and an e-mail, who did not turn it
+ * off. [{ person, leader }] – `leader` when one of their logins is a leader or an admin. Archived people are left out.
+ */
+export function digestRecipients(data, access, { today } = {}) {
+  const level = new Map();
+  for (const l of access?.logins || []) {
+    if (!l.personId || l.access === 'invite' || (l.expires && l.expires < today)) continue;
+    const leader = l.access === 'admin' || l.access === 'leader';
+    level.set(l.personId, (level.get(l.personId) || false) || leader);
+  }
+  return (data.people || [])
+    .filter((p) => level.has(p.id) && !isArchived(p) && wantsDigest(p))
+    .map((person) => ({ person, leader: level.get(person.id) }));
+}
 
 const when = (event) => `${prettyDay(event.start)} v ${prettyTime(event.start)}`;
 const roleName = (data, id) => (data.roles || []).find((r) => r.id === id)?.name || 'služba';

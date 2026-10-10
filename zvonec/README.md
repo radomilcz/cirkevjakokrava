@@ -211,7 +211,8 @@ Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (
 ## Spuštění naostro (jednou, asi 15 minut)
 
 1. **Soukromé repo** pro data `radomilcz/church-data` (prázdné).
-2. Zkopírovat `zvonec/data-repo/web.yml` a `zvonec/data-repo/check.yml` do jeho `.github/workflows/`.
+2. Zkopírovat `zvonec/data-repo/web.yml`, `zvonec/data-repo/check.yml` a `zvonec/data-repo/digest.yml` do jeho
+   `.github/workflows/`.
 3. **Pages:** v datovém repu Settings → Pages → Source: **GitHub Actions**, Custom domain
    `zvonec.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `zvonec` typu **CNAME** →
    `radomilcz.github.io.` (stejně jako u Playbooku; Pages ze soukromého repa vyžadují GitHub Pro).
@@ -237,12 +238,26 @@ Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (
 | upozornění vedoucím | ano | Actions + e-mail od GitHubu, když je v rozpisu chyba |
 | kalendář v telefonu | ano, stažením .ics | odběr by musel ležet na veřejných Pages – jména by šla ven |
 | skrýt data před členy doopravdy | ne | jeden klíč čte všechno; skrývání je jen v aplikaci |
-| připomínky e-mailem členům | ne | GitHub neposílá e-maily lidem bez účtu |
+| připomínky e-mailem členům | ano, jednou týdně | v pondělí ráno ze sborové schránky (níž „Pondělní e-mail“) |
 | registrace úplně bez pozvánky (formulář pro kohokoli) | ne | kdo by mohl zapisovat bez pozvánky, dostal by klíč i k datům ostatních |
 | víc lidí ukládá naráz | ano | změny se sloučí po záznamech; smazání člověka se ale do všech souborů nepropíše naráz |
 
-Další na seznamu: databáze písní k osnově, výměna služby mezi lidmi, připomínky (potřebují službu, která
-umí poslat e-mail nebo SMS – to už je mimo GitHub).
+Další na seznamu: databáze písní k osnově, výměna služby mezi lidmi.
+
+### Pondělní e-mail
+
+Každé pondělí kolem sedmé ráno dostane každý, kdo má přihlášení do Zvonce a vyplněný e-mail, souhrn toho, co na něj
+čeká: služby, na které má odpovědět, a co ho ten týden čeká. Vedoucí navíc vidí, co zbývá vyřešit v Obsazení. Když na
+člověka nic nečeká, e-mail nepřijde. Vypnout si ho může každý v Můj účet › Moje karta.
+
+Nastavení (jednou):
+1. Ve sborové schránce si vytvoř **heslo pro aplikace** (Gmail: Účet Google → Zabezpečení → Hesla aplikací, je
+   potřeba dvoufázové ověření; Seznam: Nastavení → Hesla pro aplikace).
+2. V repozitáři s daty Settings → Secrets and variables → Actions → New repository secret: `SMTP_HOST`
+   (`smtp.gmail.com` nebo `smtp.seznam.cz`), `SMTP_USER` (adresa schránky), `SMTP_PASS` (heslo pro aplikace).
+3. Actions → Weekly e-mail → *Run workflow*, do pole „only“ napiš svoji adresu – přijde ti jen tvůj e-mail.
+   Volba „dry run“ jen spočítá, kolik lidí by e-mail dostalo.
+
 
 ## Osobní údaje (GDPR)
 
