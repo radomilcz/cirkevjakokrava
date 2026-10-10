@@ -14,7 +14,7 @@ import { restore, openFinance, ACCESS_FILE } from './lib/access.js';
 import { resetFinance } from './ui/finance-state.js';
 import { resetGiving } from './ui/giving-state.js';
 import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
-import { addDemoGiving } from './lib/demo-gifts.js';
+import { addDemoGiving, addDemoSenders } from './lib/demo-gifts.js';
 import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
@@ -33,6 +33,8 @@ import * as GATHER from './ui/routes-gather.js';
 // ---------- routes ----------
 // Slugs are Czech (people see and share them). `parts` = the hash split by '/', without the section.
 // A route: { render(parts) → nodes with a <main> (ui/layout.js), access, nav? } – see ui/routes-mine.js.
+
+const DEMO_SENDERS_KEY = 'zvonec-demo-senders';   // the demo got the senders of the unassigned payments (once)
 
 const PACKAGES = [MINE, CALENDAR, EVENT, PEOPLE, GATHER];
 
@@ -446,6 +448,13 @@ async function boot() {
   // a demo saved before Dary and Sbírky gets their made-up content once (lib/demo-gifts.js)
   if (data.people?.length && !data.settings?.bankAccount && !data.fundraisers?.length) {
     await saveAll(store, addDemoGiving(data, today(), { me: DEMO_VIEWERS.admin }), 'Zvonec: ukázka darů');
+    data = (await load(store)) || data;
+  }
+  // …and, once, the made-up senders of the unassigned payments in Lidé (a demo saved before they were added)
+  let sendersDone = true;
+  try { sendersDone = !!localStorage.getItem(DEMO_SENDERS_KEY); localStorage.setItem(DEMO_SENDERS_KEY, '1'); } catch { /* private window */ }
+  if (!sendersDone && data.people?.length && data.fundraisers?.length && addDemoSenders(data, today())) {
+    await saveAll(store, data, 'Zvonec: ukázka – odesílatelé darů');
     data = (await load(store)) || data;
   }
   if (!personById(data, DEMO_VIEWERS.admin)) S.me.personId = null;
