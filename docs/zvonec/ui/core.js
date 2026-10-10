@@ -438,7 +438,7 @@ export function amount(text) {
 }
 
 /**
- * The figure block of Tvoje břemeno, for any headline number (CODEX §6.4a): the number in the title face (56/48)
+ * The figure block of Tvoje vytížení, for any headline number (CODEX §6.4a): the number in the title face (56/48)
  * with its words beside it in meta – the unit too („68 000“ + „Kč darů za rok 2026“) – then an optional bar, one
  * sentence, small figures under a hairline, and the block's one action. r20, padding 24; `feature` = the screen's one
  * feature fill (Moje's card, a sbírka), otherwise the card with its edge.

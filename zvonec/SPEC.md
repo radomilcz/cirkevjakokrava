@@ -901,7 +901,7 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
 - No duties: „Zatím tu nemáš žádné služby.“ No card linked: info callout „Zvonec neví, která karta je tvoje.“
 - **Obsazení** (leaders): one line linking to `#obsazeni` – „Obsazení ● chybí 1 · ● 1 problém · ○ 3 čekají ›“, or
   „✓ všechno vyřešené“ (counts in the Filtr scope of Obsazení).
-- **Tvoje břemeno**: a `--feature` card – this month's duties as a big Agrandir number „3“ + „ze 4 služeb v říjnu“,
+- **Tvoje vytížení**: a `--feature` card – this month's duties as a big Agrandir number „3“ + „ze 4 služeb v říjnu“,
   one pip per allowed duty (filled = taken, amber = over the limit), a sentence („Ještě máš místo na 1 službu.“ ·
   „Tenhle měsíc máš plno.“ · „O 1 službu víc, než zvládneš.“ · „Máš pauzu od služeb. Zvonec tě do nich nenavrhne.“),
   then three small numbers: Sundays in a row („2 ze 3 · nedělí po sobě“), this year's past duties („18 · služeb
@@ -909,8 +909,8 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
 - **Kdy nemůžu**: my ranges (rows → Uprav · Smaž) and „+ Přidej“.
 - Nothing about others: no meeting list of the week, no staffing blocks.
 - **≥ 1200**, two columns: left the answer card, Tvoje další služby, Odmítnuté, Minulé služby; right the Obsazení line,
-  Tvoje břemeno and Kdy nemůžu. A clicked duty replaces the right column as the pane; ✕ brings it back. Below 1200
-  one column: answer card · Obsazení · Tvoje břemeno · Tvoje další služby · Odmítnuté · Kdy nemůžu · Minulé služby;
+  Tvoje vytížení and Kdy nemůžu. A clicked duty replaces the right column as the pane; ✕ brings it back. Below 1200
+  one column: answer card · Obsazení · Tvoje vytížení · Tvoje další služby · Odmítnuté · Kdy nemůžu · Minulé služby;
   a duty opens the meeting page („‹ Moje“).
 
 ### 9.2 Obsazení `#obsazeni[/<id>]` (leaders; `#ukoly` redirects)
