@@ -27,7 +27,7 @@ Volitelně:
   python3 build.py --og                           přegeneruje náhled sdílení z úvodního slajdu (pip install playwright)
   python3 build.py --icons                        přegeneruje PNG ikony z favicon.svg (pip install playwright)
 """
-import argparse, os, re, shutil, sys
+import argparse, hashlib, os, re, shutil, sys
 
 import yaml                                   # pip install pyyaml jinja2
 from jinja2 import Environment, StrictUndefined, UndefinedError
@@ -361,8 +361,10 @@ def build():
         f.write(js)
     preload = ''.join(f'<link rel="preload" href="assets/fonts/{n}" as="font" type="font/woff" crossorigin>\n'
                       for n in FONTS.values())
-    web = (tpl.replace('{{CSS}}', preload + '<link rel="stylesheet" href="assets/manifest.css">')
-              .replace('{{JS}}', '<script src="assets/manifest.js"></script>'))
+    # ?v= podle obsahu: prohlížeč s novým index.html nikdy nevezme starý styl ani skript z mezipaměti
+    v = lambda t: hashlib.sha1(t.encode('utf-8')).hexdigest()[:8]
+    web = (tpl.replace('{{CSS}}', preload + f'<link rel="stylesheet" href="assets/manifest.css?v={v(css_web)}">')
+              .replace('{{JS}}', f'<script src="assets/manifest.js?v={v(js)}"></script>'))
     zkopiruj_fotky(assets)
     for name in STATIC:
         shutil.copy(os.path.join(SRC, 'assets', name), os.path.join(assets, name))
