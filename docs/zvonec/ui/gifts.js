@@ -144,6 +144,42 @@ async function assign(gift, who, words) {
   if (who.personId) ensureVs(who.personId);
 }
 
+/**
+ * „Přidej do Lidí“: someone who is not in Lidé yet gets a card with the name from the payment (the bank sends
+ * „SVOBODOVA MARIE“ – surname first, no diacritics, so the form asks to check it), and the payment is theirs.
+ * Only the name: no phone or e-mail is made up; consent is needed only once the card holds more.
+ */
+function newPersonSheet(gift) {
+  const words = senderName(gift).split(' ').filter(Boolean);
+  const [last = '', ...firsts] = words.length > 1 ? words : ['', ...words];
+  const first = textInput({ name: 'firstName', value: firsts.join(' '), autocomplete: 'off', placeholder: 'např. Marie' });
+  const lastName = textInput({ name: 'lastName', value: last, autocomplete: 'off', placeholder: 'např. Svobodová' });
+  formSheet({
+    title: 'Nový člověk',
+    subtitle: [money(gift.amount), dayWithYear(gift.date), senderName(gift)].filter(Boolean).join(' · '),
+    size: 's',
+    submitLabel: 'Přidej a přiřaď',
+    body: [
+      meta('Jméno je z platby. Banka ho posílá bez diakritiky, tak ho zkontroluj.'),
+      field({ label: 'Jméno', control: first }),
+      field({ label: 'Příjmení', control: lastName }),
+      meta('Zvonec založí kartu jen se jménem. Telefon, e-mail a další údaje doplníš v Lidech.'),
+    ],
+    onSubmit: (form) => {
+      clearErrors(form);
+      const firstName = first.value.trim();
+      if (!firstName) { fieldError(first, 'Doplň jméno.'); return false; }
+      const person = { id: newId('p'), firstName, membership: { status: 'guest' } };
+      if (lastName.value.trim()) person.lastName = lastName.value.trim(); else person.needsReview = true;
+      S.data.people.push(person);
+      change(`nový člověk z platby: ${personName(person)}`);
+      assign(gift, { personId: person.id }, `dar od ${personName(person)}`);
+      toast(`${personName(person)} je v Lidech a dar je přiřazený.`);
+      return undefined;
+    },
+  });
+}
+
 /** „Přiřaď“: a person from Lidé, a donor outside the church, a new one, anonymous, or not a gift. */
 export function assignSheet(gift) {
   let sheet;
@@ -166,6 +202,7 @@ export function assignSheet(gift) {
     body: list([
       subhead('Od koho', { tag: 'h3' }),
       row({ lead: placeMark('people'), title: 'Někdo ze sboru', meta: 'Vyber ho ze seznamu lidí. Dostane variabilní symbol, když ho ještě nemá.', onclick: close(pickPerson), chevron: true }),
+      can('leader') && senderName(gift) ? row({ lead: placeMark('plus'), title: 'Přidej do Lidí', meta: 'Ještě v Lidech není? Založ kartu se jménem z platby.', onclick: close(() => newPersonSheet(gift)), chevron: true }) : null,
       ...donors.map((d) => row({ lead: avatar({ id: `d:${d.id}`, firstName: d.name }), title: d.name, meta: `mimo sbor · VS\u00a0${d.vs}`, onclick: close(() => assign(gift, { donorId: d.id }, `dar od ${d.name}`)) })),
       row({ lead: placeMark('plus'), title: 'Nový dárce mimo sbor', meta: 'Přítel sboru, firma…', onclick: close(() => donorSheet(null, { onSaved: (id) => assign(gift, { donorId: id }, 'dar od nového dárce') })), chevron: true }),
       subhead('Jinak', { tag: 'h3' }),

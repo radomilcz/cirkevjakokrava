@@ -1195,7 +1195,9 @@ fresh `dary.json`); nothing reaches the main data except `person.donorVs`.
   anonymně (sum) · nepřiřazené (› the section).
 - **Nepřiřazené**: payments with no known donor, grouped by month (newest first) – the day arch, the sender (the bank's
   CAPITALS made readable, `senderName`), „VS 20 · message“, the amount ›; the whole row opens „Přiřazení daru“:
-  Někdo ze sboru (the people picker; a person without a symbol gets one), the donors outside the church, Nový dárce mimo sbor,
+  Někdo ze sboru (the people picker; a person without a symbol gets one), Přidej do Lidí (leaders: a card with only the
+  name from the payment – the bank's „SURNAME FIRST“ split into Jméno and Příjmení to check, status guest, nothing made up –
+  and the payment is theirs), the donors outside the church, Nový dárce mimo sbor,
   Anonymní dar, Vyřaď z darů. Matching (`matchGift`): the person's or outside donor's VS, else a sender account assigned
   before.
 - **Dárci**: avatar, name, „VS 1001 · 10 darů“, the year's sum › the donor page: facts (symbol, address, birth date or
