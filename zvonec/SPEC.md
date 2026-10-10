@@ -1299,8 +1299,13 @@ Zvonec sends one thing by itself – the Monday e-mail; everything else a leader
 - **„Připomeň“** builds a ready message. Obsazení's section „Čeká na odpověď“ (one text per person for all their
   duties) and the meeting's „○ N čeká“ open the reminders. Per person an `sms:` link (aria „Připomeň v SMS – <jméno>“), or
   without a phone a `mailto:` with subject „Služba ve Zvonci“ (aria „Připomeň e-mailem – <jméno>“), plus „Zavolej“.
-  Body (`reminderText`): „Ahoj, v neděli 18. 10. máš v rozpisu službu: Kázání (Setkání na pastvě, 10.00). Můžeš?
-  Odpověz prosím ve Zvonci: <app URL>#moje“; several duties: `reminderTextAll` (§9.2).
+  Body (`reminderTextAll`, `lib/messages.js`): the church's text `settings.reminderText`, default „Ahoj, {jméno}! V rozpisu
+  máš: {služby}. Můžeš? Odpověz prosím ve Zvonci: {odkaz}“ – {jméno} the first name (nickname first) in the vocative
+  (unknown → „Ahoj!“), {služby} „Kázání (Setkání na pastvě, ne 18. 10. v 10.00)“ joined by commas, {odkaz} <app URL>#moje.
+- **Nastavení sboru › Zprávy**: the reminder (a textarea, the marks in the hint, a live preview for Jana, [Vrať výchozí
+  text]; an unknown mark or a text without {služby} is refused) and the Monday e-mail's signature
+  `settings.digestSignature` (default „Díky, že sloužíš.“, the church's name below). Stored only when they differ from
+  the defaults.
 - **„Kdy Zvonec bučí“** (settings) sets how many days before a meeting each conflict starts to show (§6.2 K5, K6).
 - **In-app signals**: nav counts (Moje: aria „N služby čekají na tvou odpověď“; Obsazení: „Zbývá vyřešit N věcí“),
   the invites dot / „1 čeká“, Co nesedí sections, ○ / ● marks, Obsazení to-do lines.
