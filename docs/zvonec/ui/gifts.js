@@ -165,7 +165,7 @@ export function assignSheet(gift) {
     subtitle: [money(gift.amount), dayWithYear(gift.date), senderName(gift)].filter(Boolean).join(' · '),
     body: list([
       subhead('Od koho', { tag: 'h3' }),
-      row({ lead: placeMark('people'), title: 'Člověk z Lidí', meta: 'Dostane variabilní symbol, když ho ještě nemá.', onclick: close(pickPerson), chevron: true }),
+      row({ lead: placeMark('people'), title: 'Někdo ze sboru', meta: 'Vyber ho ze seznamu lidí. Dostane variabilní symbol, když ho ještě nemá.', onclick: close(pickPerson), chevron: true }),
       ...donors.map((d) => row({ lead: avatar({ id: `d:${d.id}`, firstName: d.name }), title: d.name, meta: `mimo sbor · VS\u00a0${d.vs}`, onclick: close(() => assign(gift, { donorId: d.id }, `dar od ${d.name}`)) })),
       row({ lead: placeMark('plus'), title: 'Nový dárce mimo sbor', meta: 'Přítel sboru, firma…', onclick: close(() => donorSheet(null, { onSaved: (id) => assign(gift, { donorId: id }, 'dar od nového dárce') })), chevron: true }),
       subhead('Jinak', { tag: 'h3' }),
