@@ -58,6 +58,28 @@ function directorySwitch(person) {
   });
 }
 
+/** The switch „Pondělní e-mail“ (SPEC §11) – on unless turned off (`digest: false`); needs an e-mail. Applies at once, with Vrať. */
+function digestSwitch(person) {
+  const set = (on) => {
+    const target = personById(S.data, person.id);
+    if (!target) return;
+    if (on) delete target.digest; else target.digest = false;
+    change(`pondělní e-mail ${displayName(target)}`);
+  };
+  return switchRow({
+    label: 'Pondělní e-mail',
+    hint: person.email
+      ? 'Přijde, jen když na tebe něco čeká – třeba služba, na kterou máš odpovědět.'
+      : 'Přijde, až si doplníš e-mail.',
+    checked: person.digest !== false,
+    disabled: !person.email,
+    onChange: (on) => {
+      set(on);
+      toast(on ? 'Pondělní e-mail ti zase bude chodit.' : 'Pondělní e-mail ti chodit nebude.', { action: () => set(!on) });
+    },
+  });
+}
+
 function cardSection(person) {
   const live = S.mode === 'live';
   if (!person) {
@@ -79,6 +101,7 @@ function cardSection(person) {
         person.nickname ? { icon: 'user', text: `Říkají ti ${person.nickname}` } : null,
       ]),
       h('div', { class: 'acct-switch' }, directorySwitch(person)),
+      h('div', { class: 'acct-switch' }, digestSwitch(person)),
     ],
   });
 }

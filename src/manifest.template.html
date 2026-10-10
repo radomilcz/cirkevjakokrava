@@ -67,7 +67,7 @@
 
 {%- elif t == 'predmluva' %}
   {{ sekce(x, 'read') }}
-    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    <h2 class="eyebrow rise">{{ x.nadtitulek|txt }}</h2>
     <div class="essay">
 {%- for k in x.kapitoly %}
 {%- if k.get('tagline') %}
