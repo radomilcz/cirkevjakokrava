@@ -339,7 +339,8 @@ body{
 .verse-blok{margin:clamp(1.8rem,5vh,3.6rem) 0 34vh;max-width:1560px;font-family:var(--body);font-size:clamp(1rem,1.35vw,1.55rem);line-height:1.25}
 .pilulky{display:flex;flex-wrap:wrap;gap:.6rem}
 .pil{
-  display:inline-flex;align-items:center;gap:.7em;padding:.6em 1.15em .6em 1.2em;
+  /* Agrandir sedí v řádku vysoko: horní odsazení o .15em větší, ať jsou verzálky opticky na středu */
+  display:inline-flex;align-items:center;gap:.7em;padding:.75em 1.15em .45em 1.2em;
   border:0;border-radius:999px;background:color-mix(in srgb,currentColor 9%,transparent);
   color:inherit;font:inherit;cursor:pointer;transition:background-color .3s;
 }
@@ -347,11 +348,11 @@ body{
 .pil:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 /* šipka dolů kreslená dvěma linkami – ostrá v každém písmu a velikosti */
 .pil::after{
-  content:"";flex:none;width:.4em;height:.4em;margin-top:-.2em;
+  content:"";flex:none;width:.4em;height:.4em;position:relative;top:-.27em;
   border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
-  transform:rotate(45deg);transition:transform .45s var(--ease),margin .45s var(--ease);
+  transform:rotate(45deg);transition:transform .45s var(--ease),top .45s var(--ease);
 }
-.pil[aria-expanded="true"]::after{transform:rotate(-135deg);margin-top:.2em}
+.pil[aria-expanded="true"]::after{transform:rotate(-135deg);top:.04em}
 .pil-v{
   margin:1.6em 0 0;padding-left:.9em;max-width:32em;
   border-left:.12em solid color-mix(in srgb,currentColor 45%,transparent);
