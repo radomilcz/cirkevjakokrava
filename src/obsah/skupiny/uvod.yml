@@ -14,6 +14,13 @@ slajdy:
       Jičína. Řemeslníci. Umělci. Doktoři. Designéři a tesaři. Ani jeden
       profesionálně svatý. Ale na vlastní kůži jsme poznali, že Bůh je lepší,
       než jsme se báli. Proto děláme, co umíme, ať to ochutná i naše okolí.
+  - typ: fotka
+    nazev: Manifest – PROČ?
+    nadtitulek: manifest
+    slovo: proč?
+    bez_zavorek: true
+    fotka: assets/fotky/proc.webp
+    popis_fotky: Skotský náhorní skot zblízka v podvečerním světle, v tlamě stébla trávy.
   - typ: predmluva
     nazev: Předmluva
     nadtitulek: Proč *jako* kráva?
