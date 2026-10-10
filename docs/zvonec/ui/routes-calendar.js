@@ -2,7 +2,7 @@
 //   #kalendar                              → the view chosen last in this browser (Seznam the first time)
 //   #kalendar/seznam[/<eventId>]           Seznam (calendar.js)
 //   #kalendar/mesic/<YYYY-MM>[/<day>]      Měsíc (month.js)
-//   #kalendar/rozpis/<YYYY-MM>[/<eventId> | /bremeno]   Rozpis (roster.js; /bremeno opens the Břemeno dialog)
+//   #kalendar/rozpis/<YYYY-MM>[/<eventId> | /vytizeni]   Rozpis (roster.js; /vytizeni opens the Vytížení dialog)
 // Every view gets the same ⋯ (roster.js calendarMenu).
 
 import { renderSeznam, rememberedView, thisMonth, currentMonth } from './calendar.js';
@@ -29,7 +29,8 @@ export const ROUTES = {
 export const REDIRECTS = [
   [/^kalendar$/, remembered],
   [/^kalendar\/(mesic|rozpis)$/, (m) => `kalendar/${m[1]}/${thisMonth()}`],
-  [/^kalendar\/rozpis\/(bremeno|upozorneni)$/, (m) => `kalendar/rozpis/${thisMonth()}/${m[1]}`],
+  [/^kalendar\/rozpis\/(vytizeni|upozorneni)$/, (m) => `kalendar/rozpis/${thisMonth()}/${m[1]}`],
+  [/^kalendar\/rozpis\/(?:(\d{4}-\d{2})\/)?bremeno$/, (m) => `kalendar/rozpis/${m[1] || thisMonth()}/vytizeni`],   // the old name
   [/^kalendar\/rozpis\/(\d{4}-\d{2})\/upozorneni$/, (m) => `kalendar/rozpis/${m[1]}`],
   // Simple's and Next's links
   [/^kalendar\/(\d{4}-\d{2})$/, (m) => `kalendar/mesic/${m[1]}`],
@@ -38,6 +39,6 @@ export const REDIRECTS = [
   [/^kalendar\/mesic\/(\d{4}-\d{2})-(\d{2})$/, (m) => `kalendar/mesic/${m[1]}/${m[1]}-${m[2]}`],
   [/^kalendar\/tyden(?:\/.*)?$/, () => 'kalendar/seznam'],   // Next's Týden
   [/^rozpis(?:\/(.+))?$/, (m) => `kalendar/rozpis${m[1] ? `/${m[1]}` : ''}`],
-  [/^lide\/bremeno(?:\/(\d{4}-\d{2}))?$/, (m) => `kalendar/rozpis/${m[1] || thisMonth()}/bremeno`],
+  [/^lide\/bremeno(?:\/(\d{4}-\d{2}))?$/, (m) => `kalendar/rozpis/${m[1] || thisMonth()}/vytizeni`],
 ];
 

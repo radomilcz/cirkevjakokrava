@@ -2,23 +2,25 @@
 // column of 640: value blocks (r20, --card, padding 24), each a section with quiet S „Uprav“ → a dialog (a sheet on
 // a phone) that saves at once through the save line. No inline fields, no form foot.
 //   Sbor (název, hlavní místo, adresa) · Úřední údaje (úřední název, IČO, sídlo, účet pro dary – SPEC 15.1) ·
+//   Zprávy (the reminder behind „Připomeň“, the Monday e-mail's signature – SPEC §11) ·
 //   Pravidla (Nejvíc služeb za měsíc, Nejvíc nedělí po sobě) · Kdy Zvonec bučí · Děti (Dospělý je od) · Záloha (Stáhni zálohu; admin: Nahraj zálohu – it replaces everything, asks first).
 
 import { S, can, change, replaceAll } from './state.js';
 import { placeTree, placeById, resolvePlace } from '../lib/places.js';
 import { DEFAULT_LIMITS, DEFAULT_RULES } from '../lib/scheduling.js';
 import { normalize, COLLECTIONS, SCHEMA } from '../lib/store/store.js';
-import { today } from '../lib/time.js';
+import { today, addDays } from '../lib/time.js';
+import { DEFAULT_REMINDER, DEFAULT_SIGNATURE, REMINDER_MARKS, fillReminder, reminderTemplate, digestSignature, unknownMarks } from '../lib/messages.js';
 import { parseAccount, formatAccount, validCompanyId } from '../lib/bank.js';
 import {
-  h, section, sectionAction, agree, plural, toast, confirmSheet, formSheet, field, textInput, selectInput, stepper,
+  h, section, sectionAction, agree, plural, toast, confirmSheet, formSheet, field, textInput, textArea, selectInput, stepper, shortDate,
   fieldError, clearErrors, download, page, button, meta, pill, menuBack, isPhone,
 } from './kit.js';
 
 /** The rules, in the blocks the page shows. `where`: settings.defaults or settings.rules. */
 const RULES = [
   {
-    id: 'rules', title: 'Pravidla', hint: 'Platí pro každého, kdo nemá na své kartě jiná čísla.',
+    id: 'rules', title: 'Pravidla', hint: 'Platí pro každého, kdo nemá na své kartě nastavené něco jiného.',
     rules: [
       { key: 'maxPerMonth', where: 'defaults', label: 'Nejvíc služeb za měsíc', hint: 'Zkoušky se nepočítají.', min: 1, max: 31, units: ['služba', 'služby', 'služeb'] },
       { key: 'maxConsecutiveWeeks', where: 'defaults', label: 'Nejvíc nedělí po sobě', hint: 'I kráva potřebuje volnou neděli na pastvě.', min: 1, max: 52, units: ['neděle', 'neděle', 'nedělí'] },
@@ -33,7 +35,7 @@ const RULES = [
     ],
   },
   {
-    id: 'children', title: 'Děti', hint: 'Mladší jsou pro Zvonec děti. Když dítě dostane službu jen pro dospělé, Zvonec to ohlásí.',
+    id: 'children', title: 'Děti', hint: 'Kdo ještě není dospělý, je pro Zvonec dítě. Když dítě dostane službu jen pro dospělé, Zvonec to ohlásí.',
     rules: [
       { key: 'childAge', where: 'rules', label: 'Dospělý je od', hint: null, min: 1, max: 25, units: ['roku', 'let', 'let'] },
     ],
@@ -62,7 +64,7 @@ function churchValues() {
   const address = s.address || (main ? resolvePlace(S.data, main)?.address : '');
   return values([
     ['Název sboru', s.churchName || '—'],
-    ['Hlavní místo', main ? main.name : 'nevybrané'],
+    ['Hlavní místo', main ? main.name : 'Nevybráno'],
     ['Adresa', address || '—'],
   ]);
 }
@@ -84,9 +86,9 @@ function churchSheet() {
           name: 'mainPlaceId', value: s.mainPlaceId || '',
           options: [{ value: '', label: 'Nevybráno' }, ...placeTree(S.data).map(({ place }) => ({ value: place.id, label: place.name }))],
         }),
-        hint: 'Kde se obvykle scházíme. Nové šablony ho dostanou předvyplněné.',
+        hint: 'Kde se obvykle scházíme. V nových šablonách bude předvyplněné.',
       }),
-      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Ukáže se na Pastvě v „Kde nás najdeš“. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
+      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Ukáže se na Pastvě v části „Kde nás najdeš“. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
     ],
     onSubmit: (form, v) => {
       clearErrors(form);
@@ -127,7 +129,7 @@ function legalSheet() {
     title: 'Úřední údaje',
     size: 'm',
     body: [
-      meta('Objeví se na potvrzení o daru. Číslo účtu uvidí každý ve Zvonci v Můj účet › Dary.'),
+      meta('Objeví se na potvrzení o daru. Číslo účtu uvidí každý ve Zvonci na stránce Můj účet › Dary.'),
       field({ label: 'Úřední název', control: legalName, optional: true, hint: 'Jak je sbor zapsaný v rejstříku.' }),
       field({ label: 'IČO', control: companyId, optional: true }),
       field({ label: 'Sídlo', control: legalAddress, optional: true, hint: 'Adresa z rejstříku. Může být jiná než adresa, kde se scházíme.' }),
@@ -138,7 +140,7 @@ function legalSheet() {
       const id = companyId.value.replace(/\s+/g, '');
       const account = bankAccount.value.trim() ? parseAccount(bankAccount.value) : null;
       let ok = true;
-      if (id && !validCompanyId(id)) { fieldError(companyId, 'Tohle IČO nesedí. Má osm číslic, zkontroluj je.'); ok = false; }
+      if (id && !validCompanyId(id)) { fieldError(companyId, 'Tohle IČO nesedí. IČO má osm číslic, zkontroluj je.'); ok = false; }
       if (bankAccount.value.trim() && !account) { fieldError(bankAccount, 'Tohle číslo účtu nesedí. Zkontroluj číslice a kód banky za lomítkem.'); ok = false; }
       if (!ok) return false;
       const target = S.data.settings;
@@ -148,6 +150,71 @@ function legalSheet() {
       set('legalAddress', legalAddress.value.trim());
       set('bankAccount', formatAccount(account));
       change('nastavení sboru: úřední údaje');
+      toast('Uloženo.');
+      return undefined;
+    },
+  });
+}
+
+// ---------- Zprávy (SPEC §11): the reminder behind „Připomeň“ and the Monday e-mail's signature ----------
+
+/** A made-up duty for the preview: Kázání at the next Sunday's meeting. */
+function sampleDuty() {
+  let day = today();
+  while (new Date(`${day}T12:00`).getDay() !== 0) day = addDays(day, 1);
+  return `Kázání (Setkání na pastvě, ${shortDate(day)} v 10.00)`;
+}
+const sampleReminder = (template) => fillReminder(template, { firstName: 'Jana', duties: [sampleDuty()], link: `${location.origin}${location.pathname}#moje` });
+
+/** A message as it will look: a quiet bubble, the lines kept. */
+const bubble = (text, cls) => h('p', { class: ['msg-bubble', cls] }, text);
+
+function messagesValues() {
+  const s = S.data.settings || {};
+  return h('div', { class: 'msg-values' },
+    h('div', { class: 'msg-value' },
+      h('p', { class: 'msg-value__label' }, 'Připomínka v SMS a e-mailu'),
+      bubble(sampleReminder(reminderTemplate(s))),
+      meta(s.reminderText ? 'Vlastní text sboru. Takhle ji dostane třeba Jana.' : 'Výchozí text Zvonce. Takhle ji dostane třeba Jana.')),
+    h('div', { class: 'msg-value' },
+      h('p', { class: 'msg-value__label' }, 'Podpis pondělního e-mailu'),
+      bubble(`${digestSignature(s)}\n${s.churchName || 'Zvonec'}`)));
+}
+
+function messagesSheet() {
+  const s = S.data.settings || {};
+  const preview = bubble('', 'msg-bubble--live');
+  const show = (t) => { preview.textContent = sampleReminder(t.trim() || DEFAULT_REMINDER); };
+  const reminder = textArea({ name: 'reminderText', value: reminderTemplate(s), rows: 4, onInput: show });
+  const signature = textArea({ name: 'digestSignature', value: digestSignature(s), rows: 2 });
+  show(reminder.value);
+  const reset = button('Vrať výchozí text', {
+    variant: 'quiet', size: 's',
+    onclick: (e) => { e.preventDefault(); reminder.value = DEFAULT_REMINDER; show(reminder.value); reminder.focus(); },
+  });
+  formSheet({
+    title: 'Zprávy',
+    size: 'm',
+    body: [
+      field({
+        label: 'Připomínka v SMS a e-mailu',
+        control: reminder,
+        hint: `Místo značek Zvonec doplní: ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
+      }),
+      h('div', { class: 'msg-preview' }, h('p', { class: 'msg-value__label' }, 'Takhle ji dostane třeba Jana'), preview, reset),
+      field({ label: 'Podpis pondělního e-mailu', control: signature, hint: 'Pod ním bude název sboru.' }),
+    ],
+    onSubmit: (form) => {
+      clearErrors(form);
+      const text = reminder.value.trim();
+      const unknown = unknownMarks(text);
+      if (unknown.length) { fieldError(reminder, unknown.length === 1 ? `Tuhle značku Zvonec nezná: ${unknown[0]}. Zkontroluj ji podle nápovědy.` : `Tyhle značky Zvonec nezná: ${unknown.join(', ')}. Zkontroluj je podle nápovědy.`); return false; }
+      if (text && !/\{(služby|sluzby|služba|sluzba)\}/i.test(text)) { fieldError(reminder, 'Doplň {služby}, jinak ze zprávy nebude jasné, o kterou službu jde.'); return false; }
+      const target = S.data.settings;
+      const set = (key, value, fallback) => { if (value && value !== fallback) target[key] = value; else delete target[key]; };
+      set('reminderText', text, DEFAULT_REMINDER);
+      set('digestSignature', signature.value.trim(), DEFAULT_SIGNATURE);
+      change('nastavení sboru: zprávy');
       toast('Uloženo.');
       return undefined;
     },
@@ -178,7 +245,7 @@ function rulesSheet(group) {
       target.rules = { ...target.rules };
       for (const rule of group.rules) target[rule.where][rule.key] = Number(next[rule.key]);
       change(`nastavení sboru: ${group.title.toLowerCase()}`);
-      toast('Uloženo. Upozornění se přepočítala.');
+      toast('Uloženo. Zvonec přepočítal upozornění.');
       return undefined;
     },
   });
@@ -210,7 +277,7 @@ function backupBody() {
     const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'skupina', 'skupiny', 'skupin'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
     confirmSheet({
       title: 'Chceš nahradit všechna data zálohou?',
-      text: `V souboru: ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii repa.' : ''}`,
+      text: `V souboru: ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii na GitHubu.' : ''}`,
       confirmLabel: 'Nahraj zálohu',
       onConfirm: () => { replaceAll(data, `nahraná záloha ${chosen.name}`); toast('Záloha je nahraná.'); },
     });
@@ -221,7 +288,7 @@ function backupBody() {
   };
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   return [
-    meta(`Všechno v jednom souboru: ${counts}${live ? ', bez přístupů' : ''}.${live ? ' Každá změna se navíc ukládá do soukromého repa na GitHubu i s historií.' : ''}`),
+    meta(`Všechno v jednom souboru: ${counts}${live ? ', bez přihlašovacích údajů' : ''}.${live ? ' Každá změna se navíc ukládá do soukromého úložiště na GitHubu i s historií.' : ''}`),
     h('div', { class: 'cfg-actions' },
       button('Stáhni zálohu', { variant: 'quiet', size: 's', icon: 'download', onclick: backup }),
       can('admin') ? button('Nahraj zálohu', { variant: 'quiet', size: 's', icon: 'undo', onclick: () => file.click() }) : null),
@@ -242,6 +309,7 @@ export function renderSettings() {
     body: h('div', { class: 'cfg-blocks' },
       block({ id: 'church', title: 'Sbor', action: uprav('Uprav sbor', churchSheet), body: churchValues() }),
       block({ id: 'legal', title: 'Úřední údaje', action: uprav('Uprav úřední údaje', legalSheet), body: legalValues() }),
+      block({ id: 'messages', title: 'Zprávy', action: uprav('Uprav zprávy', messagesSheet), body: messagesValues() }),
       RULES.map((g) => block({
         id: g.id, title: g.title, action: uprav(`Uprav: ${g.title}`, () => rulesSheet(g)),
         body: values(g.rules.map((r) => [r.label, ruleWords(r, valueOf(r))])),

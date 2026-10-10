@@ -280,10 +280,20 @@ document.querySelector('.skip-link')?.addEventListener('click', (e) => {
   document.getElementById('main')?.focus();
 });
 
-// phone keyboard up: hide the tab bar (it would ride on top of the keyboard)
+// phone keyboard up: hide the tab bar (it would ride on top of the keyboard), lift a bottom sheet above the keyboard
+// (--keyboard: how much of the screen's bottom it covers) and keep the field being typed in visible
 if (window.visualViewport) {
-  const keyboard = () => document.documentElement.toggleAttribute('data-keyboard', window.innerHeight - window.visualViewport.height > 150);
-  window.visualViewport.addEventListener('resize', keyboard);
+  const vv = window.visualViewport;
+  const keyboard = () => {
+    const covered = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+    const up = window.innerHeight - vv.height > 150;
+    document.documentElement.toggleAttribute('data-keyboard', up);
+    document.documentElement.style.setProperty('--keyboard', `${up ? covered : 0}px`);
+    const field = document.activeElement;
+    if (up && field?.closest?.('.sheet')) requestAnimationFrame(() => field.scrollIntoView({ block: 'nearest' }));
+  };
+  vv.addEventListener('resize', keyboard);
+  vv.addEventListener('scroll', keyboard);
 }
 
 // ---------- save status ----------

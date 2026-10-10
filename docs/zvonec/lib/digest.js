@@ -8,6 +8,7 @@ import { openSlots, unconfirmedDuties } from './scheduling.js';
 import { ledBy } from './groups.js';
 import { vocative } from './vocative.js';
 import { isArchived } from './people.js';
+import { digestSignature } from './messages.js';
 import { addDays, dayOf, prettyDay, prettyTime, weekday } from './time.js';
 
 /** How far ahead the e-mail looks (Obsazení's four weeks), and what counts as „this week“. */
@@ -90,7 +91,7 @@ function subjectOf({ answer, week, obsazeni }) {
     return `${ON_DAY[weekday(d.start)][0].toUpperCase()}${ON_DAY[weekday(d.start)].slice(1)} máš službu: ${week[0].role}`;
   }
   const n = obsazeni.missing.length + obsazeni.problems + obsazeni.waiting;
-  return `V Obsazení ${agree(n, 'zbývá', 'zbývají', 'zbývá')} vyřešit ${n} ${agree(n, 'věc', 'věci', 'věcí')}`;
+  return `V Obsazení zbývá vyřešit ${n} ${agree(n, 'věc', 'věci', 'věcí')}`;
 }
 
 // ---------- the e-mail ----------
@@ -145,9 +146,9 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
       text.push(`– ${what}: ${m.event.title}, ${when(m.event)}`);
     }
     const more = [
-      missing.length > 3 ? `ještě ${missing.length - 3} ${agree(missing.length - 3, 'místo chybí', 'místa chybí', 'míst chybí')}` : null,
-      waiting ? `${waiting} ${agree(waiting, 'člověk ještě neodpověděl', 'lidé ještě neodpověděli', 'lidí ještě neodpovědělo')}` : null,
-      problems ? `${problems} ${agree(problems, 'věc nesedí', 'věci nesedí', 'věcí nesedí')}` : null,
+      missing.length > 3 ? `chybí ještě ${missing.length - 3} ${agree(missing.length - 3, 'místo', 'místa', 'míst')}` : null,
+      waiting ? `${waiting} ${agree(waiting, 'člověk neodpověděl', 'lidé neodpověděli', 'lidí neodpovědělo')}` : null,
+      problems ? `${problems} ${agree(problems, 'věc v rozpisu nesedí', 'věci v rozpisu nesedí', 'věcí v rozpisu nesedí')}` : null,
     ].filter(Boolean);
     if (more.length) {
       const t = `${more.join(', ')}.`.replace(/^./, (c) => c.toUpperCase());
@@ -158,8 +159,9 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
     text.push(`Otevři Obsazení: ${link('#obsazeni')}`, '');
   }
 
-  const foot = 'Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? Vypni si ho v Můj účet.';
-  text.push('Díky, že sloužíš.', church, '', '—', foot, link('#ucet'));
+  const foot = 'Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? Vypni si ho na stránce Můj účet.';
+  const signature = digestSignature(data.settings);
+  text.push(signature, church, '', '—', foot, link('#ucet'));
   const subject = subjectOf(items);
   const html = `<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(subject)}</title></head>
 <body style="margin:0;padding:0;background:${C.ground}">
@@ -169,9 +171,9 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
 <tr><td style="font:700 26px/32px ${FONT};color:${C.ink}">${esc(hello)}</td></tr>
 <tr><td style="padding:6px 0 0;font:400 16px/23px ${FONT};color:${C.ink2}">Tohle na tebe ve Zvonci čeká.</td></tr>
 ${rows.join('\n')}
-<tr><td style="padding:32px 0 0;font:400 16px/23px ${FONT};color:${C.ink}">Díky, že sloužíš.<br>${esc(church)}</td></tr>
+<tr><td style="padding:32px 0 0;font:400 16px/23px ${FONT};color:${C.ink}">${esc(signature).replace(/\n/g, '<br>')}<br>${esc(church)}</td></tr>
 <tr><td style="padding:32px 0 0;border-bottom:1px solid ${C.line}"></td></tr>
-<tr><td style="padding:16px 0 0;font:400 13px/19px ${FONT};color:${C.ink2}">Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? <a href="${esc(link('#ucet'))}" style="color:${C.ink2}">Vypni si ho v Můj účet</a>.</td></tr>
+<tr><td style="padding:16px 0 0;font:400 13px/19px ${FONT};color:${C.ink2}">Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? <a href="${esc(link('#ucet'))}" style="color:${C.ink2}">Vypni si ho na stránce Můj účet</a>.</td></tr>
 </table></td></tr></table></body></html>`;
   return { subject, text: text.join('\n'), html };
 }

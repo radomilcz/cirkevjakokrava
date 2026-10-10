@@ -5,7 +5,9 @@
    the public strip, the person's menu, the bullseyes, the #kit page.
    ============================================================ */
 
-#view { min-width: 0; }
+/* nothing in the content may widen the page: a phone browser would widen the whole layout with it, sheets and the tab
+   bar included (a long link in a note did) – clip, not hidden, so nothing becomes a scroller and sticky still works */
+#view { min-width: 0; overflow-x: clip; }
 body.has-nav #view { padding-left: var(--nav-w); }
 .loading { padding: var(--space-7) var(--gutter); }
 #main:focus { outline: none; }

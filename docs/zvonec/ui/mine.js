@@ -7,12 +7,12 @@
 //       Tvoje další služby (confirmed, and cancelled ones struck) · Odmítnuté služby (a quiet section) · Minulé služby ›
 //   A duty opens its meeting: #moje/<id> – beside the list at ≥ 1200 (the pane, only on a click), a page below 1200
 //   (back „‹ Moje“). The detail itself is P3's (eventDetail in ui/event.js).
-// Everything here is about me (the owner: „what concerns me, the questions to me, my Břemeno, a nice metric“):
+// Everything here is about me (the owner: „what concerns me, the questions to me, my Břemeno (now „Tvoje vytížení“), a nice metric“):
 //   the answer card (the questions to me) · Obsazení (leaders: one line, what my team still has to resolve ›) ·
-//   Tvoje břemeno (this month's duties against my limit as a number and pips, a sentence, Sundays in a row, this year,
+//   Tvoje vytížení (this month's duties against my limit as a number and pips, a sentence, Sundays in a row, this year,
 //   my most frequent role) · Tvoje další služby · Odmítnuté služby · Kdy nemůžu (my ranges, + Přidej) · Minulé služby.
 //   Nothing about others: the week's meetings are Kalendář's, the tasks are Obsazení's.
-// ≥ 1200 two columns: the left one the answer card and my duties, the right one Obsazení's line, Tvoje břemeno and
+// ≥ 1200 two columns: the left one the answer card and my duties, the right one Obsazení's line, Tvoje vytížení and
 //   Kdy nemůžu. A meeting opened from the left takes the right column's place (the pane, #moje/<id>); ✕ or Esc brings
 //   the column back. Below 1200 one column in the order above.
 
@@ -191,7 +191,7 @@ function nextSection(duties, openId) {
     cls: 'mine-next',
     body: [
       list(shown.map((d) => dutyRow(d, openId)), { label: 'Tvoje další služby' }),
-      rest > 0 ? rowLink(rest === 1 ? 'Ukaž další' : `Ukaž další ${rest}`, { onclick: () => { state.more = true; render(); } }) : null,
+      rest > 0 ? rowLink(rest === 1 ? 'Ukaž další' : `Ukaž ${agree(rest, 'další', 'další', 'dalších')} ${rest}`, { onclick: () => { state.more = true; render(); } }) : null,
     ],
   });
 }
@@ -249,7 +249,7 @@ function staffLine() {
     icon('chevron-right', { size: 's' }));
 }
 
-// ---------- Tvoje břemeno: this month against my limit, and a little of the year ----------
+// ---------- Tvoje vytížení: this month against my limit, and a little of the year ----------
 
 const PIPS_MAX = 12;   // more pips than this would be a ruler, not a glance
 
@@ -288,9 +288,9 @@ function loadCard(person) {
   const stat = (value, label, { warn = false } = {}) => h('div', { class: 'load-stat', dataset: { warn: warn ? '' : null } },
     h('span', { class: 'load-stat__value' }, value), h('span', { class: 'load-stat__label' }, label));
   return section({
-    title: 'Tvoje břemeno',
+    title: 'Tvoje vytížení',
     cls: 'mine-load',
-    action: can('leader') ? button('Kolik zvládnu', { variant: 'quiet', size: 's', cls: 'section-action', onclick: () => limitsSheet(person), label: 'Nastav, kolik toho zvládneš' }) : null,
+    action: can('leader') ? button('Uprav', { variant: 'quiet', size: 's', cls: 'section-action', onclick: () => limitsSheet(person), label: 'Nastav, kolik toho zvládneš' }) : null,
     body: h('div', { class: 'load-card' },
       h('div', { class: 'load-card__main' },
         h('p', { class: 'load-card__count' },
@@ -301,7 +301,7 @@ function loadCard(person) {
         })))),
       h('p', { class: 'load-card__say', dataset: { tone: sentence.tone } }, sentence.text),
       h('div', { class: 'load-stats' },
-        stat(`${l.sundays} ${outOf(l.maxSundays)}`, l.sundays === 1 ? 'neděle v řadě' : 'nedělí po sobě', { warn: l.sundays > l.maxSundays }),
+        stat(`${l.sundays} ${outOf(l.maxSundays)}`, l.sundays === 1 ? 'neděle po sobě' : 'nedělí po sobě', { warn: l.sundays > l.maxSundays }),
         stat(String(l.year), `${agree(l.year, 'služba', 'služby', 'služeb')} letos`),
         l.topRole ? stat(l.topRole, 'nejčastěji') : null)),
   });
@@ -360,8 +360,8 @@ export function renderMine(parts = []) {
       tone: 'info',
       title: 'Zvonec neví, která karta je tvoje.',
       text: S.mode === 'live'
-        ? 'Bez ní tu nevidíš svoje služby. Řekni vedoucímu, ať ji propojí s tvým přístupem.'
-        : 'Teď se díváš jako správce bez karty v Lidech. Někoho jiného si vybereš v menu pod svým jménem.',
+        ? 'Bez ní tu nevidíš svoje služby. Řekni vedoucímu, ať ji propojí s tvým přihlášením.'
+        : 'Teď se díváš jako správce bez vlastní karty. Někoho jiného si vybereš v menu pod svým jménem.',
     }) : null,
     nothing ? empty({
       icon: 'calendar', title: 'Zatím tu nemáš žádné služby.',
@@ -377,7 +377,7 @@ export function renderMine(parts = []) {
     split ? null : funds);
 
   // ≥ 1200 the right column: the meeting when one is open (it takes the column's place), otherwise mine: Obsazení's
-  // line, Tvoje břemeno, Kdy nemůžu
+  // line, Tvoje vytížení, Kdy nemůžu
   // (built only when it is shown: a node lives in one place, so a phone's column must keep them)
   const side = split && (staff || load || off || funds) ? h('div', { class: 'mine-side' }, staff, load, off, funds) : null;
   const pane = !split ? null : openId ? (opened ? eventDetailFor(opened, 'pane') : missingDetail('pane')) : side;

@@ -436,7 +436,7 @@ a.event:hover, button.event--button:hover { background: var(--wash); }
 .amount { font-weight: var(--weight-strong); color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .amount__unit { font-weight: var(--weight-regular); color: var(--ink-2); }
 
-/* The figure block (figures()): Tvoje břemeno's anatomy for every headline number */
+/* The figure block (figures()): Tvoje vytížení's anatomy for every headline number */
 .figures { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--shape-block); background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
 .figures--feature { background: var(--feature); box-shadow: none; }
 /* a titled block is a whole section: the h2 inside, at the card's top, its control (a period line) on the right */

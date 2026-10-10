@@ -92,7 +92,7 @@ things and never share a name.
 | | člen (member) | vedoucí (leader) | správce (admin) |
 |---|---|---|---|
 | Navigation | Moje, Kalendář, Lidé, Skupiny | + Obsazení, the group „Zdroje“ (Šablony, Formáty, Místa), „Správa“ in the person menu (Přístupy, Nastavení sboru) | the same items as a leader |
-| Duties | answers own duties (Můžu / Nemůžu); sees the whole Rozpis, read-only | plans everything: meetings, needs, picker, auto-fill, overrides, conflicts, Břemeno | same |
+| Duties | answers own duties (Můžu / Nemůžu); sees the whole Rozpis, read-only | plans everything: meetings, needs, picker, auto-fill, overrides, conflicts, Vytížení | same |
 | People | names and households; phone and e-mail only when the person shared them | edits people, households, groups, roles, archive; invites | same |
 | Formáty, Místa | read-only, reached by links | edit | edit |
 | Access | – | invites; manages member and invite logins | + „Změň přístup“, „Vyměň klíč“, „Nahraj zálohu“ |
@@ -566,7 +566,7 @@ Short warning tags on a person in Kdo slouží: `WARNING_TAGS` in `ui/event-duti
 - `limitsOf` = the person's `servingLimits` over `settings.defaults` over `{ 4, 3 }`.
 - `isInactive` = former or paused. `monthCount` = distinct non-rehearsal events in the month.
   `sundayStreak` = consecutive Sunday services around a day.
-- **`servingLoad(data, month)`** („Kdo kolik slouží“, Břemeno): rows for non-archived adults with a skill in a
+- **`servingLoad(data, month)`** („Kdo kolik slouží“, Vytížení): rows for non-archived adults with a skill in a
   non-archived team, plus anyone serving that month. Row: `{ person, count, limit, sundaysInRow, maxSundays,
   paused, custom, over: count > limit, overSundays }`, sorted by `count / limit` descending.
 
@@ -718,7 +718,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 | `#kalendar` | the remembered view | member |
 | `#kalendar/seznam[/<eventId>]` | Seznam | member |
 | `#kalendar/mesic/<YYYY-MM>[/<YYYY-MM-DD>]` | Měsíc | member |
-| `#kalendar/rozpis/<YYYY-MM>[/<eventId>\|/bremeno]` | Rozpis (+ Břemeno, leaders) | member |
+| `#kalendar/rozpis/<YYYY-MM>[/<eventId>\|/vytizeni]` | Rozpis (+ Vytížení, leaders) | member |
 | `#setkani/<id>`, `#setkani/<id>/osnova` | Setkání page, Osnova page | member |
 | `#lide[/<personId>]` | Lidé | member |
 | `#lide/skupiny[/<groupId>[/<personId>]]` | Skupiny | member |
@@ -741,7 +741,7 @@ Redirects (old slugs keep working): `domu|vice` → `moje`; `nemuzu` → `kdy-ne
 `lide/skupiny/<id>`; `tymy|skupiny|sluzby` → `lide/skupiny`; `lide/tabulka` → `lide/vypis`;
 `lide/<clenove|pratele|hoste|deti|doplnit|narozeniny|archiv|…>` → `#lide` with that Filtr preset; `udalost/<id>` →
 `setkani/<id>`; `porad|prubeh` → `osnova`; `upozorneni|kolize` → `#obsazeni` with Filtr „Něco nesedí“;
-`rozpis[/m]` → `kalendar/rozpis/m`; `lide/bremeno` → Rozpis + Břemeno; `kalendar/<YYYY-MM>` → Měsíc;
+`rozpis[/m]` → `kalendar/rozpis/m`; `lide/vytizeni` → Rozpis + Vytížení; `kalendar/<YYYY-MM>` → Měsíc;
 `kalendar/tyden` → Seznam; `sablona/<id>`, `misto/<id>`, `format/<id>` → the plural routes;
 `nastaveni/pristupy` → `pristupy`.
 
@@ -901,7 +901,7 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
 - No duties: „Zatím tu nemáš žádné služby.“ No card linked: info callout „Zvonec neví, která karta je tvoje.“
 - **Obsazení** (leaders): one line linking to `#obsazeni` – „Obsazení ● chybí 1 · ● 1 problém · ○ 3 čekají ›“, or
   „✓ všechno vyřešené“ (counts in the Filtr scope of Obsazení).
-- **Tvoje břemeno**: a `--feature` card – this month's duties as a big Agrandir number „3“ + „ze 4 služeb v říjnu“,
+- **Tvoje vytížení**: a `--feature` card – this month's duties as a big Agrandir number „3“ + „ze 4 služeb v říjnu“,
   one pip per allowed duty (filled = taken, amber = over the limit), a sentence („Ještě máš místo na 1 službu.“ ·
   „Tenhle měsíc máš plno.“ · „O 1 službu víc, než zvládneš.“ · „Máš pauzu od služeb. Zvonec tě do nich nenavrhne.“),
   then three small numbers: Sundays in a row („2 ze 3 · nedělí po sobě“), this year's past duties („18 · služeb
@@ -909,8 +909,8 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
 - **Kdy nemůžu**: my ranges (rows → Uprav · Smaž) and „+ Přidej“.
 - Nothing about others: no meeting list of the week, no staffing blocks.
 - **≥ 1200**, two columns: left the answer card, Tvoje další služby, Odmítnuté, Minulé služby; right the Obsazení line,
-  Tvoje břemeno and Kdy nemůžu. A clicked duty replaces the right column as the pane; ✕ brings it back. Below 1200
-  one column: answer card · Obsazení · Tvoje břemeno · Tvoje další služby · Odmítnuté · Kdy nemůžu · Minulé služby;
+  Tvoje vytížení and Kdy nemůžu. A clicked duty replaces the right column as the pane; ✕ brings it back. Below 1200
+  one column: answer card · Obsazení · Tvoje vytížení · Tvoje další služby · Odmítnuté · Kdy nemůžu · Minulé služby;
   a duty opens the meeting page („‹ Moje“).
 
 ### 9.2 Obsazení `#obsazeni[/<id>]` (leaders; `#ukoly` redirects)
@@ -940,7 +940,7 @@ A list of tasks for the next 28 days, by the kind of work (not a third calendar)
 - A: „Kalendář“ · ⋯ · [Přidej setkání] (leaders). ⋯ in every view: „Ukaž minulá setkání“ / „Skryj minulá setkání“
   (Seznam only, last 4 weeks) · „Stáhni do kalendáře“ → sheet „Kalendář v telefonu“ (Moje služby / Celý kalendář)
   · „Vytiskni rozpis…“ → dialog „Tisk rozpisu“ (month select; A4 landscape, Filtr applies: one table per kind of meeting as on the screen – meetings across, roles down under their team's line; names only, unconfirmed grey (a key under the title), „chybí“ red, „–“ not needed, faint bands on every second meeting) · „Doplň volná
-  místa“ (leaders) · „Ukaž, kdo kolik slouží“ (leaders) → Břemeno.
+  místa“ (leaders) · „Ukaž, kdo kolik slouží“ (leaders) → Vytížení.
 - B: „Hledej setkání“ (title, place, Účel, names of who serves; accent-insensitive: „kucer“ finds „Kučera“) +
   Filtr: **Účel** (hue dots) · **Tým** (multi) · **Jen moje služby** · **Ukaž i zrušená**. View switch at the
   right; only a click on it is remembered.
@@ -972,7 +972,7 @@ A list of tasks for the next 28 days, by the kind of work (not a third calendar)
     sideways inside its own wrapper (never the page) and the third column peeks in.
   - Past meetings in `--ink-2`. A name (leaders) → duty sheet; „Ty“ → my answer; „+ Doplň“ → picker. Filtr › Tým
     narrows the rows; the rest of Filtr and the search narrow the columns.
-- **Břemeno** (dialog, `/bremeno`, leaders): „Kolik služeb má kdo v říjnu. Nahoře ti, kdo mají nejvíc.“ Rows:
+- **Vytížení** (dialog, `/vytizeni`, leaders): „Kolik služeb má kdo v říjnu. Nahoře ti, kdo mají nejvíc.“ Rows:
   avatar, name, „3 z 4 · má pauzu · 3 neděle po sobě“, a load bar, „víc, než zvládne“ in amber.
 
 ### 9.4 Setkání (pane or page; `#setkani/<id>` is a page at every width)
@@ -1177,7 +1177,7 @@ numbers from `lib/stats.js` (`peopleStats`, `serviceStats`). No attendance – t
 - **Lidé** (count of active people): tiles Členové · Přátelé · Hosté · z toho děti (a tile opens Lidé under that
   Filtr), one line „Za poslední rok přibylo N lidí, N karet šlo do archivu.“ and the link „V archivu 3 karty ›“.
 - **Služby** (a period line ‹ Říjen 2026 ›): a wide tile „96 %“ with „obsazeno 103 ze 107“ and a bar (› Rozpis of
-  that month), then služeb · lidí slouží · čeká na odpověď (› Obsazení) · odmítnutí. Who serves most stays in Břemeno, open places in
+  that month), then služeb · lidí slouží · čeká na odpověď (› Obsazení) · odmítnutí. Who serves most stays in Vytížení, open places in
   Obsazení and Rozpis.
 - **Dary** (the treasurer and the admins only, 9.16): the year's sum, donors, nepřiřazené – no names.
 
@@ -1195,7 +1195,9 @@ fresh `dary.json`); nothing reaches the main data except `person.donorVs`.
   anonymně (sum) · nepřiřazené (› the section).
 - **Nepřiřazené**: payments with no known donor, grouped by month (newest first) – the day arch, the sender (the bank's
   CAPITALS made readable, `senderName`), „VS 20 · message“, the amount ›; the whole row opens „Přiřazení daru“:
-  Člověk z Lidí (the picker; a person without a symbol gets one), the donors outside the church, Nový dárce mimo sbor,
+  Člen sboru (the people picker; a person without a symbol gets one), Přidej do Lidí (leaders: a card with only the
+  name from the payment – the bank's „SURNAME FIRST“ split into Jméno and Příjmení to check, status guest, nothing made up –
+  and the payment is theirs), the donors outside the church, Nový dárce mimo sbor,
   Anonymní dar, Vyřaď z darů. Matching (`matchGift`): the person's or outside donor's VS, else a sender account assigned
   before.
 - **Dárci**: avatar, name, „VS 1001 · 10 darů“, the year's sum › the donor page: facts (symbol, address, birth date or
@@ -1299,8 +1301,13 @@ Zvonec sends one thing by itself – the Monday e-mail; everything else a leader
 - **„Připomeň“** builds a ready message. Obsazení's section „Čeká na odpověď“ (one text per person for all their
   duties) and the meeting's „○ N čeká“ open the reminders. Per person an `sms:` link (aria „Připomeň v SMS – <jméno>“), or
   without a phone a `mailto:` with subject „Služba ve Zvonci“ (aria „Připomeň e-mailem – <jméno>“), plus „Zavolej“.
-  Body (`reminderText`): „Ahoj, v neděli 18. 10. máš v rozpisu službu: Kázání (Setkání na pastvě, 10.00). Můžeš?
-  Odpověz prosím ve Zvonci: <app URL>#moje“; several duties: `reminderTextAll` (§9.2).
+  Body (`reminderTextAll`, `lib/messages.js`): the church's text `settings.reminderText`, default „Ahoj, {jméno}! V rozpisu
+  máš: {služby}. Můžeš? Odpověz prosím ve Zvonci: {odkaz}“ – {jméno} the first name (nickname first) in the vocative
+  (unknown → „Ahoj!“), {služby} „Kázání (Setkání na pastvě, ne 18. 10. v 10.00)“ joined by commas, {odkaz} <app URL>#moje.
+- **Nastavení sboru › Zprávy**: the reminder (a textarea, the marks in the hint, a live preview for Jana, [Vrať výchozí
+  text]; an unknown mark or a text without {služby} is refused) and the Monday e-mail's signature
+  `settings.digestSignature` (default „Díky, že sloužíš.“, the church's name below). Stored only when they differ from
+  the defaults.
 - **„Kdy Zvonec bučí“** (settings) sets how many days before a meeting each conflict starts to show (§6.2 K5, K6).
 - **In-app signals**: nav counts (Moje: aria „N služby čekají na tvou odpověď“; Obsazení: „Zbývá vyřešit N věcí“),
   the invites dot / „1 čeká“, Co nesedí sections, ○ / ● marks, Obsazení to-do lines.
@@ -1342,7 +1349,7 @@ Zvonec sends one thing by itself – the Monday e-mail; everything else a leader
 4. **Shell and kit**: tokens and palettes, `h()`, layers, toast, rows, `listScreen`, Filtr, empty states, nav (tab
    bar, rail, sidebar, person menu), routes and redirects, pane, save line, undo.
 5. **Screens** in this order: Setkání (with duty sheet, picker, Osnova), Kalendář (Seznam, Měsíc, Rozpis,
-   Břemeno), Moje, Obsazení, Lidé (+ person, household, Tabulka), Skupiny, Šablony, Formáty, Místa,
+   Vytížení), Moje, Obsazení, Lidé (+ person, household, Tabulka), Skupiny, Šablony, Formáty, Místa,
    Nastavení sboru, Kdy nemůžu, Můj účet, Pastva.
 6. **Data repo workflows**: `build-public.mjs`, `check.mjs`, `web.yml`, `check.yml`.
 7. **QA**: the acceptance list in §12.2, a Czech proofread, print styles.

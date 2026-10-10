@@ -1,7 +1,7 @@
 // Zvonec One – Přehled (#prehled[/<YYYY-MM>], leaders): only the headline numbers Zvonec knows for sure, each tile
 // leading to the screen where the detail lives (the owner: „v přehledu jen přehledy, žádné detailní informace“).
 // No attendance – the church does not count who came (the owner).
-//   Each section is one figure block (the kit's figures(), Tvoje břemeno's anatomy – DESIGN audit 2026-10-09):
+//   Each section is one figure block (the kit's figures(), Tvoje vytížení's anatomy – DESIGN audit 2026-10-09):
 //   Lidé       „71 lidí ve sboru“, who joined and left in a year, then členové · přátelé · hosté · z toho děti (each
 //              opens Lidé under that Filtr); „V archivu 3 karty ›“
 //   Služby     ‹ Říjen 2026 ›, „96 % obsazeno 103 ze 107 míst“ with a bar, služeb · slouží · čeká na odpověď
@@ -9,7 +9,7 @@
 //   Dary       the treasurer and the admins only: the year's sum, dárci, nepřiřazené (› Dary)
 // Pure numbers come from lib/stats.js.
 
-import { h, page, section, quiet, plural, periodLine, setFilter, clearFilter, rowLink, figures, columns, stackBar, isPhone, menuBack, monthLabel, shiftMonth } from './kit.js';
+import { h, page, section, quiet, plural, agree, periodLine, setFilter, clearFilter, rowLink, figures, columns, stackBar, isPhone, menuBack, monthLabel, shiftMonth } from './kit.js';
 import { S, navigate } from './state.js';
 import { peopleStats, serviceStats } from '../lib/stats.js';
 import { today } from '../lib/time.js';
@@ -33,8 +33,8 @@ const openPeople = (patch) => () => { clearFilter('lide'); setFilter('lide', pat
 function peopleSection() {
   const s = peopleStats(S.data, { today: today() });
   const word = (n, one, few, many) => (n === 1 ? one : n >= 2 && n <= 4 ? few : many);
-  const joined = s.joined.length ? `přibyl${s.joined.length === 1 ? '' : 'o'} ${lidi(s.joined.length)}` : 'nikdo nový nepřibyl';
-  const left = s.left.length ? `${plural(s.left.length, 'karta šla', 'karty šly', 'karet šlo')} do archivu` : 'do archivu nešel nikdo';
+  const joined = s.joined.length ? `${agree(s.joined.length, 'přibyl', 'přibyli', 'přibylo')} ${lidi(s.joined.length)}` : 'nikdo nový nepřibyl';
+  const left = s.left.length ? `${plural(s.left.length, 'karta šla', 'karty šly', 'karet šlo')} do archivu` : 'do archivu nešla žádná karta';
   return section({
     label: 'Lidé',
     body: [
@@ -42,7 +42,7 @@ function peopleSection() {
         title: 'Lidé',
         n: s.active, of: `${word(s.active, 'člověk', 'lidé', 'lidí')} ve sboru`,
         chart: stackBar([{ value: s.member, step: 1 }, { value: s.regular, step: 2 }, { value: s.guest, step: 3 }],
-          { label: `Složení sboru: ${s.member} členů, ${s.regular} přátel, ${s.guest} hostů` }),
+          { label: `Složení sboru: ${plural(s.member, 'člen', 'členové', 'členů')}, ${plural(s.regular, 'přítel', 'přátelé', 'přátel')}, ${plural(s.guest, 'host', 'hosté', 'hostů')}` }),
         say: `Za poslední rok ${joined}, ${left}.`,
         items: [
           { value: s.member, swatch: 1, label: word(s.member, 'člen', 'členové', 'členů'), onclick: openPeople({ clenstvi: ['member'] }) },
@@ -80,13 +80,13 @@ function serviceSection(month) {
     body: [
       s.meetings ? figures({
         title: 'Služby', aside: period,
-        n: `${pct}\u00a0%`, of: `obsazeno ${s.filled} ${outOf(s.needed)} míst`,
+        n: `${pct}\u00a0%`, of: `obsazeno ${s.filled} ${outOf(s.needed)} ${s.needed === 1 ? 'místa' : 'míst'}`,
         tone: missing ? 'wait' : null,
         chart: serviceTrend(month),
         items: [
           { value: s.duties, label: plural(s.duties, 'služba', 'služby', 'služeb').replace(/^\d+ /, '') },
           { value: s.people, label: s.people === 1 ? 'člověk slouží' : s.people >= 2 && s.people <= 4 ? 'lidé slouží' : 'lidí slouží' },
-          { value: s.waiting, label: 'čeká na odpověď', href: s.waiting ? '#obsazeni' : null, tone: s.waiting ? 'wait' : null },
+          { value: s.waiting, label: agree(s.waiting, 'čeká na odpověď', 'čekají na odpověď', 'čeká na odpověď'), href: s.waiting ? '#obsazeni' : null, tone: s.waiting ? 'wait' : null },
           { value: s.declined, label: 'odmítnutí' },
         ],
         action: rowLink('Otevři rozpis', { href: `#kalendar/rozpis/${month}` }),

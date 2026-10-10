@@ -39,6 +39,10 @@ html[data-layer-open] { overflow: hidden; }
   animation: nx-rise var(--dur-sheet) var(--ease);
 }
 .sheet[data-mode="bottom"][data-depth="2"] { max-height: calc(92dvh - 24px); }   /* the first one's top edge shows, dimmed */
+/* the phone keyboard is up: the sheet sits on top of it and fits above it (--keyboard is set in app.js) */
+html[data-keyboard] .sheet[data-mode="bottom"] {
+  bottom: var(--keyboard, 0px); max-height: calc(100dvh - var(--keyboard, 0px) - var(--space-5)); padding-bottom: 0;
+}
 .sheet__grabber { width: 36px; height: 4px; margin: 8px auto 4px; border-radius: 2px; background: var(--line-strong); opacity: .6; }
 .sheet[data-mode="bottom"] .sheet__head { margin-top: 4px; }
 .sheet--dragging { animation: none; }

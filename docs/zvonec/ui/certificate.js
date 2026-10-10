@@ -42,7 +42,7 @@ function certificatePage(c, year, { settings, finance }) {
     h('dl', { class: 'cert__parties' },
       h('dt', {}, 'Příjemce'), h('dd', {}, h('strong', {}, settings.legalName), h('br'), `${settings.legalAddress} · IČO ${settings.companyId}`),
       h('dt', {}, 'Dárce'), h('dd', {}, h('strong', {}, c.name), donorLine ? [h('br'), donorLine] : null)),
-    h('p', {}, `Potvrzujeme, že jsme od dárce v roce ${year} přijali tyto peněžní dary na činnost sboru:`),
+    h('p', {}, `Potvrzujeme, že jsme od dárce v roce ${year} přijali ${c.gifts.length === 1 ? 'tento peněžní dar' : 'tyto peněžní dary'} na činnost sboru:`),
     h('table', { class: 'cert__gifts' }, h('tbody', {},
       giftLines(c.gifts).map(([words, amount]) => h('tr', {}, h('td', {}, words), h('td', {}, money(amount)))),
       h('tr', { class: 'cert__sum' }, h('td', {}, 'Celkem'), h('td', {}, money(c.total))))),
