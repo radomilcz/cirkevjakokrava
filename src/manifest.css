@@ -334,6 +334,32 @@ body{
 }
 .read.in .text{opacity:1;transform:none;transition-delay:.15s}
 .read .text i{font-style:normal;opacity:.2;transition:opacity .3s linear}
+/* verše pod odstavcem (Kdo jsme): pilulky, které se po kliknutí rozjedou do znění verše */
+.read .text:has(+.pilulky){margin-bottom:0}
+.pilulky{
+  display:flex;flex-wrap:wrap;align-items:flex-start;gap:.7rem;margin:clamp(1.6rem,5vh,3.4rem) 0 34vh;max-width:1560px;
+  font-family:var(--body);font-size:clamp(1rem,1.45vw,1.65rem);line-height:1.25;
+}
+.pil{border:1px solid color-mix(in srgb,currentColor 55%,transparent);border-radius:1.4em;transition:border-color .3s}
+.pil:hover,.pil.open{border-color:currentColor}
+.pil>button{
+  display:inline-flex;align-items:baseline;gap:.6em;padding:.5em 1.05em;
+  border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left;
+}
+.pil>button::after{content:"+";font-family:var(--display);font-weight:800;transition:transform .4s var(--ease)}
+.pil.open>button::after{transform:rotate(45deg)}
+.pil>button:focus-visible{outline:2px solid currentColor;outline-offset:4px;border-radius:1.4em}
+.pil.open{flex-basis:100%;max-width:38em}
+.pil-v{padding:0 1.05em 1.05em}
+.pil-v p{margin:0;font-size:1.35em;line-height:1.25;text-wrap:pretty}
+.pil-v a{
+  display:inline-block;margin-top:.7em;color:inherit;font-size:.85em;
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.3em;
+  text-decoration-color:color-mix(in srgb,currentColor 40%,transparent);
+}
+.pil-v a::after{content:" →"}
+.pil.open .pil-v{animation:pilIn .45s var(--ease)}
+@keyframes pilIn{from{opacity:0;transform:translateY(-.3em)}}
 
 /* ---------- předmluva · dlouhý text s mezititulky (Figma: Předmluva 1920×4895) ----------
    Na rozdíl od odstavce hodnot se tu nerozsvěcuje po slovech: je to přes 600 slov a zápis
@@ -450,6 +476,7 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .rail li.sep{height:4px}
   .value .how{font-size:clamp(1.1rem,5vw,1.6rem)}
   .read .text{font-size:clamp(1.7rem,8.6vw,3rem);line-height:1.2;margin:48vh 0 36vh}
+  .pilulky{margin-bottom:36vh}
   .pilir .nadpis>span{display:inline;white-space:normal}
   .pilir .nadpis{font-size:clamp(1.7rem,8.4vw,3rem);line-height:1.22}
   .pilir .podnadpis{font-size:clamp(1.15rem,5vw,1.5rem)}
@@ -462,6 +489,7 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .value .word{font-size:clamp(2rem,14vh,6rem)}
 }
 @media (prefers-reduced-motion:reduce){
+  .pil.open .pil-v{animation:none}
   .read .text i{opacity:1 !important;transition:none}
   .track{transition:none}
   .rise,.ln>span,.print,.pilir{transition:none;opacity:1;transform:none}

@@ -247,6 +247,13 @@
     if(r&&!reduced&&r.inner>1){setInner(slides[cur],r.inner-deck.clientHeight*.55);return}
     go(cur-1);
   }
+  /* verše pod odstavcem: pilulka se rozjede do znění verše; slajd tím vyroste, tak se přeměří */
+  document.querySelectorAll('.pil>button').forEach(b=>b.addEventListener('click',()=>{
+    const p=b.parentElement,open=!p.classList.contains('open');
+    p.classList.toggle('open',open);b.setAttribute('aria-expanded',String(open));
+    p.querySelector('.pil-v').hidden=!open;
+    measure();
+  }));
   measure();
   addEventListener('resize',()=>{measure();go(cur,true);startPaint()});
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{measure();go(cur,true)});
