@@ -259,15 +259,15 @@
 .osnova__time { font-size: var(--type-meta); line-height: var(--lh-body); font-weight: var(--weight-strong); font-feature-settings: var(--numerals); }
 .osnova__end { display: block; font-weight: var(--weight-regular); color: var(--ink-2); line-height: var(--lh-meta); }
 .osnova__body { display: grid; gap: 2px; min-width: 0; }
-.osnova__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); overflow-wrap: break-word; }
-.osnova__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+.osnova__title { font-size: var(--type-body); line-height: var(--lh-body); font-weight: var(--weight-strong); overflow-wrap: anywhere; }
+.osnova__meta { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); overflow-wrap: anywhere; }
 .osnova__missing { color: var(--no-ink); }
 /* members: a point made of a Formát is a link to it, lit like a row */
 .osnova--read .osnova__item:has(> .osnova__open--link) { padding: 0; }
 .osnova__open--link { margin: 0; padding-left: var(--space-3) !important; padding-right: var(--space-3) !important; border-radius: var(--radius-m); color: inherit; transition: background-color var(--dur-state) var(--ease); }
 .osnova__open--link:hover { background: var(--wash); }
 .osnova__item:has(> .osnova__open--link:hover)::before, .osnova__item:has(> .osnova__open--link:hover) + .osnova__item::before { background: transparent; }
-.osnova__note { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); white-space: pre-line; }
+.osnova__note { font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink); white-space: pre-line; overflow-wrap: anywhere; }
 /* members read it at the pulpit: larger type, read-only */
 .osnova--read .osnova__open { grid-template-columns: 72px minmax(0, 1fr); padding: var(--space-4) 0; }
 .osnova--read .osnova__title { font-size: var(--type-lead); line-height: var(--lh-lead); }
