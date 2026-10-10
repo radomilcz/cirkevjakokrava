@@ -18,13 +18,39 @@ const DEMO_LEGAL = {
   bankAccount: '1234567899/0000',
 };
 
-/** Adds the church's details, donor symbols and three sbírky to demo data (mutates and returns it). */
+/** Made-up people who sent the unassigned payments: [id, first, last, status, phone, e-mail, household]. */
+const SENDERS = [
+  ['p-dar1', 'Marie', 'Svobodová', 'regular', '777 000 901', 'marie.svobodova@example.cz', null],
+  ['p-dar2', 'Tomáš', 'Novák', 'guest', '777 000 902', 'tomas.novak@example.cz', null],
+  ['p-dar3', 'Jiří', 'Horák', 'regular', '777 000 903', 'jiri.horak@example.cz', 'h-horak'],
+];
+
+/**
+ * The senders of the payments nobody is known for yet (createDemoFinance) are in Lidé, made up like everyone else –
+ * without a donor symbol, so the treasurer can try assigning them („Někdo ze sboru“). Mutates; true when it added any.
+ */
+export function addDemoSenders(data, today) {
+  let added = false;
+  for (const [id, firstName, lastName, status, phone, email, householdId] of SENDERS) {
+    if ((data.people || []).some((p) => p.id === id)) continue;
+    data.people.push({
+      id, firstName, lastName, phone, email, ...(householdId ? { householdId } : {}),
+      membership: { status }, consentDate: addDays(today, -120),
+    });
+    added = true;
+  }
+  return added;
+}
+
+/** Adds the church's details, donor symbols, three sbírky and the senders of the unassigned payments (in Lidé) to demo
+    data (mutates and returns it). */
 export function addDemoGiving(data, today, { me } = {}) {
   Object.assign(data.settings, DEMO_LEGAL);
   const members = (data.people || []).filter((p) => ['member', 'regular'].includes(p.membership?.status) && !p.birthDate?.startsWith?.('20'));
   members.slice(0, 14).forEach((p, i) => { p.donorVs = String(1001 + i); });
   const mine = (data.people || []).find((p) => p.id === me);
   if (mine && !mine.donorVs) mine.donorVs = '1050';
+  addDemoSenders(data, today);
   const y = today.slice(0, 4);
   data.fundraisers = [
     { id: 'f-zvuk', code: '101', name: 'Nový zvuk', target: 80000, until: `${y}-12-31`, created: addDays(today, -60),
