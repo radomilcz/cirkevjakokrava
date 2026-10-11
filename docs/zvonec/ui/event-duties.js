@@ -613,9 +613,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   });
   sheet = layer.open({ kind: 'sheet',
     title: 'Návrh služeb',
-    subtitle: total === 1
-      ? 'Zvonec našel, kdo by mohl sloužit. Když ho nechceš, odškrtni ho. Kdo zůstane zaškrtnutý, dostane službu a potvrdí, jestli může.'
-      : 'Zvonec našel, kdo by mohl sloužit. Koho nechceš, odškrtni. Kdo zůstane zaškrtnutý, dostane službu a potvrdí, jestli může.',
+    subtitle: `Zvonec našel ${total === 1 ? 'volného kandidáta' : 'volné kandidáty'}. Koho nechceš, odškrtni. Kdo zůstane zaškrtnutý, dostane službu a potvrdí, jestli může.`,
     body,
     foot: submit,
     cls: 'plan-sheet',
