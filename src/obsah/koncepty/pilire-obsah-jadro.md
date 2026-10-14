@@ -25,20 +25,24 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 - Otevřené: podmínka „když“ (Bůh je v práci, jen když ji dělám jako povolání?) vs. 01 (Boží rukopis vidíme i u lidí, kteří o něm nevědí).
 - Přidáváme srdce, slova i ruce jako hosté: jejich dílo, jejich pravidla, jejich tempo.
 - Dobro města je i naše dobro.
+- **Přidat se znamená i nechat se obdarovat** (Gemini 14. 10.). Nejsme ti chytří shůry, co přišli pomáhat. Umíme si nechat poradit od starého mistra, dát si u souseda kafe, přijmout pomoc s autem a být vděční hosté. Ze vzájemnosti je opravdové sousedství.
+- **Pilíř žije hlavně v obyčejné směně.** Když Petr od sedmi do půl čtvrté zapojí dráty tak, aby dům nevyhořel, a jedná fér s lidmi kolem, dělá přesně to, co má. Nemusí to být až něco navíc po večerech.
 - Druh: čin s druhými. Hranice: vede to někdo jiný (vedu já = 03).
 - Kotvy: „Tráva roste dřív než kráva.“ „Když Bůh dává, my se přidáváme.“ „Žádný učený z nebe nespadl.“ Verš: Jer 29,7.
 - Petr: jít za někým, kdo táhne něco dobrého, a zeptat se, s čím pomoct.
-- Otevřené: na slajdu „lidi“, nebo stačí „město“?
+- Vyřešeno osou (14. 10.): „přidáváme se k lidem“, ne k městu.
 
 ## 03 · Pro koho? → Tvoříme
 - **Jádro:** Sami tvoříme dobré a krásné věci, hlavně pro lidi, kterým je kostel i víra fuk.
+- **Začínáme tam, kde nic neroste** (Gemini 14. 10.). Dvojka vstupuje do proudu, který už teče. Trojka přináší jiskru na prázdná místa, kde se nic neděje, lidi se neznají a nikdo jiný nezačal.
 - Pastvu tvoříme my všichni tam, kde žijeme, ne pastoři ani program.
 - Nejen umění: řemeslo, jídlo, péče i sport se počítají stejně.
 - Pastva má lákat (Radomil 9. 10.: „AIDA je princip.“): nejdřív zaujme oči a uši, pak osloví duši a nakonec člověk udělá krok (přijde, zkusí, vrátí se).
-- Láká kvalitou, ne háčkem. Musí to být dobré samo o sobě. Kvalita je forma lásky.
+- Láká kvalitou, ne háčkem. Musí to být dobré samo o sobě. Kvalita je projev lásky.
+- **Žádná past v trávě.** Pozvánka má zaujmout a polévka zavonět, ale za pohoštěním není schovaný žádný háček ani povinný program. Když soused přijde na jídlo a o víře nechce slyšet ani slovo, naše přátelství trvá dál beze změny.
 - Dáváme všem, bez podmínek, jako Bůh, který posílá déšť na každého.
 - Neděle má smysl, ale pastva roste každý den. Hlavně přes týden.
-- Druh: vlastní čin. Hranice: je to naše dílo, my ho vymyslíme a my ho uděláme. Když pomáháme s cizím, je to 02.
+- Druh: vlastní čin. Hranice: je to naše dílo, my ho vymyslíme a my ho uděláme, a to tam, kde zatím nic neroste. Když pomáháme s cizím, je to 02.
 - Kotvy: „Pastvu tvoří krávy. Ne pastoři. Ale vy.“ „Pastva roste tam, kde se kráva pase.“ „Neděle není pasé.“ Verše: Mt 5,45 (případně Fp 4,8).
 - Petr: vzít něco, co umí, a udělat z toho něco pro lidi kolem.
 
@@ -48,11 +52,12 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 - Bůh nevidí čísla, vidí jména.
 - Lidi to poznají od souseda, kolegyně nebo spolužáka, ne z kazatelny. Církev jsme, kudy chodíme: každý den, v práci, ve škole, na kole.
 - Úspěch neměříme židlemi ani členy, ale tím, jestli někdo zažil, že je viděný a že o něj Bůh stojí; překonal strach a zažil proměňující vztah.
-- Nikoho nelákáme. Kdo přijde, je vítaný; kdo ne, je pořád náš soused.
-- Otevřené: „Nikoho nelákáme“ vs. AIDA ve 03. Návrh: na pastvu lákáme, ale nikoho nenaháníme a netlačíme. Lákavá pastva ano, nábor ne.
+- Nikoho nenaháníme. Kdo přijde, je vítaný; kdo ne, je pořád náš soused. (Vyřešeno 14. 10.: na pastvu lákáme, ale bez háčku a bez nahánění.)
+- **Když přijde řeč na to podstatné, umíme odpovědět** (Gemini 14. 10.). Neschováváme se jen za činy. Když se parťák zeptá, odkud Petr bere klid a naději, Petr jednoduše a civilně řekne, co pro něj Bůh znamená.
+- **Každý má svou část.** My ručíme za to, jak s lidmi jednáme a jestli mluvíme poctivě. To, co se odehraje v jejich srdci, necháváme s důvěrou na Bohu.
 - Druh: důvod. Hranice: jen tady se mluví o tom, že lidi poznávají Boha.
-- Kotvy: „Nechodíme do církve. Jsme církev, kudy chodíme.“ „Číslo v kravíně. Jméno na pastvě.“ „Toužíme, aby lidé na vlastní kůži poznali…“ Verše: L 19,5, Iz 43,1, J 10,3.
-- Petr: naučit se jméno člověka, kolem kterého chodí každý den.
+- Kotvy: „Nechodíme do církve. Jsme církev, kudy chodíme.“ „Číslo v kravíně. Jméno na pastvě.“ „Toužíme, aby lidé na vlastní kůži poznali…“ Verše: **1 Pt 5,7** (B21: „Všechnu svou starost uvrhněte na něj, vždyť jemu na vás záleží.“), L 19,5 (Zacheus, spíš jako příběh), Iz 43,1, J 10,3.
+- Petr: zjistit, jak se jmenuje člověk, kolem kterého chodí každý den. A když se ho parťák zeptá, odkud bere klid, civilně odpovědět.
 
 ## Test hranic
 | | Na čem stojí | Kdo vede | Co dělá tělo |
