@@ -3,7 +3,9 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 
 **Kráva chodí po čtyřech.** (Radomil 9. 10.)
 
-**Osa:** vidíme, co Bůh dělá v lidech kolem → přidáváme se k tomu → sami tvoříme → protože toužíme, aby lidi poznali, že jim na nich Bůh záleží.
+**Osa (Radomil 14. 10.):** Oslavujeme Boží práci kolem nás. Připojujeme se k lidem, kteří už ji dělají. Tvoříme nové věci pro lidi, kteří Boha neznají, aby se s ním mohli setkat tam, kde žijí.
+
+Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k tomu → sami tvoříme → protože toužíme, aby lidi poznali, že Bohu na nich záleží.
 
 ## 01 · Co děláme? → Oslavujeme
 - **Jádro:** Bůh je tvořivý a laskavý a jeho povahu vidíme v dobrých věcech, které dělají lidi kolem nás, i ti, kdo o něm nevědí.

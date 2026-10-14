@@ -20,7 +20,9 @@ Neladíme slova, ale **obsah**: co který pilíř znamená, co vyjadřuje, kde m
 
 **„Kráva chodí po čtyřech.“** Čtyři pilíře jsou čtyři nohy. Když jedna chybí, kráva nejde. Pilíře jdou za sebou jako jeden pohyb. Tomu říkáme **osa**:
 
-**Vidíme, co Bůh dělá v lidech kolem → přidáváme se k tomu → sami tvoříme → protože toužíme, aby lidi poznali, že Bohu na nich záleží.**
+**Oslavujeme Boží práci kolem nás. Připojujeme se k lidem, kteří už ji dělají. Tvoříme nové věci pro lidi, kteří Boha neznají, aby se s ním mohli setkat tam, kde žijí.**
+
+(Radomilova osa. Tři činy a jeden důvod: oslavujeme → připojujeme se → tvoříme → aby se s Bohem setkali. Čtvrtý pilíř „Toužíme“ je to „aby“.)
 
 ## 3. Čtyři pilíře, jak je máme teď
 
