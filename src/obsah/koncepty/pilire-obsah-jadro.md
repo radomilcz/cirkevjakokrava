@@ -43,7 +43,7 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 - Dáváme všem, bez podmínek, jako Bůh, který posílá déšť na každého.
 - Neděle má smysl, ale pastva roste každý den. Hlavně přes týden.
 - Druh: vlastní čin. Hranice: je to naše dílo, my ho vymyslíme a my ho uděláme, a to tam, kde zatím nic neroste. Když pomáháme s cizím, je to 02.
-- Kotvy: „Pastvu tvoří krávy. Ne pastoři. Ale vy.“ „Pastva roste tam, kde se kráva pase.“ „Neděle není pasé.“ Verše: Mt 5,45 (případně Fp 4,8).
+- Kotvy: **„Dobrá pastva je lákavá.“** (Radomil 14. 10.) „Pastvu tvoří krávy. Ne pastoři. Ale vy.“ „Pastva roste tam, kde se kráva pase.“ „Neděle není pasé.“ Verše: Mt 5,45 (případně Fp 4,8).
 - Petr: vzít něco, co umí, a udělat z toho něco pro lidi kolem.
 
 ## 04 · Proč? → Toužíme
