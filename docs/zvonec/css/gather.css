@@ -132,3 +132,11 @@
   justify-self: stretch; margin: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-m) var(--radius-m) var(--radius-m) 4px;
   background: var(--wash); font-size: var(--type-body); line-height: var(--lh-body); white-space: pre-line; overflow-wrap: anywhere;
 }
+
+/* Osnova of a šablona: the drag handle before the time (as on the meeting's Osnova) */
+.row:has(> .reorder-grip:first-child) { padding-left: 0; --row-rule-start: calc(44px + var(--space-2) + 52px + var(--space-3)); }
+.row > .reorder-grip { margin-right: calc(var(--space-2) - var(--space-3)); cursor: grab; touch-action: none; color: var(--ink-2); }
+.row[data-dragging] { position: relative; z-index: 2; background: var(--overlay); box-shadow: var(--lift-4); transition: none; }
+.row[data-dragging] > .reorder-grip { cursor: grabbing; }
+.row[data-dragging]::before, .row[data-dragging] + .row::before { background: transparent; }
+.tpl-outline__list > .row:not([data-dragging]) { transition: transform var(--dur-state) var(--ease); }
