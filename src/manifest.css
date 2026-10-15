@@ -242,8 +242,8 @@ body{
 .pilir .podnadpis.odkaz:focus-visible{outline:2px solid currentColor;outline-offset:6px}
 .rejstrik{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.15em;
   font-family:var(--body);font-weight:700;font-size:clamp(1.15rem,2.2vw,2.7rem);line-height:1.2}
-.rej{display:flex;align-items:baseline;gap:.7em;padding:.12em 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left}
-.rej-n{flex:none;font-family:var(--display);font-weight:800;font-size:.45em;opacity:.6;min-width:1.6em}
+.rej{display:flex;align-items:baseline;gap:.5em;padding:.12em 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left}
+.rej-n{flex:none;font-family:var(--display);font-weight:800;font-size:1em;opacity:.6;width:2.1em;font-variant-numeric:tabular-nums}
 .rej-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em;
   text-decoration-color:color-mix(in srgb,currentColor 28%,transparent);transition:text-decoration-color .35s}
 .rej:hover .rej-t,.rej:focus-visible .rej-t{text-decoration-color:currentColor}
