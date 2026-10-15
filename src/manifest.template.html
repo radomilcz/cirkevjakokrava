@@ -102,13 +102,16 @@
     <div class="pilir">
 {%- set r = x.vyrok|radky %}
       <h3 class="nadpis" style="--znaku:{{ r|map('length')|max }};--radku:{{ r|length }}">{% for radek in r %}<span>{{ radek|vyrok }}</span> {% endfor %}</h3>
-{%- if x.get('podnadpis') %}
+{#- S rozklikem je odkazem sama věta pod nadpisem; další odkaz už pilíř nemá. #}
+{%- if x.get('podnadpis') and x.get('detail') %}
+      <button type="button" class="podnadpis odkaz" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{% for r in x.podnadpis|radky %}{{ r|txt }}{% if not loop.last %}<br>{% endif %}{% endfor %}</span>&nbsp;<span class="sipka" aria-hidden="true">→</span></button>
+{%- elif x.get('podnadpis') %}
       <p class="podnadpis">{% for r in x.podnadpis|radky %}{{ r|txt }}{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
 {%- endif %}
 {%- if x.get('text') %}
       <p class="popis">{{ x.text|txt }}</p>
 {%- endif %}
-{%- if x.get('detail') %}
+{%- if x.get('detail') and not x.get('podnadpis') %}
       <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span><span class="sipka" aria-hidden="true">→</span></button>
 {%- endif %}
     </div>

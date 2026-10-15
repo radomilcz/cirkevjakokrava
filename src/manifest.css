@@ -234,6 +234,12 @@ body{
   margin:0 0 .7em;max-width:36ch;font-family:var(--body);font-weight:700;text-wrap:balance;
   font-size:clamp(1.25rem,2.5vw,3.1rem);line-height:1.2;
 }
+/* věta pod nadpisem pilíře jako odkaz na rozklik: stejná sazba jako text, jemná linka a šipka */
+.pilir .podnadpis.odkaz{display:block;padding:0;border:0;background:none;color:inherit;cursor:pointer;text-align:left}
+.pilir .podnadpis.odkaz .sipka{display:inline-block;margin-left:.2em;font-weight:400;transition:transform .5s var(--ease)}
+.pilir .podnadpis.odkaz:hover .vic-t,.pilir .podnadpis.odkaz:focus-visible .vic-t{text-decoration-color:currentColor}
+.pilir .podnadpis.odkaz:hover .sipka,.pilir .podnadpis.odkaz:focus-visible .sipka{transform:translateX(.25em)}
+.pilir .podnadpis.odkaz:focus-visible{outline:2px solid currentColor;outline-offset:6px}
 .rejstrik{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.15em;
   font-family:var(--body);font-weight:700;font-size:clamp(1.15rem,2.2vw,2.7rem);line-height:1.2}
 .rej{display:flex;align-items:baseline;gap:.7em;padding:.12em 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left}

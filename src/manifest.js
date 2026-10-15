@@ -148,7 +148,7 @@
 
   /* ---------- rozklik z výroku: otevřená vrstva má klávesy, kolečko i dotyk pro sebe ---------- */
   const detailOpen=()=>!!document.querySelector('dialog.detail[open]');
-  document.querySelectorAll('.vic').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.vic,.podnadpis.odkaz').forEach(b=>b.addEventListener('click',()=>{
     const d=document.getElementById(b.getAttribute('aria-controls'));if(!d||!d.showModal)return;
     obarvi(d,barvyTed);d.scrollTop=0;d.showModal();d._from=b;
   }));
