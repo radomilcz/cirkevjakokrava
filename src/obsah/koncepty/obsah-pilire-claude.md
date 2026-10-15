@@ -2,7 +2,7 @@
 
 > **01 … Oslavujeme Boží práci kolem nás,**
 > **02 … přidáváme se k lidem, kteří už ji dělají,**
-> **03 … tvoříme pastvu pro lidi, kteří Boha neznají,**
+> **03 … tvoříme pastvu pro ty, kteří Boha neznají,**
 > **04 … aby se s ním mohli setkat tam, kde žijí a pracují.**
 
 **Kráva chodí po čtyřech.** Čtyři pilíře jsou čtyři nohy. Tři činy a jeden důvod.
@@ -57,7 +57,7 @@
 
 ---
 
-## 03 · Tvoříme pastvu pro lidi, kteří Boha neznají
+## 03 · Tvoříme pastvu pro ty, kteří Boha neznají
 
 **Obraz:** „Dobrá pastva je lákavá.“ (Radomil). Další kotvy: „Pastvu tvoří krávy. Ne pastoři. Ale vy.“ · „Každý něco umí. / Každá něco dává.“
 
