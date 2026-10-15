@@ -118,7 +118,7 @@ Privacy rules (GDPR; membership of a church reveals religion, GDPR Art. 9):
 - `person.note` is for leaders only and must never hold health, money or pastoral notes (the form says so).
 - An invite always creates a člen. Only an admin raises the level.
 - **Hiding data from members is a UI rule only.** Every login unseals the same GitHub token, which can read every
-  data file. Document this; do not pretend otherwise.
+  data file. Document this; do not pretend otherwise. (On our own server – Payload, §3.3 – the server enforces it.)
 
 ---
 
@@ -156,6 +156,14 @@ base-uri 'none'; form-action 'none'
   built on the fly with `buildPublic`.
 - **First run** (live, no logins): „Nový Zvonec“ asks for the GitHub key, repo owner and name, the first admin, and
   the base data („Z ukázky“ / „Žádný“).
+- **Payload** (`backend.json` next to the app: `{ "backend": "payload", "api": "/api/zvonec" }`, checked before
+  `access.json`): the app runs on our own server (znackarna/zvonec) and `S.payload` is a `PayloadStore`
+  (lib/store/payload.js). The server stands in for the data repo – the same files with a sha, 409 on a stale one –
+  so Sync, the merge and pictures are unchanged. It signs people in by name and password (a cookie, no sealed
+  token, `S.me.login/priv/github` stay null), serves `public.json`, and enforces the privacy rules of §2 itself:
+  a member gets the files cut down and a change a member may not make is refused. `?sbor=<slug>` in the page address
+  picks a church on an address shared by several. Not yet on the server: managing logins and invites in Přístupy
+  (the server's admin does it), „Tvůj dar dorazil“ receipts (they are sealed to login keys).
 
 ### 3.4 Sign-in and the sealed token
 - One fine-grained personal access token, limited to the data repo, with Contents: Read and write.

@@ -53,6 +53,7 @@ const vsOf = (key) => (key.startsWith('p:') ? personById(S.data, key.slice(2))?.
 /** „Klíč k darům“: the token of the finance repo, sealed into the admins' and the treasurer's logins. */
 export function financeKeySheet() {
   if (S.mode !== 'live') { toast('Ukázka žádný klíč k darům nemá.'); return; }
+  if (S.payload) { toast('Dary jsou na serveru Zvonce, klíč k nim není potřeba.'); return; }
   const owner = S.me.github?.owner || S.repoInfo?.owner || '';
   const repo = textInput({ name: 'repo', value: S.me.finance?.repo || 'church-finance', autocomplete: 'off' });
   const token = textInput({ name: 'token', type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' });

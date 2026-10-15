@@ -9,6 +9,7 @@
 import { S, setHooks, can, recompute, loadRemembered, forgetRemembered } from './ui/state.js';
 import { GithubStore } from './lib/store/github.js';
 import { LocalStore, DEMO_KEY } from './lib/store/local.js';
+import { PayloadStore, BACKEND_FILE } from './lib/store/payload.js';
 import { Sync, load, saveAll, emptyData } from './lib/store/store.js';
 import { restore, openFinance, ACCESS_FILE } from './lib/access.js';
 import { resetFinance } from './ui/finance-state.js';
@@ -53,7 +54,7 @@ const REDIRECTS = [
 ];
 
 const signedIn = () => !!S.me;
-const homeSection = () => (signedIn() ? 'moje' : S.logins.length || S.mode === 'demo' ? 'pastva' : 'prihlaseni');
+const homeSection = () => (signedIn() ? 'moje' : S.logins.length || S.mode === 'demo' || S.payload ? 'pastva' : 'prihlaseni');
 
 function allowedFor(access, parts) {
   const level = typeof access === 'function' ? access(parts) : access;
@@ -360,11 +361,26 @@ function useStore(store, data) {
 async function startLive(result) {
   S.me = { login: result.record, priv: result.priv, github: result.github, personId: result.record.personId || null, access: result.record.access };
   S.me.finance = await openFinance(result.record, result.priv);   // Dary: only the treasurer's and admins' logins hold it
+  if (await openStore(new GithubStore(result.github)) && can('leader')) refreshLogins();
+}
+
+/**
+ * Signed in on our own server (lib/store/payload.js): the server is the store, and it already knows who this is.
+ * There are no sealed keys – S.me.login, priv and github stay null; `finance` only says the Dary are open to me.
+ */
+async function startPayload(session) {
+  const { user } = session;
+  S.me = { login: null, priv: null, github: null, personId: user.personId || null, access: user.level, name: user.name };
+  S.me.finance = user.level === 'admin' || user.treasurer ? { payload: true } : null;
+  await openStore(S.payload);
+}
+
+/** Load the data from the store and show the app. False when it failed (back to the sign-in page). */
+async function openStore(store) {
   resetFinance();
   resetGiving();
   S.screen = null;
   S.signInMessage = null;
-  const store = new GithubStore(result.github);
   let data;
   try {
     data = await load(store);
@@ -372,14 +388,14 @@ async function startLive(result) {
     S.me = null;
     S.signInMessage = `Nepodařilo se načíst data. Zkus to za chvíli znovu. (${error.message})`;
     navigateTo('prihlaseni');
-    return;
+    return false;
   }
   const wanted = S.afterSignIn;
   S.afterSignIn = null;
   if (wanted) history.replaceState(null, '', `#${wanted}`);
   else if (/^#(prihlaseni|pozvanka\/|pastva|program|jak-se-schazime)/.test(location.hash)) history.replaceState(null, '', '#');
   useStore(store, data || emptyData());
-  if (can('leader')) refreshLogins();
+  return true;
 }
 
 /** Fresh access.json from the repo (leaders manage logins from it). Returns true when it changed. */
@@ -396,7 +412,7 @@ async function refreshLogins() {
 async function pullUpdates() {
   if (!S.sync || document.hidden) return;
   try { await S.sync.refresh(); } catch { /* next time */ }
-  if (S.mode === 'live' && S.me && can('leader') && await refreshLogins() && !busy()) renderApp();
+  if (S.mode === 'live' && !S.payload && S.me && can('leader') && await refreshLogins() && !busy()) renderApp();
 }
 document.addEventListener('visibilitychange', pullUpdates);
 window.addEventListener('focus', pullUpdates);
@@ -419,6 +435,9 @@ function navigateTo(path) {
 
 async function boot() {
   setHooks({ render: (options) => { resetNavIfViewerChanged(); renderApp(options); }, signedIn: startLive });
+  // Our own server shows itself by backend.json next to the app (lib/store/payload.js); it signs people in.
+  const backend = await fetchPublic(BACKEND_FILE);
+  if (backend?.backend === 'payload') { await bootPayload(backend); return; }
   // Live mode shows itself by access.json next to the app – the data repo workflow publishes it.
   const access = await fetchPublic(ACCESS_FILE);
   if (access) {
@@ -450,6 +469,27 @@ async function boot() {
   }
   if (!personById(data, DEMO_VIEWERS.admin)) S.me.personId = null;
   useStore(store, data);
+}
+
+/**
+ * Live on our own server: a cookie keeps the session, so a remembered sign-in is just asking who is signed in.
+ * `?sbor=` in the page address picks a church on an address shared by several.
+ */
+async function bootPayload(backend) {
+  S.mode = 'live';
+  const sbor = new URLSearchParams(location.search).get('sbor');
+  S.payload = new PayloadStore({ api: backend.api, sbor });
+  setHooks({ signedIn: startPayload });
+  let session = null;
+  try {
+    session = await S.payload.session();
+  } catch (error) {
+    S.signInMessage = `Server teď neodpovídá. Zkus to za chvíli znovu. (${error.message})`;
+  }
+  if (session?.user) { await startPayload(session); return; }
+  renderApp();
+  S.publicData = await fetchPublic(sbor ? `${PUBLIC_FILE}?sbor=${encodeURIComponent(sbor)}` : PUBLIC_FILE);
+  if (!S.me) renderApp();
 }
 
 /** „Podívej se očima druhých“ changes who is looking: the navigation is built again for them. */
