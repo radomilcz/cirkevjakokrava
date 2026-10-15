@@ -487,9 +487,9 @@ async function bootPayload(backend) {
     S.signInMessage = `Server teď neodpovídá. Zkus to za chvíli znovu. (${error.message})`;
   }
   if (session?.user) { await startPayload(session); return; }
-  renderApp();
+  // public.json first, then one render: a second render would wipe what a password manager filled into the form
   S.publicData = await fetchPublic(sbor ? `${PUBLIC_FILE}?sbor=${encodeURIComponent(sbor)}` : PUBLIC_FILE);
-  if (!S.me) renderApp();
+  renderApp();
 }
 
 /** „Podívej se očima druhých“ changes who is looking: the navigation is built again for them. */
