@@ -148,6 +148,7 @@ function readMore(form, base) {
     description: String(f.description?.value || '').trim(),
     note: String(f.note?.value || '').trim(),
     public: !!form.querySelector('input[type=hidden][name=public]:not([disabled])')?.value,
+    featured: !!form.querySelector('input[type=hidden][name=featured]:not([disabled])')?.value,
   };
 }
 
@@ -156,6 +157,7 @@ function applyTo(target, values, imageName) {
   for (const key of ['description', 'note', 'groupId']) { if (values[key]) target[key] = values[key]; else delete target[key]; }
   if (imageName) target.image = imageName; else delete target.image;
   target.public = values.public;
+  if (values.public && values.featured) target.featured = true; else delete target.featured;
 }
 
 // ---------- shared fields ----------
@@ -209,6 +211,7 @@ function fieldsFor(base, { adding, image, moreOpen }) {
     adding ? field({ label: 'Popis pro web', optional: true, control: textArea({ name: 'description', value: base.description || '', rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' }) }) : null,
     image?.element,
     switchRow({ name: 'public', label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: base.public === true }),
+    switchRow({ name: 'featured', label: 'Zvýrazni na webu', hint: 'Na Pastvě bude nahoře ve velké kartě se štítkem „Nenech si ujít“. Jen když je na webu.', checked: base.featured === true }),
     field({ label: 'Pro tým', optional: true, hint: 'Tuhle poznámku na webu nikdo neuvidí.', control: textArea({ name: 'note', value: base.note || '', rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }) }),
   ];
   return {

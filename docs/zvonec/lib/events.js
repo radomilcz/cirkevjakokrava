@@ -95,6 +95,7 @@ function copyEvent(source, { start, end }, newId) {
   const event = { ...clone(source), id: newId('e'), start, end, assignments: [] };
   delete event.cancelled;
   delete event.seriesId;
+  delete event.featured;      // „Zvýrazni na webu“ pins one event, never its copies
   if (source.program) {
     event.program = source.program.map(({ personId, ...item }) => ({ ...clone(item), id: newId('i') }));
   }
@@ -110,11 +111,13 @@ export function createSeries(draft, step, lastDay, { newId = randomId, limit = 1
   const times = step ? recurrences(draft.start, draft.end, step, lastDay, limit) : [{ start: draft.start, end: draft.end }];
   if (!times.length) times.push({ start: draft.start, end: draft.end });
   const seriesId = times.length > 1 ? newId('s') : undefined;
-  return times.map((t) => {
+  const events = times.map((t) => {
     const event = copyEvent(draft, t, newId);
     if (seriesId) event.seriesId = seriesId;
     return event;
   });
+  if (draft.featured === true) events[0].featured = true;   // pinned on Pastva: the first one, not the whole series
+  return events;
 }
 
 // ---------- series ----------
