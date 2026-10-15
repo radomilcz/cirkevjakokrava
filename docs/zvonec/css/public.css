@@ -29,28 +29,95 @@
   .gate__box { max-width: 464px; padding: var(--space-6); border-radius: var(--shape-block); background: var(--card); box-shadow: var(--lift-2); }
 }
 
-/* ---------- Pastva: a header 64, then one column 720, centred ---------- */
-.screen.pub { padding-top: 0; }
+/* ---------- Pastva: a header 64, then one centred column – 1080 for the board, 720 for one meeting ---------- */
+.screen.pub { --pub-w: 720px; padding-top: 0; }
+.screen.pub--board { --pub-w: 1080px; }
 .pub-head {
   display: flex; align-items: center; gap: var(--gap-x); min-height: calc(64px + env(safe-area-inset-top));
-  max-width: 720px; margin: 0 auto; padding-top: env(safe-area-inset-top);
+  max-width: var(--pub-w); margin: 0 auto; padding-top: env(safe-area-inset-top);
 }
 .pub-head__brand { display: inline-flex; min-width: 0; overflow: hidden; align-items: center; min-height: var(--control-m); color: var(--ink); text-decoration: none; }
 .pub-head__gap { flex: 1; }
 .pub-head__login { flex: none; }
 .pub-head__back { gap: 4px; padding: 0 14px 0 8px; }
-.pub__col { display: grid; align-content: start; max-width: 720px; margin: 0 auto; padding-top: var(--space-4); min-width: 0; }
+.pub__col { display: grid; align-content: start; max-width: var(--pub-w); margin: 0 auto; padding-top: var(--space-4); min-width: 0; }
 .pub__title { font-size: var(--type-title); line-height: var(--lh-title); }
 .pub__lead { margin-top: var(--space-2); font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); max-width: 46ch; }
+@media (min-width: 600px) {
+  .pub--board .pub__title { font-size: 56px; line-height: 56px; }
+  .pub--board .pub__lead { font-size: var(--type-lead); line-height: var(--lh-lead); }
+}
 .pub__sections { display: grid; min-width: 0; margin-top: var(--section-gap); }
 .pub__sections > * + * { margin-top: var(--section-gap); }
 .pub__col > .empty { margin-top: var(--space-6); }
 .pub-updated { margin-top: var(--section-gap); }
+.pub .pill--act { background: var(--act); color: var(--on-act); }
 
-/* Co bude: the week subhead, then its days (arch + Seznam rows) */
-.pub-week + .pub-week { margin-top: var(--space-4); }
-.pub-week > .subhead { padding-top: 0; }
-.pub-coming .disclosure { margin-top: var(--space-3); }
+/* the picture of a card or a meeting, 16 : 9: the Účel band at once, the photo fades in over it */
+.pub-media { position: relative; overflow: hidden; aspect-ratio: 16 / 9; background: var(--tint); }
+.pub-media > .ev-band { position: absolute; inset: 0; height: 100%; }
+.pub-media > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity var(--dur-state) var(--ease); }
+.pub-media--photo > img { opacity: 1; }
+
+/* the date on a picture: an arch in the card's colour – weekday, day, month */
+.pub-date {
+  position: absolute; top: var(--space-3); left: var(--space-3); z-index: 1;
+  display: grid; justify-items: center; width: 52px; padding: 9px 0 7px; border-radius: 26px 26px 11px 11px;
+  background: var(--card); color: var(--ink); box-shadow: var(--lift-2);
+}
+.pub-date__dow, .pub-date__month { font-size: var(--type-caption); line-height: 14px; font-weight: var(--weight-medium); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-2); }
+.pub-date__num { font-family: var(--font-title); font-weight: 900; font-size: 26px; line-height: 28px; font-feature-settings: var(--numerals); }
+
+/* Nenech si ujít: a pinned event, one big card (picture beside the words on a wide screen) */
+.pub-features { display: grid; gap: var(--space-5); min-width: 0; }
+.pub-feature { display: grid; min-width: 0; overflow: hidden; border-radius: var(--shape-block); background: var(--card); box-shadow: var(--lift-2); }
+.pub-feature__media { position: relative; display: block; min-width: 0; }
+.pub-feature .pub-date { top: var(--space-4); left: var(--space-4); width: 64px; padding-top: 11px; border-radius: 32px 32px 13px 13px; }
+.pub-feature .pub-date__num { font-size: 32px; line-height: 34px; }
+.pub-feature__body { display: grid; align-content: start; justify-items: start; gap: var(--space-2); min-width: 0; padding: var(--space-5) var(--space-4) var(--space-5); }
+.pub-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 12px 0 9px; border-radius: var(--shape-pill);
+  background: var(--act); color: var(--on-act); font-size: var(--type-caption); line-height: var(--lh-caption); font-weight: var(--weight-strong);
+}
+.pub-feature__title { margin-top: var(--space-1); font-family: var(--font-title); font-weight: 900; font-size: var(--type-title); line-height: var(--lh-title); letter-spacing: var(--tracking-title); overflow-wrap: break-word; }
+.pub-feature__title > a { color: inherit; text-decoration: none; }
+.pub-feature__title > a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.pub-feature__when { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); }
+.pub-feature__where, .pub-card__where { display: flex; align-items: flex-start; gap: 6px; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2); }
+:is(.pub-feature__where, .pub-card__where) > .icon { flex: none; margin-top: 1px; }
+.pub-feature__text { max-width: 60ch; margin-top: var(--space-1); font-size: var(--type-body); line-height: var(--lh-body); }
+.pub-feature__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+@media (min-width: 840px) {
+  .pub-feature { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .pub-feature__media .pub-media { height: 100%; min-height: 400px; aspect-ratio: auto; }
+  .pub-feature__body { align-content: center; padding: var(--space-6); }
+}
+
+/* Co chystáme, Pravidelně: cards in a grid – picture with the date, when, title, what happens, where */
+.pub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--space-5) var(--space-4); min-width: 0; }
+.pub-card {
+  display: grid; grid-template-rows: auto 1fr; min-width: 0; overflow: hidden; border-radius: var(--shape-block);
+  background: var(--card); box-shadow: var(--lift-2); color: inherit; text-decoration: none;
+  transition: box-shadow var(--dur-state) var(--ease), transform var(--dur-state) var(--ease);
+}
+.pub-card:hover { box-shadow: var(--lift-4); transform: translateY(-2px); text-decoration: none; }
+.pub-card:active { transform: none; }
+.pub-card__media { position: relative; min-width: 0; }
+.pub-card__tags { position: absolute; top: var(--space-3); right: var(--space-3); z-index: 1; display: flex; gap: 6px; }
+.pub-card__body { display: grid; align-content: start; gap: 6px; min-width: 0; padding: var(--space-4) var(--space-4) var(--space-5); }
+.pub-card__when { font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); color: var(--ink-accent, var(--ink)); }
+.pub-card__title { font-size: var(--type-lead); line-height: var(--lh-lead); font-weight: var(--weight-strong); overflow-wrap: break-word; }
+.pub-card__text {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+  font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--ink-2);
+}
+.pub-card__where { margin-top: var(--space-1); }
+.pub-card__next { margin-top: var(--space-1); font-size: var(--type-meta); line-height: var(--lh-meta); font-weight: var(--weight-strong); }
+.pub-card__off { display: flex; align-items: flex-start; gap: 6px; font-size: var(--type-meta); line-height: var(--lh-meta); color: var(--no-ink); }
+.pub-card__off > .icon { flex: none; margin-top: 1px; }
+.pub-card--cancelled .pub-media { filter: grayscale(1); opacity: .55; }
+.pub-card--cancelled .pub-card__title { color: var(--ink-2); text-decoration: line-through; }
+.pub-planned .disclosure { margin-top: var(--space-4); }
 
 /* Jak se scházíme: a format's words in a sheet */
 .pub-words + .pub-words { margin-top: var(--space-5); }
@@ -59,9 +126,9 @@
 /* Kde nás najdeš */
 .pub-find .map { margin-top: var(--space-3); }
 
-/* one meeting */
+/* one meeting: its picture leads (16 : 9), else the Účel band of the app (.ev-band, css/event.css) */
 .pub .pub-event { padding-top: var(--space-2); }
-/* the band is the app's Setkání band (.ev-band, css/event.css) */
-.pub-photo { overflow: hidden; margin-top: var(--space-4); border-radius: var(--shape-block); background: var(--tint); aspect-ratio: 16 / 9; }
-.pub-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.dhead__band > .pub-media--hero { height: 96px; aspect-ratio: auto; }
+.dhead__band > .pub-media--hero.pub-media--image { height: auto; aspect-ratio: 16 / 9; }
+@media (min-width: 600px) { .dhead__band > .pub-media--hero:not(.pub-media--image) { height: 120px; } }
 .pub-event__actions { display: flex; margin-top: var(--space-4); }

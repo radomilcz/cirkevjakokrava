@@ -10,12 +10,19 @@ import { join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildPublic, publicImages, PUBLIC_FILE } from '../../docs/zvonec/lib/public.js';
 import { createDemo } from '../../docs/zvonec/lib/demo.js';
-import { createFromType } from '../../docs/zvonec/lib/events.js';
+import { createFromType, createSeries } from '../../docs/zvonec/lib/events.js';
 import { normalize, toFiles, fromFiles } from '../../docs/zvonec/lib/store/store.js';
 
 const BUILD = fileURLToPath(new URL('../build-public.mjs', import.meta.url));
 const TODAY = '2026-10-05';
 const FORBIDDEN_KEYS = ['personId', 'assignments', 'firstName', 'lastName', 'email', 'phone'];
+
+/** The demo without its pictures (they ship with the app, so a data repo built from it has no images/). */
+function demoWithoutPictures() {
+  const data = createDemo(TODAY);
+  for (const x of [...data.events, ...data.eventTypes]) delete x.image;
+  return data;
+}
 
 const event = (id, day, extra = {}) => ({
   id, title: `Setkání ${id}`, kind: 'event', start: `${day}T10:00`, end: `${day}T12:00`,
@@ -205,7 +212,11 @@ test('demo: public.json is not empty and holds no person data at all', () => {
   assert.deepEqual(sunday.places[0], { name: 'Sál', building: 'Monta', address: 'B. Martinů 1885/2, Nový Jičín', lat: 49.5935, lon: 18.0035 });
   assert.equal(result.address, sunday.places[0].address, 'the church address agrees with the place');
   assert.ok(result.events.some((e) => e.cancelled), 'a cancelled public event shows as cancelled');
-  assert.ok(result.events.every((e) => e.image === null), 'the demo has no pictures');
+  assert.ok(result.events.every((e) => e.image === null || /^images\/demo-[a-z]+\.webp$/.test(e.image)), 'the demo pictures');
+  assert.ok(party.image && party.featured === true, 'the garden party is pinned, with a picture');
+  assert.ok(result.events.filter((e) => e.featured).every((e) => e.title === 'Zahradní slavnost'));
+  assert.ok(sunday.repeat === 'weekly' && sunday.seriesId, 'a Sunday says it is weekly');
+  assert.ok(!('repeat' in party) && !('seriesId' in party), 'a one-off event has no rhythm');
   assert.match(sunday.description, /Přijď, jak jsi/);
   assert.ok(!result.events.some((e) => /Zkouška|Skupinka|Stavění|Víkend|Porada|Rada|Maminky|Noc/.test(e.title)), 'internal events stay private');
   assert.deepEqual(result.formats.map((f) => f.name).sort(),
@@ -230,6 +241,31 @@ test('schema: public and description survive normalize and a file round trip; no
   assert.deepEqual(normalize({ events: [{ id: 'e1', start: 'x', end: 'y' }] }).events[0].public, undefined);
 });
 
+test('buildPublic: featured only when a leader pinned it; a series event says its rhythm', () => {
+  const data = base([
+    event('e1', '2026-10-11', { public: true, featured: true }),
+    event('e2', '2026-10-12', { public: true, featured: 'yes' }),
+    event('e3', '2026-10-18', { public: true, seriesId: 's1' }),
+    event('e4', '2026-10-19', { public: true, seriesId: 's-gone' }),
+  ], { series: [{ id: 's1', step: 'weekly', from: '2026-10-18', until: '2026-12-27' }] });
+  const [e1, e2, e3, e4] = buildPublic(data, { today: TODAY }).events;
+  assert.equal(e1.featured, true);
+  assert.ok(!('featured' in e2) && !('featured' in e3));
+  assert.deepEqual([e3.seriesId, e3.repeat], ['s1', 'weekly']);
+  assert.ok(!('repeat' in e1) && !('repeat' in e4) && !('seriesId' in e4), 'no rhythm without its series');
+});
+
+test('createSeries: a pinned event stays pinned once – its first time, never the copies', () => {
+  let n = 0;
+  const newId = (p) => `${p}${++n}`;
+  const draft = event('e0', '2026-10-11', { public: true, featured: true });
+  const [one] = createSeries(draft, null, null, { newId });
+  assert.equal(one.featured, true);
+  const weekly = createSeries(draft, 'weekly', '2026-11-01', { newId });
+  assert.equal(weekly.length, 4);
+  assert.deepEqual(weekly.map((e) => e.featured === true), [true, false, false, false]);
+});
+
 test('createFromType copies public from the event type, and only when the type says so', () => {
   const type = { id: 't1', name: 'Neděle', kind: 'service', startTime: '10:00', minutes: 90, placeIds: [], needs: [] };
   const newId = (p) => `${p}x`;
@@ -240,8 +276,8 @@ test('createFromType copies public from the event type, and only when the type s
   const demo = createDemo(TODAY);
   assert.ok(demo.events.filter((e) => e.typeId === 't-sunday').every((e) => e.public === true));
   const published = new Set(demo.events.filter((e) => e.public).map((e) => e.title));
-  assert.deepEqual([...published].sort(), ['Divadlo: Marnotratný syn', 'Křest u řeky', 'Mládež', 'Setkání na pastvě',
-    'Večer chval na zahradě', 'Zahradní slavnost'].sort());
+  assert.deepEqual([...published].sort(), ['Divadlo: Marnotratný syn', 'Hrajeme na náměstí', 'Křest u řeky', 'Mládež',
+    'Setkání na pastvě', 'Večer chval na zahradě', 'Večeře s otázkami', 'Zahradní slavnost'].sort());
   assert.ok(demo.events.filter((e) => e.typeId === 't-rehearsal').every((e) => e.public !== true));
 });
 
@@ -257,7 +293,7 @@ function dataRepo(data) {
 const run = (...args) => spawnSync(process.execPath, [BUILD, ...args], { encoding: 'utf8' });
 
 test('build-public.mjs: writes public.json (creating the folder) from the data directory', () => {
-  const data = createDemo(TODAY);
+  const data = demoWithoutPictures();
   const { root, dir } = dataRepo(data);
   try {
     const out = join(root, 'site', PUBLIC_FILE);
@@ -299,7 +335,7 @@ const IMG = (name) => Buffer.from(`picture ${name}`);
 
 /** A data repo with three events: published with its own picture, published via its type's picture, private with a picture. */
 function repoWithImages({ missing = [] } = {}) {
-  const data = createDemo(TODAY);
+  const data = demoWithoutPictures();
   const sunday = data.events.find((e) => e.typeId === 't-sunday' && e.start > `${TODAY}T`);
   const party = data.events.find((e) => e.title === 'Zahradní slavnost');
   const rehearsal = data.events.find((e) => e.typeId === 't-rehearsal' && e.start > `${TODAY}T`);
@@ -345,7 +381,7 @@ test('build-public.mjs: a missing image is a warning, not a failure; no images f
 });
 
 test('build-public.mjs: an unsafe image name never leaves data/ (nothing outside images/ is copied)', () => {
-  const data = createDemo(TODAY);
+  const data = demoWithoutPictures();
   data.events.find((e) => e.title === 'Zahradní slavnost').image = '../people.json';
   const { root, dir } = dataRepo(data);
   try {

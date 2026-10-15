@@ -397,7 +397,8 @@ public?: boolean, description?, image? }`
 - `end` may pass midnight. If the form's end ≤ start, the end moves to the next day. Default length 60 min.
 - `groupId` = „Pro koho“; empty = „Celý sbor“.
 - `note` = „Pro tým“: internal, never public.
-- `description` = „Popis pro web“. `public` = „Ukaž na webu“; only `true` publishes.
+- `description` = „Popis pro web“. `public` = „Ukaž na webu“; only `true` publishes. `featured` = „Zvýrazni na
+  webu“ (optional, `true` only): Pastva shows the meeting on top as „Nenech si ujít“.
 - Cover image: the event's `image`, else its template's, else a generated arch cover in the kind's hue. An uploaded
   picture is cut to its middle 16 : 9 and scaled to at most 1600 × 900 (`ui/cover-image.js`), so the same thumbnail
   works in a public listing; the Setkání band shows it at 16 : 9 but at most 180 tall (220 on a ≥ 600 page), the generated
@@ -996,7 +997,9 @@ Sections in order:
 5. **Osnova**: the first 4 points (time · name · leader, or „chybí vedoucí“); „Celá osnova · 8 bodů · 95 min ›“;
    leaders get „Uprav“ (or „+ Přidej“ when empty).
 6. **O setkání**: description; „Pro tým“ note; address with ↗ to Mapy.cz. Leaders see „Popis pro web zatím chybí ·
-   Doplň“ and the switch **„Ukaž na webu“** („Název, čas, místo, popis a obrázek uvidí každý. Jména ne.“).
+   Doplň“ and the switch **„Ukaž na webu“** („Název, čas, místo, popis a obrázek uvidí každý. Jména ne.“). A public
+   meeting adds **„Zvýrazni na webu“** („Na Pastvě bude nahoře ve velké kartě se štítkem „Nenech si ujít“.“):
+   `featured: true` on this one meeting only – never the series, copies drop it, a new series keeps it on its first.
    Turning it on asks for a description when missing, then asks about the series.
 
 Leaders' ⋯: Uprav setkání · Uprav, kolik lidí je potřeba · Doplň volná místa (when something is missing) · Obsaď
@@ -1010,7 +1013,7 @@ nemůže · dovolená“), picking one asks „Výjimka“ / „Proč to půjde�
 
 **Forms**: „Přidej setkání“ → sheet „Nové setkání“ (template rows + „Něco jiného / Bez šablony“) → the form (dialog
 640): Název setkání · Den + Čas · Opakování (Ne · Týdně · Ob týden · Měsíčně) + Do kdy + the live rule · Kde
-(chips) · „Další možnosti“: Účel, Pro koho, Popis pro web, Obrázek, Ukaž na webu, Pro tým. Submit „Přidej
+(chips) · „Další možnosti“: Účel, Pro koho, Popis pro web, Obrázek, Ukaž na webu, Zvýrazni na webu, Pro tým. Submit „Přidej
 setkání“. „Úprava setkání“ asks „Jen tohle setkání“ / „I N další“. „Prodloužení řady“.
 
 **Osnova** `#setkani/<id>/osnova` (page at every width; top bar „‹ <meeting>“; ⋯ Vytiskni · Převezmi minulou
@@ -1254,12 +1257,15 @@ data repo's `web.yml`:
 ```
 { v: 1, churchName, address, generated: today,
   events: [{ id, title, kind, start, end, description ('' if none), image: 'images/<name>' | null,
-             places: [{ name, building?, address?, lat?, lon? }], cancelled?: true }],
+             places: [{ name, building?, address?, lat?, lon? }], cancelled?: true, featured?: true,
+             seriesId?, repeat?: 'weekly' | 'biweekly' | 'monthly' }],
   formats: [{ id, name, minutes, why, how }] }
 ```
 - Events only when `public === true` and they reach into `[today − 1, today + 120]`, sorted by start, then id.
 - `image` = the event's, else its template's, else null; unsafe names count as none. `publicImages()` lists the
   files copied to `site/images/`.
+- `featured` when the event has `featured === true` („Zvýrazni na webu“); `seriesId` + `repeat` (the series' `step`)
+  when the event belongs to a series that still exists.
 - Formats only when `public === true`.
 - **No people, ever**: no names, assignments, notes, contacts.
 
@@ -1275,13 +1281,25 @@ data repo's `web.yml`:
 - Reads only the public data, never `S.data`.
 - Header 64: wordmark, [Přihlas se] (quiet). Signed in: a strip „Takhle to vidí návštěvníci · ← Vrať se do
   Zvonce“.
-- Column 720: h1 „Pastva“, „Kdy a kde se potkáváme. Přijď, jak jsi.“
-  - **Co bude**: public meetings by week as Seznam rows, no people; „Ukaž další N setkání“. Empty: „Teď nic
-    nechystáme. Mrkni sem později.“
+- A notice board, column 1080: h1 „Pastva“, „Kdy a kde se potkáváme. Přijď, jak jsi.“ Only meetings that have not
+  ended.
+  - **Nenech si ujít**: every `featured` meeting (not cancelled) as one big card – the picture (beside the words from
+    840 px), the date arch, the eyebrow „Nenech si ujít“, the title, when, where, the whole description, [Přečti si
+    víc] and [Stáhni do kalendáře].
+  - **Co chystáme**: one-off meetings (no `repeat`, not featured) as cards in a grid (min 300 px): the picture 16 : 9
+    with the date arch (weekday, day, month) and a pill „dnes“ / „zítra“ / „zrušeno“, when, the title, three lines of
+    the description, where. Six open, the rest under „Ukaž další akci“ / „Ukaž další 3 akce“ / „Ukaž dalších 7 akcí“.
+  - **Pravidelně**: one card per series – the next meeting that is not cancelled, led by its rhythm („Každou neděli v
+    10.00“, „Každý druhý čtvrtek v 18.30“, „Jednou za měsíc v pondělí v 19.00“), „Příště v neděli 18. října“ and
+    „Nescházíme se v neděli 29. 11.“ for up to two cancelled ones.
+  - Nothing upcoming: „Teď nic nechystáme. Mrkni sem později.“
   - **Jak se scházíme** (anchor `jak-se-schazime`): public formats with the minutes block → a sheet with Proč /
     Jak.
   - **Kde nás najdeš**: address + map.
-- A meeting: band, tag, title, when, where + map, „O setkání“, [Stáhni do kalendáře], and a callout when cancelled.
+- A picture is the event's, else its template's; while it loads (or when there is none) the Účel band stands in.
+  The demo's pictures are CC0 photos shipped in `docs/zvonec/demo/` (`demo-*.webp`, StockSnap, and the church's own
+  highland-cow photo); the demo store serves them when a `demo-*.webp` name has no stored file.
+- A meeting (column 720): its picture 16 : 9 (else the band), „Nenech si ujít“ when featured, tag, title, when, where + map, „O setkání“, [Stáhni do kalendáře], and a callout when cancelled.
 
 ---
 
