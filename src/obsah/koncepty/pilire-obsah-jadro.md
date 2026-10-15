@@ -3,7 +3,7 @@ Radomil: „Pojďme si dát za sebe čtyři pilíře, ale nepiš copy, ale obsah
 
 **Kráva chodí po čtyřech.** (Radomil 9. 10.)
 
-**Osa (Radomil 14. 10., 01 upraveno 15. 10.):** Fandíme Boží práci kolem nás, přidáváme se k lidem, kteří už ji dělají, tvoříme pastvu pro ty, kteří Boha neznají, aby se s ním mohli setkat tam, kde žijí a pracují.
+**Osa (Radomil 14. 10., 01 upraveno 15. 10.):** Fandíme Boží práci kolem nás, přidáváme se k lidem, kteří už ji dělají, tvoříme pastvu pro lidi, kteří Bohu nevěří, aby se s ním mohli setkat tam, kde žijí a pracují.
 
 Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k tomu → sami tvoříme → protože toužíme, aby lidi poznali, že Bohu na nich záleží.
 
