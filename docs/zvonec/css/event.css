@@ -236,7 +236,7 @@
   padding: 0 var(--space-3); border-radius: var(--radius-m); background: var(--ground); transition: transform var(--dur-state) var(--ease);
 }
 .osnova__item + .osnova__item { margin-top: var(--gap-lit); }
-.osnova--edit .osnova__item { grid-template-columns: auto minmax(0, 1fr) auto; padding-left: 0; }
+.osnova--edit .osnova__item { grid-template-columns: auto minmax(0, 1fr) auto; }
 .osnova-when { margin-bottom: var(--space-4); }
 /* the line between two points is the ::before of the lower one (as on rows), so a lit point hides both of its lines */
 .osnova__item + .osnova__item::before { content: ""; position: absolute; top: calc(-1 * var(--gap-lit) + 1px); left: var(--space-3); right: var(--space-3); height: 1px; background: var(--hairline); }
