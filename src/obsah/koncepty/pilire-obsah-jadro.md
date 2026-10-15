@@ -66,3 +66,7 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 | 02 | dílo druhých | oni | ruce |
 | 03 | naše dílo | my | ruce i hlava |
 | 04 | proč | Bůh | srdce |
+
+## Odložené nápady
+
+- **„Boží krávovství“** (Radomil, 15. 10.): slovní hříčka na Boží království. Z rozkliku 01 vyřazená, schovaná na jindy.
