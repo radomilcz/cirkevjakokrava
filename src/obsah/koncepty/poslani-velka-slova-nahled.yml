@@ -19,6 +19,7 @@ slajdy:
   nazev: 01 Fandíme
   nadtitulek: '01'
   slovo: Fandíme
+  dovetek: oči
   vyrok: |
     Oslavujeme Boží náturu,
     kreativitu a lásku -> mezi
@@ -49,6 +50,7 @@ slajdy:
   nazev: 02 Makáme
   nadtitulek: '02'
   slovo: Makáme
+  dovetek: ruce
   vyrok: |
     Přidáváme srdce i ruce do práce,
     kterou naše město dělá skvěle.
@@ -74,6 +76,7 @@ slajdy:
   nazev: 03 Tvoříme
   nadtitulek: '03'
   slovo: Tvoříme
+  dovetek: hlava
   vyrok: |
     Tvoříme pastvu pro oči,
     uši a duši. Pro publikum,
@@ -92,6 +95,7 @@ slajdy:
   nazev: 04 Toužíme
   nadtitulek: '04'
   slovo: Toužíme
+  dovetek: srdce
   vyrok: |
     Aby lidé poznali, že Bohu
     na nich záleží. Uprostřed

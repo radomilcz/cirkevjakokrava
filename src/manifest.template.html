@@ -88,7 +88,8 @@
 {%- if x.get('detail') or x.get('slovo') %}
     <div class="stred">
 {%- if x.get('slovo') %}
-      <p class="velke-slovo"><span class="ln"><span>{{ x.slovo }}</span></span></p>
+      <p class="velke-slovo"><span class="ln"><span>{{ x.slovo }}</span></span>
+        {%- if x.get('dovetek') %}<span class="how rise">{{ x.dovetek|txt }}</span>{% endif %}</p>
 {%- endif %}
     {{ vyrok(x.vyrok) }}
 {%- if x.get('detail') %}
