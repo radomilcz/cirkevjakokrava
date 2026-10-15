@@ -62,6 +62,7 @@ const mainButton = (label) => button(label, { variant: 'primary', size: 'l', blo
 // ---------- Přihlášení ----------
 
 export function renderLogin(part = '') {
+  if (S.payload) return liveLogin();   // our own server: the church is set up there, nothing to found here
   if (part === 'zalozit' || (S.mode === 'live' && !S.logins.length)) return renderSetup();
   return S.mode === 'demo' ? demoLogin() : liveLogin();
 }
@@ -77,7 +78,8 @@ function liveLogin() {
     S.signInMessage ? callout({ tone: 'wait', text: S.signInMessage }) : null,
     field({ label: 'Jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
     field({ label: 'Heslo', control: passwordBox }),
-    switchRow({ label: REMEMBER, hint: REMEMBER_HINT, checked: true, onChange: (on) => { remember = on; } }),
+    // on our own server the session is a cookie that stays (a month); there is nothing to choose
+    S.payload ? null : switchRow({ label: REMEMBER, hint: REMEMBER_HINT, checked: true, onChange: (on) => { remember = on; } }),
     error,
     submit);
   form.addEventListener('submit', async (e) => {
@@ -87,6 +89,20 @@ function liveLogin() {
     if (!name.value.trim()) { fieldError(name, 'Doplň svoje jméno.'); return; }
     if (!password.value) { fieldError(password, 'Doplň heslo.'); return; }
     busy(submit, true, 'Ověřuju…');
+    if (S.payload) {
+      let session = null;
+      try {
+        session = await S.payload.signIn(name.value, password.value);
+      } catch (problem) {
+        busy(submit, false, 'Přihlas se');
+        error.show(problem.status === 401 ? 'Jméno nebo heslo nesedí.' : problem.message);
+        password.focus();
+        return;
+      }
+      busy(submit, false, 'Přihlas se');
+      await signedIn(session);
+      return;
+    }
     const result = await signIn(S.logins, name.value, password.value);
     busy(submit, false, 'Přihlas se');
     if (!result || result.record.access === 'invite') {
@@ -232,6 +248,15 @@ async function checkInvite(code) {
 export function renderInvite(code = '') {
   const title = 'Pozvánka do Zvonce';
   if (S.mode === 'demo') return registration({ demo: true, data: S.data });
+  if (S.payload) {
+    // invites on our own server come later; until then the admin of the server creates the logins
+    return gate({
+      title,
+      body: h('div', { class: 'gate__problem' },
+        callout({ tone: 'wait', text: 'Tahle pozvánka tu zatím nefunguje. Přístup ti vytvoří správce, pak se tu přihlásíš.' }),
+        button('Přihlas se', { variant: 'quiet', size: 'l', block: true, href: '#prihlaseni' })),
+    });
+  }
   if (!invite || invite.code !== code) checkInvite(code);
   if (invite.status === 'ready') return registration(invite);
   if (invite.status === 'loading') {

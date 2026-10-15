@@ -13,7 +13,8 @@ import { buildPublic } from '../lib/public.js';
 export const S = {
   mode: null,              // null while booting · 'demo' (this browser only) · 'live' (signed in, data on GitHub)
   data: null,              // the whole data object (lib/store/store.js), mutated in place by screens
-  store: null,             // LocalStore | GithubStore
+  store: null,             // LocalStore | GithubStore | PayloadStore
+  payload: null,           // live on our own server (backend.json): the PayloadStore – it signs in and keeps the data
   sync: null,              // Sync – saves changes, refreshes what others saved
   me: null,                // { login, priv, github, personId, access }; demo: login null, admin Radim (DEMO_VIEWERS)
   logins: [],              // access.json as published next to the app (sealed records only, no names)
@@ -212,6 +213,9 @@ export function forgetRemembered() {
 /** Save what is pending, forget the login and start over. */
 export async function logout() {
   await S.sync?.save();
+  if (S.payload) {
+    try { await S.payload.signOut(); } catch { /* the cookie runs out on its own */ }
+  }
   forgetRemembered();
   location.hash = '';
   location.reload();

@@ -241,6 +241,8 @@ lib/access.js          keypairs, PBKDF2, sealing, sign-in, invites
 lib/store/merge.js     three-way merge per record id (pure)
 lib/store/github.js    Contents API client (GET/PUT/DELETE, directory listing, raw fallback, binary files)
 lib/store/local.js     localStorage backend for the demo (incl. binary files)
+lib/store/payload.js   backend on our own server (znackarna/zvonec, Payload + Postgres): the same calls as github.js
+                       against /api/zvonec, plus the session (sign in, out, password); see SPEC §3.3
 lib/store/store.js     file map {collection → file}, load all, one save queue per file, refresh by sha,
                        image helpers (saveImage, loadImageUrl, deleteImage)
 lib/people.js          names, households, age, membership queries, upcomingBirthdays, missingData, the archive's

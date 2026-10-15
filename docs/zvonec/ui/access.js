@@ -18,7 +18,7 @@ import { today, addDays } from '../lib/time.js';
 import {
   h, list, row, pill, toast, formSheet, confirmSheet, field, textInput, segmentedField, avatar, personName, icon,
   callout, joinMeta, fieldError, clearErrors, listScreen, filterButton, filterState, searchText, openMenu, layer,
-  subhead, plural, text, meta, button, empty, menuBack,
+  subhead, plural, text, meta, button, empty, menuBack, page,
 } from './kit.js';
 import {
   secretSheet, demoOnly, dayWithYear, dayShort, matches, searchEmpty, filterEmpty,
@@ -391,6 +391,16 @@ function listBody() {
 
 /** #pristupy */
 export function renderAccess() {
+  // our own server keeps the logins itself; managing them from here comes in a later version
+  if (S.payload) {
+    return page({
+      title: 'Přístupy',
+      back: menuBack(),
+      body: callout({ tone: 'info', text: 'Přístupy a pozvánky teď zakládá a mění správce serveru Zvonce. Napiš mu, koho přidat nebo komu změnit přístup.' }),
+      label: 'Přístupy',
+      cls: 'acc-screen',
+    });
+  }
   let screenEl;
   const redraw = () => screenEl?.setBody(listBody());
   screenEl = listScreen({

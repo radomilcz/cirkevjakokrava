@@ -36,7 +36,9 @@ export function resetFinance() {
 export function loadFinance() {
   if (!canSeeDary() || F.state === 'loading' || F.state === 'ready') return;
   F.state = 'loading';
-  F.store = S.mode === 'demo' ? new LocalStore({ key: DEMO_FINANCE_KEY }) : new GithubStore({ ...S.me.finance, path: '' });
+  F.store = S.mode === 'demo' ? new LocalStore({ key: DEMO_FINANCE_KEY })
+    : S.payload ? S.payload.finance()   // our own server: the same file, the server checks who may open it
+      : new GithubStore({ ...S.me.finance, path: '' });
   F.store.read(FINANCE_FILE)
     .then(async (file) => {
       // the demo's first visit: a year of made-up gifts (lib/demo-gifts.js)
