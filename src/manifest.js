@@ -257,6 +257,11 @@
     });
     measure();
   }));
+  /* rejstřík pilířů: řádek osy skočí na slajd pilíře se stejným číslem otisku */
+  document.querySelectorAll('.rej').forEach(b=>b.addEventListener('click',()=>{
+    const i=slides.findIndex(s=>s.dataset.print===b.dataset.cil&&!s.querySelector('.rejstrik'));
+    if(i>=0)go(i);
+  }));
   measure();
   addEventListener('resize',()=>{measure();go(cur,true);startPaint()});
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{measure();go(cur,true)});

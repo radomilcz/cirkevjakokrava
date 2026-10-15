@@ -115,6 +115,22 @@
     {{ pata(x.get('otazka')) }}
   </section>
 
+{%- elif t == 'rejstrik' %}
+  {#- Rejstřík pilířů: celá osa pohromadě, každý řádek skočí na svůj pilíř (podle čísla otisku). #}
+  {{ sekce(x, 'pillar') }}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    <div class="pilir">
+{%- set r = x.vyrok|radky %}
+      <h3 class="nadpis" style="--znaku:{{ r|map('length')|max }};--radku:{{ r|length }}">{% for radek in r %}<span>{{ radek|vyrok }}</span> {% endfor %}</h3>
+      <ol class="rejstrik">
+{%- for p in x.polozky %}
+        <li><button type="button" class="rej" data-cil="{{ p.cil }}"><span class="rej-n">{{ p.cil }}</span><span class="rej-t">{{ p.text|txt }}</span></button></li>
+{%- endfor %}
+      </ol>
+    </div>
+    {{ pata(x.get('otazka')) }}
+  </section>
+
 {%- elif t == 'kennedy' %}
 {%- set r = x.vyrok|radky %}
   {{ sekce(x, 'german') }}

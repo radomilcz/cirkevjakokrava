@@ -79,6 +79,20 @@ components:
           - {name: text, type: text, label: Text}
           - {name: otazka, component: otazka}
           - {name: otisk, component: otisk}
+      - name: rejstrik
+        label: Rejstřík pilířů
+        fields:
+          - {name: nazev, component: nazev}
+          - {name: nadtitulek, component: nadtitulek}
+          - {name: vyrok, component: vyrok}
+          - name: polozky
+            label: Řádky (každý skočí na pilíř)
+            type: object
+            list: {min: 1, max: 6}
+            fields:
+              - {name: cil, type: string, label: 'Číslo otisku pilíře (01–04)', pattern: {regex: '\S', message: Doplň číslo pilíře}}
+              - {name: text, type: string, label: Text řádku, pattern: {regex: '\S', message: Doplň text}}
+          - {name: otazka, component: otazka}
       - name: vyrok_ruzovy
         label: Výrok na růžovém
         fields:
