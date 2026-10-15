@@ -70,3 +70,15 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 ## Odložené nápady
 
 - **„Boží krávovství“** (Radomil, 15. 10.): slovní hříčka na Boží království. Z rozkliku 01 vyřazená, schovaná na jindy.
+
+## Nadpisy pilířů (Radomil, 15. 10.)
+
+| | Nadpis | Část těla | Výrok pod nadpisem |
+|---|---|---|---|
+| 01 | Fandíme | oči | Oslavujeme Boží náturu, kreativitu a lásku → mezi lidmi na Kravařsku. (web) |
+| 02 | Makáme | ruce | Přidáváme srdce i ruce do práce, kterou naše město dělá skvěle. (návrh: „k práci“, „lidi v našem městě“) |
+| 03 | Tvoříme | hlava | Tvoříme pastvu pro oči, uši a duši. Pro publikum, co kostel ani víru neřeší. (web) |
+| 04 | Toužíme | srdce | zatím web, potřebuje novou verzi bez „komunity“ a „Božího doteku“ |
+
+Od venku dovnitř: oči → ruce → hlava → srdce. Nadpisy jsou obří slovo přes celý slajd, pod ním výrok, odkaz s osou do rozkliku, dole otázka.
+Rozklik 02: nadpis „Bůh nesedí v kostele. / Maká v Novém Jičíně.“, verš J 5,17 (B21: „Můj Otec pracuje i dnes; proto pracuji i já.“).
