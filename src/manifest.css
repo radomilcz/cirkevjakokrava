@@ -231,7 +231,7 @@ body{
 .pilir .nadpis .arrow{font-family:var(--body)}
 /* civilní nadpis pod tagline: řekne rovnou, o čem pilíř je */
 .pilir .podnadpis{
-  margin:0 0 .7em;max-width:30ch;font-family:var(--body);font-weight:700;
+  margin:0 0 .7em;max-width:36ch;font-family:var(--body);font-weight:700;text-wrap:balance;
   font-size:clamp(1.25rem,2.5vw,3.1rem);line-height:1.2;
 }
 .pilir .popis{

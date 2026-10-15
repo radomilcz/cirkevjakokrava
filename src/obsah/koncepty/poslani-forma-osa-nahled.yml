@@ -1,11 +1,16 @@
-# Náhled formy (15. 10.): pilíř = nadtitulek + kravský obraz + řádek osy; čtyři slajdy po sobě dají celou osu. Rozkliky zatím z verze týmu. Build nečte.
+# Náhled formy (15. 10.): úvod = celá osa; pilíř = nadtitulek + kravský obraz + vlastní věta osy. Rozkliky zatím z verze týmu. Build nečte.
 slajdy:
-- typ: vyrok_ruzovy
+- typ: pilir
   nazev: Pilíře – kráva chodí po čtyřech
   nadtitulek: Pilíře
   vyrok: |
     Kráva chodí
     po čtyřech.
+  podnadpis: |
+    Oslavujeme Boží práci kolem nás,
+    přidáváme se k lidem, kteří už ji dělají,
+    tvoříme pastvu pro lidi, kteří Boha neznají,
+    aby se s ním mohli setkat tam, kde žijí a pracují.
 - typ: pilir
   nazev: Co děláme?
   nadtitulek: Co děláme?
@@ -34,7 +39,7 @@ slajdy:
     [V úterý] Pochval jednoho člověka za konkrétní věc, kterou dělá dobře. Třeba učitelku, se kterou tvůj kluk konečně pochopil zlomky. Do očí a pak i za zády.
 
     ## Protože Boha oslavujeme i tím, komu fandíme. Nejen v kostele. Ale na pastvě.
-  podnadpis: Oslavujeme Boží práci kolem nás,
+  podnadpis: Oslavujeme Boží práci kolem nás.
 - typ: vyrok_ruzovy
   nazev: Lásko, to je Kravařsko!
   nadtitulek: Kuhländchen.
@@ -71,7 +76,7 @@ slajdy:
     [V úterý] Najdi člověka, který kolem tebe táhne něco dobrého, a řekni mu, že máš volnou hodinu. Pak dělej, co řekne on, ne co bys chtěl ty. I kdyby to byly pastelky.
 
     ## Když Bůh dává, my se přidáváme.
-  podnadpis: přidáváme se k lidem, kteří už ji dělají,
+  podnadpis: Přidáváme se k lidem, kteří už ji dělají.
 - typ: kennedy
   nazev: Ich bin ein Kuhländler
   nadtitulek: Kuhländchen.
@@ -110,7 +115,7 @@ slajdy:
     [V úterý] Vyber jednu věc, kterou umíš tak dobře, že by udělala radost i dědovi z pátého patra. Urči den a hodinu a napiš to na cedulku do vchodu. A v tu hodinu tam buď.
 
     ## Bůh nekouká, komu prší. My taky ne.
-  podnadpis: tvoříme pastvu pro lidi, kteří Boha neznají,
+  podnadpis: Tvoříme pastvu pro lidi, kteří Boha neznají.
 - typ: fotka
   nazev: Kráva – má Boží design
   nadtitulek: pastva
@@ -147,4 +152,4 @@ slajdy:
     [V úterý] Zjisti jméno jednoho člověka, kterého potkáváš skoro denně. Třeba řidiče ranního autobusu nebo paní z výdejny balíků. Příště už pozdrav jménem.
 
     ## Bůh to jméno zná dávno. My se ho teprve učíme.
-  podnadpis: aby se s ním mohli setkat tam, kde žijí a pracují.
+  podnadpis: Aby se s ním mohli setkat tam, kde žijí a pracují.
