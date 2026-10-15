@@ -1,5 +1,20 @@
-# Náhled (15. 10.): původní výroky pilířů z webu + osa jako shrnutí na konci („Zdravá kráva chodí po čtyřech.“). Build nečte.
+# Náhled (15. 10.): původní výroky pilířů z webu + osa na začátku pilířů („Zdravá kráva chodí po čtyřech.“). Build nečte.
 slajdy:
+- typ: rejstrik
+  nazev: Pilíře
+  nadtitulek: Pilíře
+  vyrok: |
+    Zdravá kráva
+    chodí po čtyřech.
+  polozky:
+  - cil: '01'
+    text: Oslavujeme Boží práci kolem nás.
+  - cil: '02'
+    text: Přidáváme se k lidem, kteří už ji dělají.
+  - cil: '03'
+    text: Tvoříme pastvu pro ty, kteří Boha neznají.
+  - cil: '04'
+    text: Aby se s ním mohli setkat tam, kde žijí a pracují.
 - typ: vyrok
   nazev: Co děláme?
   nadtitulek: Co děláme?
@@ -61,18 +76,3 @@ slajdy:
     komunity, kam patříš i ty.
   otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
   otisk: '04'
-- typ: rejstrik
-  nazev: Pilíře – shrnutí
-  nadtitulek: Pilíře
-  vyrok: |
-    Zdravá kráva
-    chodí po čtyřech.
-  polozky:
-  - cil: '01'
-    text: Oslavujeme Boží práci kolem nás.
-  - cil: '02'
-    text: Přidáváme se k lidem, kteří už ji dělají.
-  - cil: '03'
-    text: Tvoříme pastvu pro ty, kteří Boha neznají.
-  - cil: '04'
-    text: Aby se s ním mohli setkat tam, kde žijí a pracují.
