@@ -8,13 +8,13 @@ slajdy:
     chodí po čtyřech.
   polozky:
   - cil: '01'
-    text: Fandíme Boží práci kolem nás.
+    text: Fandíme Boží práci kolem nás,
   - cil: '02'
-    text: Přidáváme se k lidem, kteří už ji dělají.
+    text: přidáváme se k lidem, kteří už ji dělají,
   - cil: '03'
-    text: Tvoříme pastvu pro ty, kteří Boha neznají.
+    text: tvoříme pastvu pro lidi, kteří Boha neznají,
   - cil: '04'
-    text: Aby se s ním mohli setkat tam, kde žijí a pracují.
+    text: aby se s ním mohli setkat tam, kde žijí a pracují.
 - typ: vyrok
   nazev: 01 Fandíme
   nadtitulek: '01'
