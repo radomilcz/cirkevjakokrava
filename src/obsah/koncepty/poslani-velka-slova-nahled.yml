@@ -8,7 +8,7 @@ slajdy:
     chodí po čtyřech.
   polozky:
   - cil: '01'
-    text: Oslavujeme Boží práci kolem nás.
+    text: Fandíme Boží práci kolem nás.
   - cil: '02'
     text: Přidáváme se k lidem, kteří už ji dělají.
   - cil: '03'
@@ -25,7 +25,7 @@ slajdy:
     lidmi na Kravařsku.
   otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
   otisk: '01'
-  detail_odkaz: Oslavujeme Boží práci kolem nás
+  detail_odkaz: Fandíme Boží práci kolem nás
   detail: |
     # Bůh nesedí v kostele.
     Maká v Novém Jičíně.
