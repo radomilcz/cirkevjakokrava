@@ -264,11 +264,6 @@ body{
   font-size:clamp(3.2rem,13vw,15rem);line-height:.92;letter-spacing:0;
 }
 .velke-slovo .ln>span{white-space:nowrap}
-.velke-slovo .how{
-  display:block;font-family:var(--grand);font-weight:400;text-transform:none;
-  font-size:clamp(1.15rem,3.65vw,4.4rem);line-height:1.035;margin-top:.15em;
-}
-.velke-slovo .how::before{content:"("}.velke-slovo .how::after{content:")"}
 .slovem .statement{font-size:clamp(1.3rem,2.5vw,3rem);line-height:1.25;max-width:32ch}
 @media (max-aspect-ratio:1/1){.velke-slovo{font-size:16vw}}
 .stred .statement{margin:0}

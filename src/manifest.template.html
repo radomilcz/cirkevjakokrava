@@ -84,12 +84,11 @@
 
 {%- elif t in ('vyrok', 'vyrok_ruzovy') %}
   {{ sekce(x, ('love' if t == 'vyrok_ruzovy' else '') ~ (' slovem' if x.get('slovo') else '')) }}
-    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}{% if x.get('slovo') and x.get('dovetek') %} <em>{{ x.dovetek }}</em>{% endif %}</h2>
 {%- if x.get('detail') or x.get('slovo') %}
     <div class="stred">
 {%- if x.get('slovo') %}
-      <p class="velke-slovo"><span class="ln"><span>{{ x.slovo }}</span></span>
-        {%- if x.get('dovetek') %}<span class="how rise">{{ x.dovetek|txt }}</span>{% endif %}</p>
+      <p class="velke-slovo"><span class="ln"><span>{{ x.slovo }}</span></span></p>
 {%- endif %}
     {{ vyrok(x.vyrok) }}
 {%- if x.get('detail') %}
