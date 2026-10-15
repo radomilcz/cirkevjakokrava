@@ -208,7 +208,7 @@
 <dialog class="detail" id="d-{{ x.id }}" aria-labelledby="d-{{ x.id }}-t">
   <div class="detail-in" tabindex="-1" autofocus>
     <div class="detail-head">
-      <p class="eyebrow">{% if x.get('otisk') %}{{ x.otisk }} · {% endif %}{{ x.nadtitulek }}</p>
+      <p class="eyebrow">{% if x.get('otisk') %}{{ x.otisk }} · {% endif %}{{ x.get('slovo') or x.nadtitulek }}</p>
       <button type="button" class="zavrit" aria-label="Zavřít">×</button>
     </div>
     {#- Začíná-li text velkým nadpisem (# …), je to nadpis stránky; jinak jím je text odkazu. #}
