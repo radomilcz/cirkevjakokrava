@@ -134,7 +134,7 @@
 }
 
 /* Osnova of a šablona: the drag handle before the time (as on the meeting's Osnova) */
-.row:has(> .reorder-grip:first-child) { padding-left: 0; --row-rule-start: calc(44px + var(--space-2) + 52px + var(--space-3)); }
+.row:has(> .reorder-grip:first-child) { --row-rule-start: calc(var(--space-3) + 44px + var(--space-2) + 52px + var(--space-3)); }
 .row > .reorder-grip { margin-right: calc(var(--space-2) - var(--space-3)); cursor: grab; touch-action: none; color: var(--ink-2); }
 .row[data-dragging] { position: relative; z-index: 2; background: var(--overlay); box-shadow: var(--lift-4); transition: none; }
 .row[data-dragging] > .reorder-grip { cursor: grabbing; }
