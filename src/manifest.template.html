@@ -83,12 +83,17 @@
   </section>
 
 {%- elif t in ('vyrok', 'vyrok_ruzovy') %}
-  {{ sekce(x, 'love' if t == 'vyrok_ruzovy' else '') }}
+  {{ sekce(x, ('love' if t == 'vyrok_ruzovy' else '') ~ (' slovem' if x.get('slovo') else '')) }}
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
-{%- if x.get('detail') %}
+{%- if x.get('detail') or x.get('slovo') %}
     <div class="stred">
+{%- if x.get('slovo') %}
+      <p class="velke-slovo"><span class="ln"><span>{{ x.slovo }}</span></span></p>
+{%- endif %}
     {{ vyrok(x.vyrok) }}
+{%- if x.get('detail') %}
       <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span><span class="sipka" aria-hidden="true">→</span></button>
+{%- endif %}
     </div>
 {%- else %}
     {{ vyrok(x.vyrok) }}

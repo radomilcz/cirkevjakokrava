@@ -1,0 +1,94 @@
+# Náhled (15. 10.): pilíře s obřím slovem (Fandíme / Makáme / Tvoříme / Toužíme) nad výroky. Build nečte.
+slajdy:
+- typ: rejstrik
+  nazev: Pilíře
+  nadtitulek: Pilíře
+  vyrok: |
+    Zdravá kráva
+    chodí po čtyřech.
+  polozky:
+  - cil: '01'
+    text: Oslavujeme Boží práci kolem nás.
+  - cil: '02'
+    text: Přidáváme se k lidem, kteří už ji dělají.
+  - cil: '03'
+    text: Tvoříme pastvu pro ty, kteří Boha neznají.
+  - cil: '04'
+    text: Aby se s ním mohli setkat tam, kde žijí a pracují.
+- typ: vyrok
+  nazev: 01 Fandíme
+  nadtitulek: '01'
+  slovo: Fandíme
+  vyrok: |
+    Oslavujeme Boží náturu,
+    kreativitu a lásku -> mezi
+    lidmi na Kravařsku.
+  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  otisk: '01'
+  detail_odkaz: Oslavujeme Boží práci kolem nás
+  detail: |
+    # Bůh nesedí v kostele.
+    Maká v Novém Jičíně.
+
+    Boží vliv nezačíná u dveří kostela. Jeho tvořivost a péči vidíme ve městě každý den. V poctivém řemesle, dobrém jídle i v lidech, kteří se starají o druhé.
+
+    Nejsme soupeři, ale fanoušci. Všímáme si toho, máme z toho radost a říkáme to lidem nahlas a do očí. Boha totiž oslavujeme i tím, komu fandíme.
+
+    > „Bůh viděl všechno, co učinil, a hle, bylo to velmi dobré!“
+    > [Genesis 1,31](https://bible.com/bible/15/GEN.1.31.B21)
+
+    [V úterý] Pochval jednoho člověka za konkrétní věc, kterou dělá dobře. Třeba učitelku, se kterou tvůj kluk konečně pochopil zlomky. Do očí a pak i za zády.
+- typ: vyrok_ruzovy
+  nazev: Lásko, to je Kravařsko!
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Lásko, to je
+    Kravařsko!
+  podpis: Herzenssache.
+  otisk: '05'
+- typ: vyrok
+  nazev: 02 Makáme
+  nadtitulek: '02'
+  slovo: Makáme
+  vyrok: |
+    Přidáváme srdce i ruce do práce,
+    kterou naše město dělá skvěle.
+  otazka: Jak se přidáváš k Boží práci ve svém sousedství?
+  otisk: '02'
+- typ: kennedy
+  nazev: Ich bin ein Kuhländler
+  nadtitulek: Kuhländchen.
+  vyrok: |
+    Ich bin ein
+    Kuhländler
+  otazka: Je Kravařsko i tvoje srdeční záležitost?
+  podpis: Herzenssache.
+  popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
+- typ: vyrok
+  nazev: 03 Tvoříme
+  nadtitulek: '03'
+  slovo: Tvoříme
+  vyrok: |
+    Tvoříme pastvu pro oči,
+    uši a duši. Pro publikum,
+    co kostel ani víru neřeší.
+  otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
+  otisk: '03'
+- typ: fotka
+  nazev: Kráva – má Boží design
+  nadtitulek: pastva
+  slovo: kráva
+  dovetek: má Boží design
+  bez_zavorek: true
+  fotka: assets/fotky/krava-manifest.webp
+  popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
+- typ: vyrok
+  nazev: 04 Toužíme
+  nadtitulek: '04'
+  slovo: Toužíme
+  vyrok: |
+    Aby lidé poznali, že Bohu
+    na nich záleží. Uprostřed
+    komunity, kam patříš i ty.
+  otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  otisk: '04'

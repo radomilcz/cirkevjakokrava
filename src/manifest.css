@@ -257,6 +257,15 @@ body{
    Slajd zůstává, jak je; kdo chce víc, klikne. Vrstva je nativní <dialog>: Esc, fokus
    i čtečky obrazovky řeší prohlížeč. Text se v ní normálně scrolluje (prezentace zatím stojí). */
 .stred{grid-row:2;align-self:center;min-width:0}
+/* pilíř s obřím slovem: sloveso přes celou šířku (jazyk hodnot a „kráva / má Boží design“),
+   výrok pod ním menší, aby slovo neslo úder a výrok obsah */
+.velke-slovo{
+  margin:0 0 .18em;font-family:var(--narrow);font-weight:900;text-transform:uppercase;
+  font-size:clamp(3.2rem,13vw,15rem);line-height:.92;letter-spacing:0;
+}
+.velke-slovo .ln>span{white-space:nowrap}
+.slovem .statement{font-size:clamp(1.3rem,2.5vw,3rem);line-height:1.25;max-width:32ch}
+@media (max-aspect-ratio:1/1){.velke-slovo{font-size:16vw}}
 .stred .statement{margin:0}
 .vic{
   display:inline-flex;align-items:baseline;gap:.5em;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
