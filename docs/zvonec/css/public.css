@@ -41,7 +41,7 @@
 .pub-head__login { flex: none; }
 .pub-head__back { gap: 4px; padding: 0 14px 0 8px; }
 .pub__col { display: grid; align-content: start; max-width: var(--pub-w); margin: 0 auto; padding-top: var(--space-4); min-width: 0; }
-.pub__title { font-size: var(--type-title); line-height: var(--lh-title); }
+.pub__title { font-family: var(--font-brand); font-weight: 800; font-size: var(--type-title); line-height: var(--lh-title); letter-spacing: -.01em; }
 .pub__lead { margin-top: var(--space-2); font-size: var(--type-body); line-height: var(--lh-body); color: var(--ink-2); max-width: 46ch; }
 @media (min-width: 600px) {
   .pub--board .pub__title { font-size: 56px; line-height: 56px; }

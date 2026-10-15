@@ -1281,7 +1281,7 @@ data repo's `web.yml`:
 - Reads only the public data, never `S.data`.
 - Header 64: wordmark, [Přihlas se] (quiet). Signed in: a strip „Takhle to vidí návštěvníci · ← Vrať se do
   Zvonce“.
-- A notice board, column 1080: h1 „Pastva“, „Kdy a kde se potkáváme. Přijď, jak jsi.“ Only meetings that have not
+- A notice board, column 1080: h1 „pastva“ (minuscules, the wordmark's Agrandir Grand Heavy), „Kdy a kde se potkáváme. Přijď, jak jsi.“ Only meetings that have not
   ended.
   - **Nenech si ujít**: every `featured` meeting (not cancelled) as one big card – the picture (beside the words from
     840 px), the date arch, the eyebrow „Nenech si ujít“, the title, when, where, the whole description, [Přečti si

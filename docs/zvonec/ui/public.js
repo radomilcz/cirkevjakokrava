@@ -295,7 +295,7 @@ export function renderProgram(id) {
   if (id) return renderPublicEvent(id);
   const d = data();
   const head = h('div', { class: 'pub__intro' },
-    h('h1', { class: 'title pub__title' }, 'Pastva'),
+    h('h1', { class: 'title pub__title' }, 'pastva'),   // in minuscules and the wordmark's Agrandir Grand, as the brand writes it
     h('p', { class: 'pub__lead' }, 'Kdy a kde se potkáváme. Přijď, jak jsi.'));
   if (!d) {
     const failed = S.mode !== 'live' || load === 'failed';
