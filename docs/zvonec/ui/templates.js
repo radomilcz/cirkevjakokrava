@@ -18,6 +18,7 @@ import { rolesOf, roleById, groupById } from '../lib/groups.js';
 import { placeById, placeTree } from '../lib/places.js';
 import { saveImage, loadImageUrl, deleteImage } from '../lib/store/store.js';
 import { prepareCover } from './cover-image.js';
+import { reorderable } from './reorder.js';
 import { today, dayOf, weekday } from '../lib/time.js';
 import {
   h, list, row, empty, pill, plural, toast, formSheet, confirmSheet, field, textInput, textArea, selectInput,
@@ -522,10 +523,19 @@ function needsSheet(type) {
   });
 }
 
-/** Osnova: the points in order (tap to change, ⋯ to move or remove), „Přidej bod“ (a second layer). */
+/** Osnova: the points in order (tap to change, drag the handle or ⋯ to move, ⋯ to remove), „Přidej bod“ (a second layer). */
 function outlineSheet(type) {
   const program = clone(type.program || []);
   const holder = h('div', { class: 'tpl-outline' });
+  // drag the handle (or ↑ ↓ on it) to reorder; ⋯ keeps Posuň výš / níž for anyone who prefers a menu
+  const listEl = (rows) => {
+    const el = list(rows, { label: 'Osnova', cls: 'tpl-outline__list' });
+    reorderable(el, {
+      onMove: (from, to) => { const [x] = program.splice(from, 1); program.splice(to, 0, x); draw(); },
+      focusAt: (i) => holder.querySelectorAll('.reorder-grip')[i],
+    });
+    return el;
+  };
   const draw = () => {
     let cursor = 0;
     const rows = program.map((item, i) => {
@@ -541,8 +551,11 @@ function outlineSheet(type) {
         '-',
         { label: 'Odeber z osnovy', icon: 'trash', danger: true, onclick: () => { program.splice(i, 1); draw(); } },
       ], { anchor: more, title: nameOf }));
+      const grip = h('button', {
+        type: 'button', class: 'icon-btn reorder-grip', 'aria-label': `Přesuň: ${nameOf} (šipkami nahoru a dolů)`, title: 'Přesuň',
+      }, icon('grip', { size: 's' }));
       return row({
-        lead: h('span', { class: 'tpl-time' }, clock(start)),
+        lead: [grip, h('span', { class: 'tpl-time' }, clock(start))],
         title: nameOf,
         meta: joinMeta([`${item.minutes ?? 0} min`, roleById(S.data, format?.leadRoleId)?.name ? `vede ${roleById(S.data, format.leadRoleId).name}` : null]),
         onclick: () => itemSheet(program, i, draw),
@@ -552,7 +565,7 @@ function outlineSheet(type) {
     });
     holder.replaceChildren(...[
       program.length ? outlineSum(cursor, Number(type.minutes) || 0) : null,
-      program.length ? list(rows, { label: 'Osnova' }) : quiet('Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.'),
+      program.length ? listEl(rows) : quiet('Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.'),
       h('div', { class: 'tpl-outline__foot' },
         button('Přidej bod', { variant: 'tint', size: 's', icon: 'plus', onclick: () => addItemSheet(program, draw) })),
     ].filter(Boolean));

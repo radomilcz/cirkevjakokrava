@@ -125,7 +125,7 @@ function eventHead(event) {
     band: cover(event, { cls: 'ev-band' }),
     tags: [
       kindTag(event.kind),
-      event.public === true && !event.cancelled ? pill('na webu') : null,
+      event.public === true && !event.cancelled ? pill(event.featured === true ? 'zvýrazněno na webu' : 'na webu') : null,
       event.cancelled ? pill('zrušeno', { cls: 'pill--no' }) : null,
     ],
     title: event.title,
@@ -451,6 +451,12 @@ function aboutSection(event) {
       label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
       onChange: (on) => publish(event.id, on),
     })));
+    if (event.public === true) {
+      rows.append(h('div', { class: 'ev-public' }, icon('star', { size: 's' }), switchRow({
+        label: 'Zvýrazni na webu', hint: 'Na Pastvě bude nahoře ve velké kartě se štítkem „Nenech si ujít“.', checked: event.featured === true,
+        onChange: (on) => feature(event.id, on),
+      })));
+    }
   }
   if (!description && !note && !rows.childElementCount) return null;
   return section({
@@ -461,6 +467,23 @@ function aboutSection(event) {
       note ? h('div', { class: 'ev-note' }, h('p', { class: 'ev-note__label' }, 'Pro tým'), h('p', { class: 'text' }, note)) : null,
       rows.childElementCount ? rows : null,
     ],
+  });
+}
+
+/** „Zvýrazni na webu“: this one event (never its series) goes to the top of Pastva. */
+function feature(eventId, on) {
+  const target = eventById(S.data, eventId);
+  if (!target) return;
+  const before = target.featured;
+  if (on) target.featured = true; else delete target.featured;
+  change(`${on ? 'zvýrazněno na webu' : 'už není zvýrazněno na webu'}: ${target.title}`);
+  toast(on ? 'Na Pastvě to bude nahoře za pár minut.' : 'Na Pastvě to bude zase mezi ostatními.', {
+    action: () => {
+      const x = eventById(S.data, eventId);
+      if (!x) return;
+      if (before === true) x.featured = true; else delete x.featured;
+      change(`vráceno: ${x.title} zvýraznění na webu`);
+    },
   });
 }
 

@@ -159,7 +159,7 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
     text.push(`Otevři Obsazení: ${link('#obsazeni')}`, '');
   }
 
-  const foot = 'Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? Vypni si ho na stránce Můj účet.';
+  const foot = 'Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho dostávat? Vypni zasílání v sekci Můj účet.';
   const signature = digestSignature(data.settings);
   text.push(signature, church, '', '—', foot, link('#ucet'));
   const subject = subjectOf(items);
@@ -173,7 +173,7 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
 ${rows.join('\n')}
 <tr><td style="padding:32px 0 0;font:400 16px/23px ${FONT};color:${C.ink}">${esc(signature).replace(/\n/g, '<br>')}<br>${esc(church)}</td></tr>
 <tr><td style="padding:32px 0 0;border-bottom:1px solid ${C.line}"></td></tr>
-<tr><td style="padding:16px 0 0;font:400 13px/19px ${FONT};color:${C.ink2}">Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho? <a href="${esc(link('#ucet'))}" style="color:${C.ink2}">Vypni si ho na stránce Můj účet</a>.</td></tr>
+<tr><td style="padding:16px 0 0;font:400 13px/19px ${FONT};color:${C.ink2}">Zvonec ti tenhle e-mail posílá v pondělí, jen když na tebe něco čeká. Nechceš ho dostávat? <a href="${esc(link('#ucet'))}" style="color:${C.ink2}">Vypni zasílání v sekci Můj účet</a>.</td></tr>
 </table></td></tr></table></body></html>`;
   return { subject, text: text.join('\n'), html };
 }
