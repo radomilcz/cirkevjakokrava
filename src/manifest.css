@@ -241,7 +241,9 @@ body{
 .pilir .podnadpis.odkaz:hover .sipka,.pilir .podnadpis.odkaz:focus-visible .sipka{transform:translateX(.25em)}
 .pilir .podnadpis.odkaz:focus-visible{outline:2px solid currentColor;outline-offset:6px}
 /* řádek nad nadpisem rejstříku: lehký Grand jako „jako“ v nadtitulku */
-.rej-tag{margin:0 0 .5em;font-family:var(--grand);font-weight:400;font-size:clamp(1.15rem,2.2vw,2.7rem);line-height:1.2;opacity:.8}
+.rej-tag{margin:0 0 .6em;font-family:var(--grand);font-weight:400;font-size:clamp(1.15rem,2.2vw,2.7rem);line-height:1.2;opacity:.8}
+/* šipky mezi slovy: stejná mezera z obou stran (mezera v Grandu a postranice šipky se liší) */
+.rej-tag .arrow{font-family:var(--body);margin:0 .4em}
 .rejstrik{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.15em;
   font-family:var(--body);font-weight:700;font-size:clamp(1.15rem,2.2vw,2.7rem);line-height:1.2}
 .rej{display:flex;align-items:baseline;gap:.5em;padding:.12em 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left}

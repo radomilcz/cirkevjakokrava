@@ -148,7 +148,7 @@
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <div class="pilir">
 {%- if x.get('tagline') %}
-      <p class="rej-tag rise">{{ x.tagline|txt }}</p>
+      <p class="rej-tag rise">{% for d in x.tagline.split('→') %}{% if not loop.first %}<span class="arrow" aria-hidden="true">→</span>{% endif %}{{ d.strip() }}{% endfor %}</p>
 {%- endif %}
 {%- set r = x.vyrok|radky %}
       <h3 class="nadpis" style="--znaku:{{ r|map('length')|max }};--radku:{{ r|length }}">{% for radek in r %}<span>{{ radek|vyrok }}</span> {% endfor %}</h3>
