@@ -245,7 +245,7 @@ body{
 .rej{display:flex;align-items:baseline;gap:.5em;padding:.12em 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left}
 .rej-n{flex:none;font-family:var(--display);font-weight:800;font-size:1em;opacity:.6;width:2.1em;font-variant-numeric:tabular-nums}
 /* štítek místo čísla (část těla): lehký řez Grand jako nadtitulek, šipka vede k větě */
-.rej-s{width:5.5em;font-family:var(--grand);font-weight:400;opacity:.75;display:flex;justify-content:space-between;padding-right:.35em}
+.rej-s{width:5.2em;font-family:var(--grand);font-weight:400;opacity:.75;display:flex;justify-content:flex-end;gap:.3em}
 .rej-s .sip{font-family:var(--body)}
 .rej-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em;
   text-decoration-color:color-mix(in srgb,currentColor 28%,transparent);transition:text-decoration-color .35s}
