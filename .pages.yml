@@ -93,6 +93,7 @@ components:
             list: {min: 1, max: 6}
             fields:
               - {name: cil, type: string, label: 'Číslo otisku pilíře (01–04)', pattern: {regex: '\S', message: Doplň číslo pilíře}}
+              - {name: stitek, type: string, label: 'Štítek místo čísla (např. oči)'}
               - {name: text, type: string, label: Text řádku, pattern: {regex: '\S', message: Doplň text}}
           - {name: otazka, component: otazka}
       - name: vyrok_ruzovy
