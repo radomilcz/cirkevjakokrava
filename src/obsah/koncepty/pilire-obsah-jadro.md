@@ -82,3 +82,5 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 
 Od venku dovnitř: oči → ruce → hlava → srdce. Nadpisy jsou obří slovo přes celý slajd, pod ním výrok, odkaz s osou do rozkliku, dole otázka.
 Rozklik 02: nadpis „Bůh nesedí v kostele. / Maká v Novém Jičíně.“, verš J 5,17 (B21: „Můj Otec pracuje i dnes; proto pracuji i já.“).
+
+Verš pro rozklik 03 (TVOŘÍME): Ef 2,10 (B21: „Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.“). Přesunut z pilulky u „Kdo jsme“ (16. 10.).
