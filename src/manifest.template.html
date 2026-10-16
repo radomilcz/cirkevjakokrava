@@ -149,9 +149,9 @@
     <div class="pilir">
 {%- set r = x.vyrok|radky %}
       <h3 class="nadpis" style="--znaku:{{ r|map('length')|max }};--radku:{{ r|length }}">{% for radek in r %}<span>{{ radek|vyrok }}</span> {% endfor %}</h3>
-      <ol class="rejstrik">
+      <ol class="rejstrik{% if x.polozky|selectattr('stitek', 'defined')|list %} se-stitky{% endif %}">
 {%- for p in x.polozky %}
-        <li><button type="button" class="rej" data-cil="{{ p.cil }}">{% if p.get('stitek') %}<span class="rej-n rej-s">{{ p.stitek }}<span class="sip" aria-hidden="true">→</span></span>{% else %}<span class="rej-n">{{ p.cil }}</span>{% endif %}<span class="rej-t">{{ p.text|txt }}</span></button></li>
+        <li><button type="button" class="rej" data-cil="{{ p.cil }}">{% if p.get('stitek') %}<span class="rej-s">{{ p.stitek }}</span><span class="sip" aria-hidden="true">→</span>{% else %}<span class="rej-n">{{ p.cil }}</span>{% endif %}<span class="rej-t">{{ p.text|txt }}</span></button></li>
 {%- endfor %}
       </ol>
     </div>

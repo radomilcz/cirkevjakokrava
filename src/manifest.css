@@ -244,10 +244,13 @@ body{
   font-family:var(--body);font-weight:700;font-size:clamp(1.15rem,2.2vw,2.7rem);line-height:1.2}
 .rej{display:flex;align-items:baseline;gap:.5em;padding:.12em 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:left}
 .rej-n{flex:none;font-family:var(--display);font-weight:800;font-size:1em;opacity:.6;width:2.1em;font-variant-numeric:tabular-nums}
-/* štítek místo čísla (část těla): lehký řez Grand jako nadtitulek, šipka vede k větě */
-.rej-s{width:5.2em;font-family:var(--grand);font-weight:400;opacity:.75;display:flex;justify-content:flex-end;gap:.3em}
-.rej-s .sip{font-family:var(--body)}
-.rej-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em;
+/* štítek místo čísla (část těla): tři sloupce přes subgrid – štítek u levého okraje,
+   šipky pod sebou hned za nejdelším štítkem, věty pod sebou */
+.rejstrik.se-stitky{display:grid;grid-template-columns:max-content max-content 1fr;column-gap:.4em}
+.se-stitky li,.se-stitky .rej{display:grid;grid-column:1/-1;grid-template-columns:subgrid;align-items:baseline}
+.rej-s{font-family:var(--grand);font-weight:400;opacity:.75}
+.se-stitky .sip{font-family:var(--body);font-weight:400;opacity:.75}
+.rej-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.32em;
   text-decoration-color:color-mix(in srgb,currentColor 28%,transparent);transition:text-decoration-color .35s}
 .rej:hover .rej-t,.rej:focus-visible .rej-t{text-decoration-color:currentColor}
 .rej:focus-visible{outline:2px solid currentColor;outline-offset:4px}
