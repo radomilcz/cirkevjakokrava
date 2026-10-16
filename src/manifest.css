@@ -410,6 +410,9 @@ body{
 }
 .read.in .essay{opacity:1;transform:none;transition-delay:.15s}
 .essay p{margin:0 0 1.25em}
+/* pilulky s verši uprostřed předmluvy: menší písmo než text a bez velké mezery na konci slajdu */
+.essay .verse-blok{margin:0 0 1.25em;font-size:max(.5em,.95rem)}
+.essay .pil-v p{margin:0}
 .essay .lead{margin-bottom:1.25em}
 .essay h3{
   font-family:var(--display);font-weight:800;font-size:1.8em;line-height:1.25;letter-spacing:-.01em;
