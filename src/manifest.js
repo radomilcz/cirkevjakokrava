@@ -257,8 +257,8 @@
     });
     measure();
   }));
-  /* rejstřík pilířů: řádek osy skočí na slajd pilíře se stejným číslem otisku */
-  document.querySelectorAll('.rej').forEach(b=>b.addEventListener('click',()=>{
+  /* rejstřík pilířů i navigace oči → ruce → hlava → srdce: skok na slajd pilíře se stejným číslem otisku */
+  document.querySelectorAll('.rej,.tel').forEach(b=>b.addEventListener('click',()=>{
     const i=slides.findIndex(s=>s.dataset.print===b.dataset.cil&&!s.querySelector('.rejstrik'));
     if(i>=0)go(i);
   }));

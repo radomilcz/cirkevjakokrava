@@ -66,6 +66,8 @@
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 <div class="deck" id="deck">
 <main class="track" id="track">
+{#- pilíře s obřím slovem: jejich dovětky (oči, ruce…) tvoří navigaci v rohu každého z nich #}
+{%- set pilire = o.poradi|rozvrh|selectattr('typ', 'equalto', 'vyrok')|selectattr('slovo', 'defined')|selectattr('dovetek', 'defined')|list %}
 {%- for x in o.poradi|rozvrh %}
 {%- set t = x.typ %}
 
@@ -103,7 +105,13 @@
 
 {%- elif t in ('vyrok', 'vyrok_ruzovy') %}
   {{ sekce(x, ('love' if t == 'vyrok_ruzovy' else '') ~ (' slovem' if x.get('slovo') else '')) }}
-    <h2 class="eyebrow rise">{{ x.nadtitulek }}{% if x.get('slovo') and x.get('dovetek') %} <em>{{ x.dovetek }}</em>{% endif %}</h2>
+{%- if x.get('slovo') and x.get('dovetek') %}
+    <nav class="eyebrow rise tela" aria-label="Pilíře">
+      {%- for p in pilire %}{% if not loop.first %}<span class="arrow" aria-hidden="true">→</span>{% endif %}<button type="button" class="tel{% if p.id == x.id %} je{% endif %}" data-cil="{{ p.otisk }}"{% if p.id == x.id %} aria-current="true"{% endif %}>{{ p.dovetek }}</button>{% endfor -%}
+    </nav>
+{%- else %}
+    <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
+{%- endif %}
 {%- if x.get('detail') or x.get('slovo') %}
     <div class="stred">
 {%- if x.get('slovo') %}

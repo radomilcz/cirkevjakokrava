@@ -273,6 +273,14 @@ body{
   font-size:clamp(3.2rem,13vw,15rem);line-height:.92;letter-spacing:0;
 }
 .velke-slovo .ln>span{white-space:nowrap}
+/* navigace v rohu pilíře: oči → ruce → hlava → srdce, aktuální tučně, ostatní tence a klikací */
+.tela{display:flex;flex-wrap:wrap;align-items:baseline}
+.tel{padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;
+  font-family:var(--grand);font-weight:400;opacity:.55;transition:opacity .3s}
+.tel.je{font-family:var(--display);font-weight:800;opacity:1;cursor:default}
+.tel:not(.je):hover,.tel:focus-visible{opacity:1}
+.tel:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+.tela .arrow{font-family:var(--body);font-weight:400;margin:0 .4em;opacity:.55}
 .slovem .statement{font-size:clamp(1.3rem,2.5vw,3rem);line-height:1.25;max-width:32ch}
 @media (max-aspect-ratio:1/1){.velke-slovo{font-size:16vw}}
 .stred .statement{margin:0}
