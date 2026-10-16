@@ -3,21 +3,18 @@ slajdy:
 - typ: rejstrik
   nazev: Pilíře
   nadtitulek: Pilíře
+  tagline: oči → ruce → hlava → srdce
   vyrok: |
     Zdravá kráva
     chodí po čtyřech.
   polozky:
   - cil: '01'
-    stitek: oči
     text: Fandíme Boží práci kolem nás,
   - cil: '02'
-    stitek: ruce
     text: přidáváme se k lidem, co už ji dělají,
   - cil: '03'
-    stitek: hlava
     text: tvoříme pastvu pro ty, kteří církev neřeší,
   - cil: '04'
-    stitek: srdce
     text: ať na vlastní kůži poznají, že Bohu na nich záleží.
 - typ: vyrok
   nazev: 01 Fandíme

@@ -86,6 +86,7 @@ components:
         fields:
           - {name: nazev, component: nazev}
           - {name: nadtitulek, component: nadtitulek}
+          - {name: tagline, type: string, label: 'Řádek nad nadpisem (např. oči → ruce → hlava → srdce)'}
           - {name: vyrok, component: vyrok}
           - name: polozky
             label: Řádky (každý skočí na pilíř)

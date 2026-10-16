@@ -147,6 +147,9 @@
   {{ sekce(x, 'pillar') }}
     <h2 class="eyebrow rise">{{ x.nadtitulek }}</h2>
     <div class="pilir">
+{%- if x.get('tagline') %}
+      <p class="rej-tag rise">{{ x.tagline|txt }}</p>
+{%- endif %}
 {%- set r = x.vyrok|radky %}
       <h3 class="nadpis" style="--znaku:{{ r|map('length')|max }};--radku:{{ r|length }}">{% for radek in r %}<span>{{ radek|vyrok }}</span> {% endfor %}</h3>
       <ol class="rejstrik{% if x.polozky|selectattr('stitek', 'defined')|list %} se-stitky{% endif %}">
