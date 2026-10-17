@@ -283,8 +283,10 @@ body{
 .tela .arrow{font-family:var(--body);font-weight:400;margin:0 .4em;opacity:.55}
 @media (max-aspect-ratio:1/1){.velke-slovo{font-size:16vw}}
 .stred .statement{margin:0}
-/* pilíř bez výroku: pod obřím slovem rovnou odkaz s větou z rozcestníku */
-.slovem .velke-slovo+.vic{margin-top:.2em;font-size:clamp(1.4rem,3.2vw,3.5rem);line-height:1.2}
+/* pilíř bez výroku: slovo přes celou šířku, pod ním zbytek věty z rozcestníku jako jediný odkaz
+   (FANDÍME / Boží práci kolem nás →); 4,8 em je šířka nejdelšího slova v Narrow Black */
+.slovem .velke-slovo{margin:0 0 0 -.04em;font-size:min(calc((100vw - 2*var(--pad) - 14px)/4.8),34vh)}
+.slovem .velke-slovo+.vic{margin-top:clamp(.3rem,1.2vh,1rem);padding:.5em 0;min-height:44px;font-size:clamp(1.15rem,2.6vw,3rem);line-height:1.2}
 .vic{
   display:inline-block;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
   border:0;background:none;color:inherit;cursor:pointer;text-align:left;
@@ -322,6 +324,7 @@ body{
 .detail .essay{margin:clamp(1.5rem,5vh,3.5rem) 0 0;margin-left:min(6.75vw,130px);opacity:1;transform:none}
 /* bez osiřelých slov na konci odstavce a bez rozsypaných řádků */
 .detail .essay p{text-wrap:pretty}
+.detail .essay .detail-otazka{margin:2.4em 0 1.25em;padding-top:1em;border-top:1px solid color-mix(in srgb,currentColor 30%,transparent);font-weight:700}
 .detail .essay .lead{font-weight:700}
 /* verš v rozkliku: odsazený linkou, odkaz na Bibli pod ním drobněji a se šipkou */
 .detail .essay .verse{

@@ -1,4 +1,4 @@
-# Náhled (17. 10.): pilíře s obřím slovem (Fandíme / Makáme / Tvoříme / Toužíme) bez výroku, pod slovem rovnou odkaz s větou z rozcestníku. Build nečte.
+# Náhled (17. 10.): pilíře s obřím slovem (Fandíme / Makáme / Tvoříme / Toužíme) minimalisticky: číslo, obří slovo a pod ním zbytek věty z rozcestníku jako odkaz; otázka až v rozkliku. Build nečte.
 slajdy:
 - typ: rejstrik
   nazev: Pilíře
@@ -24,7 +24,7 @@ slajdy:
   #  lidmi na Kravařsku.
   otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
   otisk: '01'
-  detail_odkaz: Fandíme Boží práci kolem nás
+  detail_odkaz: Boží práci kolem nás
   detail: |
     # Bůh tvoří, my fandíme.
 
@@ -55,7 +55,7 @@ slajdy:
   #  naše srdce, slova i ruce.
   otazka: Jak se přidáváš k Boží práci ve svém sousedství?
   otisk: '02'
-  detail_odkaz: Přidáváme se k lidem, co už ji dělají
+  detail_odkaz: přidáváme se k lidem, co už ji dělají
   detail: |
     # Bůh nesedí v kostele.
     Maká v Novém Jičíně.
@@ -82,8 +82,10 @@ slajdy:
   #  co kostel ani víru neřeší.
   otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
   otisk: '03'
-  detail_odkaz: Tvoříme pastvu pro ty, kteří církev neřeší
+  detail_odkaz: pastvu pro ty, kteří církev neřeší
   detail: |
+    # Tvoříme pastvu pro ty, kteří církev neřeší.
+
     > „Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.“
     > [Efezským 2,10](https://bible.com/bible/15/EPH.2.10.B21)
 - typ: fotka
@@ -103,9 +105,12 @@ slajdy:
   #  Aby lidé poznali, že Bohu
   #  na nich záleží. Uprostřed
   #  komunity, kam patříš i ty.
-  otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  # otázka čeká na přepis bez „Boží dotek“ a „komunity“ (17. 10.):
+  # otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
   otisk: '04'
-  detail_odkaz: Ať na vlastní kůži poznají, že Bohu na nich záleží
+  detail_odkaz: ať na vlastní kůži poznají, že Bohu na nich záleží
   detail: |
+    # Ať na vlastní kůži poznají, že Bohu na nich záleží.
+
     > „Všechnu svou starost uvrhněte na něj, vždyť jemu na vás záleží.“
     > [1. Petrova 5,7](https://bible.com/bible/15/1PE.5.7.B21)

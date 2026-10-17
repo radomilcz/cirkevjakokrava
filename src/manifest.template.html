@@ -127,7 +127,8 @@
 {%- else %}
     {{ vyrok(x.vyrok) }}
 {%- endif %}
-    {{ pata(x.get('otazka'), x.get('podpis')) }}
+    {#- pilíř s obřím slovem nese otázku až v rozkliku, slajd zůstane čistý #}
+    {{ pata(None if x.get('slovo') and x.get('detail') else x.get('otazka'), x.get('podpis')) }}
   </section>
 
 {%- elif t == 'pilir' %}
@@ -241,6 +242,9 @@
 {%- for b in (bb[1:] if prvni else bb) %}
       {{ b|blok }}
 {%- endfor %}
+{%- if x.get('slovo') and x.get('otazka') %}
+      <p class="detail-otazka">{{ x.otazka|txt }}</p>
+{%- endif %}
     </div>
     <button type="button" class="zpet zavrit">Zpátky na manifest</button>
   </div>
