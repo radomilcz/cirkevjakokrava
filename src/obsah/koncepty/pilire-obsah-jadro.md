@@ -84,3 +84,12 @@ Od venku dovnitř: oči → ruce → hlava → srdce. Nadpisy jsou obří slovo 
 Rozklik 02: nadpis „Bůh nesedí v kostele. / Maká v Novém Jičíně.“, verš J 5,17 (B21: „Můj Otec pracuje i dnes; proto pracuji i já.“).
 
 Verš pro rozklik 03 (TVOŘÍME): Ef 2,10 (B21: „Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.“). Přesunut z pilulky u „Kdo jsme“ (16. 10.).
+
+## Pracovní výroky pod obřími slovy (16.–17. 10.), odložené
+
+- Oslavujeme Boží náturu, tvořivost / a lásku → mezi lidmi na Kravařsku.
+- Přidáváme obě ruce do práce, / kterou naše město dělá skvěle.
+- Tvoříme pastvu pro oči, uši a duši. / Pro lidi, co kostely a církve neřeší.
+- Ať lidé poznají, že Bohu na nich záleží. / Každý den → v práci, ve škole i na kole.
+
+V náhledu je teď místo nich text z webu (17. 10.).

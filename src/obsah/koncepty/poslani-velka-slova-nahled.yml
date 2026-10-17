@@ -1,4 +1,4 @@
-# Náhled (15. 10.): pilíře s obřím slovem (Fandíme / Makáme / Tvoříme / Toužíme) nad výroky. Build nečte.
+# Náhled (17. 10.): pilíře s obřím slovem (Fandíme / Makáme / Tvoříme / Toužíme) nad výroky z webu (sazba jako na webu). Build nečte.
 slajdy:
 - typ: rejstrik
   nazev: Pilíře
@@ -19,8 +19,9 @@ slajdy:
   slovo: Fandíme
   dovetek: oči
   vyrok: |
-    Oslavujeme Boží náturu, tvořivost
-    a lásku -> mezi lidmi na Kravařsku.
+    Oslavujeme Boží náturu,
+    kreativitu a lásku -> mezi
+    lidmi na Kravařsku.
   otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
   otisk: '01'
   detail_odkaz: Fandíme Boží práci kolem nás
@@ -49,8 +50,9 @@ slajdy:
   slovo: Makáme
   dovetek: ruce
   vyrok: |
-    Přidáváme obě ruce do práce,
-    kterou naše město dělá skvěle.
+    Vnímáme, co Bůh kolem
+    dělá. Přidáváme k tomu
+    naše srdce, slova i ruce.
   otazka: Jak se přidáváš k Boží práci ve svém sousedství?
   otisk: '02'
   detail_odkaz: Přidáváme se k lidem, kteří už ji dělají
@@ -75,8 +77,9 @@ slajdy:
   slovo: Tvoříme
   dovetek: hlava
   vyrok: |
-    Tvoříme pastvu pro oči, uši a duši.
-    Pro lidi, co kostely a církve neřeší.
+    Tvoříme pastvu pro oči,
+    uši a duši. Pro publikum,
+    co kostel ani víru neřeší.
   otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
   otisk: '03'
 - typ: fotka
@@ -93,7 +96,8 @@ slajdy:
   slovo: Toužíme
   dovetek: srdce
   vyrok: |
-    Ať lidé poznají, že Bohu na nich záleží.
-    Každý den -> v práci, ve škole i na kole.
+    Aby lidé poznali, že Bohu
+    na nich záleží. Uprostřed
+    komunity, kam patříš i ty.
   otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
   otisk: '04'

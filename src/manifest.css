@@ -281,7 +281,6 @@ body{
 .tel:not(.je):hover,.tel:focus-visible{opacity:1}
 .tel:focus-visible{outline:2px solid currentColor;outline-offset:4px}
 .tela .arrow{font-family:var(--body);font-weight:400;margin:0 .4em;opacity:.55}
-.slovem .statement{font-size:clamp(1.3rem,2.5vw,3rem);line-height:1.25;max-width:32ch}
 @media (max-aspect-ratio:1/1){.velke-slovo{font-size:16vw}}
 .stred .statement{margin:0}
 .vic{
