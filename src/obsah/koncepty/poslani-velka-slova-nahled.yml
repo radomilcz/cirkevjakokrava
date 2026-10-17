@@ -3,9 +3,7 @@ slajdy:
 - typ: rejstrik
   nazev: Pilíře
   nadtitulek: Čtyři pilíře
-  vyrok: |
-    Zdravá kráva
-    chodí po čtyřech.
+  # vyrok na chvíli pryč (17. 10.): „Zdravá kráva / chodí po čtyřech.“
   polozky:
   - cil: '01'
     text: Fandíme Boží práci kolem nás,
