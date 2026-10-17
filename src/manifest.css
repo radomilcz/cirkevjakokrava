@@ -283,10 +283,11 @@ body{
 .tela .arrow{font-family:var(--body);font-weight:400;margin:0 .4em;opacity:.55}
 @media (max-aspect-ratio:1/1){.velke-slovo{font-size:16vw}}
 .stred .statement{margin:0}
-/* pilíř bez výroku: slovo přes celou šířku, pod ním zbytek věty z rozcestníku jako jediný odkaz
-   (FANDÍME / Boží práci kolem nás →); 4,8 em je šířka nejdelšího slova v Narrow Black */
+/* pilíř: slovo přes celou šířku, pod ním krátká pointa a odkaz s větou z rozcestníku do rozkliku;
+   4,8 em je šířka nejdelšího slova v Narrow Black */
 .slovem .velke-slovo{margin:0 0 0 -.04em;font-size:min(calc((100vw - 2*var(--pad) - 14px)/4.8),34vh)}
-.slovem .velke-slovo+.vic{margin-top:clamp(.3rem,1.2vh,1rem);padding:.5em 0;min-height:44px;font-size:clamp(1.15rem,2.6vw,3rem);line-height:1.2}
+.slovem .statement{margin-top:.15em;font-size:clamp(1.6rem,4vw,4.5rem);line-height:1.12}
+.slovem .vic{margin-top:clamp(.6rem,2.4vh,2rem);padding:.5em 0;min-height:44px;font-size:clamp(1rem,1.7vw,2rem);line-height:1.2}
 .vic{
   display:inline-block;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
   border:0;background:none;color:inherit;cursor:pointer;text-align:left;
