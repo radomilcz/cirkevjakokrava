@@ -283,8 +283,10 @@ body{
 .tela .arrow{font-family:var(--body);font-weight:400;margin:0 .4em;opacity:.55}
 @media (max-aspect-ratio:1/1){.velke-slovo{font-size:16vw}}
 .stred .statement{margin:0}
+/* pilíř bez výroku: pod obřím slovem rovnou odkaz s větou z rozcestníku */
+.slovem .velke-slovo+.vic{margin-top:.2em;font-size:clamp(1.4rem,3.2vw,3.5rem);line-height:1.2}
 .vic{
-  display:inline-flex;align-items:baseline;gap:.5em;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
+  display:inline-block;margin-top:clamp(1rem,3vh,2.4rem);padding:.15em 0;
   border:0;background:none;color:inherit;cursor:pointer;text-align:left;
   font-family:var(--body);font-weight:400;font-size:clamp(1rem,1.55vw,1.875rem);line-height:1.25;
 }
@@ -293,9 +295,9 @@ body{
   text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.3em;
   text-decoration-color:color-mix(in srgb,currentColor 40%,transparent);transition:text-decoration-color .35s;
 }
-.vic .sipka{flex:none;transition:transform .5s var(--ease)}
+.vic .sipka{position:relative;left:0;margin-left:.2em;transition:left .5s var(--ease)}
 .vic:hover .vic-t,.vic:focus-visible .vic-t{text-decoration-color:currentColor}
-.vic:hover .sipka,.vic:focus-visible .sipka{transform:translateX(.3em)}
+.vic:hover .sipka,.vic:focus-visible .sipka{left:.3em}
 .vic:focus-visible{outline:2px solid currentColor;outline-offset:6px}
 .detail{
   position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;

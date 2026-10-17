@@ -117,9 +117,11 @@
 {%- if x.get('slovo') %}
       <p class="velke-slovo"><span class="ln"><span>{{ x.slovo }}</span></span></p>
 {%- endif %}
+{%- if x.get('vyrok') %}
     {{ vyrok(x.vyrok) }}
+{%- endif %}
 {%- if x.get('detail') %}
-      <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span><span class="sipka" aria-hidden="true">→</span></button>
+      <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span>&nbsp;<span class="sipka" aria-hidden="true">→</span></button>
 {%- endif %}
     </div>
 {%- else %}
@@ -144,7 +146,7 @@
       <p class="popis">{{ x.text|txt }}</p>
 {%- endif %}
 {%- if x.get('detail') and not x.get('podnadpis') %}
-      <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span><span class="sipka" aria-hidden="true">→</span></button>
+      <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span>&nbsp;<span class="sipka" aria-hidden="true">→</span></button>
 {%- endif %}
     </div>
     {{ pata(x.get('otazka')) }}

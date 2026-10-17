@@ -63,7 +63,7 @@ components:
           - {name: nadtitulek, component: nadtitulek}
           - {name: slovo, type: string, label: Obří slovo nad výrokem (pilíře)}
           - {name: dovetek, type: string, label: Dovětek vedle čísla nahoře (pilíře)}
-          - {name: vyrok, component: vyrok}
+          - {name: vyrok, type: text, label: 'Výrok (u pilíře s obřím slovem nepovinný)'}
           - {name: otazka, component: otazka}
           - {name: podpis, component: podpis}
           - {name: otisk, component: otisk}

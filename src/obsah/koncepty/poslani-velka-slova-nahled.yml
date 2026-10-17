@@ -1,4 +1,4 @@
-# Náhled (17. 10.): pilíře s obřím slovem (Fandíme / Makáme / Tvoříme / Toužíme) nad výroky z webu (sazba jako na webu). Build nečte.
+# Náhled (17. 10.): pilíře s obřím slovem (Fandíme / Makáme / Tvoříme / Toužíme) bez výroku, pod slovem rovnou odkaz s větou z rozcestníku. Build nečte.
 slajdy:
 - typ: rejstrik
   nazev: Pilíře
@@ -18,10 +18,10 @@ slajdy:
   nadtitulek: '01'
   slovo: Fandíme
   dovetek: oči
-  vyrok: |
-    Oslavujeme Boží náturu,
-    kreativitu a lásku -> mezi
-    lidmi na Kravařsku.
+  # výrok z webu schovaný (17. 10.):
+  #  Oslavujeme Boží náturu,
+  #  kreativitu a lásku -> mezi
+  #  lidmi na Kravařsku.
   otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
   otisk: '01'
   detail_odkaz: Fandíme Boží práci kolem nás
@@ -49,13 +49,13 @@ slajdy:
   nadtitulek: '02'
   slovo: Makáme
   dovetek: ruce
-  vyrok: |
-    Vnímáme, co Bůh kolem
-    dělá. Přidáváme k tomu
-    naše srdce, slova i ruce.
+  # výrok z webu schovaný (17. 10.):
+  #  Vnímáme, co Bůh kolem
+  #  dělá. Přidáváme k tomu
+  #  naše srdce, slova i ruce.
   otazka: Jak se přidáváš k Boží práci ve svém sousedství?
   otisk: '02'
-  detail_odkaz: Přidáváme se k lidem, kteří už ji dělají
+  detail_odkaz: Přidáváme se k lidem, co už ji dělají
   detail: |
     # Bůh nesedí v kostele.
     Maká v Novém Jičíně.
@@ -76,12 +76,16 @@ slajdy:
   nadtitulek: '03'
   slovo: Tvoříme
   dovetek: hlava
-  vyrok: |
-    Tvoříme pastvu pro oči,
-    uši a duši. Pro publikum,
-    co kostel ani víru neřeší.
+  # výrok z webu schovaný (17. 10.):
+  #  Tvoříme pastvu pro oči,
+  #  uši a duši. Pro publikum,
+  #  co kostel ani víru neřeší.
   otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
   otisk: '03'
+  detail_odkaz: Tvoříme pastvu pro ty, kteří církev neřeší
+  detail: |
+    > „Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.“
+    > [Efezským 2,10](https://bible.com/bible/15/EPH.2.10.B21)
 - typ: fotka
   nazev: Kráva – má Boží design
   nadtitulek: pastva
@@ -95,9 +99,13 @@ slajdy:
   nadtitulek: '04'
   slovo: Toužíme
   dovetek: srdce
-  vyrok: |
-    Aby lidé poznali, že Bohu
-    na nich záleží. Uprostřed
-    komunity, kam patříš i ty.
+  # výrok z webu schovaný (17. 10.):
+  #  Aby lidé poznali, že Bohu
+  #  na nich záleží. Uprostřed
+  #  komunity, kam patříš i ty.
   otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
   otisk: '04'
+  detail_odkaz: Ať na vlastní kůži poznají, že Bohu na nich záleží
+  detail: |
+    > „Všechnu svou starost uvrhněte na něj, vždyť jemu na vás záleží.“
+    > [1. Petrova 5,7](https://bible.com/bible/15/1PE.5.7.B21)
