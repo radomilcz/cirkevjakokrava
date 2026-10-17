@@ -17,7 +17,7 @@ slajdy:
   nazev: 01 Fandíme
   nadtitulek: '01'
   slovo: Fandíme
-  dovetek: oči
+  # dovetek: oči  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
   # výrok z webu schovaný (17. 10.):
   #  Oslavujeme Boží náturu,
   #  kreativitu a lásku -> mezi
@@ -48,7 +48,7 @@ slajdy:
   nazev: 02 Makáme
   nadtitulek: '02'
   slovo: Makáme
-  dovetek: ruce
+  # dovetek: ruce  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
   # výrok z webu schovaný (17. 10.):
   #  Vnímáme, co Bůh kolem
   #  dělá. Přidáváme k tomu
@@ -75,7 +75,7 @@ slajdy:
   nazev: 03 Tvoříme
   nadtitulek: '03'
   slovo: Tvoříme
-  dovetek: hlava
+  # dovetek: hlava  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
   # výrok z webu schovaný (17. 10.):
   #  Tvoříme pastvu pro oči,
   #  uši a duši. Pro publikum,
@@ -98,7 +98,7 @@ slajdy:
   nazev: 04 Toužíme
   nadtitulek: '04'
   slovo: Toužíme
-  dovetek: srdce
+  # dovetek: srdce  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
   # výrok z webu schovaný (17. 10.):
   #  Aby lidé poznali, že Bohu
   #  na nich záleží. Uprostřed
