@@ -20,9 +20,9 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 ## 02 · Jak to děláme? → Přidáváme
 - **Jádro:** Bůh ve městě pracoval dřív než my. Lidi a jejich práce mají cenu, protože v ní vidíme Boží věci, a tak k ní přidáváme to svoje.
 - Pokora: nepřicházíme s hotovým plánem, učíme se od toho, co město a jeho lidi umí skvěle.
-- Obyčejná práce (elektrikář, učitelka, sestra) není jen práce na chleba. Bůh v ní je, když ji děláš jako povolání. (Radomil 9. 10.)
+- Obyčejná práce (elektrikář, učitelka, sestra) není jen práce na chleba. Bůh je v každé dobré práci, povolání je to, že o tom víš. (Radomil potvrdil 19. 10.; původně 9. 10.: „Bůh v ní je, když ji děláš jako povolání.“)
 - Z toho plyne: i moje práce v zaměstnání je přidávání. Vede ji někdo jiný (firma, škola, nemocnice) a já do ní dávám srdce, slova i ruce. Hranice s 03 platí dál.
-- Otevřené: podmínka „když“ (Bůh je v práci, jen když ji dělám jako povolání?) vs. 01 (Boží rukopis vidíme i u lidí, kteří o něm nevědí).
+- Vyřešeno 19. 10.: podmínka „když“ padla. Bůh je v každé dobré práci (Jk 1,17), povolání je to, že o tom víš. Sedí to s 01 (Boží rukopis vidíme i u lidí, kteří o něm nevědí).
 - Přidáváme srdce, slova i ruce jako hosté: jejich dílo, jejich pravidla, jejich tempo.
 - Dobro města je i naše dobro.
 - **Přidat se znamená i nechat se obdarovat** (Gemini 14. 10.). Nejsme ti chytří shůry, co přišli pomáhat. Umíme si nechat poradit od starého mistra, dát si u souseda kafe, přijmout pomoc s autem a být vděční hosté. Ze vzájemnosti je opravdové sousedství.
