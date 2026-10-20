@@ -1,18 +1,6 @@
 # Náhled (17. 10.): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
 slajdy:
-- typ: rejstrik
-  nazev: Pilíře
-  nadtitulek: Čtyři pilíře
-  # vyrok na chvíli pryč (17. 10.): „Zdravá kráva / chodí po čtyřech.“
-  polozky:
-  - cil: '01'
-    text: Fandíme Boží práci kolem nás,
-  - cil: '02'
-    text: přidáváme se k lidem, co už ji dělají,
-  - cil: '03'
-    text: tvoříme pastvu pro ty, kteří církev neřeší,
-  - cil: '04'
-    text: ať na vlastní kůži poznají, že Bohu na nich záleží.
+# rozcestník pilířů pryč (20. 10.), pilíře jdou rovnou za sebou se zbytkem Poslání
 - typ: vyrok
   nazev: 01 Fandíme
   nadtitulek: '01'
