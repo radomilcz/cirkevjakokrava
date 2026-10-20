@@ -17,7 +17,7 @@ slajdy:
   nazev: 01 Fandíme
   nadtitulek: '01'
   slovo: Fandíme
-  # dovetek: oči  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
+  dovetek: oči
   # výrok z webu schovaný (17. 10.):
   #  Oslavujeme Boží náturu,
   #  kreativitu a lásku -> mezi
@@ -25,7 +25,14 @@ slajdy:
   otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
   otisk: '01'
   vyrok: |
-    Tráva roste dřív, než kráva
+    Ceníme práci, péči a lásku
+    mezi lidmi na Kravařsku.
+    Když soused dělá něco skvěle,
+    vidíme v tom Stvořitele.
+  verse:
+  - odkaz: Jakub 1,17
+    text: Všechno dobré a dokonalé je dar shůry od Otce světel, u něhož není žádná změna, žádný proměnlivý stín.
+    url: https://www.bible.com/bible/15/JAS.1.17.B21
   detail_odkaz: Fandíme Boží práci kolem nás
   detail: |
     # Bůh tvoří, my fandíme.
@@ -50,7 +57,7 @@ slajdy:
   nazev: 02 Makáme
   nadtitulek: '02'
   slovo: Makáme
-  # dovetek: ruce  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
+  dovetek: ruce
   # výrok z webu schovaný (17. 10.):
   #  Vnímáme, co Bůh kolem
   #  dělá. Přidáváme k tomu
@@ -77,7 +84,7 @@ slajdy:
   nazev: 03 Tvoříme
   nadtitulek: '03'
   slovo: Tvoříme
-  # dovetek: hlava  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
+  dovetek: hlava
   # výrok z webu schovaný (17. 10.):
   #  Tvoříme pastvu pro oči,
   #  uši a duši. Pro publikum,
@@ -102,7 +109,7 @@ slajdy:
   nazev: 04 Toužíme
   nadtitulek: '04'
   slovo: Toužíme
-  # dovetek: srdce  (navigace oči → ruce → hlava → srdce pryč, 17. 10.)
+  dovetek: srdce
   # výrok z webu schovaný (17. 10.):
   #  Aby lidé poznali, že Bohu
   #  na nich záleží. Uprostřed

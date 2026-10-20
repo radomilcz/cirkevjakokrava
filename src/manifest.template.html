@@ -123,6 +123,9 @@
 {%- if x.get('detail') %}
       <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span>&nbsp;<span class="sipka" aria-hidden="true">→</span></button>
 {%- endif %}
+{%- if x.get('verse') %}
+    {{ verse_blok(x.verse, x.id) }}
+{%- endif %}
     </div>
 {%- else %}
     {{ vyrok(x.vyrok) }}
