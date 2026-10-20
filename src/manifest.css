@@ -287,9 +287,14 @@ body{
    4,8 em je šířka nejdelšího slova v Narrow Black */
 .slovem .velke-slovo{margin:0 0 0 -.04em;font-size:min(calc((100vw - 2*var(--pad) - 14px)/4.8),34vh)}
 .slovem .statement{margin-top:.15em;font-size:clamp(1.6rem,4vw,4.5rem);line-height:1.12}
-/* se čtyřřádkovým výrokem a veršem by se slovo nevešlo na výšku */
-.slovem .stred:has(.statement) .velke-slovo{font-size:min(calc((100vw - 2*var(--pad) - 14px)/4.8),24vh)}
-.slovem .stred:has(.verse-blok) .statement{font-size:clamp(1.5rem,3.4vw,4rem)}
+/* pilíř s výrokem (sazba podle Radomilova návrhu): slovo menší, blok odsazený, výrok plynulý odstavec */
+.slovem .stred:has(.statement){margin-left:min(8vw,160px)}
+.slovem .stred:has(.statement) .velke-slovo{font-size:clamp(2.8rem,5.4vw,7.5rem);margin:0 0 .3em}
+.slovem .stred:has(.statement) .statement{font-size:clamp(1.25rem,2.35vw,3rem);line-height:1.3;max-width:21em}
+@media (max-aspect-ratio:1/1){
+  .slovem .stred:has(.statement){margin-left:0}
+  .slovem .stred:has(.statement) .velke-slovo{font-size:13vw}
+}
 .stred .verse-blok{margin:clamp(.8rem,2.4vh,1.8rem) 0 0}
 .slovem .vic{margin-top:clamp(.6rem,2.4vh,2rem);padding:.5em 0;min-height:44px;font-size:clamp(1rem,1.7vw,2rem);line-height:1.2}
 .vic{
