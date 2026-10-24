@@ -704,9 +704,8 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
   3. „Barvy“ + the three bullseyes (the menu stays open);
   4. **Zdroje** (phone only, leaders): Šablony · Formáty · Místa;
   5. **Správa** (leaders): Přístupy (pill „1 čeká“) · Nastavení sboru;
-  6. „Veřejný web“ › „Pastva na cirkevjakokrava.cz“ (the website's Pastva);
-  7. **Ukázka** (demo only): „Podívej se očima druhých“ · „Začni ukázku znovu“ · „Začni načisto“;
-  8. „Odhlas se“ in `--no-ink`.
+  6. **Ukázka** (demo only): „Podívej se očima druhých“ · „Začni ukázku znovu“ · „Začni načisto“;
+  7. „Odhlas se“ in `--no-ink`.
 - On a phone, screens opened from the person menu get a top bar „‹ Zpět“ (history back, else `#moje`); Skupiny
   gets „‹ Lidé“.
 
@@ -1277,16 +1276,10 @@ data repo's `web.yml`:
 - `check.yml` runs `zvonec/check.mjs data` on every `data/**` push and weekly. It exits 1 when an event that has not
   ended has an `error` conflict (GitHub then e-mails the repo owner). `validateData` problems are warnings.
 
-### 10.3 Pastva – on the church's website
-- Pastva is a page of the website (repo `radomilcz/web`, `pastva/index.html` + `assets/pastva.js`), at
-  `https://cirkevjakokrava.cz/pastva/` (`PASTVA_URL` in `lib/public.js`). It reads `public.json` from Zvonec's site
-  (CORS `*`) and draws: h1 „pastva“, „Podojte život. Paste svoje duše.“; **nenech si ujít** (every `featured`
-  meeting); **co chystáme** (one-off meetings: date, title, time · place, description, → Přidej si do kalendáře
-  (.ics), → Otevři v mapě, photo 3 : 2); **pravidelně** (one row per series: rhythm, „Příště …“, „Nescházíme se …“);
-  then the website's footer. Only meetings that have not ended.
-- Zvonec has no public screen of its own any more: `#pastva`, `#program` and `#jak-se-schazime` go to `PASTVA_URL`
-  (old links and bookmarks); the person's menu „Veřejný web“ and the sign-in page link there. Signed out, the home
-  section is Přihlášení.
+### 10.3 No public page for now
+- Zvonec has no public screen. `public.json` is still built (the data repo's `web.yml`) for a future public page; the
+  owner decides when and where it goes on the website. Old `#pastva`, `#program` and `#jak-se-schazime` links are
+  unknown routes and land on the home section (Moje, or Přihlášení when signed out).
 - The demo's pictures are CC0 photos shipped in `docs/zvonec/demo/` (`demo-*.webp`, StockSnap, and the church's own
   highland-cow photo); the demo store serves them when a `demo-*.webp` name has no stored file.
 

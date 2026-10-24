@@ -7,7 +7,6 @@
 //   #pozvanka/<kód>        check the invite, the newcomer fills in a name and a password and gives consent; the invite
 //                          is replaced by a member login. Expired or unknown: one sentence and a way on.
 
-import { PASTVA_URL } from '../lib/public.js';
 import { S, newId, render, signedIn, rememberLogin, ACCESS_LABELS } from './state.js';
 import {
   signIn, createLogin, foldName, isExpired, INVITE_NAME, ACCESS_FILE, ACCESS_VERSION, emptyAccess,
@@ -30,7 +29,7 @@ const DATA_PATH = 'data';
 
 // ---------- the frame ----------
 
-/** The signed-out page: the wordmark, the h1, an optional sentence, the body, the way to Pastva. */
+/** The signed-out page: the wordmark (a link to the church's website), the h1, an optional sentence, the body, the foot. */
 function gate({ title, sentence, body, foot }) {
   return h('main', { class: ['screen', 'gate'], id: 'main', tabIndex: -1 },
     h('div', { class: 'gate__box' },
@@ -39,8 +38,7 @@ function gate({ title, sentence, body, foot }) {
       sentence ? h('p', { class: 'gate__sentence' }, sentence) : null,
       body,
       h('div', { class: 'gate__foot' },
-        nodes(foot),
-        link('Podívej se na Pastvu', { href: PASTVA_URL, iconEnd: 'chevron-right', cls: 'gate__pastva' }))));
+        nodes(foot))));
 }
 
 /** The form-wide error: a callout above the main button, hidden until there is something to say. */
