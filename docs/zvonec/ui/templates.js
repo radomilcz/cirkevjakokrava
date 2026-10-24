@@ -206,7 +206,7 @@ function needsBody(type) {
 /** Osnova: the points with their start times, and how the minutes fit the meeting. */
 function outlineBody(type) {
   const program = type.program || [];
-  if (!program.length) return quiet('Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.');
+  if (!program.length) return quiet('Osnova je zatím prázdná. Přidej do ní body programu, třeba chvály nebo kázání. Časy se dopočítají samy.');
   let cursor = 0;
   const rows = program.map((item) => {
     const format = formatById(S.data, item.formatId);
@@ -432,7 +432,7 @@ export function basicsSheet(type) {
         onChange: (k) => { v.kind = k; },
       }),
       chipsField({
-        name: 'weekday', label: 'Den', hint: 'Kdy setkání obvykle bývá. Kalendář ho předvyplní.',
+        name: 'weekday', label: 'Den', hint: 'Den, kdy setkání obvykle bývá. Zvonec ho předvyplní u nového setkání.',
         value: Number.isInteger(v.weekday) ? String(v.weekday) : '',
         options: [{ value: '', label: 'Kdykoli' }, ...DAY_SHORT.map((label, i) => ({ value: String(i), label }))],
         onChange: (x) => { v.weekday = x === '' ? undefined : Number(x); },
@@ -508,7 +508,7 @@ function needsSheet(type) {
           const own = needs.find((n) => n.roleId === role.id)?.count || 0;
           const extra = brought.get(role.id);
           return h('div', { class: 'tpl-need' },
-            h('span', { class: 'tpl-need__name' }, role.name, extra ? h('span', { class: 'caption' }, `navíc z osnovy: ${extra.count}`) : null),
+            h('span', { class: 'tpl-need__name' }, role.name, extra ? h('span', { class: 'caption' }, `Navíc ještě ${extra.count} pro body v osnově.`) : null),
             stepper({ value: own, min: 0, max: 20, label: role.name, onChange: (n) => setCount(role.id, n) }));
         }))),
     ] : [quiet('Zatím tu nejsou týmy s rolemi. Přidáš je v Lidech › Skupiny.')],
@@ -565,7 +565,7 @@ function outlineSheet(type) {
     });
     holder.replaceChildren(...[
       program.length ? outlineSum(cursor, Number(type.minutes) || 0) : null,
-      program.length ? listEl(rows) : quiet('Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.'),
+      program.length ? listEl(rows) : quiet('Osnova je zatím prázdná. Přidej do ní body programu, třeba chvály nebo kázání. Časy se dopočítají samy.'),
       h('div', { class: 'tpl-outline__foot' },
         button('Přidat bod', { variant: 'tint', size: 's', icon: 'plus', onclick: () => addItemSheet(program, draw) })),
     ].filter(Boolean));
@@ -594,7 +594,7 @@ function addItemSheet(program, redraw) {
   sheet = layer.open({
     kind: 'sheet', size: 'm',
     title: 'Nový bod osnovy',
-    subtitle: 'Přidá se na konec. Pak ho posuneš, kam patří.',
+    subtitle: 'Bod se přidá na konec osnovy. Pak ho posuň, kam patří.',
     body: formats.length
       ? list(formats.map((f) => row({
         lead: minutesMark(f.minutes ?? 10),
@@ -662,7 +662,7 @@ function webSheet(type) {
       button(has() ? 'Vybrat jiný obrázek' : 'Nahrát obrázek', { variant: 'quiet', size: 's', icon: 'image', onclick: () => file.click() }),
       has() ? button('Odebrat obrázek', { variant: 'quiet', size: 's', onclick: () => { img.pending = null; img.removed = true; draw(); } }) : null,
     ].filter(Boolean));
-    message.textContent = has() ? 'Zvonec z obrázku vyřízne prostředek na šířku (16 : 9), stejně ho uvidí i web.' : 'Bez obrázku ukáže web jen název, den a místo.';
+    message.textContent = has() ? 'Zvonec z obrázku použije široký pruh ze středu. Stejně ho uvidí i návštěvníci webu.' : 'Bez obrázku ukáže web jen název, den a místo.';
     if (img.pending) { preview.replaceChildren(h('img', { src: img.pending.dataUrl, alt: '' })); preview.hidden = false; return; }
     preview.replaceChildren();
     preview.hidden = true;

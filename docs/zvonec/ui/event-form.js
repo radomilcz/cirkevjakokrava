@@ -101,7 +101,7 @@ function imageField(state, previewEvent) {
     preview.replaceChildren(state.pending ? cover(ev, { url: state.pending.data, cls: 'ev-band' }) : cover({ ...ev, image: state.current || state.typeImage || undefined, typeId: undefined }, { cls: 'ev-band' }));
     pick.lastChild.textContent = state.pending || state.current || state.typeImage ? 'Vyměnit obrázek' : 'Nahrát obrázek';
     remove.hidden = !(state.pending || own);
-    hint.textContent = state.pending || own ? 'Zvonec z obrázku vyřízne prostředek na šířku (16 : 9). Uloží se spolu se setkáním.' : state.typeImage ? 'Obrázek je ze šablony.' : 'Bez obrázku Zvonec nakreslí obálku v barvách sboru.';
+    hint.textContent = state.pending || own ? 'Zvonec z obrázku použije široký pruh ze středu. Obrázek se uloží, až uložíš setkání.' : state.typeImage ? 'Obrázek je ze šablony.' : 'Bez obrázku Zvonec nakreslí obálku v barvách sboru.';
   }
   input.addEventListener('change', async () => {
     const file = input.files?.[0];
@@ -207,12 +207,12 @@ function fieldsFor(base, { adding, image, moreOpen }) {
   ];
   const more = [
     chipsField({ name: 'kind', label: 'Druh setkání', options: KIND_OPTIONS, value: base.kind || 'event' }),
-    field({ label: 'Pro koho', hint: 'Čí je to setkání – třeba zkouška chval nebo skupinka.', control: selectInput({ name: 'groupId', options: groupOptions(), value: base.groupId || '' }) }),
+    field({ label: 'Pro koho', hint: 'Vyber tým nebo skupinku, které setkání patří, třeba tým chval u zkoušky.', control: selectInput({ name: 'groupId', options: groupOptions(), value: base.groupId || '' }) }),
     adding ? field({ label: 'Popis pro web', optional: true, control: textArea({ name: 'description', value: base.description || '', rows: 3, placeholder: 'např. co lidi čeká, co si vzít s sebou' }) }) : null,
     image?.element,
-    switchRow({ name: 'public', label: 'Zobrazit na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: base.public === true }),
-    switchRow({ name: 'featured', label: 'Zvýraznit na webu', hint: 'Na webu bude nahoře, mezi ostatními setkáními ho nikdo nepřehlédne. Jen když je na webu.', checked: base.featured === true }),
-    field({ label: 'Pro tým', optional: true, hint: 'Tuhle poznámku na webu nikdo neuvidí.', control: textArea({ name: 'note', value: base.note || '', rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }) }),
+    switchRow({ name: 'public', label: 'Zobrazit na webu', hint: 'Název, čas, místo, popis a obrázek uvidí na webu sboru kdokoli. Jména lidí ve službě ne.', checked: base.public === true }),
+    switchRow({ name: 'featured', label: 'Zvýraznit na webu', hint: 'Setkání bude na webu nahoře, aby ho nikdo nepřehlédl. Funguje jen se zapnutým „Zobrazit na webu“.', checked: base.featured === true }),
+    field({ label: 'Pro tým', optional: true, hint: 'Poznámku uvidí jen lidé ve Zvonci, na web se nedostane.', control: textArea({ name: 'note', value: base.note || '', rows: 2, placeholder: 'např. sraz v 9.30, klíče jsou u správce' }) }),
   ];
   return {
     nodes: [...visible, disclosure(more, { open: moreOpen })],

@@ -209,7 +209,7 @@ export function placeSheet(place, { partOf: presetPartOf = '' } = {}) {
       options: [{ value: '', label: 'Ne, samostatné místo' }, ...buildings.map((b) => ({ value: b.id, label: `Ano, v budově ${b.name}` }))],
       onChange: (v) => { partOf = v; sync(); },
     }),
-    hint: ownRooms.length ? `Má ${roomsWord(ownRooms.length)}, takže samo zůstane budovou.` : null,
+    hint: ownRooms.length ? `Tohle místo má ${roomsWord(ownRooms.length)}, proto zůstane budovou a do jiné budovy patřit nemůže.` : null,
   }) : null;
   if (ownRooms.length) partOfField?.querySelector('select')?.setAttribute('disabled', '');
   sync();

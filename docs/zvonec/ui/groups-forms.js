@@ -216,7 +216,7 @@ export function memberSheet(group, personId, { fresh = false } = {}) {
     title: personName(person),
     submitLabel: 'Uložit',
     body: [
-      fresh && group.kind === 'team' ? h('p', { class: 'meta' }, `Je ${words.in} ${group.name}. Co tu umí?`) : null,
+      fresh && group.kind === 'team' ? h('p', { class: 'meta' }, `Je ${words.in} ${group.name}. Vyber, co v týmu umí.`) : null,
       skillRows,
       group.kind === 'team' && !roles.length ? callout({ tone: 'info', text: 'Tým zatím nemá žádnou roli. Přidáš ji na stránce týmu.' }) : null,
       switchRow({ label: words.leadSwitch, name: 'leader', checked: !!member.leader }),
@@ -289,8 +289,8 @@ export function roleSheet(group, role = null) {
     .flatMap((g) => rolesOf(S.data, g.id).filter((r) => r.id !== role?.id).map((r) => ({ value: r.id, label: g.id === group.id ? r.name : `${r.name} (${g.name})` })));
   const w = role?.window || null;
   const windowBox = h('div', { class: 'form__row' },
-    field({ label: 'Od', hint: 'V minutách od začátku setkání, −15 znamená čtvrt hodiny předem.', control: stepper({ name: 'startMin', value: w?.startMin ?? 0, min: -60, max: 240, step: 5, label: 'Od minuty' }) }),
-    field({ label: 'Do', hint: '0 znamená až do konce.', control: stepper({ name: 'endMin', value: w?.endMin ?? 0, min: 0, max: 300, step: 5, label: 'Do minuty' }) }));
+    field({ label: 'Od', hint: 'Kolik minut po začátku setkání služba začíná. −15 znamená čtvrt hodiny před začátkem.', control: stepper({ name: 'startMin', value: w?.startMin ?? 0, min: -60, max: 240, step: 5, label: 'Od minuty' }) }),
+    field({ label: 'Do', hint: 'Kolik minut po začátku setkání služba končí. 0 znamená až do konce setkání.', control: stepper({ name: 'endMin', value: w?.endMin ?? 0, min: 0, max: 300, step: 5, label: 'Do minuty' }) }));
   windowBox.hidden = !w;
   const anyMore = !!(role && (role.adultsOnly || role.childcare || role.window || partners.length));
   const sheet = formSheet({
@@ -300,7 +300,7 @@ export function roleSheet(group, role = null) {
     body: [
       field({ label: 'Název', control: textInput({ name: 'name', value: role?.name || '', autocomplete: 'off', placeholder: 'např. Kamera' }) }),
       field({ label: 'Kolik lidí', hint: 'Na jedno setkání.', control: stepper({ name: 'count', value: role?.count || 1, min: 1, max: 10, label: 'Kolik lidí' }) }),
-      switchRow({ label: 'Nezbytná role', hint: 'Prázdná role týden před setkáním je chyba.', name: 'essential', checked: !!role?.essential }),
+      switchRow({ label: 'Nezbytná role', hint: 'Když tuhle roli týden před setkáním nikdo nemá, Zvonec to ohlásí jako problém.', name: 'essential', checked: !!role?.essential }),
       disclosure([
         switchRow({ label: 'Jen pro dospělé', name: 'adultsOnly', checked: !!role?.adultsOnly }),
         switchRow({ label: 'Stará se o děti', hint: 'Kdo má tuhle roli, je během setkání s dětmi. Zvonec hlídá, aby u nich byli aspoň dva dospělí.', name: 'childcare', checked: !!role?.childcare }),

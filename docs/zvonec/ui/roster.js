@@ -280,7 +280,7 @@ function openPrint(month) {
     title: 'Tisk rozpisu', size: 's', submitLabel: 'Vytisknout',
     body: [
       field({ label: 'Měsíc', control: selectInput({ name: 'month', value: month, options: options.map((m) => ({ value: m, label: monthLabel(m) })) }) }),
-      h('p', { class: 'meta' }, 'Zvonec vytiskne tabulku na šířku A4: kdo kdy slouží. Platí pro ni i Filtr.'),
+      h('p', { class: 'meta' }, 'Zvonec vytiskne na šířku A4 tabulku, kdo kdy slouží. Když máš zapnutý Filtr, vytiskne jen to, co Filtr ukazuje.'),
     ],
     onSubmit: (form) => { const m = form.elements.month.value; setTimeout(() => printRoster(m), 50); },
   });

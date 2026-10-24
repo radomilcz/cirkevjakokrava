@@ -201,7 +201,7 @@ export function assignSheet(gift) {
     subtitle: [money(gift.amount), dayWithYear(gift.date), senderName(gift)].filter(Boolean).join(' · '),
     body: list([
       subhead('Od koho', { tag: 'h3' }),
-      row({ lead: placeMark('people'), title: 'Člen sboru', meta: 'Najdi ho podle jména. Když ještě nemá variabilní symbol, dostane ho.', onclick: close(pickPerson), chevron: true }),
+      row({ lead: placeMark('people'), title: 'Člen sboru', meta: 'Vyber člověka z Lidí. Kdo ještě nemá variabilní symbol, dostane ho.', onclick: close(pickPerson), chevron: true }),
       can('leader') && senderName(gift) ? row({ lead: placeMark('plus'), title: 'Nový člověk v Lidech', meta: 'Ještě v Lidech není? Založ kartu se jménem z platby.', onclick: close(() => newPersonSheet(gift)), chevron: true }) : null,
       ...donors.map((d) => row({ lead: avatar({ id: `d:${d.id}`, firstName: d.name }), title: d.name, meta: `mimo sbor · VS\u00a0${d.vs}`, onclick: close(() => assign(gift, { donorId: d.id }, `dar od ${d.name}`)) })),
       row({ lead: placeMark('plus'), title: 'Nový dárce mimo sbor', meta: 'Přítel sboru, firma…', onclick: close(() => donorSheet(null, { onSaved: (id) => assign(gift, { donorId: id }, 'dar od nového dárce') })), chevron: true }),
@@ -268,7 +268,7 @@ export function giftSheet(gift, { forKey } = {}) {
       editingBank ? meta('Platba je z výpisu z banky, datum a částku tu změnit nejde.') : meta('Dar v hotovosti nebo platba, která zatím není ve výpisu z banky.'),
       editingBank ? null : field({ label: 'Datum', control: date }),
       editingBank ? null : field({ label: 'Částka v Kč', control: amount }),
-      fund ? field({ label: 'Sbírka', control: fund, hint: 'U daru do sbírky zapíše Zvonec jako účel její název.' }) : null,
+      fund ? field({ label: 'Sbírka', control: fund, hint: 'Když vybereš sbírku, Zvonec jako účel zapíše její název.' }) : null,
       field({ label: 'Účel', control: purpose, hint: 'Když nevíš, nech „Provoz“.' }),
       field({ label: 'Poznámka', control: note, optional: true }),
     ],
@@ -429,7 +429,7 @@ function setupPage() {
       callout({
         tone: 'info',
         title: 'Dary se ukládají zvlášť.',
-        text: 'Do soukromého repozitáře, ke kterému mají klíč jen správci a pokladník. Vlož ten klíč a Dary se otevřou.',
+        text: 'Kvůli soukromí leží odděleně od ostatních dat sboru a otevře je jen klíč k darům. Mají ho jen správci a pokladník. Vlož ho a Dary se otevřou.',
         actions: [button('Vložit klíč k darům', { variant: 'primary', icon: 'key', onclick: financeKeySheet })],
       }),
     ],
@@ -464,12 +464,12 @@ function bankLine() {
     return callout({
       tone: 'no',
       title: `Zvonec od ${dayWithYear(b.failedSince || b.checked)} nestahuje platby z banky.`,
-      text: `${bankWords(b.error)} Nic se neztratí – až bude klíč od banky zase platit, Zvonec stáhne i chybějící dny. Nový klíč z Internet Banky ulož na GitHubu v repozitáři darů: Settings › Secrets › MONETA_TOKEN.`,
+      text: `${bankWords(b.error)} Nic se neztratí – až bude klíč od banky zase platit, Zvonec stáhne i chybějící dny. Nový klíč vytvoř v Internet Bance a ulož ho na GitHubu v repozitáři darů do Settings › Secrets › MONETA_TOKEN. Když si nevíš rady, řekni správci.`,
     });
   }
   const late = b.checked && daysBetween(b.checked, today()) > BANK_STALE_DAYS;
   return late
-    ? callout({ tone: 'wait', title: `Platby z banky naposledy ${dayWithYear(b.checked)}.`, text: 'Denní stahování se pár dní nespustilo. Podívej se na GitHubu do repozitáře darů na záložku Actions.' })
+    ? callout({ tone: 'wait', title: `Platby z banky naposledy ${dayWithYear(b.checked)}.`, text: 'Zvonec už pár dní nestáhl platby z banky. Co se stalo, najdeš na GitHubu v repozitáři darů na záložce Actions. Když si nevíš rady, řekni správci.' })
     : meta(`Platby z banky stažené ${dayWithYear(b.checked)}.`);
 }
 
@@ -544,7 +544,7 @@ function overview(year) {
   const split = isSplit();
   const unassigned = open.length ? section({
     id: 'dary-neprirazene', title: 'Nepřiřazené', count: open.length,
-    body: [byMonth(open, openRow), meta('Vyber platbu a přiřaď ji. Další platby ze stejného účtu už Zvonec pozná sám.')],
+    body: [byMonth(open, openRow), meta('Vyber platbu a urči, od koho je. Další platby z téhož účtu už Zvonec přiřadí sám.')],
   }) : null;
   const donorList = section({
     title: `Dárci za rok ${year}`, count: donors.length || null,

@@ -151,7 +151,7 @@ function skillChip(group, role, p, level) {
   const name = fullName(p);
   const chip = h('button', {
     type: 'button', class: 'skill-chip', dataset: { level }, title: name, 'aria-haspopup': 'menu',
-    'aria-label': `${name}, ${role.name}: ${SKILL_WORDS[level]}. Změň.`,
+    'aria-label': `${name}, ${role.name}: ${SKILL_WORDS[level]} – změnit`,
   }, avatar(p, { size: 'xs', me: p.id === myId() }), h('span', { class: 'skill-chip__name' }, shortName(p)),
   level === 'learning' ? h('span', { class: 'skill-chip__level' }, '· učí se') : null);
   const set = (next) => () => { setSkill(S.data, p.id, role.id, next || null); change(`${displayName(p)} ${role.name}: ${SKILL_WORDS[next]}`); };

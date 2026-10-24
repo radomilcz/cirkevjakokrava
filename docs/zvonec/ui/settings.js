@@ -27,9 +27,9 @@ const RULES = [
     ],
   },
   {
-    id: 'alerts', title: 'Upozornění', hint: 'Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.',
+    id: 'alerts', title: 'Upozornění', hint: 'Kolik dní před setkáním začne Zvonec hlásit, co v rozpisu chybí. Vzdálenější setkání zatím nehlídá.',
     rules: [
-      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Tolik dní předem Zvonec hlásí chybu, dvakrát tolik dní předem jen upozorní.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
+      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Třeba při 7 dnech Zvonec dva týdny před setkáním upozorní a týden předem to ohlásí jako problém.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
       { key: 'openDaysBefore', where: 'rules', label: 'Ostatní prázdná místa', hint: 'Upozornění, že ještě někdo chybí.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
       { key: 'unconfirmedDaysBefore', where: 'rules', label: 'Nepotvrzená služba', hint: 'Někdo ještě neřekl, jestli může.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
     ],
@@ -199,7 +199,7 @@ function messagesSheet() {
       field({
         label: 'Připomínka v SMS a e-mailu',
         control: reminder,
-        hint: `Místo značek Zvonec doplní: ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
+        hint: `Za značky ve složených závorkách Zvonec dosadí: ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
       }),
       h('div', { class: 'msg-preview' }, h('p', { class: 'msg-value__label' }, 'Takhle ji dostane třeba Jana'), preview, reset),
       field({ label: 'Podpis pondělního e-mailu', control: signature, hint: 'Pod ním bude název sboru.' }),
@@ -288,7 +288,7 @@ function backupBody() {
   };
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   return [
-    meta(`Všechno v jednom souboru: ${counts}${live ? ', bez přihlašovacích údajů' : ''}.${live ? ' Každá změna se navíc ukládá do soukromého úložiště na GitHubu i s historií.' : ''}`),
+    meta(`Záloha uloží všechno do jednoho souboru: ${counts}${live ? ', bez přihlašovacích údajů' : ''}.${live ? ' Každou změnu navíc Zvonec ukládá i s historií do soukromého úložiště na GitHubu.' : ''}`),
     h('div', { class: 'cfg-actions' },
       button('Stáhnout zálohu', { variant: 'quiet', size: 's', icon: 'download', onclick: backup }),
       can('admin') ? button('Nahrát zálohu', { variant: 'quiet', size: 's', icon: 'undo', onclick: () => file.click() }) : null),

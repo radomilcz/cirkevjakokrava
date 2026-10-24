@@ -354,7 +354,7 @@ test('K17: a format leads with a role that no longer exists', () => {
   e.program = [{ id: 'i1', formatId: 'f-gone', minutes: 5 }];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K17:warning'], 'no K5 for the unknown role');
-  assert.equal(k[0].text, 'Modlitba: nikdo to nevede, role z formátu už neexistuje. Vyber člověka, nebo uprav formát.');
+  assert.equal(k[0].text, 'Modlitba: bod nikdo nevede, protože role, která ho měla vést, je smazaná. Vyber člověka, nebo ve formátu nastav jinou roli.');
   e.program[0].personId = 'petr';
   assert.deepEqual(findConflicts(d, { today: TODAY }), []);
 });
@@ -387,7 +387,7 @@ test('K16: a leader who is gone, former or paused', () => {
   d.servingLimits = [{ id: 'jana', personId: 'jana', paused: true }];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(k.map((x) => x.key).sort(), ['K16:i1:gone', 'K16:i2', 'K16:i3']);
-  assert.ok(k.some((x) => x.text === 'Příběh: vede někdo, kdo už v rozpisu není.'));
+  assert.ok(k.some((x) => x.text === 'Příběh: bod vede někdo, kdo už neslouží. Vyber někoho jiného.'));
   assert.ok(k.some((x) => x.text === 'Svědectví: Petr je v archivu.'));
   assert.ok(k.some((x) => x.text === 'Příběh: Jana má teď pauzu.'));
 });

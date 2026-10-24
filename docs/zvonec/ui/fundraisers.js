@@ -165,7 +165,7 @@ function fundDetail(f, frame) {
       f.note ? section({ title: 'Na co se vybírá', body: text(f.note) }) : null,
       run && account ? section({
         title: 'Na plakát',
-        body: list([row({ lead: placeMark('image'), title: 'QR platba pro plakát nebo plátno', meta: 'Bez variabilního symbolu, se specifickým symbolem sbírky.', onclick: () => paymentSheet({ fundraiser: f, poster: true }), chevron: true })], { label: 'Na plakát' }),
+        body: list([row({ lead: placeMark('image'), title: 'QR platba pro plakát nebo plátno', meta: 'Jedna platba pro všechny: bez osobního variabilního symbolu, jen se symbolem sbírky.', onclick: () => paymentSheet({ fundraiser: f, poster: true }), chevron: true })], { label: 'Na plakát' }),
       }) : null,
     ],
   });

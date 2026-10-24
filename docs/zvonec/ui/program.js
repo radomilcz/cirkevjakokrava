@@ -301,7 +301,7 @@ export function renderProgram(id) {
       leader ? h('p', { class: 'meta osnova-hint' }, 'Pořadí změníš tažením za úchyt. Bod upravíš klepnutím.') : null]
     : [when, empty({
       kind: 'none', icon: 'list', title: 'Osnova je zatím prázdná.',
-      text: leader ? 'Slož ji z formátů, časy se dopočítají samy.' : 'Osnovu ještě nikdo nesložil.',
+      text: leader ? 'Přidej do ní body programu, třeba chvály nebo kázání. Časy se dopočítají samy.' : 'Osnovu ještě nikdo nesložil.',
       action: leader ? { label: 'Přidat bod', icon: 'plus', onclick: () => openAddPoint(id) } : null,
     })];
 

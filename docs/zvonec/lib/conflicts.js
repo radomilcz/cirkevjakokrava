@@ -291,7 +291,7 @@ export function findConflicts(data, { today } = {}) {
           const person = people.get(item.personId);
           const block = person && unavailability(data, person.id, { start, end });
           if (!person) {
-            add({ key: `K16:${item.id}:gone`, code: 'K16', severity: 'warning', eventId: e.id, text: `${name}: vede někdo, kdo už v rozpisu není.` });
+            add({ key: `K16:${item.id}:gone`, code: 'K16', severity: 'warning', eventId: e.id, text: `${name}: bod vede někdo, kdo už neslouží. Vyber někoho jiného.` });
           } else if (block) {
             add({
               key: `K16:${item.id}`, code: 'K16', severity: 'error', eventId: e.id, personId: person.id,
@@ -311,7 +311,7 @@ export function findConflicts(data, { today } = {}) {
         if (format?.leadRoleId && !roles.has(format.leadRoleId) && !itemLeaders(data, e, item).length) {
           add({
             key: `K17:${item.id}`, code: 'K17', severity: 'warning', eventId: e.id,
-            text: `${name}: nikdo to nevede, role z formátu už neexistuje. Vyber člověka, nebo uprav formát.`,
+            text: `${name}: bod nikdo nevede, protože role, která ho měla vést, je smazaná. Vyber člověka, nebo ve formátu nastav jinou roli.`,
           });
         }
       }

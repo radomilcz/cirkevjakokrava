@@ -155,7 +155,7 @@ function renderSetup() {
     segmentedField({
       name: 'base', label: 'Základ', value: 'base',
       options: [{ value: 'base', label: 'Z ukázky' }, { value: 'empty', label: 'Žádný' }],
-      hint: 'Základ z ukázky: týmy, role, formáty, šablony a místa. Bez lidí a bez setkání.',
+      hint: '„Z ukázky“ převezme týmy, role, formáty, šablony a místa, ale žádné lidi ani setkání. „Žádný“ začne úplně načisto.',
     }),
     error,
     submit);
@@ -291,7 +291,7 @@ function registration({ demo = false, result, store, data }) {
       field({ label: 'E-mail', control: email, optional: true }),
       switchRow({ label: 'Telefon a e-mail smí vidět i ostatní', hint: 'Jinak je uvidí jen vedoucí.', checked: directory, onChange: (on) => { directory = on; } }),
       roles.length ? chipsField({
-        name: 'roles', label: 'S čím chceš pomáhat', hint: 'Nemusíš nic vybírat. Vedoucí se ti ozve.', multiple: true, value: picked,
+        name: 'roles', label: 'S čím chceš pomáhat', hint: 'Nemusíš nic vybírat. Když něco vybereš, vedoucí týmu se ti ozve.', multiple: true, value: picked,
         options: roles.map((r) => ({ value: r.id, label: r.name })), onChange: (v) => { picked = v; },
       }) : null,
       switchRow({ label: REMEMBER, hint: REMEMBER_HINT, checked: true, onChange: (on) => { remember = on; } }),
@@ -306,8 +306,8 @@ function registration({ demo = false, result, store, data }) {
     if (!firstName) { fieldError(first, 'Doplň jméno.'); return; }
     const problem = checkPassword(pass.value, pass.value);
     if (problem) { fieldError(pass, problem); return; }
-    if (!consent) { error.show('Bez souhlasu tě do rozpisu zapsat nemůžeme.'); consentRow.querySelector('.switch').focus(); return; }
-    if (demo) { toast('V ukázce se nikdo nepřidává. Ostrý Zvonec by tě teď pustil dovnitř.', { icon: 'info' }); return; }
+    if (!consent) { error.show('Zapni souhlas se zapsáním údajů. Bez něj tě do Zvonce přidat nemůžeme.'); consentRow.querySelector('.switch').focus(); return; }
+    if (demo) { toast('V ukázce se nikdo nepřidává. Skutečný Zvonec by tě teď pustil dovnitř.', { icon: 'info' }); return; }
     busy(submit, true, 'Přidávám tě…');
     const loginName = `${firstName} ${last.value.trim()}`.trim();
     try {

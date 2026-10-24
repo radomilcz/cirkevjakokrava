@@ -60,8 +60,8 @@ export function blockoutSheet(person, record = null) {
       switchRow({
         label: n === 1 ? 'Odmítnout i službu v těch dnech' : 'Odmítnout i služby v těch dnech',
         hint: self
-          ? `V té době ${n === 1 ? 'máš službu' : `máš ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec zapíše, že nemůžeš.`
-          : `V té době ${n === 1 ? 'má službu' : `má ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec zapíše, že nemůže.`,
+          ? `V té době ${n === 1 ? 'máš službu' : `máš ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec rovnou zapíše „Nemůžu“ a vedoucí uvidí, že je potřeba náhrada.`
+          : `V té době ${n === 1 ? 'má službu' : `má ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec rovnou zapíše „Nemůže“ a místo se uvolní pro náhradu.`,
         checked: declineToo,
         onChange: (on) => { declineToo = on; },
       }),
@@ -82,7 +82,7 @@ export function blockoutSheet(person, record = null) {
     ],
     onSubmit: (form, values) => {
       if (!values.from || !values.to) return 'Vyber, od kdy do kdy.';
-      if (values.to < values.from) { fieldError(to.querySelector('button'), 'Do kdy nemůže být dřív než od kdy.'); return false; }
+      if (values.to < values.from) { fieldError(to.querySelector('button'), '„Do“ nemůže být dřív než „Od“. Vyber pozdější den.'); return false; }
       const [a, b] = [values.from, values.to];
       if (b < day) { fieldError(to.querySelector('button'), 'Tohle už bylo. Vyber dnešek nebo pozdější den.'); return false; }
       S.data.availability = S.data.availability || [];
@@ -210,7 +210,7 @@ export function renderBlockoutsPage() {
       body: callout({
         tone: 'info',
         title: 'Zvonec neví, která karta v Lidech je tvoje.',
-        text: S.mode === 'live' ? 'Řekni vedoucímu, ať ji propojí s tvým přístupem.' : 'Teď se díváš jako správce bez karty v Lidech.',
+        text: S.mode === 'live' ? 'Požádej vedoucího, ať tvoje přihlášení propojí s tvou kartou v Lidech. Pak si tu zapíšeš, kdy nemůžeš.' : 'Teď se díváš jako správce bez karty v Lidech.',
       }),
     });
   }

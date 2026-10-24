@@ -144,7 +144,7 @@ function missingCallout(person) {
   const size = isPhone() ? 'm' : 's';
   return callout({
     tone: 'wait',
-    title: person.needsReview ? 'Karta vznikla narychlo při plánování.' : rest.replace(/\.$/, ''),
+    title: person.needsReview ? 'Karta vznikla narychlo, jen se jménem.' : rest.replace(/\.$/, ''),
     text: person.needsReview ? rest || null : null,
     actions: [
       button('Doplnit', { size, onclick: open }),

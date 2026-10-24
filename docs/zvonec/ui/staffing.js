@@ -259,8 +259,8 @@ export function waitingSheet(waiting, { event, person } = {}) {
     size: 'm',
     body: [
       h('p', { class: 'meta waiting-lead' }, person
-        ? 'Odpověď zapíšeš i za ně: vyber službu. Text SMS i e-mailu se všemi službami ti Zvonec připraví.'
-        : 'Odpověď zapíšeš i za ně: vyber jméno. Text SMS i e-mailu ti Zvonec připraví.'),
+        ? 'Tyhle služby ještě čekají na potvrzení. Jedna zpráva připomene všechny najednou a text ti Zvonec připraví. Odpověď ti přišla osobně nebo po telefonu? Vyber službu a zapiš ji.'
+        : 'Tihle lidé ještě nepotvrdili, jestli mohou sloužit. Ikona vedle jména jim pošle připomínku s hotovým textem. Odpověď ti řekli osobně nebo po telefonu? Vyber jméno a zapiš ji.'),
       all.length ? h('div', { class: 'cluster waiting-remind' }, all) : null,
       list(waiting.map(rowOf), { label: 'Čeká na odpověď' }),
     ],
@@ -298,7 +298,7 @@ function problemRow({ event, c }, openId) {
   return row({
     lead: lead(event), title: errorLine(c), meta: joinMeta([event.title, when(event)]), chevron: true,
     ...(id ? { onclick: () => openDutySheet(event.id, id) } : { href: meetingHref(event, openId) }),
-    label: `${c.text} – oprav to`,
+    label: `${c.text} – opravit`,
   });
 }
 
@@ -322,7 +322,7 @@ function sections(t, openId) {
     t.missing.length ? section({ title: 'Chybí lidé', count: t.missing.length, cls: 'task-section', body: list(t.missing.map((x) => missingRow(x, openId)), { label: 'Chybí lidé' }) }) : null,
     t.problems.length ? section({ title: 'Problémy', count: t.problems.length, cls: 'task-section', body: list(t.problems.map((x) => problemRow(x, openId)), { label: 'Problémy' }) }) : null,
     t.waiting.length ? section({ title: 'Čeká na odpověď', count: t.waiting.length, cls: 'task-section', body: [
-      h('p', { class: 'meta task-lead' }, 'Vyber jméno a zapiš odpověď za ně. Jedna SMS jim připomene všechny služby najednou.'),
+      h('p', { class: 'meta task-lead' }, 'Tihle lidé ještě nepotvrdili, jestli mohou sloužit. Připomenout jim to můžeš jednou zprávou se všemi jejich službami. Odpověď ti řekli osobně nebo po telefonu? Vyber jméno a zapiš ji.'),
       list(t.waiting.map(waitingRow), { label: 'Čeká na odpověď' }),
     ] }) : null,
   ];
@@ -352,7 +352,7 @@ function body(m, openId) {
   }
   if (m.q) return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${m.q}“.`, action: { label: 'Vymazat hledání', onclick: clearSearchField } });
   return [
-    empty({ kind: 'none', icon: 'check', title: 'Všechno je vyřešené.', text: 'Na příští 4 týdny nikde nikdo nechybí, všichni odpověděli a všechno sedí.' }),
+    empty({ kind: 'none', icon: 'check', title: 'Všechno je vyřešené.', text: 'V příštích 4 týdnech jsou všechna místa obsazená, služby potvrzené a v rozpisu není žádný problém.' }),
     horizon(),
   ];
 }

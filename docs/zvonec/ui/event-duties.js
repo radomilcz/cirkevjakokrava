@@ -85,7 +85,7 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
     submitLabel: 'Přiřadit',
     body: [
       h('p', { class: 'text' }, `${personName(c.person)} – ${whyOf(c, event)}.`),
-      field({ label: 'Proč to půjde', hint: 'Zvonec to pak přestane hlásit jako chybu.', control: textInput({ name: 'reason', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
+      field({ label: 'Proč to půjde', hint: 'Zvonec si důvod zapíše a tuhle službu už nebude hlásit jako problém.', control: textInput({ name: 'reason', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
     ],
     onSubmit: (form, values) => {
       const reason = String(values.reason || '').trim();
@@ -293,7 +293,7 @@ export function openDutySheet(eventId, assignmentId) {
     sheet.setBody([
       h('div', { class: 'duty-sheet__who' }, avatar(person, { size: 'l', status: now.status === 'declined' ? 'declined' : null }),
         h('div', {}, h('p', { class: 'duty-sheet__name' }, personName(person)), statusNote(now.status))),
-      field({ label: 'Odpověď', hint: 'Když ti odpověď řekl osobně, zapiš ji tady.', control: segmented(STATUS_OPTIONS, now.status, (v) => { answer(eventId, assignmentId, v, { quiet: true }); draw(); }, { label: 'Stav služby' }) }),
+      field({ label: 'Odpověď', hint: 'Když se odpověď dozvíš mimo Zvonec, třeba osobně nebo po telefonu, vyber ji tady.', control: segmented(STATUS_OPTIONS, now.status, (v) => { answer(eventId, assignmentId, v, { quiet: true }); draw(); }, { label: 'Stav služby' }) }),
       warnings.length ? h('div', { class: 'duty-sheet__warn' }, warnings.map((c) => warningFor(c, { eventId, assignment: now, onDone: () => sheet.close() }))) : null,
       h('div', { class: 'duty-sheet__actions' },
         button('Vybrat jiného', { icon: 'people', block: true, onclick: () => { sheet.close(); pickFor(eventId, now.roleId, assignmentId); } }),
@@ -362,7 +362,7 @@ export function openOverride(conflict) {
     title: 'Výjimka',
     body: [
       h('p', { class: 'meta' }, conflict.text),
-      field({ label: 'Proč to půjde', hint: 'Zvonec to pak přestane hlásit jako chybu.', control: textInput({ name: 'reason', value: existing?.reason || '', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
+      field({ label: 'Proč to půjde', hint: 'Zvonec si důvod zapíše a tuhle službu už nebude hlásit jako problém.', control: textInput({ name: 'reason', value: existing?.reason || '', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
     ],
     onSubmit: (form, values) => {
       const reason = String(values.reason || '').trim();
@@ -534,7 +534,7 @@ export function openEmptySlots(eventIds, { teams = null, nobody = false, written
   const places = plural(missing, 'místo', 'místa', 'míst');
   sheet = layer.open({ kind: 'sheet',
     title: 'Volná místa',
-    subtitle: `Zbývá obsadit ${places}. ${nobody ? 'Zvonec nikoho volného nenašel. ' : 'Zvonec pro ně nikoho volného nenašel. '}U každého místa vybereš z celého týmu nebo ze všech lidí.`,
+    subtitle: `Zbývá obsadit ${places}. ${nobody ? 'Zvonec nikoho volného nenašel. ' : 'Zvonec pro ně nikoho volného nenašel. '}U každého místa pak vybereš člověka z týmu nebo ze všech lidí.`,
     body,
     cls: 'plan-sheet',
   });
@@ -584,7 +584,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   });
   if (left) {
     body.push(h('p', { class: 'plan-left' }, sev('error', `chybí ${left}`), ' ',
-      left === 1 ? 'Pro jedno místo Zvonec nikoho nenašel. Ukáže ti ho, až tyhle zapíšeš.' : `Pro ${plural(left, 'místo', 'místa', 'míst')} Zvonec nikoho nenašel. Ukáže ti je, až tyhle zapíšeš.`));
+      left === 1 ? 'Pro jedno místo Zvonec nikoho volného nenašel. Až zapíšeš služby nahoře, ukáže ti ho a člověka vybereš ručně.' : `Pro ${plural(left, 'místo', 'místa', 'míst')} Zvonec nikoho volného nenašel. Až zapíšeš služby nahoře, ukáže ti je a lidi vybereš ručně.`));
   }
   let sheet;
   submit.addEventListener('click', () => {
@@ -613,7 +613,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   });
   sheet = layer.open({ kind: 'sheet',
     title: 'Návrh služeb',
-    subtitle: `Zvonec našel ${total === 1 ? 'volného kandidáta' : 'volné kandidáty'}. Koho nechceš, odškrtni. Kdo zůstane zaškrtnutý, dostane službu a potvrdí, jestli může.`,
+    subtitle: `Zvonec našel ${total === 1 ? 'člověka, který ten den může a službu umí' : 'lidi, kteří ten den mohou a službu umí'}. Koho nechceš, odškrtni. Kdo zůstane zaškrtnutý, dostane službu a pak ji potvrdí.`,
     body,
     foot: submit,
     cls: 'plan-sheet',
@@ -627,10 +627,10 @@ export function sameAsLast(eventId) {
   const e = fresh(eventId);
   if (!e) return;
   const prev = previousEvent(S.data, eventId);
-  if (!prev) { toast('Minule tu takové setkání nebylo.', { icon: 'info' }); return; }
+  if (!prev) { toast('Před tímhle setkáním žádné ze stejné řady ani šablony nebylo, takže není odkud převzít lidi.', { icon: 'info' }); return; }
   const undo = snapshot(eventId, 'jako minule');
   const added = sameAsLastTime(S.data, eventId, () => newId('a'));
-  if (!added.length) { toast('Z minula nebylo koho přidat.', { icon: 'info' }); return; }
+  if (!added.length) { toast('Nikoho z minula nešlo přidat: místa jsou obsazená, nebo ti lidé tentokrát nemohou.', { icon: 'info' }); return; }
   change(`jako minule: ${e.title} ${shortDate(e.start, { weekday: false })}`);
   toast(`Doplněno jako minule: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, { action: undo });
 }
@@ -673,7 +673,7 @@ export function openNeedsSheet(eventId) {
   const used = (t) => t.roles.some((r) => own.get(r.id) || fromProgram.get(r.id));
   const roleField = (role) => field({
     label: role.name,
-    hint: fromProgram.get(role.id) ? `navíc z osnovy: ${fromProgram.get(role.id)}` : null,
+    hint: fromProgram.get(role.id) ? `Navíc ještě ${fromProgram.get(role.id)} pro body v osnově.` : null,
     control: stepper({ name: `n-${role.id}`, value: own.get(role.id) || 0, min: 0, max: 20, label: role.name, onChange: (v) => values.set(role.id, v) }),
     cls: 'needs-field',
   });

@@ -143,7 +143,7 @@ const SHORT_WORDS = {
   K7: 'má moc služeb za měsíc', K8: 'nemá volnou neděli', K11: 'je dítě a role je jen pro dospělé',
 };
 function problemWords(c) {
-  if (c.code === 'K14') return 'Dej vědět, že je zrušeno';
+  if (c.code === 'K14') return 'Lidé ve službě možná nevědí, že je zrušeno';
   const person = c.personId ? personOf(c.personId) : null;
   const who = person ? (person.nickname || person.firstName || fullName(person)) : null;
   return who && SHORT_WORDS[c.code] ? `${who} ${SHORT_WORDS[c.code]}` : c.text;
@@ -407,7 +407,7 @@ function osnovaSection(event) {
     return section({
       title: 'Osnova', cls: 'ev-outline',
       action: sectionAction('Přidat', { add: true, href, aria: 'Přidat body do osnovy' }),
-      body: h('p', { class: 'meta' }, 'Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.'),
+      body: h('p', { class: 'meta' }, 'Osnova je zatím prázdná. Přidej do ní body programu, třeba chvály nebo kázání. Časy se dopočítají samy.'),
     });
   }
   return section({
@@ -448,12 +448,12 @@ function aboutSection(event) {
   ]);
   if (leader) {
     rows.append(h('div', { class: 'ev-public' }, icon('globe', { size: 's' }), switchRow({
-      label: 'Zobrazit na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
+      label: 'Zobrazit na webu', hint: 'Název, čas, místo, popis a obrázek uvidí na webu sboru kdokoli. Jména lidí ve službě ne.', checked: event.public === true,
       onChange: (on) => publish(event.id, on),
     })));
     if (event.public === true) {
       rows.append(h('div', { class: 'ev-public' }, icon('star', { size: 's' }), switchRow({
-        label: 'Zvýraznit na webu', hint: 'Na webu bude nahoře, mezi ostatními setkáními ho nikdo nepřehlédne.', checked: event.featured === true,
+        label: 'Zvýraznit na webu', hint: 'Setkání bude na webu nahoře, aby ho nikdo nepřehlédl.', checked: event.featured === true,
         onChange: (on) => feature(event.id, on),
       })));
     }
@@ -519,7 +519,7 @@ function publish(eventId, on) {
   if (on && !String(e.description || '').trim()) {
     let decided = false;
     const form = h('form', { class: 'form', novalidate: true },
-      field({ label: 'Popis pro web', optional: true, hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', control: textArea({ name: 'description', rows: 3, placeholder: 'Co lidi čeká? Pár vět pro návštěvníky webu.' }) }));
+      field({ label: 'Popis pro web', optional: true, hint: 'Název, čas, místo, popis a obrázek uvidí na webu sboru kdokoli. Jména lidí ve službě ne.', control: textArea({ name: 'description', rows: 3, placeholder: 'Co lidi čeká? Pár vět pro návštěvníky webu.' }) }));
     const sheet = layer.open({ kind: 'sheet',
       title: 'Setkání na webu',
       body: form,

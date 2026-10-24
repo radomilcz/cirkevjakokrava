@@ -49,7 +49,7 @@ const appUrl = () => `${location.origin}${location.pathname}`;
 
 /** Create an invite (for a known person, or null for a newcomer) and show its link once. */
 export async function createInvite(person, { replace } = {}) {
-  if (S.mode !== 'live') { demoOnly('V ukázce se nikdo nezve. Ve skutečném Zvonci tu vznikne odkaz.'); return; }
+  if (S.mode !== 'live') { demoOnly('V ukázce se pozvánky nevytvářejí. Ve skutečném Zvonci tu dostaneš odkaz, který pošleš novému člověku.'); return; }
   try {
     const code = newPassword();
     const expires = addDays(today(), INVITE_VALID_DAYS);
@@ -84,7 +84,7 @@ export function inviteSheet(person = null) {
       text(person
         ? `${personName(person)} dostane odkaz. Zvolí si heslo a přihlásí se jako člen.`
         : 'Nový člověk dostane odkaz. Vyplní svoje údaje, zvolí si heslo a přihlásí se jako člen.'),
-      meta(`Odkaz platí ${INVITE_VALID_DAYS} dní a jde použít jen jednou. ${SOON} Vedoucím nebo správcem ho později udělá správce tady v Přístupech.`),
+      meta(`Odkaz platí ${INVITE_VALID_DAYS} dní, jde použít jen jednou a začne fungovat za pár minut. Kdo má plánovat nebo spravovat Zvonec, toho pak správce udělá vedoucím nebo správcem tady v Přístupech.`),
     ],
     onSubmit: () => { setTimeout(() => createInvite(person)); return undefined; },
   });
@@ -117,7 +117,7 @@ function treasurerToggle(login) {
   confirmSheet({
     title: on ? 'Chceš přidat pokladníka?' : 'Chceš odebrat pokladníka?',
     text: on
-      ? `${person ? fullName(person) : 'Tenhle člověk'} uvidí Dary: dárce, částky a potvrzení. ${S.me?.finance ? '' : 'Klíč k darům dostane, až ho vložíš. '}${SOON}`
+      ? `${person ? fullName(person) : 'Tenhle člověk'} uvidí Dary: dárce, částky a potvrzení. ${S.me?.finance ? '' : 'Přístup k nim dostane, až v sekci Dary vložíš klíč k darům. '}${SOON}`
       : `${person ? fullName(person) : 'Tenhle člověk'} přestane vidět Dary. ${SOON}`,
     confirmLabel: on ? 'Udělat pokladníkem' : 'Odebrat pokladníka',
     danger: !on,
@@ -149,7 +149,7 @@ function levelSheet(login) {
     subtitle: person ? fullName(person) : null,
     size: 's',
     body: [
-      segmentedField({ name: 'access', label: 'Přístup', options: LEVELS, value: login.access, hint: 'Vedoucí plánuje a spravuje přístupy členů. Správce k tomu mění přístupy vedoucích a GitHub klíč.' }),
+      segmentedField({ name: 'access', label: 'Přístup', options: LEVELS, value: login.access, hint: 'Vedoucí plánuje služby a dává přístup členům. Správce může navíc měnit přístupy vedoucích a GitHub klíč.' }),
       meta(SOON),
     ],
     onSubmit: async (form, values) => {
@@ -199,7 +199,7 @@ export function loginSheet(person) {
         render();
         setTimeout(() => secretSheet({
           title: `Přístup: ${fullName(person)}`,
-          text: 'Předej to osobně nebo soukromou zprávou, ne do skupinového chatu. Přihlásit se půjde za pár minut.',
+          text: 'Jméno a heslo předej osobně nebo soukromou zprávou, ne do skupinového chatu. Přihlásit se půjde za pár minut.',
           rows: [{ label: 'Jméno', value: login }, { label: 'Heslo', value: password }, { label: 'Adresa', value: appUrl() }],
           note: 'Zvonec si heslo nepamatuje. Po zavření ho už neuvidíš.',
         }));
@@ -215,7 +215,7 @@ export function revokeLogin(login) {
   const invite = login.access === 'invite';
   confirmSheet({
     title: invite ? 'Chceš zrušit pozvánku?' : 'Chceš odebrat přístup?',
-    text: invite ? 'Odkaz přestane fungovat za pár minut.' : 'Za pár minut se už nepřihlásí. Karta v Lidech zůstane.',
+    text: invite ? 'Odkaz přestane fungovat za pár minut.' : 'Tenhle člověk se za pár minut už nepřihlásí. Jeho karta v Lidech zůstane.',
     confirmLabel: invite ? 'Zrušit pozvánku' : 'Odebrat přístup',
     onConfirm: async () => {
       try {
@@ -271,7 +271,7 @@ function helpSheet() {
     body: [
       text('Pošli pozvánku a nový člověk si údaje i heslo vyplní sám. Kdo už je v Lidech, toho pozveš z jeho karty.'),
       text('Pozvaný začne jako člen. Vidí rozpis, svoje služby a lidi ze sboru. Vedoucím nebo správcem ho udělá správce tady v Přístupech.'),
-      text('Vedoucí plánuje setkání a služby a spravuje přístupy členů. Správce k tomu mění přístupy vedoucích, nahrává zálohu a mění GitHub klíč.'),
+      text('Vedoucí plánuje setkání a služby a spravuje přístupy členů. Správce může navíc měnit přístupy vedoucích, nahrát zálohu a vyměnit GitHub klíč.'),
       meta(SOON),
     ],
     foot: [button('Rozumím', { variant: 'primary', size: 'l', block: true, onclick: () => sheet.close() })],

@@ -358,10 +358,10 @@ export function renderMine(parts = []) {
     h('p', { class: 'mine-date' }, todayLine()),
     !person ? callout({
       tone: 'info',
-      title: 'Zvonec neví, která karta je tvoje.',
+      title: 'Zvonec neví, která karta v Lidech je tvoje.',
       text: S.mode === 'live'
-        ? 'Bez ní tu nevidíš svoje služby. Řekni vedoucímu, ať ji propojí s tvým přihlášením.'
-        : 'Teď se díváš jako správce bez vlastní karty. Někoho jiného si vybereš v menu pod svým jménem.',
+        ? 'Bez ní tu neuvidíš svoje služby. Požádej vedoucího, ať tvoje přihlášení propojí s tvou kartou v Lidech.'
+        : 'Teď se díváš jako správce bez vlastní karty. Jiného člověka vybereš v menu pod svým jménem v položce „Podívat se očima druhých“.',
     }) : null,
     nothing ? empty({
       icon: 'calendar', title: 'Zatím tu nemáš žádné služby.',

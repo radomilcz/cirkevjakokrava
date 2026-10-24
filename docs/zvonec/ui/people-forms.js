@@ -153,7 +153,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
         if (dropped.length && dropOk !== key) {
           dropOk = key;
           sheet.foot.querySelector('button[type=submit]').lastChild.textContent = 'Uložit jen jméno';
-          return `Bez souhlasu se uloží jen křestní jméno, ${andJoin(dropped)} Zvonec nezapíše. Zapni souhlas, nebo ulož jen jméno.`;
+          return `Bez souhlasu Zvonec uloží jen křestní jméno. Nezapíše ${andJoin(dropped)}. Zapni souhlas, nebo ulož jen jméno.`;
         }
       }
       const birthDate = restricted ? '' : born;
@@ -161,7 +161,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
       const phone = restricted ? '' : v('phone');
       const email = restricted ? '' : v('email');
       if (email && !EMAIL.test(email)) { fieldError(ctl(f, 'email'), 'E-mail má mít tvar jmeno@domena.cz.'); return false; }
-      if (kid && (phone || email)) { fieldError(ctl(f, 'phone'), 'Dítě nemá vlastní telefon ani e-mail – kontakt jde přes rodiče.'); return false; }
+      if (kid && (phone || email)) { fieldError(ctl(f, 'phone'), 'U dítěte telefon ani e-mail nevyplňuj, kontakt jde přes rodiče.'); return false; }
       const last = restricted ? '' : v('lastName');
       const key = fold(`${first} ${last}`);
       const twin = S.data.people.find((x) => fold(fullName(x)) === key);
@@ -261,7 +261,7 @@ export function detailsSheet(person, { focus } = {}) {
       const target = personById(S.data, person.id);
       if (!target) return gone;
       if (birthDate && isChild({ birthDate }, today(), childAge()) && (target.phone || target.email)) {
-        fieldError(ctl(f, 'birthDate'), 'Podle data je to dítě. Nejdřív smaž jeho telefon a e-mail v Kontaktu.');
+        fieldError(ctl(f, 'birthDate'), 'Podle data narození je to dítě a děti nemají vlastní telefon ani e-mail. Nejdřív je smaž v Kontaktu.');
         return false;
       }
       const since = v('since');
@@ -555,7 +555,7 @@ export function bulkGroupSheet(people, done) {
 
 // ---------- the archive, deleting a card ----------
 
-const GITHUB_NOTE = 'V historii na GitHubu údaje zůstanou. Jak je smazat úplně, najdeš v návodu ke Zvonci.';
+const GITHUB_NOTE = 'Starší verze dat si GitHub pamatuje, takže tam údaje ještě zůstanou. Jak je smazat úplně, popisuje návod ke Zvonci.';
 const revoke = (personId, message) => revokeLoginsOf(personId, message)?.catch((error) => toast(`Přístup se nepodařilo zrušit. ${error.message}`, { icon: 'alert' }));
 
 /** „Přesunout do archivu“: asks once, then archives (lib/archive.js) and releases the future duties. */
@@ -566,7 +566,7 @@ export function archiveSheet(person) {
     title: `Chceš přesunout kartu ${name} do archivu?`,
     text: [
       `${name} zmizí ze seznamů, kontaktů a návrhů do služeb. Ve starých rozpisech zůstane.`,
-      future ? 'Budoucí služby se uvolní.' : '',
+      future ? 'Služby, které má naplánované, se uvolní pro někoho jiného.' : '',
       hasLogin(person.id) ? 'Přístup do Zvonce se zruší.' : '',
     ].filter(Boolean).join(' '),
     confirmLabel: 'Přesunout do archivu',

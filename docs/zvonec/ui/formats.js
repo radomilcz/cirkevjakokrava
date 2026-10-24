@@ -78,7 +78,7 @@ function listBody(openId) {
   if (!all.length) {
     return empty({
       kind: 'none', icon: 'book', title: 'Zatím tu není žádný formát.',
-      text: leader ? 'Z formátů se skládá osnova setkání: třeba chvály, kázání nebo oznámení.' : 'Z formátů se skládá osnova setkání. Vedoucí je sem doplní.',
+      text: leader ? 'Formát je bod programu, který se opakuje, třeba chvály, kázání nebo oznámení. Z formátů pak skládáš osnovu setkání.' : 'Formát je bod programu, který se opakuje, třeba chvály nebo kázání. Vedoucí je sem doplní.',
       action: leader ? { label: 'Přidat formát', icon: 'plus', onclick: () => formatSheet() } : null,
     });
   }
@@ -128,7 +128,7 @@ function publishSwitch(format) {
   };
   return switchRow({
     label: 'Zobrazit na webu',
-    hint: '„Proč to děláme“ a „Jak to probíhá“ budou ve veřejných datech webu.',
+    hint: '„Proč to děláme“ a „Jak to probíhá“ si přečte kdokoli na webu sboru.',
     checked: !!format.public,
     onChange: (on) => { set(on); toast(on ? 'Na webu to bude za pár minut.' : 'Z webu to zmizí za pár minut.', { action: () => set(!on) }); },
   });
@@ -164,7 +164,7 @@ export function formatDetail(format, frame = 'pane') {
           meta: joinMeta([groupById(S.data, role?.groupId)?.name, lead ? 'vede' : null]),
           trail: pill(plural(n, 'člověk', 'lidé', 'lidí')),
         })), { label: 'Kdo je potřeba' })
-        : quiet('Nikdo konkrétní. Kdo vede, vybereš až v osnově.'),
+        : quiet('Nikdo navíc. Kdo bod povede, se vybírá až v osnově setkání.'),
     }),
     leader ? section({
       title: 'Kde se používá',
@@ -233,9 +233,9 @@ export function formatSheet(format) {
       field({ label: 'Proč to děláme', control: why }),
       field({ label: 'Jak to probíhá', control: how }),
       disclosure([
-        field({ label: 'Kdo je potřeba navíc', control: needsEditor(needs), hint: 'Ten, kdo vede, se započítá sám.' }),
+        field({ label: 'Kdo je potřeba navíc', control: needsEditor(needs), hint: 'Toho, kdo bod vede, sem nepočítej, Zvonec ho přidá sám.' }),
         field({ label: 'K přečtení', control: linkInput, optional: true, hint: 'Odkaz na článek nebo video.' }),
-        switchRow({ label: 'Zobrazit na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ budou ve veřejných datech webu.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
+        switchRow({ label: 'Zobrazit na webu', hint: '„Proč to děláme“ a „Jak to probíhá“ si přečte kdokoli na webu sboru.', checked: isPublic, onChange: (on) => { isPublic = on; } }),
       ], { open: !!(format?.needs?.length || format?.link || format?.public) }),
     ],
     onSubmit: (form, values) => {

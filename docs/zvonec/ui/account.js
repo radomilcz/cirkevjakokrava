@@ -85,10 +85,10 @@ function cardSection(person) {
   if (!person) {
     return callout({
       tone: 'info',
-      title: 'Zvonec neví, která karta je tvoje.',
+      title: 'Zvonec neví, která karta v Lidech je tvoje.',
       text: live
-        ? 'Řekni vedoucímu, ať ji propojí s tvým přihlášením. Pak tu uvidíš svůj kontakt a služby.'
-        : 'Teď se díváš jako správce bez vlastní karty. Někoho jiného si vybereš v menu pod svým jménem.',
+        ? 'Požádej vedoucího, ať tvoje přihlášení propojí s tvou kartou v Lidech. Pak tu uvidíš svůj kontakt a služby.'
+        : 'Teď se díváš jako správce bez vlastní karty. Jiného člověka vybereš v menu pod svým jménem v položce „Podívat se očima druhých“.',
     });
   }
   return section({
@@ -198,7 +198,7 @@ export function viewAsSheet() {
     kind: 'sheet',
     size: 'm',
     title: 'Očima druhých',
-    subtitle: 'Vyzkoušej, co vidí člen, vedoucí nebo správce. Nic se tím nemění.',
+    subtitle: 'Vyzkoušej, co vidí člen, vedoucí nebo správce. Data v ukázce se tím nezmění.',
     body: [
       list(viewers.map(([level, p]) => row({
         lead: avatar(p), title: personName(p), meta: ACCESS_LABELS[level],
@@ -276,7 +276,7 @@ function giveSection(person) {
       meta(vs
         ? 'Dary posílej se svým variabilním symbolem, pravidelné třeba trvalým příkazem. Podle symbolu ti Zvonec v lednu připraví potvrzení o daru do daňového přiznání.'
         : 'Dar můžeš poslat na účet sboru.'),
-      paymentBlock({ rows, payment, hint: 'Naskenuj v bankovní aplikaci, doplníš jen částku.' })),
+      paymentBlock({ rows, payment, hint: 'QR kód naskenuj v bankovní aplikaci a doplň jen částku.' })),
   });
 }
 

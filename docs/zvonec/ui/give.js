@@ -81,7 +81,7 @@ export function paymentSheet({ amount, fundraiser, vs, poster = false }) {
   if (!account) { toast('Sbor zatím nemá vyplněný účet pro dary.'); return; }
   const message = fundraiser ? `Sbírka ${fundraiser.name}` : 'Dar';
   const payment = spdPayment({ account, vs, ss: fundraiser?.code, amount, message, name: s.legalName || s.churchName });
-  const hint = amount ? 'Naskenuj v bankovní aplikaci.' : 'Naskenuj v bankovní aplikaci, doplníš jen částku.';
+  const hint = amount ? 'QR kód naskenuj v bankovní aplikaci.' : 'QR kód naskenuj v bankovní aplikaci a doplň jen částku.';
   const after = poster
     ? 'Chceš potvrzení o daru do daňového přiznání? Napiš do platby svůj variabilní symbol ze Zvonce.'
     : vs ? 'Až dar dorazí na účet sboru, poděkujeme ti na stránce Moje. Zvonec se přes den každou hodinu dívá do banky.'

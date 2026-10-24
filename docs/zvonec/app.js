@@ -429,7 +429,7 @@ async function boot() {
       const result = await restore(S.logins, remembered);
       if (result && result.record.access !== 'invite') { await startLive(result); return; }
       if (S.logins.some((l) => l.id === remembered.id)) forgetRemembered();
-      else S.signInMessage = 'Zatím se nemůžeš přihlásit: přístup ještě nezačal platit, nebo ho někdo zrušil. Jestli je úplně nový, zkus to za pár minut.';
+      else S.signInMessage = 'Zatím se nemůžeš přihlásit: přístup ještě nezačal platit, nebo ho někdo zrušil. Jestli ti ho vytvořili teprve teď, zkus to za pár minut.';
     }
     renderApp();
     return;

@@ -61,7 +61,7 @@ export function openMeMenu({ from } = {}) {
   });
 
   const resetDemo = () => confirmSheet({
-    title: 'Chceš začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začni znovu',
+    title: 'Chceš začít ukázku znovu?', text: 'Tvoje změny v ukázce zmizí.', confirmLabel: 'Začít znovu',
     onConfirm: () => {
       try { localStorage.removeItem(DEMO_FINANCE_KEY); } catch { /* private window */ }
       resetFinance(); resetGiving();
@@ -70,7 +70,7 @@ export function openMeMenu({ from } = {}) {
     },
   });
   const emptyDemo = () => confirmSheet({
-    title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Vrátíš ji tlačítkem „Začni ukázku znovu“.', confirmLabel: 'Vyprázdni',
+    title: 'Chceš začít s prázdným Zvoncem?', text: 'Ukázka zmizí. Vrátíš ji v menu pod svým jménem volbou „Začít ukázku znovu“.', confirmLabel: 'Vyprázdnit',
     onConfirm: () => { replaceAll(emptyData(), 'prázdný Zvonec'); toast('Zvonec je prázdný.'); },
   });
 
@@ -99,8 +99,8 @@ export function openMeMenu({ from } = {}) {
       heading('Ukázka'),
       list([
         row({ title: 'Podívat se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: then(viewAsSheet), chevron: true }),
-        row({ title: 'Začni ukázku znovu', single: true, onclick: then(resetDemo) }),
-        row({ title: 'Začni načisto', single: true, onclick: then(emptyDemo) }),
+        row({ title: 'Začít ukázku znovu', single: true, onclick: then(resetDemo) }),
+        row({ title: 'Začít načisto', single: true, onclick: then(emptyDemo) }),
       ], { label: 'Ukázka' }),
     ] : null,
     list([row({
