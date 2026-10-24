@@ -143,8 +143,8 @@ export function prettyTime(text) {
 
 export function prettyDay(text, withWeekday = true) {
   const d = parseDate(text);
-  const base = `${d.getDate()}. ${d.getMonth() + 1}.`;
-  return withWeekday ? `${DAYS[weekday(text)]} ${base}` : base;
+  const base = `${d.getDate()}.\u00a0${d.getMonth() + 1}.`;
+  return withWeekday ? `${DAYS[weekday(text)]}\u00a0${base}` : base;
 }
 
 /** A span of days for a sentence: „6. 10.“ for one day, „od 6. 10. do 9. 10.“ for more. */

@@ -453,7 +453,7 @@ test('demo content: events, series, the special ones and headcounts', () => {
   assert.ok(!count['past:proposed'], 'nothing waits in the past');
   assert.ok(count['week:confirmed'] > 10 * ((count['week:proposed'] || 0) + 1));
   assert.ok(count['later:proposed'] > count['later:confirmed']);
-  assert.ok(d.events.some((e) => e.assignments.some((a) => a.override?.reason)), 'one „Vím o tom“');
+  assert.ok(d.events.some((e) => e.assignments.some((a) => a.override?.reason)), 'one „Povolit výjimku“');
   const next = d.events.find((e) => e.kind === 'service' && e.start.slice(0, 10) > TODAY);
   assert.ok(!fillRatio(d, next).complete, 'the nearest Sunday misses someone');
 });

@@ -349,7 +349,7 @@ test('Sync: an error keeps the notes for the next attempt; offline has its own s
   state.offline = true;
   await sync.save();
   assert.equal(sync.status, 'offline');
-  assert.match(events.at(-1).error, /online/);
+  assert.match(events.at(-1).error, /připojení k internetu/);
   state.offline = false;
   data.people[1].phone = '2';
   sync.change('telefon Jana');

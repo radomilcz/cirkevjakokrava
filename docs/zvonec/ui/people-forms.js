@@ -4,7 +4,7 @@
 // „Upravit údaje“, „Kontakt“ (also Můj účet's), „Kolik toho zvládne“, the household sheets, „Přidat do
 // skupiny“ (one person or several), the archive (Přesunout do archivu · Vrátit z archivu · Smazat kartu
 // · deleting the cards a year in the archive – the logic is lib/archive.js). Shared elsewhere: Kdy nemůže (ui/blockouts.js),
-// Pozvat do Zvonce (ui/access.js), Vím o tom (ui/event-duties.js).
+// Pozvat do Zvonce (ui/access.js), Povolit výjimku (ui/event-duties.js).
 // Rules (ux.md §6): ≤ 5 visible fields, labels above, hints below, errors inline as a Czech sentence,
 // the button never disabled; reversible things happen at once with „Vrátit“ in the toast, only
 // deleting asks first.
@@ -66,12 +66,12 @@ const on = (form, name) => !!form.querySelector(`input[type=hidden][name="${name
  */
 function householdSelect({ name = 'householdId', value = '', suggest = () => '' } = {}) {
   const options = sortHouseholds(S.data.households || []).map((x) => ({ value: x.id, label: x.name }));
-  const wrap = selectInput({ name, value, placeholder: 'Bez domácnosti', options: [...options, { value: '+', label: 'Založ novou domácnost' }] });
+  const wrap = selectInput({ name, value, placeholder: 'Bez domácnosti', options: [...options, { value: '+', label: 'Založit novou domácnost' }] });
   const select = wrap.querySelector('select');
   const plus = select.querySelector('option[value="+"]');
   wrap.refresh = () => {
     const proposed = suggest();
-    plus.textContent = proposed ? `Založ novou: ${proposed}` : 'Založ novou domácnost';
+    plus.textContent = proposed ? `Založit novou: ${proposed}` : 'Založit novou domácnost';
   };
   wrap.refresh();
   return wrap;
@@ -131,7 +131,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
   ];
   const sheet = formSheet({
     title: 'Nový člověk',
-    submitLabel: 'Přidej člověka',
+    submitLabel: 'Přidat člověka',
     body,
     onSubmit: (f) => {
       clearErrors(f);
@@ -145,30 +145,30 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
       // a child is covered by the consent of a parent in the household it joins
       const coveredKid = !!born && isChild({ birthDate: born }, today(), childAge()) && householdConsents(v('householdId'));
       const restricted = status === 'guest' && !consentOn && !coveredKid;
-      // never drop what was typed without saying so: the first „Přidej“ names it and offers „Ulož jen jméno“
+      // never drop what was typed without saying so: the first „Přidat“ names it and offers „Uložit jen jméno“
       if (restricted) {
         const dropped = [['lastName', 'příjmení'], ['phone', 'telefon'], ['email', 'e-mail'], ['birthDate', 'narození'], ['nickname', 'přezdívku'],
           ['householdId', 'domácnost'], ['note', 'poznámku'], ['since', 'datum, od kdy chodí']].filter(([n]) => v(n)).map(([, w]) => w);
         const key = dropped.join(',');
         if (dropped.length && dropOk !== key) {
           dropOk = key;
-          sheet.foot.querySelector('button[type=submit]').lastChild.textContent = 'Ulož jen jméno';
-          return `Bez souhlasu uložím jen křestní jméno, ${andJoin(dropped)} zahodím. Zapni souhlas, nebo ulož jen jméno.`;
+          sheet.foot.querySelector('button[type=submit]').lastChild.textContent = 'Uložit jen jméno';
+          return `Bez souhlasu Zvonec uloží jen křestní jméno. Nezapíše ${andJoin(dropped)}. Zapni souhlas, nebo ulož jen jméno.`;
         }
       }
       const birthDate = restricted ? '' : born;
       const kid = !!birthDate && isChild({ birthDate }, today(), childAge());
       const phone = restricted ? '' : v('phone');
       const email = restricted ? '' : v('email');
-      if (email && !EMAIL.test(email)) { fieldError(ctl(f, 'email'), 'Tenhle e-mail nevypadá dobře.'); return false; }
-      if (kid && (phone || email)) { fieldError(ctl(f, 'phone'), 'Dítě nemá vlastní telefon ani e-mail – kontakt jde přes rodiče.'); return false; }
+      if (email && !EMAIL.test(email)) { fieldError(ctl(f, 'email'), 'E-mail má mít tvar jmeno@domena.cz.'); return false; }
+      if (kid && (phone || email)) { fieldError(ctl(f, 'phone'), 'U dítěte telefon ani e-mail nevyplňuj, kontakt jde přes rodiče.'); return false; }
       const last = restricted ? '' : v('lastName');
       const key = fold(`${first} ${last}`);
       const twin = S.data.people.find((x) => fold(fullName(x)) === key);
       if (twin && sameNameOk !== key) {
         sameNameOk = key;
-        sheet.foot.querySelector('button[type=submit]').lastChild.textContent = 'Přidej přesto';
-        return `${fullName(twin)} už v seznamu je. Jestli jde o někoho jiného, klepni na „Přidej přesto“.`;
+        sheet.foot.querySelector('button[type=submit]').lastChild.textContent = 'Přidat přesto';
+        return `${fullName(twin)} už v seznamu je. Jestli jde o někoho jiného, vyber „Přidat přesto“.`;
       }
       const person = { id: newId('p') };
       assign(person, {
@@ -191,7 +191,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
       else navigate(`#lide/${person.id}`);
       change(`nový člověk ${displayName(person)}`);
       toast(`Přidáno: ${fullName(person)}.`, {
-        actionLabel: 'Přidej do týmu',
+        actionLabel: 'Přidat do týmu',
         action: () => personGroupSheet(personById(S.data, person.id)),
       });
       return undefined;
@@ -215,7 +215,7 @@ export function addPersonSheet({ firstName = '', lastName = '', householdId = ''
     if ((sameNameOk && sameNameOk !== key) || dropOk) {
       sameNameOk = sameNameOk === key ? sameNameOk : '';
       dropOk = '';
-      sheet.foot.querySelector('button[type=submit]').lastChild.textContent = sameNameOk ? 'Přidej přesto' : 'Přidej člověka';
+      sheet.foot.querySelector('button[type=submit]').lastChild.textContent = sameNameOk ? 'Přidat přesto' : 'Přidat člověka';
     }
   }
   form.addEventListener('input', update);
@@ -261,7 +261,7 @@ export function detailsSheet(person, { focus } = {}) {
       const target = personById(S.data, person.id);
       if (!target) return gone;
       if (birthDate && isChild({ birthDate }, today(), childAge()) && (target.phone || target.email)) {
-        fieldError(ctl(f, 'birthDate'), 'Podle data je to dítě. Nejdřív smaž jeho telefon a e-mail v Kontaktu.');
+        fieldError(ctl(f, 'birthDate'), 'Podle data narození je to dítě a děti nemají vlastní telefon ani e-mail. Nejdřív je smaž v Kontaktu.');
         return false;
       }
       const since = v('since');
@@ -285,7 +285,7 @@ export function detailsSheet(person, { focus } = {}) {
 export function consentSheet(person) {
   const sheet = formSheet({
     title: 'Souhlas',
-    submitLabel: 'Zapiš souhlas',
+    submitLabel: 'Zapsat souhlas',
     body: [
       h('p', { class: 'text' }, `${personName(person)} souhlasí se zpracováním údajů.`),
       field({ label: 'Kdy', control: dateInput({ name: 'consentDate', value: today(), label: 'Souhlas ze dne', max: today() }) }),
@@ -313,7 +313,7 @@ export function contactSheet(person) {
     title: self ? 'Můj kontakt' : 'Kontakt',
     body: [
       kid ? callout({ tone: 'info', text: 'Je to dítě, kontakt jde přes rodiče. Dítě nemá vlastní telefon ani e-mail.' }) : null,
-      restricted ? callout({ tone: 'info', text: 'Bez souhlasu se zpracováním údajů smíme mít u hosta jen křestní jméno.', actions: button('Zapiš souhlas', { size: 's', onclick: () => { sheet.close(); consentSheet(person); } }) }) : null,
+      restricted ? callout({ tone: 'info', text: 'Bez souhlasu se zpracováním údajů smíme mít u hosta jen křestní jméno.', actions: button('Zapsat souhlas', { size: 's', onclick: () => { sheet.close(); consentSheet(person); } }) }) : null,
       kid || restricted ? null : [
         field({ label: 'Telefon', optional: true, control: textInput({ name: 'phone', type: 'tel', inputmode: 'tel', value: person.phone || '', autocomplete: self ? 'tel' : 'off', placeholder: 'např. 603 000 000' }) }),
         field({ label: 'E-mail', optional: true, control: textInput({ name: 'email', type: 'email', inputmode: 'email', value: person.email || '', autocomplete: self ? 'email' : 'off', placeholder: 'např. jmeno@email.cz' }) }),
@@ -321,13 +321,13 @@ export function contactSheet(person) {
         self ? field({ label: 'Přezdívka', optional: true, hint: 'Ukáže se v závorce za jménem.', control: textInput({ name: 'nickname', value: person.nickname || '', autocomplete: 'off', placeholder: 'např. Bětka' }) }) : null,
       ],
     ],
-    submitLabel: kid || restricted ? 'Zavři' : 'Ulož',
+    submitLabel: kid || restricted ? 'Zavřít' : 'Uložit',
     onSubmit: (f) => {
       if (kid || restricted) return undefined;
       clearErrors(f);
       const phone = String(ctl(f, 'phone').value || '').trim();
       const email = String(ctl(f, 'email').value || '').trim();
-      if (email && !EMAIL.test(email)) { fieldError(ctl(f, 'email'), 'Tenhle e-mail nevypadá dobře.'); return false; }
+      if (email && !EMAIL.test(email)) { fieldError(ctl(f, 'email'), 'E-mail má mít tvar jmeno@domena.cz.'); return false; }
       const target = personById(S.data, person.id);
       if (!target) return self ? 'Tvoje karta mezitím zmizela. Dej vědět vedoucímu.' : gone;
       assign(target, self ? { phone, email, nickname: String(ctl(f, 'nickname').value || '').trim() } : { phone, email });
@@ -407,7 +407,7 @@ export function householdChooseSheet(person) {
 export function householdSheet(original = null) {
   const sheet = formSheet({
     title: original ? 'Úprava domácnosti' : 'Nová domácnost',
-    submitLabel: original ? 'Ulož' : 'Přidej domácnost',
+    submitLabel: original ? 'Uložit' : 'Přidat domácnost',
     body: [
       field({ label: 'Název', control: textInput({ name: 'name', value: original?.name || '', autocomplete: 'off', placeholder: 'např. Svobodovi' }) }),
       field({ label: 'Adresa', optional: true, hint: 'Vidí ji jen vedoucí a lidé z domácnosti.', control: textInput({ name: 'address', value: original?.address || '', autocomplete: 'off', placeholder: 'např. Dlouhá 21, Nový Jičín' }) }),
@@ -441,7 +441,7 @@ export function deleteHousehold(household) {
   confirmSheet({
     title: `Chceš smazat domácnost ${household.name}?`,
     text: members.length ? `Lidé zůstanou v seznamu, jen už nebudou v jedné domácnosti (${andJoin(members.map(fullName))}).` : 'Nikdo v ní nebydlí.',
-    confirmLabel: 'Smaž domácnost',
+    confirmLabel: 'Smazat domácnost',
     onConfirm: () => {
       S.data.households = S.data.households.filter((x) => x.id !== household.id);
       for (const p of S.data.people) if (p.householdId === household.id) delete p.householdId;
@@ -530,7 +530,7 @@ export function bulkGroupSheet(people, done) {
   const sheet = formSheet({
     subtitle: plural(people.length, 'vybraný člověk', 'vybraní lidé', 'vybraných lidí'),
     title: 'Do které skupiny?',
-    submitLabel: 'Přidej do skupiny',
+    submitLabel: 'Přidat do skupiny',
     body: [field({ label: 'Kam', control: select }), countLine],
     onSubmit: (f) => {
       const g = groupById(S.data, ctl(f, 'group').value);
@@ -555,7 +555,7 @@ export function bulkGroupSheet(people, done) {
 
 // ---------- the archive, deleting a card ----------
 
-const GITHUB_NOTE = 'V historii na GitHubu údaje zůstanou. Jak je smazat úplně, najdeš v návodu ke Zvonci.';
+const GITHUB_NOTE = 'Starší verze dat si GitHub pamatuje, takže tam údaje ještě zůstanou. Jak je smazat úplně, popisuje návod ke Zvonci.';
 const revoke = (personId, message) => revokeLoginsOf(personId, message)?.catch((error) => toast(`Přístup se nepodařilo zrušit. ${error.message}`, { icon: 'alert' }));
 
 /** „Přesunout do archivu“: asks once, then archives (lib/archive.js) and releases the future duties. */
@@ -566,10 +566,10 @@ export function archiveSheet(person) {
     title: `Chceš přesunout kartu ${name} do archivu?`,
     text: [
       `${name} zmizí ze seznamů, kontaktů a návrhů do služeb. Ve starých rozpisech zůstane.`,
-      future ? 'Budoucí služby se uvolní.' : '',
+      future ? 'Služby, které má naplánované, se uvolní pro někoho jiného.' : '',
       hasLogin(person.id) ? 'Přístup do Zvonce se zruší.' : '',
     ].filter(Boolean).join(' '),
-    confirmLabel: 'Přesuň do archivu',
+    confirmLabel: 'Přesunout do archivu',
     danger: false,
     onConfirm: () => {
       const result = archivePerson(S.data, person.id, { today: today(), now: now() });
@@ -601,7 +601,7 @@ export function deletePerson(person) {
       future ? `${agree(future, 'Uvolní se', 'Uvolní se', 'Uvolní se')} ${plural(future, 'služba', 'služby', 'služeb')}.` : '',
       S.mode === 'live' ? GITHUB_NOTE : '',
     ].filter(Boolean).join(' '),
-    confirmLabel: 'Smaž kartu',
+    confirmLabel: 'Smazat kartu',
     onConfirm: () => {
       const done = deletePersonKeepHistory(S.data, id, { now: now() });
       if (!done) { toast(gone, { icon: 'alert' }); return; }
@@ -623,7 +623,7 @@ export function deleteOverdueSheet(people) {
   confirmSheet({
     title: `Chceš smazat ${what}?`,
     text: [`${listed}.`, 'Kontakty a ostatní údaje se smažou, ve starých rozpisech zůstanou jen jména.', S.mode === 'live' ? GITHUB_NOTE : ''].filter(Boolean).join(' '),
-    confirmLabel: `Smaž ${what}`,
+    confirmLabel: `Smazat ${what}`,
     onConfirm: () => {
       for (const p of people) {
         const done = deletePersonKeepHistory(S.data, p.id, { now: now() });

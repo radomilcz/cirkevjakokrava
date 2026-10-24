@@ -1,6 +1,6 @@
 // Zvonec One – Místa (#mista[/<id>], DESIGN §6.8, §5.2): where we meet. Buildings and places on their own are rows;
 // rooms live in their building's detail (place.partOf, one level) and inherit its address and map.
-//   A „Místa“ · [Přidej místo] (leaders)   B „Hledej místo“ (no Filtr)   D rows: pin mark 40, name,
+//   A „Místa“ · [Přidat místo] (leaders)   B „Hledat místo“ (no Filtr)   D rows: pin mark 40, name,
 //   address · „3 místnosti“, the main place first with „hlavní místo“.
 // ≥ 1200 a place opens in the pane (a room replaces it, with ‹ its building); below it as a page. Leaders add, edit
 // (a layer) and delete (⋯; a place still in use cannot be deleted – the dialog says why); members read.
@@ -78,7 +78,7 @@ function listBody(openId) {
     return empty({
       kind: 'none', icon: 'pin', title: 'Zatím tu není žádné místo.',
       text: 'Místo vybereš u každého setkání. Zvonec pohlídá, aby se dvě setkání nepotkala v jedné místnosti.',
-      action: leader ? { label: 'Přidej místo', icon: 'plus', onclick: () => placeSheet() } : null,
+      action: leader ? { label: 'Přidat místo', icon: 'plus', onclick: () => placeSheet() } : null,
     });
   }
   const query = searchText(SEARCH_KEY);
@@ -96,8 +96,8 @@ export function renderPlaces(id) {
   screenEl = listScreen({
     title: 'Místa',
     phoneBack: menuBack(),   // a phone opens it from the person menu
-    action: leader ? { label: 'Přidej místo', icon: 'plus', onclick: () => placeSheet() } : null,
-    search: { key: SEARCH_KEY, placeholder: 'Hledej místo', onInput: () => screenEl.setBody(listBody(openId)) },
+    action: leader ? { label: 'Přidat místo', icon: 'plus', onclick: () => placeSheet() } : null,
+    search: { key: SEARCH_KEY, placeholder: 'Hledat místo', onInput: () => screenEl.setBody(listBody(openId)) },
     body: listBody(openId),
     pane: id ? (raw ? placeDetail(raw, 'pane') : missingPlace('pane')) : null,
     label: 'Místo',
@@ -115,14 +115,14 @@ const missingPlace = (frame) => missingDetail({ frame, back: { href: LIST, label
 function placeMenu(raw) {
   if (!can('leader')) return null;
   return [
-    { label: 'Uprav místo', icon: 'pencil', onclick: () => placeSheet(raw) },
-    !raw.partOf ? { label: 'Přidej místnost', icon: 'plus', onclick: () => placeSheet(null, { partOf: raw.id }) } : null,
+    { label: 'Upravit místo', icon: 'pencil', onclick: () => placeSheet(raw) },
+    !raw.partOf ? { label: 'Přidat místnost', icon: 'plus', onclick: () => placeSheet(null, { partOf: raw.id }) } : null,
     '-',
-    { label: 'Smaž místo', icon: 'trash', danger: true, onclick: () => deletePlace(raw) },
+    { label: 'Smazat místo', icon: 'trash', danger: true, onclick: () => deletePlace(raw) },
   ].filter(Boolean);
 }
 
-/** The place's detail (DESIGN §5.2): pin mark 56 · h1 · address + „Otevři v mapě ↗“ → Mapa · Místnosti · Kdy se tu scházíme. */
+/** The place's detail (DESIGN §5.2): pin mark 56 · h1 · address + „Otevřít v mapě ↗“ → Mapa · Místnosti · Kdy se tu scházíme. */
 export function placeDetail(raw, frame = 'pane') {
   const leader = can('leader');
   const place = resolvePlace(S.data, raw);
@@ -147,7 +147,7 @@ export function placeDetail(raw, frame = 'pane') {
     canMap(place) ? section({ title: 'Mapa', body: mapFrame(place, { title: `Mapa: ${raw.name}` }) }) : null,
     !building && (rooms.length || leader) ? section({
       title: 'Místnosti',
-      action: leader ? sectionAction('Přidej', { add: true, aria: 'Přidej místnost', onclick: () => placeSheet(null, { partOf: raw.id }) }) : null,
+      action: leader ? sectionAction('Přidat', { add: true, aria: 'Přidat místnost', onclick: () => placeSheet(null, { partOf: raw.id }) }) : null,
       value: leader ? null : (rooms.length ? h('span', { class: 'count count--quiet' }, String(rooms.length)) : null),
       body: rooms.length
         ? list(rooms.map((r) => row({
@@ -187,7 +187,7 @@ export function placeSheet(place, { partOf: presetPartOf = '' } = {}) {
   const address = textInput({ name: 'address', value: place?.address || '', placeholder: 'např. Dlouhá 21, Nový Jičín', autocomplete: 'off' });
   const coords = textInput({ name: 'coords', value: coordsText(place), placeholder: 'např. 49.594, 18.010', inputmode: 'decimal', autocomplete: 'off' });
   let shared = !!place?.shared;
-  const find = h('a', { class: 'link', target: '_blank', rel: 'noopener noreferrer' }, 'Najdi na Mapy.cz', icon('external', { size: 's' }));
+  const find = h('a', { class: 'link', target: '_blank', rel: 'noopener noreferrer' }, 'Najít na Mapy.cz', icon('external', { size: 's' }));
   const updateFind = () => { find.href = mapUrl({ address: address.value.trim(), name: name.value.trim() }); };
   address.addEventListener('input', updateFind);
   name.addEventListener('input', updateFind);
@@ -209,13 +209,13 @@ export function placeSheet(place, { partOf: presetPartOf = '' } = {}) {
       options: [{ value: '', label: 'Ne, samostatné místo' }, ...buildings.map((b) => ({ value: b.id, label: `Ano, v budově ${b.name}` }))],
       onChange: (v) => { partOf = v; sync(); },
     }),
-    hint: ownRooms.length ? `Má ${roomsWord(ownRooms.length)}, takže samo zůstane budovou.` : null,
+    hint: ownRooms.length ? `Tohle místo má ${roomsWord(ownRooms.length)}, proto zůstane budovou a do jiné budovy patřit nemůže.` : null,
   }) : null;
   if (ownRooms.length) partOfField?.querySelector('select')?.setAttribute('disabled', '');
   sync();
   formSheet({
     title: place ? 'Úprava místa' : partOf ? 'Nová místnost' : 'Nové místo',
-    submitLabel: place ? 'Ulož' : partOf ? 'Přidej místnost' : 'Přidej místo',
+    submitLabel: place ? 'Uložit' : partOf ? 'Přidat místnost' : 'Přidat místo',
     size: 'm',
     body: [
       field({ label: 'Název', control: name }),
@@ -270,7 +270,7 @@ function deletePlace(place) {
   confirmSheet({
     title: `Chceš smazat místo ${place.name}?`,
     text: past ? 'Zmizí i z údajů setkání, která už proběhla.' : 'Nikde ho nepoužíváme.',
-    confirmLabel: 'Smaž místo',
+    confirmLabel: 'Smazat místo',
     onConfirm: () => {
       S.data.places = S.data.places.filter((x) => x.id !== place.id);
       for (const e of S.data.events) e.placeIds = (e.placeIds || []).filter((x) => x !== place.id);

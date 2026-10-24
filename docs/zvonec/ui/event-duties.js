@@ -1,17 +1,17 @@
 // Zvonec One – who serves: everything a slot can do, shared by Setkání, Obsazení, Rozpis, Moje and Lidé (package P3).
 // Every sheet here is a layer (layer.open through formSheet / layer.open: a bottom sheet on a phone, a dialog ≥ 600).
-//   pickFor()          the picker for an empty slot or „Vyber jiného“ („Klávesy · ne 11. 10.“: who can, the longest
-//                      rested first; who cannot greyed with the reason under „Nemůžou“; „Hledej mezi všemi lidmi“)
-//   openDutySheet()    a leader taps a filled slot: the answer, its problems with their fixes, Vyber jiného, Zavolej,
-//                      Otevři kartu, Odeber ze služby
+//   pickFor()          the picker for an empty slot or „Vybrat jiného“ („Klávesy · ne 11. 10.“: who can, the longest
+//                      rested first; who cannot greyed with the reason under „Nemohou“; „Hledat mezi všemi lidmi“)
+//   openDutySheet()    a leader taps a filled slot: the answer, its problems with their fixes, Vybrat jiného, Zavolat,
+//                      Otevřít kartu, Odebrat ze služby
 //   openMyAnswer()     my own duty: Můžu / Nemůžu (a clash with my „Kdy nemůžu“ is said there)
 //   blockoutOn(), blockoutNote()   that clash, for every answer card (Setkání › Tvoje služba, Moje)
-//   answer()           a duty answered in one tap – toast with „Vrať“ (Ctrl Z)
-//   warningFor()       one problem in place with „Vyber jiného“ / „Vím o tom“
-//   fillOpenSlots()    „Doplň volná místa“ for one meeting or many (optionally some teams) – review sheet,
-//                      „Zapiš N služeb“, then the places nobody was found for (openEmptySlots), each with „Vyber“
+//   answer()           a duty answered in one tap – toast with „Vrátit zpět“ (Ctrl Z)
+//   warningFor()       one problem in place with „Vybrat jiného“ / „Povolit výjimku“
+//   fillOpenSlots()    „Doplnit volná místa“ for one meeting or many (optionally some teams) – review sheet,
+//                      „Zapsat N služeb“, then the places nobody was found for (openEmptySlots), each with „Vybrat“
 //   sameAsLast(), openNeedsSheet(), askSeries(), teamWords(), warningTag()
-// Reversible things happen at once and offer „Vrať“; nothing here asks „Opravdu?“.
+// Reversible things happen at once and offer „Vrátit zpět“; nothing here asks „Opravdu?“.
 
 import {
   h, icon, button, buttonRow, segmented, statusNote, warningRow, teamMark, layer, formSheet,
@@ -50,12 +50,12 @@ function snapshot(eventId, note, extra) {
 
 /**
  * Výběr člověka for a slot – the one picker of the app (Setkání, Obsazení, the team sheet): an empty slot
- * (assignmentId null) or „Vyber jiného“ (replaces that duty). Titled by the role: the people of its team,
- * who can first and the longest rested first („naposledy 13. 9.“); who cannot that day comes under „Nemůžou“,
+ * (assignmentId null) or „Vybrat jiného“ (replaces that duty). Titled by the role: the people of its team,
+ * who can first and the longest rested first („naposledy 13. 9.“); who cannot that day comes under „Nemohou“,
  * greyed, with the reason („ten den nemůže · dovolená“) – picking them asks „Proč to půjde“ first (the answer
- * is the duty's Vím o tom), and someone who only has another role at this meeting gets „Přesuň sem“.
- * „Hledej mezi všemi lidmi“ reaches everyone who still comes, and „Přidej nového člověka „…““ makes a quick
- * card. The pick waits for an answer; the toast offers „Vrať“.
+ * is the duty's Povolit výjimku), and someone who only has another role at this meeting gets „Přesunout sem“.
+ * „Hledat mezi všemi lidmi“ reaches everyone who still comes, and „Přidat nového člověka „…““ makes a quick
+ * card. The pick waits for an answer; the toast offers „Vrátit zpět“.
  */
 export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {}) {
   const event = fresh(eventId);
@@ -82,10 +82,10 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
   const askWhy = (c) => formSheet({
     title: 'Výjimka',
     subtitle: [role?.name, dayWords(event)].filter(Boolean).join(SEP),
-    submitLabel: 'Přiřaď',
+    submitLabel: 'Přiřadit',
     body: [
       h('p', { class: 'text' }, `${personName(c.person)} – ${whyOf(c, event)}.`),
-      field({ label: 'Proč to půjde', hint: 'Zvonec to pak přestane hlásit jako chybu.', control: textInput({ name: 'reason', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
+      field({ label: 'Proč to půjde', hint: 'Zvonec si důvod zapíše a tuhle službu už nebude hlásit jako problém.', control: textInput({ name: 'reason', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
     ],
     onSubmit: (form, values) => {
       const reason = String(values.reason || '').trim();
@@ -108,10 +108,10 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
       meta: off ? h('span', { class: 'pick-row__why' }, whyOf(c, event)) : whyOf(c, event),
       onclick: () => pick(c),
       cls: off ? 'pick-row pick-row--off' : 'pick-row',
-      trail: other ? button('Přesuň sem', {
+      trail: other ? button('Přesunout sem', {
         size: 's',
         onclick: () => { done(); moveHere(eventId, other.id, roleId, assignmentId); },
-        label: `Přesuň sem: ${personName(c.person)}, teď ${roleName(other.roleId)}`,
+        label: `Přesunout sem: ${personName(c.person)}, teď ${roleName(other.roleId)}`,
       }) : null,
     });
   };
@@ -130,7 +130,7 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
       const rest = group ? team.filter((c) => !c.level) : [];
       items = can.length && !showRest ? can : [...can, ...rest];
       if (can.length && rest.length && !showRest) {
-        more = button(`Ukaž i ostatní z týmu (${rest.length})`, { variant: 'quiet', block: true, iconEnd: 'chevron-down', onclick: () => { showRest = true; draw(); } });
+        more = button(`Zobrazit i ostatní z týmu (${rest.length})`, { variant: 'quiet', block: true, iconEnd: 'chevron-down', onclick: () => { showRest = true; draw(); } });
       }
     }
     const free = items.filter((c) => !c.hardCount);
@@ -138,12 +138,12 @@ export function pickFor(eventId, roleId, assignmentId = null, { onPicked } = {})
     const rows = free.map(rowOf);
     if (!q && !free.length && blocked.length) rows.push(h('p', { class: 'meta pick-none' }, 'Ten den nemá čas nikdo, kdo to umí.'));
     if (more) { rows.push(more); more = null; }
-    if (blocked.length) rows.push(h('h4', { class: 'pick-heading pick-heading--off' }, 'Nemůžou'), ...blocked.map(rowOf));
+    if (blocked.length) rows.push(h('h4', { class: 'pick-heading pick-heading--off' }, 'Nemohou'), ...blocked.map(rowOf));
     if (!rows.length) rows.push(h('p', { class: 'meta pick-none' }, q ? 'Nikdo takový tu není.' : 'V týmu zatím nikdo není. Najdi někoho mezi všemi lidmi.'));
-    if (query.trim()) rows.push(button(`Přidej nového člověka „${query.trim()}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close({ restore: false }); addAndAssign(eventId, roleId, query.trim(), assignmentId); onPicked?.(); } }));
+    if (query.trim()) rows.push(button(`Přidat nového člověka „${query.trim()}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close({ restore: false }); addAndAssign(eventId, roleId, query.trim(), assignmentId); onPicked?.(); } }));
     results.replaceChildren(...rows);
   };
-  const search = searchField({ placeholder: 'Hledej mezi všemi lidmi', label: 'Hledej mezi všemi lidmi', onInput: (v) => { query = v; draw(); } });
+  const search = searchField({ placeholder: 'Hledat mezi všemi lidmi', label: 'Hledat mezi všemi lidmi', onInput: (v) => { query = v; draw(); } });
   sheet = layer.open({ kind: 'sheet',
     title: role?.name || 'Služba',
     subtitle: [replacing ? `Teď: ${nameOf(replacing)}` : null, event.title, dayWords(event)].filter(Boolean).join(SEP),
@@ -218,7 +218,7 @@ function place(e, roleId, personId, assignmentId, override) {
   if (override) target.override = { reason: override, at: today(), ...(myId() ? { by: myId() } : {}) };
 }
 
-/** „Přesuň sem“: the person leaves their other role at this meeting (it opens up) and takes this one. */
+/** „Přesunout sem“: the person leaves their other role at this meeting (it opens up) and takes this one. */
 export function moveHere(eventId, fromAssignmentId, roleId, assignmentId = null) {
   const e = fresh(eventId);
   const from = e?.assignments?.find((a) => a.id === fromAssignmentId);
@@ -293,13 +293,13 @@ export function openDutySheet(eventId, assignmentId) {
     sheet.setBody([
       h('div', { class: 'duty-sheet__who' }, avatar(person, { size: 'l', status: now.status === 'declined' ? 'declined' : null }),
         h('div', {}, h('p', { class: 'duty-sheet__name' }, personName(person)), statusNote(now.status))),
-      field({ label: 'Odpověď', hint: 'Když ti odpověď řekl osobně, zapiš ji tady.', control: segmented(STATUS_OPTIONS, now.status, (v) => { answer(eventId, assignmentId, v, { quiet: true }); draw(); }, { label: 'Stav služby' }) }),
+      field({ label: 'Odpověď', hint: 'Když se odpověď dozvíš mimo Zvonec, třeba osobně nebo po telefonu, vyber ji tady.', control: segmented(STATUS_OPTIONS, now.status, (v) => { answer(eventId, assignmentId, v, { quiet: true }); draw(); }, { label: 'Stav služby' }) }),
       warnings.length ? h('div', { class: 'duty-sheet__warn' }, warnings.map((c) => warningFor(c, { eventId, assignment: now, onDone: () => sheet.close() }))) : null,
       h('div', { class: 'duty-sheet__actions' },
-        button('Vyber jiného', { icon: 'people', block: true, onclick: () => { sheet.close(); pickFor(eventId, now.roleId, assignmentId); } }),
-        phone ? button('Zavolej', { icon: 'phone', block: true, href: `tel:${String(phone).replace(/\s+/g, '')}` }) : null,
-        person && !person.deleted ? button('Otevři kartu', { icon: 'user', block: true, href: `#lide/${person.id}` }) : null,
-        button('Odeber ze služby', { variant: 'danger', icon: 'trash', block: true, onclick: () => { sheet.close(); removeDuty(eventId, assignmentId); } })),
+        button('Vybrat jiného', { icon: 'people', block: true, onclick: () => { sheet.close(); pickFor(eventId, now.roleId, assignmentId); } }),
+        phone ? button('Zavolat', { icon: 'phone', block: true, href: `tel:${String(phone).replace(/\s+/g, '')}` }) : null,
+        person && !person.deleted ? button('Otevřít kartu', { icon: 'user', block: true, href: `#lide/${person.id}` }) : null,
+        button('Odebrat ze služby', { variant: 'danger', icon: 'trash', block: true, onclick: () => { sheet.close(); removeDuty(eventId, assignmentId); } })),
     ]);
   };
   sheet = layer.open({ kind: 'sheet', title: roleName(a.roleId), subtitle: [dayWords(e), e.title].join(SEP), body: [], cls: 'duty-sheet' });
@@ -326,7 +326,7 @@ export function openMyAnswer(eventId, assignmentId) {
     title: `${roleName(a.roleId)}${SEP}${e.title}`,
     subtitle: joinMeta([whenText(e), placeText(e)]),
     cls: 'sheet--compact',
-    body: [now, blocked ? h('p', { class: 'answer-clash' }, blockoutNote(blocked)) : null, here ? null : link('Otevři setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
+    body: [now, blocked ? h('p', { class: 'answer-clash' }, blockoutNote(blocked)) : null, here ? null : link('Otevřít setkání', { href: `#setkani/${e.id}`, iconEnd: 'chevron-right' })],
     foot: e.cancelled || past ? null : buttonRow(
       button('Můžu', { variant: blocked ? 'tint' : 'primary', size: 'l', onclick: () => pick('confirmed') }),
       button('Nemůžu', { variant: blocked ? 'primary' : 'tint', size: 'l', onclick: () => pick('declined') })),
@@ -344,7 +344,7 @@ export function blockoutNote(record) {
 
 // ---------- warnings in place ----------
 
-/** The assignment a „Vím o tom“ of this conflict belongs to: the one at its own event first. */
+/** The assignment a „Povolit výjimku“ of this conflict belongs to: the one at its own event first. */
 function overrideTarget(conflict) {
   const found = [];
   for (const event of S.data.events || []) {
@@ -353,7 +353,7 @@ function overrideTarget(conflict) {
   return found.find((x) => x.assignment.override) || found.find((x) => x.event.id === conflict.eventId) || found[0] || null;
 }
 
-/** „Vím o tom“: a reason on the assignment turns its errors into info. */
+/** „Povolit výjimku“: a reason on the assignment turns its errors into info. */
 export function openOverride(conflict) {
   const target = overrideTarget(conflict);
   if (!target) return;
@@ -362,7 +362,7 @@ export function openOverride(conflict) {
     title: 'Výjimka',
     body: [
       h('p', { class: 'meta' }, conflict.text),
-      field({ label: 'Proč to půjde', hint: 'Zvonec to pak přestane hlásit jako chybu.', control: textInput({ name: 'reason', value: existing?.reason || '', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
+      field({ label: 'Proč to půjde', hint: 'Zvonec si důvod zapíše a tuhle službu už nebude hlásit jako problém.', control: textInput({ name: 'reason', value: existing?.reason || '', placeholder: 'např. odejde ze zkoušky dřív', maxlength: 120 }) }),
     ],
     onSubmit: (form, values) => {
       const reason = String(values.reason || '').trim();
@@ -397,11 +397,11 @@ export function warningFor(conflict, { eventId, assignment, onDone, text, extra 
   const canReplace = assignment && assignment.personId === conflict.personId && dayOf(fresh(eventId)?.end || '') >= today();
   const overridable = (conflict.assignmentIds || []).length && (conflict.severity === 'error' || excused);
   const actions = excused ? [
-    button('Uprav důvod', { size: 's', onclick: done(() => openOverride(conflict)) }),
-    button('Zruš výjimku', { size: 's', variant: 'quiet', onclick: done(() => clearOverride(conflict)) }),
+    button('Upravit důvod', { size: 's', onclick: done(() => openOverride(conflict)) }),
+    button('Zrušit výjimku', { size: 's', variant: 'quiet', onclick: done(() => clearOverride(conflict)) }),
   ] : [
-    canReplace ? button('Vyber jiného', { size: 's', onclick: done(() => pickFor(eventId, assignment.roleId, assignment.id)) }) : null,
-    overridable ? button('Vím o tom', { size: 's', variant: 'quiet', onclick: done(() => openOverride(conflict)) }) : null,
+    canReplace ? button('Vybrat jiného', { size: 's', onclick: done(() => pickFor(eventId, assignment.roleId, assignment.id)) }) : null,
+    overridable ? button('Povolit výjimku', { size: 's', variant: 'quiet', onclick: done(() => openOverride(conflict)) }) : null,
   ].filter(Boolean);
   if (extra) actions.push(extra);
   const sentence = text || conflict.text;
@@ -486,7 +486,7 @@ function allFilled(eventIds, teams) {
   const elsewhere = teams ? emptySlots(S.data, eventIds, null).reduce((n, x) => n + x.n, 0) : 0;
   if (!elsewhere) { toast('Všechna místa jsou obsazená.', { icon: 'check' }); return; }
   toast(`Tady je všechno obsazené. V jiných týmech zbývá obsadit ${plural(elsewhere, 'místo', 'místa', 'míst')}.`, {
-    icon: 'info', actionLabel: 'Ukaž', action: () => openEmptySlots(eventIds, { teams: null }), duration: 9000,
+    icon: 'info', actionLabel: 'Zobrazit', action: () => openEmptySlots(eventIds, { teams: null }), duration: 9000,
   });
 }
 
@@ -520,8 +520,8 @@ export function openEmptySlots(eventIds, { teams = null, nobody = false, written
       list.map((x) => h('div', { class: 'plan-row plan-row--empty' },
         h('span', { class: 'plan-row__role' }, roleName(x.roleId)),
         h('span', { class: 'plan-row__who' }, sev('error', x.n > 1 ? `chybí ${x.n}` : 'chybí')),
-        button('Vyber', {
-          size: 's', label: `Vyber: ${roleName(x.roleId)}, ${shortDate(event.start)}`,
+        button('Vybrat', {
+          size: 's', label: `Vybrat: ${roleName(x.roleId)}, ${shortDate(event.start)}`,
           onclick: () => { sheet.close({ restore: false }); pickFor(eventId, x.roleId, null, { onPicked: again }); },
         }))));
   });
@@ -529,12 +529,12 @@ export function openEmptySlots(eventIds, { teams = null, nobody = false, written
   if (written) {
     body.unshift(h('div', { class: 'plan-done', role: 'status' }, icon('check', { size: 's' }),
       h('span', {}, `Zapsáno: ${written.n} ${agree(written.n, 'služba', 'služby', 'služeb')}. Čekají na potvrzení.`),
-      button('Vrať', { size: 's', variant: 'quiet', onclick: () => { sheet.close(); written.undo(); toast('Vráceno.', { icon: 'undo' }); } })));
+      button('Vrátit zpět', { size: 's', variant: 'quiet', onclick: () => { sheet.close(); written.undo(); toast('Vráceno.', { icon: 'undo' }); } })));
   }
   const places = plural(missing, 'místo', 'místa', 'míst');
   sheet = layer.open({ kind: 'sheet',
     title: 'Volná místa',
-    subtitle: `Zbývá obsadit ${places}. ${nobody ? 'Zvonec nikoho volného nenašel. ' : 'Zvonec pro ně nikoho volného nenašel. '}U každého místa vybereš z celého týmu nebo ze všech lidí.`,
+    subtitle: `Zbývá obsadit ${places}. ${nobody ? 'Zvonec nikoho volného nenašel. ' : 'Zvonec pro ně nikoho volného nenašel. '}U každého místa pak vybereš člověka z týmu nebo ze všech lidí.`,
     body,
     cls: 'plan-sheet',
   });
@@ -567,7 +567,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   const submit = button('', { variant: 'primary', size: 'l', block: true });
   const paint = () => {
     const n = chosen().length;
-    submit.lastChild.textContent = n ? `Zapiš ${sluzbyAcc(n)}` : 'Nic nezapisuj';
+    submit.lastChild.textContent = n ? `Zapsat ${sluzbyAcc(n)}` : 'Nic nezapisuj';
   };
   const body = groups.map((g) => {
     const event = fresh(g.eventId);
@@ -584,7 +584,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   });
   if (left) {
     body.push(h('p', { class: 'plan-left' }, sev('error', `chybí ${left}`), ' ',
-      left === 1 ? 'Pro jedno místo Zvonec nikoho nenašel. Ukáže ti ho, až tyhle zapíšeš.' : `Pro ${plural(left, 'místo', 'místa', 'míst')} Zvonec nikoho nenašel. Ukáže ti je, až tyhle zapíšeš.`));
+      left === 1 ? 'Pro jedno místo Zvonec nikoho volného nenašel. Až zapíšeš služby nahoře, ukáže ti ho a člověka vybereš ručně.' : `Pro ${plural(left, 'místo', 'místa', 'míst')} Zvonec nikoho volného nenašel. Až zapíšeš služby nahoře, ukáže ti je a lidi vybereš ručně.`));
   }
   let sheet;
   submit.addEventListener('click', () => {
@@ -613,7 +613,7 @@ export function fillOpenSlots(eventIds, { teams = null } = {}) {
   });
   sheet = layer.open({ kind: 'sheet',
     title: 'Návrh služeb',
-    subtitle: `Zvonec našel ${total === 1 ? 'volného kandidáta' : 'volné kandidáty'}. Koho nechceš, odškrtni. Kdo zůstane zaškrtnutý, dostane službu a potvrdí, jestli může.`,
+    subtitle: `Zvonec našel ${total === 1 ? 'člověka, který ten den může a službu umí' : 'lidi, kteří ten den mohou a službu umí'}. Koho nechceš, odškrtni. Kdo zůstane zaškrtnutý, dostane službu a pak ji potvrdí.`,
     body,
     foot: submit,
     cls: 'plan-sheet',
@@ -627,10 +627,10 @@ export function sameAsLast(eventId) {
   const e = fresh(eventId);
   if (!e) return;
   const prev = previousEvent(S.data, eventId);
-  if (!prev) { toast('Minule tu takové setkání nebylo.', { icon: 'info' }); return; }
+  if (!prev) { toast('Před tímhle setkáním žádné ze stejné řady ani šablony nebylo, takže není odkud převzít lidi.', { icon: 'info' }); return; }
   const undo = snapshot(eventId, 'jako minule');
   const added = sameAsLastTime(S.data, eventId, () => newId('a'));
-  if (!added.length) { toast('Z minula nebylo koho přidat.', { icon: 'info' }); return; }
+  if (!added.length) { toast('Nikoho z minula nešlo přidat: místa jsou obsazená, nebo ti lidé tentokrát nemohou.', { icon: 'info' }); return; }
   change(`jako minule: ${e.title} ${shortDate(e.start, { weekday: false })}`);
   toast(`Doplněno jako minule: ${plural(added.length, 'člověk', 'lidé', 'lidí')}.`, { action: undo });
 }
@@ -673,7 +673,7 @@ export function openNeedsSheet(eventId) {
   const used = (t) => t.roles.some((r) => own.get(r.id) || fromProgram.get(r.id));
   const roleField = (role) => field({
     label: role.name,
-    hint: fromProgram.get(role.id) ? `navíc z osnovy: ${fromProgram.get(role.id)}` : null,
+    hint: fromProgram.get(role.id) ? `Navíc ještě ${fromProgram.get(role.id)} pro body v osnově.` : null,
     control: stepper({ name: `n-${role.id}`, value: own.get(role.id) || 0, min: 0, max: 20, label: role.name, onChange: (v) => values.set(role.id, v) }),
     cls: 'needs-field',
   });

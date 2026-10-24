@@ -1,4 +1,4 @@
-// Tests for the church's own texts (lib/messages.js): the reminder behind „Připomeň“ and the e-mail signature.
+// Tests for the church's own texts (lib/messages.js): the reminder behind „Připomenout“ and the e-mail signature.
 // Run: node --test zvonec/test/messages.test.mjs
 
 import { test } from 'node:test';

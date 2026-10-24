@@ -379,7 +379,7 @@ export class Sync {
         this.replaceCollections(merge(mine, fileSlice(this.data, path), merged));
       }
     }
-    throw new GithubError('Nepodařilo se to sloučit ani na třetí pokus.', 409);
+    throw new GithubError('Mezitím ukládali i ostatní a Zvonec tvoje změny nedokázal spojit s jejich. Zkus to za chvíli znovu.', 409);
   }
 
   /**

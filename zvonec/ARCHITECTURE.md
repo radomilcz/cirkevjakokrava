@@ -113,7 +113,7 @@ Only `team` groups have roles and feed planning.
 
 ### events.json
 ```
-eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" | "event",   // UI: Šablona, kind = Účel
+eventType     { id: "t…", name, kind: "service" | "rehearsal" | "smallGroup" | "event",   // UI: Šablona, kind = Druh setkání
                 weekday?: 0..6,                 // 0 = Monday; the day its events usually fall on (prefills the calendar)
                 startTime: "HH:mm", minutes: int, placeIds: [], needs: [need],
                 program?: [{ formatId, minutes }], groupId?,
@@ -149,7 +149,7 @@ servingLimits { id: "<personId>", personId, maxPerMonth?: int, maxConsecutiveWee
 
 Older data with a `seriesId` but no `series` record still work: `seriesFor()` infers `{ …, inferred: true }`
 from the events (`step: null` when the dates do not follow a rule). New series go through `addSeries`
-(stores the record and the events), `extendSeries` is „Prodluž řadu“. `validateData()` (lib/validate.js)
+(stores the record and the events), `extendSeries` is „Prodloužit řadu“. `validateData()` (lib/validate.js)
 reports records that do not hold together: an unknown series step, a series ending before it starts,
 negative or non-integer `attendance`, `partOf` pointing to a missing place, to itself or to a room, a
 non-text household address. It returns Czech texts; `zvonec/check.mjs` prints them as warnings and never
@@ -180,15 +180,15 @@ K5 (unfilled) and K12 (childcare). K17 is left for a format whose lead role no l
 
 No migration: the archive **is** the stored status `former`, and older data read the same.
 `lib/archive.js` (pure, tested in `zvonec/test/archive.test.mjs`):
-- `archivePerson(data, id, { today, now })` – „Přesuň do archivu“: `membership = { status: "former",
+- `archivePerson(data, id, { today, now })` – „Přesunout do archivu“: `membership = { status: "former",
   since?, until: today, previous: <status before> }`; the person's assignments and program items of
   events starting from `now` are removed / lose `personId` (the slots open again); `leader` is dropped
   on their `groupMember` records. The records themselves stay (teams and skills come back with the
   card), but `membersOf`, `leadersOf`, `peopleForRole` and `skillMatrix` skip archived cards. Past
   events stay untouched. In live mode the UI also removes their logins from `access.json`.
-- `restorePerson(data, id)` – „Vrať z archivu“: back to `previous`, `regular` (přítel) when unknown
+- `restorePerson(data, id)` – „Vrátit z archivu“: back to `previous`, `regular` (přítel) when unknown
   (older data); released duties and leading do not come back.
-- `deletePersonKeepHistory(data, id, { now })` – „Smaž kartu“: past assignments and program items
+- `deletePersonKeepHistory(data, id, { now })` – „Smazat kartu“: past assignments and program items
   keep `personId` and get `personName` (the full name), future ones are released; the card, its
   `groupMember` records, availability and serving limits are removed. `personOrSnapshot(data, record)`
   (lib/people.js) and `personInEvent(data, event, personId)` give the card or a stand-in
@@ -249,7 +249,7 @@ lib/archive.js         archivePerson, restorePerson, deletePersonKeepHistory, fu
 lib/places.js          placeById, buildingOf, resolvePlace, placeAddress, placesOf, roomsOf, placeTree
 lib/groups.js          members of a group, roles of a person, leaders, skill level, skillMatrix
 lib/events.js          event types → events, series (addSeries, extendSeries, seriesFor, seriesSummary), needs,
-                       fillRatio, lastDuty, KIND_LABELS / KIND_ICONS (Účel)
+                       fillRatio, lastDuty, KIND_LABELS / KIND_ICONS (Druh setkání)
 lib/program.js         program times, leader of an item
 lib/scheduling.js      candidate ranking, availability and limits, "propose the rest", "same as last time",
                        servingLoad (Břemeno), openSlots, unconfirmedDuties

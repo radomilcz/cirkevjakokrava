@@ -75,7 +75,7 @@ test('K1: one person at two events at once', () => {
   assert.equal(k[0].eventId, 'a');
   assert.equal(k[0].personId, 'petr');
   assert.deepEqual(k[0].assignmentIds, ['p1', 'p2']);
-  assert.match(k[0].text, /^Petr má být naráz na dvou místech: a \(ne 11\. 10\. 10\.00\) a b/);
+  assert.match(k[0].text, /^Petr má být naráz na dvou místech: a \(ne 11\. 10\. 10\.00\) a b/);
 });
 
 test('K1 does not apply to declined assignments and cancelled events', () => {
@@ -177,12 +177,12 @@ test('K5: one card per event and kind, only when the date gets close; the past i
   assert.deepEqual(k.map((x) => `${x.eventId}:${x.severity}`).sort(), ['soon:error', 'soon:warning', 'twoweeks:warning'],
     'a freshly planned event a month ahead is not a problem yet');
   const essential = k.find((x) => x.eventId === 'soon' && x.severity === 'error');
-  assert.equal(essential.text, 'Bez tohohle to nepůjde: Zvuk.');
+  assert.equal(essential.text, 'Chybí nezbytné role: Zvuk.');
   assert.deepEqual(essential.roleIds, ['zvuk']);
   const other = k.find((x) => x.eventId === 'soon' && x.severity === 'warning');
   assert.equal(other.text, 'Ještě chybí: Zpěv (2), Kytara.');
   assert.deepEqual(other.roleIds, ['zpev', 'kytara']);
-  assert.equal(k.find((x) => x.eventId === 'twoweeks').text, 'Bez tohohle to nepůjde: Zvuk.', 'essential roles warn two weeks ahead, the rest a week ahead');
+  assert.equal(k.find((x) => x.eventId === 'twoweeks').text, 'Chybí nezbytné role: Zvuk.', 'essential roles warn two weeks ahead, the rest a week ahead');
 });
 
 test('K5 and K6 read their day limits from settings.rules', () => {
@@ -354,7 +354,7 @@ test('K17: a format leads with a role that no longer exists', () => {
   e.program = [{ id: 'i1', formatId: 'f-gone', minutes: 5 }];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(codes(k), ['K17:warning'], 'no K5 for the unknown role');
-  assert.equal(k[0].text, 'Modlitba: nikdo to nevede, role z formátu už neexistuje. Vyber člověka, nebo uprav formát.');
+  assert.equal(k[0].text, 'Modlitba: bod nikdo nevede, protože role, která ho měla vést, je smazaná. Vyber člověka, nebo ve formátu nastav jinou roli.');
   e.program[0].personId = 'petr';
   assert.deepEqual(findConflicts(d, { today: TODAY }), []);
 });
@@ -387,7 +387,7 @@ test('K16: a leader who is gone, former or paused', () => {
   d.servingLimits = [{ id: 'jana', personId: 'jana', paused: true }];
   const k = findConflicts(d, { today: TODAY });
   assert.deepEqual(k.map((x) => x.key).sort(), ['K16:i1:gone', 'K16:i2', 'K16:i3']);
-  assert.ok(k.some((x) => x.text === 'Příběh: vede někdo, kdo už v rozpisu není.'));
+  assert.ok(k.some((x) => x.text === 'Příběh: bod vede někdo, kdo už neslouží. Vyber někoho jiného.'));
   assert.ok(k.some((x) => x.text === 'Svědectví: Petr je v archivu.'));
   assert.ok(k.some((x) => x.text === 'Příběh: Jana má teď pauzu.'));
 });

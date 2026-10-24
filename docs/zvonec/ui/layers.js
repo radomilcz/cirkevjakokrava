@@ -13,7 +13,7 @@
 // first. Depth ≤ 2. A menu (or another anchored popover) closes before anything opens over it. Esc and a scrim
 // tap close the top layer; focus goes in and returns to the opener. Everything outside the top layer is inert.
 //
-// Also here: menuButton() / openMenu() (⋯), formSheet() and confirmSheet() on top of layer.open, and toast() with „Vrať“
+// Also here: menuButton() / openMenu() (⋯), formSheet() and confirmSheet() on top of layer.open, and toast() with „Vrátit zpět“
 // and Ctrl Z (undoLast()).
 
 import { h, nodes, uid } from './h.js';
@@ -243,11 +243,11 @@ function placeToasts() {
  * body, foot (phone: primary L full width, the secondary quiet L under it; dialog: right-aligned, the secondary 8 to
  * the left of the primary – pass [primary, secondary]), label (the name when there is no title), head (false: no
  * head row, e.g. the person's menu), onClose(), initialFocus (element or selector), autofocus (false: no field takes
- * the focus by itself), closeLabel ('Zavři'), cls.
+ * the focus by itself), closeLabel ('Zavřít'), cls.
  */
 function open({
   kind = 'sheet', size = 'm', anchor, placement = 'below-end', title, subtitle, body, foot, label, head = true,
-  onClose, initialFocus, autofocus = true, closeLabel = 'Zavři', cls,
+  onClose, initialFocus, autofocus = true, closeLabel = 'Zavřít', cls,
 } = {}) {
   // a menu or another anchored popover never stays under a new layer; the stack never grows past two
   while (stack.length && ANCHORED.has(stack[stack.length - 1].kind)) {
@@ -428,11 +428,11 @@ export function menuButton(items, { label = 'Další možnosti', icon: iconName 
 
 /**
  * A sheet with a form: fields in the body, the primary L button in the foot.
- *   formSheet({ title: 'Kdy nemůže', subtitle: 'Jana Nováková', body: [field…], submitLabel: 'Ulož', onSubmit: (form, values) => … })
+ *   formSheet({ title: 'Kdy nemůže', subtitle: 'Jana Nováková', body: [field…], submitLabel: 'Uložit', onSubmit: (form, values) => … })
  * onSubmit returns nothing to close, or a Czech sentence to keep the sheet open and show it as an error (the button
  * is never disabled – it says what is missing); a promise is awaited. `secondary`: a quiet L button beside / under it.
  */
-export function formSheet({ title, subtitle, body, submitLabel = 'Ulož', onSubmit, wide, size, secondary, cls, autofocus = submitLabel !== 'Ulož' } = {}) {
+export function formSheet({ title, subtitle, body, submitLabel = 'Uložit', onSubmit, wide, size, secondary, cls, autofocus = submitLabel !== 'Uložit' } = {}) {
   const formId = uid('form');
   const error = h('p', { class: 'field__error form-error', role: 'alert', hidden: true }, icon('x', { size: 's' }), h('span'));
   const form = h('form', { id: formId, class: 'form', novalidate: true }, body);
@@ -454,10 +454,10 @@ export function formSheet({ title, subtitle, body, submitLabel = 'Ulož', onSubm
 
 /**
  * The one confirmation (only for what cannot be undone): the question as h2, one sentence, the foot.
- *   confirmSheet({ title: 'Chceš smazat Zkoušku chval?', text: 'Zmizí i se službami.', confirmLabel: 'Smaž setkání', onConfirm })
- * danger (default true): the primary is the danger button. The secondary is „Nech to být“.
+ *   confirmSheet({ title: 'Chceš smazat Zkoušku chval?', text: 'Zmizí i se službami.', confirmLabel: 'Smazat setkání', onConfirm })
+ * danger (default true): the primary is the danger button. The secondary is „Zrušit“.
  */
-export function confirmSheet({ title, text, confirmLabel = 'Smaž', cancelLabel = 'Nech to být', danger = true, onConfirm } = {}) {
+export function confirmSheet({ title, text, confirmLabel = 'Smazat', cancelLabel = 'Zrušit', danger = true, onConfirm } = {}) {
   let sheet;
   sheet = open({
     kind: 'confirm', size: 's', title,
@@ -478,14 +478,14 @@ function toastRoot() {
   return root;
 }
 
-let lastUndo = null;   // { el, undo } – the „Vrať“ of the newest toast with one; Ctrl Z runs it while el is on screen
+let lastUndo = null;   // { el, undo } – the „Vrátit zpět“ of the newest toast with one; Ctrl Z runs it while el is on screen
 
 /**
- * One line + at most one action („Vrať“), 6 s, never more than two at once (CODEX §6.10). While it is on screen,
- * Ctrl Z (⌘Z) does what its „Vrať“ does (undoLast()).
+ * One line + at most one action („Vrátit zpět“), 6 s, never more than two at once (CODEX §6.10). While it is on screen,
+ * Ctrl Z (⌘Z) does what its „Vrátit zpět“ does (undoLast()).
  *   toast('Díky, máš to potvrzené.', { action: undo })
  */
-export function toast(words, { action, actionLabel = 'Vrať', duration = 6000, icon: iconName = 'check' } = {}) {
+export function toast(words, { action, actionLabel = 'Vrátit zpět', duration = 6000, icon: iconName = 'check' } = {}) {
   const root = toastRoot();
   while (root.children.length >= 2) root.firstElementChild.remove();
   let timer = 0;
@@ -495,7 +495,7 @@ export function toast(words, { action, actionLabel = 'Vrať', duration = 6000, i
     iconName ? icon(iconName, { size: 's' }) : null,
     h('span', { class: 'toast__text' }, words),
     action ? h('button', { type: 'button', class: 'btn btn--quiet toast__action', onclick: undo }, actionLabel) : null,
-    h('button', { type: 'button', class: 'icon-btn toast__close', 'aria-label': 'Zavři', title: 'Zavři', onclick: done }, icon('x', { size: 's' })));
+    h('button', { type: 'button', class: 'icon-btn toast__close', 'aria-label': 'Zavřít', title: 'Zavřít', onclick: done }, icon('x', { size: 's' })));
   root.append(el);
   placeToasts();
   if (undo) lastUndo = { el, undo };
@@ -505,7 +505,7 @@ export function toast(words, { action, actionLabel = 'Vrať', duration = 6000, i
   return { close: done };
 }
 
-/** Ctrl Z: the „Vrať“ of the newest toast on screen; false when there is none. */
+/** Ctrl Z: the „Vrátit zpět“ of the newest toast on screen; false when there is none. */
 export function undoLast() {
   if (!lastUndo?.el.isConnected) return false;
   const { undo } = lastUndo;

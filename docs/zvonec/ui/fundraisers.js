@@ -4,7 +4,7 @@
 //   #sbirky        rows (the heart mark 40, the name, „vybráno 34 500 Kč z 80 000 Kč · do 31. 12.“), then „Skončené“;
 //                  ≥ 1200 a split page with the open sbírka in the pane (the newest when none is chosen)
 //   #sbirky/<id>   a detail: the heart mark, the name, facts (until, the code); the feature figure block with the bar
-//                  and [Pošli dar]; „Na co se vybírá“; „Na plakát“ (those who run it); ⋯ Uprav · Ukonči · Smaž
+//                  and [Poslat dar]; „Na co se vybírá“; „Na plakát“ (those who run it); ⋯ Upravit · Ukončit · Smazat
 // The sbírky live in the main data (settings.json › fundraisers); the sums in data/giving.json (ui/giving-state.js).
 
 import { S, can, myId, change, navigate, newId } from './state.js';
@@ -48,7 +48,7 @@ export const fundRow = (f, { selected = false } = {}) => row({
 
 // ---------- founding and editing ----------
 
-/** Založ sbírku / Úprava sbírky: the name, what for, the target and the last day (both optional). */
+/** Založit sbírku / Úprava sbírky: the name, what for, the target and the last day (both optional). */
 export function fundraiserSheet(f) {
   const name = textInput({ name: 'name', value: f?.name || '', autocomplete: 'off', placeholder: 'např. Nový zvuk' });
   const note = textArea({ name: 'note', value: f?.note || '', rows: 3, placeholder: 'Na co se vybírá a proč' });
@@ -56,7 +56,7 @@ export function fundraiserSheet(f) {
   const until = dateInput({ name: 'until', value: f?.until || '', placeholder: 'Bez konce', label: 'Do kdy', min: today() });
   formSheet({
     title: f ? 'Úprava sbírky' : 'Nová sbírka',
-    submitLabel: f ? 'Ulož' : 'Založ sbírku',
+    submitLabel: f ? 'Uložit' : 'Založit sbírku',
     size: 'm',
     body: [
       f ? null : meta('Sbírka dostane vlastní specifický symbol. Podle něj Zvonec pozná platby, které do ní přijdou.'),
@@ -103,7 +103,7 @@ function removeFundraiser(f) {
   confirmSheet({
     title: `Chceš smazat sbírku ${f.name}?`,
     text: 'Zatím do ní nepřišel žádný dar. Kdyby pak někdo poslal platbu s jejím symbolem, Zvonec už nebude vědět, kam patří.',
-    confirmLabel: 'Smaž sbírku',
+    confirmLabel: 'Smazat sbírku',
     onConfirm: () => {
       S.data.fundraisers = (S.data.fundraisers || []).filter((x) => x.id !== f.id);
       change(`smazaná sbírka ${f.name}`);
@@ -115,14 +115,14 @@ function removeFundraiser(f) {
 
 // ---------- the screens ----------
 
-/** The sbírka as a detail (a pane ≥ 1200, a page below): the head, the figure block with [Pošli dar], what for, a poster. */
+/** The sbírka as a detail (a pane ≥ 1200, a page below): the head, the figure block with [Poslat dar], what for, a poster. */
 function fundDetail(f, frame) {
   const run = canRunFundraisers();
   const c = collected(f.id);
   const account = giftAccount();
   const known = G.state === 'ready' || !!G.data;
   const give = account && !f.closed
-    ? button('Pošli dar', { variant: 'primary', size: 'l', icon: 'heart', onclick: () => giveSheet({ fundraiserId: f.id }) })
+    ? button('Poslat dar', { variant: 'primary', size: 'l', icon: 'heart', onclick: () => giveSheet({ fundraiserId: f.id }) })
     : null;
   return detail({
     frame,
@@ -130,11 +130,11 @@ function fundDetail(f, frame) {
     close: frame === 'pane' ? null : undefined,
     label: f.name, title: f.name,
     menu: run ? [
-      { label: 'Uprav', icon: 'pencil', onclick: () => fundraiserSheet(f) },
-      run ? { label: 'Ukaž QR pro plakát', icon: 'image', onclick: () => paymentSheet({ fundraiser: f, poster: true }) } : null,
-      f.closed ? { label: 'Obnov sbírku', icon: 'undo', onclick: () => setClosed(f, false) } : { label: 'Ukonči sbírku', icon: 'check', onclick: () => setClosed(f, true) },
+      { label: 'Upravit', icon: 'pencil', onclick: () => fundraiserSheet(f) },
+      run ? { label: 'Zobrazit QR pro plakát', icon: 'image', onclick: () => paymentSheet({ fundraiser: f, poster: true }) } : null,
+      f.closed ? { label: 'Obnovit sbírku', icon: 'undo', onclick: () => setClosed(f, false) } : { label: 'Ukončit sbírku', icon: 'check', onclick: () => setClosed(f, true) },
       c.gifts ? null : '-',
-      c.gifts ? null : { label: 'Smaž', icon: 'trash', danger: true, onclick: () => removeFundraiser(f) },
+      c.gifts ? null : { label: 'Smazat', icon: 'trash', danger: true, onclick: () => removeFundraiser(f) },
     ].filter(Boolean) : null,
     cls: 'fund-detail',
     body: [
@@ -165,7 +165,7 @@ function fundDetail(f, frame) {
       f.note ? section({ title: 'Na co se vybírá', body: text(f.note) }) : null,
       run && account ? section({
         title: 'Na plakát',
-        body: list([row({ lead: placeMark('image'), title: 'QR platba pro plakát nebo plátno', meta: 'Bez variabilního symbolu, se specifickým symbolem sbírky.', onclick: () => paymentSheet({ fundraiser: f, poster: true }), chevron: true })], { label: 'Na plakát' }),
+        body: list([row({ lead: placeMark('image'), title: 'QR platba pro plakát nebo plátno', meta: 'Jedna platba pro všechny: bez osobního variabilního symbolu, jen se symbolem sbírky.', onclick: () => paymentSheet({ fundraiser: f, poster: true }), chevron: true })], { label: 'Na plakát' }),
       }) : null,
     ],
   });
@@ -196,7 +196,7 @@ export function renderSbirky(parts = []) {
   const shown = id ? f : openFundraisers()[0] || null;
   return page({
     title: 'Sbírky',
-    action: canRunFundraisers() ? { label: 'Založ sbírku', icon: 'plus', onclick: () => fundraiserSheet(null) } : null,
+    action: canRunFundraisers() ? { label: 'Založit sbírku', icon: 'plus', onclick: () => fundraiserSheet(null) } : null,
     back: isPhone() ? { href: '#moje', label: 'Moje' } : null,
     width: 'split',
     label: 'Sbírka',

@@ -21,9 +21,9 @@ Changes from v2, in one line each:
 
 | size | px | token | what |
 |---|---|---|---|
-| **S** | 36 | `--control-s` | ≥ 600 only: an action inside content (a section head's „Uprav“ / „+ Přidej“, a row's call button, the „+ Role“ slot, „Celá osnova ›“ when a button). Hit area 44 via `::after`. |
+| **S** | 36 | `--control-s` | ≥ 600 only: an action inside content (a section head's „Upravit“ / „+ Přidat“, a row's call button, the „+ Role“ slot, „Celá osnova ›“ when a button). Hit area 44 via `::after`. |
 | **M** | 44 | `--control-m` | every other control: buttons, icon buttons, search, fields, selects, chips, the segmented switch, ‹ › „Dnes“, „Filtr“, sidebar items, popover menu rows; on a phone also everything S is on ≥ 600 |
-| **L** | 52 | `--control-l` | the one main action at the foot of a sheet or dialog, Můžu / Nemůžu, the contact tiles Zavolej · SMS · E-mail, the sign-in button |
+| **L** | 52 | `--control-l` | the one main action at the foot of a sheet or dialog, Můžu / Nemůžu, the contact tiles Zavolat · SMS · E-mail, the sign-in button |
 
 Fixed structural heights (not controls): tab bar 64 + safe area (`--tabbar-h`), top bar 56 (`--topbar-h`), title row
 44, sidebar foot 56, rail cell 64, row 64 / 52 on a phone, 60 / 48 from 600 (`--row-h`, `--row-h-single`), team row in
@@ -48,8 +48,8 @@ gets the 44 hit area through `::after`.
 | date arch, empty-state well, mini-month day | arch | `--shape-arch`, `--shape-arch-l`, `--shape-arch-sm` |
 
 No other radius exists (no 7, 8, 16, 18, 24). **Never a coloured side border on anything rounded.** A colour bar
-is either detached (§5) or sits on a straight edge (the month chip's Účel bar: the chip is square on that side) or
-is its own element (the Účel bar in Seznam).
+is either detached (§5) or sits on a straight edge (the month chip's Druh setkání bar: the chip is square on that side) or
+is its own element (the Druh setkání bar in Seznam).
 
 ## 3. Type: one size per role, one weight per kind, no weight change by state
 
@@ -74,7 +74,7 @@ Agrandir Grand Heavy (`--font-brand`) only for the wordmark.
 
 - **A state never changes a weight or a size.** Current, chosen, open, hovered: the fill and the bar change; the words
   do not move. Navigation has one weight (500) in every state.
-- Typed text is ≥ 16 on a phone (no zoom). Placeholders are „Hledej“ + one noun and end in „…“ if cut.
+- Typed text is ≥ 16 on a phone (no zoom). Placeholders are „Hledat“ + one noun and end in „…“ if cut.
 - Text in narrow places breaks between words (`overflow-wrap: normal`) and ends with „…“; labels that must stay whole
   are `white-space: nowrap; flex: none`.
 
@@ -123,14 +123,14 @@ h1 ································ [⋯][main a
 - Title row: min-height 44, items centred; h1 `flex: none`, one line (a long page title wraps under the actions,
   never under them). At the content's right edge (≥ 1200: the list track's, §6.4): ⋯ (outlined like a quiet button, so it never reads as an empty place), then the main action, 8 apart – the main action ends at the edge (the owner's order).
 - **Main action:** primary M (`--act` / `--on-act`, r12, 620). Phone: icon-only 44 square with its aria-label
-  („Přidej setkání“). ≥ 600: icon 20 + label. `data-primary` (the „N“ key). Shown only to who may use it.
+  („Přidat setkání“). ≥ 600: icon 20 + label. `data-primary` (the „N“ key). Shown only to who may use it.
 - **⋯:** quiet icon M, aria-label „Další možnosti“; opens a menu (§6.10). Absent when empty.
 - Same y on every screen of a width class. Never an overline, subtitle, chip or count in the head.
 
 ### 6.2 List toolbar – `toolbar({ search, filter })` (band B)
 
 ```
-[⌕  Hledej setkání ················· ✕][⚟ Filtr ⁿ]
+[⌕  Hledat setkání ················· ✕][⚟ Filtr ⁿ]
 ```
 - Width = the list column (`--list-col`). One row, height 44, no wrap.
 - **Search** (`searchField`): M 44, r12, `--field-bg`, 1 px `--edge-field`, icon 20 inside left at 12, text 16 (phone)
@@ -164,8 +164,8 @@ h1 ································ [⋯][main a
   right. On ≥ 600 the page column is 720 (`--detail-col`), left-aligned. The body starts 12 under the top bar.
 - Head order and offsets: band 96 or mark 56 / 72 → 16 → tag(s) → 8 → h1 → 12 → facts (rows 32, icon 20 + text 16, 8
   apart; a linked fact ends in › and lights as a row) → 32 → sections.
-- **Section head** (`section`): h2 20/26 620 left; right edge: at most one action (quiet S „Uprav“ or tint S „+
-  Přidej“; M on a phone) or one value (count, ring 20 + 13 text). 12 to its content, 32 between sections.
+- **Section head** (`section`): h2 20/26 620 left; right edge: at most one action (quiet S „Upravit“ or tint S „+
+  Přidat“; M on a phone) or one value (count, ring 20 + 13 text). 12 to its content, 32 between sections.
 
 ### 6.5 Top bar (drill-in pages)
 
@@ -179,22 +179,22 @@ width; `--lift-1` once scrolled. Tab roots and list screens never have a top bar
              [meta 15/400 --ink-2 ·························]
 ```
 - Min-height `--row-h` (64 / 60) with meta, `--row-h-single` (52 / 48) without; padding 8 × 12; radius 12.
-- **Lead** (one of): avatar 40, date arch 44 × 56, team mark 40, Účel mark 40, minutes block 40, pin mark 40, icon 24.
+- **Lead** (one of): avatar 40, date arch 44 × 56, team mark 40, Druh setkání mark 40, minutes block 40, pin mark 40, icon 24.
 - **Trail** (exactly one or none): a value (pill or count), the fill ring, one control (call button: quiet icon M on a
   phone, S with a 44 hit on ≥ 600), or ›. A value never sits inside the meta line.
 - Title and meta wrap between words; the trail is `flex: none`.
 - States per §5. The whole row is one `<a>` (or `<button>`); the trail control is a sibling, not a child of it.
-- Variants with the same anatomy: the Seznam event (time column 52, Účel bar 3, text), the Obsazení item (arch +
+- Variants with the same anatomy: the Seznam event (time column 52, Druh setkání bar 3, text), the Obsazení item (arch +
   text + ring + slot line), the Rozpis block (arch + title/time + team lines), the person's-menu row, menu rows.
 
 ### 6.7 Chip, pill, tag, count, slot
 
 - **Chip** (a choice in Filtr and in forms): M 44 capsule, padding 0 16, label 16 / 15, 620 in both states. Off:
   transparent + 1 px `--edge-control`. On: `--act` fill, `--on-act` text, no border change in size, **no ✓ that adds
-  width**. A hue dot 8 before the label in Filtr › Účel. Chips wrap: 8 across, 12 down.
+  width**. A hue dot 8 before the label in Filtr › Druh setkání. Chips wrap: 8 across, 12 down.
 - **Pill** (a value: „na webu“, „ty“, „správce“, „host“): 24 high capsule, 13/620, padding 0 10, `--tint` / `--ink-2`,
   `white-space: nowrap; flex: none`.
-- **Tag** (Účel): a pill in `--hue-fill` / `--hue-ink`.
+- **Tag** (Druh setkání): a pill in `--hue-fill` / `--hue-ink`.
 - **Count / badge**: 20 high capsule, min-width 20, 13/620, `--act` / `--on-act` (on the tab icon, the sidebar item's
   trail, Filtr's slot). The person tab's invite mark is an 8 dot in `--act`.
 - **Slot** („+ Klávesy“): S capsule on ≥ 600, M on a phone; dashed 1 px `--edge-control`, transparent, label 14 / 16
@@ -223,10 +223,10 @@ Labels 620 in every state; icon 20 (S 16) then 8 then the label. Hover: `--act-h
 | `confirm` | sheet: the question as h2 („Chceš smazat Zkoušku chval?“), one sentence, foot | dialog S 400 |
 
 - **Foot:** phone – primary L full width, the secondary (quiet L) 12 under it. Dialog – L buttons right-aligned,
-  secondary 8 to the left of the primary. Confirm: primary = danger when destructive; secondary „Nech to být“.
+  secondary 8 to the left of the primary. Confirm: primary = danger when destructive; secondary „Zrušit“.
 - **Filtr layer:** groups (h3 13/620 `--ink-2`, 24 between groups), chips per §6.7 or switch rows. Choices apply at
-  once. Phone foot: [Ukaž 12 setkání] (primary L, the live count; closes) and [Zruš filtr] (quiet L, only when
-  something is on). Popover foot: [Zruš filtr] quiet M, only when something is on.
+  once. Phone foot: [Zobrazit 12 setkání] (primary L, the live count; closes) and [Zrušit filtr] (quiet L, only when
+  something is on). Popover foot: [Zrušit filtr] quiet M, only when something is on.
 - **Stacking:** all layers mount in `#layers`. Layer n (1-based) sets its scrim `z-index: 40 + 2n` and itself
   `41 + 2n` from JS (CSSOM, allowed by the CSP); each layer has its own `--dim` scrim, so a second layer dims the
   first. **Depth ≤ 2** (form → date picker; picker → its confirm). A menu item that opens a sheet closes the menu
@@ -237,15 +237,15 @@ Labels 620 in every state; icon 20 (S 16) then 8 then the label. Hover: `--act-h
 
 ### 6.10 Toast
 
-`--overlay`, r12, `--lift-4`, padding 12 16, text 15 / 14 + at most one action („Vrať“, quiet S on ≥ 600, M on a
+`--overlay`, r12, `--lift-4`, padding 12 16, text 15 / 14 + at most one action („Vrátit zpět“, quiet S on ≥ 600, M on a
 phone). Phone: centred, 16 above the tab bar, max 360. ≥ 600: bottom-left of the content frame, 24 from the bottom,
-max 400. 6 s; Ctrl Z triggers its „Vrať“. z-index 60 (above layers).
+max 400. 6 s; Ctrl Z triggers its „Vrátit zpět“. z-index 60 (above layers).
 
 ### 6.11 Main action (there is no FAB)
 
 The main action is the primary button in the title row (§6.1). There is no floating button at any width. A view
 never changes it. When a screen's main action is not an „add“ and the phone has no room for its label (Obsazení:
-„Doplň volná místa“), the phone puts it first in ⋯.
+„Doplnit volná místa“), the phone puts it first in ⋯.
 
 ### 6.12 Empty state – `empty({ case, title, text, action })`
 
@@ -269,7 +269,7 @@ Arch well 88 (`--shape-arch-l`, `--tint`) with an icon 32 `--ink-2`; 16 → h2 2
 
 - **Date arch** 44 × 56, `--tint`, weekday 13/500 caps `--tracking-caps`, numeral Agrandir 22; today = `--act` /
   `--on-act`.
-- **Účel bar** (Seznam, Rozpis, Obsazení, Pastva): its own element, 3 wide, as tall as title + meta, square ends,
+- **Druh setkání bar** (Seznam, Rozpis, Obsazení, Pastva): its own element, 3 wide, as tall as title + meta, square ends,
   `--hue-mark`, 12 from the time column and 12 from the text.
 - **Month chip** 24, padding 0 8, square left edge with the 3 px bar, right corners 9; time 13/620 + title 13/400;
   mine: `--hue-fill` / `--hue-ink`; cancelled: struck, `--ink-3`; max 3 per cell, then „+ 2 další“ (13/620 link).
@@ -279,7 +279,7 @@ Arch well 88 (`--shape-arch-l`, `--tint`) with an icon 32 `--ink-2`; 16 → h2 2
 
 ### 6.15 Save line
 
-Simple's, unchanged: a status capsule (13/620) that says „Ukládám…“ after 1 s, stays with „Změny se neuložily · Zkus
+Simple's, unchanged: a status capsule (13/620) that says „Ukládám…“ after 1 s, stays with „Změny se neuložily · Zkusit
 to znovu“ (`--no-fill` / `--no-ink`) or the offline sentence, and is otherwise hidden; `beforeunload` while unsaved.
 
 ## 7. Colour
@@ -299,12 +299,12 @@ to znovu“ (`--no-fill` / `--no-ink`) or the offline sentence, and is otherwise
 | `--act`, `--act-hover`, `--on-act`, `--thumb` | `--primary-bg`, `--primary-bg-hover`, `--primary-fg`, `--thumb` | main action, chosen chip, counts, today |
 | `--pick`, `--pick-hover`, `--mark` | `--selected-bg`, `--selected-bg-hover`, `--indicator` | selection fill, its hover, the 3 px bar |
 | `--ok-*`, `--wait-*`, `--no-*`, `--info-*` | the status tokens | ✓ ○ ● and callouts |
-| `--hue-fill`, `--hue-mark`, `--hue-ink` | `--<hue>-3`, `--<hue>-11`, `--<hue>-12` via `[data-hue]` | Účel only (DESIGN §7.2) |
+| `--hue-fill`, `--hue-mark`, `--hue-ink` | `--<hue>-3`, `--<hue>-11`, `--<hue>-12` via `[data-hue]` | Druh setkání only (DESIGN §7.2) |
 | `--dim` | `--scrim` | layer scrims |
 | `--lift-1 … --lift-4` | from `--line-*` and `--shadow-tint-*` | top bar, thumb/pane, sheet, menu/dialog/toast |
 
 - The brand has one pink, used as itself (`--act` in Hlína a růžová, `--pick`), never as a ramp, a text colour or an
-  avatar. Hues outside the brand: the status colours and the four Účel hues only.
+  avatar. Hues outside the brand: the status colours and the four Druh setkání hues only.
 - `KIND_HUES = { service: 'rose', rehearsal: 'blue', smallGroup: 'teal', event: 'plum' }`. Avatar and team hues:
   blue, green, plum, amber, teal (no rose).
 
@@ -315,5 +315,5 @@ to znovu“ (`--no-fill` / `--no-ink`) or the offline sentence, and is otherwise
 - Screens call the kit: `listScreen`, `page`, `detail`, `row`, `section`, `empty`, `layer.open`, `filterButton`,
   `periodLine`, `segmented`. A screen that needs something the kit cannot draw asks the foundation owner to extend
   the kit for every screen; it never draws its own head, toolbar, pane or layer.
-- Every Czech string: actions in the imperative, 2nd person singular (tykání); titles are nouns. Checked with
+- Every Czech string: controls in the infinitive („Uložit“, „Zrušit“), sentences in tykání; titles are nouns. Checked with
   `kontrola-cestiny`.

@@ -1,18 +1,18 @@
 // Zvonec One – the kit: Filtr (CODEX §6.2, §6.9; DESIGN §3.4). One button, always at the same place (band B, right of
 // the search, fixed 120 wide with its count slot reserved), one layer: a bottom sheet on a phone, a popover 360 under
 // the button on ≥ 600. Choices apply at once. A filter that is on shows its count on the button and one quiet line under
-// band B („Filtr: Slovo · Zruš filtr“, btn.note – the screen places it); no chip row anywhere else. Filters are remembered per browser and per screen (localStorage,
+// band B („Filtr: Slovo · Zrušit filtr“, btn.note – the screen places it); no chip row anywhere else. Filters are remembered per browser and per screen (localStorage,
 // key „zvonec-one-filtr-<key>“); a default scope counts (Obsazení starts at „Filtr 1“).
 //
 //   const filter = filterButton({
 //     key: 'kalendar',
 //     groups: [
-//       { id: 'ucel', title: 'Účel', kind: 'chips', multiple: true, options: [['service', 'Nedělní setkání', 'rose'], …] },
+//       { id: 'ucel', title: 'Druh setkání', kind: 'chips', multiple: true, options: [['service', 'Nedělní setkání', 'rose'], …] },
 //       { id: 'tym', title: 'Tým', kind: 'chips', options: [['t1', 'Chvály'], …], value: 't1' },   // value: the default
 //       { id: 'moje', title: 'Jen moje služby', kind: 'switch' },
 //     ],
 //     onChange: (state) => render(),            // after every choice (state = filterState('kalendar'))
-//     results: () => shown.length,              // the live number behind the phone foot „Ukaž 12 setkání“
+//     results: () => shown.length,              // the live number behind the phone foot „Zobrazit 12 setkání“
 //     unit: (n) => `${n} setkání`,
 //   });
 //   filterState('kalendar') → { ucel: ['service'], tym: 't1', moje: true }      setFilter('kalendar', { moje: false })
@@ -70,7 +70,7 @@ export function setFilter(key, patch = {}) {
   return next;
 }
 
-/** „Zruš filtr“: nothing on (a default scope is gone too – it shows everything). */
+/** „Zrušit filtr“: nothing on (a default scope is gone too – it shows everything). */
 export function clearFilter(key) { write(key, {}); return {}; }
 
 /** How many choices are on: a chip counts each, a single choice 1, a switch 1. */
@@ -99,7 +99,7 @@ function fill(btn, n) {
  *   key        the screen: 'kalendar' · 'obsazeni' · 'lide' · 'skupiny' · 'sablony' · 'pristupy' …
  *   groups     [{ id, title, kind: 'chips' | 'switch', multiple, options: [[value, label, hue?]], value (default), hint }]
  *   onChange   (state) after every choice – redraw the list (the layer stays open, re-anchored to the new button)
- *   results    () → the number of items the list shows now (the phone foot „Ukaž 12 setkání“)
+ *   results    () → the number of items the list shows now (the phone foot „Zobrazit 12 setkání“)
  *   unit       (n) → „12 setkání“ (default: „12“)
  *   count      a number or (state) → number, when the screen counts its own way (default: filterCount)
  */
@@ -110,7 +110,7 @@ export function filterButton({ key, groups = [], onChange, results, unit = (n) =
   }, icon('sliders', { size: 's' }), h('span', { class: 'filter-btn__label' }, 'Filtr'),
   h('span', { class: 'filter-btn__slot' }, h('span', { class: 'filter-btn__n', 'aria-hidden': 'true' }, '0')));
   const counted = () => (typeof count === 'function' ? count(filterState(key)) : typeof count === 'number' ? count : filterCount(key, groups));
-  // what is on, said once under band B („Filtr: Slovo, Klávesy · Zruš filtr“) – a filter that hides work must say so
+  // what is on, said once under band B („Filtr: Slovo, Klávesy · Zrušit filtr“) – a filter that hides work must say so
   // (the UX team: Obsazení opened filtered to one team and nothing said it)
   const note = h('p', { class: 'filter-note', hidden: true });
   const describe = () => {
@@ -127,7 +127,7 @@ export function filterButton({ key, groups = [], onChange, results, unit = (n) =
     note.hidden = !words.length;
     note.replaceChildren(...(words.length ? [
       h('span', {}, `Filtr: ${words.join(', ')}`), ' · ',
-      h('button', { type: 'button', class: 'link', onclick: () => { clearFilter(key); changed(); } }, 'Zruš filtr'),
+      h('button', { type: 'button', class: 'link', onclick: () => { clearFilter(key); changed(); } }, 'Zrušit filtr'),
     ] : []));
   };
   fill(btn, counted());
@@ -172,7 +172,7 @@ export function filterButton({ key, groups = [], onChange, results, unit = (n) =
         g.hint ? h('p', { class: 'field__hint' }, g.hint) : null);
     });
     const n = counted();
-    const clear = n ? button('Zruš filtr', {
+    const clear = n ? button('Zrušit filtr', {
       variant: 'quiet', size: openFilter?.layer.el.dataset.mode === 'bottom' ? 'l' : 'm', block: openFilter?.layer.el.dataset.mode === 'bottom',
       onclick: () => { clearFilter(key); changed(); },
     }) : null;
@@ -182,7 +182,7 @@ export function filterButton({ key, groups = [], onChange, results, unit = (n) =
     if (sheet.el.dataset.mode === 'bottom') {
       const shown = typeof results === 'function' ? results() : null;
       sheet.setFoot([
-        button(shown == null ? 'Hotovo' : `Ukaž ${unit(shown)}`, { variant: 'primary', size: 'l', block: true, onclick: () => sheet.close() }),
+        button(shown == null ? 'Hotovo' : `Zobrazit ${unit(shown)}`, { variant: 'primary', size: 'l', block: true, onclick: () => sheet.close() }),
         clear,
       ]);
     } else sheet.setFoot(clear);

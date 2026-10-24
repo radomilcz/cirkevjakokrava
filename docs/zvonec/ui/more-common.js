@@ -1,4 +1,4 @@
-// Zvonec One – what the screens of package P5 share (Šablony, Formáty, Místa – „Zdroje“; Přístupy,
+// Zvonec One – what the screens of package P5 share (Šablony, Formáty, Místa – „Příprava“; Přístupy,
 // Nastavení sboru): the marks that lead their rows and details, the search match, the three empty states, the page
 // of a missing item, sorting by Czech names, small words (minutes, times) and the „send this link“ sheet.
 // The frames are the kit's (listScreen / page / detail); nothing here draws a head, a toolbar or a pane of its own.
@@ -33,15 +33,15 @@ export function clearSearch() {
 
 // ---------- the three empty states (DESIGN §3.4) ----------
 
-/** Nothing found: „Nic tomu neodpovídá.“ · „Hledáš „Kučer“.“ · [Vymaž hledání]. */
+/** Nothing found: „Nic tomu neodpovídá.“ · „Hledáš „Kučer“.“ · [Vymazat hledání]. */
 export const searchEmpty = (query) => empty({
-  kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${query.trim()}“.`, action: { label: 'Vymaž hledání', onclick: clearSearch },
+  kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${query.trim()}“.`, action: { label: 'Vymazat hledání', onclick: clearSearch },
 });
 
-/** Filtered empty: „S tímhle filtrem tu nic není.“ · „Filtr skrývá 4 šablony.“ · [Zruš filtr]. */
+/** Filtered empty: „S tímhle filtrem tu nic není.“ · „Filtr skrývá 4 šablony.“ · [Zrušit filtr]. */
 export const filterEmpty = (key, hiddenWords) => empty({
   kind: 'filter', title: 'S tímhle filtrem tu nic není.', text: `Filtr skrývá ${hiddenWords}.`,
-  action: { label: 'Zruš filtr', onclick: () => { clearFilter(key); render(); } },
+  action: { label: 'Zrušit filtr', onclick: () => { clearFilter(key); render(); } },
 });
 
 /**
@@ -98,23 +98,23 @@ async function copy(value) {
 }
 
 /**
- * Shows a secret once (an invite link, a new password) with „Pošli“ (the system share sheet, when the device has
- * one) and „Zkopíruj“. rows: [{ label, value, share, copyLabel, shareText }].
+ * Shows a secret once (an invite link, a new password) with „Sdílet“ (the system share sheet, when the device has
+ * one) and „Zkopírovat“. rows: [{ label, value, share, copyLabel, shareText }].
  */
 export function secretSheet({ title, text, rows, note }) {
   const rowEls = rows.map((r) => {
     const out = h('input', { class: 'input secret__value', readonly: true, value: r.value, 'aria-label': r.label, onfocus: (e) => e.target.select() });
-    const copyBtn = button(r.copyLabel || 'Zkopíruj', {
+    const copyBtn = button(r.copyLabel || 'Zkopírovat', {
       icon: 'copy', size: 's', variant: 'quiet',
       onclick: async (e) => {
         const ok = await copy(r.value);
         const b = e.currentTarget;
-        b.lastChild.textContent = ok ? 'Zkopírováno' : 'Označ a zkopíruj';
+        b.lastChild.textContent = ok ? 'Zkopírováno' : 'Označit a zkopírovat';
         if (!ok) out.select();
       },
     });
     const shareBtn = r.share && navigator.share
-      ? button('Pošli', { variant: 'primary', size: 's', icon: 'share', onclick: () => navigator.share({ title, text: r.shareText || '', url: r.value }).catch(() => {}) })
+      ? button('Sdílet', { variant: 'primary', size: 's', icon: 'share', onclick: () => navigator.share({ title, text: r.shareText || '', url: r.value }).catch(() => {}) })
       : null;
     return h('div', { class: 'secret' },
       h('span', { class: 'field__label' }, r.label),
@@ -125,7 +125,7 @@ export function secretSheet({ title, text, rows, note }) {
   sheet = layer.open({
     kind: 'sheet', size: 'm', title,
     body: [text ? h('p', { class: 'text' }, text) : null, ...rowEls, note ? h('p', { class: 'meta' }, note) : null],
-    foot: [button('Zavři', { variant: 'quiet', size: 'l', block: true, onclick: () => sheet.close() })],
+    foot: [button('Zavřít', { variant: 'quiet', size: 'l', block: true, onclick: () => sheet.close() })],
     initialFocus: '.secret .btn',
   });
   return sheet;
