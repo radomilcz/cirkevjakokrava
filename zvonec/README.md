@@ -49,8 +49,8 @@ něco jiného než role v týmu a nikdy se nejmenují stejně.
 Na počítači je vlevo sloupec s menu: nahoře název církve, pod ním položky s ikonami, dole tvoje jméno
 (vede na Můj účet) a terč s barvami. Na telefonu je nahoře lišta s názvem a tlačítkem **Menu** – v něm
 najdeš totéž. Vedoucí vidí v menu všechno, člen jen Přehled, Kalendář, Lidé a Jak se scházíme. Kdo není
-přihlášený, vidí jen **Pastvu** a **Jak se scházíme** – setkání a formáty, které vedoucí zveřejnili –
-a tlačítko **Přihlas se**.
+přihlášený, vidí jen přihlášení a odkaz na **Pastvu** – veřejnou stránku webu se setkáními, která vedoucí
+zveřejnili.
 
 Každá obrazovka má nahoře název, vpravo hlavní tlačítko (třeba **Přidej setkání**) a pod názvem záložky
 s pohledy.
@@ -70,7 +70,7 @@ s pohledy.
 | **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: u každého proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
 | **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
 | **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, barvy, změna hesla, odhlášení. V ukázce i „Jak to vidí ostatní“ |
-| **Pastva**, **Jak se scházíme** | veřejná nástěnka pro ty, kdo nejsou přihlášení. Nahoře velká karta „Nenech si ujít“ pro setkání, u kterého je zapnuté „Zvýrazni na webu“ (Setkání › O setkání, jen u setkání na webu). Pod ní „Co chystáme“: jednorázové akce jako karty s obrázkem, datem, názvem a popisem. Pak „Pravidelně“: každá řada jednou („Každou neděli v 10.00“, kdy je příště, kdy se nescházíme). Na konci zveřejněné formáty a „Kde nás najdeš“. U každého setkání je tlačítko „Stáhni do kalendáře“ (.ics). V ukázce ji otevře „Veřejná část“ dole v menu |
+| **Pastva** | veřejná stránka je na webu: [cirkevjakokrava.cz/pastva](https://cirkevjakokrava.cz/pastva/). Bere si setkání, u kterých je zapnuté „Ukaž na webu“: nahoře „nenech si ujít“ (zapnuté „Zvýrazni na webu“), pak „co chystáme“ a „pravidelně“. Ve Zvonci ji otevře „Veřejný web“ dole v menu |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
 Celý tým · Všichni lidé**, hledání vždycky prochází všechny lidi. Když nikdo takový není,

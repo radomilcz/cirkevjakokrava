@@ -8,7 +8,7 @@
 //   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
 //   Správa (leaders)            Sbírky › (phone) · Dary › (phone; the treasurer too) · Přehled › (phone) · Přístupy [1 čeká] › ·
 //                               Nastavení sboru ›
-//   Veřejný web ›               meta „Pastva, jak ji vidí návštěvníci“
+//   Veřejný web ›               meta „Pastva na cirkevjakokrava.cz“ (the website)
 //   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
 //   Odhlas se
 // A tap on a link row closes the menu, then navigates; a row that opens a sheet closes the menu first.
@@ -17,6 +17,7 @@ import { S, can, myId, replaceAll, logout, ACCESS_LABELS } from './state.js';
 import { showDary } from './finance-state.js';
 import { canRunFundraisers } from './fundraisers.js';
 import { personById } from '../lib/people.js';
+import { PASTVA_URL } from '../lib/public.js';
 import { createDemo, DEMO_VIEWERS } from '../lib/demo.js';
 import { addDemoGiving } from '../lib/demo-gifts.js';
 import { resetFinance, DEMO_FINANCE_KEY } from './finance-state.js';
@@ -96,7 +97,7 @@ export function openMeMenu({ from } = {}) {
       ].filter(Boolean), { label: 'Správa' }),
     ] : null,
     h('div', { class: 'me-menu__gap' }),
-    list([page('Veřejný web', '#pastva', { meta: 'Pastva, jak ji vidí návštěvníci' })], { label: 'Veřejný web' }),
+    list([page('Veřejný web', PASTVA_URL, { meta: 'Pastva na cirkevjakokrava.cz' })], { label: 'Veřejný web' }),
     S.mode === 'demo' ? [
       heading('Ukázka'),
       list([

@@ -15,7 +15,6 @@ import { resetFinance } from './ui/finance-state.js';
 import { resetGiving } from './ui/giving-state.js';
 import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
 import { addDemoGiving } from './lib/demo-gifts.js';
-import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
 import {
@@ -53,7 +52,7 @@ const REDIRECTS = [
 ];
 
 const signedIn = () => !!S.me;
-const homeSection = () => (signedIn() ? 'moje' : S.logins.length || S.mode === 'demo' ? 'pastva' : 'prihlaseni');
+const homeSection = () => (signedIn() ? 'moje' : 'prihlaseni');
 
 function allowedFor(access, parts) {
   const level = typeof access === 'function' ? access(parts) : access;
@@ -433,8 +432,6 @@ async function boot() {
       else S.signInMessage = 'Zatím se nemůžeš přihlásit: přístup ještě nezačal platit, nebo ho někdo zrušil. Jestli je úplně nový, zkus to za pár minut.';
     }
     renderApp();
-    S.publicData = await fetchPublic(PUBLIC_FILE);
-    if (!S.me) renderApp();
     return;
   }
   S.mode = 'demo';

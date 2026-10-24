@@ -12,6 +12,8 @@ import { isImageName } from './store/store.js';
 import { resolvePlace } from './places.js';
 
 export const PUBLIC_FILE = 'public.json';
+/** The public page that shows public.json – Pastva on the church's website (the web repo's pastva/). */
+export const PASTVA_URL = 'https://cirkevjakokrava.cz/pastva/';
 export const PUBLIC_VERSION = 1;
 export const PUBLIC_IMAGES_DIR = 'images';      // next to public.json on the site
 

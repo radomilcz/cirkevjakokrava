@@ -1,4 +1,4 @@
-// Zvonec One – routes of package P1 (Moje, Můj účet, Kdy nemůžu, Přihlášení, Pozvánka, Pastva).
+// Zvonec One – routes of package P1 (Moje, Můj účet, Kdy nemůžu, Přihlášení, Pozvánka; #pastva leaves for the website).
 // Created by the foundation as a stub that maps the slugs to the forked Simple screens; owned by P1 from now on.
 // A route: { render(parts) → nodes with a <main>, access, nav? }
 //   access: 'public' · 'signedOut' · 'member' · 'leader' · 'admin' · or a function of the parts
@@ -10,7 +10,14 @@ import { renderMine } from './mine.js';
 import { renderAccountPage } from './account.js';
 import { renderBlockoutsPage } from './blockouts.js';
 import { renderLogin, renderInvite } from './login.js';
-import { renderProgram } from './public.js';
+import { h } from './h.js';
+import { PASTVA_URL } from '../lib/public.js';
+
+/** Pastva lives on the church's website now (cirkevjakokrava.cz/pastva); old links and bookmarks go there. */
+function leaveForPastva() {
+  location.replace(PASTVA_URL);
+  return h('main', { class: 'screen gate', id: 'main', tabIndex: -1 }, h('p', { class: 'gate__sentence' }, h('a', { href: PASTVA_URL }, 'Pastva je na webu cirkevjakokrava.cz.')));
+}
 
 export const ROUTES = {
   moje: { render: (parts) => renderMine(parts), access: 'member', nav: 'moje' },
@@ -18,7 +25,7 @@ export const ROUTES = {
   'kdy-nemuzu': { render: () => renderBlockoutsPage(), access: 'member', nav: 'me' },
   prihlaseni: { render: ([part]) => renderLogin(part), access: 'signedOut', nav: null },
   pozvanka: { render: ([code]) => renderInvite(code), access: 'signedOut', nav: null },
-  pastva: { render: ([id]) => renderProgram(id), access: 'public', nav: null },
+  pastva: { render: () => leaveForPastva(), access: 'public', nav: null },
 };
 
 export const REDIRECTS = [
