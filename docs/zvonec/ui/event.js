@@ -4,16 +4,16 @@
 //   notFound()                                     #setkani/neexistuje – the missing-item page
 //
 // The body, top to bottom (Next's detail, kept whole):
-//   the head – the Účel band (96, --hue-fill with the arch in --hue-mark), one Účel tag (+ „na webu“, „zrušeno“),
+//   the head – the Druh setkání band (96, --hue-fill with the arch in --hue-mark), one Druh setkání tag (+ „na webu“, „zrušeno“),
 //     the h1 (struck when cancelled), the facts: when · where › (→ Místo) · the series;
-//   Co nesedí (leaders, only when something does not fit) – one row per problem, a tap opens where it is fixed;
+//   Problémy (leaders, only when something does not fit) – one row per problem, a tap opens where it is fixed;
 //   Tvoje služba (only when I serve) – Můžu / Nemůžu L 52 while it waits, else a tap changes the answer;
 //   Kdo slouží – one collapsed row per team: the team, its names (○ waits, ● a problem – leaders), the „+ Role“
 //     slots (leaders); ⌄ or a click on the row unfolds role → person → state words. Nothing unfolds by itself;
-//   Osnova – the first four points and „Celá osnova ›“ (its page), „Uprav“ for leaders;
-//   O setkání – the description, Pro tým, the address with „Otevři v mapě ↗“, „Ukaž na webu“ (leaders).
-// ⋯ (leaders): Uprav setkání · Uprav, kolik lidí je potřeba · Doplň volná místa · Obsaď jako minule · Prodluž řadu ·
-// Kolik lidí přišlo (past) · Vytiskni · Zruš / Obnov setkání · Smaž setkání. Editing is always in a layer.
+//   Osnova – the first four points and „Celá osnova ›“ (its page), „Upravit“ for leaders;
+//   O setkání – the description, Pro tým, the address with „Otevřít v mapě ↗“, „Zobrazit na webu“ (leaders).
+// ⋯ (leaders): Upravit setkání · Upravit, kolik lidí je potřeba · Doplnit volná místa · Obsadit jako minule · Prodloužit řadu ·
+// Kolik lidí přišlo (past) · Vytisknout · Zrušit / Obnovit setkání · Smazat setkání. Editing is always in a layer.
 
 import {
   h, icon, detail, detailHead, facts, section, sectionAction, kindTag, pill, button, buttonRow, list, row, fill,
@@ -49,20 +49,20 @@ export function eventMenuItems(event) {
   const open = !event.cancelled && !isPast(event);
   const f = fillOf(event);
   return [
-    { label: 'Uprav setkání', icon: 'pencil', onclick: () => openEditEvent(event.id) },
-    { label: 'Uprav, kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
-    open && f.missing ? { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots([event.id]) } : null,
-    open ? { label: 'Obsaď jako minule', icon: 'copy', onclick: () => sameAsLast(event.id) } : null,
-    series?.step ? { label: 'Prodluž řadu', icon: 'layers', onclick: () => openExtendSeries(event.id) } : null,
-    !event.cancelled && dayOf(event.start) <= today() ? { label: 'Zapiš, kolik lidí přišlo', icon: 'people', onclick: () => openAttendance(event.id) } : null,
-    { label: 'Vytiskni', icon: 'printer', onclick: printEvent },
+    { label: 'Upravit setkání', icon: 'pencil', onclick: () => openEditEvent(event.id) },
+    { label: 'Upravit, kolik lidí je potřeba', icon: 'people', onclick: () => openNeedsSheet(event.id) },
+    open && f.missing ? { label: 'Doplnit volná místa', icon: 'user-plus', onclick: () => fillOpenSlots([event.id]) } : null,
+    open ? { label: 'Obsadit jako minule', icon: 'copy', onclick: () => sameAsLast(event.id) } : null,
+    series?.step ? { label: 'Prodloužit řadu', icon: 'layers', onclick: () => openExtendSeries(event.id) } : null,
+    !event.cancelled && dayOf(event.start) <= today() ? { label: 'Zapsat, kolik lidí přišlo', icon: 'people', onclick: () => openAttendance(event.id) } : null,
+    { label: 'Vytisknout', icon: 'printer', onclick: printEvent },
     '-',
-    { label: event.cancelled ? 'Obnov setkání' : 'Zruš setkání', icon: event.cancelled ? 'undo' : 'x', onclick: () => cancelOrRestore(event.id) },
-    { label: 'Smaž setkání', icon: 'trash', danger: true, onclick: () => deleteEventFlow(event.id) },
+    { label: event.cancelled ? 'Obnovit setkání' : 'Zrušit setkání', icon: event.cancelled ? 'undo' : 'x', onclick: () => cancelOrRestore(event.id) },
+    { label: 'Smazat setkání', icon: 'trash', danger: true, onclick: () => deleteEventFlow(event.id) },
   ].filter(Boolean);
 }
 
-/** „Vytiskni“: the meeting as it is on screen, without the app around it (print CSS in event.css). */
+/** „Vytisknout“: the meeting as it is on screen, without the app around it (print CSS in event.css). */
 function printEvent() {
   const root = document.documentElement;
   root.dataset.print = 'setkani';
@@ -72,7 +72,7 @@ function printEvent() {
   setTimeout(done, 1500);
 }
 
-/** Kolik lidí přišlo (leaders, from ⋯ of a meeting that has begun): adults and children, saved on „Ulož“. */
+/** Kolik lidí přišlo (leaders, from ⋯ of a meeting that has begun): adults and children, saved on „Uložit“. */
 function openAttendance(eventId) {
   const e = eventById(S.data, eventId);
   if (!e) return;
@@ -135,7 +135,7 @@ function eventHead(event) {
   return head;
 }
 
-// ---------- Co nesedí (leaders) ----------
+// ---------- Problémy (leaders) ----------
 
 /** A problem in a few words („Ondra má dvě služby naráz“); the whole sentence stays as the meta line. */
 const SHORT_WORDS = {
@@ -166,7 +166,7 @@ function eventLevelFix(event, c) {
     return {
       onclick: () => confirmSheet({
         title: 'Chceš odebrat všechny ze služby?', text: 'Setkání je zrušené. Kdo měl sloužit, už nebude v rozpisu.',
-        confirmLabel: 'Odeber všechny', danger: false, onConfirm: () => removeAll(event.id),
+        confirmLabel: 'Odebrat všechny', danger: false, onConfirm: () => removeAll(event.id),
       }),
     };
   }
@@ -195,7 +195,7 @@ function problemsSection(event, conflicts) {
       label: `${c.severity === 'error' ? 'Chyba' : 'Pozor'}: ${c.text}`,
     });
   });
-  return section({ title: 'Co nesedí', id: 'co-nesedi', cls: 'ev-problems', body: list(rows, { label: 'Co nesedí' }) });
+  return section({ title: 'Problémy', id: 'co-nesedi', cls: 'ev-problems', body: list(rows, { label: 'Problémy' }) });
 }
 
 // ---------- Tvoje služba ----------
@@ -204,7 +204,7 @@ const YOU_WORDS = { proposed: 'čeká na tvou odpověď', confirmed: 'potvrzeno'
 
 /**
  * My duty at this meeting. While one waits for my answer: a card with Můžu / Nemůžu (L 52) – the one thing to do here.
- * Once answered (or past): a plain section like Co nesedí – the h2, then a row per duty (role, ✓ potvrzeno / ✕ nemůžeš,
+ * Once answered (or past): a plain section like Problémy – the h2, then a row per duty (role, ✓ potvrzeno / ✕ nemůžeš,
  * › changes the answer), lit whole like every row; no card around it and no lit block inside a card.
  */
 function youCard(event) {
@@ -239,7 +239,7 @@ function youCard(event) {
         note: statusNote(assignment.status, { word: words, capital: false }),
         chevron: !past,
         onclick: past ? null : () => openMyAnswer(event.id, assignment.id),
-        label: past ? null : `${name}: ${words} – změň odpověď`,
+        label: past ? null : `${name}: ${words} – změnit odpověď`,
       });
     }), { label }),
   }) : null;
@@ -283,7 +283,7 @@ function emptySlots(event, slots) {
   const byRole = new Map();
   for (const s of slots) if (!s.assignment) byRole.set(s.role.id, { role: s.role, n: (byRole.get(s.role.id)?.n || 0) + 1 });
   return [...byRole.values()].map(({ role, n }) => slot(n > 1 ? `${n}× ${role.name}` : role.name, () => pickFor(event.id, role.id),
-    { aria: `Doplň: ${role.name}${n > 1 ? ` (chybí ${n})` : ''}` }));
+    { aria: `Doplnit: ${role.name}${n > 1 ? ` (chybí ${n})` : ''}` }));
 }
 
 /** Which teams the person unfolded, per meeting, for this visit (the app never unfolds one by itself). */
@@ -301,7 +301,7 @@ function roleRow(event, slotItem, conflicts, { leader, canEdit }) {
   if (!a) {
     return h('div', { class: 'crew-role crew-role--empty' }, roleEl,
       h('span', { class: 'crew-role__who' }, canEdit
-        ? slot('Doplň', () => pickFor(event.id, slotItem.role.id), { aria: `Doplň: ${slotItem.role.name}` })
+        ? slot('Doplnit', () => pickFor(event.id, slotItem.role.id), { aria: `Doplnit: ${slotItem.role.name}` })
         : h('span', { class: 'crew-role__nobody' }, 'nikdo')));
   }
   const me = a.personId && a.personId === myId();
@@ -311,8 +311,8 @@ function roleRow(event, slotItem, conflicts, { leader, canEdit }) {
     statusNote(a.status, { capital: false, word: me && a.status === 'declined' ? 'nemůžeš' : undefined }),
     warnings.length ? h('span', { class: 'crew-role__tags' }, warnings.map(warningTag)) : null);
   const label = `${slotItem.role.name}: ${me ? 'ty' : nameOf(a)}`;
-  if (leader) return h('button', { type: 'button', class: 'crew-role crew-role--link', onclick: () => openDutySheet(event.id, a.id), 'aria-label': `${label} – otevři službu` }, roleEl, who, icon('chevron-right', { size: 's' }));
-  if (me && !isPast(event)) return h('button', { type: 'button', class: 'crew-role crew-role--link', onclick: () => openMyAnswer(event.id, a.id), 'aria-label': `${label} – změň odpověď` }, roleEl, who, icon('chevron-right', { size: 's' }));
+  if (leader) return h('button', { type: 'button', class: 'crew-role crew-role--link', onclick: () => openDutySheet(event.id, a.id), 'aria-label': `${label} – otevřít službu` }, roleEl, who, icon('chevron-right', { size: 's' }));
+  if (me && !isPast(event)) return h('button', { type: 'button', class: 'crew-role crew-role--link', onclick: () => openMyAnswer(event.id, a.id), 'aria-label': `${label} – změnit odpověď` }, roleEl, who, icon('chevron-right', { size: 's' }));
   if (!me && openable(a)) return h('a', { class: 'crew-role crew-role--link', href: `#lide/${a.personId}` }, roleEl, who, icon('chevron-right', { size: 's' }));
   return h('div', { class: 'crew-role' }, roleEl, who);
 }
@@ -335,7 +335,7 @@ function teamRow(event, team, conflicts) {
   const roles = h('div', { class: 'crew__roles', id: rolesId, role: 'group', 'aria-label': `${group.name}: role` },
     slots.map((s) => roleRow(event, s, conflicts, { leader, canEdit })),
     canEdit && slots.filter((s) => !s.assignment).length > 1
-      ? h('p', { class: 'crew__fill' }, rowLink('Doplň volná místa', { icon: 'user-plus', onclick: () => fillOpenSlots([event.id], { teams: [group.id] }) })) : null);
+      ? h('p', { class: 'crew__fill' }, rowLink('Doplnit volná místa', { icon: 'user-plus', onclick: () => fillOpenSlots([event.id], { teams: [group.id] }) })) : null);
   const status = [error ? 'něco nesedí' : null, wait ? 'někdo ještě neodpověděl' : null, allConfirmed ? 'všichni potvrdili' : words].filter(Boolean).join(', ');
   const toggle = h('button', { type: 'button', class: 'crew__toggle', 'aria-controls': rolesId, 'aria-label': `${group.name} – ${status}` });
   const el = h('div', { class: 'crew', dataset: { group: group.id } },
@@ -378,7 +378,7 @@ function whoServes(event, conflicts) {
   if (!teams.length) {
     return section({
       title: 'Kdo slouží', id: 'kdo-slouzi', cls: 'ev-who',
-      action: leader && !event.cancelled ? sectionAction('Uprav', { onclick: () => openNeedsSheet(event.id), aria: 'Uprav, kolik lidí je potřeba' }) : null,
+      action: leader && !event.cancelled ? sectionAction('Upravit', { onclick: () => openNeedsSheet(event.id), aria: 'Upravit, kolik lidí je potřeba' }) : null,
       body: h('p', { class: 'meta' }, 'Na tohle setkání zatím nikoho nepotřebujeme.'),
     });
   }
@@ -397,7 +397,7 @@ function whoServes(event, conflicts) {
 /** The full name of a leader at this event – a deleted card by the name the event kept (as on Osnova). */
 const nameAt = (event, personId) => { const p = personInEvent(S.data, event, personId); return p ? fullName(p) : DELETED_NAME; };
 
-/** The first four points (time, name, who leads) and „Celá osnova ›“; leaders „Uprav“ (the Osnova page). */
+/** The first four points (time, name, who leads) and „Celá osnova ›“; leaders „Upravit“ (the Osnova page). */
 function osnovaSection(event) {
   const items = programTimes(event);
   const href = `#setkani/${event.id}/osnova`;
@@ -406,13 +406,13 @@ function osnovaSection(event) {
     if (!leader || isPast(event)) return null;
     return section({
       title: 'Osnova', cls: 'ev-outline',
-      action: sectionAction('Přidej', { add: true, href, aria: 'Přidej body do osnovy' }),
+      action: sectionAction('Přidat', { add: true, href, aria: 'Přidat body do osnovy' }),
       body: h('p', { class: 'meta' }, 'Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.'),
     });
   }
   return section({
     title: 'Osnova', cls: 'ev-outline',
-    action: leader ? sectionAction('Uprav', { href, aria: 'Uprav osnovu' }) : null,
+    action: leader ? sectionAction('Upravit', { href, aria: 'Upravit osnovu' }) : null,
     body: [
       h('ol', { class: 'ev-outline__list' }, items.slice(0, 4).map(({ item, start }) => {
         const leaders = itemLeaders(S.data, event, item).map((id) => nameAt(event, id));
@@ -423,7 +423,7 @@ function osnovaSection(event) {
           leaders.length ? h('span', { class: 'ev-outline__who' }, leaders.join(', '))
             : needsLeader ? h('span', { class: 'ev-outline__who ev-outline__who--missing' }, 'chybí vedoucí') : h('span'));
       })),
-      rowLink(`Celá osnova${SEP}${plural(items.length, 'bod', 'body', 'bodů')}${SEP}${programDuration(event)} min`, { href }),
+      rowLink(`Celá osnova${SEP}${plural(items.length, 'bod', 'body', 'bodů')}${SEP}${programDuration(event)}\u00a0min`, { href }),
     ],
   });
 }
@@ -433,7 +433,7 @@ function osnovaSection(event) {
 /**
  * The description (prose, on top), Pro tým, then one column of facts with the head's icon rail: the missing
  * description (leaders), the address with a map ↗ (only when it can be mapped – the place itself is in the head),
- * „Ukaž na webu“ (leaders).
+ * „Zobrazit na webu“ (leaders).
  */
 function aboutSection(event) {
   const leader = can('leader') && !event.cancelled;
@@ -443,17 +443,17 @@ function aboutSection(event) {
   const note = String(event.note || '').trim();
   const address = main ? [main.building || main.name, main.address].filter(Boolean).join(SEP) : '';
   const rows = facts([
-    !description && leader ? { icon: 'pencil', text: 'Popis pro web zatím chybí', action: 'Doplň', aria: 'Doplň popis pro web', onclick: () => openEditEvent(event.id) } : null,
-    main ? { icon: 'pin', text: address, href: mapUrl(main), target: '_blank', aria: `Otevři v mapě: ${address}` } : null,
+    !description && leader ? { icon: 'pencil', text: 'Popis pro web zatím chybí', action: 'Doplnit', aria: 'Doplnit popis pro web', onclick: () => openEditEvent(event.id) } : null,
+    main ? { icon: 'pin', text: address, href: mapUrl(main), target: '_blank', aria: `Otevřít v mapě: ${address}` } : null,
   ]);
   if (leader) {
     rows.append(h('div', { class: 'ev-public' }, icon('globe', { size: 's' }), switchRow({
-      label: 'Ukaž na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
+      label: 'Zobrazit na webu', hint: 'Název, čas, místo, popis a obrázek uvidí každý. Jména ne.', checked: event.public === true,
       onChange: (on) => publish(event.id, on),
     })));
     if (event.public === true) {
       rows.append(h('div', { class: 'ev-public' }, icon('star', { size: 's' }), switchRow({
-        label: 'Zvýrazni na webu', hint: 'Na Pastvě bude nahoře ve velké kartě se štítkem „Nenech si ujít“.', checked: event.featured === true,
+        label: 'Zvýraznit na webu', hint: 'Na webu bude nahoře, mezi ostatními setkáními ho nikdo nepřehlédne.', checked: event.featured === true,
         onChange: (on) => feature(event.id, on),
       })));
     }
@@ -470,14 +470,14 @@ function aboutSection(event) {
   });
 }
 
-/** „Zvýrazni na webu“: this one event (never its series) goes to the top of Pastva. */
+/** „Zvýraznit na webu“: this one event (never its series) goes to the top of the public list. */
 function feature(eventId, on) {
   const target = eventById(S.data, eventId);
   if (!target) return;
   const before = target.featured;
   if (on) target.featured = true; else delete target.featured;
   change(`${on ? 'zvýrazněno na webu' : 'už není zvýrazněno na webu'}: ${target.title}`);
-  toast(on ? 'Na Pastvě to bude nahoře za pár minut.' : 'Na Pastvě to bude zase mezi ostatními.', {
+  toast(on ? 'Na webu to bude nahoře za pár minut.' : 'Na webu to bude zase mezi ostatními.', {
     action: () => {
       const x = eventById(S.data, eventId);
       if (!x) return;
@@ -523,7 +523,7 @@ function publish(eventId, on) {
     const sheet = layer.open({ kind: 'sheet',
       title: 'Setkání na webu',
       body: form,
-      foot: [button('Ukaž na webu', { variant: 'primary', size: 'l', block: true, onclick: () => form.requestSubmit() })],
+      foot: [button('Zveřejnit', { variant: 'primary', size: 'l', block: true, onclick: () => form.requestSubmit() })],
       onClose: () => { if (!decided) render(); },
     });
     form.addEventListener('submit', (ev) => {

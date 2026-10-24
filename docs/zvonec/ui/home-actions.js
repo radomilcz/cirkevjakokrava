@@ -1,5 +1,5 @@
 // Zvonec One – small helpers of Moje: the role's name and the focus after an answer. Everything a duty can do
-// (Můžu / Nemůžu with Vrať, Moje odpověď, the picker) is P3's ui/event-duties.js; Kdy nemůžu is ui/blockouts.js.
+// (Můžu / Nemůžu with Vrátit zpět, Moje odpověď, the picker) is P3's ui/event-duties.js; Kdy nemůžu is ui/blockouts.js.
 
 import { S } from './state.js';
 import { roleById } from '../lib/groups.js';

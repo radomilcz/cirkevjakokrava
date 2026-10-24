@@ -180,36 +180,36 @@ run the QA checks of §4 on its routes at 390, 768, 1440 in both palettes as mem
 Routes: `#moje[/<eventId>]`, `#ucet`, `#kdy-nemuzu`, `#prihlaseni`, `#pozvanka/<kód>`, `#pastva[/<id>]`.
 Work: DESIGN §6.1, §6.11, §6.12, §6.13. Moje = `page({ width: 'split' })`, the date as D's first line, no avatar
 circle (delete the `openMeMenu` import), the answer card, Tvoje další služby, declined, Minulé služby; a duty click →
-`#moje/<id>` (pane via P3's `eventDetail`). Můj účet: sections with „Uprav“ → layers, Barvy via
+`#moje/<id>` (pane via P3's `eventDetail`). Můj účet: sections with „Upravit“ → layers, Barvy via
 `palette-choices.js`. Kdy nemůžu: page, rows open a menu, the clash offer. Login / first run / invite: centred
-column, name + password + „Pamatuj si mě“, no reset link. Pastva: public header, column 720, the signed-in strip.
+column, name + password + „Zapamatovat si mě na tomto zařízení“, no reset link. Pastva: public header, column 720, the signed-in strip.
 Acceptance: h1 at y 16 / 32 / 40 like every tab root; nothing between h1 and the card except the date line in D;
-Můžu / Nemůžu L 52 equal halves; „Vrať“ and Ctrl Z undo an answer; the pane opens only on a click; login works in
-demo and live (sign in, Pamatuj si mě, wrong password callout).
+Můžu / Nemůžu L 52 equal halves; „Vrátit zpět“ and Ctrl Z undo an answer; the pane opens only on a click; login works in
+demo and live (sign in, Zapamatovat si mě, wrong password callout).
 
 ### P2 · Kalendář (Seznam, Měsíc, Rozpis)
 
 Routes: `#kalendar`, `#kalendar/seznam[/<id>]`, `#kalendar/mesic/<YYYY-MM>[/<YYYY-MM-DD>]`,
 `#kalendar/rozpis/<YYYY-MM>[/<id>]`. Work: DESIGN §6.2. One Filtr model for the three views (Účel, Tým, Jen moje
-služby, Ukaž i zrušená) via `filterButton({ key: 'kalendar' })`; search over title, place, Účel and who serves (new
-code: a normalised, accent-insensitive text match); Seznam continuous from today with week subheads and „‹ Ukaž, co
-už bylo“ / „Ukaž další týdny“; Měsíc by container query at 700 (`month.js`: mini month + day list, or the grid with
+služby, Zobrazit i zrušená) via `filterButton({ key: 'kalendar' })`; search over title, place, Účel and who serves (new
+code: a normalised, accent-insensitive text match); Seznam continuous from today with week subheads and „‹ Zobrazit, co
+už bylo“ / „Zobrazit další týdny“; Měsíc by container query at 700 (`month.js`: mini month + day list, or the grid with
 chips, „+ 2 další“, the day popover, chip → `#setkani/<id>` page); the period line as D's first line in Měsíc and
-Rozpis; Rozpis as Simple's plain list with the team column and slots, Filtr › Tým narrowing lines; ⋯ items (Stáhni
-do kalendáře, Vytiskni rozpis…, Doplň volná místa, Břemeno dialog) and print CSS.
+Rozpis; Rozpis as Simple's plain list with the team column and slots, Filtr › Tým narrowing lines; ⋯ items (Stáhnout
+do kalendáře, Vytisknout rozpis…, Doplnit volná místa, Břemeno dialog) and print CSS.
 Acceptance: the band-B test across Seznam / Měsíc / Rozpis × three months × filter off / on × search empty / with
 results / with none; at 1200–1920 the Měsíc grid never has a pane beside it and chip titles break between words; no
-„›“ on „Dnes“ at any width or month (label fixed width); the mini month at 360 fits with dots; the Účel bars use
+„›“ on „Dnes“ at any width or month (label fixed width); the mini month at 360 fits with dots; the Druh setkání bars use
 Next's hues (Nedělní rose).
 
 ### P3 · Setkání, Osnova, the forms and duties, Obsazení
 
 Routes: `#setkani/<id>`, `#setkani/<id>/osnova`, `#obsazeni[/<id>]`. Work: DESIGN §5.1, §6.3, §6.4. `eventDetail` with
-Next's band (96, `--hue-fill`, arch in `--hue-mark`), one Účel tag, facts, „Co nesedí“ (leaders), „Tvoje služba“,
+Next's band (96, `--hue-fill`, arch in `--hue-mark`), one Druh setkání tag, facts, „Problémy“ (leaders), „Tvoje služba“,
 Kdo slouží with collapsed team lines (names, ○ ●, slots; nothing unfolds by itself), the Osnova preview with „Celá
 osnova ›“, O setkání; ⋯ items; editing forms as layers (dialog 640 / sheet) with the date picker at depth 2;
 Osnova page; the picker, duty sheet and who-waits sheets on `layer.open`; Obsazení as a list screen with the default
-team scope counted in Filtr („Filtr 1“), „Doplň volná místa“ in the head (≥ 600) or first in ⋯ (phone), the horizon
+team scope counted in Filtr („Filtr 1“), „Doplnit volná místa“ in the head (≥ 600) or first in ⋯ (phone), the horizon
 line at the end of the list, search over meetings and roles.
 Acceptance: the same detail body in pane and page, offsets identical in every frame; a deep link to a past meeting
 works; `#setkani/neexistuje` shows the missing-item page; no team unfolds by itself; the picker over a form dims the
@@ -218,12 +218,12 @@ form; Obsazení's band B matches Kalendář's at every width.
 ### P4 · Lidé, Skupiny, Člověk, Domácnost, Skupina, Podrobný výpis
 
 Routes: `#lide[/<id>]`, `#lide/skupiny[/<id>]`, `#lide/domacnost/<id>`, `#lide/vypis`. Work: DESIGN §5.2, §6.5. The
-Lidé · Skupiny view row; one search („Hledej jméno“) with groups above people; Filtr per view
+Lidé · Skupiny view row; one search („Hledat jméno“) with groups above people; Filtr per view
 (`filterButton({ key: 'lide' })` / `'skupiny'`); A–Z rows (phone single line + call; ≥ 600 meta line); the birthday
 line as D's first line; Skupiny rows in sections; the person detail with contact tiles under the head; Domácnost as a
 drill-in that replaces the pane; Podrobný výpis (Simple's table, ≥ 900, from ⋯); the old filter slugs as Filtr
 presets. Acceptance: names never cut beside the pane at 1200 (list track ≥ 400); the call button only with a phone
-number; the main action is „Přidej člověka“ in both views; band B equal in both views and both roles; a long e-mail
+number; the main action is „Přidat člověka“ in both views; band B equal in both views and both roles; a long e-mail
 never scrolls the person page sideways at 360.
 
 ### P5 · Šablony, Formáty, Místa, Přístupy, Nastavení sboru
@@ -231,8 +231,8 @@ never scrolls the person page sideways at 360.
 Routes: `#sablony[/<id>]`, `#formaty[/<id>]`, `#mista[/<id>]`, `#pristupy`, `#nastaveni`. Work: DESIGN §5.2,
 §6.6–6.10. Three list screens with search (Šablony also Filtr), rows with the „na webu“ pill in the trail, pane on
 click only (remove Next's/Simple's first-item auto-open), the head sentences moved into empty states and details,
-add / edit forms as layers; Přístupy as a list screen whose rows open menus, the help sheet and „Vyměň klíč“ in ⋯;
-Nastavení as value blocks with „Uprav“ dialogs (no inline fields, no form foot); members read Formáty and Místa
+add / edit forms as layers; Přístupy as a list screen whose rows open menus, the help sheet and „Vyměnit klíč“ in ⋯;
+Nastavení as value blocks with „Upravit“ dialogs (no inline fields, no form foot); members read Formáty and Místa
 without edit controls. Acceptance: nothing open on arrival at `#formaty`; band B at the same rectangle as Kalendář's on
 every screen; „na webu“ never wraps at 360; Přístupy rows never open a pane; Nastavení saves through the dialogs and
 the save line.
@@ -245,7 +245,7 @@ the save line.
 2. **P1–P5** in parallel. P3 delivers `eventDetail` (and P5 `waitingInvites`, P4 `personDetail`) as its first commit
    of work; until then the forked functions keep working. Kit gaps → a request to F, who stays on call during this
    phase and is the only one editing kit, shell and tokens.
-3. **Q**: the checklist below at every width, both palettes, member and leader (demo: „Podívej se očima druhých“) and
+3. **Q**: the checklist below at every width, both palettes, member and leader (demo: „Podívat se očima druhých“) and
    admin; files bugs to owners; deletes the compat wrappers; final `kontrola-cestiny` pass; screenshots for the owner.
 
 ---
@@ -268,7 +268,7 @@ Roles: **member**, **leader**, **admin**. Demo mode: goto, `localStorage.clear()
 4. **Nothing overlaps**: pairwise rects of the title row's and the toolbar's controls, the period line's ‹ label ›
    Dnes, the tab bar items, the sheet foot buttons do not intersect.
 5. **Nothing is cut**: no `nowrap` label, chip, pill, nav label or placeholder with `scrollWidth > clientWidth`
-   without an ellipsis; check „Shromáždění“, „Listopad 2026“, „Červenec 2026“, „Doplň volná místa“, „Hledej šablonu“
+   without an ellipsis; check „Shromáždění“, „Listopad 2026“, „Červenec 2026“, „Doplnit volná místa“, „Hledat šablonu“
    at 360; names beside the pane at 1200.
 6. **Sizes**: every control's height ∈ {36, 44, 52} (36 only from 600 up); radii per CODEX §2; control labels 620
    in every state; nav labels 500 in every state (probe current vs not).
@@ -280,18 +280,18 @@ Roles: **member**, **leader**, **admin**. Demo mode: goto, `localStorage.clear()
 10. **Lit rows**: hover, selected and open rows are rounded, whole, 3 apart, with no hairline touching them; the
     selected look = `--pick` + detached 3 px `--mark` bar, kept on hover; no coloured border on a rounded shape.
 11. **Palettes**: the picker shows exactly three choices; tokens only (grep for `#` colours in `one/css/*.css` except
-    `tokens.css` comments: none); the Účel hues are rose / blue / teal / plum; pink only as itself.
+    `tokens.css` comments: none); the Druh setkání hues are rose / blue / teal / plum; pink only as itself.
 12. **CSP**: no console CSP errors; `grep -rn "innerHTML\|style=\"" docs/zvonec/one` is empty.
 13. `node --test zvonec/test/*.test.mjs` green; Next and Simple unchanged (`git diff --stat docs/zvonec/next
     docs/zvonec/simple` empty).
 
 ### 4.2 Walk-through (eyes, per role, at 390 · 1024 · 1440, both palettes)
 
-- Member: Moje (Můžu, Vrať) → Kalendář × 3 views → a meeting → Lidé, call → person's menu (every row). No leader
+- Member: Moje (Můžu, Vrátit zpět) → Kalendář × 3 views → a meeting → Lidé, call → person's menu (every row). No leader
   control anywhere, no „Jak se scházíme“ in the nav.
-- Leader: Obsazení („Filtr 1“, + Klávesy, who waits, Doplň volná místa) → Přidej setkání (form + date picker) →
-  Setkání ⋯ → Lidé, Skupiny, Podrobný výpis → Šablony, Formáty, Místa → Přístupy (row menu, Pozvi) → Nastavení.
-- Admin: plus záloha, klíč, levels; „Podívej se očima druhých“ and back. Signed out: Přihlášení, Pozvánka (valid,
+- Leader: Obsazení („Filtr 1“, + Klávesy, who waits, Doplnit volná místa) → Přidat setkání (form + date picker) →
+  Setkání ⋯ → Lidé, Skupiny, Podrobný výpis → Šablony, Formáty, Místa → Přístupy (row menu, Pozvat) → Nastavení.
+- Admin: plus záloha, klíč, levels; „Podívat se očima druhých“ and back. Signed out: Přihlášení, Pozvánka (valid,
   expired), Pastva, the signed-in strip. A failed / offline save; `beforeunload`; print Rozpis.
 
 ### 4.3 The owner's rules (BRIEF.md), read once more before calling it done

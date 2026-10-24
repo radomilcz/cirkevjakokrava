@@ -75,17 +75,17 @@ export class GithubStore {
         },
       });
     } catch {
-      throw new GithubError('Spojení vypadlo. Jsi online?', 0);
+      throw new GithubError('Chybí připojení k internetu. Zkontroluj ho a zkus to znovu.', 0);
     }
     if (response.ok) return response;
     if (response.status === 409) throw new Conflict();
     const messages = {
       401: 'GitHub klíč nepoznal. Vypršela mu platnost, nebo je v něm překlep?',
-      403: 'GitHub klíč nemá k tomuhle repu oprávnění (Contents: Read and write).',
-      404: 'Zvonec nenašel repo ani soubor. Sedí vlastník, název a větev? A má klíč přístup k tomuhle repu?',
+      403: 'GitHub klíč nemá k tomuto repozitáři oprávnění (Contents: Read and write).',
+      404: 'Zvonec nenašel repozitář ani soubor. Zkontroluj vlastníka, název a větev a jestli má klíč k repozitáři přístup.',
       422: 'GitHub uložení odmítl. Zkus stránku načíst znovu.',
     };
-    throw new GithubError(messages[response.status] || `GitHub odpověděl ${response.status}.`, response.status);
+    throw new GithubError(messages[response.status] || `Uložení se nezdařilo (chyba GitHubu ${response.status}). Zkus to za chvíli znovu.`, response.status);
   }
 
   /** GET that returns null on 404 when the repo itself exists (a 404 repo still throws). */

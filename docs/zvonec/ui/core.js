@@ -29,8 +29,8 @@ const dateOf = (day) => new Date(`${String(day).slice(0, 10)}T12:00`);
 /** „ne 18. 10.“ (withWeekday) · „18. 10.“ · with year: „18. 10. 2026“. */
 export function shortDate(day, { weekday = true, year = false } = {}) {
   const d = dateOf(day);
-  const base = `${d.getDate()}. ${d.getMonth() + 1}.${year ? ` ${d.getFullYear()}` : ''}`;
-  return weekday ? `${DOW[d.getDay()]} ${base}` : base;
+  const base = `${d.getDate()}.\u00a0${d.getMonth() + 1}.${year ? `\u00a0${d.getFullYear()}` : ''}`;
+  return weekday ? `${DOW[d.getDay()]}\u00a0${base}` : base;
 }
 
 /** „10.00“ from 'HH:mm' or a 'YYYY-MM-DDTHH:mm' date-time (24 h, Czech dot). */
@@ -52,7 +52,7 @@ export function dayRange(from, to = from) {
   if (!to || from === to) return shortDate(from);
   const [a, b] = [dateOf(from), dateOf(to)];
   const year = a.getFullYear() !== b.getFullYear() || b.getFullYear() !== new Date().getFullYear();
-  if (!year && a.getMonth() === b.getMonth()) return `${a.getDate()}.–${b.getDate()}. ${b.getMonth() + 1}.`;
+  if (!year && a.getMonth() === b.getMonth()) return `${a.getDate()}.–${b.getDate()}.\u00a0${b.getMonth() + 1}.`;
   return `${shortDate(from, { weekday: false, year })} – ${shortDate(to, { weekday: false, year })}`;
 }
 
@@ -136,11 +136,11 @@ export const badge = (n, { label } = {}) => (n ? h('span', { class: 'badge', 'ar
 /** A neutral word-pill: „zrušeno“, „ty“, „na webu“, „učí se“. */
 export const pill = (word, { cls } = {}) => h('span', { class: ['pill', cls] }, word);
 
-/** Účel → hue (Next's, DESIGN §7.2): Nedělní setkání rose · Zkouška blue · Skupinka teal · Akce plum. */
+/** Druh setkání → hue (Next's, DESIGN §7.2): Nedělní setkání rose · Zkouška blue · Skupinka teal · Akce plum. */
 export const KIND_HUES = { service: 'rose', rehearsal: 'blue', smallGroup: 'teal', event: 'plum' };
 /** A category tag in a hue. */
 export const tag = (word, hue) => h('span', { class: 'tag', dataset: { hue } }, word);
-/** The Účel tag of an event kind: kindTag('service') → „Nedělní setkání“ in rose. */
+/** The Druh setkání tag of an event kind: kindTag('service') → „Nedělní setkání“ in rose. */
 export const kindTag = (kind) => tag(KIND_LABELS[kind] || 'Setkání', KIND_HUES[kind] || 'plum');
 
 // ---------- choice ----------
@@ -186,7 +186,7 @@ export function segmented(options, value, onChange, { label, cls } = {}) {
 
 /**
  * One chip (CODEX §6.7). `pressed` (true/false) makes it a toggle: on = --act fill, no ✓ that adds width;
- * undefined = a plain action chip. `hue`: the 8 px dot before the label (Filtr › Účel).
+ * undefined = a plain action chip. `hue`: the 8 px dot before the label (Filtr › Druh setkání).
  */
 export function chip(label, { pressed, onclick, n, icon: iconName, iconEnd, hue, cls, dataset } = {}) {
   return h('button', {
@@ -313,7 +313,7 @@ export function teamMark(group, { size = 'm' } = {}) {
 
 // ---------- marks: the lead of a row (40) and of a detail (56, size 'l') ----------
 
-/** The Účel of a template: an arch in its hue with the Účel's icon. */
+/** The Druh setkání of a template: an arch in its hue with the Druh setkání's icon. */
 export const kindMark = (kind, { size = 'm' } = {}) => h('span', {
   class: ['lead-mark', 'lead-mark--kind', size === 'l' && 'lead-mark--l'], dataset: { hue: KIND_HUES[kind] || 'plum' }, 'aria-hidden': 'true',
 }, icon(KIND_ICONS[kind] || 'star'));
@@ -384,7 +384,7 @@ export function fill(filled, total, { words, trailing, quiet = false } = {}) {
 /**
  * A warning in context. tone: 'wait' (pozor) · 'no' (chyba) · 'info'. `actions`: the fix button(s).
  */
-export function callout({ tone = 'info', title: head, text: body, icon: iconName, actions, onDismiss, dismissLabel = 'Skryj' } = {}) {
+export function callout({ tone = 'info', title: head, text: body, icon: iconName, actions, onDismiss, dismissLabel = 'Skrýt' } = {}) {
   return h('div', { class: ['callout', onDismiss && 'callout--dismiss'], dataset: { tone }, role: tone === 'no' ? 'alert' : null },
     icon(iconName || (tone === 'info' ? 'info' : 'alert')),
     head ? h('p', { class: 'callout__title' }, head) : null,
@@ -408,9 +408,9 @@ export function warningRow({ severity = 'warning', word, text: sentence, actions
 
 /**
  * A section of a detail or a page (CODEX §6.4): h2 20/26 left; at its right edge at most ONE action (a quiet S
- * „Uprav“ or a tint S „+ Přidej“ – M on a phone: sectionAction()) or ONE value (a count, the ring + words).
+ * „Upravit“ or a tint S „+ Přidat“ – M on a phone: sectionAction()) or ONE value (a count, the ring + words).
  * 12 from the h2 to its content, 32 between sections.
- *   section({ title: 'Kontakt', action: sectionAction('Uprav', { onclick }), body: [...] })
+ *   section({ title: 'Kontakt', action: sectionAction('Upravit', { onclick }), body: [...] })
  *   section({ title: 'Kdo slouží', value: fill(6, 6), body })
  * `count` (old name) is a value too.
  */
@@ -424,8 +424,8 @@ export function section({ title: head, count: n, action, value, id, body, cls, l
 }
 
 /**
- * The one action of a section head: quiet S „Uprav“ (default) or tint S „+ Přidej“ (`add: true`); on a phone it is M.
- *   sectionAction('Uprav', { onclick }) · sectionAction('Přidej', { add: true, onclick })
+ * The one action of a section head: quiet S „Upravit“ (default) or tint S „+ Přidat“ (`add: true`); on a phone it is M.
+ *   sectionAction('Upravit', { onclick }) · sectionAction('Přidat', { add: true, onclick })
  */
 export function sectionAction(label, { onclick, href, add = false, icon: iconName, aria } = {}) {
   return button(label, { variant: add ? 'tint' : 'quiet', size: 's', icon: iconName || (add ? 'plus' : null), onclick, href, label: aria, cls: 'section-action' });
@@ -443,7 +443,7 @@ export function amount(text) {
  * sentence, small figures under a hairline, and the block's one action. r20, padding 24; `feature` = the screen's one
  * feature fill (Moje's card, a sbírka), otherwise the card with its edge.
  *   figures({ n: '68 000', of: 'Kč darů za rok 2026', items: [{ value: 4, label: 'dárci' }, …] })
- *   figures({ feature: true, n: '34 500', of: 'Kč z 80 000 Kč', bar: .43, action: button('Pošli dar', …) })
+ *   figures({ feature: true, n: '34 500', of: 'Kč z 80 000 Kč', bar: .43, action: button('Poslat dar', …) })
  */
 /**
  * A small column chart inside a figure block (Přehled › Služby, Dary): one value per month, the current one in the
@@ -513,7 +513,7 @@ export const card = (body, { cls, label, tag: tagName = 'div' } = {}) => h(tagNa
  * a row. facts([{ icon: 'clock', text: 'čt 8. 10. · 18.30–20.30' }, { icon: 'pin', text: 'Monta, Sál', href: '#mista/x' },
  * { icon: 'phone', text: '731 204 118', href: 'tel:…', external: true }]) – `external` (tel:, mailto:, a map) has no ›.
  * An `onclick` fact is a button with ›. A fact opening a new tab (`target: '_blank'`) ends in ↗; `action` puts accent
- * words at the end instead of the › (`{ icon: 'pencil', text: 'Popis pro web zatím chybí', action: 'Doplň', onclick }`);
+ * words at the end instead of the › (`{ icon: 'pencil', text: 'Popis pro web zatím chybí', action: 'Doplnit', onclick }`);
  * `aria` names a linked fact when its words alone do not say where it leads.
  */
 export function facts(items) {
@@ -533,7 +533,7 @@ export function facts(items) {
  * 24 → at most one quiet M action. Left-aligned in the list column, 48 under the last control row.
  * kind: 'none' (nothing yet) · 'search' (nothing found) · 'filter' (filtered empty) – picks the default icon.
  * action: a node, or { label, onclick | href } (drawn as a quiet M button).
- *   empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: 'Hledáš „Kučer“.', action: { label: 'Vymaž hledání', onclick } })
+ *   empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: 'Hledáš „Kučer“.', action: { label: 'Vymazat hledání', onclick } })
  */
 export function empty({ kind = 'none', icon: iconName, title: head, text: body, action, cls, heading = 'h2' } = {}) {
   const glyph = iconName || { none: 'sun', search: 'search', filter: 'sliders' }[kind] || 'sun';
@@ -611,7 +611,7 @@ export function row({
 export function personRow(person, { meta: metaText, note: noteNode, href, onclick, phone, trail, selected, open, me = false, status: st } = {}) {
   const name = person ? fullName(person) : DELETED_NAME;
   const nick = person?.nickname && person.nickname !== person.firstName && person.nickname !== name ? person.nickname : null;
-  const call = phone ? h('a', { class: 'icon-btn icon-btn--call', href: `tel:${String(phone).replace(/\s+/g, '')}`, 'aria-label': `Zavolej – ${name}`, title: `Zavolej – ${name}` }, icon('phone', { size: 's' })) : null;
+  const call = phone ? h('a', { class: 'icon-btn icon-btn--call', href: `tel:${String(phone).replace(/\s+/g, '')}`, 'aria-label': `Zavolat – ${name}`, title: `Zavolat – ${name}` }, icon('phone', { size: 's' })) : null;
   return row({
     lead: avatar(person, { me, status: st }), title: name, nick, meta: metaText, note: noteNode, href, onclick,
     trail: [trail, call], selected, open, declined: st === 'declined',
@@ -631,7 +631,7 @@ export function mapUrl(place) {
 }
 
 /** „Otevřít v mapě ↗“ – the one wording and look everywhere; opens Mapy.cz in a new tab. null without an address. */
-export const mapLink = (place, { label = 'Otevři v mapě' } = {}) => (canMap(place)
+export const mapLink = (place, { label = 'Otevřít v mapě' } = {}) => (canMap(place)
   ? h('a', { class: 'link map-link', href: mapUrl(place), target: '_blank', rel: 'noopener noreferrer' }, icon('pin', { size: 's' }), label, icon('external', { size: 's' }))
   : null);
 
@@ -706,7 +706,7 @@ export function agendaDay({ day, today: isToday = false, label, events }) {
 export const agenda = (children) => h('div', { class: 'agenda' }, children);
 
 /**
- * An event in the agenda: time column, a hue rule (Účel), title, meta, my duty.
+ * An event in the agenda: time column, a hue rule (Druh setkání), title, meta, my duty.
  *   agendaEvent({ start, end, title, meta: 'Monta, sál', hue: 'rose', href, duty: { role: 'Zvuk', status: 'proposed' } })
  */
 export function agendaEvent({ start, end, title: head, meta: metaText, hue, href, onclick, cancelled = false, duty, extra, open } = {}) {
@@ -763,7 +763,7 @@ export function teamHead(group, { words, action } = {}) {
 export function dutyRow({ role, person, name, status: st, me = false, onclick, href, empty: emptySlot, warn, short = false } = {}) {
   let who;
   if (emptySlot) {
-    who = h('span', { class: 'duty__who' }, slot(emptySlot.label || 'Doplň', emptySlot.onclick, { aria: emptySlot.aria || `Doplň: ${role}` }), h('span', { class: 'caption' }, 'chybí'));
+    who = h('span', { class: 'duty__who' }, slot(emptySlot.label || 'Doplnit', emptySlot.onclick, { aria: emptySlot.aria || `Doplnit: ${role}` }), h('span', { class: 'caption' }, 'chybí'));
   } else {
     const key = STATUS_KEY[st];
     const parts = [
@@ -779,8 +779,8 @@ export function dutyRow({ role, person, name, status: st, me = false, onclick, h
 }
 
 /**
- * The one lifted block of a screen (Domů › Odpověz).
- *   feature({ title: 'Odpověz', count: 2, items: [answerItem(...)], more: { link: 'Ukázat další 2', onclick, icon } })
+ * The one lifted block of a screen (Domů › Odpovědět).
+ *   feature({ title: 'Odpovědět', count: 2, items: [answerItem(...)], more: { link: 'Ukázat další 2', onclick, icon } })
  */
 export function feature({ title: head, count: n, items, more } = {}) {
   const hid = uid('feat');

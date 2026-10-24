@@ -53,8 +53,8 @@ function moreButton(menu, title) {
 /**
  * A: h1 ·················· [⋯][main action] – min-height 44; the h1 never carries a chip, a date, a count or a
  * subtitle; the main action never changes with the view, the month or the filter.
- *   titleRow({ title: 'Kalendář', action: { label: 'Přidej setkání', icon: 'calendar-plus', onclick }, menu: [...] })
- * action.phoneMenu: on a phone the action is not an „add“ and has no room for its label (Obsazení: „Doplň volná
+ *   titleRow({ title: 'Kalendář', action: { label: 'Přidat setkání', icon: 'calendar-plus', onclick }, menu: [...] })
+ * action.phoneMenu: on a phone the action is not an „add“ and has no room for its label (Obsazení: „Doplnit volná
  * místa“) → it becomes the first item of ⋯ there.
  */
 export function titleRow({ title, action, menu, headingId } = {}) {
@@ -79,10 +79,10 @@ const searchMemory = new Map();   // the search text per screen, kept for this v
 export const searchText = (key) => searchMemory.get(key) || '';
 
 /**
- * B: [⌕ Hledej … ✕][⚟ Filtr ⁿ] – the second row of every list screen, on the left above the list (the owner's sketch,
+ * B: [⌕ Hledat … ✕][⚟ Filtr ⁿ] – the second row of every list screen, on the left above the list (the owner's sketch,
  * the UX and UI teams' choice): always visible and labelled, the search 320 wide on ≥ 1200 (the row's width below),
  * Filtr fixed 120 with its count slot reserved, so nothing moves when a filter is turned on.
- *   toolbar({ search: { key: 'kalendar', placeholder: 'Hledej setkání', onInput }, filter: filterButton({...}) })
+ *   toolbar({ search: { key: 'kalendar', placeholder: 'Hledat setkání', onInput }, filter: filterButton({...}) })
  * search.key keeps the text for the visit; search.value overrides it.
  */
 export function toolbar({ search, filter } = {}) {
@@ -91,7 +91,7 @@ export function toolbar({ search, filter } = {}) {
     const key = search.key || search.placeholder || 'search';
     const value = search.value ?? searchText(key);
     field = searchField({
-      placeholder: search.placeholder || 'Hledej', label: search.label || search.placeholder || 'Hledej', value,
+      placeholder: search.placeholder || 'Hledat', label: search.label || search.placeholder || 'Hledat', value,
       onInput: (v, e) => { searchMemory.set(key, v); search.onInput?.(v, e); },
     });
     field.dataset.searchKey = key;
@@ -117,9 +117,9 @@ const paneSlot = (pane, label) => h('aside', { class: 'split__pane', 'aria-label
  * The ONE list screen. Returns the <main> (with .setBody(nodes) and .setPane(node) for a redraw without a render).
  *   listScreen({
  *     title: 'Kalendář',
- *     action: { label: 'Přidej setkání', icon: 'calendar-plus', onclick },        | null (who may not use it gets none)
+ *     action: { label: 'Přidat setkání', icon: 'calendar-plus', onclick },        | null (who may not use it gets none)
  *     menu: [{ label, icon, onclick | href, danger }],                            | null – ⋯
- *     search: { key: 'kalendar', placeholder: 'Hledej setkání', value, onInput },   always on a list screen
+ *     search: { key: 'kalendar', placeholder: 'Hledat setkání', value, onInput },   always on a list screen
  *     filter: filterButton({...}),                                                 | null
  *     views: { options: [['seznam', 'Seznam', '#kalendar/seznam'], …], value: 'seznam' },   | null – C
  *     body: [...],                                                                 D
@@ -134,10 +134,10 @@ export function listScreen({ title, action, menu, search, filter, views, body, p
   const bodyEl = h('div', { class: 'ls__body' }, body);
   // the head of every list screen, the same rows everywhere (the owner's sketch, the UX and UI teams' spec):
   //   A  TITLE ··················· ⋯ [main action]
-  //   B  [⌕ Hledej …][Filtr] ······ [Seznam | Měsíc | Rozpis]     (the switch only in Kalendář; a phone: its own row)
-  //      „Filtr: Slovo · Zruš filtr“                               (only while a filter is on)
+  //   B  [⌕ Hledat …][Filtr] ······ [Seznam | Měsíc | Rozpis]     (the switch only in Kalendář; a phone: its own row)
+  //      „Filtr: Slovo · Zrušit filtr“                               (only while a filter is on)
   //   C  ‹ Říjen 2026 › ··············· Dnes                      (Měsíc and Rozpis)
-  const bar = toolbar({ search: search || { placeholder: 'Hledej' }, filter });
+  const bar = toolbar({ search: search || { placeholder: 'Hledat' }, filter });
   const controlsEl = h('div', { class: 'ls__controls' },
     h('div', { class: 'ls__tools' }, bar, views ? segmented(views.options, views.value, null, { label: views.label || 'Zobrazení' }) : null),
     filter?.note || null,
@@ -161,7 +161,7 @@ export function listScreen({ title, action, menu, search, filter, views, body, p
 
 /**
  * A page (not a list): A at the same y as every list screen, then D 24 under it; no B.
- *   page({ title: 'Kdy nemůžu', action: { label: 'Přidej', onclick }, body })                  one column 640
+ *   page({ title: 'Kdy nemůžu', action: { label: 'Přidat', onclick }, body })                  one column 640
  *   page({ title: 'Ahoj, Radime', width: 'split', body, pane: detail({...}) })                  Moje: list | pane ≥ 1200
  *   page({ title: 'Osnova', back: { href: '#setkani/x', label: 'Zkouška chval' }, menu, body })   a drill-in page: top bar
  * width: 'column' (640) · 'split' (the list screen's frame and grid) · 'wide' (the frame without a pane: tables).
@@ -209,8 +209,8 @@ export function detail({ frame = 'pane', back, close, menu, body, label, title, 
       h('div', { class: 'frame' }, h('article', { class: 'detail detail--page' }, body)));
   }
   const closeEl = close == null ? null : typeof close === 'function'
-    ? iconButton('x', 'Zavři', { onclick: close, dataset: { paneClose: '' } })
-    : h('a', { class: 'icon-btn', href: close, 'aria-label': 'Zavři', title: 'Zavři', dataset: { paneClose: '' } }, icon('x'));
+    ? iconButton('x', 'Zavřít', { onclick: close, dataset: { paneClose: '' } })
+    : h('a', { class: 'icon-btn', href: close, 'aria-label': 'Zavřít', title: 'Zavřít', dataset: { paneClose: '' } }, icon('x'));
   const backEl = back ? h('a', { class: 'btn btn--quiet pane__back', href: back.href, onclick: back.onclick }, icon('chevron-left', { size: 's' }), h('span', {}, back.label)) : null;
   const more = moreButton(menu, title || label);
   return h('article', { class: ['pane', 'detail', 'detail--pane', cls], 'aria-label': label },

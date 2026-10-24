@@ -1,7 +1,7 @@
 // Zvonec One – getting in (DESIGN §6.12). No app chrome: a centred column (max 400) on the page ground; from 600 up a
 // block (r20, --card, padding 32) a fifth of the window down. Wordmark → h1 → (one sentence) → the form; fields M 44
-// 12 apart, the error as a callout above the button, the main action L 52 full width; „Podívej se na Pastvu ›“ under it.
-//   #prihlaseni            live: Jméno, Heslo, „Pamatuj si mě“ (lib/access.js); demo: one tap per prepared person.
+// 12 apart, the error as a callout above the button, the main action L 52 full width; „Podívat se na Pastvu ›“ under it.
+//   #prihlaseni            live: Jméno, Heslo, „Zapamatovat si mě na tomto zařízení“ (lib/access.js); demo: one tap per prepared person.
 //                          No „forgot password“ link: there is no reset (a leader gives a new password).
 //   #prihlaseni/zalozit    Nový Zvonec (also live without any login): the GitHub key, the data repo, the first admin.
 //   #pozvanka/<kód>        check the invite, the newcomer fills in a name and a password and gives consent; the invite
@@ -23,7 +23,7 @@ import {
 } from './kit.js';
 import { checkPassword } from './account.js';
 
-const REMEMBER = 'Pamatuj si mě';
+const REMEMBER = 'Zapamatovat si mě na tomto zařízení';
 const REMEMBER_HINT = 'Na cizím počítači to vypni.';
 const DATA_PATH = 'data';
 
@@ -71,7 +71,7 @@ function liveLogin() {
   const password = passwordBox.input;
   let remember = true;
   const error = errorBox();
-  const submit = mainButton('Přihlas se');
+  const submit = mainButton('Přihlásit se');
   const form = h('form', { class: 'form gate__form', novalidate: true },
     S.signInMessage ? callout({ tone: 'wait', text: S.signInMessage }) : null,
     field({ label: 'Jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
@@ -85,9 +85,9 @@ function liveLogin() {
     error.show('');
     if (!name.value.trim()) { fieldError(name, 'Doplň svoje jméno.'); return; }
     if (!password.value) { fieldError(password, 'Doplň heslo.'); return; }
-    busy(submit, true, 'Ověřuju…');
+    busy(submit, true, 'Ověřuji…');
     const result = await signIn(S.logins, name.value, password.value);
-    busy(submit, false, 'Přihlas se');
+    busy(submit, false, 'Přihlásit se');
     if (!result || result.record.access === 'invite') {
       error.show('Jméno nebo heslo nesedí. Jestli ti vedoucí přístup vytvořil právě teď, počkej pár minut.');
       password.focus();
@@ -118,7 +118,7 @@ function demoLogin() {
     body: list(viewers.map((v) => row({
       lead: avatar(v.person), title: personName(v.person), meta: ACCESS_LABELS[v.access], chevron: true, onclick: () => enter(v),
     })), { label: 'Lidé z ukázky', cls: 'gate__people' }),
-    foot: link('Založ Zvonec pro svůj sbor', { href: '#prihlaseni/zalozit', iconEnd: 'chevron-right', cls: 'gate__pastva' }),
+    foot: link('Založit Zvonec pro svůj sbor', { href: '#prihlaseni/zalozit', iconEnd: 'chevron-right', cls: 'gate__pastva' }),
   });
 }
 
@@ -138,17 +138,17 @@ function renderSetup() {
   const pass = passBox.input;
   for (const input of [token, owner, repoName]) input.spellcheck = false;
   const error = errorBox();
-  const submit = mainButton('Založ Zvonec');
+  const submit = mainButton('Založit Zvonec');
   const step = (...content) => h('li', {}, content);
   const form = h('form', { class: 'form gate__form', novalidate: true },
-    h('h2', { class: 'gate__part' }, 'Datové repo'),
+    h('h2', { class: 'gate__part' }, 'Datový repozitář'),
     field({ label: 'GitHub klíč', control: token }),
     disclosure(h('ol', { class: 'gate__steps' },
       step('Na GitHubu otevři Settings › Developer settings › Fine-grained tokens › Generate new token.'),
-      step('Repository access: Only select repositories, jen datové repo.'),
+      step('Repository access: Only select repositories, jen datový repozitář.'),
       step('Permissions › Repository › Contents: Read and write. Nic víc. Platnost klidně rok.'),
       step('Klíč vlož sem. Zvonec ho schová pod hesla, nikdo další ho znát nemusí.')), { label: 'Jak získáš klíč' }),
-    h('div', { class: 'form__row form__row--pair' }, field({ label: 'Vlastník repa', control: owner }), field({ label: 'Repo', control: repoName })),
+    h('div', { class: 'form__row form__row--pair' }, field({ label: 'Vlastník repozitáře', control: owner }), field({ label: 'Repozitář', control: repoName })),
     h('h2', { class: 'gate__part' }, 'První správce'),
     h('div', { class: 'form__row form__row--pair' }, field({ label: 'Jméno', control: first }), field({ label: 'Příjmení', control: last })),
     field({ label: 'Heslo', control: passBox, hint: 'Aspoň 8 znaků.' }),
@@ -166,8 +166,8 @@ function renderSetup() {
     const firstName = first.value.trim();
     const lastName = last.value.trim();
     if (!token.value.trim()) { fieldError(token, 'Vlož GitHub klíč.'); return; }
-    if (!owner.value.trim()) { fieldError(owner, 'Doplň vlastníka repa.'); return; }
-    if (!repoName.value.trim()) { fieldError(repoName, 'Doplň název repa.'); return; }
+    if (!owner.value.trim()) { fieldError(owner, 'Doplň vlastníka repozitáře.'); return; }
+    if (!repoName.value.trim()) { fieldError(repoName, 'Doplň název repozitáře.'); return; }
     if (!firstName) { fieldError(first, 'Doplň svoje jméno.'); return; }
     const problem = checkPassword(pass.value, pass.value);
     if (problem) { fieldError(pass, problem); return; }
@@ -192,15 +192,15 @@ function renderSetup() {
       await signedIn(result);
       toast('Zvonec je založený. Ostatní se přihlásí za pár minut.', { duration: 9000 });
     } catch (err) {
-      busy(submit, false, 'Založ Zvonec');
+      busy(submit, false, 'Založit Zvonec');
       error.show(`Zvonec se nepodařilo založit. ${err.message || err}`);
     }
   });
   return gate({
     title: 'Nový Zvonec',
-    sentence: 'Zvonec tu zatím nikdo nepoužívá. Vlož GitHub klíč k datovému repu a zapiš se jako první správce.',
+    sentence: 'Zvonec tu zatím nikdo nepoužívá. Vlož GitHub klíč k datovému repozitáři a zapiš se jako první správce.',
     body: form,
-    foot: S.mode === 'demo' ? link('Vrať se do ukázky', { href: '#prihlaseni', iconEnd: 'chevron-right', cls: 'gate__pastva' }) : null,
+    foot: S.mode === 'demo' ? link('Zpět do ukázky', { href: '#prihlaseni', iconEnd: 'chevron-right', cls: 'gate__pastva' }) : null,
   });
 }
 
@@ -241,8 +241,8 @@ export function renderInvite(code = '') {
     body: h('div', { class: 'gate__problem' },
       callout({ tone: invite.status === 'failed' ? 'no' : 'wait', text: invite.message }),
       invite.status === 'failed'
-        ? button('Zkus to znovu', { variant: 'primary', size: 'l', block: true, onclick: () => { invite = null; render(); } })
-        : button('Přihlas se', { variant: 'quiet', size: 'l', block: true, href: '#prihlaseni' })),
+        ? button('Zkusit znovu', { variant: 'primary', size: 'l', block: true, onclick: () => { invite = null; render(); } })
+        : button('Přihlásit se', { variant: 'quiet', size: 'l', block: true, href: '#prihlaseni' })),
   });
 }
 
@@ -280,7 +280,7 @@ function registration({ demo = false, result, store, data }) {
     checked: consent, onChange: (on) => { consent = on; },
   });
   const error = errorBox();
-  const submit = mainButton('Přijmi pozvánku');
+  const submit = mainButton('Přijmout pozvánku');
   const form = h('form', { class: 'form gate__form', novalidate: true },
     demo ? callout({ tone: 'info', text: 'Tohle je ukázka. Takhle vypadá stránka, kterou otevře pozvaný člověk.' }) : null,
     h('div', { class: 'form__row form__row--pair' }, field({ label: 'Jméno', control: first }), field({ label: 'Příjmení', control: last })),
@@ -345,7 +345,7 @@ function registration({ demo = false, result, store, data }) {
       await signedIn(fresh);
       toast(`${welcome(firstName, { end: '!' })} Příště se přihlásíš jménem a heslem.`, { duration: 8000 });
     } catch (err) {
-      busy(submit, false, 'Přijmi pozvánku');
+      busy(submit, false, 'Přijmout pozvánku');
       error.show(`Nepodařilo se tě přidat. ${err.message || err}`);
     }
   });

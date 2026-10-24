@@ -1,15 +1,15 @@
 // Zvonec One – the person's menu (DESIGN §2.5): you and the system. One build: a bottom sheet on a phone (from the
 // „Více“ tab), a popover 320 at ≥ 600 (above the sidebar foot, or right of the rail's avatar), mounted in the layer
 // root so the scrolling sidebar never clips it. The contents are the same at every width; the phone adds
-// „Zdroje“ (it has no sidebar).
+// „Příprava“ (it has no sidebar).
 //   (RK) Radim Kovář ›          #ucet, meta „Můj účet · správce“
 //   Kdy nemůžu ›                #kdy-nemuzu, meta = the next range
 //   Barvy (◉)(◉)(◉)             a tap applies, the menu stays
-//   Zdroje (phone)              Šablony › · Formáty › · Místa › (leaders)
+//   Příprava (phone)            Šablony › · Formáty › · Místa › (leaders)
 //   Správa (leaders)            Sbírky › (phone) · Dary › (phone; the treasurer too) · Přehled › (phone) · Přístupy [1 čeká] › ·
 //                               Nastavení sboru ›
-//   Ukázka (demo)               Podívej se očima druhých › · Začni ukázku znovu · Začni načisto
-//   Odhlas se
+//   Ukázka (demo)               Podívat se očima druhých › · Začni ukázku znovu · Začni načisto
+//   Odhlásit se
 // A tap on a link row closes the menu, then navigates; a row that opens a sheet closes the menu first.
 
 import { S, can, myId, replaceAll, logout, ACCESS_LABELS } from './state.js';
@@ -81,8 +81,8 @@ export function openMeMenu({ from } = {}) {
     ].filter(Boolean), { label: 'Já' }),
     coloursRow(),
     leader && isPhone() ? [
-      heading('Zdroje'),
-      list([page('Šablony', '#sablony'), page('Formáty', '#formaty'), page('Místa', '#mista')], { label: 'Zdroje' }),
+      heading('Příprava'),
+      list([page('Šablony', '#sablony'), page('Formáty', '#formaty'), page('Místa', '#mista')], { label: 'Příprava' }),
     ] : null,
     leader || (isPhone() && (showDary() || canRunFundraisers())) ? [
       heading('Správa'),
@@ -98,13 +98,13 @@ export function openMeMenu({ from } = {}) {
     S.mode === 'demo' ? [
       heading('Ukázka'),
       list([
-        row({ title: 'Podívej se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: then(viewAsSheet), chevron: true }),
+        row({ title: 'Podívat se očima druhých', meta: `teď: ${person ? personName(person) : 'správce bez karty'} · ${role}`, onclick: then(viewAsSheet), chevron: true }),
         row({ title: 'Začni ukázku znovu', single: true, onclick: then(resetDemo) }),
         row({ title: 'Začni načisto', single: true, onclick: then(emptyDemo) }),
       ], { label: 'Ukázka' }),
     ] : null,
     list([row({
-      title: 'Odhlas se', single: true, cls: 'me-menu__out',
+      title: 'Odhlásit se', single: true, cls: 'me-menu__out',
       onclick: then(() => { if (S.mode === 'live') logout(); else demoSignOut(); }),
     })], { label: 'Odhlášení' }));
   // a row that links to the page already shown fires no hashchange: close the menu by hand

@@ -22,7 +22,7 @@ export const CODES = {
   K3: 'Nemá čas',
   K4: 'Neumí',
   K4b: 'Zaučuje se',
-  K5: 'Chybí lidi',
+  K5: 'Chybí lidé',
   K6: 'Nepotvrzeno',
   K7: 'Moc služeb v měsíci',
   K8: 'Neděle po sobě',
@@ -201,7 +201,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K8:${personId}:${days[i]}`, code: 'K8', severity: 'warning',
           eventId: sundays.get(days[i]), personId,
-          text: `${who} slouží už ${streak}. neděli po sobě. I kráva potřebuje volnou neděli na pastvě.`,
+          text: `${who} slouží už ${streak}. neděli po sobě.`,
         });
       }
     }
@@ -254,7 +254,7 @@ export function findConflicts(data, { today } = {}) {
       add({
         key: `K5:${e.id}:essential`, code: 'K5', severity: daysUntil <= essentialDaysBefore ? 'error' : 'warning', eventId: e.id,
         roleIds: gaps.essential.map((g) => g.roleId), roleId: gaps.essential[0].roleId,
-        text: `Bez tohohle to nepůjde: ${listGaps(gaps.essential)}.`,
+        text: `Chybí nezbytné role: ${listGaps(gaps.essential)}.`,
       });
     }
     if (gaps.other.length && daysUntil <= openDaysBefore) {

@@ -1,8 +1,8 @@
 // Zvonec One – Přístupy (#pristupy, leaders; from the person's menu › Správa; DESIGN §6.9). Who can sign in, the
 // invites, and logins whose card is gone. Each change rewrites access.json in the data repo (lib/access.js) and
 // starts to work in a few minutes, after the repo's workflow publishes it. Demo: the prepared list, nothing changes.
-//   A „Přístupy“ · [Pozvi člověka] · ⋯ (Jak se lidé dostanou dovnitř · Vyměň klíč · Klíč k darům – admin)
-//   B „Hledej člověka“ + Filtr (Úroveň · Jen pozvánky)   D one column, no pane: subheads Pozvánky · Správci ·
+//   A „Přístupy“ · [Pozvat člověka] · ⋯ (Jak se lidé dostanou dovnitř · Vyměnit klíč · Klíč k darům – admin)
+//   B „Hledat člověka“ + Filtr (Úroveň · Jen pozvánky)   D one column, no pane: subheads Pozvánky · Správci ·
 //   Vedoucí · Členové · Přístupy bez karty; trail = the level pill. A row has only actions, so it opens its menu.
 // Also exported for other screens: inviteSheet(person), accessOf(personId), waitingInvites(), loginSheet(person).
 
@@ -49,7 +49,7 @@ const appUrl = () => `${location.origin}${location.pathname}`;
 
 /** Create an invite (for a known person, or null for a newcomer) and show its link once. */
 export async function createInvite(person, { replace } = {}) {
-  if (S.mode !== 'live') { demoOnly('V ukázce se nikdo nezve. V ostrém Zvonci tu vznikne odkaz.'); return; }
+  if (S.mode !== 'live') { demoOnly('V ukázce se nikdo nezve. Ve skutečném Zvonci tu vznikne odkaz.'); return; }
   try {
     const code = newPassword();
     const expires = addDays(today(), INVITE_VALID_DAYS);
@@ -64,21 +64,21 @@ export async function createInvite(person, { replace } = {}) {
     secretSheet({
       title: person ? `Pozvánka: ${fullName(person)}` : 'Pozvánka',
       text: 'Kdo odkaz otevře, vyplní svoje údaje, zvolí si heslo a dá souhlas. Pak uvidí rozpis a svoje služby.',
-      rows: [{ label: 'Odkaz', value: `${appUrl()}#pozvanka/${code}`, share: true, copyLabel: 'Zkopíruj odkaz', shareText: 'Pozvánka do Zvonce' }],
+      rows: [{ label: 'Odkaz', value: `${appUrl()}#pozvanka/${code}`, share: true, copyLabel: 'Zkopírovat odkaz', shareText: 'Pozvánka do Zvonce' }],
       note: `Pošli ho jen tomu člověku, ne do skupinového chatu. Platí ${INVITE_VALID_DAYS} dní a začne fungovat za pár minut.`,
     });
   } catch (error) { toast(`Pozvánku se nepodařilo vytvořit. ${error.message}`, { icon: 'alert' }); }
 }
 
 /**
- * „Pozvi do Zvonce“ – the one way in, for a person (their card, Lidé ⋯) or a newcomer (Přístupy, null): what will
- * happen, then „Vytvoř pozvánku“ makes the link and shows it once. The invite makes a člen; raise it later here.
+ * „Pozvat do Zvonce“ – the one way in, for a person (their card, Lidé ⋯) or a newcomer (Přístupy, null): what will
+ * happen, then „Vytvořit pozvánku“ makes the link and shows it once. The invite makes a člen; raise it later here.
  */
 export function inviteSheet(person = null) {
   return formSheet({
     title: 'Pozvánka do Zvonce',
     subtitle: person ? personName(person) : null,
-    submitLabel: 'Vytvoř pozvánku',
+    submitLabel: 'Vytvořit pozvánku',
     size: 's',
     body: [
       text(person
@@ -109,17 +109,17 @@ async function refreshFinance(record) {
   else if (!holdsFinance(record)) delete record.fin;
 }
 
-/** Udělej pokladníkem / Zruš pokladníka (admins): the mark on the login, and with it the key to Dary. */
+/** Udělat pokladníkem / Odebrat pokladníka (admins): the mark on the login, and with it the key to Dary. */
 function treasurerToggle(login) {
   if (S.mode !== 'live') { demoOnly('V ukázce se přístupy nemění.'); return; }
   const person = personById(S.data, login.personId);
   const on = !login.treasurer;
   confirmSheet({
-    title: on ? 'Má být pokladníkem?' : 'Chceš odebrat pokladníka?',
+    title: on ? 'Chceš přidat pokladníka?' : 'Chceš odebrat pokladníka?',
     text: on
       ? `${person ? fullName(person) : 'Tenhle člověk'} uvidí Dary: dárce, částky a potvrzení. ${S.me?.finance ? '' : 'Klíč k darům dostane, až ho vložíš. '}${SOON}`
       : `${person ? fullName(person) : 'Tenhle člověk'} přestane vidět Dary. ${SOON}`,
-    confirmLabel: on ? 'Udělej pokladníkem' : 'Odeber pokladníka',
+    confirmLabel: on ? 'Udělat pokladníkem' : 'Odebrat pokladníka',
     danger: !on,
     onConfirm: async () => {
       try {
@@ -140,7 +140,7 @@ function treasurerToggle(login) {
 
 const LEVELS = [{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }];
 
-/** Změň přístup (admins): člen · vedoucí · správce. The key pair stays, so nobody needs a new password. */
+/** Změnit přístup (admins): člen · vedoucí · správce. The key pair stays, so nobody needs a new password. */
 function levelSheet(login) {
   if (S.mode !== 'live') { demoOnly('V ukázce se přístupy nemění.'); return; }
   const person = personById(S.data, login.personId);
@@ -174,7 +174,7 @@ export function loginSheet(person) {
   formSheet({
     title: existing ? 'Nové heslo' : 'Nový přístup',
     subtitle: fullName(person),
-    submitLabel: 'Vytvoř heslo',
+    submitLabel: 'Vytvořit heslo',
     size: 'm',
     body: [
       meta(`${existing ? 'Staré heslo přestane platit. ' : ''}Nové heslo vymyslí Zvonec a ukáže ti ho jen jednou.`),
@@ -216,7 +216,7 @@ export function revokeLogin(login) {
   confirmSheet({
     title: invite ? 'Chceš zrušit pozvánku?' : 'Chceš odebrat přístup?',
     text: invite ? 'Odkaz přestane fungovat za pár minut.' : 'Za pár minut se už nepřihlásí. Karta v Lidech zůstane.',
-    confirmLabel: invite ? 'Zruš pozvánku' : 'Odeber přístup',
+    confirmLabel: invite ? 'Zrušit pozvánku' : 'Odebrat přístup',
     onConfirm: async () => {
       try {
         await updateLogins((logins) => { const i = logins.findIndex((x) => x.id === login.id); if (i >= 0) logins.splice(i, 1); }, `zrušeno: ${ACCESS_LABELS[login.access] || login.access}`);
@@ -234,12 +234,12 @@ function keySheet() {
   const token = textInput({ name: 'token', type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' });
   formSheet({
     title: 'Výměna klíče',
-    submitLabel: 'Vyměň klíč',
+    submitLabel: 'Vyměnit klíč',
     size: 'm',
     body: [
       text(`Zvonec ukládá data do ${S.me.github?.owner}/${S.me.github?.repo} jedním klíčem. Každý, kdo se může přihlásit, ho má schovaný pod svým heslem.`),
       text('Nový klíč dostanou všichni najednou a nikdo nemusí měnit heslo. Starý klíč na GitHubu zruš až za pár minut.'),
-      field({ label: 'Nový GitHub klíč', control: token, hint: 'Jen k datovému repu, Contents: Read and write.' }),
+      field({ label: 'Nový GitHub klíč', control: token, hint: 'Jen k datovému repozitáři, Contents: Read and write.' }),
     ],
     onSubmit: async (form) => {
       clearErrors(form);
@@ -286,19 +286,19 @@ const FILTER_GROUPS = [
   { id: 'pozvanky', title: 'Jen pozvánky', kind: 'switch' },
 ];
 
-/** The row's menu: Změň přístup (admin; a leader's own members only get the rest) · Pošli znovu · Zruš / Odeber. */
+/** The row's menu: Změnit přístup (admin; a leader's own members only get the rest) · Sdílet znovu · Zrušit / Odebrat. */
 function rowItems(login) {
   const person = personById(S.data, login.personId);
   const invite = login.access === 'invite';
   const manage = !isMe(login) && mayManage(login);
   return [
-    person ? { label: 'Otevři kartu', icon: 'user', href: `#lide/${person.id}` } : null,
-    manage && invite ? { label: 'Pošli pozvánku znovu', icon: 'share', onclick: () => createInvite(person, { replace: login }) } : null,
-    manage && !invite && can('admin') ? { label: 'Změň přístup', icon: 'key', onclick: () => levelSheet(login) } : null,
-    manage && !invite && person ? { label: 'Nastav nové heslo', icon: 'lock', onclick: () => loginSheet(person) } : null,
-    !invite && can('admin') && person ? { label: login.treasurer ? 'Odeber pokladníka' : 'Udělej pokladníkem', icon: 'gift', onclick: () => treasurerToggle(login) } : null,
+    person ? { label: 'Otevřít kartu', icon: 'user', href: `#lide/${person.id}` } : null,
+    manage && invite ? { label: 'Poslat pozvánku znovu', icon: 'share', onclick: () => createInvite(person, { replace: login }) } : null,
+    manage && !invite && can('admin') ? { label: 'Změnit přístup', icon: 'key', onclick: () => levelSheet(login) } : null,
+    manage && !invite && person ? { label: 'Nastavit nové heslo', icon: 'lock', onclick: () => loginSheet(person) } : null,
+    !invite && can('admin') && person ? { label: login.treasurer ? 'Odebrat pokladníka' : 'Udělat pokladníkem', icon: 'gift', onclick: () => treasurerToggle(login) } : null,
     manage ? '-' : null,
-    manage ? { label: invite ? 'Zruš pozvánku' : 'Odeber přístup', icon: 'x', danger: true, onclick: () => revokeLogin(login) } : null,
+    manage ? { label: invite ? 'Zrušit pozvánku' : 'Odebrat přístup', icon: 'x', danger: true, onclick: () => revokeLogin(login) } : null,
   ].filter(Boolean);
 }
 
@@ -362,12 +362,12 @@ function listBody() {
   const f = filterState(KEY);
   const q = searchText(KEY);
   const shown = all.filter((l) => passes(l, f, q));
-  const demo = live ? null : callout({ tone: 'info', text: 'V ukázce se nikdo nepřihlašuje. Takhle by seznam vypadal v ostrém Zvonci.' });
+  const demo = live ? null : callout({ tone: 'info', text: 'V ukázce se nikdo nepřihlašuje. Takhle by seznam vypadal ve skutečném Zvonci.' });
   if (!all.length) {
     return [demo, empty({
       kind: 'none', icon: 'key', title: 'Zatím se nikdo nemůže přihlásit.',
       text: 'Pošli pozvánku a nový člověk si údaje i heslo vyplní sám.',
-      action: { label: 'Pozvi člověka', icon: 'user-plus', onclick: () => inviteSheet(null) },
+      action: { label: 'Pozvat člověka', icon: 'user-plus', onclick: () => inviteSheet(null) },
     })];
   }
   if (!shown.length) {
@@ -396,13 +396,13 @@ export function renderAccess() {
   screenEl = listScreen({
     title: 'Přístupy',
     phoneBack: menuBack(),   // a phone opens it from the person menu
-    action: { label: 'Pozvi člověka', icon: 'user-plus', onclick: () => inviteSheet(null) },
+    action: { label: 'Pozvat člověka', icon: 'user-plus', onclick: () => inviteSheet(null) },
     menu: [
-      { label: 'Ukaž, jak se lidé dostanou dovnitř', icon: 'info', onclick: helpSheet },
-      can('admin') ? { label: 'Vyměň klíč', icon: 'key', onclick: keySheet } : null,
+      { label: 'Zobrazit, jak se lidé dostanou dovnitř', icon: 'info', onclick: helpSheet },
+      can('admin') ? { label: 'Vyměnit klíč', icon: 'key', onclick: keySheet } : null,
       can('admin') ? { label: 'Klíč k darům', icon: 'gift', onclick: financeKeySheet } : null,
     ].filter(Boolean),
-    search: { key: KEY, placeholder: 'Hledej člověka', onInput: redraw },
+    search: { key: KEY, placeholder: 'Hledat člověka', onInput: redraw },
     filter: filterButton({
       key: KEY, groups: FILTER_GROUPS, onChange: redraw,
       results: () => allLogins().filter((l) => passes(l, filterState(KEY), searchText(KEY))).length,

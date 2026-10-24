@@ -233,7 +233,7 @@ function hashOf(text) {
 
 /**
  * The cover of an event (16 : 9): its picture (or its template's) once loaded, else a generated one –
- * the arch window in the hue of its Účel. Events with the same title share the generated variant.
+ * the arch window in the hue of its Druh setkání. Events with the same title share the generated variant.
  * `url` shows a picture that is not saved yet (the form preview).
  */
 export function cover(event, { url, cls } = {}) {
@@ -323,14 +323,14 @@ export function downloadDuties(person) {
   if (!person) return;
   const items = icsForPerson(S.data, person.id, addDays(today(), -30));
   download(`sluzby-${asciiName(fullName(person), 'clovek')}.ics`, ics(S.data, items, `Služby – ${displayName(person)}`), 'text/calendar');
-  toast(items.length ? `Stahuju ${plural(items.length, 'službu', 'služby', 'služeb')}. Otevři soubor v telefonu.` : 'Stahuju soubor. Zatím v něm žádná služba není.', { icon: 'download' });
+  toast(items.length ? `Stahuji ${plural(items.length, 'službu', 'služby', 'služeb')}. Otevři soubor v telefonu.` : 'Stahuji soubor. Zatím v něm žádná služba není.', { icon: 'download' });
 }
 
 /** .ics of the whole calendar from a month back on (cancelled events say so inside). */
 export function downloadCalendar() {
   const items = (S.data.events || []).filter((e) => dayOf(e.start) >= addDays(today(), -30)).map((event) => ({ event }));
   download('kalendar-sboru.ics', ics(S.data, items, S.data.settings?.churchName || 'Zvonec'), 'text/calendar');
-  toast(`Stahuju ${plural(items.length, 'setkání', 'setkání', 'setkání')}. Otevři soubor v telefonu.`, { icon: 'download' });
+  toast(`Stahuji ${plural(items.length, 'setkání', 'setkání', 'setkání')}. Otevři soubor v telefonu.`, { icon: 'download' });
 }
 
 /** The two .ics choices as rows: Moje služby (with a card) · Celý kalendář. `onDone` closes a sheet first. */

@@ -41,11 +41,17 @@ Copy these into `AGENTS.md` if the agent reads that file.
   people read is Czech: UI text, URL slugs people see (`#kalendar`, `#pozvanka/…`), downloaded file names, the commit
   messages the app writes into the data repo, the user guide `zvonec/README.md`.
 - **Czech voice.** One kind voice in tykání.
-  - Actions (buttons, menu items, action links, aria-labels of icon buttons) are imperative 2nd person singular:
-    „Přidej setkání“, „Ulož“, „Přihlas se“, „Zruš filtr“.
-  - Page, section and dialog titles are nouns, never infinitives: „Přihlášení“, „Nové setkání“, „Úprava setkání“.
-    Established exceptions: „Nový člověk“, „Nová skupina“.
-  - Search placeholders are „Hledej“ + one noun („Hledej setkání“). Confirms ask „Chceš …?“.
+  - Controls (buttons, menu items, action links, switches, checkboxes, aria-labels of icon buttons) are infinitives,
+    as in every Czech app: „Přidat setkání“, „Uložit“, „Přihlásit se“, „Zrušit filtr“, „Zobrazit na webu“.
+    Standard words: cancel „Zrušit“, undo „Vrátit zpět“, share „Sdílet“, close „Zavřít“.
+  - Sentences, hints, toasts and errors talk to the reader in tykání; an instruction inside a sentence stays in the
+    imperative („Doplnit jméno.“, „Vybrat den.“). An error says what is wrong and how to fix it.
+  - Page, section and dialog titles are nouns: „Přihlášení“, „Nové setkání“, „Úprava setkání“.
+    Established exceptions: „Nový člověk“, „Nová skupina“, „Kdy nemůžu“.
+  - Search placeholders are „Hledat“ + one noun („Hledat setkání“). Confirms ask „Chceš …?“ and the confirm
+    button repeats the verb („Chceš smazat setkání?“ → „Smazat setkání“ / „Zrušit“).
+  - Standard written Czech: no jokes in warnings, „lidé“ not „lidi“, „nemohou“ not „nemůžou“, a non-breaking space
+    inside dates („18. 10.“) and before units („10 min“).
   - Natural Czech, no calques.
 - **No build step.** Static vanilla ES modules. No framework, no bundler, no npm runtime dependencies.
 - **Strict CSP.** No inline scripts or styles, never `innerHTML`. DOM is built with `h()`.
@@ -91,11 +97,11 @@ things and never share a name.
 
 | | člen (member) | vedoucí (leader) | správce (admin) |
 |---|---|---|---|
-| Navigation | Moje, Kalendář, Lidé, Skupiny | + Obsazení, the group „Zdroje“ (Šablony, Formáty, Místa), „Správa“ in the person menu (Přístupy, Nastavení sboru) | the same items as a leader |
+| Navigation | Moje, Kalendář, Lidé, Skupiny | + Obsazení, the group „Příprava“ (Šablony, Formáty, Místa), „Správa“ in the person menu (Přístupy, Nastavení sboru) | the same items as a leader |
 | Duties | answers own duties (Můžu / Nemůžu); sees the whole Rozpis, read-only | plans everything: meetings, needs, picker, auto-fill, overrides, conflicts, Vytížení | same |
 | People | names and households; phone and e-mail only when the person shared them | edits people, households, groups, roles, archive; invites | same |
 | Formáty, Místa | read-only, reached by links | edit | edit |
-| Access | – | invites; manages member and invite logins | + „Změň přístup“, „Vyměň klíč“, „Nahraj zálohu“ |
+| Access | – | invites; manages member and invite logins | + „Změnit přístup“, „Vyměnit klíč“, „Nahrát zálohu“ |
 | Dary (15.1) | own account, symbol and QR in Můj účet | the same | + the Dary screen and Přehled › Dary, like the treasurer |
 | Sbírky (9.17) | the open ones, how much they have collected, a gift by QR | + found and run them | the same |
 
@@ -151,7 +157,7 @@ base-uri 'none'; form-action 'none'
 - **Live** (the file exists): the published logins are loaded, `repo.json` gives `{ owner, repo }`, signed-out
   visitors get `public.json`. Signing in unseals the GitHub config and creates a `GithubStore`.
 - **Demo** (no file): a `LocalStore` in localStorage key `zvonec-demo`, seeded on first run by
-  `createDemo(today())` from `lib/demo.js`. The viewer starts as admin Radim Kovář. „Podívej se očima druhých“
+  `createDemo(today())` from `lib/demo.js`. The viewer starts as admin Radim Kovář. „Podívat se očima druhých“
   switches to leader Martina Dvořáková, member Jana Nováková, or a generic member / leader / admin. Public data is
   built on the fly with `buildPublic`.
 - **First run** (live, no logins): „Nový Zvonec“ asks for the GitHub key, repo owner and name, the first admin, and
@@ -165,9 +171,9 @@ base-uri 'none'; form-action 'none'
     `foldName` removes diacritics and case, so „Diakritika a velká písmena nevadí.“
   - `lookup` = hex of bits 32..48 of the derived key; it finds the login record without a name.
   - `gh` = the GitHub config `{ t: token, o: owner, r: repo, c: 'data', v: 'main' }` sealed to the public key.
-  - `resealAll` swaps the token for every login without new passwords („Vyměň klíč“).
-- „Pamatuj si mě“ stores `zvonec-me` = `{ id, priv }` in localStorage; otherwise sessionStorage.
-- No password reset. A leader sets a new password („Nastav nové heslo“).
+  - `resealAll` swaps the token for every login without new passwords („Vyměnit klíč“).
+- „Zapamatovat si mě na tomto zařízení“ stores `zvonec-me` = `{ id, priv }` in localStorage; otherwise sessionStorage.
+- No password reset. A leader sets a new password („Nastavit nové heslo“).
 - A signed-out visitor following an app link signs in first, then lands on that route (`S.afterSignIn`).
 - **Invite**: a leader creates a login with `access: 'invite'`, name `invite`, password = a random code, valid
   14 days, single use. The link is `#pozvanka/<kód>`. Registering creates or updates the person (`registeredAt`,
@@ -185,7 +191,7 @@ base-uri 'none'; form-action 'none'
 
 ### 3.6 Keyboard
 „/“ focuses the search · „N“ clicks the `[data-primary]` main action · Esc closes the top layer, then the pane ·
-← / → change the month at ≥ 600 · Ctrl/⌘ Z runs the newest toast's „Vrať“.
+← / → change the month at ≥ 600 · Ctrl/⌘ Z runs the newest toast's „Vrátit zpět“.
 
 ---
 
@@ -228,7 +234,7 @@ servingLimits, settings }`.
   file, with that file's last sha.
 - Status: `saved | pending | saving | error | offline` (offline = network status 0). On failure the notes are kept.
 - Save line (top-centre capsule): „Ukládám…“ appears only after 1 s; on failure „Změny se neuložily.“ +
-  [Zkus to znovu]; offline „Chybí připojení k internetu. Zvonec změny uloží, až se připojení vrátí.“
+  [Zkusit znovu]; offline „Chybí připojení k internetu. Zvonec změny uloží, až se připojení vrátí.“
   `beforeunload` warns while anything is unsaved.
 - **Commit message**: `Zvonec: <first 3 notes joined by ", ">`, then ` a N další` (N ≤ 4) or ` a N dalších`.
   Without notes: `Zvonec: úprava`. Notes are short Czech phrases: `Petr na Zvuk 11. 10.`, `vráceno: …`,
@@ -260,7 +266,7 @@ whose sha changed, three-way merge, then toast „Zvonec načetl, co mezitím ul
 (`saveAll`) and invite registration (edits `data/people.json` and `data/groups.json` directly).
 
 ### 4.7 Undo
-- Reversible actions run at once. Their toast has „Vrať“. Undo is an in-memory closure (for example a JSON snapshot
+- Reversible actions run at once. Their toast has „Vrátit zpět“. Undo is an in-memory closure (for example a JSON snapshot
   of `event.assignments` or the previous status). Undoing is a new change with the note `vráceno: …`, so it is a
   new commit, never a git revert. Toast after undo: „Vráceno.“
 - Irreversible actions ask first in a confirm: deleting an event, household, group, role, template, format, place
@@ -357,7 +363,7 @@ from its people.
 `{ id: "r…", groupId, name, count, essential?: true, adultsOnly?: true, childcare?: true,
 window?: { startMin, endMin? }, combinableWith?: [roleId] }`
 - `groupId` must be a `team`. `count`: integer ≥ 1 (UI 1–10), the default people per event.
-- `essential` „Bez toho to nepůjde“ · `adultsOnly` „Jen pro dospělé“ · `childcare` „Stará se o děti“ (hint „Kdo má tuhle roli, je během setkání s dětmi. Zvonec hlídá, aby u nich
+- `essential` „Nezbytná role“ · `adultsOnly` „Jen pro dospělé“ · `childcare` „Stará se o děti“ (hint „Kdo má tuhle roli, je během setkání s dětmi. Zvonec hlídá, aby u nich
   byli aspoň dva dospělí.“; it was „Je s dětmi“, which read as a property of the event).
 - `window` „Jen část setkání“: minutes from the event start. `startMin` −60..240; `endMin` 0..300, where 0 or
   missing = until the end; `endMin > startMin`.
@@ -375,7 +381,7 @@ program?: [{ formatId, minutes }], groupId?, weekday?: 0..6 (0 = Monday), public
 archived?: true }`
 - `weekday` prefills the calendar; without it, it is inferred from the template's events.
 - An archived template is not offered for new events.
-- Editing a template (name, Účel, time and length, places, group, needs, osnova, description, picture) can reach
+- Editing a template (name, Druh setkání, time and length, places, group, needs, osnova, description, picture) can reach
   its planned events (from today, not cancelled): an event takes a changed key only while it still has the old
   template's value there, so a change made by hand stays. The time keeps each event's day; a new osnova keeps who
   leads a point and its note where the same format stays (`typeChangePlan`, `applyTypeChange`).
@@ -385,7 +391,7 @@ archived?: true }`
 needs: [need], program?: [programItem], assignments: [assignment], attendance?: { adults?, children? },
 public?: boolean, description?, image? }`
 
-`kind` (UI „Účel“):
+`kind` (UI „Druh setkání“):
 
 | value | label | icon | hue |
 |---|---|---|---|
@@ -397,7 +403,7 @@ public?: boolean, description?, image? }`
 - `end` may pass midnight. If the form's end ≤ start, the end moves to the next day. Default length 60 min.
 - `groupId` = „Pro koho“; empty = „Celý sbor“.
 - `note` = „Pro tým“: internal, never public.
-- `description` = „Popis pro web“. `public` = „Ukaž na webu“; only `true` publishes. `featured` = „Zvýrazni na
+- `description` = „Popis pro web“. `public` = „Zobrazit na webu“; only `true` publishes. `featured` = „Zvýraznit na
   webu“ (optional, `true` only): Pastva shows the meeting on top as „Nenech si ujít“.
 - Cover image: the event's `image`, else its template's, else a generated arch cover in the kind's hue. An uploaded
   picture is cut to its middle 16 : 9 and scaled to at most 1600 × 900 (`ui/cover-image.js`), so the same thumbnail
@@ -423,7 +429,7 @@ public?: boolean, description?, image? }`
 `{ id: "a…", roleId, personId, status, personName?, override?: { reason, by?: personId, at?: date } }`
 - `status`: `proposed` „čeká na potvrzení“ (short „čeká“), `confirmed` „potvrzeno“, `declined` „nemůže“.
 - Every new or replaced assignment starts as `proposed`. Replacing the person also deletes `override`.
-- `override` is the „Vím o tom“ / „Výjimka“ reason („Proč to půjde“, max 120 characters).
+- `override` is the „Povolit výjimku“ / „Výjimka“ reason („Proč to půjde“, max 120 characters).
 
 ### 5.14 format (UI „Formát“)
 `{ id: "f…", name, minutes: 1–600, leadRoleId?, why?, how?, link?, needs?: [need], public?: true }`
@@ -499,8 +505,8 @@ Enforced by the demo test (`zvonec/test/demo.test.mjs`) and expected of all data
 place or to a room; a household `address` that is not a string.
 
 ### 5.22 Form rules
-- **Person**: first name required. A guest without consent keeps only the first name. A child joining a household with a member or a consenting adult is covered by that consent. Nothing typed is dropped silently: the first „Přidej člověka“ names what would go („…, příjmení a narození zahodím“) and turns into „Ulož jen jméno“. The consent switch stores
-  today as `consentDate`. A duplicate full name needs a second confirmation („Přidej přesto“). A child cannot have
+- **Person**: first name required. A guest without consent keeps only the first name. A child joining a household with a member or a consenting adult is covered by that consent. Nothing typed is dropped silently: the first „Přidat člověka“ names what would go („…, příjmení a narození zahodím“) and turns into „Uložit jen jméno“. The consent switch stores
+  today as `consentDate`. A duplicate full name needs a second confirmation („Přidat přesto“). A child cannot have
   a phone or e-mail.
 - **Limits** are integers. **Blockout** „Do“ is today or later; optionally the clashing duties become `declined` in
   the same save.
@@ -545,7 +551,7 @@ roleIds?, assignmentIds, overrideNote?, text }` (`text` in Czech).
 | K2 | Dvě služby naráz | One event, two roles with overlapping windows, not combinable. Hint „Jednu z nich dej někomu jinému.“ unless overridden. | error |
 | K3 | Nemá čas | An availability record intersects the days of the window. One conflict per record. | error |
 | K4b | Zaučuje se | Level `learning`, and nobody else active in that role at the event is `trained`. | warning |
-| K5 | Chybí lidi | Upcoming events only (daysUntil ≥ 0), one card per event and class. Essential gaps count when daysUntil ≤ 2 × `essentialDaysBefore`: error at ≤ `essentialDaysBefore`, warning before. Other gaps: warning at ≤ `openDaysBefore`. | error / warning |
+| K5 | Chybí lidé | Upcoming events only (daysUntil ≥ 0), one card per event and class. Essential gaps count when daysUntil ≤ 2 × `essentialDaysBefore`: error at ≤ `essentialDaysBefore`, warning before. Other gaps: warning at ≤ `openDaysBefore`. | error / warning |
 | K6 | Nepotvrzeno | Upcoming event with daysUntil ≤ `unconfirmedDaysBefore`; one per `proposed` assignment. | warning |
 | K7 | Moc služeb v měsíci | Distinct non-rehearsal events in a calendar month > the person's `maxPerMonth`. | warning |
 | K8 | Neděle po sobě | Sunday `service` events in consecutive weeks; fires when the run reaches `maxConsecutiveWeeks` + 1. | warning |
@@ -586,23 +592,23 @@ Picker behaviour (One `pickFor`):
 - The `team` pool, search across `all`. People already in this role are hidden.
 - A candidate with a hard error other than `declined` needs an exception reason first; it is saved as
   `override: { reason, at, by }`.
-- „Přesuň sem“ moves a person whose only obstacle is another role at the same event.
-- „Přidej nového člověka „…““ creates `{ membership: { status: 'guest' }, needsReview: true }`, adds them to the
+- „Přesunout sem“ moves a person whose only obstacle is another role at the same event.
+- „Přidat nového člověka „…““ creates `{ membership: { status: 'guest' }, needsReview: true }`, adds them to the
   team as `learning`, and assigns them.
-- Every pick is `proposed`; the toast offers „Vrať“.
+- Every pick is `proposed`; the toast offers „Vrátit zpět“.
 
 ### 6.5 Auto-fill and „as last time“
-**„Doplň volná místa“** (`fillOpenSlots(eventIds, { teams })`):
+**„Doplnit volná místa“** (`fillOpenSlots(eventIds, { teams })`):
 1. Works on a `structuredClone` draft; skips cancelled and past events (end < today).
 2. For each full need (optionally only chosen teams), while non-declined assignments < count: take the first
    `skilled` candidate with no error, no warning and not learning; propose them.
-3. Sheet „Návrh služeb“: the leader can untick proposals, then [Zapiš N služeb].
+3. Sheet „Návrh služeb“: the leader can untick proposals, then [Zapsat N služeb].
 4. On write each proposal is re-checked (`missingCount > 0`, no duplicate). Undo removes them all.
-5. Slots still empty are listed under „Volná místa“ with [Vyber].
+5. Slots still empty are listed under „Volná místa“ with [Vybrat].
 
 `lib proposeRemaining` is the same algorithm but counts only assignments with a person.
 
-**„Obsaď jako minule“** (`sameAsLastTime`): the previous non-cancelled event of the same series, else of the same
+**„Obsadit jako minule“** (`sameAsLastTime`): the previous non-cancelled event of the same series, else of the same
 template. Copy its non-declined people into roles this event needs, up to the count; skip people who are inactive,
 unavailable, or busy elsewhere in that window. New assignments are `proposed`.
 
@@ -622,7 +628,7 @@ unavailable, or busy elsewhere in that window. New assignments are `proposed`.
   „Každou neděli do 28. 6. · 12 setkání“.
 - **`updateSeries`** (answer „I N dalších“): copies `title, kind, typeId, placeIds, groupId, note, needs, public,
   description, image` to the following events; each keeps its day but takes the new time and length.
-- **`extendSeries`** („Prodluž řadu“): continues the rule from the last event (copied without people or
+- **`extendSeries`** („Prodloužit řadu“): continues the rule from the last event (copied without people or
   attendance), or from the template when no event is left; stores or updates the record.
 - **`seriesFor`**: infers `{ …, inferred: true, step | null }` for older data with no record.
 - `cancelEvent` / `deleteEvent` optionally apply to the following events.
@@ -638,17 +644,17 @@ sum. `itemLeaders` = the hand-picked person, else the active assignees of the fo
 - `age(person, onDate)`: from a full date, or the year difference when only the year is known.
 - Birthdays use full dates only; 29 Feb is celebrated on 28 Feb in non-leap years; former people are excluded.
   `upcomingBirthdays` groups 12 months by month with `isToday`, `thisWeek` (Mon–Sun) and `past`.
-- **`archivePerson`** („Přesuň do archivu“): `membership = { status: 'former', since?, until: today, previous }`,
+- **`archivePerson`** („Přesunout do archivu“): `membership = { status: 'former', since?, until: today, previous }`,
   delete `needsReview`, remove their assignments from events starting now or later, clear their `personId` from
   future program items, drop `leader` on their groupMembers (the records stay). Live mode also revokes their
   logins.
-- **`restorePerson`** („Vrať z archivu“): status = `previous`, else `regular`. Released duties and leading do not
+- **`restorePerson`** („Vrátit z archivu“): status = `previous`, else `regular`. Released duties and leading do not
   come back.
-- **`deletePersonKeepHistory`** („Smaž kartu“): past assignments and program items get `personName` = the full
+- **`deletePersonKeepHistory`** („Smazat kartu“): past assignments and program items get `personName` = the full
   name; future duties are released; the card, groupMembers, availability and servingLimits are removed.
   `personOrSnapshot` returns `{ id, firstName, lastName?, deleted: true }`.
 - **Overdue archive**: archived more than a year ago (`ARCHIVE_KEEP_YEARS = 1`) or without `until`. Lidé ⋯ offers
-  „Smaž staré karty z archivu“ once such cards exist.
+  „Smazat staré karty z archivu“ once such cards exist.
 - Former people are excluded from filters and search, pickers and candidates, servingLoad, birthdays,
   missingData, group lists (`membersOf`, `leadersOf`, `peopleForRole`, `skillMatrix`) and the household block.
 - **`missingData`** (never for former people), in order: `review` (needsReview) · `lastName` · `contact` (an adult
@@ -693,7 +699,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
 - **Rail** (600–899): „ck“ mark; cells 88 × 64 (icon 24 + label 13/500); a 32 × 1 divider before Zdroje; avatar
   40 at the foot opens the person menu as a popover.
 - **Sidebar** (≥ 900, 248): wordmark (→ `#moje`); items M 44, r12, 3 apart, icon 20, label 15/500, count capsule
-  at the end; group title „Zdroje“ 13/620 in `--ink-2`; foot 56 pinned (avatar 36, name 15/620, level word,
+  at the end; group title „Příprava“ 13/620 in `--ink-2`; foot 56 pinned (avatar 36, name 15/620, level word,
   invites dot) opens the person menu above it.
 - **Current item**: `--ground` fill inside an inset 1 px `--edge` hairline, label 620, plus a detached 3 × 16
   `--mark` bar at the nav's left edge (sidebar, rail). On a phone the 56 × 32 icon niche takes the look. On
@@ -702,10 +708,10 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
   1. avatar row, meta „Můj účet · správce“ › `#ucet`;
   2. „Kdy nemůžu“ › with the next range as meta („24.–26. 10. · dovolená“);
   3. „Barvy“ + the three bullseyes (the menu stays open);
-  4. **Zdroje** (phone only, leaders): Šablony · Formáty · Místa;
+  4. **Příprava** (phone only, leaders): Šablony · Formáty · Místa;
   5. **Správa** (leaders): Přístupy (pill „1 čeká“) · Nastavení sboru;
-  6. **Ukázka** (demo only): „Podívej se očima druhých“ · „Začni ukázku znovu“ · „Začni načisto“;
-  7. „Odhlas se“ in `--no-ink`.
+  6. **Ukázka** (demo only): „Podívat se očima druhých“ · „Začni ukázku znovu“ · „Začni načisto“;
+  7. „Odhlásit se“ in `--no-ink`.
 - On a phone, screens opened from the person menu get a top bar „‹ Zpět“ (history back, else `#moje`); Skupiny
   gets „‹ Lidé“.
 
@@ -740,7 +746,7 @@ Redirects (old slugs keep working): `domu|vice` → `moje`; `nemuzu` → `kdy-ne
 `pastva`; `jak-se-schazime` → the Pastva anchor; `osoba/<id>` → `lide/<id>`; `tym|skupina/<id>` →
 `lide/skupiny/<id>`; `tymy|skupiny|sluzby` → `lide/skupiny`; `lide/tabulka` → `lide/vypis`;
 `lide/<clenove|pratele|hoste|deti|doplnit|narozeniny|archiv|…>` → `#lide` with that Filtr preset; `udalost/<id>` →
-`setkani/<id>`; `porad|prubeh` → `osnova`; `upozorneni|kolize` → `#obsazeni` with Filtr „Něco nesedí“;
+`setkani/<id>`; `porad|prubeh` → `osnova`; `upozorneni|kolize` → `#obsazeni` with Filtr „Problémy“;
 `rozpis[/m]` → `kalendar/rozpis/m`; `lide/vytizeni` → Rozpis + Vytížení; `kalendar/<YYYY-MM>` → Měsíc;
 `kalendar/tyden` → Seznam; `sablona/<id>`, `misto/<id>`, `format/<id>` → the plural routes;
 `nastaveni/pristupy` → `pristupy`.
@@ -775,12 +781,12 @@ Every band is present or absent per screen and role, never per state.
   - The main action is primary M: icon-only 44 on a phone (the aria-label carries the words), icon 20 + label at
     ≥ 600. Order: ⋯ first; the main action ends at the edge.
   - Nothing ever sits in the h1 or between A and B: no chip, date, count or subtitle.
-- **B** (12 under A): [⌕ Hledej … ✕] [Filtr ⁿ] on the left.
+- **B** (12 under A): [⌕ Hledat … ✕] [Filtr ⁿ] on the left.
   - Search: always visible, labelled, soft tint, M 44, r12, icon inside left, ✕ clears; 320 wide at ≥ 600, the
     full row on a phone. Filters as you type; text kept per screen for the visit.
   - Filtr: soft tint, fixed 120, icon „sliders“ · „Filtr“ · a reserved count slot (capsule `--ink` on `--ground`,
     hidden at 0). aria-label „Filtr, zapnuto 2“.
-  - While a filter is on, one quiet line under B: „Filtr: Slovo, Slovo · Zruš filtr“.
+  - While a filter is on, one quiet line under B: „Filtr: Slovo, Slovo · Zrušit filtr“.
   - Kalendář's view switch (Seznam | Měsíc | Rozpis) is quiet words at B's right end (the chosen one on a soft
     tint). Where B is narrower than 720 it takes its own row.
 - **C** (Měsíc, Rozpis only; 12 under B): [‹] [Říjen 2026] [›] ······ „Dnes“. Label 136 wide, 17/620. „Dnes“ is
@@ -789,25 +795,25 @@ Every band is present or absent per screen and role, never per state.
 
 ### 8.2 Filtr layer
 Bottom sheet on a phone, popover 360 at ≥ 600. Groups: h3 13/620 in `--ink-2`; chips (M 44 capsules, on = `--act`
-fill, an 8 px hue dot for Účel) or switch rows. Choices apply at once. Phone foot: [Ukaž 12 setkání] (primary L,
-live count) + [Zruš filtr] (only while something is on). Popover foot: [Zruš filtr]. Remembered per browser and
+fill, an 8 px hue dot for Druh setkání) or switch rows. Choices apply at once. Phone foot: [Zobrazit 12 setkání] (primary L,
+live count) + [Zrušit filtr] (only while something is on). Popover foot: [Zrušit filtr]. Remembered per browser and
 screen in `zvonec-one-filtr-<key>`. A default scope counts as a filter.
 
 ### 8.3 Empty states (`empty()`)
 Arch well 88 with an icon, h2 20/620, one sentence, at most one quiet M action, 48 under the controls.
 - Nothing yet: a per-screen title and sentence (see §9).
-- Nothing found: „Nic tomu neodpovídá.“ / „Hledáš „…“.“ / [Vymaž hledání].
-- Filtered empty: „S tímhle filtrem tu nic není.“ / „Filtr skrývá 12 setkání.“ / [Zruš filtr].
+- Nothing found: „Nic tomu neodpovídá.“ / „Hledáš „…“.“ / [Vymazat hledání].
+- Filtered empty: „S tímhle filtrem tu nic není.“ / „Filtr skrývá 12 setkání.“ / [Zrušit filtr].
 - Lidé, a search that finds no one shown: when the Filtr hides someone who matches – „S tímhle filtrem tu nikdo
-  není.“ / „Hledáš „…“. Filtr skrývá 1 člověka, který tomu odpovídá.“ / [Zruš filtr] (keeps Ukaž i archiv); else,
+  není.“ / „Hledáš „…“. Filtr skrývá 1 člověka, který tomu odpovídá.“ / [Zrušit filtr] (keeps Zobrazit i archiv); else,
   for leaders, when cards in the archive match – „Jen v archivu.“ / „Hledáš „…“. V archivu tomu odpovídá 1 karta.“
-  / [Ukaž i archiv] (turns the Filtr's switch on).
+  / [Zobrazit i archiv] (turns the Filtr's switch on).
 - Měsíc and Rozpis: one quiet line under the period line.
 - A missing item: the well + „Možná ho někdo smazal, nebo je odkaz starý.“
 
 ### 8.4 Buttons, sizes, type
 - **Three button kinds**: (1) the dark main action (`--act` / `--on-act`); (2) soft tint (`--tint`: quiet
-  buttons, Filtr, „+ Přidej“); (3) bare icon (⋯, ✕, call, ‹ ›). Danger (`--no-solid`) only in confirms and
+  buttons, Filtr, „+ Přidat“); (3) bare icon (⋯, ✕, call, ‹ ›). Danger (`--no-solid`) only in confirms and
   destructive sheet buttons.
 - **Heights**: S 36 (content actions, ≥ 600 only, hit area 44), M 44 (everything else), L 52 (the main action of a
   sheet or dialog foot, Můžu / Nemůžu, contact tiles, sign-in). On a phone S becomes M.
@@ -823,7 +829,7 @@ Arch well 88 with an icon, h2 20/620, one sentence, at most one quiet M action, 
 `--section-gap` 40 between sections · 12 from an h2 to its content · 3 between lit rows.
 
 ### 8.6 Rows (`row()`)
-- Lead 40 (avatar, date arch 44 × 56, team mark, Účel mark, minutes block, pin), title 17/620 (16 at ≥ 600) +
+- Lead 40 (avatar, date arch 44 × 56, team mark, Druh setkání mark, minutes block, pin), title 17/620 (16 at ≥ 600) +
   meta, exactly one trail item.
 - Height 64 / 52 (single line) on a phone, 60 / 48 at ≥ 600.
 - Hover: the whole row `--wash`, r12.
@@ -846,9 +852,9 @@ Always a symbol + a word, never colour alone.
 - Ink for text and links. Red (`--no-*`) only for problems. `--ink-accent` only for quiet links.
 - One pink, used as itself: in Hlína a růžová it is the main action, counts, today disc and selection bar; in Krém
   a hlína only the selection tint (`--pick`, pink α .30; bar `--mark` = hlína).
-- Účel hues (service rose, rehearsal blue, smallGroup teal, event plum; `--hue-fill` step 3, `--hue-mark` 11,
-  `--hue-ink` 12) appear only on the Účel bar, month chips, mini-month dots, the Setkání band and tag, the Šablona
-  mark and the Filtr Účel dots.
+- Druh setkání hues (service rose, rehearsal blue, smallGroup teal, event plum; `--hue-fill` step 3, `--hue-mark` 11,
+  `--hue-ink` 12) appear only on the Druh setkání bar, month chips, mini-month dots, the Setkání band and tag, the Šablona
+  mark and the Filtr Druh setkání dots.
 - Avatar and team hues: blue, green, plum, amber, teal (no rose).
 - Status tokens: `--ok-*`, `--wait-*`, `--no-*`, `--info-*`.
 
@@ -865,17 +871,17 @@ Always a symbol + a word, never colour alone.
 
 | kind | phone | ≥ 600 |
 |---|---|---|
-| sheet | bottom sheet: grabber, head 44 with h2 + ✕ „Zavři“, sticky foot | dialog S 400 / M 480 / L 640 |
+| sheet | bottom sheet: grabber, head 44 with h2 + ✕ „Zavřít“, sticky foot | dialog S 400 / M 480 / L 640 |
 | filter | bottom sheet | popover 360 |
 | menu | action sheet titled by its object, rows 52 | popover 240–320, rows M 44 |
 | popover | bottom sheet | popover 320 |
 | confirm | sheet | dialog S 400 |
 
-- Confirm: the question is the h2 („Chceš smazat …?“); secondary „Nech to být“; primary is danger.
+- Confirm: the question is the h2 („Chceš smazat …?“); secondary „Zrušit“; primary is danger.
 - Depth ≤ 2 (form → date picker). A menu closes before a sheet opens. Each layer has its own scrim. Esc or a
   scrim tap closes the top layer.
 - **Editing always happens in a layer, never inline. Destructive actions live only in ⋯.**
-- **Toast**: max 2, 6 s, optional „Vrať“, ✕. Phone: centred above the tab bar; ≥ 600: bottom-left of the frame.
+- **Toast**: max 2, 6 s, optional „Vrátit zpět“, ✕. Phone: centred above the tab bar; ≥ 600: bottom-left of the frame.
 
 ### 8.10 Downloads
 Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru.ics`, `lide-2026-10-08.csv`,
@@ -893,10 +899,10 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
   - When my Kdy nemůžu covers the day, Nemůžu is the dark button and a note reads „Ten den máš zapsáno: dovolená“.
   - Dots for 2–5 waiting duties; ← → or a swipe moves between them.
   - After an answer the next card slides in; toast „Díky, máš to potvrzené.“ / „Vedoucí uvidí, že nemůžeš.“ +
-    Vrať.
+    Vrátit zpět.
   - Nothing waiting: one line „✓ Všechno máš zodpovězené.“
 - **Tvoje další služby**: 6 rows (date arch, role, „event · time“; cancelled struck with pill „zrušeno“), then
-  „Ukaž další N“.
+  „Zobrazit další N“.
 - **Odmítnuté služby**: a quiet section. „Minulé služby ›“ opens a sheet „Minulé služby“ / „Poslední 3 měsíce“.
 - No duties: „Zatím tu nemáš žádné služby.“ No card linked: info callout „Zvonec neví, která karta je tvoje.“
 - **Obsazení** (leaders): one line linking to `#obsazeni` – „Obsazení ● chybí 1 · ● 1 problém · ○ 3 čekají ›“, or
@@ -906,7 +912,7 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
   „Tenhle měsíc máš plno.“ · „O 1 službu víc, než zvládneš.“ · „Máš pauzu od služeb. Zvonec tě do nich nenavrhne.“),
   then three small numbers: Sundays in a row („2 ze 3 · nedělí po sobě“), this year's past duties („18 · služeb
   letos“), the most frequent role („Kázání · nejčastěji“). Leaders: S „Kolik zvládnu“ → the limits sheet.
-- **Kdy nemůžu**: my ranges (rows → Uprav · Smaž) and „+ Přidej“.
+- **Kdy nemůžu**: my ranges (rows → Upravit · Smazat) and „+ Přidat“.
 - Nothing about others: no meeting list of the week, no staffing blocks.
 - **≥ 1200**, two columns: left the answer card, Tvoje další služby, Odmítnuté, Minulé služby; right the Obsazení line,
   Tvoje vytížení and Kdy nemůžu. A clicked duty replaces the right column as the pane; ✕ brings it back. Below 1200
@@ -915,49 +921,49 @@ Czech file names without diacritics: `sluzby-jana-novakova.ics`, `kalendar-sboru
 
 ### 9.2 Obsazení `#obsazeni[/<id>]` (leaders; `#ukoly` redirects)
 A list of tasks for the next 28 days, by the kind of work (not a third calendar).
-- A: „Obsazení“ · ⋯ (Vytiskni rozpis) · **„Doplň volná místa“** (icon-only on a phone).
-- B: „Hledej úkol“ (role, meeting title, place, Účel, person, the problem's words) + Filtr: **Tým** (chips; default =
-  the team I lead, or „Moje týmy“ when I lead several, so a leader starts at „Filtr 1“) · **Stav** (Chybí lidi · Čeká
-  na odpověď · Něco nesedí, multi: which sections show).
+- A: „Obsazení“ · ⋯ (Vytisknout rozpis…) · **„Doplnit volná místa“** (icon-only on a phone).
+- B: „Hledat úkol“ (role, meeting title, place, Druh setkání, person, the problem's words) + Filtr: **Tým** (chips; default =
+  the team I lead, or „Moje týmy“ when I lead several, so a leader starts at „Filtr 1“) · **Stav** (Chybí lidé · Čeká
+  na odpověď · Problémy, multi: which sections show).
 - D: three sections, each only while it has something, each with its count:
-  - **Chybí lidi**: a row per missing role – date arch, „2× Klávesy“, „Setkání na pastvě · ne 11. 10. 10.00“,
-    [+ Doplň] (→ picker). The row opens the meeting (pane ≥ 1200, page below).
-  - **Něco nesedí**: a row per non-overridden error – date arch, „Ondra má dvě služby naráz“, the meeting ›; the row
+  - **Chybí lidé**: a row per missing role – date arch, „2× Klávesy“, „Setkání na pastvě · ne 11. 10. 10.00“,
+    [+ Doplnit] (→ picker). The row opens the meeting (pane ≥ 1200, page below).
+  - **Problémy**: a row per non-overridden error – date arch, „Ondra má dvě služby naráz“, the meeting ›; the row
     opens the fix (the duty sheet; the meeting when no duty is involved).
-  - **Čeká na odpověď**: lead „Klepni na jméno a zapiš odpověď za ně. Jedna SMS jim připomene všechny služby
+  - **Čeká na odpověď**: lead „Klepnout na jméno a zapiš odpověď za ně. Jedna SMS jim připomene všechny služby
     najednou.“; a row per person (not per duty) – avatar, name, „Zpěv · Setkání na pastvě · ne 11. 10.“ or „3 služby
-    · nejbližší čt 8. 10.“; trail = SMS (or e-mail without a phone) with one text for all their duties + Zavolej. One
+    · nejbližší čt 8. 10.“; trail = SMS (or e-mail without a phone) with one text for all their duties + Zavolat. One
     duty: the row opens the duty sheet; more: a sheet titled by the person („3 služby čekají na odpověď“) with
-    [Připomeň v SMS] [Zavolej] and a row per duty (→ duty sheet).
+    [Připomenout v SMS] [Zavolat] and a row per duty (→ duty sheet).
 - End line: „Dál než 4 týdny dopředu: Rozpis ›“.
 - Nothing left: „Všechno je vyřešené.“ / „Na příští 4 týdny nikde nikdo nechybí, všichni odpověděli a všechno sedí.“
   Filtered: „S tímhle filtrem tu nic není.“ / „Filtr skrývá 5 úkolů.“
 - The nav count is the number of tasks in my Filtr scope („Zbývá vyřešit 5 věcí“).
 - Reminder for several duties: „Ahoj, v rozpisu máš služby: Zpěv (Setkání na pastvě, ne 11. 10. v 10.00), Klávesy
-  (…). Můžeš? Odpověz prosím ve Zvonci: <app URL>#moje“.
+  (…). Můžeš? Odpovědět prosím ve Zvonci: <app URL>#moje“.
 
 ### 9.3 Kalendář (everyone)
-- A: „Kalendář“ · ⋯ · [Přidej setkání] (leaders). ⋯ in every view: „Ukaž minulá setkání“ / „Skryj minulá setkání“
-  (Seznam only, last 4 weeks) · „Stáhni do kalendáře“ → sheet „Kalendář v telefonu“ (Moje služby / Celý kalendář)
-  · „Vytiskni rozpis…“ → dialog „Tisk rozpisu“ (month select; A4 landscape, Filtr applies: one table per kind of meeting as on the screen – meetings across, roles down under their team's line; names only, unconfirmed grey (a key under the title), „chybí“ red, „–“ not needed, faint bands on every second meeting) · „Doplň volná
-  místa“ (leaders) · „Ukaž, kdo kolik slouží“ (leaders) → Vytížení.
-- B: „Hledej setkání“ (title, place, Účel, names of who serves; accent-insensitive: „kucer“ finds „Kučera“) +
-  Filtr: **Účel** (hue dots) · **Tým** (multi) · **Jen moje služby** · **Ukaž i zrušená**. View switch at the
+- A: „Kalendář“ · ⋯ · [Přidat setkání] (leaders). ⋯ in every view: „Zobrazit minulá setkání“ / „Skrýt minulá setkání“
+  (Seznam only, last 4 weeks) · „Stáhnout do kalendáře“ → sheet „Kalendář v telefonu“ (Moje služby / Celý kalendář)
+  · „Vytisknout rozpis…“ → dialog „Tisk rozpisu“ (month select; A4 landscape, Filtr applies: one table per kind of meeting as on the screen – meetings across, roles down under their team's line; names only, unconfirmed grey (a key under the title), „chybí“ red, „–“ not needed, faint bands on every second meeting) · „Doplnit volná
+  místa“ (leaders) · „Zobrazit, kdo kolik slouží“ (leaders) → Vytížení.
+- B: „Hledat setkání“ (title, place, Druh setkání, names of who serves; accent-insensitive: „kucer“ finds „Kučera“) +
+  Filtr: **Druh setkání** (hue dots) · **Tým** (multi) · **Jen moje služby** · **Zobrazit i zrušená**. View switch at the
   right; only a click on it is remembered.
 - **Seznam** `#kalendar/seznam`: one continuous list from today, 6 weeks at a time (a search looks 400 days
-  ahead). Week subheads, one date arch per day, „Dnes“ / „Zítra“. A line: start time · Účel bar (3 px) · title ·
+  ahead). Week subheads, one date arch per day, „Dnes“ / „Zítra“. A line: start time · Druh setkání bar (3 px) · title ·
   place · „(ty) Kázání ○ čeká…“ when I serve · leaders' status tag where something is missing or waits (§8.7) ·
-  „zrušeno“ pill. [Ukaž další týdny] at the end. A click opens the pane (≥ 1200) or the page („‹ Kalendář“). Empty: „Zatím tu nejsou žádná setkání.“ /
+  „zrušeno“ pill. [Zobrazit další týdny] at the end. A click opens the pane (≥ 1200) or the page („‹ Kalendář“). Empty: „Zatím tu nejsou žádná setkání.“ /
   „Tady uvidíš, co se chystá: neděle, zkoušky, skupinky i akce.“
 - **Měsíc** `#kalendar/mesic/<m>[/<day>]`: the period line, then a form chosen by content width (container query at
   700).
-  - Narrow: mini month (cells 44, up to 3 Účel dots, today = `--act` disc, chosen day = pick + bar) and the chosen
-    day's list under it (subhead „Středa 7. října“; leaders get [Přidej setkání] for today or later; empty: „Na
+  - Narrow: mini month (cells 44, up to 3 Druh setkání dots, today = `--act` disc, chosen day = pick + bar) and the chosen
+    day's list under it (subhead „Středa 7. října“; leaders get [Přidat setkání] for today or later; empty: „Na
     tenhle den nic není.“).
-  - Wide: a full grid (po–ne; cells min-height 112; day number in a 28 arch). Chips 24: Účel bar, „10.00“ + title
+  - Wide: a full grid (po–ne; cells min-height 112; day number in a 28 arch). Chips 24: Druh setkání bar, „10.00“ + title
     in at most 2 lines of whole words; mine = hue fill; cancelled = struck; max 3, then „+ N další“. A chip opens
     the Setkání **page** (never a pane). A day number, „+ N další“ or empty cell space opens the day popover
-    („St 7. 10.“, the day's lines, leaders' foot [Přidej setkání]).
+    („St 7. 10.“, the day's lines, leaders' foot [Přidat setkání]).
   - Empty month: „V říjnu tu nic není.“
 - **Rozpis** `#kalendar/rozpis/<m>[/<id>]`: the classic church roster, spanning the whole frame (never a pane).
   Period line; legend „○ čeká na odpověď ● něco nesedí“ (leaders, when a mark appears). Then one table per kind of
@@ -967,207 +973,207 @@ A list of tasks for the next 28 days, by the kind of work (not a third calendar)
     setkání“), leaders' ◯ 14 z 15, „zrušeno“. The head is a link to the meeting page („‹ Rozpis“).
   - A **row** per role under its team's line („Chvály“); the role column is sticky.
   - A **cell**: one name per line (short names on a phone), „Ty“ on the pick tint, ○ / ● after a name (leaders);
-    „+ Doplň“ (leaders, upcoming) or „chybí“ where someone is missing; „–“ where the meeting does not need the role.
+    „+ Doplnit“ (leaders, upcoming) or „chybí“ where someone is missing; „–“ where the meeting does not need the role.
   - Meetings share the width equally (role 120 + at least 144 each; phone 96 + 116). On a phone the table scrolls
     sideways inside its own wrapper (never the page) and the third column peeks in.
-  - Past meetings in `--ink-2`. A name (leaders) → duty sheet; „Ty“ → my answer; „+ Doplň“ → picker. Filtr › Tým
+  - Past meetings in `--ink-2`. A name (leaders) → duty sheet; „Ty“ → my answer; „+ Doplnit“ → picker. Filtr › Tým
     narrows the rows; the rest of Filtr and the search narrow the columns.
 - **Vytížení** (dialog, `/vytizeni`, leaders): „Kolik služeb má kdo v říjnu. Nahoře ti, kdo mají nejvíc.“ Rows:
   avatar, name, „3 z 4 · má pauzu · 3 neděle po sobě“, a load bar, „víc, než zvládne“ in amber.
 
 ### 9.4 Setkání (pane or page; `#setkani/<id>` is a page at every width)
 Sections in order:
-1. **Head**: Účel band 96 (generated arches in the hue, or the photo); tags (Účel · „na webu“ · „zrušeno“, h1
+1. **Head**: Druh setkání band 96 (generated arches in the hue, or the photo); tags (Druh setkání · „na webu“ · „zrušeno“, h1
    struck); h1; facts with icons: ◷ „čt 8. 10. · 18.30–20.30“ · ⌖ place › (`#mista/<id>`) · ⟳ „Každý čtvrtek do
    28. 1. 2027“.
-2. **Co nesedí** (leaders, upcoming, only when something is wrong): ● / ○ rows, a short phrase („Ondra má dvě
-   služby naráz“) with the full sentence as meta. A tap opens the fix: the duty sheet, Osnova (K15, K16), Uprav
-   setkání (K9), or for K14 „Dej vědět, že je zrušeno“ → „Chceš odebrat všechny ze služby?“
+2. **Problémy** (leaders, upcoming, only when something is wrong): ● / ○ rows, a short phrase („Ondra má dvě
+   služby naráz“) with the full sentence as meta. A tap opens the fix: the duty sheet, Osnova (K15, K16), Upravit
+   setkání (K9), or for K14 „Dát vědět, že je zrušeno“ → „Chceš odebrat všechny ze služby?“
 3. **Tvoje služba / Tvoje služby** (when I serve): waiting = a `--feature` card „Zpěv ○ čeká na tvou odpověď“ +
    [Můžu] [Nemůžu]; answered = rows „✓ potvrzeno“ / „nemůžeš“, › opens the „Moje odpověď“ sheet.
 4. **Kdo slouží** + ring „6 z 6 · chybí 1 / 1 čeká“. One collapsed row per team (mark, name, names with ○ / ●,
    „+ Role“ slots for leaders, „5 z 5“ or „✓ všichni potvrdili“, ⌄). A click unfolds role → person → status word
-   + warning tags. Empty role: „+ Doplň“ (leaders) or „nikdo“; 2+ empty slots: „Doplň volná místa“. No needs:
-   „Na tohle setkání zatím nikoho nepotřebujeme.“ + Uprav.
+   + warning tags. Empty role: „+ Doplnit“ (leaders) or „nikdo“; 2+ empty slots: „Doplnit volná místa“. No needs:
+   „Na tohle setkání zatím nikoho nepotřebujeme.“ + Upravit.
    - **Duty sheet** (leaders, a click on a name): title = role, subtitle „day · event“; segmented „Odpověď“
-     potvrzeno / čeká / nemůže („Když ti odpověď řekl osobně, zapiš ji tady.“); warnings with [Vyber jiného] /
-     [Vím o tom] / [Uprav důvod] / [Zruš výjimku]; [Vyber jiného] [Zavolej] [Otevři kartu] [Odeber ze služby]
+     potvrzeno / čeká / nemůže („Když ti odpověď řekl osobně, zapiš ji tady.“); warnings with [Vybrat jiného] /
+     [Povolit výjimku] / [Upravit důvod] / [Zrušit výjimku]; [Vybrat jiného] [Zavolat] [Otevřít kartu] [Odebrat ze služby]
      (danger). Members open their own answer or the person's card.
 5. **Osnova**: the first 4 points (time · name · leader, or „chybí vedoucí“); „Celá osnova · 8 bodů · 95 min ›“;
-   leaders get „Uprav“ (or „+ Přidej“ when empty).
+   leaders get „Upravit“ (or „+ Přidat“ when empty).
 6. **O setkání**: description; „Pro tým“ note; address with ↗ to Mapy.cz. Leaders see „Popis pro web zatím chybí ·
-   Doplň“ and the switch **„Ukaž na webu“** („Název, čas, místo, popis a obrázek uvidí každý. Jména ne.“). A public
-   meeting adds **„Zvýrazni na webu“** („Na Pastvě bude nahoře ve velké kartě se štítkem „Nenech si ujít“.“):
+   Doplnit“ and the switch **„Zobrazit na webu“** („Název, čas, místo, popis a obrázek uvidí každý. Jména ne.“). A public
+   meeting adds **„Zvýraznit na webu“** („Na Pastvě bude nahoře ve velké kartě se štítkem „Nenech si ujít“.“):
    `featured: true` on this one meeting only – never the series, copies drop it, a new series keeps it on its first.
    Turning it on asks for a description when missing, then asks about the series.
 
-Leaders' ⋯: Uprav setkání · Uprav, kolik lidí je potřeba · Doplň volná místa (when something is missing) · Obsaď
-jako minule · Prodluž řadu (series) · Zapiš, kolik lidí přišlo (after the start; Dospělí / Děti steppers) ·
-Vytiskni · — · Zruš setkání / Obnov setkání · Smaž setkání. Members get no ⋯.
+Leaders' ⋯: Upravit setkání · Upravit, kolik lidí je potřeba · Doplnit volná místa (when something is missing) · Obsadit
+jako minule · Prodloužit řadu (series) · Zapsat, kolik lidí přišlo (after the start; Dospělí / Děti steppers) ·
+Vytisknout · — · Zrušit setkání / Obnovit setkání · Smazat setkání. Members get no ⋯.
 
 **Picker** (sheet titled by the role; subtitle „Teď: …“ · event · day): „Z týmu Chvály“ (who knows the role first,
-meta „naposledy 13. 9.“ / „poprvé“), then „Ukaž i ostatní z týmu (N)“; „Nemůžou“ greyed with the reason („ten den
-nemůže · dovolená“), picking one asks „Výjimka“ / „Proč to půjde“; „Přesuň sem“; „Hledej mezi všemi lidmi“;
-„Přidej nového člověka „…““.
+meta „naposledy 13. 9.“ / „poprvé“), then „Zobrazit i ostatní z týmu (N)“; „Nemohou“ greyed with the reason („ten den
+nemůže · dovolená“), picking one asks „Výjimka“ / „Proč to půjde“; „Přesunout sem“; „Hledat mezi všemi lidmi“;
+„Přidat nového člověka „…““.
 
-**Forms**: „Přidej setkání“ → sheet „Nové setkání“ (template rows + „Něco jiného / Bez šablony“) → the form (dialog
+**Forms**: „Přidat setkání“ → sheet „Nové setkání“ (template rows + „Něco jiného / Bez šablony“) → the form (dialog
 640): Název setkání · Den + Čas · Opakování (Ne · Týdně · Ob týden · Měsíčně) + Do kdy + the live rule · Kde
-(chips) · „Další možnosti“: Účel, Pro koho, Popis pro web, Obrázek, Ukaž na webu, Zvýrazni na webu, Pro tým. Submit „Přidej
+(chips) · „Další možnosti“: Druh setkání, Pro koho, Popis pro web, Obrázek, Zobrazit na webu, Zvýraznit na webu, Pro tým. Submit „Přidat
 setkání“. „Úprava setkání“ asks „Jen tohle setkání“ / „I N další“. „Prodloužení řady“.
 
-**Osnova** `#setkani/<id>/osnova` (page at every width; top bar „‹ <meeting>“; ⋯ Vytiskni · Převezmi minulou
+**Osnova** `#setkani/<id>/osnova` (page at every width; top bar „‹ <meeting>“; ⋯ Vytisknout · Převzít minulou
 osnovu): a meta line (when, where); a sum bar „95 z 120 min · zbývá 25 min“ (amber when over: „o N min delší než
 setkání“); points with time, title, „5 min · leader“, note. Leaders: drag handle, tap to edit (title, minutes,
-„Kdo vede“, note), row ⋯ (Uprav bod · Ukaž formát · Posuň výš / níž · Odeber z osnovy), „+ Přidej bod“ (a Formát
+„Kdo vede“, note), row ⋯ (Upravit bod · Zobrazit formát · Posunout výš / níž · Odebrat z osnovy), „+ Přidat bod“ (a Formát
 or „Vlastní bod“), hint „Pořadí změníš tažením za úchyt. Bod upravíš klepnutím.“ Members read only.
 
 ### 9.5 Lidé `#lide` (everyone)
-- A: „Lidé“ · ⋯ · [Nový člověk] (leaders). Leaders' ⋯: Přidej domácnost · Pozvi do Zvonce · — · Zkopíruj e-maily
-  · Stáhni seznam · Smaž staré karty z archivu (when due). Members' ⋯: Stáhni seznam.
+- A: „Lidé“ · ⋯ · [Nový člověk] (leaders). Leaders' ⋯: Přidat domácnost · Pozvat do Zvonce · — · Zkopírovat e-maily
+  · Stáhnout seznam · Smazat staré karty z archivu (when due). Members' ⋯: Stáhnout seznam.
 - B: search · Filtr ······ [Seznam | Tabulka] (the same quiet switch as Kalendář's, leaders ≥ 900, everyone ≥ 1200;
   remembered). Table head sort buttons are 32 high (hit 44), so their hover never touches the head's line.
-- B: „Hledej jméno“ (name, nickname, visible phone or e-mail; while searching, up to 3 matching groups appear
+- B: „Hledat jméno“ (name, nickname, visible phone or e-mail; while searching, up to 3 matching groups appear
   above under „Skupiny“ / „Lidé“) + Filtr. Leaders: **Členství** (Členové · Přátelé · Hosté · Děti) · **Tým** ·
   **Chybí údaje** · **Bez souhlasu** (adult friends and guests with more than a name and no consent;
   `#lide/bez-souhlasu`) · **Narozeniny** (sorts by the next birthday; subheads „Do týdne“ / months / „Bez data
-  narození“) · **Ukaž i archiv**. Members: Tým only.
+  narození“) · **Zobrazit i archiv**. Members: Tým only.
 - D: phone first row „Skupiny · 9 skupin ›“; leaders' quiet birthday line „Dnes slaví Eva …, do týdne ještě 2“ →
   Filtr Narozeniny; A–Z list with letter subheads. Row: avatar, name (nickname), call button (visible phone, not
   on my own row). Meta at ≥ 600: leaders „člen · Chvály, Technika“ + amber „chybí příjmení a kontakt“; members
   teams only. Foot „47 lidí“; an archive callout when needed.
-- Empty: „Zatím tu nikdo není.“ / „Tady najdeš, jak se s kým spojit. Přidej první lidi, nebo jim pošli pozvánku.“
+- Empty: „Zatím tu nikdo není.“ / „Tady najdeš, jak se s kým spojit. Přidat první lidi, nebo jim pošli pozvánku.“
 - **Tabulka** `#lide/vypis`: rows 52 with hairlines between them like Seznam (no frame, no column lines);
   sortable Jméno, Členství*, Domácnost, Telefon, E-mail, Skupiny,
-  Narozeniny*, Poslední služba* (* leaders). Ticks + bulk bar „3 vybraní lidé“ [Zkopíruj e-maily] [Přidej do
-  skupiny] [Stáhni seznam] [Zruš výběr]. Spans the frame; compact beside an open pane.
+  Narozeniny*, Poslední služba* (* leaders). Ticks + bulk bar „3 vybraní lidé“ [Zkopírovat e-maily] [Přidat do
+  skupiny] [Stáhnout seznam] [Zrušit výběr]. Spans the frame; compact beside an open pane.
 - **Person detail** `#lide/<id>`: avatar 72 in the card's top-left corner – in a pane on the row of ⋯ and ✕, on a page
   first under the top bar, 24 above the name (a button with a camera badge for leaders and
-  the person: sheet „Fotka“ – Vyber fotku / Vyber jinou / Odeber fotku, cut to a 512 square, „Uvidí ji jen přihlášení
+  the person: sheet „Fotka“ – Vybrat fotku / Vybrat jinou / Odebrat fotku, cut to a 512 square, „Uvidí ji jen přihlášení
   ve Zvonci, na veřejný web se nedostane.“; the same on Můj účet); one membership pill (leaders: člen / přítel / host,
   a child „dítě“ when the birthday shows the age, „v archivu“; tint-2, ink); h1; facts: the teams as one plain line
   (icon teams, „Chvály, Pohostinnost, Technika“; a team name never breaks; no team pills – the Skupiny section is where
-  teams are links), birthday fact (leaders and self). Contact tiles [Zavolej] [SMS] [E-mail] L 52 (only those with data, never on my own card).
-  Then: callouts (leaders: archive „Vrať z archivu“, missing data „Doplň“ / „Potvrď údaje“) · Co nesedí (leaders)
-  · Příští služby · Kontakt [Uprav] („Kontakt vidí všichni / jen vedoucí.“) · Domácnost · Skupiny [+ Přidej] (skill
-  pills; leaders' „Uprav“ → member sheet) · Kdy nemůže · Údaje [Uprav] (leaders: membership + since, birth,
+  teams are links), birthday fact (leaders and self). Contact tiles [Zavolat] [SMS] [E-mail] L 52 (only those with data, never on my own card).
+  Then: callouts (leaders: archive „Vrátit z archivu“, missing data „Doplnit“ / „Potvrdit údaje“) · Problémy (leaders)
+  · Příští služby · Kontakt [Upravit] („Kontakt vidí všichni / jen vedoucí.“) · Domácnost · Skupiny [+ Přidat] (skill
+  pills; leaders' „Upravit“ → member sheet) · Kdy nemůže · Údaje [Upravit] (leaders: membership + since, birth,
   nickname, consent, „Nejvíc N služeb za měsíc · N nedělí po sobě“, access „Může se přihlásit · vedoucí“ /
   „Pozvánka platí do …“) · Poznámka (leaders).
-  ⋯: Uprav · Uprav kontakt (self) · Nastav, kolik toho zvládne · Pozvi do Zvonce · Stáhni do kalendáře · Přesuň do
-  archivu / Vrať z archivu · Smaž kartu.
+  ⋯: Upravit · Upravit kontakt (self) · Nastavit, kolik toho zvládne · Pozvat do Zvonce · Stáhnout do kalendáře · Přesunout do
+  archivu / Vrátit z archivu · Smazat kartu.
 - Sheets: „Nový člověk“ (Jméno, Příjmení, Telefon, E-mail, Členství Člen / Přítel / Host (default Host), Souhlasí
   se zpracováním údajů; Další možnosti: Přezdívka, Narození, Domácnost, „Telefon a e-mail smí vidět i ostatní“,
-  Poznámka „Krátce. Nic o zdraví, penězích ani pastoraci.“, Chodí od; submit „Přidej člověka“; a duplicate
+  Poznámka „Krátce. Nic o zdraví, penězích ani pastoraci.“, Chodí od; submit „Přidat člověka“; a duplicate
   callout) · „Jméno a údaje“ · „Kontakt“ / „Můj kontakt“ · „Kolik toho zvládne“ (two steppers + „Pauza od
   služeb“) · „Souhlas“ · „Domácnost“ · „Do které skupiny?“ · archive and delete confirms.
-- **Domácnost** `#lide/domacnost/<id>` (drill-in, „‹ <person>“): house mark, address, section Lidé [+ Přidej]; each
-  person's ⋯ (leaders): „Odeber z domácnosti“ (toast with Vrať; the card stays).
-  ⋯: Uprav · Přidej člověka · Smaž domácnost.
+- **Domácnost** `#lide/domacnost/<id>` (drill-in, „‹ <person>“): house mark, address, section Lidé [+ Přidat]; each
+  person's ⋯ (leaders): „Odebrat z domácnosti“ (toast with Vrátit zpět; the card stays).
+  ⋯: Upravit · Přidat člověka · Smazat domácnost.
 
 ### 9.6 Skupiny `#lide/skupiny` (everyone)
 - A: „Skupiny“ · [Nová skupina] (leaders). No ⋯.
-- B: „Hledej skupinu“ (name, kind, description, role names) + Filtr: **Druh** (Týmy · Skupinky · Vedení) · **Jen
-  moje** · **Ukaž i archiv** (leaders).
+- B: „Hledat skupinu“ (name, kind, description, role names) + Filtr: **Druh** (Týmy · Skupinky · Vedení) · **Jen
+  moje** · **Zobrazit i archiv** (leaders).
 - D: subheads Týmy · Skupinky · Vedení (mine first). Below 900 rows: team mark, name, „9 lidí · vedou David Kučera
   a Radim Kovář“, pill „ty“. From 900 cards (auto-fill min 260: mark, name, meta, roles or description, up to 6
   stacked avatars); the open card gets pick + outline; at ≥ 1200 the cards span the frame while nothing is open.
   „V archivu“ stays a row list.
 - **Group detail**: mark 56; pills kind („Tým“) · „ty“ · „v archivu“; h1; fact „9 lidí · vedou …“ (or „zatím bez
-  vedoucího“ / „zatím bez předsedy“); description. **Role** (teams, leaders) [+ Přidej]: one folded line per role, hairlines
+  vedoucího“ / „zatím bez předsedy“); description. **Role** (teams, leaders) [+ Přidat]: one folded line per role, hairlines
   between – its name, „umí 7 · učí se 2“ / „umí jen 1“ / „nikdo to neumí“ (amber when ≤ 1) and ⌄; a tap unfolds it
   (remembered while the app runs, an edit keeps it open): its people as chips (avatar 24 + „Martina D.“; umí = ok tint, učí se = outline „· učí se“; a tap opens a
-  menu Umí to / Učí se to / Neumí to, with Vrať via the toast) [+ Přidej] (a picker of the team's people who
-  cannot do it yet; the one picked umí) and [Uprav roli]. It replaced the people × roles table „Kdo co umí“, which never fit a pane
+  menu Umí to / Učí se to / Neumí to, with Vrátit zpět via the toast) [+ Přidat] (a picker of the team's people who
+  cannot do it yet; the one picked umí) and [Upravit roli]. It replaced the people × roles table „Kdo co umí“, which never fit a pane
   (the owner chose this). **Lidé**
-  [+ Přidej]: leaders first, meta „vede tým“ + skill pills, call button, „Ukaž všech N“ after 8; a person drills
+  [+ Přidat]: leaders first, meta „vede tým“ + skill pills, call button, „Zobrazit všech N“ after 8; a person drills
   in inside the pane („‹ <group>“). **Příští služby / Příští setkání** (six weeks).
-  ⋯: Uprav · Přidej člověka · Přesuň do archivu / Vrať z archivu · Smaž.
+  ⋯: Upravit · Přidat člověka · Přesunout do archivu / Vrátit z archivu · Smazat.
 - **Group sheet** „Nová skupina“ / „Úprava skupiny“: Druh skupiny (Tým / Skupinka / Vedení with hints), Název,
-  Popis, **„Kdo vede“** (the group's people as chips, leaders pressed; [Přidej vedoucího] picks anyone, who joins
-  on save; hint „Vyber jednoho nebo víc lidí ze skupiny.“).
+  Popis, **„Kdo vede“** (the group's people as chips, leaders pressed; [Přidat vedoucího] picks anyone, who joins
+  on save; hint „Vybrat jednoho nebo víc lidí ze skupiny.“).
 - **Member sheet** (title = person, subtitle = group): „Co umí“ per role (Neumí · Učí se · Umí); switch „Vede tým“
-  / „Vede skupinku“ / „Předsedá“; danger „Odeber z týmu“.
-- **Role sheet** „Nová role“ / „Úprava role“: Název, Kolik lidí („Na jedno setkání.“), „Bez toho to nepůjde“;
+  / „Vede skupinku“ / „Předsedá“; danger „Odebrat z týmu“.
+- **Role sheet** „Nová role“ / „Úprava role“: Název, Kolik lidí („Na jedno setkání.“), „Nezbytná role“;
   Další možnosti: Jen pro dospělé · Stará se o děti · Jen část setkání (Od / Do minutes) · „Jde naráz s“.
 
 ### 9.7 Šablony `#sablony` (leaders)
-- A: „Šablony“ · [Přidej šablonu]. B: „Hledej šablonu“ + Filtr: Účel · Jen na webu · Ukaž i archiv.
-- Rows: Účel mark, name, „každou neděli · 10.00–12.00 · Sál“, pill „na webu“ / „v archivu“.
+- A: „Šablony“ · [Přidat šablonu]. B: „Hledat šablonu“ + Filtr: Druh setkání · Jen na webu · Zobrazit i archiv.
+- Rows: Druh setkání mark, name, „každou neděli · 10.00–12.00 · Sál“, pill „na webu“ / „v archivu“.
 - Empty: „Zatím tu není žádná šablona.“ / „Nové setkání ze šablony dostane čas, místo, role i osnovu.“
-- Detail: Účel mark; tags; facts (when · length; place › or „Místo zatím není vybrané.“; „pro skupinu …“ ›).
-  Sections: **Kdo je potřeba** [Uprav] · **Osnova** [Uprav] · **Na webu** [Uprav] („Ukazuj nová setkání na
+- Detail: Druh setkání mark; tags; facts (when · length; place › or „Místo zatím není vybrané.“; „pro skupinu …“ ›).
+  Sections: **Kdo je potřeba** [Upravit] · **Osnova** [Upravit] · **Na webu** [Upravit] („Zobrazovat nová setkání na
   webu“, popis, obrázek) · **Setkání v plánu** (count, next 5, „Řady“).
-  ⋯: Uprav šablonu · Naplánuj setkání · Zkopíruj šablonu · Přesuň do archivu / Vrať z archivu · Smaž šablonu.
-- Form „Nová šablona“: Název setkání, Účel, Den (Kdykoli / po–ne), time, Kde (place chips per building, „celá
+  ⋯: Upravit šablonu · Naplánovat setkání · Zkopírovat šablonu · Přesunout do archivu / Vrátit z archivu · Smazat šablonu.
+- Form „Nová šablona“: Název setkání, Druh setkání, Den (Kdykoli / po–ne), time, Kde (place chips per building, „celá
   budova“), Pro koho.
 - After saving an edit, when planned meetings still follow the old template: „Chceš změnit i naplánovaná
   setkání?“ – „V plánu je 11 setkání z téhle šablony. Změní se jim čas a osnova.“ (+ „Co někdo u setkání upravil
-  ručně, zůstane.“) · [Změň i 11 setkání] [Jen šablonu]. Then „Uloženo i u 11 setkání v plánu.“ with „Vrať“
+  ručně, zůstane.“) · [Změnit i 11 setkání] [Jen šablonu]. Then „Uloženo i u 11 setkání v plánu.“ with „Vrátit zpět“
   (template and meetings back), or „Uloženo. Naplánovaná setkání zůstala, jak byla.“
 
 ### 9.8 Formáty `#formaty` (leaders edit; members read via links)
-- A: „Formáty“ · [Přidej formát]. B: „Hledej formát“ only (no Filtr).
+- A: „Formáty“ · [Přidat formát]. B: „Hledat formát“ only (no Filtr).
 - Rows: minutes block („25 / min“), name, „vede role Projekce“, „na webu“. Nothing opens until clicked.
 - Detail: Proč to děláme · Jak to probíhá · Kdo je potřeba · Kde se používá (Šablony links, leaders) · Na webu
-  switch (leaders); facts: lead role, „K přečtení“ ↗. ⋯: Uprav formát · Smaž formát.
+  switch (leaders); facts: lead role, „K přečtení“ ↗. ⋯: Upravit formát · Smazat formát.
 - Form: Název, Kolik minut, Kdo vede (role select), Proč to děláme, Jak to probíhá, Kdo je potřeba navíc, K
-  přečtení, Ukaž na webu. Empty: „Zatím tu není žádný formát.“
+  přečtení, Zobrazit na webu. Empty: „Zatím tu není žádný formát.“
 
 ### 9.9 Místa `#mista`
-- A: „Místa“ · [Přidej místo]. B: „Hledej místo“ only.
+- A: „Místa“ · [Přidat místo]. B: „Hledat místo“ only.
 - Rows: pin, name, address · „3 místnosti“; the main place first with pill „hlavní místo“.
-- Detail: tags („hlavní místo“, „víc setkání naráz“); address + „Otevři v mapě ↗“; **Mapa** (OpenStreetMap frame,
+- Detail: tags („hlavní místo“, „víc setkání naráz“); address + „Otevřít v mapě ↗“; **Mapa** (OpenStreetMap frame,
   16:9); **Místnosti** (a room drills in, „‹ <building>“); **Kdy se tu scházíme** (next 5).
-  ⋯: Uprav místo · Přidej místnost · Smaž místo.
+  ⋯: Upravit místo · Přidat místnost · Smazat místo.
 - Form: Název, Adresa, Souřadnice, „Je to místnost v budově?“, „Vejde se sem víc setkání naráz“.
 
 ### 9.10 Přístupy `#pristupy` (leaders)
-- A: „Přístupy“ · ⋯ (Ukaž, jak se lidé dostanou dovnitř → help sheet [Rozumím] · Vyměň klíč (admin)) · [Pozvi
-  člověka]. B: „Hledej člověka“ + Filtr: Úroveň (Správce · Vedoucí · Člen) · Jen pozvánky.
+- A: „Přístupy“ · ⋯ (Zobrazit, jak se lidé dostanou dovnitř → help sheet [Rozumím] · Vyměnit klíč (admin)) · [Pozvat
+  člověka]. B: „Hledat člověka“ + Filtr: Úroveň (Správce · Vedoucí · Člen) · Jen pozvánky.
 - One column, no pane. Sections: „Pozvánky · 1 čeká“ (meta „platí do 19. 10.“ or red „Vypršela 21. 9.“) ·
   Správci · Vedoucí · Členové („to jsi ty · přístup od …“, level pill) · Přístupy bez karty („Smazaná karta“).
-- A row opens a menu: Otevři kartu · Pošli pozvánku znovu · Změň přístup (admin) · Nastav nové heslo · Zruš
-  pozvánku / Odeber přístup.
+- A row opens a menu: Otevřít kartu · Poslat pozvánku znovu · Změnit přístup (admin) · Nastavit nové heslo · Zrušit
+  pozvánku / Odebrat přístup.
 - Demo callout: „V ukázce se nikdo nepřihlašuje. Takhle by seznam vypadal v ostrém Zvonci.“
-- Invite: sheet „Pozvánka do Zvonce“ → [Vytvoř pozvánku] → link sheet [Zkopíruj odkaz] / [Pošli] („Odkaz platí 14
+- Invite: sheet „Pozvánka do Zvonce“ → [Vytvořit pozvánku] → link sheet [Zkopírovat odkaz] / [Sdílet] („Odkaz platí 14
   dní a jde použít jen jednou. Každá změna začne platit za pár minut. …“).
 
 ### 9.11 Nastavení sboru `#nastaveni` (leaders)
-One 640 column of value blocks (r20 cards) with „label — value“ rows, each with an S „Uprav“ opening a dialog:
+One 640 column of value blocks (r20 cards) with „label — value“ rows, each with an S „Upravit“ opening a dialog:
 - **Sbor**: Název sboru, Hlavní místo, Adresa.
 - **Úřední údaje** (Dary, 15.1): Úřední název, IČO (8 digits, mod-11 check: „Tohle IČO nesedí. …“), Sídlo, Účet pro
   dary (`prefix-number/bank`, the mod-11 checksums: „Tohle číslo účtu nesedí. …“) – `settings.legalName`,
   `companyId`, `legalAddress`, `bankAccount`. None reaches public.json yet (Pastva will show the account with the
   public web redesign).
 - **Pravidla**: Nejvíc služeb za měsíc; Nejvíc nedělí po sobě („I kráva potřebuje volnou neděli na pastvě.“).
-- **Kdy Zvonec bučí**: Prázdná nezbytná role · Ostatní prázdná místa · Nepotvrzená služba, each „N dní předem“
+- **Upozornění**: Prázdná nezbytná role · Ostatní prázdná místa · Nepotvrzená služba, each „N dní předem“
   („Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.“).
 - **Děti**: Dospělý je od.
-- **Záloha**: [Stáhni zálohu]; admin [Nahraj zálohu].
+- **Záloha**: [Stáhnout zálohu]; admin [Nahrát zálohu].
 
 ### 9.12 Kdy nemůžu `#kdy-nemuzu`
-- A: „Kdy nemůžu“ · [Přidej]. Lead: „Zapiš si dny, kdy nemůžeš. V těch dnech tě Zvonec do služeb nenavrhne.“
-- Rows „24.–26. 10. · dovolená“; a row opens a menu (Uprav · Smaž, with Vrať). Empty: „Zatím žádné dny.“
-- Sheet „Nové dny, kdy nemůžu“: Od, Do, Důvod („Uvidí ho jen vedoucí.“). With clashing duties: switch „Odmítni i
+- A: „Kdy nemůžu“ · [Přidat]. Lead: „Zapsat si dny, kdy nemůžeš. V těch dnech tě Zvonec do služeb nenavrhne.“
+- Rows „24.–26. 10. · dovolená“; a row opens a menu (Upravit · Smazat, with Vrátit zpět). Empty: „Zatím žádné dny.“
+- Sheet „Nové dny, kdy nemůžu“: Od, Do, Důvod („Uvidí ho jen vedoucí.“). With clashing duties: switch „Odmítnout i
   služby v těch dnech“ + their list.
 
 ### 9.13 Můj účet `#ucet`
-Avatar 72, name, level word. **Moje karta** [Uprav] (phone, e-mail, „Říkají ti …“, switch „Telefon a e-mail smí
-vidět i ostatní“ applied at once with Vrať) · **Přihlášení** [Změň heslo] → „Nové heslo“ (min 8 characters, twice)
+Avatar 72, name, level word. **Moje karta** [Upravit] (phone, e-mail, „Říkají ti …“, switch „Telefon a e-mail smí
+vidět i ostatní“ applied at once with Vrátit zpět) · **Přihlášení** [Změnit heslo] → „Nové heslo“ (min 8 characters, twice)
 · **Kalendář v telefonu** (.ics rows) · **Dary** (once `settings.bankAccount` is set; 15.1 „The donor's own view“: the
 account and my symbol with copy buttons, a QR payment – SPD with the IBAN, `X-VS`, the recipient and „Dar“, no
-amount, black on white – on the right, behind „Ukaž QR kód“ on a phone; my `donorVs` is given the first time I
-see it, sequential from 1001, `lib/bank.js`) · **Barvy** · [Odhlas se]. Demo: „Očima druhých“ sheet.
+amount, black on white – on the right, behind „Zobrazit QR kód“ on a phone; my `donorVs` is given the first time I
+see it, sequential from 1001, `lib/bank.js`) · **Barvy** · [Odhlásit se]. Demo: „Očima druhých“ sheet.
 
 ### 9.14 Sign-in, first run, invite
 - No app chrome. Centred column, max 400; at ≥ 600 a card r20. Wordmark → h1 „Přihlášení“ → Jméno („Diakritika a
-  velká písmena nevadí.“), Heslo (show/hide), „Pamatuj si mě“ („Na cizím počítači to vypni.“) → [Přihlas se] L 52
-  → „Podívej se na Pastvu ›“. Foot „Ještě nemáš přístup? Požádej vedoucího o pozvánku.“ Error „Jméno nebo heslo
+  velká písmena nevadí.“), Heslo (show/hide), „Zapamatovat si mě na tomto zařízení“ („Na cizím počítači to vypni.“) → [Přihlásit se] L 52
+  → „Podívat se na Pastvu ›“. Foot „Ještě nemáš přístup? Požádej vedoucího o pozvánku.“ Error „Jméno nebo heslo
   nesedí. …“.
-- Demo: „Tohle je ukázka. Přihlas se jako:“ + 3 people, and „Založ Zvonec pro svůj sbor ›“.
-- Invite page „Pozvánka do Zvonce“ („Zve tě Radim Kovář. Vyplň svoje jméno a zvol si heslo.“): Jméno, Příjmení,
+- Demo: „Tohle je ukázka. Přihlásit se jako:“ + 3 people, and „Založit Zvonec pro svůj sbor ›“.
+- Invite page „Pozvánka do Zvonce“ („Zve tě Radim Kovář. Vyplnit svoje jméno a zvol si heslo.“): Jméno, Příjmení,
   Heslo, required switch „Souhlasím, že si sbor moje údaje zapíše“; Další možnosti: Telefon, E-mail, the directory
-  switch, „S čím chceš pomáhat“ chips, Pamatuj si mě. Submit [Přijmi pozvánku]. Invalid or expired: one sentence +
-  [Přihlas se].
+  switch, „S čím chceš pomáhat“ chips, Zapamatovat si mě. Submit [Přijmout pozvánku]. Invalid or expired: one sentence +
+  [Přihlásit se].
 
 ---
 
@@ -1188,31 +1194,31 @@ numbers from `lib/stats.js` (`peopleStats`, `serviceStats`). No attendance – t
 gate, not a level: `showDary()`), on a phone in the person's menu › Správa – a treasurer who is a člen gets Správa
 with Dary alone. The gifts are read and written only through the finance store (one `store.update` per change on the
 fresh `dary.json`); nothing reaches the main data except `person.donorVs`.
-- **Setup** (a live admin without the finance key): a callout „Dary zatím nemají kam se ukládat.“ with [Vlož klíč k
+- **Setup** (a live admin without the finance key): a callout „Dary zatím nemají kam se ukládat.“ with [Vložit klíč k
   darům] → „Klíč k darům“ (repo name, default church-finance; a fine-grained token, Contents: Read and write). Zvonec
   creates `dary.json` (proving it can write) and seals the key into every admin's and treasurer's login (`fin`).
-  Also in Přístupy ⋯ (admins). Přístupy: a row's menu „Udělej pokladníkem / Odeber pokladníka“ (admins), a „pokladník“
+  Also in Přístupy ⋯ (admins). Přístupy: a row's menu „Udělat pokladníkem / Odebrat pokladníka“ (admins), a „pokladník“
   pill; a level change or a new password re-seals or drops the key (`holdsFinance`).
 - **The year** (‹ 2026 › „Letos“): a wide tile with the sum („10 150 Kč darů za rok 2026“), then dárců · darů ·
   anonymně (sum) · nepřiřazené (› the section).
 - **Nepřiřazené**: payments with no known donor, grouped by month (newest first) – the day arch, the sender (the bank's
   CAPITALS made readable, `senderName`), „VS 20 · message“, the amount ›; the whole row opens „Přiřazení daru“:
-  Člen sboru (the people picker; a person without a symbol gets one), Přidej do Lidí (leaders: a card with only the
+  Člen sboru (the people picker; a person without a symbol gets one), Nový člověk v Lidech (leaders: a card with only the
   name from the payment – the bank's „SURNAME FIRST“ split into Jméno and Příjmení to check, status guest, nothing made up –
   and the payment is theirs), the donors outside the church, Nový dárce mimo sbor,
-  Anonymní dar, Vyřaď z darů. Matching (`matchGift`): the person's or outside donor's VS, else a sender account assigned
+  Anonymní dar, Není to dar. Matching (`matchGift`): the person's or outside donor's VS, else a sender account assigned
   before.
 - **Dárci**: avatar, name, „VS 1001 · 10 darů“, the year's sum › the donor page: facts (symbol, address, birth date or
-  IČO – a missing one says „Doplň“ and leads to the card in Lidé or the donor sheet), ‹ year ›, „Dary za rok 2026“
-  with the sum, each gift (the day „5. 10.“; purpose · hotově/na účet · note; the amount and ⋯ Uprav · Přiřaď jinému ·
-  Smaž – cash only)
-  and [Vytiskni potvrzení za rok 2026]. ⋯ Přidej dar (for this donor) · Uprav dárce (outside donors).
-- **⋯**: Přidej dar (date, amount, purpose „Provoz“, note → then „Přiřazení daru“) · Přidej dárce mimo sbor (name,
-  address, IČO; a symbol from the same sequence as people's) · Vytiskni potvrzení za rok … · Nastavení darů (Místo
+  IČO – a missing one says „Doplnit“ and leads to the card in Lidé or the donor sheet), ‹ year ›, „Dary za rok 2026“
+  with the sum, each gift (the day „5. 10.“; purpose · hotově/na účet · note; the amount and ⋯ Upravit · Přiřadit jinému ·
+  Smazat – cash only)
+  and [Vytisknout potvrzení za rok 2026]. ⋯ Přidat dar (for this donor) · Upravit dárce (outside donors).
+- **⋯**: Přidat dar (date, amount, purpose „Provoz“, note → then „Přiřazení daru“) · Přidat dárce mimo sbor (name,
+  address, IČO; a symbol from the same sequence as people's) · Vytisknout potvrzení za rok … · Nastavení darů (Místo
   „V Novém Jičíně“, Podepisuje, Funkce „pastor sboru“, Razítko and Podpis – SVG or PNG ≤ 400 kB, stored as data URLs in
   `dary.json`) · Klíč k darům (admins).
 - **Printing** checks first: the church's Úřední údaje (else „Chybí úřední údaje sboru“ → Nastavení sboru), then the
-  donors' gaps („U 2 dárců něco chybí … Vytiskni i tak“). The certificate as 15.1 describes, one A4 page per donor
+  donors' gaps („U 2 dárců něco chybí … Vytisknout i tak“). The certificate as 15.1 describes, one A4 page per donor
   (`@page dary`, margin 0, the otisk an <img> from `css/otisk.svg`); more than 12 gifts print one line per month.
 - **Přehled › Dary** (9.15): the year's sum (wide), dárců, nepřiřazené – each › Dary.
 - **Sbírky** in Dary: the open ones with what each has collected (SS · darů · cíl, the sum ›  #sbirky/<id>); in „Nový
@@ -1228,17 +1234,17 @@ everyone sees the name, the QR and how much was collected; who gave stays with t
 - **Nav**: sidebar „Sbírky“ (heart) for whoever runs them, for everyone while one is open; on a phone from Moje (a
   „Sbírky“ section of the open ones) and Správa (leaders) – it lights Moje.
 - **List**: the open ones as cards (name, the sum in strong figures „z 80 000 Kč“, a bar when there is a target,
-  „4 dary · do 31. 12. 2026 · specifický symbol 101“), 2 columns ≥ 900; „Skončené“ rows below. [+ Založ sbírku].
-- **Detail**: the note, the big card, [Pošli dar] (primary) · [Ukaž QR pro plakát] (those who run it: a big QR without a
-  VS, the account and the code to copy, „Chceš potvrzení o daru …? Napiš do platby svůj variabilní symbol ze Zvonce.“);
-  ⋯ Uprav · Ukonči sbírku / Obnov sbírku (with Vrať) · Smaž (only with no gift). „Kdo dal kolik, vidí jen pokladník a
+  „4 dary · do 31. 12. 2026 · specifický symbol 101“), 2 columns ≥ 900; „Skončené“ rows below. [+ Založit sbírku].
+- **Detail**: the note, the big card, [Poslat dar] (primary) · [Zobrazit QR pro plakát] (those who run it: a big QR without a
+  VS, the account and the code to copy, „Chceš potvrzení o daru …? Napsat do platby svůj variabilní symbol ze Zvonce.“);
+  ⋯ Upravit · Ukončit sbírku / Obnovit sbírku (with Vrátit zpět) · Smazat (only with no gift). „Kdo dal kolik, vidí jen pokladník a
   správci v Darech.“
 - **Nová sbírka**: Název, Na co, Kolik potřebujeme (optional), Do kdy (optional) → „Sbírka má specifický symbol 101.“
-- **Mimořádný dar** (Můj účet › Dary [Pošli mimořádný dar], a sbírka's [Pošli dar]): Kolik (optional), Na co (Provoz
-  sboru or an open sbírka) → [Ukaž platbu] → the payment: the QR (`spdPayment` with AM, X-VS = my donorVs, X-SS = the
-  code, MSG „Sbírka …“) and the details to copy; on a phone the details first, the QR behind „Ukaž QR kód“. „Až dar
+- **Mimořádný dar** (Můj účet › Dary [Poslat mimořádný dar], a sbírka's [Poslat dar]): Kolik (optional), Na co (Provoz
+  sboru or an open sbírka) → [Zobrazit platbu] → the payment: the QR (`spdPayment` with AM, X-VS = my donorVs, X-SS = the
+  code, MSG „Sbírka …“) and the details to copy; on a phone the details first, the QR behind „Zobrazit QR kód“. „Až dar
   dorazí na účet sboru, poděkujeme ti na stránce Moje. Zvonec se do banky dívá přes den každou hodinu.“
-- **Tvůj dar dorazil**: Moje shows „Tvůj dar 2 000 Kč dorazil. Děkujeme!“ (info, heart, [Skryj]) for my gifts the bank
+- **Tvůj dar dorazil**: Moje shows „Tvůj dar 2 000 Kč dorazil. Děkujeme!“ (info, heart, [Skrýt]) for my gifts the bank
   has seen since I last hid it; Můj účet › Dary lists them („Dary, které dorazily“).
 - **data/giving.json** (main data repo, read by everyone, never published): `{ v: 1, fundraisers: { <id>: { total,
   gifts } }, receipts: [{ until, box }] }`. The bank's Action writes it (with ZVONEC_DATA_TOKEN, 15.1), the treasurer's
@@ -1263,7 +1269,7 @@ data repo's `web.yml`:
 - Events only when `public === true` and they reach into `[today − 1, today + 120]`, sorted by start, then id.
 - `image` = the event's, else its template's, else null; unsafe names count as none. `publicImages()` lists the
   files copied to `site/images/`.
-- `featured` when the event has `featured === true` („Zvýrazni na webu“); `seriesId` + `repeat` (the series' `step`)
+- `featured` when the event has `featured === true` („Zvýraznit na webu“); `seriesId` + `repeat` (the series' `step`)
   when the event belongs to a series that still exists.
 - Formats only when `public === true`.
 - **No people, ever**: no names, assignments, notes, contacts.
@@ -1290,27 +1296,27 @@ data repo's `web.yml`:
 Zvonec sends one thing by itself – the Monday e-mail; everything else a leader sends by hand.
 - **The Monday e-mail** (`lib/digest.js`, `zvonec/digest.mjs`, the data repo's `digest.yml`, Monday ~7.00 Prague). To
   everyone with a login (not an invite, not expired), an e-mail and `digest` not false, and only when something waits:
-  „Čeká na tvou odpověď“ (my proposed duties of the next 4 weeks, [Odpověz ve Zvonci] → #moje), „Tento týden sloužíš“
+  „Čeká na tvou odpověď“ (my proposed duties of the next 4 weeks, [Odpovědět ve Zvonci] → #moje), „Tento týden sloužíš“
   (my confirmed duties of the next 7 days), and for leaders and admins „V Obsazení zbývá vyřešit“ in the teams they
   lead (every team when they lead none): the three nearest missing roles named, the rest, the people who have not
-  answered and the conflicts in one sentence, [Otevři Obsazení]. Subject = the most pressing part („2 služby čekají
+  answered and the conflicts in one sentence, [Otevřít Obsazení]. Subject = the most pressing part („2 služby čekají
   na tvou odpověď“ · „V neděli máš službu: Kázání“ · „V Obsazení zbývá vyřešit 3 věci“). Greeting in the vocative.
   Sent over SMTP from the church's mailbox (secrets SMTP_HOST, SMTP_USER, SMTP_PASS, optional SMTP_PORT, MAIL_FROM);
   the log has counts only. Můj účet › Moje karta has the switch „Pondělní e-mail“ (off without an e-mail address).
-  SMS stays manual („Připomeň“); a notifications centre is not planned (everything has its place on Moje / Obsazení).
-- **„Připomeň“** builds a ready message. Obsazení's section „Čeká na odpověď“ (one text per person for all their
-  duties) and the meeting's „○ N čeká“ open the reminders. Per person an `sms:` link (aria „Připomeň v SMS – <jméno>“), or
-  without a phone a `mailto:` with subject „Služba ve Zvonci“ (aria „Připomeň e-mailem – <jméno>“), plus „Zavolej“.
+  SMS stays manual („Připomenout“); a notifications centre is not planned (everything has its place on Moje / Obsazení).
+- **„Připomenout“** builds a ready message. Obsazení's section „Čeká na odpověď“ (one text per person for all their
+  duties) and the meeting's „○ N čeká“ open the reminders. Per person an `sms:` link (aria „Připomenout v SMS – <jméno>“), or
+  without a phone a `mailto:` with subject „Služba ve Zvonci“ (aria „Připomenout e-mailem – <jméno>“), plus „Zavolat“.
   Body (`reminderTextAll`, `lib/messages.js`): the church's text `settings.reminderText`, default „Ahoj, {jméno}! V rozpisu
-  máš: {služby}. Můžeš? Odpověz prosím ve Zvonci: {odkaz}“ – {jméno} the first name (nickname first) in the vocative
+  máš: {služby}. Můžeš? Odpovědět prosím ve Zvonci: {odkaz}“ – {jméno} the first name (nickname first) in the vocative
   (unknown → „Ahoj!“), {služby} „Kázání (Setkání na pastvě, ne 18. 10. v 10.00)“ joined by commas, {odkaz} <app URL>#moje.
-- **Nastavení sboru › Zprávy**: the reminder (a textarea, the marks in the hint, a live preview for Jana, [Vrať výchozí
+- **Nastavení sboru › Zprávy**: the reminder (a textarea, the marks in the hint, a live preview for Jana, [Vrátit zpět výchozí
   text]; an unknown mark or a text without {služby} is refused) and the Monday e-mail's signature
   `settings.digestSignature` (default „Díky, že sloužíš.“, the church's name below). Stored only when they differ from
   the defaults.
-- **„Kdy Zvonec bučí“** (settings) sets how many days before a meeting each conflict starts to show (§6.2 K5, K6).
+- **„Upozornění“** (settings) sets how many days before a meeting each conflict starts to show (§6.2 K5, K6).
 - **In-app signals**: nav counts (Moje: aria „N služby čekají na tvou odpověď“; Obsazení: „Zbývá vyřešit N věcí“),
-  the invites dot / „1 čeká“, Co nesedí sections, ○ / ● marks, Obsazení to-do lines.
+  the invites dot / „1 čeká“, Problémy sections, ○ / ● marks, Obsazení to-do lines.
 - **GitHub Actions** `check.yml` (§10.2).
 - **Calendar**: .ics downloads only (§6.10).
 
@@ -1331,7 +1337,7 @@ Zvonec sends one thing by itself – the Monday e-mail; everything else a leader
 - No console errors and no CSP violations on any route, at widths 390, 768, 1024, 1280 and 1600, in both palettes.
 - Every route in §7.3 renders for member, leader and admin as the access table says; members never see
   membership, birth dates, notes, consent or access of others.
-- Every action is reachable by keyboard; every icon button has a Czech imperative aria-label; focus is visible.
+- Every action is reachable by keyboard; every icon button has a Czech infinitive aria-label; focus is visible.
 - Every change saves (status capsule), survives a reload, and can be undone where §4.7 says.
 - Two browsers editing different records of the same file both keep their changes (merge).
 - `public.json` built from the demo contains no person data; the `web.yml` guard passes.
@@ -1364,7 +1370,7 @@ Zvonec sends one thing by itself – the Monday e-mail; everything else a leader
 - **One glossary** for „chybí / čeká / nesedí“ across all screens.
 - **Households**: a household filter in Lidé, or a clickable Domácnost column in Tabulka.
 - **Rename the role „U dětí“ to „Péče o děti“** in the demo and in the live data.
-- Renaming „Přidej setkání“ to „Nové setkání“ for the main action.
+- Renaming „Přidat setkání“ to „Nové setkání“ for the main action.
 - **SMS** reminders sent by Zvonec (a paid gateway, ~1 Kč per SMS) – only if the Monday e-mail is not enough.
 
 ## 15. Roadmap (agreed direction, not built yet)
@@ -1400,16 +1406,16 @@ the next run – also assigns payments by the people's symbols and the sbírky's
   once, history stays, a payment seen twice is stored once. The token is a secret of the finance repo; a daily
   GitHub Action fetches incoming payments. Cash gifts are entered by hand.
 - **Token renewal** (Moneta's token expires): Zvonec keeps the expiry date when the bank gives it; a week before,
-  Dary shows „Klíč k bance vyprší 20. 10. Obnov ho.“ and the nav item a badge; once it fails, the line turns red
+  Dary shows „Klíč k bance vyprší 20. 10. Obnovit ho.“ and the nav item a badge; once it fails, the line turns red
   („Zvonec od 20. 10. nestahuje platby, klíč k bance už neplatí.“) – nothing is lost. The treasurer pastes a new
-  token in Dary › Nastavení darů › „Vlož nový klíč“; Zvonec stores it as a GitHub secret (sealed with the repo's
+  token in Dary › Nastavení darů › „Vložit nový klíč“; Zvonec stores it as a GitHub secret (sealed with the repo's
   public key, so a small vendored crypto library is needed; fallback: exact steps for the repo settings) and at
   once fetches the days it missed.
 - **Becoming a donor** – nobody registers; a person becomes a donor by sending a gift. The symbol is given by Zvonec
   and typed (or scanned) in the person's own bank, never entered into Zvonec:
   1. with access to Zvonec: Můj účet › Dary shows the account, their symbol and a QR payment with the symbol filled
      in; the symbol is assigned when the page is first opened;
-  2. without access: the treasurer picks the person from Lidé in Dary › Dárci › „Přidej dárce“; Zvonec assigns the
+  2. without access: the treasurer picks the person from Lidé in Dary › Dárci › „Přidat dárce“; Zvonec assigns the
      symbol and prints (or sends) a small card – account, symbol, QR, the sentence about the yearly certificate;
   3. a gift without a symbol lands in „Nepřiřazené“; assigned once, the sender account is remembered and the person
      gets a symbol the treasurer can hand over;
@@ -1419,24 +1425,24 @@ the next run – also assigns payments by the people's symbols and the sbírky's
   lets the treasurer fill it in there.
 - **Matching**: the donor's variable symbol (per person – a tax certificate is per donor; visible to the treasurer
   only) → the person; else a sender account matched before → the same person; else „Nepřiřazené“, where the
-  treasurer picks a person, „Anonymní dar“ or „Vyřaď z darů“ (rent, a grant, a refund).
+  treasurer picks a person, „Anonymní dar“ or „Není to dar“ (rent, a grant, a refund).
 - **The donor's own view** (Můj účet › Dary, everyone): „Posílej dar na účet sboru se svým variabilním symbolem.
   Podle něj ti Zvonec vždy v lednu připraví potvrzení o daru do daňového přiznání.“; a framed block with two rows –
   the account („Účet sboru“) and the symbol („Tvůj variabilní symbol“), each with a copy icon – and on the right a
-  QR payment with the symbol filled in („Naskenuj v bankovní aplikaci, doplníš jen částku.“); under the block
-  „Pravidelný dar zadáš ve své bance jako trvalý příkaz.“ On a phone the QR hides behind „Ukaž QR kód“ (one cannot
+  QR payment with the symbol filled in („Naskenovat v bankovní aplikaci, doplníš jen částku.“); under the block
+  „Pravidelný dar zadáš ve své bance jako trvalý příkaz.“ On a phone the QR hides behind „Zobrazit QR kód“ (one cannot
   scan one's own screen; „Hodí se, když platíš z jiného zařízení.“). The symbol is assigned by Zvonec (sequential, unique), is
   not sensitive on its own and lives on the person record in the main data repo (`donorVs`), so a member sees it
   without reading the finance repo; amounts never reach the member's view.
 - **Changing the symbol** (the owner): a person changes their own in Můj účet › Dary (✎ beside the symbol – „Posíláš
-  už dary s jiným symbolem? Napiš ho sem a Zvonec tvoje platby pozná.“); the treasurer and the admins change anyone's
-  on the donor page in Dary (fact „Variabilní symbol …“ › Změň), a donor outside the church's too. Digits only, at most
+  už dary s jiným symbolem? Napsat ho sem a Zvonec tvoje platby pozná.“); the treasurer and the admins change anyone's
+  on the donor page in Dary (fact „Variabilní symbol …“ › Změnit), a donor outside the church's too. Digits only, at most
   ten, compared as banks do (leading zeros dropped, `cleanVs`), never one somebody else has (`vsOwner` – a member's
   check sees people only; the treasurer's sees outside donors too). Gifts already assigned stay; open payments with
   the new symbol are assigned at once.
 - **Never on the person card** (the owner): the card stays about contact and serving – no Dary section, no link, not
   even for the treasurer. Donations live only on the Dary screen: Dary › Dárci (the donors) → a donor's detail
-  (symbol, this year and last year, the gifts, „Vytiskni potvrzení za rok …“). The symbol is shown to the person
+  (symbol, this year and last year, the gifts, „Vytisknout potvrzení za rok …“). The symbol is shown to the person
   in Můj účet and to the treasurer in Dary, nowhere else.
 - **Purposes** (účely): default „Provoz“; another by the specific symbol, a word in the message, or by hand.
 - **Out**: the yearly donation certificate per donor (print, A4 portrait, one donor per page: the church's brand
@@ -1456,5 +1462,5 @@ the next run – also assigns payments by the people's symbols and the sbírky's
   „Úřední název“ (`legalName`, e.g. „Apoštolská církev, sbor Nový Jičín“), „IČO“ (`companyId`) and „Sídlo“
   (`legalAddress` – the registered seat from the Ministry of Culture's register / ARES, which can differ from
   `address`, the place people come to and Pastva shows); certificates are not offered until all three are filled
-  in. A „Načti z ARES“ button could fill the name and the seat from the IČO (ARES has a public REST API).
+  in. A „Načíst z ARES“ button could fill the name and the seat from the IČO (ARES has a public REST API).
 - Open: purposes beyond Provoz; who the treasurer and the deputy are.

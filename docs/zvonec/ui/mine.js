@@ -2,7 +2,7 @@
 //   A   „Ahoj, Radime“ (the vocative; no main action, no ⋯, no circle – „Více“ / the sidebar foot opens the menu)
 //   D   the date („Středa 7. října“) as its first line, then:
 //       one answer card at a time („Čeká na tvou odpověď · 1 ze 4“, the duty, Můžu / Nemůžu L 52, dots); after an
-//         answer the next one slides in, toast „Díky, máš to potvrzené. · Vrať“ (Ctrl Z too). Nothing waiting: one
+//         answer the next one slides in, toast „Díky, máš to potvrzené. · Vrátit zpět“ (Ctrl Z too). Nothing waiting: one
 //         line „Všechno máš zodpovězené.“; no duties at all: the empty well.
 //       Tvoje další služby (confirmed, and cancelled ones struck) · Odmítnuté služby (a quiet section) · Minulé služby ›
 //   A duty opens its meeting: #moje/<id> – beside the list at ≥ 1200 (the pane, only on a click), a page below 1200
@@ -10,7 +10,7 @@
 // Everything here is about me (the owner: „what concerns me, the questions to me, my Břemeno (now „Tvoje vytížení“), a nice metric“):
 //   the answer card (the questions to me) · Obsazení (leaders: one line, what my team still has to resolve ›) ·
 //   Tvoje vytížení (this month's duties against my limit as a number and pips, a sentence, Sundays in a row, this year,
-//   my most frequent role) · Tvoje další služby · Odmítnuté služby · Kdy nemůžu (my ranges, + Přidej) · Minulé služby.
+//   my most frequent role) · Tvoje další služby · Odmítnuté služby · Kdy nemůžu (my ranges, + Přidat) · Minulé služby.
 //   Nothing about others: the week's meetings are Kalendář's, the tasks are Obsazení's.
 // ≥ 1200 two columns: the left one the answer card and my duties, the right one Obsazení's line, Tvoje vytížení and
 //   Kdy nemůžu. A meeting opened from the left takes the right column's place (the pane, #moje/<id>); ✕ or Esc brings
@@ -37,7 +37,7 @@ import { loadGiving, unseenNotes, markSeen } from './giving-state.js';
 import { fundraisersOnMine } from './fundraisers.js';
 import { money } from '../lib/gifts.js';
 
-const SHOWN = 6;              // Tvoje další služby: six rows, then „Ukaž další N“
+const SHOWN = 6;              // Tvoje další služby: six rows, then „Zobrazit další N“
 const state = { pos: 0, more: false, who: null, enter: false, openId: null };
 
 const cap = (s) => s.charAt(0).toLocaleUpperCase('cs') + s.slice(1);
@@ -68,7 +68,7 @@ function eventDetailFor(event, frame) {
 function missingDetail(frame) {
   return missingItem({
     frame, back: frame === 'page' ? { href: '#moje', label: 'Moje' } : null, close: '#moje', icon: 'calendar', label: 'Setkání',
-    title: 'Tohle setkání už tu není.', action: frame === 'page' ? { label: 'Vrať se na Moje', href: '#moje' } : null,
+    title: 'Tohle setkání už tu není.', action: frame === 'page' ? { label: 'Zpět na Moje', href: '#moje' } : null,
   });
 }
 
@@ -191,7 +191,7 @@ function nextSection(duties, openId) {
     cls: 'mine-next',
     body: [
       list(shown.map((d) => dutyRow(d, openId)), { label: 'Tvoje další služby' }),
-      rest > 0 ? rowLink(rest === 1 ? 'Ukaž další' : `Ukaž ${agree(rest, 'další', 'další', 'dalších')} ${rest}`, { onclick: () => { state.more = true; render(); } }) : null,
+      rest > 0 ? rowLink(rest === 1 ? 'Zobrazit další' : `Zobrazit ${agree(rest, 'další', 'další', 'dalších')} ${rest}`, { onclick: () => { state.more = true; render(); } }) : null,
     ],
   });
 }
@@ -290,7 +290,7 @@ function loadCard(person) {
   return section({
     title: 'Tvoje vytížení',
     cls: 'mine-load',
-    action: can('leader') ? button('Uprav', { variant: 'quiet', size: 's', cls: 'section-action', onclick: () => limitsSheet(person), label: 'Nastav, kolik toho zvládneš' }) : null,
+    action: can('leader') ? button('Upravit', { variant: 'quiet', size: 's', cls: 'section-action', onclick: () => limitsSheet(person), label: 'Nastavit, kolik toho zvládneš' }) : null,
     body: h('div', { class: 'load-card' },
       h('div', { class: 'load-card__main' },
         h('p', { class: 'load-card__count' },
@@ -309,7 +309,7 @@ function loadCard(person) {
 
 // ---------- Dary: thank you ----------
 
-const dayMonth = (d) => `${Number(d.slice(8, 10))}. ${Number(d.slice(5, 7))}.`;
+const dayMonth = (d) => `${Number(d.slice(8, 10))}.\u00a0${Number(d.slice(5, 7))}.`;
 
 /** „Tvůj dar 2 000 Kč dorazil. Děkujeme!“ – my gifts the bank has seen since I last looked (ui/giving-state.js). */
 function thanks(person) {

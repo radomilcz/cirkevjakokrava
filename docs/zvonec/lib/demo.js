@@ -7,7 +7,7 @@
 //
 // Sundays are counted from N0 = the first Sunday after today (N1 a week later …). Every conflict
 // rule K1–K17 occurs at least once, on purpose:
-//   K1  N0: the Sunday sound tech also builds the tent that morning – overridden („Vím o tom“);
+//   K1  N0: the Sunday sound tech also builds the tent that morning – overridden („Povolit výjimku“);
 //       N1: a coffee volunteer leads the members' meeting that starts while the coffee is served
 //   K2  N1: one person on sound and projection at once
 //   K3  N2: Jana with the kids although she is on holiday

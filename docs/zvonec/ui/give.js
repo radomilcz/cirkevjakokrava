@@ -1,7 +1,7 @@
 // Zvonec One – sending a gift (Dary, SPEC 15.1): „Mimořádný dar“ from Můj účet or a sbírka, and a sbírka's QR for a
 // poster or the screen in church. The payment is a Czech QR payment (lib/bank.js spdPayment) with the amount, my
 // variable symbol (so the gift counts on my certificate) and a sbírka's code as the specific symbol. On a phone –
-// where the bank app is the same device – the details to copy come first and the QR waits behind „Ukaž QR kód“.
+// where the bank app is the same device – the details to copy come first and the QR waits behind „Zobrazit QR kód“.
 // When the payment arrives, the bank's Action leaves me a sealed note (ui/giving-state.js): Moje says thank you.
 
 import { S, myId, change } from './state.js';
@@ -53,22 +53,22 @@ function qrBlock(payment, hint, { poster = false } = {}) {
 
 /**
  * The one payment block (Můj účet, the payment sheet, the poster): the details to copy on the left, the QR on the
- * right; on a phone – where the bank app is – the details, then the QR behind „Ukaž QR kód“ (not on a poster).
+ * right; on a phone – where the bank app is – the details, then the QR behind „Zobrazit QR kód“ (not on a poster).
  */
 export function paymentBlock({ rows, payment, hint, poster = false }) {
   const details = list(rows.filter(Boolean), { label: 'Platba' });
   return h('div', { class: ['give', poster && 'give--poster'] },
     h('div', { class: 'give__details' }, details,
-      poster ? null : h('div', { class: 'give-qr-toggle' }, disclosure([qrBlock(payment, 'Naskenuj ho v bankovní aplikaci v telefonu.')], { label: 'Ukaž QR kód' }))),
+      poster ? null : h('div', { class: 'give-qr-toggle' }, disclosure([qrBlock(payment, 'Naskenuj ho v bankovní aplikaci v telefonu.')], { label: 'Zobrazit QR kód' }))),
     qrBlock(payment, hint, { poster }));
 }
 
 /** The rows of a payment, in the order a bank app asks for them. */
 export const paymentRows = ({ account, amount, vs, fundraiser }) => [
-  copyRow(account, 'Účet sboru', 'Zkopíruj číslo účtu', 'Číslo účtu je zkopírované.'),
-  amount ? copyRow(money(amount), 'Částka', 'Zkopíruj částku', 'Částka je zkopírovaná.') : null,
-  vs ? copyRow(vs, 'Tvůj variabilní symbol', 'Zkopíruj variabilní symbol', 'Variabilní symbol je zkopírovaný.') : null,
-  fundraiser ? copyRow(fundraiser.code, 'Specifický symbol sbírky', 'Zkopíruj specifický symbol', 'Specifický symbol je zkopírovaný.') : null,
+  copyRow(account, 'Účet sboru', 'Zkopírovat číslo účtu', 'Číslo účtu je zkopírované.'),
+  amount ? copyRow(money(amount), 'Částka', 'Zkopírovat částku', 'Částka je zkopírovaná.') : null,
+  vs ? copyRow(vs, 'Tvůj variabilní symbol', 'Zkopírovat variabilní symbol', 'Variabilní symbol je zkopírovaný.') : null,
+  fundraiser ? copyRow(fundraiser.code, 'Specifický symbol sbírky', 'Zkopírovat specifický symbol', 'Specifický symbol je zkopírovaný.') : null,
 ];
 
 /**
@@ -113,7 +113,7 @@ export function giveSheet({ fundraiserId } = {}) {
   }) : null;
   formSheet({
     title: 'Mimořádný dar',
-    submitLabel: 'Ukaž platbu',
+    submitLabel: 'Zobrazit platbu',
     size: 's',
     body: [
       field({ label: 'Kolik', control: amount, optional: true, hint: 'Částku můžeš nechat prázdnou a doplnit v bance.' }),

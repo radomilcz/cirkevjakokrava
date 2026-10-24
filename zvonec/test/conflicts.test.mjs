@@ -75,7 +75,7 @@ test('K1: one person at two events at once', () => {
   assert.equal(k[0].eventId, 'a');
   assert.equal(k[0].personId, 'petr');
   assert.deepEqual(k[0].assignmentIds, ['p1', 'p2']);
-  assert.match(k[0].text, /^Petr má být naráz na dvou místech: a \(ne 11\. 10\. 10\.00\) a b/);
+  assert.match(k[0].text, /^Petr má být naráz na dvou místech: a \(ne 11\. 10\. 10\.00\) a b/);
 });
 
 test('K1 does not apply to declined assignments and cancelled events', () => {
@@ -177,12 +177,12 @@ test('K5: one card per event and kind, only when the date gets close; the past i
   assert.deepEqual(k.map((x) => `${x.eventId}:${x.severity}`).sort(), ['soon:error', 'soon:warning', 'twoweeks:warning'],
     'a freshly planned event a month ahead is not a problem yet');
   const essential = k.find((x) => x.eventId === 'soon' && x.severity === 'error');
-  assert.equal(essential.text, 'Bez tohohle to nepůjde: Zvuk.');
+  assert.equal(essential.text, 'Chybí nezbytné role: Zvuk.');
   assert.deepEqual(essential.roleIds, ['zvuk']);
   const other = k.find((x) => x.eventId === 'soon' && x.severity === 'warning');
   assert.equal(other.text, 'Ještě chybí: Zpěv (2), Kytara.');
   assert.deepEqual(other.roleIds, ['zpev', 'kytara']);
-  assert.equal(k.find((x) => x.eventId === 'twoweeks').text, 'Bez tohohle to nepůjde: Zvuk.', 'essential roles warn two weeks ahead, the rest a week ahead');
+  assert.equal(k.find((x) => x.eventId === 'twoweeks').text, 'Chybí nezbytné role: Zvuk.', 'essential roles warn two weeks ahead, the rest a week ahead');
 });
 
 test('K5 and K6 read their day limits from settings.rules', () => {

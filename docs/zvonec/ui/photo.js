@@ -51,14 +51,14 @@ export function dropPhoto(name) {
   deleteImage(S.store, name, 'Zvonec: fotka smazána').catch(() => {});
 }
 
-/** „Fotka“: the preview, Vyber fotku / Vyber jinou, Odeber fotku; Ulož writes it (a new file, the old one goes). */
+/** „Fotka“: the preview, Vybrat fotku / Vybrat jinou, Odebrat fotku; Uložit writes it (a new file, the old one goes). */
 export function photoSheet(person) {
   const state = { pending: null, removed: false };
   const input = h('input', { type: 'file', accept: 'image/*', class: 'visually-hidden', tabindex: -1 });
   const preview = h('div', { class: 'photo-preview' });
   const problem = h('p', { class: 'field__error', hidden: true }, h('span'));
-  const pick = button('Vyber fotku', { size: 's', icon: 'image', onclick: () => input.click() });
-  const remove = button('Odeber fotku', { size: 's', variant: 'quiet', onclick: () => { state.pending = null; state.removed = true; draw(); } });
+  const pick = button('Vybrat fotku', { size: 's', icon: 'image', onclick: () => input.click() });
+  const remove = button('Odebrat fotku', { size: 's', variant: 'quiet', onclick: () => { state.pending = null; state.removed = true; draw(); } });
   function draw() {
     const shown = state.removed ? { ...person, photo: undefined } : person;
     const av = avatar(shown, { size: 'xxl', me: person.id === myId() });
@@ -68,7 +68,7 @@ export function photoSheet(person) {
     }
     preview.replaceChildren(av);
     const has = !!state.pending || (!!person.photo && !state.removed);
-    pick.lastChild.textContent = has ? 'Vyber jinou' : 'Vyber fotku';
+    pick.lastChild.textContent = has ? 'Vybrat jinou' : 'Vybrat fotku';
     remove.hidden = !has;
   }
   input.addEventListener('change', async () => {
@@ -113,18 +113,18 @@ export function photoSheet(person) {
         delete target.photo;
         change(`bez fotky ${displayName(target)}`);
         dropPhoto(old);
-        toast('Fotka je pryč.');
+        toast('Fotka je smazaná.');
       }
       return undefined;
     },
   });
 }
 
-/** The avatar of a person's head: for who may change it a button „Přidej fotku“ / „Změň fotku“ with a camera badge. */
+/** The avatar of a person's head: for who may change it a button „Přidat fotku“ / „Změnit fotku“ with a camera badge. */
 export function headAvatar(person, { me = false } = {}) {
   const av = avatar(person, { size: 'xl', me });
   if (!mayChangePhoto(person)) return av;
-  const label = person.photo ? 'Změň fotku' : 'Přidej fotku';
+  const label = person.photo ? 'Změnit fotku' : 'Přidat fotku';
   return h('button', { type: 'button', class: 'photo-btn', 'aria-label': label, title: label, onclick: () => photoSheet(person) },
     av, h('span', { class: 'photo-btn__badge', 'aria-hidden': 'true' }, icon('camera', { size: 's' })));
 }

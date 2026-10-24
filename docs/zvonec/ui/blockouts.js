@@ -1,7 +1,7 @@
 // Zvonec One – Kdy nemůžu / Kdy nemůže: a person's „can't“ ranges. One row, one sheet, one delete for the page
 // #kdy-nemuzu (mine, DESIGN §6.11), the person's menu (the next range as meta) and the person detail (P4's
-// blockoutSection), so the dates, the words and the Vrať read the same everywhere. I change my own; a leader anyone's.
-// The reason is seen only by leaders and the person. A row has only actions, so it opens a menu (Uprav · Smaž).
+// blockoutSection), so the dates, the words and the Vrátit zpět read the same everywhere. I change my own; a leader anyone's.
+// The reason is seen only by leaders and the person. A row has only actions, so it opens a menu (Upravit · Smazat).
 
 import {
   h, page, section, sectionAction, list, row, dateArch, formSheet, field, dateInput, textInput, switchRow, fieldError,
@@ -32,7 +32,7 @@ const seesReason = (person) => isSelf(person) || can('leader');
 
 /**
  * Add (record null) or change a range: Od · Do side by side, Důvod (nemusíš). When duties fall into the range,
- * „Odmítni i služby v těch dnech“ (on) with the list: they get „Nemůžu“ in the same save, one Vrať undoes both.
+ * „Odmítnout i služby v těch dnech“ (on) with the list: they get „Nemůžu“ in the same save, one Vrátit zpět undoes both.
  */
 export function blockoutSheet(person, record = null) {
   const self = isSelf(person);
@@ -58,7 +58,7 @@ export function blockoutSheet(person, record = null) {
     const n = found.length;
     clashBox.append(
       switchRow({
-        label: n === 1 ? 'Odmítni i službu v těch dnech' : 'Odmítni i služby v těch dnech',
+        label: n === 1 ? 'Odmítnout i službu v těch dnech' : 'Odmítnout i služby v těch dnech',
         hint: self
           ? `V té době ${n === 1 ? 'máš službu' : `máš ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec zapíše, že nemůžeš.`
           : `V té době ${n === 1 ? 'má službu' : `má ${plural(n, 'službu', 'služby', 'služeb')}`}. Zvonec zapíše, že nemůže.`,
@@ -73,7 +73,7 @@ export function blockoutSheet(person, record = null) {
   return formSheet({
     title: record ? (self ? 'Kdy nemůžu' : 'Kdy nemůže') : (self ? 'Nové dny, kdy nemůžu' : 'Kdy nemůže'),
     subtitle: self ? null : personName(person),
-    submitLabel: record ? 'Ulož' : 'Přidej',
+    submitLabel: record ? 'Uložit' : 'Přidat',
     autofocus: false,   // a phone keyboard would cover the dates (the reason is optional)
     body: [
       h('div', { class: 'form__row form__row--pair' }, field({ label: 'Od', control: from }), field({ label: 'Do', control: to })),
@@ -123,7 +123,7 @@ export function blockoutSheet(person, record = null) {
   });
 }
 
-/** Delete a range at once; „Vrať“ puts it back. */
+/** Delete a range at once; „Vrátit zpět“ puts it back. */
 export function deleteBlockout(person, record) {
   const all = S.data.availability || [];
   const index = all.findIndex((x) => x.id === record.id);
@@ -157,7 +157,7 @@ function whenWords(v) {
 
 /**
  * One range: its first day as an arch (filled while it runs), the reason as the title (else the dates), the dates and
- * when it comes („za 11 dní“), its length as a pill. Who may change it gets a row that opens a menu (Uprav · Smaž);
+ * when it comes („za 11 dní“), its length as a pill. Who may change it gets a row that opens a menu (Upravit · Smazat);
  * everyone else a plain row.
  */
 export function blockoutRow(person, v) {
@@ -172,15 +172,15 @@ export function blockoutRow(person, v) {
     meta: joinMeta([reason ? words : null, whenWords(v)]),
     trail: h('span', { class: 'pill' }, plural(length, 'den', 'dny', 'dní')),
     onclick: editable ? (e) => openMenu([
-      { label: 'Uprav', icon: 'pencil', onclick: () => blockoutSheet(person, v) },
-      { label: 'Smaž', icon: 'trash', danger: true, onclick: () => deleteBlockout(person, v) },
+      { label: 'Upravit', icon: 'pencil', onclick: () => blockoutSheet(person, v) },
+      { label: 'Smazat', icon: 'trash', danger: true, onclick: () => deleteBlockout(person, v) },
     ], { anchor: e.currentTarget, title: joinMeta([words, reason]), placement: 'below-start' }) : null,
-    label: editable ? `${words}${reason ? `, ${reason}` : ''}: uprav nebo smaž` : null,
+    label: editable ? `${words}${reason ? `, ${reason}` : ''}: upravit nebo smazat` : null,
   });
 }
 
 /**
- * The section „Kdy nemůžu“ (mine) / „Kdy nemůže“ (someone else's): rows, „+ Přidej“ for who may edit, a quiet line when
+ * The section „Kdy nemůžu“ (mine) / „Kdy nemůže“ (someone else's): rows, „+ Přidat“ for who may edit, a quiet line when
  * there is nothing. null when there is nothing and the viewer may not add anything.
  */
 export function blockoutSection(person, { cls } = {}) {
@@ -193,17 +193,17 @@ export function blockoutSection(person, { cls } = {}) {
   return section({
     title,
     cls,
-    action: editable ? sectionAction('Přidej', { add: true, onclick: () => blockoutSheet(person), aria: self ? 'Přidej, kdy nemůžeš' : `Přidej, kdy ${displayName(person)} nemůže` }) : null,
+    action: editable ? sectionAction('Přidat', { add: true, onclick: () => blockoutSheet(person), aria: self ? 'Přidat, kdy nemůžeš' : `Přidat, kdy ${displayName(person)} nemůže` }) : null,
     body: records.length ? list(records.map((v) => blockoutRow(person, v)), { label: title })
-      : quiet(self ? LEAD : 'Nic zapsaného.'),
+      : quiet(self ? LEAD : 'Zatím tu nejsou zapsané žádné dny.'),
   });
 }
 
-/** #kdy-nemuzu: a page of one column; A „Kdy nemůžu“ · [Přidej]; D the sentence and the rows, or the empty well. */
+/** #kdy-nemuzu: a page of one column; A „Kdy nemůžu“ · [Přidat]; D the sentence and the rows, or the empty well. */
 export function renderBlockoutsPage() {
   const person = personById(S.data, myId());
-  const add = person ? { label: 'Přidej', icon: 'plus', onclick: () => blockoutSheet(person) } : null;
-  if (add && isPhone()) add.label = 'Přidej dny, kdy nemůžeš';   // the phone shows „+“ only: its name says what it adds
+  const add = person ? { label: 'Přidat', icon: 'plus', onclick: () => blockoutSheet(person) } : null;
+  if (add && isPhone()) add.label = 'Přidat dny, kdy nemůžeš';   // the phone shows „+“ only: its name says what it adds
   if (!person) {
     return page({
       title: 'Kdy nemůžu',
@@ -222,8 +222,8 @@ export function renderBlockoutsPage() {
     body: records.length
       ? [text(LEAD), list(records.map((v) => blockoutRow(person, v)), { label: 'Kdy nemůžu' })]
       : empty({
-        icon: 'calendar', title: 'Zatím žádné dny.', text: LEAD,
-        action: { label: 'Přidej', icon: 'plus', onclick: () => blockoutSheet(person) },
+        icon: 'calendar', title: 'Zatím tu nejsou zapsané žádné dny.', text: LEAD,
+        action: { label: 'Přidat', icon: 'plus', onclick: () => blockoutSheet(person) },
       }),
   });
 }

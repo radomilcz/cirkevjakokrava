@@ -1,6 +1,6 @@
 // Zvonec Next – Skupiny: the sheets. „Přidat skupinu“ / „Upravit skupinu“ (Druh skupiny only when new),
 // the member sheet (Co umí per role: Neumí · Učí se · Umí, Vede tým / Předsedá, Odebrat z týmu), the role
-// sheet (Název, Kolik lidí, Bez toho to nepůjde; rarer options under „Další možnosti“), archiving,
+// sheet (Název, Kolik lidí, Nezbytná role; rarer options under „Další možnosti“), archiving,
 // deleting a group or a role (the only two that ask first).
 
 import {
@@ -78,7 +78,7 @@ const KIND_HINTS = {
 
 /**
  * „Kdo vede“ in the group's own sheet (the owner: choosing who leads belongs to the group's settings, not only to each
- * person's card): the group's people as chips, the leaders pressed; „Přidej vedoucího“ picks anyone (they join the
+ * person's card): the group's people as chips, the leaders pressed; „Přidat vedoucího“ picks anyone (they join the
  * group as its leader on save). Returns { el, ids() }.
  */
 function leadersField(group) {
@@ -106,7 +106,7 @@ function leadersField(group) {
     h('p', { class: 'field__label', id: labelId }, 'Kdo vede', h('span', { class: 'field__optional' }, ' (nepovinné)')),
     box,
     shown.length ? h('p', { class: 'field__hint' }, 'Vyber jednoho nebo víc lidí ze skupiny.') : null,
-    button('Přidej vedoucího', { variant: 'quiet', size: 's', icon: 'plus', onclick: pick }));
+    button('Přidat vedoucího', { variant: 'quiet', size: 's', icon: 'plus', onclick: pick }));
   return { el, ids: () => [...chosen] };
 }
 
@@ -116,7 +116,7 @@ export function groupSheet(group = null, { kind = 'team' } = {}) {
   const leaders = leadersField(group);
   const sheet = formSheet({
     title: group ? 'Úprava skupiny' : 'Nová skupina',
-    submitLabel: group ? 'Ulož' : 'Přidej skupinu',
+    submitLabel: group ? 'Uložit' : 'Přidat skupinu',
     body: [
       group ? null : h('div', { class: 'field' },
         segmentedField({ name: 'kind', label: 'Druh skupiny', value: kind, options: KIND_CHOICES, onChange: (v) => { hint.textContent = KIND_HINTS[v]; } }), hint),
@@ -176,7 +176,7 @@ export function deleteGroup(group) {
   confirmSheet({
     title: `Chceš smazat skupinu ${group.name}?`,
     text,
-    confirmLabel: 'Smaž skupinu',
+    confirmLabel: 'Smazat skupinu',
     onConfirm: () => {
       const g = groupById(S.data, group.id);
       if (!g) return;
@@ -214,7 +214,7 @@ export function memberSheet(group, personId, { fresh = false } = {}) {
   sheet = formSheet({
     subtitle: group.name,
     title: personName(person),
-    submitLabel: 'Ulož',
+    submitLabel: 'Uložit',
     body: [
       fresh && group.kind === 'team' ? h('p', { class: 'meta' }, `Je ${words.in} ${group.name}. Co tu umí?`) : null,
       skillRows,
@@ -296,11 +296,11 @@ export function roleSheet(group, role = null) {
   const sheet = formSheet({
     subtitle: role ? joinMeta([role.name, group.name]) : group.name,
     title: role ? 'Úprava role' : 'Nová role',
-    submitLabel: role ? 'Ulož' : 'Přidej roli',
+    submitLabel: role ? 'Uložit' : 'Přidat roli',
     body: [
       field({ label: 'Název', control: textInput({ name: 'name', value: role?.name || '', autocomplete: 'off', placeholder: 'např. Kamera' }) }),
       field({ label: 'Kolik lidí', hint: 'Na jedno setkání.', control: stepper({ name: 'count', value: role?.count || 1, min: 1, max: 10, label: 'Kolik lidí' }) }),
-      switchRow({ label: 'Bez toho to nepůjde', hint: 'Prázdná role týden před setkáním je chyba.', name: 'essential', checked: !!role?.essential }),
+      switchRow({ label: 'Nezbytná role', hint: 'Prázdná role týden před setkáním je chyba.', name: 'essential', checked: !!role?.essential }),
       disclosure([
         switchRow({ label: 'Jen pro dospělé', name: 'adultsOnly', checked: !!role?.adultsOnly }),
         switchRow({ label: 'Stará se o děti', hint: 'Kdo má tuhle roli, je během setkání s dětmi. Zvonec hlídá, aby u nich byli aspoň dva dospělí.', name: 'childcare', checked: !!role?.childcare }),
@@ -344,7 +344,7 @@ export function deleteRole(role) {
   confirmSheet({
     title: `Chceš smazat roli ${role.name}?`,
     text: [use.all ? `Z rozpisu ${agree(use.all, 'zmizí', 'zmizí', 'zmizí')} ${plural(use.all, 'služba', 'služby', 'služeb')}.` : '', 'Zmizí i ze šablon, formátů a z toho, kdo co umí.'].filter(Boolean).join(' '),
-    confirmLabel: 'Smaž roli',
+    confirmLabel: 'Smazat roli',
     onConfirm: () => {
       deleteRoles([role.id]);
       change(`smazaná role ${role.name}`);

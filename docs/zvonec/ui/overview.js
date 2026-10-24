@@ -5,7 +5,7 @@
 //   Lidé       „71 lidí ve sboru“, who joined and left in a year, then členové · přátelé · hosté · z toho děti (each
 //              opens Lidé under that Filtr); „V archivu 3 karty ›“
 //   Služby     ‹ Říjen 2026 ›, „96 % obsazeno 103 ze 107 míst“ with a bar, služeb · slouží · čeká na odpověď
-//              (› Obsazení) · odmítnutí; „Otevři rozpis ›“
+//              (› Obsazení) · odmítnutí; „Otevřít rozpis ›“
 //   Dary       the treasurer and the admins only: the year's sum, dárci, nepřiřazené (› Dary)
 // Pure numbers come from lib/stats.js.
 
@@ -89,7 +89,7 @@ function serviceSection(month) {
           { value: s.waiting, label: agree(s.waiting, 'čeká na odpověď', 'čekají na odpověď', 'čeká na odpověď'), href: s.waiting ? '#obsazeni' : null, tone: s.waiting ? 'wait' : null },
           { value: s.declined, label: 'odmítnutí' },
         ],
-        action: rowLink('Otevři rozpis', { href: `#kalendar/rozpis/${month}` }),
+        action: rowLink('Otevřít rozpis', { href: `#kalendar/rozpis/${month}` }),
       }) : figures({ title: 'Služby', aside: period, n: '–', of: `${cap(inMonth(month))} není v plánu žádné setkání.` }),
     ],
   });

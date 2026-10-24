@@ -1,13 +1,13 @@
 // Zvonec One – Obsazení (#obsazeni[/<eventId>], leaders): what is there to resolve? (DESIGN §6.4)
 // Not a third calendar but a list of tasks for the next 4 weeks, by the kind of work (the owner's choice, variant 1):
-// A „Obsazení“ · ⋯ (Vytiskni rozpis) · [Doplň volná místa]. B: „Hledej“ + Filtr (Tým – the teams I lead by default,
-// so a leader starts at „Filtr 1“ · Stav: Chybí lidi · Čeká na odpověď · Něco nesedí). No C.
+// A „Obsazení“ · ⋯ (Vytisknout rozpis…) · [Doplnit volná místa]. B: „Hledat“ + Filtr (Tým – the teams I lead by default,
+// so a leader starts at „Filtr 1“ · Stav: Chybí lidé · Čeká na odpověď · Problémy). No C.
 // D, three sections, each only while it has something:
-//   Chybí lidi – a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne 11. 10. 10.00“, [+ Doplň]
+//   Chybí lidé – a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne 11. 10. 10.00“, [+ Doplnit]
 //     (→ the picker); the row opens the meeting (the pane ≥ 1200, its page below).
-//   Něco nesedí – a row per problem: „Ondra má dvě služby naráz“ › (→ the duty sheet with its fixes).
+//   Problémy – a row per problem: „Ondra má dvě služby naráz“ › (→ the duty sheet with its fixes).
 //   Čeká na odpověď – a row per PERSON, not per duty: „Daniel Sýkora“, „3 služby · nejbližší ne 11. 10.“, and one SMS
-//     (or e-mail) that reminds of all of them at once, plus Zavolej; the row records the answer for them.
+//     (or e-mail) that reminds of all of them at once, plus Zavolat; the row records the answer for them.
 // What is done drops out; nothing left: „Všechno je vyřešené.“ The horizon is said at the end („Dál než 4 týdny…“).
 // staffingCount() – the nav's count: the tasks in my Filtr scope.
 
@@ -79,7 +79,7 @@ function teamOptions() {
   return { options, value };
 }
 
-const CO = [['chybi', 'Chybí lidi'], ['ceka', 'Čeká na odpověď'], ['nesedi', 'Něco nesedí']];
+const CO = [['chybi', 'Chybí lidé'], ['ceka', 'Čeká na odpověď'], ['nesedi', 'Problémy']];
 
 function filterGroups() {
   const { options, value } = teamOptions();
@@ -144,7 +144,7 @@ const byState = (t, co) => (!co?.length ? t : {
   waiting: co.includes('ceka') ? t.waiting : [],
 });
 
-/** The search: the role, the meeting (title, place, Účel), the person, the problem's words. */
+/** The search: the role, the meeting (title, place, Druh setkání), the person, the problem's words. */
 function bySearch(t, q) {
   if (!q) return t;
   const meeting = (e) => [e.title, placeText(e), KIND_LABELS[e.kind]];
@@ -196,15 +196,15 @@ export function reminderTextAll(duties) {
   });
 }
 
-/** SMS (or e-mail) with the ready text, and Zavolej – the trail of a waiting person. */
+/** SMS (or e-mail) with the ready text, and Zavolat – the trail of a waiting person. */
 function remindButtons(person, duties) {
   if (!person) return [];
   const text = encodeURIComponent(reminderTextAll(duties));
   const who = personName(person);
   return [
-    person.phone ? h('a', { class: 'icon-btn icon-btn--call', href: `${smsHref(person.phone)}?&body=${text}`, 'aria-label': `Připomeň v SMS – ${who}`, title: `Připomeň v SMS – ${who}` }, icon('message', { size: 's' })) : null,
-    !person.phone && person.email ? h('a', { class: 'icon-btn icon-btn--call', href: `${mailHref(person.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomeň e-mailem – ${who}`, title: `Připomeň e-mailem – ${who}` }, icon('mail', { size: 's' })) : null,
-    person.phone ? h('a', { class: 'icon-btn icon-btn--call', href: telHref(person.phone), 'aria-label': `Zavolej – ${who}`, title: `Zavolej – ${who}` }, icon('phone', { size: 's' })) : null,
+    person.phone ? h('a', { class: 'icon-btn icon-btn--call', href: `${smsHref(person.phone)}?&body=${text}`, 'aria-label': `Připomenout v SMS – ${who}`, title: `Připomenout v SMS – ${who}` }, icon('message', { size: 's' })) : null,
+    !person.phone && person.email ? h('a', { class: 'icon-btn icon-btn--call', href: `${mailHref(person.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}`, 'aria-label': `Připomenout e-mailem – ${who}`, title: `Připomenout e-mailem – ${who}` }, icon('mail', { size: 's' })) : null,
+    person.phone ? h('a', { class: 'icon-btn icon-btn--call', href: telHref(person.phone), 'aria-label': `Zavolat – ${who}`, title: `Zavolat – ${who}` }, icon('phone', { size: 's' })) : null,
   ].filter(Boolean);
 }
 
@@ -229,7 +229,7 @@ export function waitingSheet(waiting, { event, person } = {}) {
         title: d.role?.name || 'Služba',
         meta: joinMeta([d.event.title, clock(d.event.start), whenWords(d.daysUntil ?? 0)]),
         onclick: () => open(d), chevron: true,
-        label: `${d.role?.name || 'Služba'}, ${d.event.title} ${shortDate(d.event.start)}: zapiš odpověď`,
+        label: `${d.role?.name || 'Služba'}, ${d.event.title} ${shortDate(d.event.start)}: zapsat odpověď`,
       });
     }
     const what = event ? d.role?.name || 'Služba' : joinMeta([d.role?.name || 'Služba', d.event.title, shortDate(d.event.start)]);
@@ -238,7 +238,7 @@ export function waitingSheet(waiting, { event, person } = {}) {
       title: name,
       meta: joinMeta([what, whenWords(d.daysUntil ?? 0)]),
       onclick: () => open(d),
-      label: `${name}, ${d.role?.name || 'služba'}: zapiš odpověď`,
+      label: `${name}, ${d.role?.name || 'služba'}: zapsat odpověď`,
       trail: remind(d),
     });
   };
@@ -247,9 +247,9 @@ export function waitingSheet(waiting, { event, person } = {}) {
   if (person) {
     const text = encodeURIComponent(reminderTextAll(waiting));
     all = [
-      person.phone ? button('Připomeň v SMS', { size: 's', icon: 'message', href: `${smsHref(person.phone)}?&body=${text}` }) : null,
-      !person.phone && person.email ? button('Připomeň e-mailem', { size: 's', icon: 'mail', href: `${mailHref(person.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}` }) : null,
-      person.phone ? button('Zavolej', { size: 's', icon: 'phone', href: telHref(person.phone) }) : null,
+      person.phone ? button('Připomenout v SMS', { size: 's', icon: 'message', href: `${smsHref(person.phone)}?&body=${text}` }) : null,
+      !person.phone && person.email ? button('Připomenout e-mailem', { size: 's', icon: 'mail', href: `${mailHref(person.email)}?subject=${encodeURIComponent('Služba ve Zvonci')}&body=${text}` }) : null,
+      person.phone ? button('Zavolat', { size: 's', icon: 'phone', href: telHref(person.phone) }) : null,
     ].filter(Boolean);
   }
   sheet = layer.open({ kind: 'sheet',
@@ -259,8 +259,8 @@ export function waitingSheet(waiting, { event, person } = {}) {
     size: 'm',
     body: [
       h('p', { class: 'meta waiting-lead' }, person
-        ? 'Odpověď zapíšeš i za ně: klepni na službu. Text SMS i e-mailu se všemi službami ti Zvonec připraví.'
-        : 'Odpověď zapíšeš i za ně: klepni na jméno. Text SMS i e-mailu ti Zvonec připraví.'),
+        ? 'Odpověď zapíšeš i za ně: vyber službu. Text SMS i e-mailu se všemi službami ti Zvonec připraví.'
+        : 'Odpověď zapíšeš i za ně: vyber jméno. Text SMS i e-mailu ti Zvonec připraví.'),
       all.length ? h('div', { class: 'cluster waiting-remind' }, all) : null,
       list(waiting.map(rowOf), { label: 'Čeká na odpověď' }),
     ],
@@ -281,18 +281,18 @@ function errorLine(c) {
 const lead = (event) => dateArch(dayOf(event.start), { today: dayOf(event.start) === today() });
 const meetingHref = (event, openId) => (event.id === openId && isSplit() ? '#obsazeni' : `#obsazeni/${event.id}`);
 
-/** Chybí lidi: „2× Klávesy“ · „Setkání na pastvě · ne 11. 10. 10.00“ · [+ Doplň]; the row opens the meeting. */
+/** Chybí lidé: „2× Klávesy“ · „Setkání na pastvě · ne 11. 10. 10.00“ · [+ Doplnit]; the row opens the meeting. */
 function missingRow({ event, role, n }, openId) {
   const name = `${n > 1 ? `${n}× ` : ''}${role?.name || 'Služba'}`;
   return row({
     lead: lead(event), title: name, meta: joinMeta([event.title, when(event)]),
     href: meetingHref(event, openId), open: event.id === openId,
     label: `${name}: ${event.title}, ${when(event)}`,
-    trail: button('Doplň', { size: 's', icon: 'plus', onclick: () => pickFor(event.id, role.id), label: `Doplň: ${role?.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}` }),
+    trail: button('Doplnit', { size: 's', icon: 'plus', onclick: () => pickFor(event.id, role.id), label: `Doplnit: ${role?.name}, ${event.title} ${shortDate(event.start)}${n > 1 ? ` (chybí ${n})` : ''}` }),
   });
 }
 
-/** Něco nesedí: „Ondra má dvě služby naráz“ · the meeting ›; the row opens the fix (the duty sheet). */
+/** Problémy: „Ondra má dvě služby naráz“ · the meeting ›; the row opens the fix (the duty sheet). */
 function problemRow({ event, c }, openId) {
   const id = (c.assignmentIds || []).find((a) => (event.assignments || []).some((y) => y.id === a));
   return row({
@@ -312,17 +312,17 @@ function waitingRow({ person, duties }) {
   return row({
     lead: avatar(person), title: name, meta,
     onclick: () => (duties.length === 1 ? openDutySheet(first.event.id, first.assignment.id) : waitingSheet(duties, { person })),
-    label: `${name}, ${meta}: zapiš odpověď`,
+    label: `${name}, ${meta}: zapsat odpověď`,
     trail: remindButtons(person, duties),
   });
 }
 
 function sections(t, openId) {
   return [
-    t.missing.length ? section({ title: 'Chybí lidi', count: t.missing.length, cls: 'task-section', body: list(t.missing.map((x) => missingRow(x, openId)), { label: 'Chybí lidi' }) }) : null,
-    t.problems.length ? section({ title: 'Něco nesedí', count: t.problems.length, cls: 'task-section', body: list(t.problems.map((x) => problemRow(x, openId)), { label: 'Něco nesedí' }) }) : null,
+    t.missing.length ? section({ title: 'Chybí lidé', count: t.missing.length, cls: 'task-section', body: list(t.missing.map((x) => missingRow(x, openId)), { label: 'Chybí lidé' }) }) : null,
+    t.problems.length ? section({ title: 'Problémy', count: t.problems.length, cls: 'task-section', body: list(t.problems.map((x) => problemRow(x, openId)), { label: 'Problémy' }) }) : null,
     t.waiting.length ? section({ title: 'Čeká na odpověď', count: t.waiting.length, cls: 'task-section', body: [
-      h('p', { class: 'meta task-lead' }, 'Klepni na jméno a zapiš odpověď za ně. Jedna SMS jim připomene všechny služby najednou.'),
+      h('p', { class: 'meta task-lead' }, 'Vyber jméno a zapiš odpověď za ně. Jedna SMS jim připomene všechny služby najednou.'),
       list(t.waiting.map(waitingRow), { label: 'Čeká na odpověď' }),
     ] }) : null,
   ];
@@ -344,13 +344,13 @@ function clearSearchField() {
 function body(m, openId) {
   if (taskCount(m.shown)) return [h('div', { class: 'tasks' }, sections(m.shown, openId)), horizon()];
   if (m.q && taskCount(m.scoped)) {
-    return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${m.q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearchField } });
+    return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${m.q}“.`, action: { label: 'Vymazat hledání', onclick: clearSearchField } });
   }
   const hidden = taskCount(m.all) - taskCount(m.scoped);
   if (hidden > 0) {
-    return empty({ kind: 'filter', title: 'S tímhle filtrem tu nic není.', text: `Filtr skrývá ${plural(hidden, 'úkol', 'úkoly', 'úkolů')}.`, action: { label: 'Zruš filtr', onclick: () => { clearFilter(KEY); render(); } } });
+    return empty({ kind: 'filter', title: 'S tímhle filtrem tu nic není.', text: `Filtr skrývá ${plural(hidden, 'úkol', 'úkoly', 'úkolů')}.`, action: { label: 'Zrušit filtr', onclick: () => { clearFilter(KEY); render(); } } });
   }
-  if (m.q) return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${m.q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearchField } });
+  if (m.q) return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${m.q}“.`, action: { label: 'Vymazat hledání', onclick: clearSearchField } });
   return [
     empty({ kind: 'none', icon: 'check', title: 'Všechno je vyřešené.', text: 'Na příští 4 týdny nikde nikdo nechybí, všichni odpověděli a všechno sedí.' }),
     horizon(),
@@ -375,11 +375,11 @@ export function renderStaffing(parts = []) {
   });
   const main = listScreen({
     title: 'Obsazení',
-    action: { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: m.teams }) },
+    action: { label: 'Doplnit volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: m.teams }) },
     menu: [
-      { label: 'Vytiskni rozpis', icon: 'printer', onclick: () => import('./roster.js').then((r) => r.printRoster?.(today().slice(0, 7))) },
+      { label: 'Vytisknout rozpis…', icon: 'printer', onclick: () => import('./roster.js').then((r) => r.printRoster?.(today().slice(0, 7))) },
     ],
-    search: { key: KEY, placeholder: 'Hledej úkol', onInput: () => { m = model(); main.setBody(body(m, openId)); } },
+    search: { key: KEY, placeholder: 'Hledat úkol', onInput: () => { m = model(); main.setBody(body(m, openId)); } },
     filter,
     body: body(m, openId),
     pane: opened ? eventDetail(opened, { frame: 'pane', close: '#obsazeni' }) : openId ? notFoundPane() : null,

@@ -1,7 +1,7 @@
 // Zvonec One – Osnova (#setkani/<id>/osnova): the order of a meeting, a page at every width (DESIGN §6.3), package P3.
-// The top bar „‹ Zkouška chval“ · ⋯ (Vytiskni · Převezmi minulou osnovu). Readable at the pulpit (members: large type,
+// The top bar „‹ Zkouška chval“ · ⋯ (Vytisknout · Převzít minulou osnovu). Readable at the pulpit (members: large type,
 // read-only, a point made of a Formát links to it), editable by leaders: drag the handle (or ↑ ↓ on it) to reorder, tap a
-// point to change its title, minutes, who leads and the note (a layer), „+ Přidej bod“ (an S slot) at the end
+// point to change its title, minutes, who leads and the note (a layer), „+ Přidat bod“ (an S slot) at the end
 // (a Formát or an own point). Times follow one another from the start (lib/program); the sum bar says
 // „95 z 120 min“ and turns amber when it runs over.
 
@@ -53,7 +53,7 @@ function openAddPoint(eventId) {
     sheet.close();
     formSheet({
       title: 'Vlastní bod',
-      submitLabel: 'Přidej bod',
+      submitLabel: 'Přidat bod',
       body: [
         field({ label: 'Název bodu', control: textInput({ name: 'title', placeholder: 'např. Slovo na cestu' }) }),
         field({ label: 'Kolik minut', control: stepper({ name: 'minutes', value: 10, min: 0, max: 240, step: 5, label: 'Kolik minut' }) }),
@@ -77,7 +77,7 @@ function openAddPoint(eventId) {
     body: list([
       ...formats.map((f) => row({
         title: f.name,
-        meta: [`${f.minutes || 0} min`, f.leadRoleId ? `vede ${roleById(S.data, f.leadRoleId)?.name || 'role'}` : null].filter(Boolean).join(SEP),
+        meta: [`${f.minutes || 0}\u00a0min`, f.leadRoleId ? `vede ${roleById(S.data, f.leadRoleId)?.name || 'role'}` : null].filter(Boolean).join(SEP),
         onclick: () => add(f.id), single: false,
       })),
       row({ lead: icon('plus'), title: 'Vlastní bod', meta: 'Bez formátu, jen název a čas', onclick: own }),
@@ -98,8 +98,8 @@ function openPoint(eventId, itemId) {
     whoText.textContent = personId ? nameAt(e, personId) : role ? `podle role ${role.name}${byRole.length ? ` (${byRole.join(', ')})` : ' – zatím nikdo'}` : 'nikdo';
     reset.hidden = !personId;
   };
-  const reset = link(role ? 'Vrať podle role' : 'Zruš výběr', { onclick: () => { personId = ''; paintWho(); } });
-  const choose = button('Vyber', {
+  const reset = link(role ? 'Vrátit podle role' : 'Zrušit výběr', { onclick: () => { personId = ''; paintWho(); } });
+  const choose = button('Vybrat', {
     size: 's', onclick: () => {
       const all = (S.data.people || []).filter((p) => p.membership?.status !== 'former');
       const pools = [];
@@ -247,7 +247,7 @@ function pointBody(event, { item, start, end }) {
     h('span', { class: 'osnova__body' },
       h('span', { class: 'osnova__title' }, itemName(S.data, item)),
       h('span', { class: 'osnova__meta' },
-        `${item.minutes || 0} min`,
+        `${item.minutes || 0}\u00a0min`,
         leaders.length ? `${SEP}${leaders.join(', ')}` : needsLeader ? [SEP, h('span', { class: 'osnova__missing' }, 'chybí vedoucí')] : null),
       item.note ? h('span', { class: 'osnova__note' }, item.note) : null),
   ];
@@ -255,7 +255,7 @@ function pointBody(event, { item, start, end }) {
 
 const formatOf = (item) => (item.formatId ? formatById(S.data, item.formatId) : null);
 
-/** #setkani/<id>/osnova – a page at every width: ‹ the meeting · ⋯ (Vytiskni · Převezmi minulou osnovu). */
+/** #setkani/<id>/osnova – a page at every width: ‹ the meeting · ⋯ (Vytisknout · Převzít minulou osnovu). */
 export function renderProgram(id) {
   const event = eventById(S.data, id);
   if (!event) return notFound();
@@ -267,8 +267,8 @@ export function renderProgram(id) {
   const when = h('p', { class: 'meta osnova-when' }, joinMeta([whenText(event), placeText(event) || null]));
   const sum = items.length ? h('div', { class: 'osnova-sum', dataset: { over: over > 0 ? '' : null } },
     h('span', { class: 'osnova-sum__bar', 'aria-hidden': 'true' }, h('span', { class: 'osnova-sum__fill' })),
-    h('p', { class: 'osnova-sum__text' }, h('b', {}, `${total} z ${length} min`),
-      over > 0 ? ` · o ${over} min delší než setkání` : over < 0 ? ` · zbývá ${-over} min` : null)) : null;
+    h('p', { class: 'osnova-sum__text' }, h('b', {}, `${total} z ${length}\u00a0min`),
+      over > 0 ? ` · o ${over}\u00a0min delší než setkání` : over < 0 ? ` · zbývá ${-over}\u00a0min` : null)) : null;
   if (sum) sum.querySelector('.osnova-sum__fill').style.width = `${length ? Math.min(100, Math.round((total / length) * 100)) : 100}%`;
 
   const points = items.map((point, index) => {
@@ -277,19 +277,19 @@ export function renderProgram(id) {
     const leaders = itemLeaders(S.data, event, item);
     const needsLeader = !!formatById(S.data, item.formatId)?.leadRoleId || !!item.personId;
     return h('li', { class: 'osnova__item', dataset: { missing: !leaders.length && needsLeader ? '' : null } },
-      leader ? h('button', { type: 'button', class: 'osnova__grip icon-btn', 'aria-label': `Přesuň: ${name} (šipkami nahoru a dolů)`, title: 'Přesuň', dataset: { item: item.id } }, icon('grip', { size: 's' })) : null,
-      leader ? h('button', { type: 'button', class: 'osnova__edit', onclick: () => openPoint(id, item.id), 'aria-label': `Uprav: ${name}` }) : null,
+      leader ? h('button', { type: 'button', class: 'osnova__grip icon-btn', 'aria-label': `Přesunout: ${name} (šipkami nahoru a dolů)`, title: 'Přesunout', dataset: { item: item.id } }, icon('grip', { size: 's' })) : null,
+      leader ? h('button', { type: 'button', class: 'osnova__edit', onclick: () => openPoint(id, item.id), 'aria-label': `Upravit: ${name}` }) : null,
       // members: a point made of a Formát is a link to it (what it is and how it goes); an own point is just text
       !leader && formatOf(item)
-        ? h('a', { class: 'osnova__open osnova__open--link', href: `#formaty/${item.formatId}`, 'aria-label': `${name} – ukaž formát` }, pointBody(event, point))
+        ? h('a', { class: 'osnova__open osnova__open--link', href: `#formaty/${item.formatId}`, 'aria-label': `${name} – zobrazit formát` }, pointBody(event, point))
         : h('div', { class: 'osnova__open' }, pointBody(event, point)),
       leader ? menuButton([
-        { label: 'Uprav bod', onclick: () => openPoint(id, item.id) },
-        formatOf(item) ? { label: 'Ukaž formát', href: `#formaty/${item.formatId}` } : null,
-        index > 0 ? { label: 'Posuň výš', onclick: () => move(id, item.id, -1) } : null,
-        index < items.length - 1 ? { label: 'Posuň níž', onclick: () => move(id, item.id, 1) } : null,
+        { label: 'Upravit bod', onclick: () => openPoint(id, item.id) },
+        formatOf(item) ? { label: 'Zobrazit formát', href: `#formaty/${item.formatId}` } : null,
+        index > 0 ? { label: 'Posunout výš', onclick: () => move(id, item.id, -1) } : null,
+        index < items.length - 1 ? { label: 'Posunout níž', onclick: () => move(id, item.id, 1) } : null,
         '-',
-        { label: 'Odeber z osnovy', danger: true, onclick: () => removePoint(id, item.id) },
+        { label: 'Odebrat z osnovy', danger: true, onclick: () => removePoint(id, item.id) },
       ].filter(Boolean), { title: name, label: `Další možnosti – ${name}` }) : null);
   });
   const listEl = h('ol', { class: ['osnova', leader ? 'osnova--edit' : 'osnova--read'], 'aria-label': 'Osnova' }, points);
@@ -297,20 +297,20 @@ export function renderProgram(id) {
 
   const body = items.length
     ? [when, sum, listEl,
-      leader ? h('div', { class: 'osnova-add' }, slot('Přidej bod', () => openAddPoint(id))) : null,
+      leader ? h('div', { class: 'osnova-add' }, slot('Přidat bod', () => openAddPoint(id))) : null,
       leader ? h('p', { class: 'meta osnova-hint' }, 'Pořadí změníš tažením za úchyt. Bod upravíš klepnutím.') : null]
     : [when, empty({
       kind: 'none', icon: 'list', title: 'Osnova je zatím prázdná.',
       text: leader ? 'Slož ji z formátů, časy se dopočítají samy.' : 'Osnovu ještě nikdo nesložil.',
-      action: leader ? { label: 'Přidej bod', icon: 'plus', onclick: () => openAddPoint(id) } : null,
+      action: leader ? { label: 'Přidat bod', icon: 'plus', onclick: () => openAddPoint(id) } : null,
     })];
 
   return page({
     title: 'Osnova',
     back: { href: `#setkani/${id}`, label: event.title },
     menu: [
-      { label: 'Vytiskni', icon: 'printer', onclick: printProgram },
-      leader ? { label: 'Převezmi minulou osnovu', icon: 'copy', onclick: () => takePrevious(id) } : null,
+      { label: 'Vytisknout', icon: 'printer', onclick: printProgram },
+      leader ? { label: 'Převzít minulou osnovu', icon: 'copy', onclick: () => takePrevious(id) } : null,
     ].filter(Boolean),
     body,
     // the meeting's own column (--detail-col 720, as on its Setkání page), so ‹ and ⋯ stay put going one level deeper
