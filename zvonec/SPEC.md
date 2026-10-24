@@ -304,7 +304,7 @@ defaultSettings() = {
   rules: { essentialDaysBefore: 7, unconfirmedDaysBefore: 5, childAge: 15 },
 }
 ```
-Optional: `address` (one line, shown on Pastva); `mainPlaceId` (the usual place; prefills new templates and events;
+Optional: `address` (one line); `mainPlaceId` (the usual place; prefills new templates and events;
 cleared when that place is deleted); `rules.openDaysBefore` (default 7 in `scheduling.js DEFAULT_RULES`).
 
 UI ranges: `maxPerMonth` 1–31 · `maxConsecutiveWeeks` 1–52 · `*DaysBefore` 0–60 · `childAge` 1–25
@@ -704,7 +704,7 @@ JS re-renders when 600 or 1200 is crossed. Gutters 20 / 32 / 40; title top 16 / 
   3. „Barvy“ + the three bullseyes (the menu stays open);
   4. **Zdroje** (phone only, leaders): Šablony · Formáty · Místa;
   5. **Správa** (leaders): Přístupy (pill „1 čeká“) · Nastavení sboru;
-  6. „Veřejný web“ › „Pastva, jak ji vidí návštěvníci“;
+  6. „Veřejný web“ › „Pastva na cirkevjakokrava.cz“ (the website's Pastva);
   7. **Ukázka** (demo only): „Podívej se očima druhých“ · „Začni ukázku znovu“ · „Začni načisto“;
   8. „Odhlas se“ in `--no-ink`.
 - On a phone, screens opened from the person menu get a top bar „‹ Zpět“ (history back, else `#moje`); Skupiny
@@ -1277,29 +1277,18 @@ data repo's `web.yml`:
 - `check.yml` runs `zvonec/check.mjs data` on every `data/**` push and weekly. It exits 1 when an event that has not
   ended has an `error` conflict (GitHub then e-mails the repo owner). `validateData` problems are warnings.
 
-### 10.3 Pastva `#pastva[/<id>]` (public screen)
-- Reads only the public data, never `S.data`.
-- Header 64: wordmark, [Přihlas se] (quiet). Signed in: a strip „Takhle to vidí návštěvníci · ← Vrať se do
-  Zvonce“.
-- A notice board, column 1080: h1 „pastva“ (minuscules, the wordmark's Agrandir Grand Heavy), „Podojte život. Paste svoje duše.“ Only meetings that have not
-  ended.
-  - **Nenech si ujít**: every `featured` meeting (not cancelled) as one big card – the picture (beside the words from
-    840 px), the date arch, the eyebrow „Nenech si ujít“, the title, when, where, the whole description, [Přečti si
-    víc] and [Stáhni do kalendáře].
-  - **Co chystáme**: one-off meetings (no `repeat`, not featured) as cards in a grid (min 300 px): the picture 16 : 9
-    with the date arch (weekday, day, month) and a pill „dnes“ / „zítra“ / „zrušeno“, when, the title, three lines of
-    the description, where. Six open, the rest under „Ukaž další akci“ / „Ukaž další 3 akce“ / „Ukaž dalších 7 akcí“.
-  - **Pravidelně**: one card per series – the next meeting that is not cancelled, led by its rhythm („Každou neděli v
-    10.00“, „Každý druhý čtvrtek v 18.30“, „Jednou za měsíc v pondělí v 19.00“), „Příště v neděli 18. října“ and
-    „Nescházíme se v neděli 29. 11.“ for up to two cancelled ones.
-  - Nothing upcoming: „Teď nic nechystáme. Mrkni sem později.“
-  - **Jak se scházíme** (anchor `jak-se-schazime`): public formats with the minutes block → a sheet with Proč /
-    Jak.
-  - **Kde nás najdeš**: address + map.
-- A picture is the event's, else its template's; while it loads (or when there is none) the Účel band stands in.
-  The demo's pictures are CC0 photos shipped in `docs/zvonec/demo/` (`demo-*.webp`, StockSnap, and the church's own
+### 10.3 Pastva – on the church's website
+- Pastva is a page of the website (repo `radomilcz/web`, `pastva/index.html` + `assets/pastva.js`), at
+  `https://cirkevjakokrava.cz/pastva/` (`PASTVA_URL` in `lib/public.js`). It reads `public.json` from Zvonec's site
+  (CORS `*`) and draws: h1 „pastva“, „Podojte život. Paste svoje duše.“; **nenech si ujít** (every `featured`
+  meeting); **co chystáme** (one-off meetings: date, title, time · place, description, → Přidej si do kalendáře
+  (.ics), → Otevři v mapě, photo 3 : 2); **pravidelně** (one row per series: rhythm, „Příště …“, „Nescházíme se …“);
+  then the website's footer. Only meetings that have not ended.
+- Zvonec has no public screen of its own any more: `#pastva`, `#program` and `#jak-se-schazime` go to `PASTVA_URL`
+  (old links and bookmarks); the person's menu „Veřejný web“ and the sign-in page link there. Signed out, the home
+  section is Přihlášení.
+- The demo's pictures are CC0 photos shipped in `docs/zvonec/demo/` (`demo-*.webp`, StockSnap, and the church's own
   highland-cow photo); the demo store serves them when a `demo-*.webp` name has no stored file.
-- A meeting (column 720): its picture 16 : 9 (else the band), „Nenech si ujít“ when featured, tag, title, when, where + map, „O setkání“, [Stáhni do kalendáře], and a callout when cancelled.
 
 ---
 

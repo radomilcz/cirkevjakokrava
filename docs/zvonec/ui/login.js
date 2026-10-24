@@ -7,6 +7,7 @@
 //   #pozvanka/<kód>        check the invite, the newcomer fills in a name and a password and gives consent; the invite
 //                          is replaced by a member login. Expired or unknown: one sentence and a way on.
 
+import { PASTVA_URL } from '../lib/public.js';
 import { S, newId, render, signedIn, rememberLogin, ACCESS_LABELS } from './state.js';
 import {
   signIn, createLogin, foldName, isExpired, INVITE_NAME, ACCESS_FILE, ACCESS_VERSION, emptyAccess,
@@ -33,13 +34,13 @@ const DATA_PATH = 'data';
 function gate({ title, sentence, body, foot }) {
   return h('main', { class: ['screen', 'gate'], id: 'main', tabIndex: -1 },
     h('div', { class: 'gate__box' },
-      h('a', { class: 'brand gate__brand', href: '#pastva', 'aria-label': 'Církev jako kráva – Pastva' }, 'církev jako kráva'),
+      h('a', { class: 'brand gate__brand', href: 'https://cirkevjakokrava.cz/', 'aria-label': 'Církev jako kráva – web' }, 'církev jako kráva'),
       h('h1', { class: 'title gate__title' }, title),
       sentence ? h('p', { class: 'gate__sentence' }, sentence) : null,
       body,
       h('div', { class: 'gate__foot' },
         nodes(foot),
-        link('Podívej se na Pastvu', { href: '#pastva', iconEnd: 'chevron-right', cls: 'gate__pastva' }))));
+        link('Podívej se na Pastvu', { href: PASTVA_URL, iconEnd: 'chevron-right', cls: 'gate__pastva' }))));
 }
 
 /** The form-wide error: a callout above the main button, hidden until there is something to say. */

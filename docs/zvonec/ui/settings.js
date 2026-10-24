@@ -79,7 +79,7 @@ function churchSheet() {
     title: 'Sbor',
     size: 'm',
     body: [
-      field({ label: 'Název sboru', control: name, hint: 'Ukáže se na Pastvě a v kalendářích.' }),
+      field({ label: 'Název sboru', control: name, hint: 'Ukáže se v kalendářích a v e-mailech.' }),
       field({
         label: 'Hlavní místo',
         control: selectInput({
@@ -88,7 +88,7 @@ function churchSheet() {
         }),
         hint: 'Kde se obvykle scházíme. V nových šablonách bude předvyplněné.',
       }),
-      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Ukáže se na Pastvě v části „Kde nás najdeš“. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
+      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
     ],
     onSubmit: (form, v) => {
       clearErrors(form);
