@@ -71,7 +71,7 @@ export function blockoutSheet(person, record = null) {
   };
   drawClashes();
   return formSheet({
-    title: record ? (self ? 'Kdy nemůžu' : 'Kdy nemůže') : (self ? 'Nové dny, kdy nemůžu' : 'Kdy nemůže'),
+    title: self ? 'Kdy nemůžu' : 'Kdy nemůže',
     subtitle: self ? null : personName(person),
     submitLabel: record ? 'Uložit' : 'Přidat',
     autofocus: false,   // a phone keyboard would cover the dates (the reason is optional)
