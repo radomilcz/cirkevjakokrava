@@ -1153,7 +1153,7 @@ One 640 column of value blocks (r20 cards) with „label — value“ rows, each
 ### 9.12 Kdy nemůžu `#kdy-nemuzu`
 - A: „Kdy nemůžu“ · [Přidat]. Lead: „Zapsat si dny, kdy nemůžeš. V těch dnech tě Zvonec do služeb nenavrhne.“
 - Rows „24.–26. 10. · dovolená“; a row opens a menu (Upravit · Smazat, with Vrátit zpět). Empty: „Zatím žádné dny.“
-- Sheet „Nové dny, kdy nemůžu“: Od, Do, Důvod („Uvidí ho jen vedoucí.“). With clashing duties: switch „Odmítnout i
+- Sheet „Kdy nemůžu“: Od, Do, Důvod („Uvidí ho jen vedoucí.“). With clashing duties: switch „Odmítnout i
   služby v těch dnech“ + their list.
 
 ### 9.13 Můj účet `#ucet`
