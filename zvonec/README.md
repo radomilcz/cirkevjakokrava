@@ -51,21 +51,21 @@ Na počítači je vlevo sloupec s menu: nahoře název církve, pod ním položk
 najdeš totéž. Vedoucí vidí v menu všechno, člen jen Přehled, Kalendář, Lidé a Jak se scházíme. Kdo není
 přihlášený, vidí jen přihlášení.
 
-Každá obrazovka má nahoře název, vpravo hlavní tlačítko (třeba **Přidej setkání**) a pod názvem záložky
+Každá obrazovka má nahoře název, vpravo hlavní tlačítko (třeba **Přidat setkání**) a pod názvem záložky
 s pohledy.
 
 | obrazovka | co tam je |
 | --- | --- |
 | **Přehled** | úvod pro všechny: co čeká na tvoji odpověď (Potvrď / Nemůžu), tvoje služby na osm týdnů dopředu (i do kalendáře v telefonu, .ics), příští neděle, tento týden, kdy nemůžeš, tvoje skupiny. Vedoucí navíc vidí, co nesedí, volná místa na příští tři týdny, služby čekající na potvrzení a karty lidí k doplnění; správce ještě pozvánky, které čekají, a přístupy bez karty |
-| **Kalendář** | jedna stránka a čtyři pohledy: **Měsíc** (mřížka, na telefonu malá mřížka a pod ní seznam vybraného dne), **Týden** (hodiny na ose, na telefonu tři dny), **Seznam** (po týdnech, s obrázky) a **Rozpis**. Nad nimi šipky ‹ ›, **Dnes** a filtry: **Účel** (Nedělní setkání, Zkouška, Skupinka, Akce), **Tým** a **Jen moje služby**. Pohled si Zvonec pamatuje |
+| **Kalendář** | jedna stránka a čtyři pohledy: **Měsíc** (mřížka, na telefonu malá mřížka a pod ní seznam vybraného dne), **Týden** (hodiny na ose, na telefonu tři dny), **Seznam** (po týdnech, s obrázky) a **Rozpis**. Nad nimi šipky ‹ ›, **Dnes** a filtry: **Druh setkání** (Nedělní setkání, Zkouška, Skupinka, Akce), **Tým** a **Jen moje služby**. Pohled si Zvonec pamatuje |
 | **Rozpis** | tabulka měsíce: řádky jsou setkání, sloupce role po týmech. Vedoucí klikne do buňky, vybere člověka a hotovo; člen vidí tabulku jen ke čtení se svými službami zvýrazněnými. Tisk na A4 na šířku – bez telefonů |
-| **Setkání** | detail s obrázkem a třemi záložkami. **Přehled**: popis, poznámka pro tým, kdo slouží, začátek osnovy, mapa, upozornění a po skončení kolik lidí přišlo (jen počet, ne kdo). **Kdo slouží**: služby po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhni lidi“, „Obsaď jako minule“, „Kolik lidí je potřeba“, stavy čeká na potvrzení → potvrzeno → nemůže, výjimka u upozornění. **Osnova**: viz níže |
-| **Nové setkání** | tlačítko „Přidej setkání“, ve dvou krocích: nejdřív **Podle čeho?** (šablona, nebo „Bez šablony“), pak název, kdy, kde a pro koho; zbytek (obrázek, popis, zveřejnění, poznámka pro tým) je v **Dalších možnostech**. Opakování: každý týden, každých 14 dní, každý měsíc ve stejný den v týdnu (třeba každou první neděli). Hotovou řadu prodloužíš v detailu setkání (**Prodluž řadu**). Při úpravě řady se Zvonec zeptá, jestli jen tohle setkání, nebo i další |
-| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…). Časy se dopočítají, vedoucí bodů se doplní podle rolí, body jdou přetahovat, je tu „Převezmi minulou osnovu“ a součet proti délce setkání. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhni lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
-| **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně. Pohledy **Podle setkání** a **Podle lidí**, filtr chyba / pozor / info. Rovnou tu jde vybrat jiného člověka nebo napsat „Vím o tom“ |
+| **Setkání** | detail s obrázkem a třemi záložkami. **Přehled**: popis, poznámka pro tým, kdo slouží, začátek osnovy, mapa, upozornění a po skončení kolik lidí přišlo (jen počet, ne kdo). **Kdo slouží**: služby po týmech, výběr lidí s důvody, proč by to nešlo, „Navrhnout lidi“, „Obsadit jako minule“, „Kolik lidí je potřeba“, stavy čeká na potvrzení → potvrzeno → nemůže, výjimka u upozornění. **Osnova**: viz níže |
+| **Nové setkání** | tlačítko „Přidat setkání“, ve dvou krocích: nejdřív **Podle čeho?** (šablona, nebo „Bez šablony“), pak název, kdy, kde a pro koho; zbytek (obrázek, popis, zveřejnění, poznámka pro tým) je v **Dalších možnostech**. Opakování: každý týden, každých 14 dní, každý měsíc ve stejný den v týdnu (třeba každou první neděli). Hotovou řadu prodloužíš v detailu setkání (**Prodloužit řadu**). Při úpravě řady se Zvonec zeptá, jestli jen tohle setkání, nebo i další |
+| **Osnova** | setkání se skládá z formátů (Přivítání, Chvály, Kázání, Otázky na tělo, Večeře Páně…). Časy se dopočítají, vedoucí bodů se doplní podle rolí, body jdou přetahovat, je tu „Převzít minulou osnovu“ a součet proti délce setkání. Formát může přinést další role (Večeře Páně potřebuje dva lidi) – na setkání se objeví jako volná místa a „Navrhnout lidi“ je obsadí taky. List na A4 na výšku k pultu, dost velký i na plátno |
+| **Upozornění** | všechno, co v rozpisu nesedí, od dneška i zpětně. Pohledy **Podle setkání** a **Podle lidí**, filtr chyba / pozor / info. Rovnou tu jde vybrat jiného člověka nebo vybrat „Povolit výjimku“ |
 | **Lidé** | pohledy **Seznam**, **Tabulka** (třídění, sloupce, hromadné akce: zkopírovat e-maily, přidat do skupiny, stáhnout jako CSV; na počítači výchozí), **Domácnosti**, **Podle skupin**, **Narozeniny** a **Vytížení** (kolik služeb má kdo tenhle měsíc proti tomu, kolik jich zvládne). Filtry Všichni · Členové · Přátelé · Hosté · Děti (a Chybí údaje, když nějaké chybí), hledání podle jména, telefonu i e-mailu. Karta člověka: vlevo osobní údaje, vpravo skupiny, služby, kdy nemůže, vytížení a upozornění; každý blok upravíš zvlášť. Člen má Seznam, Domácnosti a Podle skupin |
-| **Archiv** | kdo k nám přestal chodit, nepatří do seznamu, ale do archivu. Na kartě člověka zvol v nabídce ⋯ **Přesuň do archivu** (nebo dole v Členství). Člověk pak zmizí ze seznamů, kontaktů, výběru lidí i návrhů do služeb, jeho budoucí služby se uvolní a přestane vést skupiny. Ve starých rozpisech a osnovách zůstane. Archiv najdeš úplně dole v Lidech pod odkazem **Archiv (počet)**; u každého uvidíš, odkdy tam je, a tlačítka **Vrať z archivu** (karta dostane zpátky dřívější členství, a když ho Zvonec nezná, bude přítel; týmy a dovednosti zůstávají) a **Smaž kartu**. Po roce v archivu se Zvonec zeptá, jestli karty nesmazat. Archiv vidí jen vedoucí. Starý odkaz na filtr „Už nechodí“ otevře archiv |
-| **Týmy a skupinky** | **Týmy**, **Skupinky**, **Vedení** a **Role** (u každé role je vidět, kolik lidí ji umí, a kdo: zeleně umí, v obrysu se učí; vedoucí klepnutím na člověka změní, jak to umí, a přes „+ Přidej“ přidá dalšího). V týmu záložky **Lidé**, **Role**, **Kdo co umí** a **Setkání**. Role: kolik lidí, „Bez toho to nepůjde“, jen pro dospělé, u dětí, jen část setkání, které role zvládne jeden člověk naráz. Starý tým jde dát do archivu |
+| **Archiv** | kdo k nám přestal chodit, nepatří do seznamu, ale do archivu. Na kartě člověka zvol v nabídce ⋯ **Přesunout do archivu** (nebo dole v Členství). Člověk pak zmizí ze seznamů, kontaktů, výběru lidí i návrhů do služeb, jeho budoucí služby se uvolní a přestane vést skupiny. Ve starých rozpisech a osnovách zůstane. Archiv najdeš úplně dole v Lidech pod odkazem **Archiv (počet)**; u každého uvidíš, odkdy tam je, a tlačítka **Vrátit z archivu** (karta dostane zpátky dřívější členství, a když ho Zvonec nezná, bude přítel; týmy a dovednosti zůstávají) a **Smazat kartu**. Po roce v archivu se Zvonec zeptá, jestli karty nesmazat. Archiv vidí jen vedoucí. Starý odkaz na filtr „Už nechodí“ otevře archiv |
+| **Týmy a skupinky** | **Týmy**, **Skupinky**, **Vedení** a **Role** (u každé role je vidět, kolik lidí ji umí, a kdo: zeleně umí, v obrysu se učí; vedoucí klepnutím na člověka změní, jak to umí, a přes „+ Přidat“ přidá dalšího). V týmu záložky **Lidé**, **Role**, **Kdo co umí** a **Setkání**. Role: kolik lidí, „Nezbytná role“, jen pro dospělé, u dětí, jen část setkání, které role zvládne jeden člověk naráz. Starý tým jde dát do archivu |
 | **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: u každého proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
 | **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
 | **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, barvy, změna hesla, odhlášení. V ukázce i „Jak to vidí ostatní“ |
@@ -77,7 +77,7 @@ v Lidech pod „Chybí údaje“, ať ji někdo doplní.
 
 **Formuláře** ukazují nejvýš zhruba sedm polí. Co se hodí jen občas, je schované pod **Další možnosti**
 a Zvonec si pamatuje, jestli byly otevřené. Dlouhé věci (třeba šablona) mají vlastní stránku
-s tlačítkem **Ulož**.
+s tlačítkem **Uložit**.
 
 **Stavy** poznáš podle tvaru, barvy i slova: zelené plné kolečko s fajfkou je potvrzeno, přerušovaný
 oranžový kroužek s hodinkami čeká na potvrzení, červené ✕ je nemůže (jméno je navíc přeškrtnuté).
@@ -102,7 +102,7 @@ svůj kontakt.
 
 Chyba = takhle to nepůjde: v seznamu upozornění plná tečka, v kalendáři a u služby plná plocha.
 Pozor = ať o tom víš: prázdné kolečko, v kalendáři čárkovaný obrys. U konkrétní služby jde chybu
-**povolit jako výjimku** („Vím o tom“) a napsat proč – Zvonec ji pak hlásí jen jako info.
+**povolit jako výjimku** („Povolit výjimku“) a napsat proč – Zvonec ji pak hlásí jen jako info.
 
 | kód | co hlídá | závažnost |
 | --- | --- | --- |
@@ -110,7 +110,7 @@ Pozor = ať o tom víš: prázdné kolečko, v kalendáři čárkovaný obrys. U
 | K2 | dvě role naráz na jednom setkání (kromě rolí, které jde dělat zároveň, a rolí, které trvají jen část setkání – kafe po skončení) | chyba |
 | K3 | služba v době, kdy člověk nemůže | chyba |
 | K4 / K4b | role, kterou člověk v týmu nemá / učí se a nikdo zkušený u toho není | chyba / pozor |
-| K5 | neobsazená role – i ta, kterou přinesl formát v osnově (u role „Bez toho to nepůjde“ týden předem chyba) | pozor / chyba |
+| K5 | neobsazená role – i ta, kterou přinesl formát v osnově (u nezbytné role týden předem chyba) | pozor / chyba |
 | K6 | pět dní předem pořád „čeká na potvrzení“ | pozor |
 | K7 | víc služeb v měsíci, než člověk chce (zkoušky se nepočítají) | pozor |
 | K8 | víc nedělí po sobě, než člověk chce | pozor |

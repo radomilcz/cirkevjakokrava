@@ -12,7 +12,7 @@ The four audits behind version 2 (scratchpad, 2026-10-07) measured every control
 
 | size | px | what |
 |---|---|---|
-| **S** | 36 | An action **inside content** on a desktop: a section head's „Uprav“ / „+ Přidej“, a row's or a card's action, the „+ Role“ slot. Its hit area is still 44 (`::after`). |
+| **S** | 36 | An action **inside content** on a desktop: a section head's „Upravit“ / „+ Přidat“, a row's or a card's action, the „+ Role“ slot. Its hit area is still 44 (`::after`). |
 | **M** | 44 | Every other control: buttons, icon buttons, the segmented switch, search, fields, selects, chips, the month chip, and **everything in a toolbar** (‹ › , „Dnes“, the view switch, „Filtr“). |
 | **L** | 52 | The one main action at the foot of a sheet or a form, the floating action, the answer pair Můžu / Nemůžu, the contact tiles Zavolej · SMS · E-mail. |
 
@@ -75,7 +75,7 @@ must be drawn smaller (a cell's „+“, a table tick, an inline dot) gets the 4
   Beside the month grid only when a day cell stays ≥ 110 px wide; narrower, the day or the meeting opens in a sheet.
 - **Layers:** every sheet, dialog, menu and popover lives in the layer root with a depth; a second layer dims the
   first. Nothing floating is clipped by a scrolling parent (the rail).
-- **Section-head action:** quiet S („Uprav“), or tint S „+ Přidej“; one per section head, at its right edge.
+- **Section-head action:** quiet S („Upravit“), or tint S „+ Přidat“; one per section head, at its right edge.
 
 ## 7. Colour
 

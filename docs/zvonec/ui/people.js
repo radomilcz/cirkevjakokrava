@@ -1,7 +1,7 @@
 // Zvonec One – Lidé and Skupiny (DESIGN §6.5): „How do I reach someone?“ Two list screens, each its own item in the
 // sidebar (the owner's decision); on a phone Skupiny is the first row of Lidé (the tab bar has no room for it).
 //   A  „Lidé“ · ⋯ · [Nový člověk] – „Skupiny“ · [Nová skupina] (leaders)
-//   B  „Hledej jméno“ / „Hledej skupinu“ (each screen its own search, kept for the visit) + Filtr ('lide' / 'skupiny')
+//   B  „Hledat jméno“ / „Hledat skupinu“ (each screen its own search, kept for the visit) + Filtr ('lide' / 'skupiny')
 //   D  Lidé: the birthday line (leaders, someone within 7 days) as the first line, then A–Z under letters – a phone
 //        row is the avatar, the name and a call button (only with a phone the viewer may see); ≥ 600 a meta line
 //        „člen · Chvály, Technika“ (leaders also „chybí …“). Searching: up to 3 matching groups above the people.
@@ -104,7 +104,7 @@ function peopleFilterGroups() {
     { id: 'chybi', title: 'Chybí údaje', kind: 'switch', hint: 'Karty bez příjmení, kontaktu, souhlasu nebo domácnosti.' },
     { id: 'souhlas', title: 'Bez souhlasu', kind: 'switch', hint: 'Dospělí přátelé a hosté, kteří ještě nesouhlasili se zapsáním údajů.' },
     { id: 'narozeniny', title: 'Narozeniny', kind: 'switch', hint: 'Seřadí lidi podle toho, kdo slaví nejdřív.' },
-    { id: 'archiv', title: 'Ukaž i archiv', kind: 'switch', hint: 'Lidé, kteří k nám už nechodí.' },
+    { id: 'archiv', title: 'Zobrazit i archiv', kind: 'switch', hint: 'Lidé, kteří k nám už nechodí.' },
   ].filter(Boolean);
 }
 
@@ -140,7 +140,7 @@ function rowMeta(p, { birthdays = false } = {}) {
 function callButton(p) {
   if (!seesContact(p) || !p.phone || p.id === myId() || isFormer(p)) return null;
   const name = fullName(p);
-  return h('a', { class: 'icon-btn icon-btn--call', href: telHref(p.phone), 'aria-label': `Zavolej – ${name}`, title: `Zavolej – ${name}` }, icon('phone', { size: 's' }));
+  return h('a', { class: 'icon-btn icon-btn--call', href: telHref(p.phone), 'aria-label': `Zavolat – ${name}`, title: `Zavolat – ${name}` }, icon('phone', { size: 's' }));
 }
 
 /** A person row of the list. The open row (its pane is open) leads back to the list: a click on it closes the pane. */
@@ -173,7 +173,7 @@ function birthdayLine() {
   return line;
 }
 
-/** The cards over a year in the archive – shown and offered only while Filtr › Ukaž i archiv is on (leaders). */
+/** The cards over a year in the archive – shown and offered only while Filtr › Zobrazit i archiv is on (leaders). */
 function overduePeople() {
   if (!can('leader') || !filterState(PEOPLE_FILTER).archiv) return [];
   return (S.data.people || []).filter((p) => isFormer(p) && archiveOverdue(p, today()));
@@ -202,17 +202,17 @@ function peopleEmpty(q) {
       return empty({
         kind: 'filter', title: 'S tímhle filtrem tu nikdo není.',
         text: `Hledáš „${q}“. Filtr skrývá ${accusative(hidden)}, ${hidden === 1 ? 'který tomu odpovídá' : 'kteří tomu odpovídají'}.`,
-        action: { label: 'Zruš filtr', onclick: () => { clearFilter(PEOPLE_FILTER); if (f.archiv) setFilter(PEOPLE_FILTER, { archiv: true }); render(); } },
+        action: { label: 'Zrušit filtr', onclick: () => { clearFilter(PEOPLE_FILTER); if (f.archiv) setFilter(PEOPLE_FILTER, { archiv: true }); render(); } },
       });
     }
     if (archived) {
       return empty({
         kind: 'search', icon: 'archive', title: 'Jen v archivu.',
         text: `Hledáš „${q}“. V archivu tomu ${archived > 1 && archived < 5 ? 'odpovídají' : 'odpovídá'} ${plural(archived, 'karta', 'karty', 'karet')}.`,
-        action: { label: 'Ukaž i archiv', icon: 'archive', onclick: () => { setFilter(PEOPLE_FILTER, { archiv: true }); render(); } },
+        action: { label: 'Zobrazit i archiv', icon: 'archive', onclick: () => { setFilter(PEOPLE_FILTER, { archiv: true }); render(); } },
       });
     }
-    return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearch } });
+    return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymazat hledání', onclick: clearSearch } });
   }
   if (!(S.data.people || []).some((p) => !isFormer(p))) {
     return empty({
@@ -224,7 +224,7 @@ function peopleEmpty(q) {
   const hidden = everyone().length;
   return empty({
     kind: 'filter', title: 'S tímhle filtrem tu nikdo není.', text: `Filtr skrývá ${accusative(hidden)}.`,
-    action: { label: 'Zruš filtr', onclick: () => { clearFilter(PEOPLE_FILTER); render(); } },
+    action: { label: 'Zrušit filtr', onclick: () => { clearFilter(PEOPLE_FILTER); render(); } },
   });
 }
 
@@ -303,18 +303,18 @@ function groupsBody({ openId } = {}) {
     ];
   }
   const leader = can('leader');
-  if (q) return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearch } });
+  if (q) return empty({ kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymazat hledání', onclick: clearSearch } });
   const all = (S.data.groups || []).filter((g) => !g.archived || (leader && filterState(GROUPS_FILTER).archiv));
   if (!all.length) {
     return empty({
       kind: 'none', icon: 'teams', title: 'Zatím tu není žádná skupina.',
       text: 'Tým má role, třeba Zvuk nebo Zpěv, a z nich se skládá rozpis.',
-      action: leader ? { label: 'Přidej skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
+      action: leader ? { label: 'Přidat skupinu', icon: 'plus', onclick: () => groupSheet() } : null,
     });
   }
   return empty({
     kind: 'filter', title: 'S tímhle filtrem tu žádná skupina není.', text: `Filtr skrývá ${plural(all.length, 'skupinu', 'skupiny', 'skupin')}.`,
-    action: { label: 'Zruš filtr', onclick: () => { clearFilter(GROUPS_FILTER); render(); } },
+    action: { label: 'Zrušit filtr', onclick: () => { clearFilter(GROUPS_FILTER); render(); } },
   });
 }
 
@@ -334,23 +334,23 @@ function downloadCsv(people) {
         : [p.firstName, p.lastName, seesContact(p) ? p.phone : '', seesContact(p) ? p.email : '', groups];
     }),
   ]);
-  toast(`Stahuju seznam: ${peopleCount(people.length)}.`, { icon: 'download' });
+  toast(`Stahuji seznam: ${peopleCount(people.length)}.`, { icon: 'download' });
 }
 
-/** The head's ⋯ – a function, read when it opens, so it follows the Filtr (Ukaž i archiv) without a redraw. */
+/** The head's ⋯ – a function, read when it opens, so it follows the Filtr (Zobrazit i archiv) without a redraw. */
 const listMenu = () => {
-  const download = { label: 'Stáhni seznam', icon: 'download', onclick: () => downloadCsv(shownPeople()) };
+  const download = { label: 'Stáhnout seznam', icon: 'download', onclick: () => downloadCsv(shownPeople()) };
   if (!can('leader')) return [download];
   const overdue = overduePeople();
   return [
-    { label: 'Přidej domácnost', icon: 'home', onclick: () => householdSheet(null) },
-    { label: 'Pozvi do Zvonce', icon: 'log-in', onclick: () => inviteSheet(null) },
+    { label: 'Přidat domácnost', icon: 'home', onclick: () => householdSheet(null) },
+    { label: 'Pozvat do Zvonce', icon: 'log-in', onclick: () => inviteSheet(null) },
     '-',
-    { label: 'Zkopíruj e-maily', icon: 'copy', onclick: () => copyEmails(shownPeople()) },
+    { label: 'Zkopírovat e-maily', icon: 'copy', onclick: () => copyEmails(shownPeople()) },
     download,
     overdue.length ? '-' : null,
     overdue.length ? {
-      label: overdue.length === 1 ? 'Smaž starou kartu z archivu' : 'Smaž staré karty z archivu',
+      label: overdue.length === 1 ? 'Smazat starou kartu z archivu' : 'Smazat staré karty z archivu',
       icon: 'trash', danger: true, onclick: () => deleteOverdueSheet(overdue),
     } : null,
   ].filter(Boolean);
@@ -397,8 +397,8 @@ function peopleScreen({ view, body, pane = null, wide = false }) {
       : { label: 'Nový člověk', icon: 'user-plus', onclick: () => addPersonSheet() },
     menu: groups ? null : listMenu,
     search: groups
-      ? { key: GROUP_SEARCH, placeholder: 'Hledej skupinu', onInput: () => main.setBody(body()) }
-      : { key: SEARCH, placeholder: 'Hledej jméno', onInput: () => main.setBody(body()) },
+      ? { key: GROUP_SEARCH, placeholder: 'Hledat skupinu', onInput: () => main.setBody(body()) }
+      : { key: SEARCH, placeholder: 'Hledat jméno', onInput: () => main.setBody(body()) },
     filter,
     // Seznam | Tabulka where the table fits (the switch remembers the choice: a click writes it before #lide opens)
     views: !groups && tableFits() ? {
@@ -529,10 +529,10 @@ function bulkBar(redraw) {
   return h('div', { class: 'people-bulk', role: 'region', 'aria-label': 'Vybraní lidé' },
     h('p', { class: 'people-bulk__count' }, plural(n, 'vybraný člověk', 'vybraní lidé', 'vybraných lidí')),
     h('div', { class: 'people-bulk__actions' },
-      button('Zkopíruj e-maily', { size: 's', icon: 'copy', onclick: () => copyEmails(pickedPeople()) }),
-      button('Přidej do skupiny', { size: 's', icon: 'teams', onclick: () => bulkGroupSheet(pickedPeople(), done) }),
-      button('Stáhni seznam', { size: 's', icon: 'download', onclick: () => downloadCsv(pickedPeople()) }),
-      button('Zruš výběr', { size: 's', variant: 'quiet', onclick: done })));
+      button('Zkopírovat e-maily', { size: 's', icon: 'copy', onclick: () => copyEmails(pickedPeople()) }),
+      button('Přidat do skupiny', { size: 's', icon: 'teams', onclick: () => bulkGroupSheet(pickedPeople(), done) }),
+      button('Stáhnout seznam', { size: 's', icon: 'download', onclick: () => downloadCsv(pickedPeople()) }),
+      button('Zrušit výběr', { size: 's', variant: 'quiet', onclick: done })));
 }
 
 /**
@@ -566,7 +566,7 @@ function tableBody({ openId, compact = false } = {}) {
     else if (sortCol) box.querySelector(`th.${sortCol} button`)?.focus();
   };
   redraw();
-  return box;   // „Ukaž jednoduchý seznam“ is in ⋯
+  return box;   // „Zobrazit jednoduchý seznam“ is in ⋯
 }
 
 function tableParts({ openId, compact, redraw }) {
@@ -592,7 +592,7 @@ function tableParts({ openId, compact, redraw }) {
   const check = (on, label, onchange, id) => h('input', { type: 'checkbox', class: 'table-check', checked: on, 'aria-label': label, onchange, dataset: { pick: id } });
   const allOn = sorted.every((p) => table$.picked.has(p.id));
   const someOn = sorted.some((p) => table$.picked.has(p.id));
-  const all = ticks ? check(allOn, 'Vyber všechny', (e) => pick(sorted.map((p) => p.id), e.target.checked), 'all') : null;
+  const all = ticks ? check(allOn, 'Vybrat všechny', (e) => pick(sorted.map((p) => p.id), e.target.checked), 'all') : null;
   if (all) all.indeterminate = someOn && !allOn;
   const head = h('tr', {},
     ticks ? h('th', { class: 'col-pick', scope: 'col' }, all) : null,
@@ -641,7 +641,7 @@ function tableParts({ openId, compact, redraw }) {
   };
   const rows = sorted.map((p) => {
     const on = table$.picked.has(p.id);
-    const box = ticks ? check(on, `Vyber: ${fullName(p)}`, (e) => pick([p.id], e.target.checked), p.id) : null;
+    const box = ticks ? check(on, `Vybrat: ${fullName(p)}`, (e) => pick([p.id], e.target.checked), p.id) : null;
     const tr = h('tr', { dataset: { picked: ticks && on ? '' : null, open: p.id === openId ? '' : null } },
       ticks ? h('td', { class: 'col-pick' }, box) : null,
       columns.map((c) => { const td = cell(c, p); td.classList.add(`col-${c.key}`); return td; }));

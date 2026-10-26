@@ -2,7 +2,7 @@
 // (≥ 900); rail ↔ sidebar is CSS only (the same <nav class="sidenav">, the same items).
 //   sidebar: the places where weekly work happens (my duties, meetings, people, what meetings are made of)
 //   the person's menu: you and the system (ui/me-menu.js) – the „Více“ tab on a phone, the foot of the sidebar / rail
-// Members do not see „Zdroje“ in the nav (they open a Formát or a Místo by link, read-only).
+// Members do not see „Příprava“ in the nav (they open a Formát or a Místo by link, read-only).
 
 import { showDary } from './finance-state.js';
 import { showSbirky } from './fundraisers.js';
@@ -16,7 +16,7 @@ import { staffingCount } from './staffing.js';
 import { waitingInvites } from './access.js';
 
 /**
- * [id, label, icon, href, minAccess, group, count?] – group 'main' or 'gather' (Zdroje);
+ * [id, label, icon, href, minAccess, group, count?] – group 'main' or 'gather' (Příprava);
  * count: 'answers' (duties waiting for my answer) · 'staffing' (Obsazení's count).
  */
 export const NAV = [
@@ -32,7 +32,7 @@ export const NAV = [
   ['formaty', 'Formáty', 'book', '#formaty', 'leader', 'gather'],
   ['mista', 'Místa', 'pin', '#mista', 'leader', 'gather'],
 ];
-export const GROUP_TITLES = { gather: 'Zdroje' };
+export const GROUP_TITLES = { gather: 'Příprava' };
 
 /** Not in the tab bar (no room on a phone): Skupiny is the first row of Lidé there, and lights the Lidé tab; Přehled is
     in the person's menu (Správa); Sbírky are reached from Moje (and Správa for leaders) and light Moje. */
@@ -64,7 +64,7 @@ const sidenavEl = () => document.querySelector('.sidenav');
 const tabbarEl = () => document.querySelector('.tabbar');
 let shellKey = null;
 
-/** Forget the built shell (a sign-in, „Podívej se očima druhých“): the next updateNav() builds it again. */
+/** Forget the built shell (a sign-in, „Podívat se očima druhých“): the next updateNav() builds it again. */
 export function resetNav() { shellKey = null; }
 
 const shown = () => NAV.filter(([, , , , level]) => (typeof level === 'function' ? level() : can(level)));

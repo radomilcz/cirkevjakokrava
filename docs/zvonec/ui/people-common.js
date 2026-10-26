@@ -84,7 +84,7 @@ export function fullDate(date) {
   return `${Number(date.slice(8, 10))}. ${Number(date.slice(5, 7))}. ${date.slice(0, 4)}`;
 }
 /** '2026-10-08' → '8. 10.' */
-export const dayMonth = (date) => (date && date.length >= 10 ? `${Number(date.slice(8, 10))}. ${Number(date.slice(5, 7))}.` : '');
+export const dayMonth = (date) => (date && date.length >= 10 ? `${Number(date.slice(8, 10))}.\u00a0${Number(date.slice(5, 7))}.` : '');
 
 export const capital = (value) => (value ? value.charAt(0).toLocaleUpperCase('cs') + value.slice(1) : value);
 
@@ -198,9 +198,9 @@ export const activeGroups = () => (S.data.groups || []).filter((g) => !g.archive
 
 /** Words per group kind. */
 export const GROUP_WORDS = {
-  team: { kind: 'tým', kinds: 'Týmy', add: 'Přidej do týmu', addWho: 'Koho přidáš do týmu', remove: 'Odeber z týmu', leads: 'vede tým', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede tým', in: 'v týmu' },
-  community: { kind: 'skupinka', kinds: 'Skupinky', add: 'Přidej do skupinky', addWho: 'Koho přidáš do skupinky', remove: 'Odeber ze skupinky', leads: 'vede skupinku', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede skupinku', in: 've skupince' },
-  leadership: { kind: 'vedení', kinds: 'Vedení', add: 'Přidej do vedení', addWho: 'Koho přidáš do vedení', remove: 'Odeber z vedení', leads: 'předsedá', lead1: 'předsedá', leadN: 'předsedají', leadSwitch: 'Předsedá', in: 've vedení' },
+  team: { kind: 'tým', kinds: 'Týmy', add: 'Přidat do týmu', addWho: 'Koho přidáš do týmu', remove: 'Odebrat z týmu', leads: 'vede tým', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede tým', in: 'v týmu' },
+  community: { kind: 'skupinka', kinds: 'Skupinky', add: 'Přidat do skupinky', addWho: 'Koho přidáš do skupinky', remove: 'Odebrat ze skupinky', leads: 'vede skupinku', lead1: 'vede', leadN: 'vedou', leadSwitch: 'Vede skupinku', in: 've skupince' },
+  leadership: { kind: 'vedení', kinds: 'Vedení', add: 'Přidat do vedení', addWho: 'Koho přidáš do vedení', remove: 'Odebrat z vedení', leads: 'předsedá', lead1: 'předsedá', leadN: 'předsedají', leadSwitch: 'Předsedá', in: 've vedení' },
 };
 export const groupWords = (group) => GROUP_WORDS[group?.kind] || GROUP_WORDS.community;
 export const KIND_CHOICES = [{ value: 'team', label: 'Tým' }, { value: 'community', label: 'Skupinka' }, { value: 'leadership', label: 'Vedení' }];

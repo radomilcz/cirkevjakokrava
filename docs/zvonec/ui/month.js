@@ -2,16 +2,16 @@
 //   #kalendar/mesic/<YYYY-MM>[/<YYYY-MM-DD>]
 // D starts with the period line ‹ Říjen 2026 › ······ Dnes. Under it ONE of two forms, chosen by the content's own
 // width (a container query at 700 in css/calendar.css), not by the device:
-//   narrow (phone, tablet 768): the mini month (cells 44, up to 3 Účel dots, today = --act disc, the chosen day =
+//   narrow (phone, tablet 768): the mini month (cells 44, up to 3 Druh setkání dots, today = --act disc, the chosen day =
 //          pick + bar) and under it the chosen day's meetings (Simple). A tap on a day only chooses it.
 //   wide (1024 tablet, desktop): the grid with the meetings as chips (min 24, the title in up to two lines of whole
-//          words, the Účel bar on the square left edge, mine in the Účel tint), at most 3 a day, then „+ 2 další“. The
+//          words, the Druh setkání bar on the square left edge, mine in the Druh setkání tint), at most 3 a day, then „+ 2 další“. The
 //          day number has the mini month's arch and states (today, a ring on a day I serve, the open day = pick + bar). A chip opens the Setkání page (never a pane beside
 //          the grid); a day number, „+ 2 další“ or the free part of a day opens the day popover.
 // Search hides the chips and dots that do not match, Filtr the same; the month stays, and an empty case is one quiet
 // line under the period line.
 
-import { h, periodLine, monthGrid, monthLabel, layer, button, subhead, quiet, plural, clock } from './kit.js';
+import { h, periodLine, monthGrid, monthLabel, layer, button, subhead, quiet, plural, agree, clock } from './kit.js';
 import { S, can } from './state.js';
 import { eventsInRange } from '../lib/events.js';
 import { addDays, dayOf, today } from '../lib/time.js';
@@ -73,7 +73,7 @@ function narrowForm(month, chosen, days) {
       list.length
         ? h('div', { class: 'agenda cal-agenda' }, dayBlock(chosen, list, { href: eventHref }))
         : quiet('Na tenhle den nic není.'),
-      leader ? h('div', { class: 'cal-dayview__add' }, button('Přidej setkání', { variant: 'quiet', icon: 'plus', onclick: () => openAddEvent({ day: chosen }) })) : null));
+      leader ? h('div', { class: 'cal-dayview__add' }, button('Přidat setkání', { variant: 'quiet', icon: 'plus', onclick: () => openAddEvent({ day: chosen }) })) : null));
 }
 
 // ---------- wide: the grid with chips, the day popover ----------
@@ -121,17 +121,17 @@ const sized = typeof ResizeObserver === 'function' ? new ResizeObserver((entries
   }
 }) : null;
 
-/** A day's popover (320, anchored to the cell): the day's meetings and, for leaders, „Přidej setkání“. */
+/** A day's popover (320, anchored to the cell): the day's meetings and, for leaders, „Přidat setkání“. */
 function openDay(day, list, anchor) {
   const leader = can('leader') && day >= today();
   const date = new Date(`${day}T12:00`);
-  const title = `${['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'][date.getDay()]} ${date.getDate()}. ${date.getMonth() + 1}.`;
+  const title = `${['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'][date.getDay()]} ${date.getDate()}.\u00a0${date.getMonth() + 1}.`;
   layer.open({
     kind: 'popover', anchor, placement: 'below-start', title, cls: 'cal-daypop',
     body: list.length
       ? h('div', { class: 'agenda__items cal-daypop__list' }, list.map((e) => calEvent(e, { href: eventHref(e), trail: false })))
       : quiet('Na tenhle den nic není.'),
-    foot: leader ? button('Přidej setkání', { variant: 'quiet', icon: 'plus', onclick: () => openAddEvent({ day }) }) : null,
+    foot: leader ? button('Přidat setkání', { variant: 'quiet', icon: 'plus', onclick: () => openAddEvent({ day }) }) : null,
   });
 }
 
@@ -153,7 +153,7 @@ function wideForm(month, days) {
     }, String(num)),
     h('div', { class: 'cal-cell__chips' },
       (more > 0 ? list.slice(0, MAX_CHIPS - 1) : list).map(chip),
-      more > 0 ? h('button', { type: 'button', class: 'cal-cell__more', onclick: open, 'aria-label': `${words}: ještě ${plural(more + 1, 'setkání', 'setkání', 'setkání')}` }, `+ ${more + 1} další`) : null));
+      more > 0 ? h('button', { type: 'button', class: 'cal-cell__more', onclick: open, 'aria-label': `${words}: ještě ${plural(more + 1, 'setkání', 'setkání', 'setkání')}` }, `+ ${more + 1} ${agree(more + 1, 'další', 'další', 'dalších')}`) : null));
     // the free part of a day opens it too (a chip and the buttons do their own thing)
     cell.addEventListener('click', (e) => { if (!e.target.closest('a, button')) open(e); });
     return cell;

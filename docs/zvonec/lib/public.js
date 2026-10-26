@@ -58,7 +58,7 @@ function publicPlace(data, room) {
  * The public view of the data, upcoming only.
  * today: "YYYY-MM-DD". Events: published (`public === true`) and reaching into the window from
  * today − 1 day to today + daysAhead; cancelled ones stay with `cancelled: true` so people see a
- * cancellation. Sorted by start, then id. `featured` – a leader pinned it to the top of Pastva („Zvýrazni na webu“);
+ * cancellation. Sorted by start, then id. `featured` – a leader pinned it to the top of Pastva („Zvýraznit na webu“);
  * `seriesId` and `repeat` – it is one of a regular series, so Pastva shows the series once („Každou neděli“).
  *
  * { v: 1, churchName, address, generated: today,

@@ -23,7 +23,7 @@ export const REDIRECTS = [
   [/^porad\/(.+)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^setkani\/([^/]+)\/(porad|prubeh)$/, (m) => `setkani/${m[1]}/osnova`],
   [/^setkani\/([^/]+)\/sluzby$/, (m) => [`setkani/${m[1]}`, 'kdo-slouzi']],
-  // Úkoly was Obsazení's name for a day; Upozornění and Kolize became Obsazení › Filtr › Stav › Něco nesedí
+  // Úkoly was Obsazení's name for a day; Upozornění and Kolize became Obsazení › Filtr › Stav › Problémy
   [/^ukoly(\/.*)?$/, (m) => `obsazeni${m[1] || ''}`],
   [/^(?:upozorneni|kolize)(?:\/.*)?$/, () => ({ path: 'obsazeni', filter: ['obsazeni', { co: ['nesedi'] }] })],
 ];

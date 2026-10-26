@@ -22,7 +22,7 @@ export const CODES = {
   K3: 'Nemá čas',
   K4: 'Neumí',
   K4b: 'Zaučuje se',
-  K5: 'Chybí lidi',
+  K5: 'Chybí lidé',
   K6: 'Nepotvrzeno',
   K7: 'Moc služeb v měsíci',
   K8: 'Neděle po sobě',
@@ -201,7 +201,7 @@ export function findConflicts(data, { today } = {}) {
         add({
           key: `K8:${personId}:${days[i]}`, code: 'K8', severity: 'warning',
           eventId: sundays.get(days[i]), personId,
-          text: `${who} slouží už ${streak}. neděli po sobě. I kráva potřebuje volnou neděli na pastvě.`,
+          text: `${who} slouží už ${streak}. neděli po sobě.`,
         });
       }
     }
@@ -254,7 +254,7 @@ export function findConflicts(data, { today } = {}) {
       add({
         key: `K5:${e.id}:essential`, code: 'K5', severity: daysUntil <= essentialDaysBefore ? 'error' : 'warning', eventId: e.id,
         roleIds: gaps.essential.map((g) => g.roleId), roleId: gaps.essential[0].roleId,
-        text: `Bez tohohle to nepůjde: ${listGaps(gaps.essential)}.`,
+        text: `Chybí nezbytné role: ${listGaps(gaps.essential)}.`,
       });
     }
     if (gaps.other.length && daysUntil <= openDaysBefore) {
@@ -291,7 +291,7 @@ export function findConflicts(data, { today } = {}) {
           const person = people.get(item.personId);
           const block = person && unavailability(data, person.id, { start, end });
           if (!person) {
-            add({ key: `K16:${item.id}:gone`, code: 'K16', severity: 'warning', eventId: e.id, text: `${name}: vede někdo, kdo už v rozpisu není.` });
+            add({ key: `K16:${item.id}:gone`, code: 'K16', severity: 'warning', eventId: e.id, text: `${name}: bod vede někdo, kdo už neslouží. Vyber někoho jiného.` });
           } else if (block) {
             add({
               key: `K16:${item.id}`, code: 'K16', severity: 'error', eventId: e.id, personId: person.id,
@@ -311,7 +311,7 @@ export function findConflicts(data, { today } = {}) {
         if (format?.leadRoleId && !roles.has(format.leadRoleId) && !itemLeaders(data, e, item).length) {
           add({
             key: `K17:${item.id}`, code: 'K17', severity: 'warning', eventId: e.id,
-            text: `${name}: nikdo to nevede, role z formátu už neexistuje. Vyber člověka, nebo uprav formát.`,
+            text: `${name}: bod nikdo nevede, protože role, která ho měla vést, je smazaná. Vyber člověka, nebo ve formátu nastav jinou roli.`,
           });
         }
       }

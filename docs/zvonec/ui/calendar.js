@@ -4,7 +4,7 @@
 // they are drawn in (calendarScreen: A „Kalendář“ · B search + Filtr · C Seznam | Měsíc | Rozpis · D), the event
 // line every view uses (calEvent), and Seznam itself.
 //   #kalendar/seznam[/<eventId>]   one continuous list from today, week subheads, one date arch per day;
-//                                  „‹ Ukaž, co už bylo“ on top, „Ukaž další týdny“ at the end; a click → the pane
+//                                  „‹ Zobrazit, co už bylo“ on top, „Zobrazit další týdny“ at the end; a click → the pane
 //                                  (≥ 1200) or the Setkání page (< 1200, back „‹ Kalendář“).
 // Měsíc is month.js, Rozpis roster.js, the routes routes-calendar.js (which hands every view the same ⋯).
 
@@ -65,10 +65,10 @@ export const SEARCH_KEY = 'kalendar';
 function filterGroups() {
   const teams = teamsWithRoles();
   return [
-    { id: 'ucel', title: 'Účel', kind: 'chips', multiple: true, options: EVENT_KINDS.map((k) => [k, KIND_LABELS[k], kindHue(k)]) },
+    { id: 'ucel', title: 'Druh setkání', kind: 'chips', multiple: true, options: EVENT_KINDS.map((k) => [k, KIND_LABELS[k], kindHue(k)]) },
     teams.length ? { id: 'tym', title: 'Tým', kind: 'chips', multiple: true, options: teams.map(({ group }) => [group.id, group.name]) } : null,
     myId() ? { id: 'moje', title: 'Jen moje služby', kind: 'switch' } : null,
-    { id: 'zrusena', title: 'Ukaž i zrušená', kind: 'switch' },
+    { id: 'zrusena', title: 'Zobrazit i zrušená', kind: 'switch' },
   ].filter(Boolean);
 }
 
@@ -79,7 +79,7 @@ export function filterTeams() {
   return chosen.length ? chosen : null;
 }
 
-/** Does an event pass Filtr? (Cancelled meetings only with „Ukaž i zrušená“.) */
+/** Does an event pass Filtr? (Cancelled meetings only with „Zobrazit i zrušená“.) */
 export function passesFilter(event) {
   const f = filterState(FILTER_KEY);
   if (f.ucel?.length && !f.ucel.includes(event.kind)) return false;
@@ -95,7 +95,7 @@ export const filterOn = () => countFilter(FILTER_KEY, filterGroups()) > 0;
 /** Accent- and case-insensitive: „kucer“ finds „Kučera“. */
 export const norm = (text) => String(text || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 
-/** The words the search looks in: the title, the place, the Účel and the names of who serves. */
+/** The words the search looks in: the title, the place, the Druh setkání and the names of who serves. */
 function haystack(event) {
   const names = (event.assignments || []).filter((a) => a.status !== 'declined').map((a) => {
     const p = personOf(a);
@@ -129,15 +129,15 @@ export function clearSearch() {
 export function emptyCase({ all, afterFilter, noneTitle, noneText, unit = (n) => plural(n, 'setkání', 'setkání', 'setkání') }) {
   const q = query();
   if (q && afterFilter > 0) {
-    return { kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearch } };
+    return { kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymazat hledání', onclick: clearSearch } };
   }
   if (filterOn() && all > 0) {
     return {
       kind: 'filter', title: 'S tímhle filtrem tu nic není.', text: `Filtr skrývá ${unit(all)}.`,
-      action: { label: 'Zruš filtr', onclick: () => { clearFilter(FILTER_KEY); render(); } },
+      action: { label: 'Zrušit filtr', onclick: () => { clearFilter(FILTER_KEY); render(); } },
     };
   }
-  if (q) return { kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymaž hledání', onclick: clearSearch } };
+  if (q) return { kind: 'search', title: 'Nic tomu neodpovídá.', text: `Hledáš „${q}“.`, action: { label: 'Vymazat hledání', onclick: clearSearch } };
   return { kind: 'none', title: noneTitle, text: noneText };
 }
 
@@ -185,7 +185,7 @@ function myLine(event) {
 }
 
 /**
- * One meeting as a line: the start (the end is in the detail) · the Účel bar (its own element) · title, place, my
+ * One meeting as a line: the start (the end is in the detail) · the Druh setkání bar (its own element) · title, place, my
  * duty; for leaders the status tag where something is missing or waits – in the trail from 600 up, under the words on
  * a phone. The whole line is one link.
  *   calEvent(event, { href: '#kalendar/seznam/e1', open: true })
@@ -260,10 +260,10 @@ export function paneLinks(root, base) {
 // ---------- the frame of every view ----------
 
 /**
- * Kalendář's list screen: A „Kalendář“ [Přidej setkání] [⋯] · B „Hledej setkání“ + Filtr · C Seznam | Měsíc | Rozpis ·
+ * Kalendář's list screen: A „Kalendář“ [Přidat setkání] [⋯] · B „Hledat setkání“ + Filtr · C Seznam | Měsíc | Rozpis ·
  * D = draw(). Nothing in A, B or C depends on the view, the month or the filter (DESIGN §3).
  *   calendarScreen({ view: 'mesic', month: '2026-10', draw, results, menu, addDay, pane, wide: true })
- * draw() redraws D on search and Filtr; results() is the number of meetings shown (the phone's „Ukaž 12 setkání“).
+ * draw() redraws D on search and Filtr; results() is the number of meetings shown (the phone's „Zobrazit 12 setkání“).
  */
 export function calendarScreen({ view, month, period, draw, results, menu, addDay, pane, wide = false, label = 'Setkání', base }) {
   if (month) shownMonth = month;
@@ -275,9 +275,9 @@ export function calendarScreen({ view, month, period, draw, results, menu, addDa
   });
   main = listScreen({
     title: 'Kalendář',
-    action: can('leader') ? { label: 'Přidej setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ day: addDay?.() || null }) } : null,
+    action: can('leader') ? { label: 'Přidat setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ day: addDay?.() || null }) } : null,
     menu,
-    search: { key: SEARCH_KEY, placeholder: 'Hledej setkání', onInput: redraw },
+    search: { key: SEARCH_KEY, placeholder: 'Hledat setkání', onInput: redraw },
     filter,
     views: {
       label: 'Zobrazení kalendáře',
@@ -301,8 +301,8 @@ export function calendarScreen({ view, month, period, draw, results, menu, addDa
 
 // ---------- Seznam ----------
 
-const WEEKS = 6;          // „Ukaž další týdny“ adds six more
-const PAST_WEEKS = 4;     // „Ukaž, co už bylo“: the last four weeks
+const WEEKS = 6;          // „Zobrazit další týdny“ adds six more
+const PAST_WEEKS = 4;     // „Zobrazit, co už bylo“: the last four weeks
 const SEARCH_DAYS = 400;  // a search looks this far ahead (so „Kučera“ finds his meetings, not only the next six weeks)
 const listState = { weeks: WEEKS, past: false };
 
@@ -335,7 +335,7 @@ function seznamBody(openId) {
   const events = afterFilter.filter((e) => matchesSearch(e));
   const href = (e) => (e.id === openId && isSplit() ? '#kalendar/seznam' : `#kalendar/seznam/${e.id}`);   // a click on the open one closes it
     const later = !query() && inRange(addDays(to, 1), addDays(to, SEARCH_DAYS)).some(shownBy);
-  const more = later ? button('Ukaž další týdny', {
+  const more = later ? button('Zobrazit další týdny', {
     variant: 'quiet', block: true, iconEnd: 'chevron-down', cls: 'cal-more',
     onclick: () => { listState.weeks += WEEKS; render(); },
   }) : null;
@@ -347,7 +347,7 @@ function seznamBody(openId) {
       noneTitle: 'Zatím tu nejsou žádná setkání.',
       noneText: 'Tady uvidíš, co se chystá: neděle, zkoušky, skupinky i akce.',
     });
-    if (c.kind === 'none' && can('leader')) c.action = { label: 'Přidej setkání', icon: 'plus', onclick: () => openAddEvent({}) };
+    if (c.kind === 'none' && can('leader')) c.action = { label: 'Přidat setkání', icon: 'plus', onclick: () => openAddEvent({}) };
     if (c.kind === 'none' && later) { c.title = 'V příštích týdnech nic není.'; c.text = 'Další setkání jsou až později.'; }
     return [empty(c), more];
   }
@@ -369,11 +369,11 @@ function seznamBody(openId) {
   return [h('div', { class: 'agenda cal-agenda' }, out), more];
 }
 
-/** ⋯ › „Ukaž minulá setkání“ (the last four weeks above today) / „Skryj minulá setkání“ – not a link on top of the list. */
+/** ⋯ › „Zobrazit minulá setkání“ (the last four weeks above today) / „Skrýt minulá setkání“ – not a link on top of the list. */
 function pastItem() {
-  if (listState.past) return { label: 'Skryj minulá setkání', icon: 'chevron-down', onclick: () => { listState.past = false; render(); } };
+  if (listState.past) return { label: 'Skrýt minulá setkání', icon: 'chevron-down', onclick: () => { listState.past = false; render(); } };
   const hasPast = inRange(mondayOf(addDays(today(), -7 * PAST_WEEKS)), addDays(today(), -1)).some(shownBy);
-  return hasPast ? { label: 'Ukaž minulá setkání', icon: 'chevron-left', onclick: () => { listState.past = true; render(); } } : null;
+  return hasPast ? { label: 'Zobrazit minulá setkání', icon: 'chevron-left', onclick: () => { listState.past = true; render(); } } : null;
 }
 
 /** #kalendar/seznam[/<eventId>] */

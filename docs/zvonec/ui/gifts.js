@@ -2,14 +2,14 @@
 // The gifts come from the finance repo (ui/finance-state.js) – never from the main data, never on a person's card.
 // Built from the kit only, as Moje (DESIGN 2026-10-09 audit): a split page ≥ 1200 – the work on the left, the year on
 // the right; one column below it (Nepřiřazené first).
-//   A „Dary“ · ⋯ (Přidej dar · Přidej dárce mimo sbor · Vytiskni potvrzení za rok · Nastavení darů · Klíč k darům)
+//   A „Dary“ · ⋯ (Přidat dar · Přidat dárce mimo sbor · Vytisknout potvrzení za rok · Nastavení darů · Klíč k darům)
 //   Nepřiřazené  payments nobody is known for, under month subheads: the day arch, the sender, „VS · zpráva“, the
 //                amount; a tap → „Přiřazení daru“ (a person from Lidé, a donor outside the church, anonymous, not a gift)
 //   the year     ‹ 2026 › Letos, the figure block („68 000 Kč darů za rok 2026“; dárci · dary · anonymně ·
 //                nepřiřazené), how the bank is doing
 //   Dárci        avatar 40, name, „VS 1001 · 10 darů“, the year's sum › the donor: a detail (avatar, facts), its gifts
 //   Sbírky       the open ones with what they have collected › #sbirky/<id>
-// Live admin without the finance key: how to set it up („Vlož klíč k darům“).
+// Live admin without the finance key: how to set it up („Vložit klíč k darům“).
 
 import { S, can, change, render, navigate, newId, updateLogins } from './state.js';
 import { F, canSeeDary, financeMissing, loadFinance, changeFinance, resetFinance } from './finance-state.js';
@@ -58,7 +58,7 @@ export function financeKeySheet() {
   const token = textInput({ name: 'token', type: 'password', placeholder: 'github_pat_…', autocomplete: 'off' });
   formSheet({
     title: 'Klíč k darům',
-    submitLabel: 'Ulož klíč',
+    submitLabel: 'Uložit klíč',
     size: 'm',
     body: [
       text(`Dary leží zvlášť, v soukromém repozitáři ${owner} na GitHubu, ne v datech sboru. Klíč k němu dostanou jen správci a pokladník a každý si ho schová pod svoje heslo. Ostatní k darům nedosáhnou.`),
@@ -145,7 +145,7 @@ async function assign(gift, who, words) {
 }
 
 /**
- * „Přidej do Lidí“: someone who is not in Lidé yet gets a card with the name from the payment (the bank sends
+ * „Nový člověk v Lidech“: someone who is not in Lidé yet gets a card with the name from the payment (the bank sends
  * „SVOBODOVA MARIE“ – surname first, no diacritics, so the form asks to check it), and the payment is theirs.
  * Only the name: no phone or e-mail is made up; consent is needed only once the card holds more.
  */
@@ -158,7 +158,7 @@ function newPersonSheet(gift) {
     title: 'Nový člověk',
     subtitle: [money(gift.amount), dayWithYear(gift.date), senderName(gift)].filter(Boolean).join(' · '),
     size: 's',
-    submitLabel: 'Přidej a přiřaď',
+    submitLabel: 'Přidat a přiřadit',
     body: [
       meta('Jméno je z platby. Banka ho posílá bez háčků a čárek, tak ho zkontroluj.'),
       field({ label: 'Jméno', control: first }),
@@ -180,7 +180,7 @@ function newPersonSheet(gift) {
   });
 }
 
-/** „Přiřaď“: a person from Lidé, a donor outside the church, a new one, anonymous, or not a gift. */
+/** „Přiřadit“: a person from Lidé, a donor outside the church, a new one, anonymous, or not a gift. */
 export function assignSheet(gift) {
   let sheet;
   const close = (fn) => () => { sheet.close(); fn(); };
@@ -201,20 +201,20 @@ export function assignSheet(gift) {
     subtitle: [money(gift.amount), dayWithYear(gift.date), senderName(gift)].filter(Boolean).join(' · '),
     body: list([
       subhead('Od koho', { tag: 'h3' }),
-      row({ lead: placeMark('people'), title: 'Člen sboru', meta: 'Najdi ho podle jména. Když ještě nemá variabilní symbol, dostane ho.', onclick: close(pickPerson), chevron: true }),
-      can('leader') && senderName(gift) ? row({ lead: placeMark('plus'), title: 'Přidej do Lidí', meta: 'Ještě v Lidech není? Založ kartu se jménem z platby.', onclick: close(() => newPersonSheet(gift)), chevron: true }) : null,
+      row({ lead: placeMark('people'), title: 'Člen sboru', meta: 'Vyber člověka z Lidí. Kdo ještě nemá variabilní symbol, dostane ho.', onclick: close(pickPerson), chevron: true }),
+      can('leader') && senderName(gift) ? row({ lead: placeMark('plus'), title: 'Nový člověk v Lidech', meta: 'Ještě v Lidech není? Založ kartu se jménem z platby.', onclick: close(() => newPersonSheet(gift)), chevron: true }) : null,
       ...donors.map((d) => row({ lead: avatar({ id: `d:${d.id}`, firstName: d.name }), title: d.name, meta: `mimo sbor · VS\u00a0${d.vs}`, onclick: close(() => assign(gift, { donorId: d.id }, `dar od ${d.name}`)) })),
       row({ lead: placeMark('plus'), title: 'Nový dárce mimo sbor', meta: 'Přítel sboru, firma…', onclick: close(() => donorSheet(null, { onSaved: (id) => assign(gift, { donorId: id }, 'dar od nového dárce') })), chevron: true }),
       subhead('Jinak', { tag: 'h3' }),
       row({ lead: placeMark('eye'), title: 'Anonymní dar', meta: 'Počítá se do součtů, potvrzení nedostane nikdo.', onclick: close(() => assign(gift, { kind: 'anonymous' }, 'anonymní dar')) }),
-      row({ lead: placeMark('x'), title: 'Vyřaď z darů', meta: 'Nájem, grant, vrácené peníze… Do darů se nepočítá.', onclick: close(() => assign(gift, { kind: 'notGift' }, 'platba, která není dar')) }),
+      row({ lead: placeMark('x'), title: 'Není to dar', meta: 'Nájem, grant, vrácené peníze… Do darů se nepočítá.', onclick: close(() => assign(gift, { kind: 'notGift' }, 'platba, která není dar')) }),
     ], { cls: 'assign-list' }),
   });
 }
 
 // ---------- the donor's symbol (the treasurer, the admins) ----------
 
-/** Změň variabilní symbol of a person (main data) or of a donor outside the church (finance); then assign what matches. */
+/** Změnit variabilní symbol of a person (main data) or of a donor outside the church (finance); then assign what matches. */
 function changeVs(key) {
   const id = key.slice(2);
   const isPerson = key.startsWith('p:');
@@ -247,7 +247,7 @@ const parseAmount = (s) => {
   return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null;
 };
 
-/** Přidej dar (cash, or a payment the bank has not sent) / Úprava daru. A new gift then asks whose it is. */
+/** Přidat dar (cash, or a payment the bank has not sent) / Úprava daru. A new gift then asks whose it is. */
 export function giftSheet(gift, { forKey } = {}) {
   const editingBank = gift && gift.source !== 'cash';
   const date = textInput({ name: 'date', type: 'date', value: gift?.date || today() });
@@ -268,7 +268,7 @@ export function giftSheet(gift, { forKey } = {}) {
       editingBank ? meta('Platba je z výpisu z banky, datum a částku tu změnit nejde.') : meta('Dar v hotovosti nebo platba, která zatím není ve výpisu z banky.'),
       editingBank ? null : field({ label: 'Datum', control: date }),
       editingBank ? null : field({ label: 'Částka v Kč', control: amount }),
-      fund ? field({ label: 'Sbírka', control: fund, hint: 'U daru do sbírky zapíše Zvonec jako účel její název.' }) : null,
+      fund ? field({ label: 'Sbírka', control: fund, hint: 'Když vybereš sbírku, Zvonec jako účel zapíše její název.' }) : null,
       field({ label: 'Účel', control: purpose, hint: 'Když nevíš, nech „Provoz“.' }),
       field({ label: 'Poznámka', control: note, optional: true }),
     ],
@@ -308,7 +308,7 @@ function removeGift(gift) {
   confirmSheet({
     title: 'Chceš smazat tenhle dar?',
     text: `${money(gift.amount)} · ${dayWithYear(gift.date)}. Ze součtů i z potvrzení zmizí.`,
-    confirmLabel: 'Smaž dar',
+    confirmLabel: 'Smazat dar',
     onConfirm: async () => {
       await changeFinance((f) => { const i = f.gifts.findIndex((g) => g.id === gift.id); if (i >= 0) f.gifts.splice(i, 1); }, 'smazaný dar');
       toast('Dar je smazaný.');
@@ -345,8 +345,8 @@ export function financeSettingsSheet() {
         files[key] = e.target.files?.[0] || null;
         try { const url = await readImage(files[key]); preview.replaceChildren(url ? h('img', { src: url, alt: '' }) : empty('zatím není')); } catch (error) { preview.replaceChildren(empty('nejde použít')); toast(error.message, { icon: 'alert' }); files[key] = null; }
       } });
-    const pick = button(current ? 'Vyměň' : 'Nahraj', { size: 's', icon: 'image', onclick: () => input.click() });
-    const drop = current ? button('Odeber', { size: 's', variant: 'quiet', onclick: () => { files[key] = false; preview.replaceChildren(empty('bude odebrané')); } }) : null;
+    const pick = button(current ? 'Vyměnit' : 'Nahrát', { size: 's', icon: 'image', onclick: () => input.click() });
+    const drop = current ? button('Odebrat', { size: 's', variant: 'quiet', onclick: () => { files[key] = false; preview.replaceChildren(empty('bude odebrané')); } }) : null;
     return field({ label, control: h('div', { class: 'gift-img__row' }, preview, pick, drop, input), optional: true });
   };
   formSheet({
@@ -390,7 +390,7 @@ export function printFor(keys, year) {
     confirmSheet({
       title: 'Chybí úřední údaje sboru',
       text: 'Na potvrzení musí být úřední název, IČO a sídlo. Doplň je v Nastavení sboru.',
-      confirmLabel: 'Otevři Nastavení sboru', danger: false,
+      confirmLabel: 'Otevřít Nastavení sboru', danger: false,
       onConfirm: () => navigate('#nastaveni'),
     });
     return;
@@ -404,7 +404,7 @@ export function printFor(keys, year) {
     title: lacking.length === 1 ? `${lacking[0].name}: něco chybí` : `U ${lacking.length} ${agree(lacking.length, 'dárce', 'dárců', 'dárců')} něco chybí`,
     text: lacking.slice(0, 6).map((c) => `${c.name}: ${c.missing.map((m) => MISSING_WORDS[m]).join(', ')}`).join(' · ')
       + (lacking.length > 6 ? ' …' : '') + '. Doplň to na kartě dárce, nebo vytiskni i tak a dopiš to rukou.',
-    confirmLabel: 'Vytiskni i tak', danger: false,
+    confirmLabel: 'Vytisknout i tak', danger: false,
     onConfirm: go,
   });
 }
@@ -413,9 +413,9 @@ export function printFor(keys, year) {
 
 function screenMenu(year) {
   return [
-    { label: 'Přidej dar', icon: 'plus', onclick: () => giftSheet(null) },
-    { label: 'Přidej dárce mimo sbor', icon: 'user', onclick: () => donorSheet(null) },
-    { label: `Vytiskni potvrzení za rok ${year}`, icon: 'printer', onclick: () => printFor(donorsOfYear(F.data, S.data.people, year).map((d) => d.key), year) },
+    { label: 'Přidat dar', icon: 'plus', onclick: () => giftSheet(null) },
+    { label: 'Přidat dárce mimo sbor', icon: 'user', onclick: () => donorSheet(null) },
+    { label: `Vytisknout potvrzení za rok ${year}`, icon: 'printer', onclick: () => printFor(donorsOfYear(F.data, S.data.people, year).map((d) => d.key), year) },
     '-',
     { label: 'Nastavení darů', icon: 'sliders', onclick: financeSettingsSheet },
     S.mode === 'live' && can('admin') ? { label: 'Klíč k darům', icon: 'key', onclick: financeKeySheet } : null,
@@ -429,8 +429,8 @@ function setupPage() {
       callout({
         tone: 'info',
         title: 'Dary se ukládají zvlášť.',
-        text: 'Do soukromého repozitáře, ke kterému mají klíč jen správci a pokladník. Vlož ten klíč a Dary se otevřou.',
-        actions: [button('Vlož klíč k darům', { variant: 'primary', icon: 'key', onclick: financeKeySheet })],
+        text: 'Kvůli soukromí leží odděleně od ostatních dat sboru a otevře je jen klíč k darům. Mají ho jen správci a pokladník. Vlož ho a Dary se otevřou.',
+        actions: [button('Vložit klíč k darům', { variant: 'primary', icon: 'key', onclick: financeKeySheet })],
       }),
     ],
   });
@@ -438,7 +438,7 @@ function setupPage() {
 
 function waitingPage() {
   if (F.state === 'error') {
-    return page({ title: 'Dary', back: phoneBack(), body: callout({ tone: 'no', title: 'Dary se nepodařilo načíst.', text: F.error?.message || '', actions: [button('Zkus to znovu', { onclick: () => { resetFinance(); render(); } })] }) });
+    return page({ title: 'Dary', back: phoneBack(), body: callout({ tone: 'no', title: 'Dary se nepodařilo načíst.', text: F.error?.message || '', actions: [button('Zkusit znovu', { onclick: () => { resetFinance(); render(); } })] }) });
   }
   return page({ title: 'Dary', back: phoneBack(), body: skeleton({ rows: 4 }) });
 }
@@ -464,12 +464,12 @@ function bankLine() {
     return callout({
       tone: 'no',
       title: `Zvonec od ${dayWithYear(b.failedSince || b.checked)} nestahuje platby z banky.`,
-      text: `${bankWords(b.error)} Nic se neztratí – až bude klíč od banky zase platit, Zvonec stáhne i chybějící dny. Nový klíč z Internet Banky ulož na GitHubu v repozitáři darů: Settings › Secrets › MONETA_TOKEN.`,
+      text: `${bankWords(b.error)} Nic se neztratí – až bude klíč od banky zase platit, Zvonec stáhne i chybějící dny. Nový klíč vytvoř v Internet Bance a ulož ho na GitHubu v repozitáři darů do Settings › Secrets › MONETA_TOKEN. Když si nevíš rady, řekni správci.`,
     });
   }
   const late = b.checked && daysBetween(b.checked, today()) > BANK_STALE_DAYS;
   return late
-    ? callout({ tone: 'wait', title: `Platby z banky naposledy ${dayWithYear(b.checked)}.`, text: 'Denní stahování se pár dní nespustilo. Podívej se na GitHubu do repozitáře darů na záložku Actions.' })
+    ? callout({ tone: 'wait', title: `Platby z banky naposledy ${dayWithYear(b.checked)}.`, text: 'Zvonec už pár dní nestáhl platby z banky. Co se stalo, najdeš na GitHubu v repozitáři darů na záložce Actions. Když si nevíš rady, řekni správci.' })
     : meta(`Platby z banky stažené ${dayWithYear(b.checked)}.`);
 }
 
@@ -544,7 +544,7 @@ function overview(year) {
   const split = isSplit();
   const unassigned = open.length ? section({
     id: 'dary-neprirazene', title: 'Nepřiřazené', count: open.length,
-    body: [byMonth(open, openRow), meta('Klepni a přiřaď. Další platby ze stejného účtu už Zvonec pozná sám.')],
+    body: [byMonth(open, openRow), meta('Vyber platbu a urči, od koho je. Další platby z téhož účtu už Zvonec přiřadí sám.')],
   }) : null;
   const donorList = section({
     title: `Dárci za rok ${year}`, count: donors.length || null,
@@ -577,10 +577,10 @@ function donorPage(key, year) {
   if (!person && !outside) return missingItem({ frame: 'page', back, icon: 'user', label: 'Dárce', title: 'Tenhle dárce už tu není.' });
   const born = c.birthDate ? `nar. ${dayWithYear(c.birthDate)}` : null;
   const giftMenu = (g) => [
-    { label: 'Uprav', icon: 'pencil', onclick: () => giftSheet(g) },
-    { label: 'Přiřaď jinému', icon: 'user', onclick: () => assignSheet(g) },
+    { label: 'Upravit', icon: 'pencil', onclick: () => giftSheet(g) },
+    { label: 'Přiřadit jinému', icon: 'user', onclick: () => assignSheet(g) },
     g.source === 'cash' ? '-' : null,
-    g.source === 'cash' ? { label: 'Smaž', icon: 'trash', danger: true, onclick: () => removeGift(g) } : null,
+    g.source === 'cash' ? { label: 'Smazat', icon: 'trash', danger: true, onclick: () => removeGift(g) } : null,
   ].filter(Boolean);
   const giftRow = (g) => row({
     lead: dateArch(g.date, { quiet: true }),
@@ -594,9 +594,9 @@ function donorPage(key, year) {
   return detail({
     frame: 'page', back, label: name, title: name,
     menu: [
-      { label: 'Přidej dar', icon: 'plus', onclick: () => giftSheet(null, { forKey: key }) },
-      c.gifts.length ? { label: `Vytiskni potvrzení za rok ${year}`, icon: 'printer', onclick: () => printFor([key], year) } : null,
-      outside ? { label: 'Uprav dárce', icon: 'pencil', onclick: () => donorSheet(outside) } : null,
+      { label: 'Přidat dar', icon: 'plus', onclick: () => giftSheet(null, { forKey: key }) },
+      c.gifts.length ? { label: `Vytisknout potvrzení za rok ${year}`, icon: 'printer', onclick: () => printFor([key], year) } : null,
+      outside ? { label: 'Upravit dárce', icon: 'pencil', onclick: () => donorSheet(outside) } : null,
     ].filter(Boolean),
     cls: 'gifts',
     body: [
@@ -605,9 +605,9 @@ function donorPage(key, year) {
         tags: outside ? [pill('mimo sbor')] : null,
         title: name,
         facts: facts([
-          { icon: 'key', text: vsOf(key) ? `Variabilní symbol ${vsOf(key)}` : 'Variabilní symbol zatím nemá', action: 'Změň', aria: 'Změň variabilní symbol', onclick: () => changeVs(key) },
-          c.address ? { icon: 'pin', text: c.address } : { icon: 'pin', text: 'Adresa chybí', action: 'Doplň', onclick: () => (person ? navigate(`#lide/${person.id}`) : donorSheet(outside)) },
-          person ? (born ? { icon: 'cake', text: born } : { icon: 'cake', text: 'Datum narození chybí', action: 'Doplň', onclick: () => navigate(`#lide/${person.id}`) }) : null,
+          { icon: 'key', text: vsOf(key) ? `Variabilní symbol ${vsOf(key)}` : 'Variabilní symbol zatím nemá', action: 'Změnit', aria: 'Změnit variabilní symbol', onclick: () => changeVs(key) },
+          c.address ? { icon: 'pin', text: c.address } : { icon: 'pin', text: 'Adresa chybí', action: 'Doplnit', onclick: () => (person ? navigate(`#lide/${person.id}`) : donorSheet(outside)) },
+          person ? (born ? { icon: 'cake', text: born } : { icon: 'cake', text: 'Datum narození chybí', action: 'Doplnit', onclick: () => navigate(`#lide/${person.id}`) }) : null,
           outside?.companyId ? { icon: 'info', text: `IČO ${outside.companyId}` } : null,
         ]),
       }),
@@ -616,7 +616,7 @@ function donorPage(key, year) {
         body: [
           periodLine({ year, href: (y) => `#dary/darce/${key}/${y}`, here: year === thisYear() }),
           c.gifts.length ? byMonth(c.gifts.slice().reverse(), giftRow) : quiet(`Za rok ${year} tu žádný dar není.`),
-          c.gifts.length ? h('div', { class: 'gift-print' }, button('Vytiskni potvrzení', { variant: 'quiet', icon: 'printer', onclick: () => printFor([key], year) })) : null,
+          c.gifts.length ? h('div', { class: 'gift-print' }, button('Vytisknout potvrzení', { variant: 'quiet', icon: 'printer', onclick: () => printFor([key], year) })) : null,
         ],
       }),
     ],
@@ -669,7 +669,7 @@ export function giftsOverviewSection() {
           { value: amountEl(t.anonymous), label: 'anonymně' },
           { value: String(t.open), label: 'nepřiřazené', tone: t.open ? 'wait' : null, href: t.open ? '#dary-neprirazene' : null },
         ],
-        action: rowLink('Otevři Dary', { href: '#dary' }),
+        action: rowLink('Otevřít Dary', { href: '#dary' }),
       }),
     ],
   });

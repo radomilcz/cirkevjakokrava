@@ -142,13 +142,13 @@ test('kinds: Czech labels and icon keys for every stored kind', () => {
 // ---------- series ----------
 
 test('series: summary in Czech', () => {
-  assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-04', until: '2027-06-27' }), 'Každou neděli do 27. 6.');
-  assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-04', until: '2027-06-27' }, { today: TODAY }), 'Každou neděli do 27. 6. 2027');
-  assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-06', until: '2026-12-15' }, { today: TODAY }), 'Každé úterý do 15. 12.');
+  assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-04', until: '2027-06-27' }), 'Každou neděli do 27.\u00a06.');
+  assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-04', until: '2027-06-27' }, { today: TODAY }), 'Každou neděli do 27.\u00a06. 2027');
+  assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-06', until: '2026-12-15' }, { today: TODAY }), 'Každé úterý do 15.\u00a012.');
   assert.equal(seriesSummary({ step: 'weekly', from: '2026-10-08' }), 'Každý čtvrtek');
-  assert.equal(seriesSummary({ step: 'biweekly', from: '2026-10-07', until: '2026-12-16' }), 'Každou druhou středu do 16. 12.');
+  assert.equal(seriesSummary({ step: 'biweekly', from: '2026-10-07', until: '2026-12-16' }), 'Každou druhou středu do 16.\u00a012.');
   assert.equal(seriesSummary({ step: 'biweekly', from: '2026-10-09' }), 'Každý druhý pátek');
-  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-04', until: '2027-06-06' }), 'Každou první neděli v měsíci do 6. 6.');
+  assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-04', until: '2027-06-06' }), 'Každou první neděli v měsíci do 6.\u00a06.');
   assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-13' }), 'Každé druhé úterý v měsíci');
   assert.equal(seriesSummary({ step: 'monthly', from: '2026-10-15' }), 'Každý třetí čtvrtek v měsíci');
   assert.equal(seriesSummary({ step: 'monthly', from: '2026-12-23' }), 'Každou čtvrtou středu v měsíci');
@@ -217,7 +217,7 @@ test('series: seriesFor infers the rule of older data without a record', () => {
   const d = data();
   d.events = ['2026-10-07', '2026-10-21', '2026-11-04'].map((day, i) => ev(`e${i}`, `${day}T19:00`, `${day}T21:00`, { seriesId: 'old', typeId: 't-sun' }));
   assert.deepEqual(seriesFor(d, d.events[1]), { id: 'old', step: 'biweekly', from: '2026-10-07', until: '2026-11-04', inferred: true, typeId: 't-sun' });
-  assert.equal(seriesSummary(seriesFor(d, 'old')), 'Každou druhou středu do 4. 11.');
+  assert.equal(seriesSummary(seriesFor(d, 'old')), 'Každou druhou středu do 4.\u00a011.');
   d.events[2].start = '2026-11-05T19:00';
   assert.equal(seriesFor(d, 'old').step, null, 'irregular gaps fit no rule');
   assert.equal(seriesFor(d, ev('x', '2026-10-07T19:00', '2026-10-07T20:00')), null);
@@ -225,7 +225,7 @@ test('series: seriesFor infers the rule of older data without a record', () => {
   const old = ['2026-07-07', '2026-08-07', '2026-09-07'].map((day, i) => ev(`m${i}`, `${day}T19:00`, `${day}T20:00`, { seriesId: 'same-date' }));
   const legacy = seriesFor({ ...d, events: old }, 'same-date');
   assert.deepEqual([legacy.step, legacy.from, legacy.until], [null, '2026-07-07', '2026-09-07']);
-  assert.equal(seriesSummary(legacy), 'Opakuje se do 7. 9.');
+  assert.equal(seriesSummary(legacy), 'Opakuje se do 7.\u00a09.');
   assert.deepEqual(extendSeries({ ...d, events: old }, 'same-date', '2026-12-31', { newId: counter() }), []);
   // extending stores a record for the first time
   d.events[2].start = '2026-11-04T19:00';

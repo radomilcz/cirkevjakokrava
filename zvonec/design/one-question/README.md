@@ -32,7 +32,7 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - When, where; „Tvoje služba“ card (with Můžu / Nemůžu while it waits); „Kdo slouží“ as one line per
      team with the names; the viewer is „Ty“ (capital T).
    - Leader: ○ before a name that has not answered (legend „○ čeká na odpověď“), „+ Role“ under a team
-     for an empty slot, › to open the team (roles with ✓ potvrzeno / ○ čeká na odpověď / „+ Doplň“).
+     for an empty slot, › to open the team (roles with ✓ potvrzeno / ○ čeká na odpověď / „+ Doplnit“).
    - **No fill ring** on this screen (the owner removed it); Osnova and „O setkání a místě“ are rows.
    - Editing the event (time, place, Osnova, cancel) is in ⋯. No cover picture, no kind / web pills, no
      recurrence line.
@@ -46,12 +46,12 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
    - Later (the owner liked Next's Seznam): the list is the one view on the phone and the desktop alike – by week,
      one arch per day, an event with its time from–to, the bar in its Účel hue (the brand's colours: Nedělní
      setkání sand, Zkouška blue, Skupinka green, Akce lilac), place, „ty · Kázání · potvrzeno“ and for leaders
-     ◔ 14 z 15 · chybí 1; „Ukaž, co už bylo“, „Ukaž další týdny“. ≥ 1200 px: the list | the event, as Moje.
+     ◔ 14 z 15 · chybí 1; „Zobrazit, co už bylo“, „Zobrazit další týdny“. ≥ 1200 px: the list | the event, as Moje.
    - Then the owner missed the whole month: a switch Seznam · Měsíc under the head (remembered per browser).
      Měsíc (#kalendar/mesic[/<month | day>]) is the grid with the chips in the Účel hues on a desktop (≥ 1200 px the
      event beside it) and the small month with the chosen day's events on a phone.
    - Rozpis came out of hiding (it was only „Rozpis k tisku“ under ⋯): the third view of the switch, for everyone
-     as in Next (#kalendar/rozpis[/<month>][/bremeno | /upozorneni]); leaders get „Doplň volná místa“ in the head,
+     as in Next (#kalendar/rozpis[/<month>][/bremeno | /upozorneni]); leaders get „Doplnit volná místa“ in the head,
      Vytiskni and Břemeno under ⋯, and Obsazení links to it („Celý rozpis ›“).
    - Back to Simple's own form, keeping Next's Seznam (the owner's call): no switch. Phone – the original head
      (Kalendář, „Říjen ▾“, +, ⋯) over the Seznam list. Desktop – the original month grid (one quiet bar for
@@ -63,7 +63,7 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
      where events are compared). Under the title: „+ Role“ per empty slot, „○ 2 ještě neodpověděli ›“,
      „● Radomil má dvě služby naráz ›“. Scope chip: the leader's team / „Všechny týmy“ for admins.
    - „+ Klávesy“ opens the picker titled by the role: people of the team who can, longest-rested first;
-     who cannot that day is greyed out with the reason; „Hledej mezi všemi lidmi“.
+     who cannot that day is greyed out with the reason; „Hledat mezi všemi lidmi“.
    - „2 ještě neodpověděli“ opens who waits, with their duty, how long it waits, SMS and call buttons.
 5. **Lidé** (`lide.html`, approved)
    - Search („Hledej jméno nebo tým“) and A–Z with a call button on each row; no filters, chips or table.
@@ -75,7 +75,7 @@ on a phone, the name at the bottom of the rail on a desktop). There is no Více 
 6. **Under the circle** (`menu.html`, shown)
    - Member: Můj účet, Kdy nemůžu (with the next range), Barvy (bullseyes inline), Veřejný web, Odhlas se.
    - Admin: plus Správa – Šablony setkání, Formáty, Místa, Přístupy (with what waits), Nastavení sboru.
-   - Kdy nemůžu: one sentence, the list, „Přidej“.
+   - Kdy nemůžu: one sentence, the list, „Přidat“.
 7. **Desktop** (`pocitac.html`, shown)
    - Rail: Moje · Obsazení · Kalendář · Lidé and the person at the bottom. Each tab is its phone screen on
      the left and the chosen item on the right (Moje → the event of the chosen duty as a member sees it,
