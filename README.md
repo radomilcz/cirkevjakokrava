@@ -138,7 +138,7 @@ kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swi
 ## Jak je to postavené
 
 - Slajdy se nepřepínají nativním scrollem, ale jedním `translateY` na celém pásu – proto to nikde neškube.
-- Místo otisku jsou fleky z Figmy (mrak_01–05). Sedí na polohách a rotacích otisku z Figmy (tabulka `PRINT` v JS, pole Otisk v CMS dál vybírá polohu); každá poloha má svůj tvar, sousedé se neopakují a pět slajdů má ještě druhý, menší flek, který se s hlavním nepřekrývá. Flek se „přitiskne“ stejně jako dřív otisk – naběhne z 108 % a −2° do plné síly – a obrázek se stáhne, až slajd poprvé přijde na řadu.
+- Místo otisku jsou fleky z Figmy (mrak_01–05). Sedí na polohách a rotacích otisku z Figmy (tabulka `PRINT` v JS, pole Otisk v CMS dál vybírá polohu); každá poloha má svůj tvar a sousedé se neopakují. Dlouhé čtecí slajdy (předmluva, odstavce) mají dva fleky – vpravo nahoře a vlevo níž, takže se nepřekrývají. Flek se „přitiskne“ stejně jako dřív otisk – naběhne z 108 % a −2° do plné síly – a obrázek se stáhne, až slajd poprvé přijde na řadu.
 - Barvu fleku dává `mix-blend-mode: overlay` s pozadím slajdu (i s fotkou): na tmavém i růžovém vyjde světlejší skvrna. Na krémovém by se rozpustil, tam jde převrácený a ztmavuje (`multiply`).
 - Text se odhaluje po řádcích maskou (`.ln`), písmena BŮŮŮH jednotlivě.
 - Barvy: pozadí `#3b2f2f`, text `#e6acac` (slajdy bez fotky si losují dvojici z palety webu).

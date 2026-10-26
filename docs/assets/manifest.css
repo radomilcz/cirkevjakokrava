@@ -83,6 +83,10 @@ body{
    (1920×1080, CPU 4×: ~20 fps během přechodu, s tímhle 60 fps). */
 .print .sweep{position:absolute;inset:0;opacity:0;transform:scale(1.08) rotate(-2deg)}
 .print .flek{display:block;width:100%;height:100%;filter:var(--flek-filtr,none)}
+/* dvojice na dlouhých čtecích slajdech – polohy v procentech celého (vysokého) slajdu */
+.print.cteni{width:min(44vw,820px);height:auto}
+.print.cteni.nahore{right:-8%;top:4%;rotate:-14deg}
+.print.cteni.dole{left:-10%;top:52%;rotate:166deg}
 .slide.in .print .sweep{opacity:1;transform:none;transition:opacity 1s ease .15s,transform 1.8s cubic-bezier(.2,.7,.2,1) .15s}
 /* Tady bývalo „jemné dýchání“ – nekonečná rotace otisku na desktopu. Stálo to 22 % jádra
    pořád dokola, i když se na stránce nic nedělo: maska na .sweep brání tomu, aby se rotace
@@ -421,11 +425,11 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
 
 /* ---------- na výšku: otisk na střed slajdu, velký, jen s rotací daného slajdu ---------- */
 @media (max-aspect-ratio:1/1){
-  .print.dva{display:none}   /* na výšku jen jeden velký flek */
-  .slide:not(.german) .print{left:50% !important;top:50% !important;width:min(135vw,78vh) !important;height:auto !important;
+  .print.cteni{width:min(80vw,60vh)}
+  .slide:not(.german) .print:not(.cteni){left:50% !important;top:50% !important;width:min(135vw,78vh) !important;height:auto !important;
     aspect-ratio:1/1;transform:translate(-50%,-50%) scale(.96)}
-  .slide.in:not(.german) .print{transform:translate(-50%,-50%) scale(1)}
-  .slide:not(.german) .print .rot{width:100% !important}
+  .slide.in:not(.german) .print:not(.cteni){transform:translate(-50%,-50%) scale(1)}
+  .slide:not(.german) .print:not(.cteni) .rot{width:100% !important}
   /* na výšku: kráva větší a výrok přes ni, jako v návrhu – ne dva oddělené bloky.
      Váže se na poměr stran, ne na šířku: i široké, ale vysoké okno je „na výšku“. */
 }

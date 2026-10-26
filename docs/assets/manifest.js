@@ -10,29 +10,28 @@
 
   /* ---------- fleky: rozmístění po otisku 1:1 podle Figmy (rámeček 1920×1080) ----------
      Místo otisku jsou fleky z Figmy (Fleky → Atlas fleků single, mrak_01–05). Každý slajd má svůj
-     tvar (f), sousedé se neopakují; některé mají ještě druhý, menší flek (dva: střed x,y a šířka w
-     v pixelech rámu, r = rotace). Druhý flek je umístěný tak, aby se s hlavním nepřekrýval –
-     ověřeno podle skutečného tvaru (průhlednosti) obou fleků, ne jen obalových obdélníků. Poloha a rotace hlavního fleku zůstaly po otisku – x,y je levý
+     tvar (f) a sousedé se neopakují. Dlouhé slajdy, které se čtou rolováním, mají místo jednoho
+     fleku dva (CTENI níž). Poloha a rotace hlavního fleku zůstaly po otisku – x,y je levý
      horní roh obalového boxu otočené skupiny 816×997, r je rotace ve Figmě. */
   const FLEKY={'01':[1108,1197],'02':[1225,770],'03':[1159,1163],'04':[907,1114],'05':[1285,940]};
   const PRINT={
     '01':     {x:851, y:115,  r:90,   f:'01'},
-    '02':     {x:283, y:370,  r:-75,  f:'03', dva:{f:'02',x:1600,y:190,w:580,r:-12}},
+    '02':     {x:283, y:370,  r:-75,  f:'03'},
     '03':     {x:549, y:-471, r:60,   f:'02'},
-    '04':     {x:-367,y:228,  r:60,   f:'01', dva:{f:'04',x:1680,y:650,w:560,r:18}},
+    '04':     {x:-367,y:228,  r:60,   f:'01'},
     '05':     {x:446, y:132,  r:-90,  f:'05'},
     '06a':    {x:483, y:121,  r:-90,  f:'04'},
     'h01':    {x:324, y:-3,   r:-120, f:'03'},
     'h02':    {x:324, y:-34,  r:-120, f:'03'},
     'h01b':   {x:324, y:-34,  r:-120, f:'03'},
     'h03':    {x:439, y:118,  r:90,   f:'05'},
-    'h04':    {x:302, y:-111, r:60,   f:'04', dva:{f:'02',x:1600,y:220,w:560,r:8}},
+    'h04':    {x:302, y:-111, r:60,   f:'04'},
     'h05':    {x:384, y:17,   r:-105, f:'01'},
     'h06':    {x:384, y:0,    r:75,   f:'02'},
-    'h07':    {x:351, y:-126, r:-45,  f:'03', dva:{f:'05',x:1640,y:820,w:580,r:-20}},
+    'h07':    {x:351, y:-126, r:-45,  f:'03'},
     'h08':    {x:336, y:-139, r:30,   f:'04'},
     'h09':    {x:373, y:17,   r:-105, f:'05'},
-    'h10':    {x:396, y:0,    r:-75,  f:'01', dva:{f:'03',x:240,y:690,w:540,r:25}},
+    'h10':    {x:396, y:0,    r:-75,  f:'01'},
     'h11':    {x:404, y:38,   r:99,   f:'02'},
     'zrcadlo':{x:373, y:0,    r:75,   f:'03'}
   };
@@ -50,12 +49,17 @@
     const r=document.createElement('div');r.className='rot';
     r.style.cssText=`width:${sirka/c.w*100}%;aspect-ratio:${fw}/${fh};transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
     r.innerHTML=flek(c.f);d.appendChild(r);
-    if(c.dva){
-      const v=c.dva,[w2,h2]=FLEKY[v.f],e=document.createElement('div');e.className='print dva';
-      e.style.cssText=`left:${(v.x-v.w/2)/19.2}%;top:${(v.y-v.w*h2/w2/2)/10.8}%;width:${v.w/19.2}%;aspect-ratio:${w2}/${h2};rotate:${v.r}deg`;
-      e.innerHTML=flek(v.f);s.prepend(e);
-    }
     s.prepend(d);
+  });
+  /* Dlouhé čtecí slajdy (předmluva, odstavce) mají dva fleky: jeden vpravo nahoře, druhý vlevo
+     níž. Polohy jsou v procentech slajdu, takže se rozloží po celé délce textu; vodorovně leží
+     každý na jiné straně, takže se nepřekrývají. Tvary se pro každý čtecí slajd střídají. */
+  const CTENI=[['02','05'],['04','03'],['05','01']];
+  slides.filter(s=>s.classList.contains('read')).forEach((s,n)=>{
+    CTENI[n%CTENI.length].forEach((f,j)=>{
+      const [fw,fh]=FLEKY[f],e=document.createElement('div');e.className='print cteni '+(j?'dole':'nahore');
+      e.style.aspectRatio=`${fw}/${fh}`;e.innerHTML=flek(f);s.prepend(e);
+    });
   });
   /* obrázek se stáhne, až slajd poprvé přijde na řadu */
   function drawPrint(s){s.querySelectorAll('.print img[data-src]').forEach(i=>{i.src=i.dataset.src;i.removeAttribute('data-src')})}
@@ -234,7 +238,7 @@
         const tp=pos(r.t);r.lineH=parseFloat(getComputedStyle(r.t).lineHeight);r.w=r.t.clientWidth;
         r.el.forEach(w=>{const q=pos(w);w._top=q.y;w._x=(q.x-tp.x)/r.w});
       }
-      const c=s._printCfg,d=s.querySelector('.print:not(.dva)');
+      const c=s._printCfg,d=s.querySelector('.print:not(.cteni)');
       if(c&&d){d.style.top=(c.y/1080*H+(s.offsetHeight-H)/2)+'px';d.style.height=(c.h/1080*H)+'px'}
       r.inner=Math.min(r.inner,r.max);
     });
