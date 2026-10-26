@@ -88,7 +88,7 @@ body{
 .slide.cream .print{mix-blend-mode:normal}
 .slide.cream .print .blot{visibility:hidden}
 .slide.cream .print .sweep::before{
-  content:"";position:absolute;inset:0;background:var(--ink);
+  content:"";position:absolute;inset:0;background:var(--ink);opacity:.7;   /* weakest that still keeps the hue; lower turns grey */
   -webkit-mask:var(--blot-mask) center/100% 100% no-repeat;mask:var(--blot-mask) center/100% 100% no-repeat;
 }
 /* pair of blots on long reading slides – positions are percentages of the whole (tall) slide */
