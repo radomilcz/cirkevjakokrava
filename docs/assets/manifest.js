@@ -8,49 +8,58 @@
   const N=slides.length;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- otisk: rozmístění 1:1 podle Figmy (rámeček 1920×1080, skupina 816×997 otočená) ----------
-     x,y,w,h = obalový box otočené skupiny v rámu; rot = rotace navíc oproti exportu (export je otočený o 90°) */
-  const PRINT={            /* x,y = levý horní roh obalového boxu otočené skupiny v rámu, r = rotace ve Figmě */
-    '01':     {x:851, y:115,  r:90},
-    '02':     {x:283, y:370,  r:-75},
-    '03':     {x:549, y:-471, r:60},
-    '04':     {x:-367,y:228,  r:60},
-    '05':     {x:446, y:132,  r:-90},
-    '06a':    {x:483, y:121,  r:-90},
-    'h01':    {x:324, y:-3,   r:-120},
-    'h02':    {x:324, y:-34,  r:-120},
-    'h01b':   {x:324, y:-34,  r:-120},
-    'h03':    {x:439, y:118,  r:90},
-    'h04':    {x:302, y:-111, r:60},
-    'h05':    {x:384, y:17,   r:-105},
-    'h06':    {x:384, y:0,    r:75},
-    'h07':    {x:351, y:-126, r:-45},
-    'h08':    {x:336, y:-139, r:30},
-    'h09':    {x:373, y:17,   r:-105},
-    'h10':    {x:396, y:0,    r:-75},
-    'h11':    {x:404, y:38,   r:99},
-    'zrcadlo':{x:373, y:0,    r:75}
+  /* ---------- fleky: rozmístění po otisku 1:1 podle Figmy (rámeček 1920×1080) ----------
+     Místo otisku jsou fleky z Figmy (Fleky → Atlas fleků single, mrak_01–05). Každý slajd má svůj
+     tvar (f), sousedé se neopakují; některé mají ještě druhý, menší flek (dva: střed x,y a šířka w
+     v pixelech rámu, r = rotace). Druhý flek je umístěný tak, aby se s hlavním nepřekrýval –
+     ověřeno podle skutečného tvaru (průhlednosti) obou fleků, ne jen obalových obdélníků. Poloha a rotace hlavního fleku zůstaly po otisku – x,y je levý
+     horní roh obalového boxu otočené skupiny 816×997, r je rotace ve Figmě. */
+  const FLEKY={'01':[1108,1197],'02':[1225,770],'03':[1159,1163],'04':[907,1114],'05':[1285,940]};
+  const PRINT={
+    '01':     {x:851, y:115,  r:90,   f:'01'},
+    '02':     {x:283, y:370,  r:-75,  f:'03', dva:{f:'02',x:1600,y:190,w:580,r:-12}},
+    '03':     {x:549, y:-471, r:60,   f:'02'},
+    '04':     {x:-367,y:228,  r:60,   f:'01', dva:{f:'04',x:1680,y:650,w:560,r:18}},
+    '05':     {x:446, y:132,  r:-90,  f:'05'},
+    '06a':    {x:483, y:121,  r:-90,  f:'04'},
+    'h01':    {x:324, y:-3,   r:-120, f:'03'},
+    'h02':    {x:324, y:-34,  r:-120, f:'03'},
+    'h01b':   {x:324, y:-34,  r:-120, f:'03'},
+    'h03':    {x:439, y:118,  r:90,   f:'05'},
+    'h04':    {x:302, y:-111, r:60,   f:'04', dva:{f:'02',x:1600,y:220,w:560,r:8}},
+    'h05':    {x:384, y:17,   r:-105, f:'01'},
+    'h06':    {x:384, y:0,    r:75,   f:'02'},
+    'h07':    {x:351, y:-126, r:-45,  f:'03', dva:{f:'05',x:1640,y:820,w:580,r:-20}},
+    'h08':    {x:336, y:-139, r:30,   f:'04'},
+    'h09':    {x:373, y:17,   r:-105, f:'05'},
+    'h10':    {x:396, y:0,    r:-75,  f:'01', dva:{f:'03',x:240,y:690,w:540,r:25}},
+    'h11':    {x:404, y:38,   r:99,   f:'02'},
+    'zrcadlo':{x:373, y:0,    r:75,   f:'03'}
   };
-  /* skupina je 816×997; export otisku je pořízený při rotaci 90°, Figma točí proti směru hodin, CSS po směru → css = 90 − r */
+  /* Obalový box se počítá ze skupiny otisku 816×997 (Figma točí proti směru hodin, CSS po směru →
+     css = 90 − r). Flek se do něj vejde s plochou zhruba jako otisk, poměr stran má vlastní. */
+  const PLOCHA=998*1078;
   Object.values(PRINT).forEach(c=>{const a=c.r*Math.PI/180,C=Math.abs(Math.cos(a)),S=Math.abs(Math.sin(a));
     c.w=816*C+997*S;c.h=816*S+997*C;c.rot=90-c.r});
+  const flek=f=>'<div class="sweep"><img class="flek" alt="" decoding="async" data-src="assets/fleky/mrak'+f+'.webp"></div>';
   slides.forEach(s=>{
     const k=s.dataset.print;if(!k)return;const c=PRINT[k];
+    const [fw,fh]=FLEKY[c.f],sirka=Math.sqrt(PLOCHA*fw/fh);
     const d=document.createElement('div');d.className='print';
     d.style.cssText=`left:${c.x/19.2}%;top:${c.y/10.8}%;width:${c.w/19.2}%;height:${c.h/10.8}%`;
     const r=document.createElement('div');r.className='rot';
-    r.style.cssText=`width:${998/c.w*100}%;transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
-    r.innerHTML='<div class="sweep"><svg viewBox="0 0 998 816"></svg></div>';
-    d.appendChild(r);s.prepend(d);s._svg=r.querySelector('svg');
+    r.style.cssText=`width:${sirka/c.w*100}%;aspect-ratio:${fw}/${fh};transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
+    r.innerHTML=flek(c.f);d.appendChild(r);
+    if(c.dva){
+      const v=c.dva,[w2,h2]=FLEKY[v.f],e=document.createElement('div');e.className='print dva';
+      e.style.cssText=`left:${(v.x-v.w/2)/19.2}%;top:${(v.y-v.w*h2/w2/2)/10.8}%;width:${v.w/19.2}%;aspect-ratio:${w2}/${h2};rotate:${v.r}deg`;
+      e.innerHTML=flek(v.f);s.prepend(e);
+    }
+    s.prepend(d);
   });
-  const LINES=[...document.querySelectorAll('#otisk path')];
-  function drawPrint(s){
-    if(!s._svg||s._svg.childElementCount)return;
-    const frag=document.createDocumentFragment();
-    LINES.forEach(p=>frag.appendChild(p.cloneNode()));
-    s._svg.appendChild(frag);
-  }
-  function clearPrint(s){if(s._svg)s._svg.replaceChildren()}
+  /* obrázek se stáhne, až slajd poprvé přijde na řadu */
+  function drawPrint(s){s.querySelectorAll('.print img[data-src]').forEach(i=>{i.src=i.dataset.src;i.removeAttribute('data-src')})}
+  function clearPrint(){}
 
   /* ---------- lišta s tečkami ---------- */
   slides.forEach((s,i)=>{
@@ -112,6 +121,12 @@
       posledni=k;obarvi(s,PALETA[k]);
       const [g,i]=PALETA[k];
       s._barvy=s.classList.contains('love')?[i,g]:[g,i];   /* .love má pozadí v --ink, pevné prvky jdou naopak */
+      /* Flek je světlý a overlay ho míchá s pozadím – na tmavém i na růžovém vyjde světlejší skvrna
+         (jako v atlasu fleků ve Figmě). Jen na krémové by se úplně rozpustil, tam jde převrácený
+         a ztmavuje (multiply), slabě, jako dřív otisk v barvě písma. */
+      const krem=s._barvy[0]==='#f9e7dd';
+      s.style.setProperty('--flek-filtr',krem?'invert(1) opacity(.45)':'none');
+      s.style.setProperty('--flek-blend',krem?'multiply':'overlay');
     }
     barvyTed=s._barvy||ZAKLAD;
     pevne.forEach(el=>obarvi(el,barvyTed));
@@ -219,7 +234,7 @@
         const tp=pos(r.t);r.lineH=parseFloat(getComputedStyle(r.t).lineHeight);r.w=r.t.clientWidth;
         r.el.forEach(w=>{const q=pos(w);w._top=q.y;w._x=(q.x-tp.x)/r.w});
       }
-      const c=s._printCfg,d=s.querySelector('.print');
+      const c=s._printCfg,d=s.querySelector('.print:not(.dva)');
       if(c&&d){d.style.top=(c.y/1080*H+(s.offsetHeight-H)/2)+'px';d.style.height=(c.h/1080*H)+'px'}
       r.inner=Math.min(r.inner,r.max);
     });
