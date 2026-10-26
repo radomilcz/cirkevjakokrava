@@ -18,7 +18,7 @@ Placeholdery v šabloně / CSS (nahrazuje build, ne Jinja):
   {{SITE}}                       adresa webu (absolutní odkazy pro og:image, canonical)
   {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
   – náhled sdílení, ikony a fleky (src/assets/og.jpg, favicon.svg, favicon-32.png, icon-180.png,
-    src/assets/fleky/) se jen kopírují; generují se zvlášť, viz níže
+    src/assets/blots/) se jen kopírují; generují se zvlášť, viz níže
   {{F_GRANDHEAVY}} {{F_REGULAR}} {{F_NARROWBLACK}} {{F_GRAND}}   fonty (src/fonts/*.woff)
 
 Použití:  python3 build.py
@@ -48,7 +48,7 @@ FOTKY = os.path.join('assets', 'fotky')         # fotky slajdů: src/assets/fotk
 FOTKA_MAX = 2000, 600 * 1024                   # širší nebo těžší upload build zmenší do webp (pip install pillow)
 # náhled sdílení a ikony – hotové soubory, jen se kopírují do docs/assets/
 STATIC = ('og.jpg', 'favicon.svg', 'favicon-32.png', 'icon-180.png')
-FLEKY = os.path.join('assets', 'fleky')          # fleky z Figmy (mrak01–05.webp) – kopírují se celé
+BLOTS = os.path.join('assets', 'blots')          # blots from Figma (blot01–05.webp, layers mrak_01–05), copied as a whole
 
 
 def read(path):
@@ -365,8 +365,9 @@ def build():
     zkopiruj_fotky(assets)
     for name in STATIC:
         shutil.copy(os.path.join(SRC, 'assets', name), os.path.join(assets, name))
-    shutil.rmtree(os.path.join(DOCS, FLEKY), ignore_errors=True)
-    shutil.copytree(os.path.join(SRC, FLEKY), os.path.join(DOCS, FLEKY))
+    shutil.rmtree(os.path.join(DOCS, 'assets', 'fleky'), ignore_errors=True)   # old folder name
+    shutil.rmtree(os.path.join(DOCS, BLOTS), ignore_errors=True)
+    shutil.copytree(os.path.join(SRC, BLOTS), os.path.join(DOCS, BLOTS))
     web = web.replace('{{SITE}}', SITE)
     check(web)
     with open(os.path.join(DOCS, 'index.html'), 'w', encoding='utf-8') as f:

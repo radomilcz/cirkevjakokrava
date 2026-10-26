@@ -8,12 +8,13 @@
   const N=slides.length;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- fleky: rozmístění po otisku 1:1 podle Figmy (rámeček 1920×1080) ----------
-     Místo otisku jsou fleky z Figmy (Fleky → Atlas fleků single, mrak_01–05). Každý slajd má svůj
-     tvar (f) a sousedé se neopakují. Dlouhé slajdy, které se čtou rolováním, mají místo jednoho
-     fleku dva (CTENI níž). Poloha a rotace hlavního fleku zůstaly po otisku – x,y je levý
-     horní roh obalového boxu otočené skupiny 816×997, r je rotace ve Figmě. */
-  const FLEKY={'01':[1108,1197],'02':[1225,770],'03':[1159,1163],'04':[907,1114],'05':[1285,940]};
+  /* ---------- blots: placed where the fingerprint used to be, 1:1 from Figma (1920×1080 frame) ----------
+     The fingerprint is replaced by blots from Figma (Fleky → Atlas fleků single, layers mrak_01–05,
+     files assets/blots/blot01–05.webp). Each slide has its own shape (f) and neighbours never repeat.
+     Long slides read by scrolling get two blots instead of one (READING_BLOTS below). Position and
+     rotation stayed from the fingerprint – x,y is the top-left corner of the bounding box of the
+     rotated 816×997 group, r is the rotation in Figma. */
+  const BLOTS={'01':[1108,1197],'02':[1225,770],'03':[1159,1163],'04':[907,1114],'05':[1285,940]};
   const PRINT={
     '01':     {x:851, y:115,  r:90,   f:'01'},
     '02':     {x:283, y:370,  r:-75,  f:'03'},
@@ -35,30 +36,39 @@
     'h11':    {x:404, y:38,   r:99,   f:'02'},
     'zrcadlo':{x:373, y:0,    r:75,   f:'03'}
   };
-  /* Obalový box se počítá ze skupiny otisku 816×997 (Figma točí proti směru hodin, CSS po směru →
-     css = 90 − r). Flek se do něj vejde s plochou zhruba jako otisk, poměr stran má vlastní. */
-  const PLOCHA=998*1078;
+  /* The bounding box comes from the 816×997 fingerprint group (Figma rotates counter-clockwise,
+     CSS clockwise → css = 90 − r). A blot gets roughly the fingerprint's area, with its own aspect ratio. */
+  const BLOT_AREA=998*1078;
   Object.values(PRINT).forEach(c=>{const a=c.r*Math.PI/180,C=Math.abs(Math.cos(a)),S=Math.abs(Math.sin(a));
     c.w=816*C+997*S;c.h=816*S+997*C;c.rot=90-c.r});
-  const flek=f=>'<div class="sweep"><img class="flek" alt="" decoding="async" data-src="assets/fleky/mrak'+f+'.webp"></div>';
+  /* --blot-mask holds an absolute URL: a url() inside a custom property would otherwise resolve
+     against the stylesheet (assets/) and 404 */
+  const blotMarkup=f=>{const u=new URL('assets/blots/blot'+f+'.webp',document.baseURI).href;
+    return '<div class="sweep" style="--blot-mask:url('+u+')"><img class="blot" alt="" decoding="async" data-src="'+u+'"></div>'};
   slides.forEach(s=>{
     const k=s.dataset.print;if(!k)return;const c=PRINT[k];
-    const [fw,fh]=FLEKY[c.f],sirka=Math.sqrt(PLOCHA*fw/fh);
+    const [fw,fh]=BLOTS[c.f],width=Math.sqrt(BLOT_AREA*fw/fh);
     const d=document.createElement('div');d.className='print';
     d.style.cssText=`left:${c.x/19.2}%;top:${c.y/10.8}%;width:${c.w/19.2}%;height:${c.h/10.8}%`;
     const r=document.createElement('div');r.className='rot';
-    r.style.cssText=`width:${sirka/c.w*100}%;aspect-ratio:${fw}/${fh};transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
-    r.innerHTML=flek(c.f);d.appendChild(r);
+    r.style.cssText=`width:${width/c.w*100}%;aspect-ratio:${fw}/${fh};transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
+    r.innerHTML=blotMarkup(c.f);d.appendChild(r);
     s.prepend(d);
   });
-  /* Dlouhé čtecí slajdy (předmluva, odstavce) mají dva fleky: jeden vpravo nahoře, druhý vlevo
-     níž. Polohy jsou v procentech slajdu, takže se rozloží po celé délce textu; vodorovně leží
-     každý na jiné straně, takže se nepřekrývají. Tvary se pro každý čtecí slajd střídají. */
-  const CTENI=[['02','05'],['04','03'],['05','01']];
+  /* Long reading slides (foreword, paragraphs) get two blots: one at the top, the other lower down
+     on the opposite side. Positions are percentages of the (tall) slide, so they spread along the
+     whole text, and since each sits on a different side they never overlap. Classes: placement
+     (top/bottom), side (left/right), large = bigger blot. The order follows the reading slides of
+     the manifest and repeats after that. */
+  const READING_BLOTS=[
+    [['01','top left large'],['05','bottom right']],    /* Kdo jsme? – large blot top left */
+    [['04','top right'],['03','bottom left']],
+    [['05','top right'],['01','bottom left']]
+  ];
   slides.filter(s=>s.classList.contains('read')).forEach((s,n)=>{
-    CTENI[n%CTENI.length].forEach((f,j)=>{
-      const [fw,fh]=FLEKY[f],e=document.createElement('div');e.className='print cteni '+(j?'dole':'nahore');
-      e.style.aspectRatio=`${fw}/${fh}`;e.innerHTML=flek(f);s.prepend(e);
+    READING_BLOTS[n%READING_BLOTS.length].forEach(([f,place])=>{
+      const [fw,fh]=BLOTS[f],e=document.createElement('div');e.className='print reading '+place;
+      e.style.aspectRatio=`${fw}/${fh}`;e.innerHTML=blotMarkup(f);s.prepend(e);
     });
   });
   /* obrázek se stáhne, až slajd poprvé přijde na řadu */
@@ -125,12 +135,10 @@
       posledni=k;obarvi(s,PALETA[k]);
       const [g,i]=PALETA[k];
       s._barvy=s.classList.contains('love')?[i,g]:[g,i];   /* .love má pozadí v --ink, pevné prvky jdou naopak */
-      /* Flek je světlý a overlay ho míchá s pozadím – na tmavém i na růžovém vyjde světlejší skvrna
-         (jako v atlasu fleků ve Figmě). Jen na krémové by se úplně rozpustil, tam jde převrácený
-         a ztmavuje (multiply), slabě, jako dřív otisk v barvě písma. */
-      const krem=s._barvy[0]==='#f9e7dd';
-      s.style.setProperty('--flek-filtr',krem?'invert(1) opacity(.45)':'none');
-      s.style.setProperty('--flek-blend',krem?'multiply':'overlay');
+      /* The blot is light and overlay blends it with the background – on dark and pink it shows as a
+         lighter patch (as in the Figma blot atlas). Cream would swallow it, so there it is drawn
+         in the text colour instead (see .cream in the CSS). */
+      s.classList.toggle('cream',s._barvy[0]==='#f9e7dd');
     }
     barvyTed=s._barvy||ZAKLAD;
     pevne.forEach(el=>obarvi(el,barvyTed));
@@ -238,7 +246,7 @@
         const tp=pos(r.t);r.lineH=parseFloat(getComputedStyle(r.t).lineHeight);r.w=r.t.clientWidth;
         r.el.forEach(w=>{const q=pos(w);w._top=q.y;w._x=(q.x-tp.x)/r.w});
       }
-      const c=s._printCfg,d=s.querySelector('.print:not(.cteni)');
+      const c=s._printCfg,d=s.querySelector('.print:not(.reading)');
       if(c&&d){d.style.top=(c.y/1080*H+(s.offsetHeight-H)/2)+'px';d.style.height=(c.h/1080*H)+'px'}
       r.inner=Math.min(r.inner,r.max);
     });
