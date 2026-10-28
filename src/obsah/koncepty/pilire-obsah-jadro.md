@@ -93,3 +93,14 @@ Verš pro rozklik 03 (TVOŘÍME): Ef 2,10 (B21: „Jsme přece jeho dílo! Bůh 
 - Ať lidé poznají, že Bohu na nich záleží. / Každý den → v práci, ve škole i na kole.
 
 V náhledu je teď místo nich text z webu (17. 10.).
+
+## Kořen osy (uložený 28. 10., do pilířů zatím ne)
+Radomil 28. 10.: „Ten kořen někam ulož, ale do pilířů ho zatím nedávej.“
+
+> Bůh v našem životě působil dřív, než jsme ho poznali. Proto nás nepřekvapuje, že působí i v životě lidí kolem nás dřív, než ho poznají oni.
+
+Vychází z Gemini „Strategický přehled“ (Kořen manifestu, 1 J 4,19; Ef 2,10).
+
+Varianty ve stylu Otty (28. 10., prošly kontrolou češtiny):
+- A) **Tráva roste dřív než kráva** / Bůh v našem životě pracoval dřív, než jsme o něm vůbec věděli. My jsme přišli na hotové. / Proto nás nepřekvapí, když ho potkáme u sousedů. Byl tam dávno před námi. A dávno předtím, než ho poznají oni.
+- B) Kdo byl v našem životě první? On. / Bůh pracoval dřív, než jsme ho poznali. A u sousedů to není jinak. / Tráva roste dřív než kráva.
