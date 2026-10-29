@@ -10,7 +10,7 @@ Náhled: https://claude.ai/artifact/MPUqCp1XKwCJustFScUE8w · Build tuhle složk
 
 Bůh je tvořivý a laskavý. Jeho náturu vidíme v naší krajině i krajanech. V dobrých věcech, které dělají lidi kolem nás. Včetně těch, kteří Boha ještě neznají. Automechanik, který poctivě řekne, co se opravovat nemusí. Paní ze školní jídelny, která ví, kdo nemá rád koprovku. Trenér, který v únoru mrzne u hřiště s cizími dětmi.
 
-Proč začínáme zrovna tady? Kdo začne slovem „přinášíme“, tváří se jako jediný majitel dobra ve městě. My se nejdřív díváme. Dobré věci kolem nás nebereme jako samozřejmost ani jako konkurenci. Jsou to Boží dary, i když lidi o Dárci nevědí. A když slavíme dar, slavíme Dárce.
+Proč začínáme zrovna tady? Kdo začne slovem „přinášíme“, tváří se jako jediný majitel dobra ve městě. My se nejdřív díváme. Dobré věci kolem nás nebereme jako samozřejmost ani jako konkurenci. Jsou to Boží dary, i když lidi o Dárci nevědí. A když slavíme dar, slavíme Dárce. Bohoslužba nekončí u dveří kostela.
 
 Fandit umí každý. Všimneme si, máme radost a řekneme to nahlas: člověku do očí i ostatním, když u toho není. Ve sboru to platí stejně. Ceníme i to, co není vidět: poctivá práce kuchařky, uklízečky nebo rodiče má u nás stejnou váhu jako nedělní kázání. Povzbuzení zazní dřív a častěji než kritika.
 
