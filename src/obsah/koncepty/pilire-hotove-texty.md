@@ -97,7 +97,7 @@ Neděle má smysl. Pastva ale roste hlavně přes týden.
 
 ## 04 · TOUŽÍME (srdce)
 
-**Pointa:** Toužíme, aby naši sousedé na vlastní kůži poznali, že Bůh je blízko, zná je jménem a touží, aby překonali strach a navázali osobní a proměňující vztah. (Radomil 29. 10.)
+**Pointa:** Toužíme, aby sousedé na vlastní kůži zažili, že Bůh je blízko. Že je zná jménem a touží, aby překonali strach a navázali s ním osobní a proměňující vztah. (Radomil 29. 10.)
 
 *Alternativa pointy:* Proč to celé děláme? Kvůli jménům, ne číslům.
 
