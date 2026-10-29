@@ -51,14 +51,14 @@ export class PayloadStore {
         body: body === undefined ? undefined : JSON.stringify(body),
       });
     } catch {
-      throw new GithubError('Spojení vypadlo. Jsi online?', 0);
+      throw new GithubError('Chybí připojení k internetu. Zkontroluj ho a zkus to znovu.', 0);
     }
     if (method === 'GET' && response.status === 404) return null;
     let json = null;
     try { json = await response.json(); } catch { /* an empty answer */ }
     if (response.ok) return json;
     if (response.status === 409) throw new Conflict(json?.error || undefined);
-    throw new GithubError(json?.error || `Server odpověděl ${response.status}.`, response.status);
+    throw new GithubError(json?.error || `Server vrátil chybu ${response.status}. Zkus to za chvíli znovu.`, response.status);
   }
 
   path(path) {
@@ -81,7 +81,7 @@ export class PayloadStore {
     return this.request('POST', 'logout', {}, {});
   }
 
-  /** „Změň heslo“: the new password and the name I sign in with. */
+  /** „Změnit heslo“: the new password and the name I sign in with. */
   changePassword(name, password) {
     return this.request('POST', 'password', {}, { name, password });
   }

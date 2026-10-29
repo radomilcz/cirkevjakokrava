@@ -16,7 +16,6 @@ import { resetFinance } from './ui/finance-state.js';
 import { resetGiving } from './ui/giving-state.js';
 import { createDemo, DEMO_VIEWERS } from './lib/demo.js';
 import { addDemoGiving } from './lib/demo-gifts.js';
-import { PUBLIC_FILE } from './lib/public.js';
 import { personById } from './lib/people.js';
 import { today } from './lib/time.js';
 import {
@@ -54,7 +53,7 @@ const REDIRECTS = [
 ];
 
 const signedIn = () => !!S.me;
-const homeSection = () => (signedIn() ? 'moje' : S.logins.length || S.mode === 'demo' || S.payload ? 'pastva' : 'prihlaseni');
+const homeSection = () => (signedIn() ? 'moje' : 'prihlaseni');
 
 function allowedFor(access, parts) {
   const level = typeof access === 'function' ? access(parts) : access;
@@ -98,9 +97,9 @@ function resolve() {
 /** Where a Setkání page goes back to: the tab (or the person card) it was opened from. */
 const BACK_LABELS = { moje: 'Moje', obsazeni: 'Obsazení', kalendar: 'Kalendář', lide: 'Lidé' };
 
-/** Signed in and looking at a public page: „Takhle to vidí návštěvníci · Vrať se do Zvonce“. */
+/** Signed in and looking at a public page: „Takhle to vidí návštěvníci · Zpět do Zvonce“. */
 const publicStrip = () => h('div', { class: 'strip', role: 'note' },
-  h('span', {}, 'Takhle to vidí návštěvníci'), h('a', { class: 'link', href: '#moje' }, icon('arrow-left', { size: 's' }), 'Vrať se do Zvonce'));
+  h('span', {}, 'Takhle to vidí návštěvníci'), h('a', { class: 'link', href: '#moje' }, icon('arrow-left', { size: 's' }), 'Zpět do Zvonce'));
 
 // ---------- rendering ----------
 
@@ -250,7 +249,7 @@ window.addEventListener('hashchange', () => {
 // crossing 600 / 1200 px changes the layout (tab bar ↔ rail, page ↔ pane): render again
 onLayoutChange(() => { if (!busy()) renderApp(); });
 
-// keyboard: „/“ search, „N“ the main action, Esc closes an open pane, ← / → the month (≥ 600), Ctrl Z the toast's „Vrať“
+// keyboard: „/“ search, „N“ the main action, Esc closes an open pane, ← / → the month (≥ 600), Ctrl Z the toast's „Vrátit zpět“
 document.addEventListener('keydown', (e) => {
   if (e.defaultPrevented) return;
   const typing = e.target.closest?.('input, textarea, select, [contenteditable]');
@@ -299,7 +298,7 @@ if (window.visualViewport) {
 
 // ---------- save status ----------
 // Quiet unless it matters: „Ukládám…“ only after a second, nothing once saved; a failed save stays on screen with
-// „Zkus to znovu“.
+// „Zkusit znovu“.
 
 const saveLine = document.querySelector('.save-line');
 let savingTimer = 0;
@@ -311,7 +310,7 @@ function showSaveStatus({ status, error }) {
     saveLine.dataset.tone = 'no';
     saveLine.replaceChildren(
       h('span', {}, status === 'offline' ? 'Chybí připojení k internetu. Zvonec změny uloží, až se připojení vrátí.' : 'Změny se neuložily.'),
-      h('button', { type: 'button', class: 'btn btn--s btn--quiet', onclick: () => S.sync.save() }, 'Zkus to znovu'));
+      h('button', { type: 'button', class: 'btn btn--s btn--quiet', onclick: () => S.sync.save() }, 'Zkusit znovu'));
     saveLine.hidden = false;
   } else if (status === 'saving' || status === 'pending') {
     savingTimer = setTimeout(() => {
@@ -449,11 +448,9 @@ async function boot() {
       const result = await restore(S.logins, remembered);
       if (result && result.record.access !== 'invite') { await startLive(result); return; }
       if (S.logins.some((l) => l.id === remembered.id)) forgetRemembered();
-      else S.signInMessage = 'Zatím se nemůžeš přihlásit: přístup ještě nezačal platit, nebo ho někdo zrušil. Jestli je úplně nový, zkus to za pár minut.';
+      else S.signInMessage = 'Zatím se nemůžeš přihlásit: přístup ještě nezačal platit, nebo ho někdo zrušil. Jestli ti ho vytvořili teprve teď, zkus to za pár minut.';
     }
     renderApp();
-    S.publicData = await fetchPublic(PUBLIC_FILE);
-    if (!S.me) renderApp();
     return;
   }
   S.mode = 'demo';
@@ -487,12 +484,10 @@ async function bootPayload(backend) {
     S.signInMessage = `Server teď neodpovídá. Zkus to za chvíli znovu. (${error.message})`;
   }
   if (session?.user) { await startPayload(session); return; }
-  // public.json first, then one render: a second render would wipe what a password manager filled into the form
-  S.publicData = await fetchPublic(sbor ? `${PUBLIC_FILE}?sbor=${encodeURIComponent(sbor)}` : PUBLIC_FILE);
   renderApp();
 }
 
-/** „Podívej se očima druhých“ changes who is looking: the navigation is built again for them. */
+/** „Podívat se očima druhých“ changes who is looking: the navigation is built again for them. */
 let viewer = null;
 function resetNavIfViewerChanged() {
   const now = `${S.me?.personId}-${S.me?.access}`;

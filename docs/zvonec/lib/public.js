@@ -58,16 +58,19 @@ function publicPlace(data, room) {
  * The public view of the data, upcoming only.
  * today: "YYYY-MM-DD". Events: published (`public === true`) and reaching into the window from
  * today − 1 day to today + daysAhead; cancelled ones stay with `cancelled: true` so people see a
- * cancellation. Sorted by start, then id.
+ * cancellation. Sorted by start, then id. `featured` – a leader pinned it to the top of Pastva („Zvýraznit na webu“);
+ * `seriesId` and `repeat` – it is one of a regular series, so Pastva shows the series once („Každou neděli“).
  *
  * { v: 1, churchName, address, generated: today,
  *   events:  [{ id, title, kind, start, end, description, image: "images/<name>" | null,
- *               places: [{ name, building?, address?, lat?, lon? }], cancelled? }],
+ *               places: [{ name, building?, address?, lat?, lon? }], cancelled?, featured?,
+ *               seriesId?, repeat?: 'weekly' | 'biweekly' | 'monthly' }],
  *   formats: [{ id, name, minutes, why, how }] }
  */
 export function buildPublic(data, { today, daysAhead = 120 } = {}) {
   checkToday(today);
   const placesById = new Map((data.places || []).map((p) => [p.id, p]));
+  const stepOf = new Map((data.series || []).map((x) => [x.id, x.step]));
 
   const events = publishedEvents(data, today, daysAhead).map((e) => {
     const image = imageOf(data, e);
@@ -82,6 +85,9 @@ export function buildPublic(data, { today, daysAhead = 120 } = {}) {
       image: image ? `${PUBLIC_IMAGES_DIR}/${image}` : null,
     };
     if (e.cancelled) item.cancelled = true;
+    if (e.featured === true) item.featured = true;
+    const repeat = e.seriesId ? stepOf.get(e.seriesId) : null;
+    if (['weekly', 'biweekly', 'monthly'].includes(repeat)) Object.assign(item, { seriesId: e.seriesId, repeat });
     return item;
   });
 

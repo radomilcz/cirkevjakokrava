@@ -3,10 +3,10 @@
 //   personBody(person, { frame })                  the same body without the frame (Můj účet › Moje karta)
 //   householdDetail(household, { frame, back, close })
 // Člověk: avatar 72 (a pane's top-left corner) → membership pill (leaders) → name → facts (the teams as one line, the
-// birthday for leaders and the person) → contact tiles Zavolej · SMS · E-mail (L 52, only those with data, never on
-// your own card). Sections: callouts (archive, what is missing – leaders), Co nesedí (leaders), Příští služby, Kontakt [Uprav], Domácnost, Skupiny
-// [+ Přidej], Kdy nemůže, Údaje [Uprav] and Poznámka (leaders). ⋯: Uprav · Nastav, kolik toho zvládne · Pozvi do
-// Zvonce · Stáhni do kalendáře · Přesuň do archivu / Vrať z archivu · Smaž kartu.
+// birthday for leaders and the person) → contact tiles Zavolat · SMS · E-mail (L 52, only those with data, never on
+// your own card). Sections: callouts (archive, what is missing – leaders), Problémy (leaders), Příští služby, Kontakt [Upravit], Domácnost, Skupiny
+// [+ Přidat], Kdy nemůže, Údaje [Upravit] and Poznámka (leaders). ⋯: Upravit · Nastavit, kolik toho zvládne · Pozvat do
+// Zvonce · Stáhnout do kalendáře · Přesunout do archivu / Vrátit z archivu · Smazat kartu.
 // Privacy: a member looking at someone else never sees membership, birth date, notes, consent or logins; the
 // contact only when it is shared.
 
@@ -51,28 +51,28 @@ export function personMenuItems(person) {
   const self = person.id === myId();
   const serves = !isFormer(person) && !isKid(person);
   return [
-    leader ? { label: 'Uprav', icon: 'pencil', onclick: () => detailsSheet(person) } : null,
-    !leader && self ? { label: 'Uprav kontakt', icon: 'pencil', onclick: () => contactSheet(person) } : null,
-    leader && serves ? { label: 'Nastav, kolik toho zvládne', icon: 'sliders', onclick: () => limitsSheet(person) } : null,
-    leader && !isFormer(person) && !accessOf(person.id).login ? { label: 'Pozvi do Zvonce', icon: 'log-in', onclick: () => inviteSheet(person) } : null,
-    leader || self ? { label: 'Stáhni do kalendáře', icon: 'download', onclick: () => downloadDuties(person) } : null,
+    leader ? { label: 'Upravit', icon: 'pencil', onclick: () => detailsSheet(person) } : null,
+    !leader && self ? { label: 'Upravit kontakt', icon: 'pencil', onclick: () => contactSheet(person) } : null,
+    leader && serves ? { label: 'Nastavit, kolik toho zvládne', icon: 'sliders', onclick: () => limitsSheet(person) } : null,
+    leader && !isFormer(person) && !accessOf(person.id).login ? { label: 'Pozvat do Zvonce', icon: 'log-in', onclick: () => inviteSheet(person) } : null,
+    leader || self ? { label: 'Stáhnout do kalendáře', icon: 'download', onclick: () => downloadDuties(person) } : null,
     leader && !self ? '-' : null,
-    leader && !self && !isFormer(person) ? { label: 'Přesuň do archivu', icon: 'archive', onclick: () => archiveSheet(person) } : null,
-    leader && isFormer(person) ? { label: 'Vrať z archivu', icon: 'undo', onclick: () => restoreFromArchive(person) } : null,
-    leader && !self ? { label: 'Smaž kartu', icon: 'trash', danger: true, onclick: () => deletePerson(person) } : null,
+    leader && !self && !isFormer(person) ? { label: 'Přesunout do archivu', icon: 'archive', onclick: () => archiveSheet(person) } : null,
+    leader && isFormer(person) ? { label: 'Vrátit z archivu', icon: 'undo', onclick: () => restoreFromArchive(person) } : null,
+    leader && !self ? { label: 'Smazat kartu', icon: 'trash', danger: true, onclick: () => deletePerson(person) } : null,
   ].filter(Boolean);
 }
 
 // ---------- head ----------
 
-/** Zavolej · SMS · E-mail: L 52, equal parts, only what exists and may be seen; never on your own card. */
+/** Zavolat · SMS · E-mail: L 52, equal parts, only what exists and may be seen; never on your own card. */
 function contactTiles(person) {
   if (person.id === myId() || !seesContact(person) || isFormer(person)) return null;
   const name = fullName(person);
   const tiles = [
-    person.phone ? button('Zavolej', { size: 'l', icon: 'phone', href: telHref(person.phone), label: `Zavolej – ${name}` }) : null,
-    person.phone ? button('SMS', { size: 'l', icon: 'message', href: smsHref(person.phone), label: `Napiš SMS – ${name}` }) : null,
-    person.email ? button('E-mail', { size: 'l', icon: 'mail', href: mailHref(person.email), label: `Napiš e-mail – ${name}` }) : null,
+    person.phone ? button('Zavolat', { size: 'l', icon: 'phone', href: telHref(person.phone), label: `Zavolat – ${name}` }) : null,
+    person.phone ? button('SMS', { size: 'l', icon: 'message', href: smsHref(person.phone), label: `Napsat SMS – ${name}` }) : null,
+    person.email ? button('E-mail', { size: 'l', icon: 'mail', href: mailHref(person.email), label: `Napsat e-mail – ${name}` }) : null,
   ].filter(Boolean);
   return tiles.length ? h('div', { class: 'contact-tiles', dataset: { n: tiles.length } }, tiles) : null;
 }
@@ -126,7 +126,7 @@ function archiveCallout(person) {
   return callout({
     tone: 'info', icon: 'archive', title: capital(archivedText(person)),
     text: 'Karta se neukazuje v seznamech, kontaktech ani v návrzích do služeb. Ve starých rozpisech zůstává.',
-    actions: button('Vrať z archivu', { size: isPhone() ? 'm' : 's', icon: 'undo', onclick: () => restoreFromArchive(person) }),
+    actions: button('Vrátit z archivu', { size: isPhone() ? 'm' : 's', icon: 'undo', onclick: () => restoreFromArchive(person) }),
   });
 }
 
@@ -144,11 +144,11 @@ function missingCallout(person) {
   const size = isPhone() ? 'm' : 's';
   return callout({
     tone: 'wait',
-    title: person.needsReview ? 'Karta vznikla narychlo při plánování.' : rest.replace(/\.$/, ''),
+    title: person.needsReview ? 'Karta vznikla narychlo, jen se jménem.' : rest.replace(/\.$/, ''),
     text: person.needsReview ? rest || null : null,
     actions: [
-      button('Doplň', { size, onclick: open }),
-      person.needsReview ? button('Potvrď údaje', { size, variant: 'quiet', onclick: () => {
+      button('Doplnit', { size, onclick: open }),
+      person.needsReview ? button('Potvrdit údaje', { size, variant: 'quiet', onclick: () => {
         const p = S.data.people.find((x) => x.id === person.id);
         if (!p) return;
         delete p.needsReview;
@@ -161,21 +161,21 @@ function missingCallout(person) {
 // ---------- sections ----------
 
 const SEV_ORDER = { error: 0, warning: 1, info: 2 };
-/** Co nesedí (leaders): the upcoming conflicts of this person, each with its fix. */
+/** Problémy (leaders): the upcoming conflicts of this person, each with its fix. */
 function problemsSection(person) {
   const found = (S.conflicts || []).filter((c) => c.personId === person.id && isUpcoming(c));
   if (!found.length) return null;
   const start = (c) => eventById(S.data, c.eventId)?.start || '';
   const sorted = found.slice().sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity] || start(a).localeCompare(start(b)));
   return section({
-    title: 'Co nesedí', cls: 'person-section',
+    title: 'Problémy', cls: 'person-section',
     body: h('div', { class: 'person-warnings' }, sorted.map((c) => {
       const event = eventById(S.data, c.eventId);
       const when = event ? `${prettyDay(event.start)} ${prettyTime(event.start)}` : '';
       return warningFor(c, {
         eventId: c.eventId,
         text: joinMeta([c.text, when && !c.text.includes(prettyDay(event.start)) ? when : null]),
-        extra: event ? button('Otevři setkání', { size: isPhone() ? 'm' : 's', variant: 'quiet', href: `#setkani/${event.id}` }) : null,
+        extra: event ? button('Otevřít setkání', { size: isPhone() ? 'm' : 's', variant: 'quiet', href: `#setkani/${event.id}` }) : null,
       });
     })),
   });
@@ -233,7 +233,7 @@ function contactSection(person) {
   }
   return section({
     title: 'Kontakt', cls: 'person-section',
-    action: (leader || self) && !kid ? sectionAction('Uprav', { onclick: () => contactSheet(person), aria: `Uprav kontakt – ${fullName(person)}` }) : null,
+    action: (leader || self) && !kid ? sectionAction('Upravit', { onclick: () => contactSheet(person), aria: `Upravit kontakt – ${fullName(person)}` }) : null,
     body,
   });
 }
@@ -255,7 +255,7 @@ function householdSection(person) {
     if (!leader) return null;
     return section({
       title: 'Domácnost', cls: 'person-section',
-      action: sectionAction('Přidej', { add: true, onclick: () => householdChooseSheet(person), aria: 'Přidej do domácnosti' }),
+      action: sectionAction('Přidat', { add: true, onclick: () => householdChooseSheet(person), aria: 'Přidat do domácnosti' }),
       body: quiet(self ? 'Nepatříš k žádné domácnosti.' : 'Nepatří k žádné domácnosti.'),
     });
   }
@@ -263,7 +263,7 @@ function householdSection(person) {
   const address = household.address && (leader || self) ? household.address : null;
   return section({
     title: 'Domácnost', cls: 'person-section',
-    action: leader ? sectionAction('Uprav', { onclick: () => householdChooseSheet(person), aria: 'Uprav domácnost' }) : null,
+    action: leader ? sectionAction('Upravit', { onclick: () => householdChooseSheet(person), aria: 'Upravit domácnost' }) : null,
     body: list([
       householdRow(household, { meta: address }),
       ...others.map((p) => row({
@@ -296,13 +296,13 @@ function groupsSection(person) {
       lead: teamMark(g), title: g.name,
       meta: h('span', { class: 'group-meta' }, member?.leader ? words.leads : words.kind, pills),
       wrap: true, href: `#lide/skupiny/${g.id}`,
-      trail: leader ? button('Uprav', { variant: 'quiet', size: isPhone() ? 'm' : 's', label: `Uprav – ${g.name}`, onclick: () => memberSheet(g, person.id) }) : null,
+      trail: leader ? button('Upravit', { variant: 'quiet', size: isPhone() ? 'm' : 's', label: `Upravit – ${g.name}`, onclick: () => memberSheet(g, person.id) }) : null,
       chevron: !leader,
     });
   });
   return section({
     title: 'Skupiny', cls: 'person-section',
-    action: leader && !isFormer(person) ? sectionAction('Přidej', { add: true, onclick: () => personGroupSheet(person), aria: 'Přidej do skupiny' }) : null,
+    action: leader && !isFormer(person) ? sectionAction('Přidat', { add: true, onclick: () => personGroupSheet(person), aria: 'Přidat do skupiny' }) : null,
     body: rows.length ? list(rows, { label: 'Skupiny' }) : quiet(self ? 'Nejsi v žádném týmu ani skupince.' : 'Není v žádném týmu ani skupince.'),
   });
 }
@@ -323,7 +323,7 @@ function detailsSection(person) {
   const serves = !isFormer(person) && !isKid(person);
   return section({
     title: 'Údaje', cls: 'person-section',
-    action: sectionAction('Uprav', { onclick: () => detailsSheet(person), aria: `Uprav údaje – ${fullName(person)}` }),
+    action: sectionAction('Upravit', { onclick: () => detailsSheet(person), aria: `Upravit údaje – ${fullName(person)}` }),
     body: facts([
       { icon: 'user', text: membership },
       person.birthDate ? { icon: 'cake', text: exact ? `${fullDate(person.birthDate)} · ${yearsText(years)}` : `rok ${person.birthDate.slice(0, 4)}` } : null,
@@ -339,7 +339,7 @@ function noteSection(person) {
   if (!person.note) return null;
   return section({
     title: 'Poznámka', cls: 'person-section',
-    action: sectionAction('Uprav', { onclick: () => detailsSheet(person, { focus: 'note' }), aria: 'Uprav poznámku' }),
+    action: sectionAction('Upravit', { onclick: () => detailsSheet(person, { focus: 'note' }), aria: 'Upravit poznámku' }),
     body: h('p', { class: 'text person-note' }, person.note),
   });
 }
@@ -383,28 +383,28 @@ export function personDetail(person, { frame = 'pane', back, close } = {}) {
 
 // ---------- Domácnost ----------
 
-/** Domácnost (leaders; a drill-in from a person): house mark, address, its people; ⋯ Uprav · Přidej člověka · Smaž. */
+/** Domácnost (leaders; a drill-in from a person): house mark, address, its people; ⋯ Upravit · Přidat člověka · Smazat. */
 export function householdDetail(household, { frame = 'pane', back, close } = {}) {
   if (!household) {
     return missingItem({ frame, back, close, label: 'Domácnost', icon: 'home', title: 'Tahle domácnost tu už není.', text: 'Možná ji někdo smazal.' });
   }
   const members = householdMembers(S.data, household.id, { today: today() }).filter((p) => !isFormer(p));
   const kids = members.filter(isKid).length;
-  // each person's ⋯: Odeber z domácnosti (with Vrať) – the card itself stays
+  // each person's ⋯: Odebrat z domácnosti (with Vrátit zpět) – the card itself stays
   const rows = members.map((p) => row({
     lead: avatar(p, { me: p.id === myId() }), title: personName(p),
     meta: isKid(p) ? kidText(p) : MEMBERSHIP_WORDS[statusOf(p)], href: `#lide/${p.id}`,
     trail: can('leader') ? menuButton([
-      { label: 'Odeber z domácnosti', icon: 'minus', onclick: () => removeFromHousehold(p, household) },
+      { label: 'Odebrat z domácnosti', icon: 'minus', onclick: () => removeFromHousehold(p, household) },
     ], { title: personName(p), label: `Další možnosti – ${personName(p)}` }) : null,
   }));
   return detail({
     frame, back, close, label: household.name, title: household.name,
     menu: [
-      { label: 'Uprav', icon: 'pencil', onclick: () => householdSheet(household) },
-      { label: 'Přidej člověka', icon: 'user-plus', onclick: () => addPersonSheet({ householdId: household.id }) },
+      { label: 'Upravit', icon: 'pencil', onclick: () => householdSheet(household) },
+      { label: 'Přidat člověka', icon: 'user-plus', onclick: () => addPersonSheet({ householdId: household.id }) },
       '-',
-      { label: 'Smaž domácnost', icon: 'trash', danger: true, onclick: () => deleteHousehold(household) },
+      { label: 'Smazat domácnost', icon: 'trash', danger: true, onclick: () => deleteHousehold(household) },
     ],
     body: [
       detailHead({
@@ -418,7 +418,7 @@ export function householdDetail(household, { frame = 'pane', back, close } = {})
       }),
       section({
         title: 'Lidé', cls: 'person-section',
-        action: sectionAction('Přidej', { add: true, onclick: () => addToHouseholdSheet(household), aria: 'Přidej do domácnosti' }),
+        action: sectionAction('Přidat', { add: true, onclick: () => addToHouseholdSheet(household), aria: 'Přidat do domácnosti' }),
         body: rows.length ? list(rows, { label: `Lidé v domácnosti ${household.name}` }) : quiet('Nikdo tu nebydlí.'),
       }),
     ],

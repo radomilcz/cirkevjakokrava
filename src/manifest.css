@@ -1,6 +1,6 @@
 /* ============================================================
    Církev jako kráva — manifest
-   Barvy, otisk i rozmístění vychází z Figmy (#3b2f2f / #e6acac, „Group 14“ otisk).
+   Barvy, fleky i jejich rozmístění vychází z Figmy (#3b2f2f / #e6acac, fleky mrak_01–05 na místech otisku).
    Písmo Agrandir (Pangram Pangram) je vložené přímo v souboru jako subset
    (latinka + čeština + šipka), řezy: Grand Heavy, Regular, Narrow Black, Grand.
    ============================================================ */
@@ -67,20 +67,38 @@ body{
   margin:0 0 0 auto;white-space:nowrap;letter-spacing:-.01em;
 }
 
-/* ---------- otisk z Figmy (jeden <symbol>, <use> na každém slajdu) ---------- */
-.print{
+/* ---------- blots from Figma (mrak_01–05) – placed and rotated like the fingerprint, PRINT table in JS ----------
+   Overlay with the slide background (photos included) gives the blot its colour. The blend sits on
+   .print, not on the image: .sweep is transparent while it fades in, and an image blended inside it
+   would only blend with itself and jump to its real colour once the fade ends. */
+.print{mix-blend-mode:overlay;
   position:absolute;z-index:0;pointer-events:none;
   transform:scale(var(--ps,1));
 }
-.print .rot{position:absolute;left:50%;top:50%;aspect-ratio:998/816}
+.print .rot{position:absolute;left:50%;top:50%;aspect-ratio:1108/1197}
 /* otisk se „přitiskne“: jednou naběhne z mírně většího měřítka a zprůhlednění do plné síly.
    Animuje se jen opacity a transform jedné vrstvy – to zvládne kompozitor sám, svg se
    vykreslí jen jednou. Dřívější odkrývání maskou stálo na velké obrazovce plynulost
    (1920×1080, CPU 4×: ~20 fps během přechodu, s tímhle 60 fps). */
 .print .sweep{position:absolute;inset:0;opacity:0;transform:scale(1.08) rotate(-2deg)}
-.print .sweep>svg{width:100%;height:100%}
+.print .blot{display:block;width:100%;height:100%}
+/* On cream the light blot would vanish and an inverted one turned cold grey. There the blot is drawn
+   in the palette's text colour (green, blue, brown): the shape comes from a mask of the same image,
+   so the blot keeps its transparency. JS sets .cream from the drawn palette. */
+.slide.cream .print{mix-blend-mode:normal}
+.slide.cream .print .blot{visibility:hidden}
+.slide.cream .print .sweep::before{
+  content:"";position:absolute;inset:0;background:var(--ink);opacity:.7;   /* weakest that still keeps the hue; lower turns grey */
+  -webkit-mask:var(--blot-mask) center/100% 100% no-repeat;mask:var(--blot-mask) center/100% 100% no-repeat;
+}
+/* pair of blots on long reading slides – positions are percentages of the whole (tall) slide */
+.print.reading{width:min(44vw,820px);height:auto}
+.print.reading.large{width:min(62vw,1150px)}
+.print.reading.top.right{right:-8%;top:4%;rotate:-14deg}
+.print.reading.top.left{left:-12%;top:1%;rotate:10deg}
+.print.reading.bottom.left{left:-10%;top:52%;rotate:166deg}
+.print.reading.bottom.right{right:-10%;top:56%;rotate:-160deg}
 .slide.in .print .sweep{opacity:1;transform:none;transition:opacity 1s ease .15s,transform 1.8s cubic-bezier(.2,.7,.2,1) .15s}
-.print svg{display:block;overflow:visible;fill:var(--print)}
 /* Tady bývalo „jemné dýchání“ – nekonečná rotace otisku na desktopu. Stálo to 22 % jádra
    pořád dokola, i když se na stránce nic nedělo: maska na .sweep brání tomu, aby se rotace
    jen skládala na kompozitoru, takže se každý snímek znovu rastrovalo přes 2,8 milionu
@@ -142,7 +160,6 @@ body{
 .intro .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;z-index:0}
 .intro .veil{position:absolute;inset:0;z-index:0;pointer-events:none;background:rgba(42,33,33,.18)}
 .intro .print{z-index:1}
-.intro .print svg{fill:rgba(255,255,255,.55)}
 
 /* ---------- zrcadlo – fotka přes celý slajd, otisk nad ní ---------- */
 .mirror{color:#fff;background:var(--ground-deep)}
@@ -154,11 +171,9 @@ body{
   background:linear-gradient(to top,rgba(42,33,33,.66),transparent 26%),
              linear-gradient(to bottom,rgba(42,33,33,.70),transparent 22%)}
 .mirror .print{z-index:1}
-.mirror .print svg{fill:rgba(255,255,255,.55)}
 
 /* ---------- Kravařsko. Moje lásko. ---------- */
 .love{background:var(--ink);color:var(--ground)}
-.love .print svg{fill:rgba(255,255,255,.55)}
 .love .foot{justify-content:flex-end}
 .love .statement{
   justify-self:center;width:auto;max-width:100%;
@@ -350,6 +365,9 @@ body{
 }
 .read.in .essay{opacity:1;transform:none;transition-delay:.15s}
 .essay p{margin:0 0 1.25em}
+/* pilulky s verši uprostřed předmluvy: menší písmo než text a bez velké mezery na konci slajdu */
+.essay .verse-blok{margin:0 0 1.25em;font-size:max(.5em,.95rem)}
+.essay .pil-v p{margin:0}
 .essay .lead{margin-bottom:1.25em}
 .essay h3{
   font-family:var(--display);font-weight:800;font-size:1.8em;line-height:1.25;letter-spacing:-.01em;
@@ -418,10 +436,11 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
 
 /* ---------- na výšku: otisk na střed slajdu, velký, jen s rotací daného slajdu ---------- */
 @media (max-aspect-ratio:1/1){
-  .slide:not(.german) .print{left:50% !important;top:50% !important;width:min(135vw,78vh) !important;height:auto !important;
+  .print.reading,.print.reading.large{width:min(80vw,60vh)}
+  .slide:not(.german) .print:not(.reading){left:50% !important;top:50% !important;width:min(135vw,78vh) !important;height:auto !important;
     aspect-ratio:1/1;transform:translate(-50%,-50%) scale(.96)}
-  .slide.in:not(.german) .print{transform:translate(-50%,-50%) scale(1)}
-  .slide:not(.german) .print .rot{width:100% !important}
+  .slide.in:not(.german) .print:not(.reading){transform:translate(-50%,-50%) scale(1)}
+  .slide:not(.german) .print:not(.reading) .rot{width:100% !important}
   /* na výšku: kráva větší a výrok přes ni, jako v návrhu – ne dva oddělené bloky.
      Váže se na poměr stran, ne na šířku: i široké, ale vysoké okno je „na výšku“. */
 }

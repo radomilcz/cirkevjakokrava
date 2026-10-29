@@ -3,9 +3,9 @@
 //                                    with the team mark, „9 lidí · vedou …“ and a „ty“ pill when I am in it, from 900
 //                                    Next's cards (roles, avatars); V archivu (Filtr, leaders) stays rows
 //   groupDetail(group, { frame, back, close, openPersonHref })
-//                                    team mark 56 → kind pill → name → „9 lidí · vedou …“; Role (teams, leaders) [+ Přidej];
-//                                    Lidé [+ Přidej] (rows with call); Příští služby / Příští setkání (six weeks)
-// Filtr (key 'skupiny'): Druh · Jen moje · Ukaž i archiv (leaders). Members read names, leaders and the schedule only.
+//                                    team mark 56 → kind pill → name → „9 lidí · vedou …“; Role (teams, leaders) [+ Přidat];
+//                                    Lidé [+ Přidat] (rows with call); Příští služby / Příští setkání (six weeks)
+// Filtr (key 'skupiny'): Druh · Jen moje · Zobrazit i archiv (leaders). Members read names, leaders and the schedule only.
 
 import {
   h, icon, row, list, subhead, teamMark, avatar, avatars, pill, detail, detailHead, section, sectionAction, facts, eventRow,
@@ -72,7 +72,7 @@ export function groupFilterGroups() {
   return [
     { id: 'druh', title: 'Druh', kind: 'chips', multiple: true, options: KIND_ORDER.map((k) => [k, GROUP_WORDS[k].kinds]) },
     { id: 'moje', title: 'Jen moje', kind: 'switch', hint: 'Skupiny, ve kterých jsi.' },
-    can('leader') ? { id: 'archiv', title: 'Ukaž i archiv', kind: 'switch' } : null,
+    can('leader') ? { id: 'archiv', title: 'Zobrazit i archiv', kind: 'switch' } : null,
   ].filter(Boolean);
 }
 
@@ -151,7 +151,7 @@ function skillChip(group, role, p, level) {
   const name = fullName(p);
   const chip = h('button', {
     type: 'button', class: 'skill-chip', dataset: { level }, title: name, 'aria-haspopup': 'menu',
-    'aria-label': `${name}, ${role.name}: ${SKILL_WORDS[level]}. Změň.`,
+    'aria-label': `${name}, ${role.name}: ${SKILL_WORDS[level]} – změnit`,
   }, avatar(p, { size: 'xs', me: p.id === myId() }), h('span', { class: 'skill-chip__name' }, shortName(p)),
   level === 'learning' ? h('span', { class: 'skill-chip__level' }, '· učí se') : null);
   const set = (next) => () => { setSkill(S.data, p.id, role.id, next || null); change(`${displayName(p)} ${role.name}: ${SKILL_WORDS[next]}`); };
@@ -163,7 +163,7 @@ function skillChip(group, role, p, level) {
   return chip;
 }
 
-/** + Přidej in a role: the team's people who cannot do it yet; the one picked can (a tap on the chip makes it „učí se“). */
+/** + Přidat in a role: the team's people who cannot do it yet; the one picked can (a tap on the chip makes it „učí se“). */
 function addSkill(group, role) {
   const people = peopleIn(group).filter(({ m }) => !m.roles?.[role.id]).map(({ p }) => p).sort(comparePeople);
   peoplePicker({
@@ -186,7 +186,7 @@ function roleCountWords(trained, learning) {
 /**
  * Role (teams, leaders): one folded line per role – its name, „umí 7 · učí se 2“ (amber
  * when at most one can) and a chevron. A tap unfolds it: the people as chips (umí on the ok tint, učí se outlined; a
- * tap on a chip offers Umí to / Učí se to / Neumí to), + Přidej and Uprav roli. It replaced the people × roles table
+ * tap on a chip offers Umí to / Učí se to / Neumí to), + Přidat and Upravit roli. It replaced the people × roles table
  * („Kdo co umí“), which never fit a pane; folded, because seven chips under every role took the whole card (the owner).
  * What one person can do stays in Lidé below (skill pills) and in the member sheet.
  */
@@ -204,8 +204,8 @@ function rolesSection(group) {
       h('div', { class: 'role-block__chips' },
         ...able.map(({ p }) => skillChip(group, role, p, 'trained')),
         ...learning.map(({ p }) => skillChip(group, role, p, 'learning')),
-        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => addSkill(group, role), 'aria-label': `Přidej, kdo umí ${role.name}` }, icon('plus', { size: 's' }), 'Přidej'),
-        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => roleSheet(group, role), 'aria-label': `Uprav roli ${role.name}` }, icon('pencil', { size: 's' }), 'Uprav roli')));
+        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => addSkill(group, role), 'aria-label': `Přidat, kdo umí ${role.name}` }, icon('plus', { size: 's' }), 'Přidat'),
+        h('button', { type: 'button', class: 'skill-chip skill-chip--add', onclick: () => roleSheet(group, role), 'aria-label': `Upravit roli ${role.name}` }, icon('pencil', { size: 's' }), 'Upravit roli')));
     const head = h('button', {
       type: 'button', class: 'role-block__head', 'aria-expanded': String(open), 'aria-controls': bodyId,
       onclick: () => {
@@ -222,7 +222,7 @@ function rolesSection(group) {
   });
   return section({
     title: 'Role', cls: 'group-section', id: 'role',
-    action: sectionAction('Přidej', { add: true, onclick: () => roleSheet(group), aria: 'Přidej roli' }),
+    action: sectionAction('Přidat', { add: true, onclick: () => roleSheet(group), aria: 'Přidat roli' }),
     body: blocks.length ? h('div', { class: 'role-blocks' }, blocks) : quiet('Tým zatím nemá žádnou roli. Bez rolí se z něj nesloží rozpis.'),
   });
 }
@@ -232,7 +232,7 @@ function memberRow(group, { m, p }, personHref) {
   const leader = can('leader');
   const words = groupWords(group);
   const call = seesContact(p) && p.phone && p.id !== myId()
-    ? h('a', { class: 'icon-btn icon-btn--call', href: telHref(p.phone), 'aria-label': `Zavolej – ${personName(p)}`, title: `Zavolej – ${personName(p)}` }, icon('phone', { size: 's' }))
+    ? h('a', { class: 'icon-btn icon-btn--call', href: telHref(p.phone), 'aria-label': `Zavolat – ${personName(p)}`, title: `Zavolat – ${personName(p)}` }, icon('phone', { size: 's' }))
     : null;
   const pills = leader && group.kind === 'team' ? skillPills(group, p.id) : null;
   const metaNode = m.leader || pills ? h('span', { class: 'group-meta' }, m.leader ? words.leads : null, pills) : null;
@@ -249,7 +249,7 @@ function peopleSection(group, personHref) {
   const cut = !expanded.has(group.id) && all.length > PEOPLE_SHOWN + 2;
   const rows = (cut ? all.slice(0, PEOPLE_SHOWN) : all).map((x) => memberRow(group, x, personHref));
   const box = list(rows, { label: 'Lidé' });
-  const more = cut ? rowLink(`Ukaž všech ${all.length}`, {
+  const more = cut ? rowLink(`Zobrazit všech ${all.length}`, {
     icon: 'chevron-down',
     onclick: (e) => {
       expanded.add(group.id);
@@ -259,7 +259,7 @@ function peopleSection(group, personHref) {
   }) : null;
   return section({
     title: 'Lidé', cls: 'group-section', id: 'lide',
-    action: can('leader') && !group.archived ? sectionAction('Přidej', { add: true, onclick: () => pickPerson(group), aria: groupWords(group).add }) : null,
+    action: can('leader') && !group.archived ? sectionAction('Přidat', { add: true, onclick: () => pickPerson(group), aria: groupWords(group).add }) : null,
     body: all.length ? [box, more] : quiet('Zatím tu nikdo není.'),
   });
 }
@@ -300,7 +300,7 @@ function eventsSection(group) {
     title: team ? 'Příští služby' : 'Příští setkání', cls: 'group-section', id: 'sluzby',
     body: [
       rows.length ? list(rows, { label: team ? 'Příští služby' : 'Příští setkání' }) : quiet(team ? 'Příštích šest týdnů tým nikde neslouží.' : 'Příštích šest týdnů tu nic není.'),
-      all.length > rows.length ? rowLink(`Ukaž všech ${all.length} v Rozpisu`, { href: '#kalendar/rozpis' }) : null,
+      all.length > rows.length ? rowLink(`Zobrazit všech ${all.length} v Rozpisu`, { href: '#kalendar/rozpis' }) : null,
     ],
   });
 }
@@ -308,11 +308,11 @@ function eventsSection(group) {
 function groupMenu(group) {
   if (!can('leader')) return null;
   return [
-    { label: 'Uprav', icon: 'pencil', onclick: () => groupSheet(group) },
-    group.archived ? null : { label: 'Přidej člověka', icon: 'user-plus', onclick: () => pickPerson(group) },
-    { label: group.archived ? 'Vrať z archivu' : 'Přesuň do archivu', icon: group.archived ? 'undo' : 'archive', onclick: () => toggleArchive(group) },
+    { label: 'Upravit', icon: 'pencil', onclick: () => groupSheet(group) },
+    group.archived ? null : { label: 'Přidat člověka', icon: 'user-plus', onclick: () => pickPerson(group) },
+    { label: group.archived ? 'Vrátit z archivu' : 'Přesunout do archivu', icon: group.archived ? 'undo' : 'archive', onclick: () => toggleArchive(group) },
     '-',
-    { label: 'Smaž', icon: 'trash', danger: true, onclick: () => deleteGroup(group) },
+    { label: 'Smazat', icon: 'trash', danger: true, onclick: () => deleteGroup(group) },
   ].filter(Boolean);
 }
 

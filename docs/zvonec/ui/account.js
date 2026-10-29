@@ -1,15 +1,15 @@
 // Zvonec One – Můj účet (#ucet, from the person's menu): a page of one column 640 (DESIGN §6.11).
 //   head      avatar 72 · the name · „správce“
-//   Moje karta          my contact facts and who sees them, „Uprav“ → the contact form (a layer)
-//   Přihlášení          live: the name I sign in with, „Změň heslo“ → a layer; demo: one sentence
+//   Moje karta          my contact facts and who sees them, „Upravit“ → the contact form (a layer)
+//   Přihlášení          live: the name I sign in with, „Změnit heslo“ → a layer; demo: one sentence
 //   Kalendář v telefonu my duties / the whole calendar as .ics
 //   Dary                once the church's account is set (Nastavení sboru › Úřední údaje): the account and my
 //                       variable symbol (each with copy), a QR payment with the symbol and no amount; on a phone the
-//                       QR behind „Ukaž QR kód“. My symbol (person.donorVs) is given the first time I see this.
-//                       „Pošli mimořádný dar“ (ui/give.js) and the gifts that arrived lately (sealed notes).
+//                       QR behind „Zobrazit QR kód“. My symbol (person.donorVs) is given the first time I see this.
+//                       „Poslat mimořádný dar“ (ui/give.js) and the gifts that arrived lately (sealed notes).
 //   Barvy               the three bullseyes (Krém a hlína · Hlína a růžová · Podle zařízení)
-//   „Odhlas se“         quiet M in --no-ink at the end
-// Without a card in Lidé: a callout instead of Moje karta. Also the demo's „Podívej se očima druhých“ (viewAsSheet)
+//   „Odhlásit se“         quiet M in --no-ink at the end
+// Without a card in Lidé: a callout instead of Moje karta. Also the demo's „Podívat se očima druhých“ (viewAsSheet)
 // and the demo sign-out (demoSignOut), which the person's menu calls.
 
 import { headAvatar } from './photo.js';
@@ -39,7 +39,7 @@ export const whoSeesContact = (person) => (person.showInDirectory
   ? 'Telefon a e-mail vidí všichni, kdo se do Zvonce přihlásí.'
   : 'Telefon a e-mail vidí jen vedoucí.');
 
-/** The switch „Telefon a e-mail smí vidět i ostatní“ – applies at once, with Vrať. */
+/** The switch „Telefon a e-mail smí vidět i ostatní“ – applies at once, with Vrátit zpět. */
 function directorySwitch(person) {
   const set = (on) => {
     const target = personById(S.data, person.id);
@@ -58,7 +58,7 @@ function directorySwitch(person) {
   });
 }
 
-/** The switch „Pondělní e-mail“ (SPEC §11) – on unless turned off (`digest: false`); needs an e-mail. Applies at once, with Vrať. */
+/** The switch „Pondělní e-mail“ (SPEC §11) – on unless turned off (`digest: false`); needs an e-mail. Applies at once, with Vrátit zpět. */
 function digestSwitch(person) {
   const set = (on) => {
     const target = personById(S.data, person.id);
@@ -85,15 +85,15 @@ function cardSection(person) {
   if (!person) {
     return callout({
       tone: 'info',
-      title: 'Zvonec neví, která karta je tvoje.',
+      title: 'Zvonec neví, která karta v Lidech je tvoje.',
       text: live
-        ? 'Řekni vedoucímu, ať ji propojí s tvým přihlášením. Pak tu uvidíš svůj kontakt a služby.'
-        : 'Teď se díváš jako správce bez vlastní karty. Někoho jiného si vybereš v menu pod svým jménem.',
+        ? 'Požádej vedoucího, ať tvoje přihlášení propojí s tvou kartou v Lidech. Pak tu uvidíš svůj kontakt a služby.'
+        : 'Teď se díváš jako správce bez vlastní karty. Jiného člověka vybereš v menu pod svým jménem v položce „Podívat se očima druhých“.',
     });
   }
   return section({
     title: 'Moje karta',
-    action: sectionAction('Uprav', { onclick: () => contactSheet(person), aria: 'Uprav svůj kontakt' }),
+    action: sectionAction('Upravit', { onclick: () => contactSheet(person), aria: 'Upravit svůj kontakt' }),
     body: [
       facts([
         { icon: 'phone', text: person.phone || 'Telefon nemáš vyplněný.' },
@@ -114,7 +114,7 @@ export const checkPassword = (password, again) => {
   return null;
 };
 
-/** „Změň heslo“ (live): the name I sign in with, the new password twice. */
+/** „Změnit heslo“ (live): the name I sign in with, the new password twice. */
 export function passwordSheet() {
   const person = personById(S.data, myId());
   const name = textInput({ name: 'name', value: person ? fullName(person) : '', autocomplete: 'username' });
@@ -122,7 +122,7 @@ export function passwordSheet() {
   const again = textInput({ name: 'password2', type: 'password', autocomplete: 'new-password' });
   formSheet({
     title: 'Nové heslo',
-    submitLabel: 'Změň heslo',
+    submitLabel: 'Změnit heslo',
     body: [
       field({ label: 'Jméno, kterým se přihlašuješ', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
       field({ label: 'Nové heslo', control: pass, hint: 'Aspoň 8 znaků.' }),
@@ -163,7 +163,7 @@ function signInSection(person) {
   const live = S.mode === 'live';
   return section({
     title: 'Přihlášení',
-    action: live ? sectionAction('Změň heslo', { onclick: passwordSheet }) : null,
+    action: live ? sectionAction('Změnit heslo', { onclick: passwordSheet }) : null,
     body: live
       ? meta('Přihlašuješ se jménem a heslem. Na cizím počítači se pak odhlas.')
       : meta('V ukázce se přihlašuješ bez hesla, jedním klepnutím na člověka.'),
@@ -179,7 +179,7 @@ export function demoSignOut() {
 
 const signOut = () => (S.mode === 'live' ? logout() : demoSignOut());
 
-// ---------- demo: Podívej se očima druhých ----------
+// ---------- demo: Podívat se očima druhých ----------
 
 /** The demo's three prepared people, then anyone (people picker) with any permission. */
 export function viewAsSheet() {
@@ -208,7 +208,7 @@ export function viewAsSheet() {
     kind: 'sheet',
     size: 'm',
     title: 'Očima druhých',
-    subtitle: 'Vyzkoušej, co vidí člen, vedoucí nebo správce. Nic se tím nemění.',
+    subtitle: 'Vyzkoušej, co vidí člen, vedoucí nebo správce. Data v ukázce se tím nezmění.',
     body: [
       list(viewers.map(([level, p]) => row({
         lead: avatar(p), title: personName(p), meta: ACCESS_LABELS[level],
@@ -219,7 +219,7 @@ export function viewAsSheet() {
         label: 'Jako kdo se díváš',
         control: segmented([{ value: 'member', label: 'člen' }, { value: 'leader', label: 'vedoucí' }, { value: 'admin', label: 'správce' }], access, (v) => { access = v; }, { label: 'Přístup' }),
       }),
-      button('Vyber člověka', { icon: 'search', block: true, onclick: others }),
+      button('Vybrat člověka', { icon: 'search', block: true, onclick: others }),
       rowLink('Správce bez karty', { onclick: () => pick(null, 'admin') }),
     ],
   });
@@ -227,7 +227,7 @@ export function viewAsSheet() {
 
 // ---------- Dary (SPEC 15.1) ----------
 
-/** „Změň variabilní symbol“: someone who already sends gifts with their own symbol keeps it. */
+/** „Změnit variabilní symbol“: someone who already sends gifts with their own symbol keeps it. */
 function changeMyVs(person) {
   vsSheet({
     current: person.donorVs,
@@ -273,20 +273,20 @@ function giveSection(person) {
     rows[2] = row({
       title: h('span', { class: 'num' }, vs), meta: 'Tvůj variabilní symbol',
       trail: menuButton([
-        { label: 'Zkopíruj', icon: 'copy', onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') },
-        { label: 'Změň variabilní symbol', icon: 'pencil', onclick: () => changeMyVs(person) },
+        { label: 'Zkopírovat', icon: 'copy', onclick: () => copyValue(vs, 'Variabilní symbol je zkopírovaný.') },
+        { label: 'Změnit variabilní symbol', icon: 'pencil', onclick: () => changeMyVs(person) },
       ], { label: 'Možnosti variabilního symbolu' }),
     });
   }
   const payment = spdPayment({ account, vs, name: s.legalName || s.churchName, message: 'Dar' });
   return section({
     title: 'Dary',
-    action: sectionAction('Pošli dar', { icon: 'heart', onclick: () => giveSheet(), aria: 'Pošli mimořádný dar' }),
+    action: sectionAction('Poslat dar', { icon: 'heart', onclick: () => giveSheet(), aria: 'Poslat mimořádný dar' }),
     body: stack(
       meta(vs
         ? 'Dary posílej se svým variabilním symbolem, pravidelné třeba trvalým příkazem. Podle symbolu ti Zvonec v lednu připraví potvrzení o daru do daňového přiznání.'
         : 'Dar můžeš poslat na účet sboru.'),
-      paymentBlock({ rows, payment, hint: 'Naskenuj v bankovní aplikaci, doplníš jen částku.' })),
+      paymentBlock({ rows, payment, hint: 'QR kód naskenuj v bankovní aplikaci a doplň jen částku.' })),
   });
 }
 
@@ -321,6 +321,6 @@ export function renderAccountPage() {
       arrivedSection(),
       section({ title: 'Barvy', body: paletteChoices({ label: 'Barvy' }) }),
       h('div', { class: 'acct-out' },
-        button('Odhlas se', { variant: 'quiet', icon: 'log-out', cls: 'acct-out__btn', onclick: signOut }))),
+        button('Odhlásit se', { variant: 'quiet', icon: 'log-out', cls: 'acct-out__btn', onclick: signOut }))),
   });
 }

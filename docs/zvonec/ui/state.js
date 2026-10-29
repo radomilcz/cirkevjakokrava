@@ -6,7 +6,6 @@ import { findConflicts } from '../lib/conflicts.js';
 import { eventById, randomId } from '../lib/events.js';
 import { dayOf, today } from '../lib/time.js';
 import { ACCESS_FILE, ACCESS_VERSION, emptyAccess } from '../lib/access.js';
-import { buildPublic } from '../lib/public.js';
 
 // ---------- state ----------
 
@@ -25,7 +24,6 @@ export const S = {
   screen: null,            // live, signed out: the invite pages (#pozvanka/…) – () => nodes, set by ui/login.js
   signInMessage: null,     // live, signed out: an error line for the sign-in page (#prihlaseni)
   afterSignIn: null,       // live: the route a signed-out visitor asked for, opened after signing in
-  publicData: null,        // live: public.json next to the app (null until loaded or when missing)
   filters: {               // remembered for the session; screens may add their own keys
     conflictScope: 'upcoming',      // 'upcoming' | 'all'
     peopleSearch: '',
@@ -94,15 +92,6 @@ export function actAs(personId, access = 'admin') {
 
 // ---------- public part ----------
 
-/**
- * What a visitor who is not signed in may see (lib/public.js shape: { churchName, address, events,
- * formats }). Demo: built from the demo data right now. Live: public.json as published next to the
- * app; null when it is not there (yet).
- */
-export function publicData() {
-  if (S.mode === 'demo') return S.data ? buildPublic(S.data, { today: today() }) : null;
-  return S.publicData;
-}
 
 // ---------- data changes ----------
 

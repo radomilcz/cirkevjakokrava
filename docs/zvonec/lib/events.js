@@ -16,7 +16,7 @@ export const EVENT_KINDS = ['service', 'rehearsal', 'smallGroup', 'event'];
 export const ASSIGNMENT_STATUSES = ['proposed', 'confirmed', 'declined'];
 export const RECURRENCE_STEPS = ['weekly', 'biweekly', 'monthly'];
 
-/** Czech names of the kinds (UI: „Účel“). The stored values never change. */
+/** Czech names of the kinds (UI: „Druh setkání“). The stored values never change. */
 export const KIND_LABELS = { service: 'Nedělní setkání', rehearsal: 'Zkouška', smallGroup: 'Skupinka', event: 'Akce' };
 /** Icon key per kind – the UI draws the icon. */
 export const KIND_ICONS = { service: 'sun', rehearsal: 'music', smallGroup: 'home', event: 'star' };
@@ -95,6 +95,7 @@ function copyEvent(source, { start, end }, newId) {
   const event = { ...clone(source), id: newId('e'), start, end, assignments: [] };
   delete event.cancelled;
   delete event.seriesId;
+  delete event.featured;      // „Zvýraznit na webu“ pins one event, never its copies
   if (source.program) {
     event.program = source.program.map(({ personId, ...item }) => ({ ...clone(item), id: newId('i') }));
   }
@@ -110,11 +111,13 @@ export function createSeries(draft, step, lastDay, { newId = randomId, limit = 1
   const times = step ? recurrences(draft.start, draft.end, step, lastDay, limit) : [{ start: draft.start, end: draft.end }];
   if (!times.length) times.push({ start: draft.start, end: draft.end });
   const seriesId = times.length > 1 ? newId('s') : undefined;
-  return times.map((t) => {
+  const events = times.map((t) => {
     const event = copyEvent(draft, t, newId);
     if (seriesId) event.seriesId = seriesId;
     return event;
   });
+  if (draft.featured === true) events[0].featured = true;   // pinned on Pastva: the first one, not the whole series
+  return events;
 }
 
 // ---------- series ----------
@@ -325,7 +328,7 @@ export function addSeries(data, draft, step, until, { newId = randomId, limit = 
 }
 
 /**
- * „Prodluž řadu“: adds events to a series up to `until` ("YYYY-MM-DD") following its rule.
+ * „Prodloužit řadu“: adds events to a series up to `until` ("YYYY-MM-DD") following its rule.
  * The new events copy the last event of the series (title, places, needs, osnova, time – whatever
  * the series looks like now), without people; when the series has no events left they are made from
  * its event type. Stores the series record (creating it for older data) with the new `until`.

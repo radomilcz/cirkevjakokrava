@@ -85,10 +85,10 @@ test('time: shifts, overlap, month grid', () => {
   assert.equal(grid.length, 42);
   assert.equal(grid[0], '2026-09-28');       // Monday before 1 Oct
   assert.equal(time.prettyTime('2026-10-04T09:05'), '9.05');
-  assert.equal(time.prettyDay('2026-10-04'), 'ne 4. 10.');
+  assert.equal(time.prettyDay('2026-10-04'), 'ne\u00a04.\u00a010.');
   assert.equal(time.prettyDayLong('2026-10-04'), 'neděle 4. října 2026');
   assert.equal(time.monthName('2026-10'), 'říjen 2026');
-  assert.equal(time.prettyRange({ start: '2026-10-04T10:00', end: '2026-10-04T12:00' }), 'ne 4. 10. 10.00–12.00');
+  assert.equal(time.prettyRange({ start: '2026-10-04T10:00', end: '2026-10-04T12:00' }), 'ne\u00a04.\u00a010. 10.00–12.00');
 });
 
 test('time: recurrence across the DST change and up to the last day', () => {

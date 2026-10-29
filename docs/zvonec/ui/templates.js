@@ -1,10 +1,10 @@
-// Zvonec One – Šablony (#sablony[/<id>], leaders; DESIGN §6.6, §5.2). A template pre-fills a new meeting: name, Účel,
+// Zvonec One – Šablony (#sablony[/<id>], leaders; DESIGN §6.6, §5.2). A template pre-fills a new meeting: name, Druh setkání,
 // day, time, place, who is needed, the osnova and what the web shows.
-//   A „Šablony“ · [Přidej šablonu]   B „Hledej šablonu“ + Filtr (Účel · Jen na webu · Ukaž i archiv)   D rows
-// Rows: Účel mark 40, name, „každou neděli · 10.00–12.00 · Sál“, trail „na webu“ (never in the meta). Click → the
-// detail in the pane (≥ 1200) or as a page; nothing is open on arrival. Every edit is a layer: Uprav (the basics),
-// Kdo je potřeba, Osnova, Na webu – each saves at once through the save line; ⋯ holds Naplánuj setkání, Zkopíruj,
-// Přesuň do archivu and Smaž.
+//   A „Šablony“ · [Přidat šablonu]   B „Hledat šablonu“ + Filtr (Druh setkání · Jen na webu · Zobrazit i archiv)   D rows
+// Rows: Druh setkání mark 40, name, „každou neděli · 10.00–12.00 · Sál“, trail „na webu“ (never in the meta). Click → the
+// detail in the pane (≥ 1200) or as a page; nothing is open on arrival. Every edit is a layer: Upravit (the basics),
+// Kdo je potřeba, Osnova, Na webu – each saves at once through the save line; ⋯ holds Naplánovat setkání, Zkopírovat,
+// Přesunout do archivu and Smazat.
 //
 // Data: eventType { id, name, kind, groupId?, weekday? (0 = Monday … 6 = Sunday), startTime, minutes, placeIds,
 // image?, description?, public?, archived?, needs: [{ roleId, count }], program?: [{ formatId, minutes }] }.
@@ -72,9 +72,9 @@ const templateMeta = (type) => joinMeta([whenText(type), placesText(type.placeId
 // ---------- #sablony ----------
 
 const FILTER_GROUPS = [
-  { id: 'ucel', title: 'Účel', kind: 'chips', multiple: true, options: EVENT_KINDS.map((k) => [k, KIND_LABELS[k], KIND_HUES[k]]) },
+  { id: 'ucel', title: 'Druh setkání', kind: 'chips', multiple: true, options: EVENT_KINDS.map((k) => [k, KIND_LABELS[k], KIND_HUES[k]]) },
   { id: 'web', title: 'Jen na webu', kind: 'switch' },
-  { id: 'archiv', title: 'Ukaž i archiv', kind: 'switch', hint: 'Šablonu z archivu Zvonec u nového setkání nenabídne.' },
+  { id: 'archiv', title: 'Zobrazit i archiv', kind: 'switch', hint: 'Šablonu z archivu Zvonec u nového setkání nenabídne.' },
 ];
 
 /** Templates in their order: the most planned first, then by name. */
@@ -99,7 +99,7 @@ function listBody(openId) {
     return empty({
       kind: 'none', icon: 'layers', title: 'Zatím tu není žádná šablona.',
       text: 'Nové setkání ze šablony dostane čas, místo, role i osnovu.',
-      action: { label: 'Přidej šablonu', icon: 'plus', onclick: () => basicsSheet(null) },
+      action: { label: 'Přidat šablonu', icon: 'plus', onclick: () => basicsSheet(null) },
     });
   }
   const rows = shown();
@@ -128,8 +128,8 @@ export function renderTemplates(id) {
   screenEl = listScreen({
     title: 'Šablony',
     phoneBack: menuBack(),   // a phone opens it from the person menu
-    action: { label: 'Přidej šablonu', icon: 'plus', onclick: () => basicsSheet(null) },
-    search: { key: KEY, placeholder: 'Hledej šablonu', onInput: redraw },
+    action: { label: 'Přidat šablonu', icon: 'plus', onclick: () => basicsSheet(null) },
+    search: { key: KEY, placeholder: 'Hledat šablonu', onInput: redraw },
     filter: filterButton({ key: KEY, groups: FILTER_GROUPS, onChange: redraw, results: () => shown().length, unit: templatesWord }),
     body: listBody(type?.id),
     pane: id ? (type ? templateDetail(type, 'pane') : missingTemplate('pane')) : null,
@@ -147,12 +147,12 @@ const missingTemplate = (frame) => missingDetail({ frame, back: { href: LIST, la
 
 function templateMenu(type) {
   return [
-    { label: 'Uprav šablonu', icon: 'pencil', onclick: () => basicsSheet(type) },
-    type.archived ? null : { label: 'Naplánuj setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ typeId: type.id }) },
-    { label: 'Zkopíruj šablonu', icon: 'copy', onclick: () => copyTemplate(type) },
-    { label: type.archived ? 'Vrať z archivu' : 'Přesuň do archivu', icon: 'archive', onclick: () => toggleArchive(type) },
+    { label: 'Upravit šablonu', icon: 'pencil', onclick: () => basicsSheet(type) },
+    type.archived ? null : { label: 'Naplánovat setkání', icon: 'calendar-plus', onclick: () => openAddEvent({ typeId: type.id }) },
+    { label: 'Zkopírovat šablonu', icon: 'copy', onclick: () => copyTemplate(type) },
+    { label: type.archived ? 'Vrátit z archivu' : 'Přesunout do archivu', icon: 'archive', onclick: () => toggleArchive(type) },
     '-',
-    { label: 'Smaž šablonu', icon: 'trash', danger: true, onclick: () => deleteTemplate(type) },
+    { label: 'Smazat šablonu', icon: 'trash', danger: true, onclick: () => deleteTemplate(type) },
   ].filter(Boolean);
 }
 
@@ -206,7 +206,7 @@ function needsBody(type) {
 /** Osnova: the points with their start times, and how the minutes fit the meeting. */
 function outlineBody(type) {
   const program = type.program || [];
-  if (!program.length) return quiet('Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.');
+  if (!program.length) return quiet('Osnova je zatím prázdná. Přidej do ní body programu, třeba chvály nebo kázání. Časy se dopočítají samy.');
   let cursor = 0;
   const rows = program.map((item) => {
     const format = formatById(S.data, item.formatId);
@@ -232,7 +232,7 @@ function outlineSum(sum, length) {
     h('span', {}, `${sum} z ${length} min · `, over > 0 ? `přetéká o ${over} min` : over === 0 ? 'sedí přesně' : `zbývá ${-over} min`));
 }
 
-/** Na webu: the switch (applies at once, „Vrať“), the description and the picture. */
+/** Na webu: the switch (applies at once, „Vrátit zpět“), the description and the picture. */
 function webBody(type) {
   const set = (on) => {
     const target = typeById(type.id);
@@ -248,7 +248,7 @@ function webBody(type) {
   }
   return [
     switchRow({
-      label: 'Ukazuj nová setkání na webu', hint: 'Název, čas, místo, obrázek a popis uvidí každý na Pastvě. Jména lidí nikdy.',
+      label: 'Zobrazovat nová setkání na webu', hint: 'Název, čas, místo, obrázek a popis uvidí na webu každý. Jména lidí nikdy.',
       checked: !!type.public,
       onChange: (on) => { set(on); toast(on ? 'Nová setkání budou na webu.' : 'Nová setkání na web nepůjdou.', { action: () => set(!on) }); },
     }),
@@ -257,7 +257,7 @@ function webBody(type) {
   ];
 }
 
-/** Setkání v plánu: the next five, „Ukaž všech 16“, and the series it runs in (Prodluž). */
+/** Setkání v plánu: the next five, „Zobrazit všech 16“, and the series it runs in (Prodloužit). */
 function plannedBody(type) {
   const events = upcomingOf(type.id);
   const rowOf = (e) => eventRow({
@@ -272,13 +272,13 @@ function plannedBody(type) {
       lead: icon('undo'),
       title: seriesSummary(s, { today: now }),
       meta: ahead ? `ještě ${meetingsWord(ahead)}` : 'nic dalšího v plánu',
-      trail: s.step ? button('Prodluž', { variant: 'quiet', size: 's', onclick: () => extendSeriesSheet(s) }) : null,
+      trail: s.step ? button('Prodloužit', { variant: 'quiet', size: 's', onclick: () => extendSeriesSheet(s) }) : null,
     });
   });
   if (!events.length && !seriesRows.length) return quiet('Z téhle šablony teď nic v plánu není.');
   const eventList = list(events.slice(0, SHOWN_EVENTS).map(rowOf), { label: 'Setkání v plánu' });
   const more = events.length > SHOWN_EVENTS
-    ? rowLink(`Ukaž všech ${events.length}`, { onclick: (e) => { eventList.replaceChildren(...events.map(rowOf)); e.currentTarget.remove(); } })
+    ? rowLink(`Zobrazit všech ${events.length}`, { onclick: (e) => { eventList.replaceChildren(...events.map(rowOf)); e.currentTarget.remove(); } })
     : null;
   return [
     events.length ? eventList : null,
@@ -287,7 +287,7 @@ function plannedBody(type) {
   ];
 }
 
-/** The template's detail (DESIGN §5.2): Účel mark 56 · tags · h1 · when, where → Kdo · Osnova · Na webu · v plánu. */
+/** The template's detail (DESIGN §5.2): Druh setkání mark 56 · tags · h1 · when, where → Kdo · Osnova · Na webu · v plánu. */
 export function templateDetail(type, frame = 'pane') {
   const upcoming = upcomingOf(type.id).length;
   const firstPlace = (type.placeIds || []).find((id) => placeById(S.data, id));
@@ -304,9 +304,9 @@ export function templateDetail(type, frame = 'pane') {
       ]),
     }),
     meta('Nové setkání ze šablony dostane čas, místo, role i osnovu.'),
-    section({ title: 'Kdo je potřeba', action: sectionAction('Uprav', { aria: 'Uprav, kdo je potřeba', onclick: () => needsSheet(type) }), body: needsBody(type) }),
-    section({ title: 'Osnova', action: sectionAction('Uprav', { aria: 'Uprav osnovu', onclick: () => outlineSheet(type) }), body: outlineBody(type) }),
-    section({ title: 'Na webu', action: sectionAction('Uprav', { aria: 'Uprav popis a obrázek', onclick: () => webSheet(type) }), body: webBody(type) }),
+    section({ title: 'Kdo je potřeba', action: sectionAction('Upravit', { aria: 'Upravit, kdo je potřeba', onclick: () => needsSheet(type) }), body: needsBody(type) }),
+    section({ title: 'Osnova', action: sectionAction('Upravit', { aria: 'Upravit osnovu', onclick: () => outlineSheet(type) }), body: outlineBody(type) }),
+    section({ title: 'Na webu', action: sectionAction('Upravit', { aria: 'Upravit popis a obrázek', onclick: () => webSheet(type) }), body: webBody(type) }),
     section({ title: 'Setkání v plánu', value: upcoming ? count(upcoming, { quiet: true }) : null, body: plannedBody(type) }),
   ];
   return frame === 'page'
@@ -325,8 +325,8 @@ const andWords = (words) => (words.length > 1 ? `${words.slice(0, -1).join(', ')
 
 /**
  * A saved template edit: change(), then – when planned meetings still follow the old template – the question
- * „Chceš změnit i naplánovaná setkání?“ (Změň i 16 setkání / Jen šablonu). What someone changed by hand in a
- * meeting stays; „Vrať“ in the toast puts the template and the meetings back.
+ * „Chceš změnit i naplánovaná setkání?“ (Změnit i 16 setkání / Jen šablonu). What someone changed by hand in a
+ * meeting stays; „Vrátit zpět“ in the toast puts the template and the meetings back.
  */
 function savedType(before, target, note) {
   change(note);
@@ -367,7 +367,7 @@ function savedType(before, target, note) {
       `V plánu ${n === 1 || n > 4 ? 'je' : 'jsou'} ${meetingsWord(n)} z téhle šablony. Změní se ${n === 1 ? 'mu' : 'jim'} ${andWords(keys.map((k) => CHANGE_WORDS[k]))}.`,
       plan.kept ? ' Co někdo u setkání upravil ručně, zůstane.' : null),
     foot: [
-      button(`Změň i ${meetingsWord(n)}`, { variant: 'primary', size: 'l', block: true, onclick: pick(true) }),
+      button(`Změnit i ${meetingsWord(n)}`, { variant: 'primary', size: 'l', block: true, onclick: pick(true) }),
       button('Jen šablonu', { size: 'l', block: true, onclick: pick(false) }),
     ],
     onClose: () => { if (!answered) toast('Uloženo. Naplánovaná setkání zůstala, jak byla.'); },
@@ -382,7 +382,7 @@ function writeType(target, fields) {
   }
 }
 
-/** Nová šablona / Úprava šablony: name, Účel, day, time, place, for whom – a dialog L (a sheet on a phone). */
+/** Nová šablona / Úprava šablony: name, Druh setkání, day, time, place, for whom – a dialog L (a sheet on a phone). */
 export function basicsSheet(type) {
   const main = S.data.settings?.mainPlaceId && placeById(S.data, S.data.settings.mainPlaceId) ? [S.data.settings.mainPlaceId] : [];
   const v = type ? clone(type) : { name: '', kind: 'service', startTime: '10:00', minutes: 120, placeIds: main, needs: [] };
@@ -422,17 +422,17 @@ export function basicsSheet(type) {
   const groups = S.data.groups.filter((g) => !g.archived || g.id === v.groupId).sort(byName);
   return formSheet({
     title: type ? 'Úprava šablony' : 'Nová šablona',
-    submitLabel: type ? 'Ulož' : 'Přidej šablonu',
+    submitLabel: type ? 'Uložit' : 'Přidat šablonu',
     size: 'l',
     body: [
       field({ label: 'Název setkání', control: name, hint: 'Takhle se bude jmenovat každé nové setkání.' }),
       chipsField({
-        name: 'kind', label: 'Účel', value: v.kind || 'service',
+        name: 'kind', label: 'Druh setkání', value: v.kind || 'service',
         options: EVENT_KINDS.map((k) => ({ value: k, label: KIND_LABELS[k] })),
         onChange: (k) => { v.kind = k; },
       }),
       chipsField({
-        name: 'weekday', label: 'Den', hint: 'Kdy setkání obvykle bývá. Kalendář ho předvyplní.',
+        name: 'weekday', label: 'Den', hint: 'Den, kdy setkání obvykle bývá. Zvonec ho předvyplní u nového setkání.',
         value: Number.isInteger(v.weekday) ? String(v.weekday) : '',
         options: [{ value: '', label: 'Kdykoli' }, ...DAY_SHORT.map((label, i) => ({ value: String(i), label }))],
         onChange: (x) => { v.weekday = x === '' ? undefined : Number(x); },
@@ -508,7 +508,7 @@ function needsSheet(type) {
           const own = needs.find((n) => n.roleId === role.id)?.count || 0;
           const extra = brought.get(role.id);
           return h('div', { class: 'tpl-need' },
-            h('span', { class: 'tpl-need__name' }, role.name, extra ? h('span', { class: 'caption' }, `navíc z osnovy: ${extra.count}`) : null),
+            h('span', { class: 'tpl-need__name' }, role.name, extra ? h('span', { class: 'caption' }, `Navíc ještě ${extra.count} pro body v osnově.`) : null),
             stepper({ value: own, min: 0, max: 20, label: role.name, onChange: (n) => setCount(role.id, n) }));
         }))),
     ] : [quiet('Zatím tu nejsou týmy s rolemi. Přidáš je v Lidech › Skupiny.')],
@@ -523,11 +523,11 @@ function needsSheet(type) {
   });
 }
 
-/** Osnova: the points in order (tap to change, drag the handle or ⋯ to move, ⋯ to remove), „Přidej bod“ (a second layer). */
+/** Osnova: the points in order (tap to change, drag the handle or ⋯ to move, ⋯ to remove), „Přidat bod“ (a second layer). */
 function outlineSheet(type) {
   const program = clone(type.program || []);
   const holder = h('div', { class: 'tpl-outline' });
-  // drag the handle (or ↑ ↓ on it) to reorder; ⋯ keeps Posuň výš / níž for anyone who prefers a menu
+  // drag the handle (or ↑ ↓ on it) to reorder; ⋯ keeps Posunout výš / níž for anyone who prefers a menu
   const listEl = (rows) => {
     const el = list(rows, { label: 'Osnova', cls: 'tpl-outline__list' });
     reorderable(el, {
@@ -546,28 +546,28 @@ function outlineSheet(type) {
       const move = (to) => { const [x] = program.splice(i, 1); program.splice(to, 0, x); draw(); };
       const more = iconButton('more', `Další možnosti – ${nameOf}`, { cls: 'menu-btn' });
       more.addEventListener('click', () => openMenu([
-        { label: 'Posuň výš', disabled: i === 0, onclick: () => move(i - 1) },
-        { label: 'Posuň níž', disabled: i === program.length - 1, onclick: () => move(i + 1) },
+        { label: 'Posunout výš', disabled: i === 0, onclick: () => move(i - 1) },
+        { label: 'Posunout níž', disabled: i === program.length - 1, onclick: () => move(i + 1) },
         '-',
-        { label: 'Odeber z osnovy', icon: 'trash', danger: true, onclick: () => { program.splice(i, 1); draw(); } },
+        { label: 'Odebrat z osnovy', icon: 'trash', danger: true, onclick: () => { program.splice(i, 1); draw(); } },
       ], { anchor: more, title: nameOf }));
       const grip = h('button', {
-        type: 'button', class: 'icon-btn reorder-grip', 'aria-label': `Přesuň: ${nameOf} (šipkami nahoru a dolů)`, title: 'Přesuň',
+        type: 'button', class: 'icon-btn reorder-grip', 'aria-label': `Přesunout: ${nameOf} (šipkami nahoru a dolů)`, title: 'Přesunout',
       }, icon('grip', { size: 's' }));
       return row({
         lead: [grip, h('span', { class: 'tpl-time' }, clock(start))],
         title: nameOf,
         meta: joinMeta([`${item.minutes ?? 0} min`, roleById(S.data, format?.leadRoleId)?.name ? `vede ${roleById(S.data, format.leadRoleId).name}` : null]),
         onclick: () => itemSheet(program, i, draw),
-        label: `Uprav: ${nameOf}`,
+        label: `Upravit: ${nameOf}`,
         trail: more,
       });
     });
     holder.replaceChildren(...[
       program.length ? outlineSum(cursor, Number(type.minutes) || 0) : null,
-      program.length ? listEl(rows) : quiet('Osnova je zatím prázdná. Slož ji z formátů, časy se dopočítají samy.'),
+      program.length ? listEl(rows) : quiet('Osnova je zatím prázdná. Přidej do ní body programu, třeba chvály nebo kázání. Časy se dopočítají samy.'),
       h('div', { class: 'tpl-outline__foot' },
-        button('Přidej bod', { variant: 'tint', size: 's', icon: 'plus', onclick: () => addItemSheet(program, draw) })),
+        button('Přidat bod', { variant: 'tint', size: 's', icon: 'plus', onclick: () => addItemSheet(program, draw) })),
     ].filter(Boolean));
   };
   draw();
@@ -594,7 +594,7 @@ function addItemSheet(program, redraw) {
   sheet = layer.open({
     kind: 'sheet', size: 'm',
     title: 'Nový bod osnovy',
-    subtitle: 'Přidá se na konec. Pak ho posuneš, kam patří.',
+    subtitle: 'Bod se přidá na konec osnovy. Pak ho posuň, kam patří.',
     body: formats.length
       ? list(formats.map((f) => row({
         lead: minutesMark(f.minutes ?? 10),
@@ -659,10 +659,10 @@ function webSheet(type) {
   const has = () => !!img.pending || (!!type.image && !img.removed);
   const draw = async () => {
     buttons.replaceChildren(...[
-      button(has() ? 'Vyber jiný obrázek' : 'Nahraj obrázek', { variant: 'quiet', size: 's', icon: 'image', onclick: () => file.click() }),
-      has() ? button('Odeber obrázek', { variant: 'quiet', size: 's', onclick: () => { img.pending = null; img.removed = true; draw(); } }) : null,
+      button(has() ? 'Vybrat jiný obrázek' : 'Nahrát obrázek', { variant: 'quiet', size: 's', icon: 'image', onclick: () => file.click() }),
+      has() ? button('Odebrat obrázek', { variant: 'quiet', size: 's', onclick: () => { img.pending = null; img.removed = true; draw(); } }) : null,
     ].filter(Boolean));
-    message.textContent = has() ? 'Zvonec z obrázku vyřízne prostředek na šířku (16 : 9), stejně ho uvidí i web.' : 'Bez obrázku ukáže web jen název, den a místo.';
+    message.textContent = has() ? 'Zvonec z obrázku použije široký pruh ze středu. Stejně ho uvidí i návštěvníci webu.' : 'Bez obrázku ukáže web jen název, den a místo.';
     if (img.pending) { preview.replaceChildren(h('img', { src: img.pending.dataUrl, alt: '' })); preview.hidden = false; return; }
     preview.replaceChildren();
     preview.hidden = true;
@@ -675,7 +675,7 @@ function webSheet(type) {
     const chosen = file.files[0];
     file.value = '';
     if (!chosen) return;
-    message.textContent = 'Zmenšuju…';
+    message.textContent = 'Zmenšuji…';
     try {
       img.pending = await prepareImage(chosen);
       img.removed = false;
@@ -689,7 +689,7 @@ function webSheet(type) {
     subtitle: type.name,
     size: 'l',
     body: [
-      field({ label: 'Popis', optional: true, control: description, hint: 'Předvyplní se u nových setkání. Uvidí ho každý na Pastvě.' }),
+      field({ label: 'Popis', optional: true, control: description, hint: 'Předvyplní se u nových setkání. Na webu ho uvidí každý.' }),
       field({ label: 'Obrázek', optional: true, control: [preview, buttons, file], cls: 'tpl-image-field' }),
       message,
     ],
@@ -746,7 +746,7 @@ function deleteTemplate(type) {
   confirmSheet({
     title: `Chceš smazat šablonu ${type.name}?`,
     text: n ? `Setkání, která z ní už vznikla (${n}), zůstanou, jak jsou.` : 'Žádné setkání z ní zatím nevzniklo.',
-    confirmLabel: 'Smaž šablonu',
+    confirmLabel: 'Smazat šablonu',
     onConfirm: () => {
       S.data.eventTypes = S.data.eventTypes.filter((x) => x.id !== type.id);
       for (const e of S.data.events) if (e.typeId === type.id) delete e.typeId;

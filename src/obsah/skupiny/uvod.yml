@@ -18,9 +18,6 @@ slajdy:
       - odkaz: 1. Janova 4,19
         text: My milujeme, neboť on první miloval nás.
         url: https://www.bible.com/bible/15/1JN.4.19.B21
-      - odkaz: Efezským 2,10
-        text: Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.
-        url: https://www.bible.com/bible/15/EPH.2.10.B21
   - typ: fotka
     nazev: Manifest – PROČ?
     nadtitulek: manifest
@@ -30,7 +27,7 @@ slajdy:
     popis_fotky: Skotský náhorní skot zblízka v podvečerním světle, v tlamě stébla trávy.
   - typ: predmluva
     nazev: Předmluva
-    nadtitulek: Proč *jako* kráva?
+    nadtitulek: Proč kráva?
     kapitoly:
       - tagline: Dobrá zpráva
         nadpis: Češi nejsou ovce. Potřebují církev jako kráva.
@@ -43,10 +40,14 @@ slajdy:
           Pane. To má být vtip? Bože. Vážně cituješ Setha Godina? A pak nám to
           došlo. Kráva je Boží! Jo. Je to sice divný název pro církev. Ale bez
           mrknutí oka nás teleportuje do přítomnosti.
+        verse:
+          - odkaz: Izaiáš 43,18–19
+            text: Nevzpomínejte na věci minulé, o starých neuvažujte! Hle, já činím novou věc, a klíčí právě teď – vy to nevíte?
+            url: https://www.bible.com/bible/15/ISA.43.18-19.B21
       - nadpis: Minulost je past. Přítomnost je pastva.
         text: >-
           Jasně. Jsme Češi. Církev je pro nás minulost. Uzavřená. Prostě past.
-          Ale kráva? Je nadčasová. Normální. Odzbrojující. Lokální. Kde zabučí
+          Ale kráva? Je nadčasová. Normální. Odzbrojující. Lokální. Kde se pase
           kráva, na církev nikdo nenadává. Vtahuje nás do děje. Smějeme se →
           jsme zvědaví → ptáme se:
 
@@ -54,8 +55,8 @@ slajdy:
           > Proč jako kráva?
 
 
-          Protože kráva patří na pastvu, ne do kostela. Žijeme tím, čím žije
-          naše město. Fandíme všemu, co v něm Bůh dělá. Přidáváme se, ať to s
+          Jednoduše. Kráva patří na pastvu, ne do kostela. Žijeme tím, čím
+          žije naše město. Fandíme všemu, co v něm Bůh dělá. Přidáváme se, ať to s
           námi roste. Tam, kde pracujeme a platíme nájem. Dáváme srdce, čas a
           neředěný zájem.
       - nadpis: Lásko, to je Kravařsko!
@@ -67,10 +68,14 @@ slajdy:
           Prospívá životu. Na každém kroku přidává hodnotu.
 
 
-          Kráva je úkaz. Dokud je tu, připomíná světu, že má laskavého
-          Hospodáře. Kdyby odsud zmizela, tvář Kravařska by se k nepoznání
+          Kráva je úkaz. Dokud je tu, laskavě připomíná světu, že náš Hospodář je
+          blízko. Kdyby odsud zmizela, tvář Kravařska by se k nepoznání
           změnila. Takoví chceme být i my.
 
 
           Církev, která *by* Kravařsku chyběla.
+        verse:
+          - odkaz: Filipským 4,5
+            text: Všichni lidé ať znají vaši vlídnost. Pán je blízko.
+            url: https://www.bible.com/bible/15/PHP.4.5.B21
     otazka: Co to znamená?

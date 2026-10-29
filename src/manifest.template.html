@@ -30,6 +30,22 @@
 {%- endfor %}
     </p>
 {%- endmacro -%}
+{#- Verše jako pilulky: kliknutím se pod nimi rozbalí znění (vždy jen jeden). Odstavec i kapitola předmluvy. #}
+{%- macro verse_blok(verse, zaklad) -%}
+    <div class="verse-blok">
+      <div class="pilulky">
+      {%- for v in verse %}
+        <button type="button" class="pil" aria-expanded="false" aria-controls="{{ zaklad }}-v{{ loop.index }}">{{ v.odkaz }}</button>
+      {%- endfor %}
+      </div>
+      {%- for v in verse %}
+      <blockquote class="pil-v" id="{{ zaklad }}-v{{ loop.index }}" hidden>
+        <p>„{{ v.text|txt }}“</p>
+        {%- if v.get('url') %}<a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.odkaz }}: Bible21</a>{% endif %}
+      </blockquote>
+      {%- endfor %}
+    </div>
+{%- endmacro -%}
 {%- macro pata(otazka, podpis=None) -%}
     <div class="foot">
 {%- if otazka %}
@@ -44,9 +60,6 @@
     {%- if x.predel %} data-predel{% endif %}
     {%- if stitek %} aria-label="{{ stitek }}"{% endif %}>
 {%- endmacro %}
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="otisk" viewBox="0 0 998 816">{{BLOB_PATHS}}</symbol>
-</svg>
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 <div class="deck" id="deck">
 <main class="track" id="track">
@@ -77,6 +90,9 @@
 {%- for b in k.text|bloky %}
       {{ b|blok }}
 {%- endfor %}
+{%- if k.get('verse') %}
+      {{ verse_blok(k.verse, x.id ~ '-k' ~ loop.index) }}
+{%- endif %}
 {%- endfor %}
     </div>
     {{ pata(x.get('otazka')) }}
@@ -140,19 +156,7 @@
     <p class="text">{{ x.text|txt }}</p>
     {#- Verše pod odstavcem: pilulky s odkazem, kliknutím se pod nimi rozbalí znění (vždy jen jeden). #}
     {%- if x.get('verse') %}
-    <div class="verse-blok">
-      <div class="pilulky">
-      {%- for v in x.verse %}
-        <button type="button" class="pil" aria-expanded="false" aria-controls="{{ x.id }}-v{{ loop.index }}">{{ v.odkaz }}</button>
-      {%- endfor %}
-      </div>
-      {%- for v in x.verse %}
-      <blockquote class="pil-v" id="{{ x.id }}-v{{ loop.index }}" hidden>
-        <p>„{{ v.text|txt }}“</p>
-        {%- if v.get('url') %}<a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.odkaz }}: Bible21</a>{% endif %}
-      </blockquote>
-      {%- endfor %}
-    </div>
+    {{ verse_blok(x.verse, x.id) }}
     {%- endif %}
     {{ pata(None, None) }}
   </section>

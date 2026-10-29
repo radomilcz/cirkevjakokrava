@@ -4,12 +4,12 @@
 // mark appears), then one table per kind of meeting of the month („Setkání na pastvě“, „Zkouška chval“; the meetings
 // that happen once share „Další setkání“). A column is a meeting (the day, the time, for leaders ◯ 14 z 15; a click
 // opens the meeting as a page), a row is a role under its team's line, a cell says who: one name a line („Ty“ on the
-// pick tint, so I find my Sundays at a glance), ○ / ● after a name (leaders), „+ Doplň“ where someone is missing
+// pick tint, so I find my Sundays at a glance), ○ / ● after a name (leaders), „+ Doplnit“ where someone is missing
 // (leaders, upcoming) or „chybí“, and „–“ where the meeting does not need the role. Read across: who plays the keys
 // this month; read down: who serves on Sunday. The role column stays put while a phone scrolls the meetings sideways.
 // Filtr › Tým narrows the rows, the rest of Filtr and the search narrow the columns. What is over is in --ink-2.
 // A click on a name (leaders) → the duty sheet; on „Ty“ → my answer.
-// Also here: Kalendář's ⋯ (calendarMenu) – Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa · Vytížení –
+// Also here: Kalendář's ⋯ (calendarMenu) – Stáhnout do kalendáře · Vytisknout rozpis… · Doplnit volná místa · Vytížení –
 // the Vytížení dialog and the print (A4 landscape, a table of every role).
 
 import {
@@ -110,7 +110,7 @@ function columnHead(event, { month, mixed, teams }) {
       showFill ? h('span', { class: 'rt-col__fill' }, fillRing(f.filled, f.needed), h('span', { class: 'num' }, `${f.filled} z ${f.needed}`)) : null));
 }
 
-/** Who serves one role at one meeting: a name a line, „Ty“, ○ / ●, then „+ Doplň“ or „chybí“; „–“ when not needed. */
+/** Who serves one role at one meeting: a name a line, „Ty“, ○ / ●, then „+ Doplnit“ or „chybí“; „–“ when not needed. */
 function cell(event, role, slots, conflicts, marks) {
   if (event.cancelled || !slots) {
     return h('td', { class: 'rt-cell rt-cell--none' }, h('span', { 'aria-hidden': 'true' }, '–'),
@@ -136,8 +136,8 @@ function cell(event, role, slots, conflicts, marks) {
   const holes = slots.filter((x) => !x.assignment).length;
   let gap = null;
   if (holes && editable) {
-    gap = slot(h('span', { class: 'slot__label' }, holes > 1 ? `Doplň ${holes}` : 'Doplň'), () => pickFor(event.id, role.id),
-      { aria: `Doplň: ${role.name}, ${event.title} ${shortDate(event.start)}${holes > 1 ? ` (chybí ${holes})` : ''}` });
+    gap = slot(h('span', { class: 'slot__label' }, holes > 1 ? `Doplnit ${holes}` : 'Doplnit'), () => pickFor(event.id, role.id),
+      { aria: `Doplnit: ${role.name}, ${event.title} ${shortDate(event.start)}${holes > 1 ? ` (chybí ${holes})` : ''}` });
   } else if (holes) gap = sev('error', holes > 1 ? `chybí ${holes}` : 'chybí');
   return h('td', { class: 'rt-cell', dataset: { me: me ? '' : null, past: isPast(event) ? '' : null } }, people, gap);
 }
@@ -256,7 +256,7 @@ function printTable(t) {
     table({ label: `Rozpis: ${t.title}`, cls: 'print-roster', head, rows }));
 }
 
-/** Print the month's Rozpis (Filtr › Účel and Tým apply; what is cancelled says so). */
+/** Print the month's Rozpis (Filtr › Druh setkání and Tým apply; what is cancelled says so). */
 export function printRoster(month) {
   const teams = filterTeams();
   const items = monthEvents(month).filter(passesFilter).map((event) => ({ event, lines: linesOf(event, teams) })).filter((x) => x.lines.length);
@@ -272,15 +272,15 @@ export function printRoster(month) {
   setTimeout(done, 1500);
 }
 
-/** „Vytiskni rozpis…“: which month (the shown one first). */
+/** „Vytisknout rozpis…“: which month (the shown one first). */
 function openPrint(month) {
   const options = [-1, 0, 1, 2, 3, 4, 5, 6].map((n) => shiftMonth(thisMonth(), n));
   if (!options.includes(month)) options.unshift(month);
   formSheet({
-    title: 'Tisk rozpisu', size: 's', submitLabel: 'Vytiskni',
+    title: 'Tisk rozpisu', size: 's', submitLabel: 'Vytisknout',
     body: [
       field({ label: 'Měsíc', control: selectInput({ name: 'month', value: month, options: options.map((m) => ({ value: m, label: monthLabel(m) })) }) }),
-      h('p', { class: 'meta' }, 'Zvonec vytiskne tabulku na šířku A4: kdo kdy slouží. Platí pro ni i Filtr.'),
+      h('p', { class: 'meta' }, 'Zvonec vytiskne na šířku A4 tabulku, kdo kdy slouží. Když máš zapnutý Filtr, vytiskne jen to, co Filtr ukazuje.'),
     ],
     onSubmit: (form) => { const m = form.elements.month.value; setTimeout(() => printRoster(m), 50); },
   });
@@ -289,16 +289,16 @@ function openPrint(month) {
 // ---------- Kalendář's ⋯ (the same in every view) ----------
 
 /**
- * ⋯ of Kalendář: Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa (leaders) · Ukaž, kdo kolik slouží (Vytížení, leaders).
- * `month`: the shown month (Měsíc, Rozpis); `ids()`: the meetings „Doplň volná místa“ works on.
+ * ⋯ of Kalendář: Stáhnout do kalendáře · Vytisknout rozpis… · Doplnit volná místa (leaders) · Zobrazit, kdo kolik slouží (Vytížení, leaders).
+ * `month`: the shown month (Měsíc, Rozpis); `ids()`: the meetings „Doplnit volná místa“ works on.
  */
 export function calendarMenu({ month = currentMonth(), ids = () => [] } = {}) {
   const leader = can('leader');
   return [
-    { label: 'Stáhni do kalendáře', icon: 'download', onclick: openCalendarExport },
-    { label: 'Vytiskni rozpis…', icon: 'printer', onclick: () => openPrint(month) },
-    leader ? { label: 'Doplň volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: filterTeams() }) } : null,
-    leader ? { label: 'Ukaž, kdo kolik slouží', icon: 'layers', onclick: () => openLoad(month) } : null,
+    { label: 'Stáhnout do kalendáře', icon: 'download', onclick: openCalendarExport },
+    { label: 'Vytisknout rozpis…', icon: 'printer', onclick: () => openPrint(month) },
+    leader ? { label: 'Doplnit volná místa', icon: 'user-plus', onclick: () => fillOpenSlots(ids(), { teams: filterTeams() }) } : null,
+    leader ? { label: 'Zobrazit, kdo kolik slouží', icon: 'layers', onclick: () => openLoad(month) } : null,
   ].filter(Boolean);
 }
 

@@ -1,4 +1,5 @@
-// Zvonec One – routes of package P1 (Moje, Můj účet, Kdy nemůžu, Přihlášení, Pozvánka, Pastva).
+// Zvonec One – routes of package P1 (Moje, Můj účet, Kdy nemůžu, Přihlášení, Pozvánka). Zvonec has no public page: old
+// #pastva, #program and #jak-se-schazime links are unknown routes and land on the home section.
 // Created by the foundation as a stub that maps the slugs to the forked Simple screens; owned by P1 from now on.
 // A route: { render(parts) → nodes with a <main>, access, nav? }
 //   access: 'public' · 'signedOut' · 'member' · 'leader' · 'admin' · or a function of the parts
@@ -10,7 +11,7 @@ import { renderMine } from './mine.js';
 import { renderAccountPage } from './account.js';
 import { renderBlockoutsPage } from './blockouts.js';
 import { renderLogin, renderInvite } from './login.js';
-import { renderProgram } from './public.js';
+
 
 export const ROUTES = {
   moje: { render: (parts) => renderMine(parts), access: 'member', nav: 'moje' },
@@ -18,12 +19,9 @@ export const ROUTES = {
   'kdy-nemuzu': { render: () => renderBlockoutsPage(), access: 'member', nav: 'me' },
   prihlaseni: { render: ([part]) => renderLogin(part), access: 'signedOut', nav: null },
   pozvanka: { render: ([code]) => renderInvite(code), access: 'signedOut', nav: null },
-  pastva: { render: ([id]) => renderProgram(id), access: 'public', nav: null },
 };
 
 export const REDIRECTS = [
   [/^nemuzu$/, () => 'kdy-nemuzu'],
   [/^nastaveni\/ucet$/, () => 'ucet'],
-  [/^program(\/.*)?$/, (m) => `pastva${m[1] || ''}`],   // the public page used to be „Program“; links people shared
-  [/^jak-se-schazime$/, () => ['pastva', 'jak-se-schazime']],
 ];

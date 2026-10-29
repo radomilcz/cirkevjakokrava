@@ -8,49 +8,72 @@
   const N=slides.length;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- otisk: rozmístění 1:1 podle Figmy (rámeček 1920×1080, skupina 816×997 otočená) ----------
-     x,y,w,h = obalový box otočené skupiny v rámu; rot = rotace navíc oproti exportu (export je otočený o 90°) */
-  const PRINT={            /* x,y = levý horní roh obalového boxu otočené skupiny v rámu, r = rotace ve Figmě */
-    '01':     {x:851, y:115,  r:90},
-    '02':     {x:283, y:370,  r:-75},
-    '03':     {x:549, y:-471, r:60},
-    '04':     {x:-367,y:228,  r:60},
-    '05':     {x:446, y:132,  r:-90},
-    '06a':    {x:483, y:121,  r:-90},
-    'h01':    {x:324, y:-3,   r:-120},
-    'h02':    {x:324, y:-34,  r:-120},
-    'h01b':   {x:324, y:-34,  r:-120},
-    'h03':    {x:439, y:118,  r:90},
-    'h04':    {x:302, y:-111, r:60},
-    'h05':    {x:384, y:17,   r:-105},
-    'h06':    {x:384, y:0,    r:75},
-    'h07':    {x:351, y:-126, r:-45},
-    'h08':    {x:336, y:-139, r:30},
-    'h09':    {x:373, y:17,   r:-105},
-    'h10':    {x:396, y:0,    r:-75},
-    'h11':    {x:404, y:38,   r:99},
-    'zrcadlo':{x:373, y:0,    r:75}
+  /* ---------- blots: placed where the fingerprint used to be, 1:1 from Figma (1920×1080 frame) ----------
+     The fingerprint is replaced by blots from Figma (Fleky → Atlas fleků single, layers mrak_01–05,
+     files assets/blots/blot01–05.webp). Each slide has its own shape (f) and neighbours never repeat.
+     Long slides read by scrolling get two blots instead of one (READING_BLOTS below). Position and
+     rotation stayed from the fingerprint – x,y is the top-left corner of the bounding box of the
+     rotated 816×997 group, r is the rotation in Figma. */
+  const BLOTS={'01':[1108,1197],'02':[1225,770],'03':[1159,1163],'04':[907,1114],'05':[1285,940]};
+  const PRINT={
+    '01':     {x:851, y:115,  r:90,   f:'01'},
+    '02':     {x:283, y:370,  r:-75,  f:'03'},
+    '03':     {x:549, y:-471, r:60,   f:'02'},
+    '04':     {x:-367,y:228,  r:60,   f:'01'},
+    '05':     {x:446, y:132,  r:-90,  f:'05'},
+    '06a':    {x:483, y:121,  r:-90,  f:'04'},
+    'h01':    {x:324, y:-3,   r:-120, f:'03'},
+    'h02':    {x:324, y:-34,  r:-120, f:'03'},
+    'h01b':   {x:324, y:-34,  r:-120, f:'03'},
+    'h03':    {x:439, y:118,  r:90,   f:'05'},
+    'h04':    {x:302, y:-111, r:60,   f:'04'},
+    'h05':    {x:384, y:17,   r:-105, f:'01'},
+    'h06':    {x:384, y:0,    r:75,   f:'02'},
+    'h07':    {x:351, y:-126, r:-45,  f:'03'},
+    'h08':    {x:336, y:-139, r:30,   f:'04'},
+    'h09':    {x:373, y:17,   r:-105, f:'05'},
+    'h10':    {x:396, y:0,    r:-75,  f:'01'},
+    'h11':    {x:404, y:38,   r:99,   f:'02'},
+    'zrcadlo':{x:373, y:0,    r:75,   f:'03'}
   };
-  /* skupina je 816×997; export otisku je pořízený při rotaci 90°, Figma točí proti směru hodin, CSS po směru → css = 90 − r */
+  /* The bounding box comes from the 816×997 fingerprint group (Figma rotates counter-clockwise,
+     CSS clockwise → css = 90 − r). A blot gets roughly the fingerprint's area, with its own aspect ratio. */
+  const BLOT_AREA=998*1078;
   Object.values(PRINT).forEach(c=>{const a=c.r*Math.PI/180,C=Math.abs(Math.cos(a)),S=Math.abs(Math.sin(a));
     c.w=816*C+997*S;c.h=816*S+997*C;c.rot=90-c.r});
+  /* --blot-mask holds an absolute URL: a url() inside a custom property would otherwise resolve
+     against the stylesheet (assets/) and 404 */
+  const blotMarkup=f=>{const u=new URL('assets/blots/blot'+f+'.webp',document.baseURI).href;
+    return '<div class="sweep" style="--blot-mask:url('+u+')"><img class="blot" alt="" decoding="async" data-src="'+u+'"></div>'};
   slides.forEach(s=>{
     const k=s.dataset.print;if(!k)return;const c=PRINT[k];
+    const [fw,fh]=BLOTS[c.f],width=Math.sqrt(BLOT_AREA*fw/fh);
     const d=document.createElement('div');d.className='print';
     d.style.cssText=`left:${c.x/19.2}%;top:${c.y/10.8}%;width:${c.w/19.2}%;height:${c.h/10.8}%`;
     const r=document.createElement('div');r.className='rot';
-    r.style.cssText=`width:${998/c.w*100}%;transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
-    r.innerHTML='<div class="sweep"><svg viewBox="0 0 998 816"></svg></div>';
-    d.appendChild(r);s.prepend(d);s._svg=r.querySelector('svg');
+    r.style.cssText=`width:${width/c.w*100}%;aspect-ratio:${fw}/${fh};transform:translate(-50%,-50%) rotate(${c.rot}deg)`;
+    r.innerHTML=blotMarkup(c.f);d.appendChild(r);
+    s.prepend(d);
   });
-  const LINES=[...document.querySelectorAll('#otisk path')];
-  function drawPrint(s){
-    if(!s._svg||s._svg.childElementCount)return;
-    const frag=document.createDocumentFragment();
-    LINES.forEach(p=>frag.appendChild(p.cloneNode()));
-    s._svg.appendChild(frag);
-  }
-  function clearPrint(s){if(s._svg)s._svg.replaceChildren()}
+  /* Long reading slides (foreword, paragraphs) get two blots: one at the top, the other lower down
+     on the opposite side. Positions are percentages of the (tall) slide, so they spread along the
+     whole text, and since each sits on a different side they never overlap. Classes: placement
+     (top/bottom), side (left/right), large = bigger blot. The order follows the reading slides of
+     the manifest and repeats after that. */
+  const READING_BLOTS=[
+    [['01','top left large'],['05','bottom right']],    /* Kdo jsme? – large blot top left */
+    [['04','top right'],['03','bottom left']],
+    [['05','top right'],['01','bottom left']]
+  ];
+  slides.filter(s=>s.classList.contains('read')).forEach((s,n)=>{
+    READING_BLOTS[n%READING_BLOTS.length].forEach(([f,place])=>{
+      const [fw,fh]=BLOTS[f],e=document.createElement('div');e.className='print reading '+place;
+      e.style.aspectRatio=`${fw}/${fh}`;e.innerHTML=blotMarkup(f);s.prepend(e);
+    });
+  });
+  /* obrázek se stáhne, až slajd poprvé přijde na řadu */
+  function drawPrint(s){s.querySelectorAll('.print img[data-src]').forEach(i=>{i.src=i.dataset.src;i.removeAttribute('data-src')})}
+  function clearPrint(){}
 
   /* ---------- lišta s tečkami ---------- */
   slides.forEach((s,i)=>{
@@ -112,6 +135,10 @@
       posledni=k;obarvi(s,PALETA[k]);
       const [g,i]=PALETA[k];
       s._barvy=s.classList.contains('love')?[i,g]:[g,i];   /* .love má pozadí v --ink, pevné prvky jdou naopak */
+      /* The blot is light and overlay blends it with the background – on dark and pink it shows as a
+         lighter patch (as in the Figma blot atlas). Cream would swallow it, so there it is drawn
+         in the text colour instead (see .cream in the CSS). */
+      s.classList.toggle('cream',s._barvy[0]==='#f9e7dd');
     }
     barvyTed=s._barvy||ZAKLAD;
     pevne.forEach(el=>obarvi(el,barvyTed));
@@ -219,7 +246,7 @@
         const tp=pos(r.t);r.lineH=parseFloat(getComputedStyle(r.t).lineHeight);r.w=r.t.clientWidth;
         r.el.forEach(w=>{const q=pos(w);w._top=q.y;w._x=(q.x-tp.x)/r.w});
       }
-      const c=s._printCfg,d=s.querySelector('.print');
+      const c=s._printCfg,d=s.querySelector('.print:not(.reading)');
       if(c&&d){d.style.top=(c.y/1080*H+(s.offsetHeight-H)/2)+'px';d.style.height=(c.h/1080*H)+'px'}
       r.inner=Math.min(r.inner,r.max);
     });

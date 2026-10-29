@@ -25,7 +25,8 @@ src/obsah/spolecne.yml       podpis, nápověda, sdílení odkazu (v CMS „Nast
 src/manifest.template.html   šablona – sazba jednotlivých typů slajdů (Jinja2)
 src/manifest.css             styly
 src/manifest.js              navigace, otisky, animace
-src/assets/otisk-paths.txt   křivky otisku (vektor „Group 14“ z Figmy, 55 cest)
+src/assets/blots/            fleky z Figmy (Fleky → Atlas fleků single, vrstvy mrak_01–05 jako blot01–05.webp) – na místech dřívějšího otisku
+src/assets/otisk-paths.txt   křivky dřívějšího otisku (vektor „Group 14“ z Figmy) – na webu už se nepoužívá
 src/assets/fotky/hero.webp       úvodní fotka, zmenšená pro web (webp q82; zdroj hero.jpg, + hero-original.jpg)
 src/assets/fotky/kultura.jpg     fotka slajdu KULTURA, oříznutá podle Figmy (+ kultura-original.jpg)
 src/assets/fotky/kennedy.webp    vystřižený portrét na slajd „Ich bin ein Kuhländler“ (bezztrátový webp; zdroj kennedy.png)
@@ -137,7 +138,8 @@ kolečko myši / touchpad · šipky, mezerník, PageUp/PageDown, Home/End · swi
 ## Jak je to postavené
 
 - Slajdy se nepřepínají nativním scrollem, ale jedním `translateY` na celém pásu – proto to nikde neškube.
-- Otisk je jeden `<symbol>`; na aktivní slajd se naklonuje a „přitiskne“ – naběhne z 108 % a −2° do plné síly. Animuje se jen průhlednost a transformace jedné vrstvy, takže to kompozitor zvládne sám a SVG se vykreslí jen jednou. Rozmístění a rotace otisku na jednotlivých slajdech odpovídá Figmě 1:1 (tabulka `PRINT` v JS).
+- Místo otisku jsou fleky z Figmy (mrak_01–05). Sedí na polohách a rotacích otisku z Figmy (tabulka `PRINT` v JS, pole Otisk v CMS dál vybírá polohu); každá poloha má svůj tvar a sousedé se neopakují. Dlouhé čtecí slajdy (předmluva, odstavce) mají dva fleky – jeden nahoře, druhý níž na opačné straně, takže se nepřekrývají (tabulka `CTENI` v JS; „Kdo jsme?“ má velký vlevo nahoře). Flek se „přitiskne“ stejně jako dřív otisk – naběhne z 108 % a −2° do plné síly – a obrázek se stáhne, až slajd poprvé přijde na řadu.
+- Barvu fleku dává `mix-blend-mode: overlay` s pozadím slajdu (i s fotkou): na tmavém i růžovém vyjde světlejší skvrna. Na krémovém by se rozpustil, tam se kreslí barvou písma dané palety (maska z téhož obrázku).
 - Text se odhaluje po řádcích maskou (`.ln`), písmena BŮŮŮH jednotlivě.
-- Barvy: pozadí `#3b2f2f`, text `#e6acac`, otisk `rgba(217,199,199,.30)` (náhrada za white + soft-light).
+- Barvy: pozadí `#3b2f2f`, text `#e6acac` (slajdy bez fotky si losují dvojici z palety webu).
 - Písmo: Agrandir Grand Heavy (popisky, wordmark), Regular (výroky), Narrow Black (BŮŮŮH, hodnoty, Zrcadlo), Grand (podtitul, příslovce).

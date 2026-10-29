@@ -86,7 +86,7 @@ export function selectInput({ name, options = [], value = '', onChange, placehol
  * A date: a field-like button with the Czech date („ne 18. 10. 2026“) that opens our month sheet.
  * The ISO value lives in a hidden input `name`. onChange(iso).
  */
-export function dateInput({ name, value = '', onChange, placeholder = 'Vyber den', label = 'Vyber den', min, max } = {}) {
+export function dateInput({ name, value = '', onChange, placeholder = 'Vybrat den', label = 'Vybrat den', min, max } = {}) {
   // min / max may be functions (read when the sheet opens): „Do“ never before „Od“
   const lo = () => (typeof min === 'function' ? min() : min) || null;
   const hi = () => (typeof max === 'function' ? max() : max) || null;
@@ -202,8 +202,8 @@ export function stepper({ name, value = 0, min = 0, max = 99, step = 1, onChange
     plus.disabled = v >= max;
     onChange?.(v);
   };
-  const minus = iconButton('minus', `Uber – ${label}`, { onclick: () => set(Number(input.value) - step) });
-  const plus = iconButton('plus', `Přidej – ${label}`, { onclick: () => set(Number(input.value) + step) });
+  const minus = iconButton('minus', `Ubrat – ${label}`, { onclick: () => set(Number(input.value) - step) });
+  const plus = iconButton('plus', `Přidat – ${label}`, { onclick: () => set(Number(input.value) + step) });
   input.addEventListener('change', () => set(parseInt(input.value, 10)));
   input.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowUp') { e.preventDefault(); set(Number(input.value) + step); }
@@ -214,7 +214,7 @@ export function stepper({ name, value = 0, min = 0, max = 99, step = 1, onChange
   return h('span', { class: 'stepper', role: 'group', 'aria-label': label }, minus, input, plus);
 }
 
-/** Yes / no as a sentence with a switch („Pamatuj si mě na tomhle zařízení“). FormData gets name='on' or nothing. */
+/** Yes / no as a sentence with a switch („Zapamatovat si mě na tomhle zařízení“). FormData gets name='on' or nothing. */
 export function switchRow({ label, hint, checked = false, onChange, name, disabled } = {}) {
   const textId = uid('sw');
   const hidden = name ? h('input', { type: 'hidden', name, value: checked ? 'on' : '', disabled: !checked }) : null;
@@ -229,11 +229,11 @@ export function switchRow({ label, hint, checked = false, onChange, name, disabl
   return row;
 }
 
-/** The search field („Hledej jméno, telefon, e-mail“). `/` focuses it (the shell's shortcut). */
-export function searchField({ placeholder = 'Hledej', value = '', onInput, label = 'Hledej', name = 'q' } = {}) {
+/** The search field („Hledat jméno, telefon, e-mail“). `/` focuses it (the shell's shortcut). */
+export function searchField({ placeholder = 'Hledat', value = '', onInput, label = 'Hledat', name = 'q' } = {}) {
   const input = h('input', { class: 'input', type: 'search', name, value, placeholder, autocomplete: 'off', enterkeyhint: 'search' });
   // our own ✕ in the palette's ink (the browser's own clear button is a blue of its own)
-  const clear = h('button', { type: 'button', class: 'icon-btn search__clear', 'aria-label': 'Vymaž hledání', title: 'Vymaž hledání', hidden: !value }, icon('x', { size: 's' }));
+  const clear = h('button', { type: 'button', class: 'icon-btn search__clear', 'aria-label': 'Vymazat hledání', title: 'Vymazat hledání', hidden: !value }, icon('x', { size: 's' }));
   input.addEventListener('input', (e) => { clear.hidden = !input.value; onInput?.(input.value, e); });
   clear.addEventListener('click', (e) => {
     e.preventDefault();
@@ -250,7 +250,7 @@ export function searchField({ placeholder = 'Hledej', value = '', onInput, label
  */
 export function passwordInput({ name = 'password', autocomplete = 'current-password', value = '' } = {}) {
   const input = h('input', { class: 'input', type: 'password', name, value, autocomplete, spellcheck: false, autocapitalize: 'off' });
-  const eye = h('button', { type: 'button', class: 'icon-btn password__eye', 'aria-pressed': 'false', 'aria-label': 'Ukaž heslo', title: 'Ukaž heslo' }, icon('eye', { size: 's' }));
+  const eye = h('button', { type: 'button', class: 'icon-btn password__eye', 'aria-pressed': 'false', 'aria-label': 'Zobrazit heslo', title: 'Zobrazit heslo' }, icon('eye', { size: 's' }));
   eye.addEventListener('click', () => {
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
@@ -294,7 +294,7 @@ export function disclosure(body, { label = 'Další možnosti', open = false } =
  *     everyone: S.data.people, onPick: (person) => …, onAdd: (name) => … (leader: „Přidat „Jana Malá“ a vybrat“),
  *   })
  */
-export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone = [], onPick, onAdd, searchPlaceholder = 'Hledej jméno' } = {}) {
+export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone = [], onPick, onAdd, searchPlaceholder = 'Hledat jméno' } = {}) {
   let current = pool || pools[0]?.id;
   let query = '';
   let sheet;
@@ -322,10 +322,10 @@ export function peoplePicker({ title, meta: metaText, pools = [], pool, everyone
     if (!rows.length) {
       rows.push(h('p', { class: 'meta picker__none' }, q ? 'Nikdo takový tu není.' : 'Tady nikdo není.'));
     }
-    if (q && onAdd) rows.push(button(`Přidej nového člověka „${q}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close(); onAdd(q); } }));
+    if (q && onAdd) rows.push(button(`Přidat nového člověka „${q}“`, { icon: 'user-plus', variant: 'quiet', block: true, onclick: () => { sheet.close(); onAdd(q); } }));
     results.replaceChildren(...rows);
   };
-  const search = searchField({ placeholder: searchPlaceholder, label: 'Hledej člověka', onInput: (v) => { query = v; draw(); } });
+  const search = searchField({ placeholder: searchPlaceholder, label: 'Hledat člověka', onInput: (v) => { query = v; draw(); } });
   search.querySelector('input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); results.querySelector('.picker__row')?.click(); }
   });

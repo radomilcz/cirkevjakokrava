@@ -17,9 +17,8 @@ a co je širší než 2000 px nebo těžší než 600 kB, zmenší do webp.
 Placeholdery v šabloně / CSS (nahrazuje build, ne Jinja):
   {{SITE}}                       adresa webu (absolutní odkazy pro og:image, canonical)
   {{CSS}} {{JS}}                 odkazy na assets/manifest.css a assets/manifest.js
-  {{BLOB_PATHS}}                 křivky otisku (src/assets/otisk-paths.txt) – vždy inline, JS je klonuje
-  – náhled sdílení a ikony (src/assets/og.jpg, favicon.svg, favicon-32.png, icon-180.png)
-    se jen kopírují; generují se zvlášť, viz níže
+  – náhled sdílení, ikony a fleky (src/assets/og.jpg, favicon.svg, favicon-32.png, icon-180.png,
+    src/assets/blots/) se jen kopírují; generují se zvlášť, viz níže
   {{F_GRANDHEAVY}} {{F_REGULAR}} {{F_NARROWBLACK}} {{F_GRAND}}   fonty (src/fonts/*.woff)
 
 Použití:  python3 build.py
@@ -49,6 +48,7 @@ FOTKY = os.path.join('assets', 'fotky')         # fotky slajdů: src/assets/fotk
 FOTKA_MAX = 2000, 600 * 1024                   # širší nebo těžší upload build zmenší do webp (pip install pillow)
 # náhled sdílení a ikony – hotové soubory, jen se kopírují do docs/assets/
 STATIC = ('og.jpg', 'favicon.svg', 'favicon-32.png', 'icon-180.png')
+BLOTS = os.path.join('assets', 'blots')          # blots from Figma (blot01–05.webp, layers mrak_01–05), copied as a whole
 
 
 def read(path):
@@ -61,7 +61,7 @@ HEAD_END = '<!--/head-->'
 
 # ---------- obsah z CMS ----------
 
-PASSTHROUGH = ['SITE', 'CSS', 'JS', 'BLOB_PATHS']  # nahradí se až po Jinja
+PASSTHROUGH = ['SITE', 'CSS', 'JS']  # nahradí se až po Jinja
 BLOKY = {'tagline': '<p class="lead">{}</p>', 'nadpis': '<h3>{}</h3>',   # bloky předmluvy (druh → sazba)
          'odstavec': '<p>{}</p>', 'otazka': '<p class="ask">{}</p>'}
 # Otisky (polohy z Figmy, tabulka PRINT v JS). Slajd s polem Otisk = „automaticky“ dostane další z řady.
@@ -345,9 +345,6 @@ def build():
     tpl = render(read(os.path.join(SRC, 'manifest.template.html')))
     css = read(os.path.join(SRC, 'manifest.css'))
     js = read(os.path.join(SRC, 'manifest.js'))
-    paths = [l.strip() for l in read(os.path.join(SRC, 'assets', 'otisk-paths.txt')).splitlines() if l.strip()]
-    blob = ''.join(f'<path d="{d}"/>' for d in paths)
-    tpl = tpl.replace('{{BLOB_PATHS}}', blob)
 
     assets = os.path.join(DOCS, 'assets')
     os.makedirs(os.path.join(assets, 'fonts'), exist_ok=True)
@@ -368,6 +365,9 @@ def build():
     zkopiruj_fotky(assets)
     for name in STATIC:
         shutil.copy(os.path.join(SRC, 'assets', name), os.path.join(assets, name))
+    shutil.rmtree(os.path.join(DOCS, 'assets', 'fleky'), ignore_errors=True)   # old folder name
+    shutil.rmtree(os.path.join(DOCS, BLOTS), ignore_errors=True)
+    shutil.copytree(os.path.join(SRC, BLOTS), os.path.join(DOCS, BLOTS))
     web = web.replace('{{SITE}}', SITE)
     check(web)
     with open(os.path.join(DOCS, 'index.html'), 'w', encoding='utf-8') as f:

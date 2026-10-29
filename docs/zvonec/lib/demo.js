@@ -7,7 +7,7 @@
 //
 // Sundays are counted from N0 = the first Sunday after today (N1 a week later …). Every conflict
 // rule K1–K17 occurs at least once, on purpose:
-//   K1  N0: the Sunday sound tech also builds the tent that morning – overridden („Vím o tom“);
+//   K1  N0: the Sunday sound tech also builds the tent that morning – overridden („Povolit výjimku“);
 //       N1: a coffee volunteer leads the members' meeting that starts while the coffee is served
 //   K2  N1: one person on sound and projection at once
 //   K3  N2: Jana with the kids although she is on holiday
@@ -126,6 +126,7 @@ const PLACES = [
   ['l-garden', 'Zahrada u Kučerů', true, { address: 'Lesní 14, Nový Jičín', lat: 49.5987, lon: 18.0172 }],
   ['l-river', 'Řeka Jičínka – u lávky', true, { lat: 49.5899, lon: 18.0146 }],
   ['l-cottage', 'Chata Bílá', true, { address: 'Bílá 120, Staré Hamry', lat: 49.4436, lon: 18.4567 }],
+  ['l-square', 'Masarykovo náměstí', true, { address: 'Masarykovo náměstí, Nový Jičín', lat: 49.5945, lon: 18.0104 }],
 ];
 
 // id, name, kind, description, extra
@@ -423,18 +424,18 @@ const SUNDAY_PROGRAM = ['f-welcome', 'f-worship', 'f-announcements', 'f-offering
 // event types (UI: šablony): id, name, kind, weekday, start, minutes, places, extra
 const EVENT_TYPES = [
   ['t-sunday', 'Setkání na pastvě', 'service', 6, '10:00', 120, ['l-hall', 'l-small'], {
-    public: true, needs: SUNDAY_NEEDS, program: SUNDAY_PROGRAM,
+    public: true, needs: SUNDAY_NEEDS, program: SUNDAY_PROGRAM, image: 'demo-sunday.webp',
     description: 'Chvály, slovo, otázky na tělo a kafe. Přijď, jak jsi. Děti jsou vítané.',
   }],
   ['t-rehearsal', 'Zkouška chval', 'rehearsal', 3, '18:30', 120, ['l-hall'], { groupId: 'g-worship', needs: REHEARSAL_NEEDS }],
   ['t-homegroup', 'Skupinka', 'smallGroup', 2, '19:00', 120, ['l-flat'], { groupId: 'g-homegroup' }],
   ['t-youth', 'Mládež', 'smallGroup', 4, '18:00', 150, ['l-hall'], {
-    groupId: 'g-youth', public: true,
+    groupId: 'g-youth', public: true, image: 'demo-youth.webp',
     description: 'Pro všechny od třinácti do dvaceti. Hrajeme, jíme a povídáme si o tom, na čem v životě záleží. Vezmi s sebou kamaráda.',
   }],
   ['t-prayer', 'Modlitební večer', 'event', 1, '19:00', 90, ['l-small'], { groupId: 'g-prayer' }],
   ['t-garden', 'Zahradní slavnost', 'event', 6, '14:00', 240, ['l-garden'], {
-    public: true, needs: GARDEN_NEEDS,
+    public: true, needs: GARDEN_NEEDS, image: 'demo-garden.webp',
     description: 'Přijď s celou rodinou. Na zahradě u Kučerů bude gril, pití i hry pro děti. Přines něco dobrého na společný stůl.',
   }],
 ];
@@ -538,6 +539,7 @@ export function createDemo(today = localToday()) {
     if (extra.groupId) type.groupId = extra.groupId;
     if (extra.public !== undefined) type.public = extra.public;
     if (extra.description) type.description = extra.description;
+    if (extra.image) type.image = extra.image;
     return type;
   });
   const typeById = new Map(eventTypes.map((t) => [t.id, t]));
@@ -568,6 +570,8 @@ export function createDemo(today = localToday()) {
     const description = fields.description ?? type?.description;
     if (description) event.description = description;
     if (fields.note) event.note = fields.note;
+    if (fields.image) event.image = fields.image;
+    if (fields.featured) event.featured = true;
     event.needs = structuredClone(fields.needs || type?.needs || []);
     const program = fields.program || type?.program?.map((x) => x.formatId);
     if (program) event.program = program.map((formatId) => item(formatId));
@@ -629,10 +633,10 @@ export function createDemo(today = localToday()) {
     title: 'Stavění stanu na zahradní slavnost', kind: 'event', day: n0, startTime: '08:00', minutes: 150, placeIds: ['l-garden'],
     note: 'Sraz na zahradě u Kučerů. Vezmi si pracovní rukavice.', needs: needs([['r-sound', 1]]),
   });
-  oneOff({ typeId: 't-garden', day: n0 });
+  oneOff({ typeId: 't-garden', day: n0, featured: true });
   const evening = oneOff({
     title: 'Večer chval na zahradě', kind: 'event', day: addDays(sunday(1), -1), startTime: '18:00', minutes: 120,
-    placeIds: ['l-garden'], public: true, needs: needs([['r-wlead', 1], ['r-guitar', 1], ['r-sound', 1]]),
+    placeIds: ['l-garden'], public: true, needs: needs([['r-wlead', 1], ['r-guitar', 1], ['r-sound', 1]]), image: 'demo-worship.webp',
     description: 'Zpíváme pod širým nebem a přidat se může každý. Deku a teplý čaj s sebou.',
   });
   const meeting = oneOff({
@@ -647,8 +651,18 @@ export function createDemo(today = localToday()) {
   oneOff({
     title: 'Křest u řeky', kind: 'event', day: addDays(sunday(3), -1), startTime: '15:00', minutes: 90, placeIds: ['l-river'],
     public: true, program: ['f-welcome', 'f-worship', 'f-baptism', 'f-prayer'],
-    needs: needs([['r-lead', 1], ['r-wlead', 1], ['r-sermon', 1], ['r-guitar', 1], ['r-photo', 1]]),
+    needs: needs([['r-lead', 1], ['r-wlead', 1], ['r-sermon', 1], ['r-guitar', 1], ['r-photo', 1]]), image: 'demo-river.webp',
     description: 'Na břehu Jičínky pokřtíme ty, kdo se rozhodli jít za Ježíšem. Přijď je podpořit. Vezmi si deku, u vody bývá chladno.',
+  });
+  oneOff({
+    title: 'Večeře s otázkami', kind: 'event', day: addDays(sunday(2), 2), startTime: '18:30', minutes: 150, placeIds: ['l-hall'],
+    public: true, image: 'demo-alfa.webp',
+    description: 'Společná večeře, krátké zamyšlení a pak rozhovor u stolu. Ptát se můžeš na cokoli – na víru, na život, na pochybnosti. Večeře je zdarma.',
+  });
+  oneOff({
+    title: 'Hrajeme na náměstí', kind: 'event', day: addDays(sunday(4), -1), startTime: '16:00', minutes: 120, placeIds: ['l-square'],
+    public: true, image: 'demo-music.webp',
+    description: 'Kapela ze sboru zahraje pod širým nebem písničky, které máme rádi. Zastav se, poslechni si nás a dej si s námi horký čaj.',
   });
   oneOff({
     title: 'Noc v modlitebně', kind: 'event', day: addDays(sunday(4), -1), startTime: '20:00', minutes: 600, placeIds: ['l-hall'],

@@ -126,14 +126,14 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
     rows.push(heading('Čeká na tvou odpověď'), para('Dej vedoucím vědět, jestli můžeš.'));
     text.push('Čeká na tvou odpověď:');
     for (const d of answer) { rows.push(line(d.role, `${d.event.title} · ${when(d.event)}`)); text.push(`– ${d.role}: ${d.event.title}, ${when(d.event)}`); }
-    rows.push(button('Odpověz ve Zvonci', link('#moje')));
+    rows.push(button('Odpovědět ve Zvonci', link('#moje')));
     text.push(`Odpověz ve Zvonci: ${link('#moje')}`, '');
   }
   if (week.length) {
     rows.push(heading('Tento týden sloužíš'));
     text.push('Tento týden sloužíš:');
     for (const d of week) { rows.push(line(d.role, `${d.event.title} · ${when(d.event)}`)); text.push(`– ${d.role}: ${d.event.title}, ${when(d.event)}`); }
-    if (!answer.length) rows.push(button('Otevři Zvonec', link('#moje')));
+    if (!answer.length) rows.push(button('Otevřít Zvonec', link('#moje')));
     text.push('');
   }
   if (obsazeni) {
@@ -155,7 +155,7 @@ export function digestFor(data, person, { today, leader = false, conflicts = [],
       rows.push(`<tr><td style="padding:12px 0;border-top:1px solid ${C.line};font:400 15px/21px ${FONT};color:${C.ink2}">${esc(t)}</td></tr>`);
       text.push(t);
     }
-    rows.push(button('Otevři Obsazení', link('#obsazeni')));
+    rows.push(button('Otevřít Obsazení', link('#obsazeni')));
     text.push(`Otevři Obsazení: ${link('#obsazeni')}`, '');
   }
 

@@ -4,6 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { createDemo, createDemoAccess, demoBase, DEMO_VIEWERS } from '../../docs/zvonec/lib/demo.js';
 import { findConflicts, CODES } from '../../docs/zvonec/lib/conflicts.js';
 import { seriesEvents, seriesSummary, fillRatio } from '../../docs/zvonec/lib/events.js';
@@ -86,7 +87,7 @@ const SPEC = {
     id: [true, (x) => /^e/.test(x)], title: [true, isStr], kind: [true, oneOf('service', 'rehearsal', 'smallGroup', 'event')],
     typeId: [false, isStr], start: [true, (x) => DATE_TIME.test(x)], end: [true, (x) => DATE_TIME.test(x)],
     placeIds: [true, arrayOf(isStr)], seriesId: [false, isStr], cancelled: [false, isBool], groupId: [false, isStr],
-    note: [false, isStr], public: [false, isBool], description: [false, isStr], image: [false, isStr], needs: [true, arrayOf(need)],
+    note: [false, isStr], public: [false, isBool], featured: [false, isBool], description: [false, isStr], image: [false, isStr], needs: [true, arrayOf(need)],
     attendance: [false, (x) => { shape(x, { adults: [false, (v) => isInt(v) && v >= 0], children: [false, (v) => isInt(v) && v >= 0] }, 'attendance'); return true; }],
     program: [false, arrayOf((x) => {
       shape(x, {
@@ -378,8 +379,14 @@ test('demo content: library – formats, templates, places', () => {
   assert.equal(sunday.startTime, '10:00');
   assert.ok(sunday.placeIds.includes('l-hall'));
   assert.match(sunday.description, /Přijď, jak jsi/);
-  assert.ok(!d.events.some((e) => 'publicNote' in e || 'image' in e));
-  assert.ok(!d.eventTypes.some((t) => 'image' in t));
+  assert.ok(!d.events.some((e) => 'publicNote' in e));
+  // the demo's pictures ship with the app (docs/zvonec/demo/), never in a data repo
+  const pictures = [...d.events, ...d.eventTypes].map((x) => x.image).filter(Boolean);
+  assert.ok(pictures.length > 0 && pictures.every((name) => /^demo-[a-z]+\.webp$/.test(name)), 'demo pictures');
+  for (const name of new Set(pictures)) assert.ok(existsSync(new URL(`../../docs/zvonec/demo/${name}`, import.meta.url)), `${name} ships with the app`);
+  // one event is pinned to the top of Pastva, and it is public
+  const pinned = d.events.filter((e) => e.featured);
+  assert.deepEqual(pinned.map((e) => [e.title, e.public]), [['Zahradní slavnost', true]]);
 
   // the church address and the places agree: Monta is a building, its rooms inherit the address
   const monta = d.places.find((p) => p.name === 'Monta');
@@ -446,7 +453,7 @@ test('demo content: events, series, the special ones and headcounts', () => {
   assert.ok(!count['past:proposed'], 'nothing waits in the past');
   assert.ok(count['week:confirmed'] > 10 * ((count['week:proposed'] || 0) + 1));
   assert.ok(count['later:proposed'] > count['later:confirmed']);
-  assert.ok(d.events.some((e) => e.assignments.some((a) => a.override?.reason)), 'one „Vím o tom“');
+  assert.ok(d.events.some((e) => e.assignments.some((a) => a.override?.reason)), 'one „Povolit výjimku“');
   const next = d.events.find((e) => e.kind === 'service' && e.start.slice(0, 10) > TODAY);
   assert.ok(!fillRatio(d, next).complete, 'the nearest Sunday misses someone');
 });

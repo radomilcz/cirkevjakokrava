@@ -1,4 +1,4 @@
-// The texts Zvonec writes for the church (SPEC §11): the reminder behind „Připomeň“ (SMS or e-mail) and the signature
+// The texts Zvonec writes for the church (SPEC §11): the reminder behind „Připomenout“ (SMS or e-mail) and the signature
 // of the Monday e-mail. A leader may rewrite both in Nastavení sboru; the reminder keeps three marks Zvonec fills in –
 // {jméno} (the first name in the vocative), {služby} (the duties) and {odkaz} (Moje). Pure, no DOM.
 

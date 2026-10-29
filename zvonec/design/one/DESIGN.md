@@ -10,7 +10,7 @@
 > - **Služby** – obsazenost for the twelve months up to the chosen one; a column opens that month.
 > - **Dary** – the year's sums by month, this month lit, the months to come empty.
 > On a phone every third month is labelled and the cap is left to the tooltip. The section titles live inside the
-> cards (figures({ title, aside })) with the period line on the right and the „Otevři …“ link at the card's foot – the
+> cards (figures({ title, aside })) with the period line on the right and the „Otevřít …“ link at the card's foot – the
 > owner: the titles above the cards looked detached.
 
 > **Update – the design audit of Dary and Sbírky (2026-10-09).** The owner: „ty mnou navržené jsou esteticky jinde“.
@@ -25,7 +25,7 @@
 > - **One row anatomy**: a 40 lead (avatar m, the heart lead-mark) or the 44 arch, the amount as the only trail,
 >   no ›; month subheads are the kit's `subhead()` inside the list. Sbírky are rows everywhere (list, Moje, Dary).
 > - **One payment block** (`paymentBlock`) in Můj účet, the payment sheet (L) and the poster: details left, QR
->   right; on a phone the QR behind „Ukaž QR kód“. --card, r20, padding 24.
+>   right; on a phone the QR behind „Zobrazit QR kód“. --card, r20, padding 24.
 > - Moje: the thank-you comes after the answer card, one sentence with a ✕; Sbírky go to the right column ≥ 1200.
 > - Rhythm: 8 (h2 → content) · 12 (stacked parts) · 24 (a control row → content) · 40 (sections); no 16/32 joins.
 > - **Přehled** (the owner: „Přehled mi taky nesedí“): the grey tile grids are gone – each section is one figure
@@ -34,9 +34,9 @@
 
 > **Update – Sbírky and Mimořádný dar (2026-10-09).** A new screen `#sbirky` (SPEC 9.17), kit only: a sbírka is a
 > card on the tint (the name 20/26, the sum in the title face 32 with a quiet „Kč“, „z 80 000 Kč“, the stat bar, a meta
-> line); the detail makes the card big (48) with [Pošli dar] and [Ukaž QR pro plakát]. The payment sheet puts the QR
+> line); the detail makes the card big (48) with [Poslat dar] and [Zobrazit QR pro plakát]. The payment sheet puts the QR
 > first and the details to copy under it (no wrapping of the account); on a phone the details first and the QR behind
-> „Ukaž QR kód“ – the bank app is on the same phone. Moje thanks with an info callout with a heart; the heart is the
+> „Zobrazit QR kód“ – the bank app is on the same phone. Moje thanks with an info callout with a heart; the heart is the
 > icon of Sbírky (the gift stays Dary's). In Dary the anonymous tile says „28 500 / Kč anonymně“ so five figures fit.
 
 > **Update – Dary, a calmer screen (2026-10-09).** The owner: „stránka Dary není tak hezká jako jiné stránky“. Sums
@@ -51,14 +51,14 @@
 
 > **Update – Dary, step B (2026-10-09).** A new screen for the treasurer and the admins (SPEC 9.16), built from the
 > kit only: the year line (‹ 2026 › Letos), number tiles (the wide sum tile of Přehled), „Nepřiřazené“ rows with an S
-> „Přiřaď“, „Dárci“ rows (avatar 32, VS and count, the sum in strong figures, ›), a donor page with facts and the gift
+> „Přiřadit“, „Dárci“ rows (avatar 32, VS and count, the sum in strong figures, ›), a donor page with facts and the gift
 > rows (⋯). The certificate prints as the owner approved it: wordmark, the otisk in the corner, stamp left of the
 > signature line, the signature over it. Gifts never touch the person card.
 
 > **Update – Dary, step A (2026-10-09).** Nastavení sboru gets „Úřední údaje“ (úřední název, IČO, sídlo, účet pro
 > dary – each checked). Once the account is set, Můj účet shows „Dary“ as the owner approved it in the mock: the
 > account and the person's variable symbol in a framed block (20/28 strong figures, a copy button each), a 176 QR
-> payment on the right (black on white on every palette, so a bank app reads it), on a phone behind „Ukaž QR kód“.
+> payment on the right (black on white on every palette, so a bank app reads it), on a phone behind „Zobrazit QR kód“.
 
 > **Update – Přehled, headline numbers only (2026-10-09).** The owner: „v přehledu jen přehledy, žádné detailní
 > informace“. Přehled (`#prehled`, leaders) keeps the tiles – Lidé (by membership, the archive, who joined and left in
@@ -101,13 +101,13 @@
 
 > **Update – Lidé search points to the archive (2026-10-08).** A search that showed no one said only „Nic tomu
 > neodpovídá.“ even when the person was in the archive or behind the Filtr. Now it says where they are: „Jen v
-> archivu.“ – „V archivu tomu odpovídá 1 karta.“ [Ukaž i archiv] (leaders), or „Filtr skrývá 1 člověka, který tomu
-> odpovídá.“ [Zruš filtr].
+> archivu.“ – „V archivu tomu odpovídá 1 karta.“ [Zobrazit i archiv] (leaders), or „Filtr skrývá 1 člověka, který tomu
+> odpovídá.“ [Zrušit filtr].
 
 > **Update – a template edit reaches planned meetings (2026-10-08).** The usability test found that changing a
 > template left its planned meetings as they were, without a word. Now saving an edit asks „Chceš změnit i
-> naplánovaná setkání?“ and names what changes („Změní se jim čas a osnova.“) – [Změň i 11 setkání] / [Jen šablonu].
-> Only what a meeting still has from the old template changes; what someone changed by hand stays. „Vrať“ in the
+> naplánovaná setkání?“ and names what changes („Změní se jim čas a osnova.“) – [Změnit i 11 setkání] / [Jen šablonu].
+> Only what a meeting still has from the old template changes; what someone changed by hand stays. „Vrátit zpět“ in the
 > toast puts the template and the meetings back.
 
 > **Update – Rozpis column bands (2026-10-08).** The owner asked for vertical lines or banded columns and chose bands
@@ -119,7 +119,7 @@
 > **Update – Role with its people (2026-10-08).** „Kdo co umí“ (people × roles) needed a sideways scroll in a pane. The
 > owner chose variant B: the team's Role section now shows one folded line per role – its name, „umí 7 · učí se 2“
 > („umí jen 1“ amber), ⌄ – and unfolded (seven chips under every role took the whole card) the people as chips – umí on the ok tint, učí se outlined – with a menu on each chip (Umí to / Učí se to / Neumí to)
-> + Přidej (the team's people who cannot do it yet) and Uprav roli. The table is gone; it works on a phone too.
+> + Přidat (the team's people who cannot do it yet) and Upravit roli. The table is gone; it works on a phone too.
 
 > **Update – Lidé: Seznam | Tabulka (2026-10-08).** The table no longer opens by itself on a desktop and is no longer
 > picked in ⋯: Lidé has the same quiet switch as Kalendář at the right of the search row – Seznam | Tabulka (leaders
@@ -152,7 +152,7 @@
 > ui/ and css/) are deleted; the main address opens One (`go.js`) and the data repo's web.yml publishes only
 > index.html, go.js, lib/, ui/ (state.js, palette.js), css/ (palettes.css) and one/. Before that, the last things worth
 > having were brought over: **Kdo co umí** (a team's detail, leaders, ≥ 600: people × roles, a cell steps neumí → učí
-> se → umí, a role's head says „umí to jen 1“ / „nikdo to neumí“), **Odeber z domácnosti** (⋯ on each person of a
+> se → umí, a role's head says „umí to jen 1“ / „nikdo to neumí“), **Odebrat z domácnosti** (⋯ on each person of a
 > household) and the Lidé Filtr **Bez souhlasu** (adult friends and guests without consent; `#lide/bez-souhlasu`).
 > The palette generator reads the old tuned scales from `zvonec/palette-scales.css`.
 
@@ -162,13 +162,13 @@
 > card · Obsazení as one line for leaders („Obsazení ● chybí 1 · ● 1 problém · ○ 3 čekají ›“) · **Tvoje vytížení** (this
 > month's duties against my limit as a big number and pips, a sentence – „Ještě máš místo na 1 službu.“ / „Tenhle
 > měsíc máš plno.“ / „O 1 službu víc, než zvládneš.“ / pauza –, Sundays in a row, this year's duties, my most frequent
-> role; leaders get „Kolik zvládnu“) · Tvoje další služby · Odmítnuté · **Kdy nemůžu** (+ Přidej) · Minulé služby. ≥ 1200
+> role; leaders get „Kolik zvládnu“) · Tvoje další služby · Odmítnuté · **Kdy nemůžu** (+ Přidat) · Minulé služby. ≥ 1200
 > the right column holds the Obsazení line, Tvoje vytížení and Kdy nemůžu.
 
 > **Update – Obsazení is a list of tasks (2026-10-08).** With Seznam's status tag and the Rozpis table, Obsazení had
 > become a third calendar. The owner chose variant 1: it lists the leader's tasks for the next 4 weeks by the kind of
-> work, not by meeting – **Chybí lidi** (a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne
-> 11. 10. 10.00“, [+ Doplň]; the row opens the meeting), **Něco nesedí** (a row per problem, › opens the fix) and
+> work, not by meeting – **Chybí lidé** (a row per missing role: the date arch, „2× Klávesy“, „Setkání na pastvě · ne
+> 11. 10. 10.00“, [+ Doplnit]; the row opens the meeting), **Něco nesedí** (a row per problem, › opens the fix) and
 > **Čeká na odpověď** (a row per person, not per duty: one SMS or e-mail reminds them of all their duties at once; the
 > row records their answer, a person with several duties gets a sheet with them and the worded reminder buttons).
 > What is done drops out; nothing left: „Všechno je vyřešené.“ The nav count is the number of tasks. Filtr › Stav picks
@@ -182,11 +182,11 @@
 
 > **Update – Simple's fill line, Rozpis as a table (2026-10-08).** The owner found Simple's line under a meeting
 > clearer than the quiet words: Seznam (and Měsíc's day list and popover) show again the time from–to and, for leaders,
-> the whole fill under the place – ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba (errors other than „Chybí lidi“).
+> the whole fill under the place – ◯ 14 z 15 · ● chybí 1 · ○ 2 čekají · ● 1 chyba (errors other than „Chybí lidé“).
 > Rozpis is rebuilt as the classic church roster: one table per kind of meeting of the month (the meetings that happen
 > once share „Další setkání“), a column per meeting (the day, the time, leaders' ◯ 14 z 15; a click opens the meeting
 > as a page), a row per role under its team's line, a name a line in the cell („Ty“ on the pick tint), ○ / ● after a
-> name for leaders, „+ Doplň“ (leaders, upcoming) or „chybí“, „–“ where the role is not needed. Read across: who
+> name for leaders, „+ Doplnit“ (leaders, upcoming) or „chybí“, „–“ where the role is not needed. Read across: who
 > plays the keys this month; read down: who serves on Sunday. The role column stays put while a phone scrolls the
 > meetings sideways (the third peeks in at the edge). Rozpis spans the whole frame and never opens a pane.
 
@@ -194,7 +194,7 @@
 > (both chose the owner's sketch), every list screen has the same rows: A = TITLE ······ ⋯ (bare) + the main action
 > (at every width, Obsazení's on a phone too); B = an always visible, labelled search (320 on ≥ 600) + „Filtr“ (soft
 > tint, 120, its count slot reserved) on the left above the list, Kalendář's view switch (quiet words) at the right
-> end (its own full row where it does not fit); while a filter is on, one quiet line „Filtr: Slovo · Zruš filtr“;
+> end (its own full row where it does not fit); while a filter is on, one quiet line „Filtr: Slovo · Zrušit filtr“;
 > C (Měsíc, Rozpis) = ‹ Říjen 2026 › ······ „Dnes“ (quiet words at the right end, not shown while today is on screen).
 > The search icons of the calm update are gone. The current nav item (tab bar, rail, sidebar, person) is the page's
 > ground with a hairline and a strong label, as in Next and Simple; --pick stays for selection in the content. Three
@@ -206,7 +206,7 @@
 > (⌕ opens the search field in place, a full row under the title on a phone; ⚟ Filtr with its count), ⋯ is quiet
 > among them; the view switch is quiet text; a list shows a fill only when something needs doing („chybí 1“ in the
 > error ink, „2 čekají“ in the second ink) – no rings for full meetings, none on Obsazení (its to-do lines say it),
-> no ticks on confirmed duties; lists show only the start time; „Ukaž, co už bylo“ moved into ⋯ („Ukaž minulá
+> no ticks on confirmed duties; lists show only the start time; „Zobrazit, co už bylo“ moved into ⋯ („Zobrazit minulá
 > setkání“) – no accent links on top of a list (the birthday line on Lidé is quiet ink). Screen names are capitals
 > (KALENDÁŘ, OBSAZENÍ; Moje's greeting stays a sentence); on a phone they scale with the width so the name and its
 > icons share one row.
@@ -216,7 +216,7 @@
 > blocks). Now: Skupiny is its own sidebar item (`#lide/skupiny`, title „Skupiny“, main action „Nová skupina“, its
 > own search); on a phone it is the first row of Lidé, the tab bar has no room. ≥ 1200 A and B are one row over the
 > whole frame – h1 left; search 320, Filtr, ⋯ and the main action at the right edge – with C under it. The segmented
-> thumb is light (card + lift), the search and Filtr are soft tint wells: only the main action is dark. „Ukaž
+> thumb is light (card + lift), the search and Filtr are soft tint wells: only the main action is dark. „Zobrazit
 > jednoduchý seznam“ lives in ⋯ only.
 
 > **Update after launch – the desktop uses the whole screen (≥ 1200).** The owner compared One with Next: One was a
@@ -239,9 +239,9 @@ What the owner asked for, and where this design answers it:
 
 | the owner | here |
 |---|---|
-| Next's colours and its Setkání detail | §7 (Účel hues as in Next, rose kept), §5.1 (detail kept whole) |
+| Next's colours and its Setkání detail | §7 (Druh setkání hues as in Next, rose kept), §5.1 (detail kept whole) |
 | Simple's simplicity, its person menu and Správa | §2.4 (the menu, Správa in it), §4 (Simple's Moje, A–Z, Rozpis, mini month) |
-| „some things belong in the sidebar“: Formáty, Šablony, Lidé as screens | §2.2 (group „Zdroje“), §6.9–6.11 |
+| „some things belong in the sidebar“: Formáty, Šablony, Lidé as screens | §2.2 (group „Příprava“), §6.9–6.11 |
 | search and Filtr in one place, never jumping | §3 (band B, fixed offsets, nothing above it ever varies) |
 | clear and not cluttered | one Filtr button, no chip rows, no lead lines, no FAB, nothing opens by itself |
 | phone, tablet and desktop | §1 (three layout classes), wireframes at 390 / 768 / 1440 |
@@ -280,12 +280,12 @@ What the owner asked for, and where this design answers it:
 | Zdroje | Šablony | `#sablony` | – | ✓ | ✓ | – |
 | Zdroje | Formáty | `#formaty` | link only | ✓ | ✓ | – |
 | Zdroje | Místa | `#mista` | link only | ✓ | ✓ | – |
-| person's menu | Můj účet, Kdy nemůžu, Barvy, Veřejný web, Odhlas se | | ✓ | ✓ | ✓ | – |
+| person's menu | Můj účet, Kdy nemůžu, Barvy, Veřejný web, Odhlásit se | | ✓ | ✓ | ✓ | – |
 | person's menu › Správa | Přístupy, Nastavení sboru | `#pristupy`, `#nastaveni` | – | ✓ | ✓ (+ záloha, klíč) | invites waiting |
 
 The split rule: **the sidebar holds the places where weekly work happens** (my duties, meetings, people, and
 what meetings are made of). **The person's menu holds you and the system** (your account, your days off,
-colours, access, the church's settings, the public web, sign-out). Members do not see „Zdroje“: they
+colours, access, the church's settings, the public web, sign-out). Members do not see „Příprava“: they
 open a Formát from an Osnova point and a Místo from a meeting's place line, read-only. Admin and leader see
 the same items; the admin sees more *inside* them (all teams, záloha, klíč, levels), never more items.
 
@@ -353,13 +353,13 @@ leader:  [ ⌂ Moje ]  [ ⊕ Obsazení ]  [ ▦ Kalendář ]  [ ☺☺ Lidé ]  
 │ Správa                                │  leaders: Přístupy [1 čeká] › · Nastavení sboru ›
 │                                       │
 │ Veřejný web                       ›   │  meta „Pastva, jak ji vidí návštěvníci“
-│ Ukázka                    (demo only) │  Podívej se očima druhých › (meta „teď: Radim Kovář · správce“) ·
+│ Ukázka                    (demo only) │  Podívat se očima druhých › (meta „teď: Radim Kovář · správce“) ·
 │                                       │  Začni ukázku znovu · Začni načisto
-│ Odhlas se                             │  single row, --no-ink text
+│ Odhlásit se                             │  single row, --no-ink text
 └───────────────────────────────────────┘
 ```
 
-- The contents are the same at every width. The only difference: the phone adds „Zdroje“, because it has
+- The contents are the same at every width. The only difference: the phone adds „Příprava“, because it has
   no sidebar. Rows are the standard row (CODEX §6.6), one weight. A tap on a link row closes the menu, then
   navigates. A row that opens a sheet („Začni ukázku znovu“ → confirm) closes the menu first (layers never stack
   a menu under a sheet).
@@ -406,15 +406,15 @@ D  content     list / grid; its own first line may be a period line, a birthday 
 
 ```
   0 ┌──────────────────────────────────────┐
- 16 │ Kalendář                    [+]  [⋯] │ A  h1 34/36; [+] primary M 44 (aria „Přidej setkání“); [⋯] quiet M
+ 16 │ Kalendář                    [+]  [⋯] │ A  h1 34/36; [+] primary M 44 (aria „Přidat setkání“); [⋯] quiet M
     │                                      │ 12
- 72 │ [⌕ Hledej setkání        ][⚟ Filtr  ]│ B  search 222 · 8 · Filtr 120 (content 350 = 390 − 2 × 20)
+ 72 │ [⌕ Hledat setkání        ][⚟ Filtr  ]│ B  search 222 · 8 · Filtr 120 (content 350 = 390 − 2 × 20)
     │                                      │ 12
 128 │ [  Seznam  |  Měsíc   |  Rozpis  ]   │ C  full width
     │                                      │ 24
-196 │ ‹ Ukaž, co už bylo                   │ D  quiet link 15/620 --ink-accent
+196 │ ‹ Zobrazit, co už bylo                   │ D  quiet link 15/620 --ink-accent
     │ Tento týden                          │ subhead 13/620 --ink-2
-    │ ╭──╮ 18.30 ┃ Zkouška chval           │ date arch 44 × 56 · times · Účel bar 3 (a separate element)
+    │ ╭──╮ 18.30 ┃ Zkouška chval           │ date arch 44 × 56 · times · Druh setkání bar 3 (a separate element)
     │ │ČT│ 20.30 ┃ Monta, Sál              │
     │ │ 8│       ┃ ◯ 6 z 6 · ○ 1 čeká      │ (leaders: the fill)
     │ ╰──╯ 19.30 ┃ Rada starších           │
@@ -423,16 +423,16 @@ D  content     list / grid; its own first line may be a period line, a birthday 
     └──────────────────────────────────────┘
 ```
 
-At 360 the search is 192 wide; „Hledej setkání“ still fits (every placeholder is „Hledej“ + one noun, and ends
+At 360 the search is 192 wide; „Hledat setkání“ still fits (every placeholder is „Hledat“ + one noun, and ends
 in „…“ if it ever must).
 
 ### 3.2 Tablet 768 (rail 88, padding 32, list column 616)
 
 ```
 ┌──────┬───────────────────────────────────────────────────────────────┐
-│  ck  │ Kalendář                          [+ Přidej setkání]  [⋯]     │ A  h1 40/44, top 32
+│  ck  │ Kalendář                          [+ Přidat setkání]  [⋯]     │ A  h1 40/44, top 32
 │ ⌂    │                                                               │ 12
-│ ⊕    │ [⌕ Hledej setkání                          ][⚟ Filtr   ]      │ B  88: search 488 · Filtr 120
+│ ⊕    │ [⌕ Hledat setkání                          ][⚟ Filtr   ]      │ B  88: search 488 · Filtr 120
 │▌▦    │                                                               │ 12
 │ ☺☺   │ [ Seznam | Měsíc | Rozpis ]                                   │ C  360
 │ ──── │                                                               │ 24
@@ -450,13 +450,13 @@ A click on a row opens the detail as a page (§5). At 1024 the same layout sits 
 
 ```
 ┌──────────────┬──────────────────────────────────────────────────────────────────────────────────┐
-│ církev jako… │ Kalendář              [⋯][+ Přidej setkání]                                       │ A  list track only
+│ církev jako… │ Kalendář              [⋯][+ Přidat setkání]                                       │ A  list track only
 │              │                                                                                  │ 12
-│ ⌂ Moje     4 │ [⌕ Hledej setkání              ][⚟ Filtr  ]  ┌──────────────────────────[⋯][✕]┐ │ B  list track only
-│ ⊕ Obsazení10 │                                               │ ▒▒▒▒▒ Účel band 96 ▒▒▒▒▒▒ ∩∩ ▒ │ │ pane top = B top
+│ ⌂ Moje     4 │ [⌕ Hledat setkání              ][⚟ Filtr  ]  ┌──────────────────────────[⋯][✕]┐ │ B  list track only
+│ ⊕ Obsazení10 │                                               │ ▒▒▒▒▒ Druh setkání band 96 ▒▒▒▒▒▒ ∩∩ ▒ │ │ pane top = B top
 │▌▦ Kalendář   │ [ Seznam | Měsíc | Rozpis ]                   │ (Zkouška)                      │ │ C
 │ ☺☺ Lidé      │                                               │ Zkouška chval                  │ │
-│              │ ‹ Ukaž, co už bylo                            │ ◷ čt 8. 10. · 18.30–20.30      │ │ D
+│              │ ‹ Zobrazit, co už bylo                            │ ◷ čt 8. 10. · 18.30–20.30      │ │ D
 │ Jak se sch…  │ Tento týden                                   │ ⌖ Monta, Sál                 › │ │
 │ ▤ Šablony    │▌╭──╮ 18.30 ┃ Zkouška chval        ◯ 6 z 6 ▒▒ │ ⟳ Každý čtvrtek do 28. 1. 2027 │ │ open row: pick + bar
 │ ▯ Formáty    │ ╰──╯ 20.30 ┃ Monta, Sál                       │ Kdo slouží     ◯ 6 z 6 · 1 čeká │ │
@@ -486,8 +486,8 @@ A click on a row opens the detail as a page (§5). At 1024 the same layout sits 
 | case | title (h2) | sentence | action |
 |---|---|---|---|
 | nothing yet | „Zatím tu nejsou žádná setkání.“ (per screen) | what the screen is for (the old head subtitles live here) | the main action, quiet M, only if the viewer may |
-| nothing found | „Nic tomu neodpovídá.“ | „Hledáš „Kučer“.“ | „Vymaž hledání“ |
-| filtered empty | „S tímhle filtrem tu nic není.“ | „Filtr skrývá 12 setkání.“ | „Zruš filtr“ |
+| nothing found | „Nic tomu neodpovídá.“ | „Hledáš „Kučer“.“ | „Vymazat hledání“ |
+| filtered empty | „S tímhle filtrem tu nic není.“ | „Filtr skrývá 12 setkání.“ | „Zrušit filtr“ |
 
   In Měsíc and Rozpis the grid or the month stays; the empty case is one quiet line under the period line.
 - **A missing item** (`#setkani/neexistuje`, a deleted person): a page with the empty well, „Tohle setkání už tu
@@ -522,7 +522,7 @@ other pages are one column of 640.
   and shows `‹ Zkouška chval` in the action row. Panes never stack.
 - **Head order, same offsets in every detail:** mark or band → tag → h1 (34/36 in a pane and on a phone, 40/44 on
   a ≥ 600 page) → facts (icon 20 + text 16, rows 32, › where a fact links on) → sections.
-- **Section** = h2 20/26 + at most one action at its right edge (quiet S „Uprav“ or tint S „+ Přidej“; M on a phone)
+- **Section** = h2 20/26 + at most one action at its right edge (quiet S „Upravit“ or tint S „+ Přidat“; M on a phone)
   or one value (a count, the ring). 32 between sections, 12 from the h2 to its content.
 - **Editing is always in a layer** (sheet or dialog), never an inline edit mode. Destructive actions only in ⋯.
 - **An item that has only actions and no content opens a menu, not a detail** (Přístupy rows, Kdy nemůžu rows).
@@ -534,14 +534,14 @@ phone 390 (page)                              pane at 1440 (560)
 ┌──────────────────────────────────────┐      ┌─────────────────────────────────────────┐
 │ ‹ Kalendář                       [⋯] │ 56   │                               [⋯] [✕]   │ 44
 │ ╭────────────────────────────────╮   │      │ ╭─────────────────────────────────────╮ │
-│ │ ▒▒▒▒ Účel band 96 ▒▒▒▒▒▒ ∩∩ ▒▒ │   │      │ │ ▒▒▒▒▒ --hue-fill, arch --hue-mark ∩∩│ │ band 96, r20
+│ │ ▒▒▒▒ Druh setkání band 96 ▒▒▒▒▒▒ ∩∩ ▒▒ │   │      │ │ ▒▒▒▒▒ --hue-fill, arch --hue-mark ∩∩│ │ band 96, r20
 │ ╰────────────────────────────────╯   │      │ ╰─────────────────────────────────────╯ │
 │ (Zkouška)                            │      │ (Zkouška) (na webu)                     │ tag capsules 13
 │ Zkouška chval                        │      │ Zkouška chval                           │ h1 34/36
 │ ◷ čt 8. 10. · 18.30–20.30            │      │ ◷ čt 8. 10. · 18.30–20.30               │
 │ ⌖ Monta, Sál                      ›  │      │ ⌖ Monta, Sál                         ›  │ → Místo
 │ ⟳ Každý čtvrtek do 28. 1. 2027       │      │ ⟳ Každý čtvrtek do 28. 1. 2027          │
-│ ╭ Co nesedí ──────────────────────╮  │      │ ● Ondra má dvě služby naráz          ›  │ leaders, only when something
+│ ╭ Problémy ──────────────────────╮  │      │ ● Ondra má dvě služby naráz          ›  │ leaders, only when something
 │ │ ● Ondra má dvě služby naráz  ›  │  │      │                                         │   does not fit
 │ ╰─────────────────────────────────╯  │      │ ╭ Tvoje služba ────────────────────────╮│ only when I serve
 │ ╭ Tvoje služba ───────────────────╮  │      │ │ Zpěv · čeká na tvou odpověď          ││ --feature, r20, padding 20
@@ -552,11 +552,11 @@ phone 390 (page)                              pane at 1440 (560)
 │ (CH) Chvály                  5 z 5 ⌄ │      │      Daniel ○, Hedvika, Martina, Ty     │ collapsed: names + marks
 │      Daniel ○, Hedvika, Ty           │      │      [+ Klávesy]                        │ empty slot (leaders) S capsule
 │      [+ Klávesy]                     │      │ (TE) Technika     ✓ všichni potvrdili ⌄ │
-│ (TE) Technika    ✓ všichni         ⌄ │      │ Osnova                          [Uprav] │
-│ Osnova                       [Uprav] │      │ 10.00 Přivítání 5′ · 10.05 Chvály 25′ … │ first 4 points
+│ (TE) Technika    ✓ všichni         ⌄ │      │ Osnova                          [Upravit] │
+│ Osnova                       [Upravit] │      │ 10.00 Přivítání 5′ · 10.05 Chvály 25′ … │ first 4 points
 │ 10.00 Přivítání 5′ · Chvály 25′ …    │      │ Celá osnova ›                           │
 │ Celá osnova ›                        │      │ O setkání                               │ text, Pro tým (leaders),
-│ O setkání                            │      │ …  Otevři v mapě ↗   Ukaž na webu (○—)  │ map link, web switch
+│ O setkání                            │      │ …  Otevřít v mapě ↗   Zobrazit na webu (○—)  │ map link, web switch
 └──────────────────────────────────────┘      └─────────────────────────────────────────┘
 ```
 
@@ -564,22 +564,22 @@ phone 390 (page)                              pane at 1440 (560)
   leaders, its „+ Role“ slots, so nothing actionable hides. ⌄ (or a click on the row) unfolds role → person → state
   words (✓ potvrzeno / ○ čeká / ● nesedí + reason). A click on a name (leaders) opens the duty sheet; on a slot, the
   picker („Klávesy · ne 11. 10.“: who can, longest rested first, who cannot greyed with the reason, Můžou / Nejde
-  to, „Hledej mezi všemi lidmi“).
-- A member sees the same detail without slots, ⋯ and „Co nesedí“; „Ty“ marks the viewer.
-- ⋯ (leaders): Uprav setkání · Uprav, kolik lidí je potřeba · Prodluž řadu · Vytiskni · Zruš setkání / Obnov
-  setkání · Smaž setkání. Past meetings add „Kolik lidí přišlo“ (leaders).
+  to, „Hledat mezi všemi lidmi“).
+- A member sees the same detail without slots, ⋯ and „Problémy“; „Ty“ marks the viewer.
+- ⋯ (leaders): Upravit setkání · Upravit, kolik lidí je potřeba · Prodloužit řadu · Vytisknout · Zrušit setkání / Obnovit
+  setkání · Smazat setkání. Past meetings add „Kolik lidí přišlo“ (leaders).
 - Dropped from Next: the photo picker in the band, duplicate pills. Cancelled: the tag „zrušeno“ and a struck h1.
 
 ### 5.2 The other details (same frame, same head offsets)
 
 | detail | mark | facts | sections, in order | ⋯ |
 |---|---|---|---|---|
-| **Člověk** `#lide/<id>` | avatar 72 | membership pill, team pills (links) | contact tiles **Zavolej · SMS · E-mail** (L 52, equal thirds, only those with data, right under the head); leaders: callout „Chybí datum narození · Doplň“; Příští služby; Kontakt [Uprav]; Domácnost (rows ›); Skupiny [+ Přidej]; Kdy nemůže; Poznámka (leaders) | Uprav · Pozvi do Zvonce · Přesuň do archivu · Smaž |
-| **Domácnost** (drill-in) | house mark 56 | address | Lidé (rows) | Uprav · Přidej člověka · Smaž |
-| **Skupina** `#lide/skupiny/<id>` | team mark 56 | „9 lidí · vedou David Kučera a Radim Kovář“ | Role (role → who can, [+ Přidej]); Lidé (rows with call); Příští služby | Uprav · Přidej člověka · Přesuň do archivu · Smaž |
-| **Šablona** `#sablony/<id>` | Účel mark 56 | „každou neděli · 10.00–12.00 · Sál“ | a first line „Nové setkání ze šablony dostane čas, místo, role i osnovu.“; Kdo je potřeba [Uprav]; Osnova [Uprav]; Na webu (switch); Setkání v plánu (next 5 + „Ukaž všech 16“) | Uprav · Naplánuj setkání · Zkopíruj · Přesuň do archivu · Smaž |
-| **Formát** `#formaty/<id>` | minutes block 56 „5 min“ | „vede role Projekce“ | Proč to děláme; Jak to probíhá; Kdo je potřeba; Kde se používá (Šablony as links); Na webu (switch) | Uprav · Smaž |
-| **Místo** `#mista/<id>` | pin mark 56 | address + „Otevři v mapě ↗“ | Mapa (16:9, r20); Místnosti [+ Přidej]; Kdy se tu scházíme (next 5) | Uprav · Smaž |
+| **Člověk** `#lide/<id>` | avatar 72 | membership pill, team pills (links) | contact tiles **Zavolat · SMS · E-mail** (L 52, equal thirds, only those with data, right under the head); leaders: callout „Chybí datum narození · Doplnit“; Příští služby; Kontakt [Upravit]; Domácnost (rows ›); Skupiny [+ Přidat]; Kdy nemůže; Poznámka (leaders) | Upravit · Pozvat do Zvonce · Přesunout do archivu · Smazat |
+| **Domácnost** (drill-in) | house mark 56 | address | Lidé (rows) | Upravit · Přidat člověka · Smazat |
+| **Skupina** `#lide/skupiny/<id>` | team mark 56 | „9 lidí · vedou David Kučera a Radim Kovář“ | Role (role → who can, [+ Přidat]); Lidé (rows with call); Příští služby | Upravit · Přidat člověka · Přesunout do archivu · Smazat |
+| **Šablona** `#sablony/<id>` | Druh setkání mark 56 | „každou neděli · 10.00–12.00 · Sál“ | a first line „Nové setkání ze šablony dostane čas, místo, role i osnovu.“; Kdo je potřeba [Upravit]; Osnova [Upravit]; Na webu (switch); Setkání v plánu (next 5 + „Zobrazit všech 16“) | Upravit · Naplánovat setkání · Zkopírovat · Přesunout do archivu · Smazat |
+| **Formát** `#formaty/<id>` | minutes block 56 „5 min“ | „vede role Projekce“ | Proč to děláme; Jak to probíhá; Kdo je potřeba; Kde se používá (Šablony as links); Na webu (switch) | Upravit · Smazat |
+| **Místo** `#mista/<id>` | pin mark 56 | address + „Otevřít v mapě ↗“ | Mapa (16:9, r20); Místnosti [+ Přidat]; Kdy se tu scházíme (next 5) | Upravit · Smazat |
 
 On a phone the person's contact tiles are inside the first screen: reaching someone is why people open Lidé.
 
@@ -610,30 +610,30 @@ Minulé služby ›                           Minulé služby ›
 ```
 
 - One answer card (`--feature`, r20, padding 20) at a time; after an answer the next slides in, toast „Díky, máš to
-  potvrzené. · Vrať“. Nothing waiting: one line „Všechno máš zodpovězené.“, no card. Declined duties in their own
+  potvrzené. · Vrátit zpět“. Nothing waiting: one line „Všechno máš zodpovězené.“, no card. Declined duties in their own
   quiet section (Simple #36). No leader blocks here: the Obsazení count says it.
 - Member and leader: the same. Empty (no duties at all): the well „Zatím tu nemáš žádné služby.“
 
 ### 6.2 Kalendář `#kalendar/<seznam|mesic|rozpis>[…]` (everyone) – „What is happening?“
 
-A: „Kalendář“ · [Přidej setkání] (leaders) · ⋯ (Stáhni do kalendáře · Vytiskni rozpis… · Doplň volná místa
-(leaders) · Břemeno (leaders, dialog)). B: „Hledej setkání“ + Filtr. C: Seznam · Měsíc · Rozpis.
-**Filtr** (one model, the same count in every view): Účel (4 chips with hue dots) · Tým · Jen moje služby (switch)
-· Ukaž i zrušená (switch). **Search** matches the title, the place, the Účel and the names of who serves
+A: „Kalendář“ · [Přidat setkání] (leaders) · ⋯ (Stáhnout do kalendáře · Vytisknout rozpis… · Doplnit volná místa
+(leaders) · Břemeno (leaders, dialog)). B: „Hledat setkání“ + Filtr. C: Seznam · Měsíc · Rozpis.
+**Filtr** (one model, the same count in every view): Druh setkání (4 chips with hue dots) · Tým · Jen moje služby (switch)
+· Zobrazit i zrušená (switch). **Search** matches the title, the place, the Druh setkání and the names of who serves
 („Kučera“ finds the meetings where a Kučera serves); Seznam lists the matches, Měsíc hides non-matching chips
 and dots, Rozpis hides non-matching meetings.
 
 **Seznam** `#kalendar/seznam[/<id>]`: §3.1 / §3.3. Continuous from today, week subheads („Tento týden“,
-„Příští týden“, „19.–25. 10.“), one date arch per day, time from–to, the Účel bar, title, place, „ty · Kázání ·
-potvrzeno“ when I serve; leaders also ◯ 14 z 15 · chybí 1. Cancelled: struck + „zrušeno“. „‹ Ukaž, co už bylo“ on
-top, „Ukaž další týdny“ at the end. Click → pane (D) or page (P, tablet).
+„Příští týden“, „19.–25. 10.“), one date arch per day, time from–to, the Druh setkání bar, title, place, „ty · Kázání ·
+potvrzeno“ when I serve; leaders also ◯ 14 z 15 · chybí 1. Cancelled: struck + „zrušeno“. „‹ Zobrazit, co už bylo“ on
+top, „Zobrazit další týdny“ at the end. Click → pane (D) or page (P, tablet).
 
 **Měsíc** `#kalendar/mesic/<YYYY-MM>[/<YYYY-MM-DD>]`: the form is chosen by the content's own width (container
 query at 700), not by the device.
 
 ```
 narrow (P, tablet 768, content < 700)          wide (content ≥ 700: 1024 tablet, desktop)
-[ Seznam | Měsíc | Rozpis ]                    [⌕ Hledej setkání        ][⚟ Filtr ]     (B in the list track)
+[ Seznam | Měsíc | Rozpis ]                    [⌕ Hledat setkání        ][⚟ Filtr ]     (B in the list track)
                                                [ Seznam | Měsíc | Rozpis ]
 [‹] Říjen 2026 [›]              [Dnes]         [‹] Říjen 2026 [›]  ·········································  [Dnes]
  po út st čt pá so ne                          po        út        st        čt        pá        so        ne
@@ -643,17 +643,17 @@ narrow (P, tablet 768, content < 700)          wide (content ≥ 700: 1024 table
      •     ••             chosen = pick + bar   │         │┃19.00 Mo│         │┃19.30 Ra│         │         │┃14.00 Z│
  …                                             └─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴────────┘
 St 7. 10.                                      the grid spans the whole content frame (list + pane tracks)
-╭──╮ 18.30 ┃ Zkouška chval                    chip 24: 3 px Účel bar on its square left edge, right corners 9,
+╭──╮ 18.30 ┃ Zkouška chval                    chip 24: 3 px Druh setkání bar on its square left edge, right corners 9,
                                                13/620 time + 13 title, ellipsis after whole words; „+ 2 další“
 ```
 
-- Narrow: the mini month (cells 44, day 16, up to 3 Účel dots 6 px, today = `--act` disc, chosen = `--pick` +
+- Narrow: the mini month (cells 44, day 16, up to 3 Druh setkání dots 6 px, today = `--act` disc, chosen = `--pick` +
   detached bar), and under it **the chosen day's list** (Simple). A tap on a day only chooses it. Default: today,
   or the first day with meetings in another month.
 - Wide: cells ≥ 100 (cell ≥ 130: time + title; 100–129: title only). Mine = `--hue-fill` chip with `--hue-ink`.
   A click on a chip opens **the Setkání page** (back „‹ Kalendář“ returns to the same month). **No pane beside the
   grid, ever.** A click on a day number or „+ 2 další“ opens the day popover (320, anchored to the cell: the day's
-  rows + „Přidej setkání“ for leaders).
+  rows + „Přidat setkání“ for leaders).
 - The period line is D's first line; it is identical in both forms.
 
 **Rozpis** `#kalendar/rozpis/<YYYY-MM>[/<id>]` (Simple's plain list of meetings):
@@ -670,25 +670,25 @@ P                                          D (list track | pane on click)
 
 - Team label column 96 (P) / 120 (≥ 600), 13/620 `--ink-2`; names 15, wrapping between names; slots S capsules.
   Filtr › Tým narrows the lines (no team chip in the head). A click on a name (leaders) → the duty sheet; on the
-  block → detail. „Vytiskni rozpis…“ prints the shown month (print CSS, Simple's).
+  block → detail. „Vytisknout rozpis…“ prints the shown month (print CSS, Simple's).
 - Member: the same, without slots. Empty month: „V říjnu tu nic není.“ under the period line.
 
 ### 6.3 Setkání `#setkani/<id>` and Osnova `#setkani/<id>/osnova`
 
 §5.1. Osnova is a page at every width (top bar „‹ Zkouška chval“): points with times, minutes and their Formát (a
-link), the running clock, drag handles and „+ Přidej bod“ (S slot at the end) for leaders. „Nové setkání“ and
-„Uprav setkání“ are forms in a layer (phone sheet, ≥ 600 dialog 640); the date picker stacks on them (depth 2).
+link), the running clock, drag handles and „+ Přidat bod“ (S slot at the end) for leaders. „Nové setkání“ and
+„Upravit setkání“ are forms in a layer (phone sheet, ≥ 600 dialog 640); the date picker stacks on them (depth 2).
 
 ### 6.4 Obsazení `#obsazeni[/<id>]` (leaders) – „Whom do we still need?“
 
-A: „Obsazení“ · [Doplň volná místa] (≥ 600; on a phone it is the first item of ⋯, so the title row has only ⋯)
-· ⋯ (Připomeň všem, kdo neodpověděli · Vytiskni rozpis). B: „Hledej setkání“ + Filtr (Tým: my teams by default,
-admins Všechny týmy → **„Filtr 1“** · Co řešit: Chybí lidi · Čeká na odpověď · Něco nesedí). No C.
+A: „Obsazení“ · [Doplnit volná místa] (≥ 600; on a phone it is the first item of ⋯, so the title row has only ⋯)
+· ⋯ (Připomenout všem, kdo neodpověděli · Vytisknout rozpis…). B: „Hledat setkání“ + Filtr (Tým: my teams by default,
+admins Všechny týmy → **„Filtr 1“** · Co řešit: Chybí lidé · Čeká na odpověď · Něco nesedí). No C.
 
 ```
 P                                          D (list track | pane: the Setkání as a leader sees it)
-Obsazení                             [⋯]   Obsazení                       [Doplň volná místa] [⋯]
-[⌕ Hledej setkání        ][⚟ Filtr 1]      [⌕ Hledej setkání          ][⚟ Filtr 1]  ┌──────[⋯][✕]┐
+Obsazení                             [⋯]   Obsazení                       [Doplnit volná místa] [⋯]
+[⌕ Hledat setkání        ][⚟ Filtr 1]      [⌕ Hledat setkání          ][⚟ Filtr 1]  ┌──────[⋯][✕]┐
 Tento týden                                Tento týden                                │ …          │
 ╭──╮ Zkouška chval            6 z 6 ◯      ▌╭──╮ Zkouška chval · 18.30      6 z 6 ◯ ▒  │            │
 │ 8│ 18.30 · Monta, Sál                     ╰──╯ ○ 1 člověk ještě neodpověděl ›      │            │
@@ -701,22 +701,22 @@ Dál než 4 týdny dopředu: Rozpis ›
 
 - Only meetings in the next 4 weeks with something to do. The horizon is said **at the end of the list**.
 - „+ Klávesy“ → the picker. „○ n ještě neodpověděli ›“ → who waits (rows: person, duty, „čeká 5 dní“, SMS ·
-  Zavolej · Připomeň with a ready text). „● … ›“ → the duty sheet with its fixes. A row click → pane / page.
-- Empty: „Na příští 4 týdny je všechno obsazené.“ (nothing yet), or the filtered case („Zruš filtr“ shows all teams).
+  Zavolat · Připomenout with a ready text). „● … ›“ → the duty sheet with its fixes. A row click → pane / page.
+- Empty: „Na příští 4 týdny je všechno obsazené.“ (nothing yet), or the filtered case („Zrušit filtr“ shows all teams).
 
 ### 6.5 Lidé `#lide[/<id>]` and Skupiny `#lide/skupiny[/<id>]` (everyone) – „How do I reach someone?“
 
-A: „Lidé“ · ⋯ · [Nový člověk] (leaders, in both views; the owner's wording) (Přidej skupinu · Přidej domácnost · Pozvi do Zvonce
-· Zkopíruj e-maily · Stáhni seznam · Podrobný výpis (≥ 900) – leaders; members: Stáhni seznam).
-B: „Hledej jméno“ + Filtr. C: Lidé · Skupiny.
+A: „Lidé“ · ⋯ · [Nový člověk] (leaders, in both views; the owner's wording) (Přidat skupinu · Přidat domácnost · Pozvat do Zvonce
+· Zkopírovat e-maily · Stáhnout seznam · Podrobný výpis (≥ 900) – leaders; members: Stáhnout seznam).
+B: „Hledat jméno“ + Filtr. C: Lidé · Skupiny.
 
 ```
 P                                          D (list track | pane: Člověk)
 Lidé                          [⋯]  [+]     Lidé                                   [⋯] [+ Nový člověk]
-[⌕ Hledej jméno          ][⚟ Filtr  ]      [⌕ Hledej jméno              ][⚟ Filtr ]  ┌───────────[⋯][✕]┐
+[⌕ Hledat jméno          ][⚟ Filtr  ]      [⌕ Hledat jméno              ][⚟ Filtr ]  ┌───────────[⋯][✕]┐
 [     Lidé      |    Skupiny      ]        [ Lidé | Skupiny ]                         │ (B) Bára        │
                                                                                       │ host            │
-🎂 Dnes slaví Eva Kučerová, do týdne 2 ›    🎂 Dnes slaví Eva Kučerová, do týdne 2 › │ [Zavolej][SMS]… │
+🎂 Dnes slaví Eva Kučerová, do týdne 2 ›    🎂 Dnes slaví Eva Kučerová, do týdne 2 › │ [Zavolat][SMS]… │
 B                                          B                                          │ ● Chybí příjmení│
 (B)  Bára                                  ▌(B)  Bára                                ▒ │ Příští služby   │
 Č                                              host · chybí příjmení a kontakt        │ …               │
@@ -733,24 +733,24 @@ B                                          B                                    
   the trail when I am in it. Click → the Skupina detail.
 - **Search** in the Lidé view matches name, nickname, phone, e-mail and, above the people, up to 3 matching groups
   (a „Skupiny“ subhead); in the Skupiny view it matches groups. **Filtr**: Lidé view – Členství (Členové · Přátelé ·
-  Hosté · Děti) · Tým · Chybí údaje (leaders) · Narozeniny (leaders, sorts by the next birthday) · Ukaž i archiv
-  (leaders); Skupiny view – Druh (Týmy · Skupinky · Vedení) · Jen moje · Ukaž i archiv (leaders). Members get the
+  Hosté · Děti) · Tým · Chybí údaje (leaders) · Narozeniny (leaders, sorts by the next birthday) · Zobrazit i archiv
+  (leaders); Skupiny view – Druh (Týmy · Skupinky · Vedení) · Jen moje · Zobrazit i archiv (leaders). Members get the
   same Filtr with their groups only, so B is identical for every role.
 - **Podrobný výpis** `#lide/vypis` (leaders, ≥ 900): Simple's table (Jméno, Členství, Domácnost, Telefon, E-mail,
   Skupiny, Narozeniny; ticks + bulk bar) under the same A·B·C; the view row stays Lidé · Skupiny and a quiet line at
-  the top of D says „Podrobný výpis · Ukaž jednoduchý seznam“.
+  the top of D says „Podrobný výpis · Zobrazit jednoduchý seznam“.
 
 ### 6.6 Šablony `#sablony[/<id>]` (leaders)
 
-A: „Šablony“ · [Přidej šablonu]. B: „Hledej šablonu“ + Filtr (Účel · Na webu · Ukaž i archiv). Rows 64: Účel mark
+A: „Šablony“ · [Přidat šablonu]. B: „Hledat šablonu“ + Filtr (Druh setkání · Na webu · Zobrazit i archiv). Rows 64: Druh setkání mark
 40 (arch, hue tint + icon), name, „každou neděli · 10.00–12.00 · Sál“, trail „na webu“ pill (nowrap, never in the
 meta). Click → pane / page. Empty: „Zatím tu není žádná šablona.“ + „Nové setkání ze šablony dostane čas, místo,
-role i osnovu.“ + [Přidej šablonu]. The add / edit form is a layer (dialog 640).
+role i osnovu.“ + [Přidat šablonu]. The add / edit form is a layer (dialog 640).
 
 ```
 P                                           D
-Šablony                       [+]  [⋯]     Šablony                                     [+ Přidej šablonu] [⋯]
-[⌕ Hledej šablonu        ][⚟ Filtr  ]      [⌕ Hledej šablonu            ][⚟ Filtr ]   ┌───────────[⋯][✕]┐
+Šablony                       [+]  [⋯]     Šablony                                     [+ Přidat šablonu] [⋯]
+[⌕ Hledat šablonu        ][⚟ Filtr  ]      [⌕ Hledat šablonu            ][⚟ Filtr ]   ┌───────────[⋯][✕]┐
 (☼) Setkání na pastvě          na webu     ▌(☼) Setkání na pastvě           na webu ▒ │ (☼) Setkání na… │
     každou neděli · 10.00–12.00 · Sál           každou neděli · 10.00–12.00 · Sál      │ Kdo je potřeba  │
 (♫) Zkouška chval                          (♫) Zkouška chval                           └─────────────────┘
@@ -758,14 +758,14 @@ P                                           D
 
 ### 6.7 Formáty `#formaty[/<id>]` (leaders in the nav; members by link, read-only)
 
-A: „Formáty“ · [Přidej formát] (leaders). B: „Hledej formát“ (no Filtr: the search fills B). Rows: minutes block
+A: „Formáty“ · [Přidat formát] (leaders). B: „Hledat formát“ (no Filtr: the search fills B). Rows: minutes block
 40 („25 / min“), name, „vede role Vedení chval“, trail „na webu“. **Nothing is open until clicked** (Next opened the
 first one). Pane / page. Empty: „Zatím tu není žádný formát.“ + „Z formátů se skládá osnova setkání.“
 
 ```
 P                                           D
-Formáty                       [+]  [⋯]     Formáty                                       [+ Přidej formát]
-[⌕ Hledej formát                     ]     [⌕ Hledej formát                         ]   (pane track empty)
+Formáty                       [+]  [⋯]     Formáty                                       [+ Přidat formát]
+[⌕ Hledat formát                     ]     [⌕ Hledat formát                         ]   (pane track empty)
 (5 min)  (B)učení – video                  (5 min)  (B)učení – video
          vede role Projekce                         vede role Projekce
 (25 min) Chvály                na webu     (25 min) Chvály                    na webu
@@ -773,34 +773,34 @@ Formáty                       [+]  [⋯]     Formáty                          
 
 ### 6.8 Místa `#mista[/<id>]` (leaders in the nav; members by link)
 
-A: „Místa“ · [Přidej místo]. B: „Hledej místo“ (no Filtr). Rows: pin mark 40, name, address · „3 místnosti“; the
+A: „Místa“ · [Přidat místo]. B: „Hledat místo“ (no Filtr). Rows: pin mark 40, name, address · „3 místnosti“; the
 main place first with „hlavní místo“. Rooms live in the place's detail, not as indented rows. Pane / page.
 
 ### 6.9 Přístupy `#pristupy` (leaders; from the person's menu)
 
-A: „Přístupy“ · [Pozvi člověka] · ⋯ (Jak se lidé dostanou dovnitř – help sheet · Vyměň klíč – admin).
-B: „Hledej člověka“ + Filtr (Úroveň: Správce · Vedoucí · Člen · Jen pozvánky). One column (list track); **no pane**:
-a row opens its menu (popover / action sheet: Změň přístup (admin for leaders) · Pošli pozvánku znovu · Zruš
-pozvánku / Odeber přístup). Sections: Pozvánky (2) – „platí do 19. 10.“ or „Vypršela 21. 9.“ in `--no-ink`;
+A: „Přístupy“ · [Pozvat člověka] · ⋯ (Jak se lidé dostanou dovnitř – help sheet · Vyměnit klíč – admin).
+B: „Hledat člověka“ + Filtr (Úroveň: Správce · Vedoucí · Člen · Jen pozvánky). One column (list track); **no pane**:
+a row opens its menu (popover / action sheet: Změnit přístup (admin for leaders) · Poslat pozvánku znovu · Zrušit
+pozvánku / Odebrat přístup). Sections: Pozvánky (2) – „platí do 19. 10.“ or „Vypršela 21. 9.“ in `--no-ink`;
 Správci · Vedoucí · Členové; Přístupy bez karty. Trail: the level pill. Demo: an info callout as D's first line.
-„Každá změna začne platit za pár minut.“ is said in the Pozvi dialog and the change menu, not under the title.
+„Každá změna začne platit za pár minut.“ is said in the Pozvat dialog and the change menu, not under the title.
 
 ### 6.10 Nastavení sboru `#nastaveni` (leaders; admin rows marked)
 
-Page, one column 640. Blocks (r20, `--card`, padding 24), each a section with quiet S „Uprav“ → a dialog / sheet:
+Page, one column 640. Blocks (r20, `--card`, padding 24), each a section with quiet S „Upravit“ → a dialog / sheet:
 **Sbor** (název, hlavní místo, adresa, web) · **Pravidla** (Nejvíc služeb za měsíc, Nejvíc nedělí po sobě) · **Kdy
-Zvonec bučí** (days before) · **Děti** (Dospělý je od) · **Záloha** (Stáhni zálohu; admin: Nahraj zálohu). Values
+Zvonec bučí** (days before) · **Děti** (Dospělý je od) · **Záloha** (Stáhnout zálohu; admin: Nahrát zálohu). Values
 are shown as „label — value“ rows. No inline fields, no form foot.
 
 ### 6.11 Můj účet `#ucet`, Kdy nemůžu `#kdy-nemuzu` (everyone; from the person's menu)
 
-- **Můj účet**: page 640. Head (avatar 72, name, „správce“). Sections: Moje karta (contact facts, [Uprav] → the person
-  form) · Přihlášení (jméno, [Změň heslo]) · Kalendář v telefonu ([Stáhni] / odběr) · Barvy (the same three
-  bullseyes) · „Odhlas se“ (quiet M, `--no-ink`) at the end. Without a card: a callout „Zvonec neví, která karta
+- **Můj účet**: page 640. Head (avatar 72, name, „správce“). Sections: Moje karta (contact facts, [Upravit] → the person
+  form) · Přihlášení (jméno, [Změnit heslo]) · Kalendář v telefonu ([Stáhnout] / odběr) · Barvy (the same three
+  bullseyes) · „Odhlásit se“ (quiet M, `--no-ink`) at the end. Without a card: a callout „Zvonec neví, která karta
   v Lidech je tvoje…“.
-- **Kdy nemůžu**: page 640. A: „Kdy nemůžu“ · [Přidej] (phone „+“). D: „Zapiš si dny, kdy nemůžeš. Zvonec tě na ně
-  nebude navrhovat.“, then rows „24.–26. 10. · dovolená“; a row opens its menu (Uprav · Smaž). Empty: „Zatím žádné
-  dny.“ The add sheet: date range, reason and, when duties clash, „Odmítni i služby v těch dnech“ with the list.
+- **Kdy nemůžu**: page 640. A: „Kdy nemůžu“ · [Přidat] (phone „+“). D: „Zapsat si dny, kdy nemůžeš. Zvonec tě na ně
+  nebude navrhovat.“, then rows „24.–26. 10. · dovolená“; a row opens its menu (Upravit · Smazat). Empty: „Zatím žádné
+  dny.“ The add sheet: date range, reason and, when duties clash, „Odmítnout i služby v těch dnech“ with the list.
 
 ### 6.12 Přihlášení `#prihlaseni`, Nový Zvonec, Pozvánka `#pozvanka/<kód>` (signed out)
 
@@ -812,20 +812,20 @@ height. Fields M 44 (16 px text), 12 apart; main action L 52 full width; the err
           Přihlášení                             h1 34/40
           Jméno           [________________]
           Heslo           [____________ 👁 ]
-          [✓] Pamatuj si mě                      no „forgot password“ link (there is no reset)
-          [          Přihlas se          ]       L 52 primary
-          Podívej se na Pastvu ›                 quiet link
+          [✓] Zapamatovat si mě                      no „forgot password“ link (there is no reset)
+          [          Přihlásit se          ]       L 52 primary
+          Podívat se na Pastvu ›                 quiet link
 ```
 
 - **Nový Zvonec** (first run, live mode without logins): the GitHub key and the first admin, same frame (Simple).
-- **Pozvánka**: „Pozvánka do Zvonce“, „Zve tě Radim Kovář“, name (prefilled), a new password, [Přijmi pozvánku].
+- **Pozvánka**: „Pozvánka do Zvonce“, „Zve tě Radim Kovář“, name (prefilled), a new password, [Přijmout pozvánku].
   Expired: one sentence and „Požádej o novou pozvánku“ (mailto to the inviter).
 
 ### 6.13 Veřejný web / Pastva `#pastva[/<id>]` (public)
 
-No app chrome. Header 64: wordmark left, „Přihlas se“ (quiet M) right; signed in, a strip above it „Takhle to vidí
-návštěvníci · ‹ Vrať se do Zvonce“. Column 720, centred. h1 „Pastva“, a paragraph, **Co bude** (Seznam rows of
-public meetings: arch, time, Účel bar, title, place – no people), **Jak se scházíme** (public formats as rows with
+No app chrome. Header 64: wordmark left, „Přihlásit se“ (quiet M) right; signed in, a strip above it „Takhle to vidí
+návštěvníci · ‹ Zpět do Zvonce“. Column 720, centred. h1 „Pastva“, a paragraph, **Co bude** (Seznam rows of
+public meetings: arch, time, Druh setkání bar, title, place – no people), **Jak se scházíme** (public formats as rows with
 the minutes block, anchor `jak-se-schazime`). A meeting: the band, title, when, where + map, description, the
 public Osnova points. The same two palettes.
 
@@ -852,17 +852,17 @@ public Osnova points. The same two palettes.
   růžová). A palette stored by Next or Simple that One does not offer is shown in One as its scheme's palette
   (light → Krém a hlína, dark → Hlína a růžová) without rewriting the stored choice (`one/palette-limit.js`).
 
-### 7.2 Next's Účel hues (unchanged; Sunday stays rose)
+### 7.2 Next's Druh setkání hues (unchanged; Sunday stays rose)
 
 `KIND_HUES = { service: 'rose', rehearsal: 'blue', smallGroup: 'teal', event: 'plum' }` (Next's; Simple's amber
 and green are dropped). Each hue gives `--hue-fill` (step 3), `--hue-mark` (11), `--hue-ink` (12). They appear in
 exactly these places, nowhere else:
 
-1. the 3 px Účel bar beside a meeting's text (Seznam, Rozpis, Obsazení, Moje's rows, Pastva), a separate element;
+1. the 3 px Druh setkání bar beside a meeting's text (Seznam, Rozpis, Obsazení, Moje's rows, Pastva), a separate element;
 2. the month chip: its bar on the chip's square left edge; „mine“ = `--hue-fill` chip with `--hue-ink`;
 3. the mini month's dots (6 px, max 3);
-4. the Setkání band (fill + arch in mark) and its Účel tag;
-5. the Šablona mark; 6. the dot before each choice in Filtr › Účel.
+4. the Setkání band (fill + arch in mark) and its Druh setkání tag;
+5. the Šablona mark; 6. the dot before each choice in Filtr › Druh setkání.
 
 Never on buttons, navigation, selection or links. A rose „mine“ chip never sits beside the pick look: the grid has
 no selected chip (a chip opens a page). Avatars and team marks use the avatar pairs blue, green, plum, amber, teal
@@ -904,30 +904,30 @@ Redirects (all of Simple's stay): `#osoba/<id>` → `#lide/<id>`; `#tym/<id>`, `
 | person tab (avatar + name) | Simple | „Více“ (phone), sidebar foot (≥ 600) | the face read as noise among the line icons; the menu behind it is unchanged |
 | the circle only on Moje | Simple | „Více“ on every screen | Kdy nemůžu, Barvy, Správa were two taps from anywhere else |
 | sidebar group „Sbor“ (Přístupy, Nastavení, Veřejný web) | both | the person's menu › Správa | rare, system-level; the owner likes Simple's Správa |
-| Šablony, Formáty, Místa under the circle | Simple (phone, 960–1199) | sidebar / rail „Zdroje“ (phone: the menu) | the owner: they belong in the sidebar |
+| Šablony, Formáty, Místa under the circle | Simple (phone, 960–1199) | sidebar / rail „Příprava“ (phone: the menu) | the owner: they belong in the sidebar |
 | month chip „Říjen ▾“ on the h1, scope chip „Všechny týmy“, Rozpis team chip | Simple | period line in D (Měsíc, Rozpis); Filtr › Tým | they overlapped the h1 and were cut |
 | period in the top bar / toolbar | Next, Simple | the first line of D, fixed-width label | the source of „› over Dnes“ and of every jump |
-| chip rows (Všichni / Členové…, Chybí lidi / Čeká…, team tabs) | Next | one Filtr with a count | „one Filtr, not rows of chips“ |
-| „Filtr: … · Zruš“ line | Simple | the count + the filtered empty state | it pushed the content |
+| chip rows (Všichni / Členové…, Chybí lidé / Čeká…, team tabs) | Next | one Filtr with a count | „one Filtr, not rows of chips“ |
+| „Filtr: … · Zrušit“ line | Simple | the count + the filtered empty state | it pushed the content |
 | lead lines and overlines in the head (Moje date, Obsazení, Šablony, Přístupy, Formáty) | both | D's first or last line, the empty state, the dialog | they moved B to a different y per screen |
 | FAB | Next, Simple phone | the main action in A („+“ on a phone) | it covered call buttons and slots, and rode on the keyboard |
 | pane opening by itself (Next Kalendář, Formáty; Simple Obsazení) | both | pane on click only | „nothing opens by itself“ |
 | month grid beside a pane | both | full-width grid; a meeting opens as a page | cells squeezed to 2–6 letters, › on Dnes |
 | icon-only rail 960–1199 | both | labelled rail 600–899, full sidebar from 900 | at 1024 a full sidebar fits |
 | „Co je potřeba“ on Domů | Next | Obsazení + its count | Moje answers one question |
-| Upozornění / Kolize views and chips | Next | Obsazení › Filtr › Něco nesedí; „● … ›“ lines; „Co nesedí“ in Setkání | problems live where they are fixed |
-| „Doplň volná místa“ as Rozpis's head button | both | Obsazení's main action; Kalendář ⋯ | a screen's main action never changes with the view |
+| Upozornění / Kolize views and chips | Next | Obsazení › Filtr › Něco nesedí; „● … ›“ lines; „Problémy“ in Setkání | problems live where they are fixed |
+| „Doplnit volná místa“ as Rozpis's head button | both | Obsazení's main action; Kalendář ⋯ | a screen's main action never changes with the view |
 | Rozpis as a page from ⋯ | Simple | the third Kalendář view | it is the month a leader plans, with the same Filtr |
 | group cards with avatar stacks | Next, Simple | rows „9 lidí · vedou …“ | read faster, wrap without cutting |
 | indented rooms in Místa | Next | inside the place's detail | broke the one-row look |
-| two-column Nastavení with inline fields | Next | one column of value blocks + „Uprav“ dialogs | editing is always in a layer |
-| photo picker and duplicate pills in the Setkání head | Next | the Účel band and one tag | a calmer detail |
+| two-column Nastavení with inline fields | Next | one column of value blocks + „Upravit“ dialogs | editing is always in a layer |
+| photo picker and duplicate pills in the Setkání head | Next | the Druh setkání band and one tag | a calmer detail |
 | palettes other than the two | both | Krém a hlína, Hlína a růžová, Podle zařízení | the owner's call |
 | auto-open first team in Setkání | proposal calm | collapsed team lines that show names, marks and slots | counts as „opening by itself“ |
 
 **Kept on purpose.** From Simple: Moje's answer card, the person's menu, Lidé A–Z, the mini month with the day
-list, Rozpis as a plain list, one Filtr, the picker („Můžou / Nejde to“, „Hledej mezi všemi lidmi“), the save line,
-Ctrl Z / „Vrať“, „/“ and „N“, the blockout clash offer, the login and first-run pages, Podrobný výpis (in ⋯). From
+list, Rozpis as a plain list, one Filtr, the picker („Můžou / Nejde to“, „Hledat mezi všemi lidmi“), the save line,
+Ctrl Z / „Vrátit zpět“, „/“ and „N“, the blockout clash offer, the login and first-run pages, Podrobný výpis (in ⋯). From
 Next: the Účel hues and calendar dots, the Seznam list with date arches, the minutes blocks, the Setkání detail
 with its band, Kdo slouží, ring and Osnova preview, the sidebar groups. Names users know stay (Obsazení, Břemeno,
-Doplň volná místa).
+Doplnit volná místa).

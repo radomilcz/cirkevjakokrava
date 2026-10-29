@@ -1,9 +1,9 @@
 // Zvonec One – Nastavení sboru (#nastaveni, leaders; from the person's menu › Správa; DESIGN §6.10). A page, one
-// column of 640: value blocks (r20, --card, padding 24), each a section with quiet S „Uprav“ → a dialog (a sheet on
+// column of 640: value blocks (r20, --card, padding 24), each a section with quiet S „Upravit“ → a dialog (a sheet on
 // a phone) that saves at once through the save line. No inline fields, no form foot.
 //   Sbor (název, hlavní místo, adresa) · Úřední údaje (úřední název, IČO, sídlo, účet pro dary – SPEC 15.1) ·
-//   Zprávy (the reminder behind „Připomeň“, the Monday e-mail's signature – SPEC §11) ·
-//   Pravidla (Nejvíc služeb za měsíc, Nejvíc nedělí po sobě) · Kdy Zvonec bučí · Děti (Dospělý je od) · Záloha (Stáhni zálohu; admin: Nahraj zálohu – it replaces everything, asks first).
+//   Zprávy (the reminder behind „Připomenout“, the Monday e-mail's signature – SPEC §11) ·
+//   Pravidla (Nejvíc služeb za měsíc, Nejvíc nedělí po sobě) · Upozornění · Děti (Dospělý je od) · Záloha (Stáhnout zálohu; admin: Nahrát zálohu – it replaces everything, asks first).
 
 import { S, can, change, replaceAll } from './state.js';
 import { placeTree, placeById, resolvePlace } from '../lib/places.js';
@@ -27,9 +27,9 @@ const RULES = [
     ],
   },
   {
-    id: 'alerts', title: 'Kdy Zvonec bučí', hint: 'Kolik dní před setkáním začne Zvonec upozorňovat. Dřív si toho nevšímá.',
+    id: 'alerts', title: 'Upozornění', hint: 'Kolik dní před setkáním začne Zvonec hlásit, co v rozpisu chybí. Vzdálenější setkání zatím nehlídá.',
     rules: [
-      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Tolik dní předem Zvonec hlásí chybu, dvakrát tolik dní předem jen upozorní.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
+      { key: 'essentialDaysBefore', where: 'rules', label: 'Prázdná nezbytná role', hint: 'Třeba při 7 dnech Zvonec dva týdny před setkáním upozorní a týden předem to ohlásí jako problém.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
       { key: 'openDaysBefore', where: 'rules', label: 'Ostatní prázdná místa', hint: 'Upozornění, že ještě někdo chybí.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
       { key: 'unconfirmedDaysBefore', where: 'rules', label: 'Nepotvrzená služba', hint: 'Někdo ještě neřekl, jestli může.', min: 0, max: 60, units: ['den', 'dny', 'dní'], prefix: 'předem' },
     ],
@@ -79,7 +79,7 @@ function churchSheet() {
     title: 'Sbor',
     size: 'm',
     body: [
-      field({ label: 'Název sboru', control: name, hint: 'Ukáže se na Pastvě a v kalendářích.' }),
+      field({ label: 'Název sboru', control: name, hint: 'Ukáže se v kalendářích a v e-mailech.' }),
       field({
         label: 'Hlavní místo',
         control: selectInput({
@@ -88,7 +88,7 @@ function churchSheet() {
         }),
         hint: 'Kde se obvykle scházíme. V nových šablonách bude předvyplněné.',
       }),
-      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Ukáže se na Pastvě v části „Kde nás najdeš“. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
+      field({ label: 'Adresa', control: address, optional: true, hint: 'Jedním řádkem. Když ji nevyplníš, Zvonec vezme adresu hlavního místa.' }),
     ],
     onSubmit: (form, v) => {
       clearErrors(form);
@@ -156,7 +156,7 @@ function legalSheet() {
   });
 }
 
-// ---------- Zprávy (SPEC §11): the reminder behind „Připomeň“ and the Monday e-mail's signature ----------
+// ---------- Zprávy (SPEC §11): the reminder behind „Připomenout“ and the Monday e-mail's signature ----------
 
 /** A made-up duty for the preview: Kázání at the next Sunday's meeting. */
 function sampleDuty() {
@@ -188,7 +188,7 @@ function messagesSheet() {
   const reminder = textArea({ name: 'reminderText', value: reminderTemplate(s), rows: 4, onInput: show });
   const signature = textArea({ name: 'digestSignature', value: digestSignature(s), rows: 2 });
   show(reminder.value);
-  const reset = button('Vrať výchozí text', {
+  const reset = button('Obnovit výchozí text', {
     variant: 'quiet', size: 's',
     onclick: (e) => { e.preventDefault(); reminder.value = DEFAULT_REMINDER; show(reminder.value); reminder.focus(); },
   });
@@ -199,7 +199,7 @@ function messagesSheet() {
       field({
         label: 'Připomínka v SMS a e-mailu',
         control: reminder,
-        hint: `Místo značek Zvonec doplní: ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
+        hint: `Za značky ve složených závorkách Zvonec dosadí: ${REMINDER_MARKS.map(([m, what]) => `${m} – ${what}`).join(' · ')}.`,
       }),
       h('div', { class: 'msg-preview' }, h('p', { class: 'msg-value__label' }, 'Takhle ji dostane třeba Jana'), preview, reset),
       field({ label: 'Podpis pondělního e-mailu', control: signature, hint: 'Pod ním bude název sboru.' }),
@@ -278,20 +278,20 @@ function backupBody() {
     confirmSheet({
       title: 'Chceš nahradit všechna data zálohou?',
       text: `V souboru: ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii na GitHubu.' : ''}`,
-      confirmLabel: 'Nahraj zálohu',
+      confirmLabel: 'Nahrát zálohu',
       onConfirm: () => { replaceAll(data, `nahraná záloha ${chosen.name}`); toast('Záloha je nahraná.'); },
     });
   });
   const backup = () => {
     download(`zvonec-${today()}.json`, `${JSON.stringify({ schema: SCHEMA, ...normalize(S.data) }, null, 1)}\n`, 'application/json');
-    toast('Stahuju zálohu.', { icon: 'download' });
+    toast('Stahuji zálohu.', { icon: 'download' });
   };
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   return [
-    meta(`Všechno v jednom souboru: ${counts}${live ? ', bez přihlašovacích údajů' : ''}.${live ? ' Každá změna se navíc ukládá do soukromého úložiště na GitHubu i s historií.' : ''}`),
+    meta(`Záloha uloží všechno do jednoho souboru: ${counts}${live ? ', bez přihlašovacích údajů' : ''}.${live ? ' Každou změnu navíc Zvonec ukládá i s historií do soukromého úložiště na GitHubu.' : ''}`),
     h('div', { class: 'cfg-actions' },
-      button('Stáhni zálohu', { variant: 'quiet', size: 's', icon: 'download', onclick: backup }),
-      can('admin') ? button('Nahraj zálohu', { variant: 'quiet', size: 's', icon: 'undo', onclick: () => file.click() }) : null),
+      button('Stáhnout zálohu', { variant: 'quiet', size: 's', icon: 'download', onclick: backup }),
+      can('admin') ? button('Nahrát zálohu', { variant: 'quiet', size: 's', icon: 'undo', onclick: () => file.click() }) : null),
     can('admin') ? h('p', { class: 'meta cfg-admin' }, pill('správce'), 'Nahraná záloha nahradí všechna data tím, co je v souboru.') : null,
     file,
   ];
@@ -301,17 +301,17 @@ function backupBody() {
 
 /** #nastaveni */
 export function renderSettings() {
-  const uprav = (aria, onclick) => sectionAction('Uprav', { aria, onclick });
+  const uprav = (aria, onclick) => sectionAction('Upravit', { aria, onclick });
   return page({
     title: 'Nastavení sboru',
     back: isPhone() ? menuBack() : null,   // a phone opens it from the person menu
     cls: 'gather cfg-screen',
     body: h('div', { class: 'cfg-blocks' },
-      block({ id: 'church', title: 'Sbor', action: uprav('Uprav sbor', churchSheet), body: churchValues() }),
-      block({ id: 'legal', title: 'Úřední údaje', action: uprav('Uprav úřední údaje', legalSheet), body: legalValues() }),
-      block({ id: 'messages', title: 'Zprávy', action: uprav('Uprav zprávy', messagesSheet), body: messagesValues() }),
+      block({ id: 'church', title: 'Sbor', action: uprav('Upravit sbor', churchSheet), body: churchValues() }),
+      block({ id: 'legal', title: 'Úřední údaje', action: uprav('Upravit úřední údaje', legalSheet), body: legalValues() }),
+      block({ id: 'messages', title: 'Zprávy', action: uprav('Upravit zprávy', messagesSheet), body: messagesValues() }),
       RULES.map((g) => block({
-        id: g.id, title: g.title, action: uprav(`Uprav: ${g.title}`, () => rulesSheet(g)),
+        id: g.id, title: g.title, action: uprav(`Upravit: ${g.title}`, () => rulesSheet(g)),
         body: values(g.rules.map((r) => [r.label, ruleWords(r, valueOf(r))])),
       })),
       block({ id: 'backup', title: 'Záloha', body: backupBody() })),

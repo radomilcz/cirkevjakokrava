@@ -214,6 +214,10 @@ export async function saveImage(store, base64, ext = 'webp', message = 'Zvonec: 
   throw new Conflict('Nepodařilo se vybrat název obrázku.');
 }
 
+/** The demo's own pictures („demo-garden.webp“) ship with the app in zvonec/demo/ (CC0 photos, see lib/demo.js). */
+export const DEMO_IMAGES_DIR = 'demo';
+const isDemoImage = (store, name) => store.kind === 'local' && /^demo-[a-z0-9-]+\.webp$/.test(name);
+
 /**
  * A URL the page can show: an object URL (GitHub) or a data URL (demo), cached in memory per store.
  * Resolves to null when the image does not exist (not cached – it may be uploaded later).
@@ -224,6 +228,7 @@ export function loadImageUrl(store, name) {
   const promise = (async () => {
     const file = await store.readBinary(imagePath(name));
     if (!file) {
+      if (isDemoImage(store, name)) return `${DEMO_IMAGES_DIR}/${name}`;
       cache.delete(name);
       return null;
     }
@@ -374,7 +379,7 @@ export class Sync {
         this.replaceCollections(merge(mine, fileSlice(this.data, path), merged));
       }
     }
-    throw new GithubError('Nepodařilo se to sloučit ani na třetí pokus.', 409);
+    throw new GithubError('Mezitím ukládali i ostatní a Zvonec tvoje změny nedokázal spojit s jejich. Zkus to za chvíli znovu.', 409);
   }
 
   /**
