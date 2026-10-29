@@ -168,8 +168,13 @@ base-uri 'none'; form-action 'none'
   so Sync, the merge and pictures are unchanged. It signs people in by name and password (a cookie, no sealed
   token, `S.me.login/priv/github` stay null), serves `public.json`, and enforces the privacy rules of §2 itself:
   a member gets the files cut down and a change a member may not make is refused. `?sbor=<slug>` in the page address
-  picks a church on an address shared by several. Not yet on the server: managing logins and invites in Přístupy
-  (the server's admin does it), „Tvůj dar dorazil“ receipts (they are sealed to login keys).
+  picks a church on an address shared by several. Přístupy and invites work through the server too: it keeps the
+  logins (accounts, and invites stored only as the hash of their code), makes up passwords and invite codes, applies
+  the rules of §2 and §5.18 (a leader manages members and invites, an admin everyone, nobody their own login) and a
+  change takes effect at once; the list reaches the app in the shape of access.json's logins without keys, and there
+  is no GitHub key or key to Dary to exchange. Registering from an invite is one call that writes the card and the
+  roles, makes the member login and signs the person in. Not yet on the server: „Tvůj dar dorazil“ receipts (they are
+  sealed to login keys).
 
 ### 3.4 Sign-in and the sealed token
 - One fine-grained personal access token, limited to the data repo, with Contents: Read and write.

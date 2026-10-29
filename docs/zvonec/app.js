@@ -6,7 +6,7 @@
 // render, navigate…) and the logic from ../lib/**. Each screen package registers its routes and redirects in its own
 // ui/routes-*.js (ROUTES, REDIRECTS); this file owns only the shell.
 
-import { S, setHooks, can, recompute, loadRemembered, forgetRemembered } from './ui/state.js';
+import { S, setHooks, can, recompute, loadRemembered, forgetRemembered, reloadLogins } from './ui/state.js';
 import { GithubStore } from './lib/store/github.js';
 import { LocalStore, DEMO_KEY } from './lib/store/local.js';
 import { PayloadStore, BACKEND_FILE } from './lib/store/payload.js';
@@ -366,12 +366,13 @@ async function startLive(result) {
 /**
  * Signed in on our own server (lib/store/payload.js): the server is the store, and it already knows who this is.
  * There are no sealed keys – S.me.login, priv and github stay null; `finance` only says the Dary are open to me.
+ * `loginId` is my login in the server's list of logins (Přístupy: „to jsi ty“).
  */
 async function startPayload(session) {
   const { user } = session;
-  S.me = { login: null, priv: null, github: null, personId: user.personId || null, access: user.level, name: user.name };
+  S.me = { login: null, priv: null, github: null, personId: user.personId || null, access: user.level, name: user.name, loginId: user.loginId || null };
   S.me.finance = user.level === 'admin' || user.treasurer ? { payload: true } : null;
-  await openStore(S.payload);
+  if (await openStore(S.payload) && can('leader') && await refreshLogins() && !busy()) renderApp();
 }
 
 /** Load the data from the store and show the app. False when it failed (back to the sign-in page). */
@@ -397,12 +398,12 @@ async function openStore(store) {
   return true;
 }
 
-/** Fresh access.json from the repo (leaders manage logins from it). Returns true when it changed. */
+/** Fresh access.json from the repo – or the logins from our own server (leaders manage them). True when it changed. */
 async function refreshLogins() {
   try {
     const before = JSON.stringify(S.loginsFromRepo);
-    const file = await S.store.read(ACCESS_FILE);
-    S.loginsFromRepo = file?.json?.logins || [];
+    if (S.payload) await reloadLogins();
+    else S.loginsFromRepo = (await S.store.read(ACCESS_FILE))?.json?.logins || [];
     return JSON.stringify(S.loginsFromRepo) !== before;
   } catch { return false; }
 }
@@ -411,7 +412,7 @@ async function refreshLogins() {
 async function pullUpdates() {
   if (!S.sync || document.hidden) return;
   try { await S.sync.refresh(); } catch { /* next time */ }
-  if (S.mode === 'live' && !S.payload && S.me && can('leader') && await refreshLogins() && !busy()) renderApp();
+  if (S.mode === 'live' && S.me && can('leader') && await refreshLogins() && !busy()) renderApp();
 }
 document.addEventListener('visibilitychange', pullUpdates);
 window.addEventListener('focus', pullUpdates);

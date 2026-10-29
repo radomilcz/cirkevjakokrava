@@ -15,9 +15,10 @@ export const S = {
   store: null,             // LocalStore | GithubStore | PayloadStore
   payload: null,           // live on our own server (backend.json): the PayloadStore – it signs in and keeps the data
   sync: null,              // Sync – saves changes, refreshes what others saved
-  me: null,                // { login, priv, github, personId, access }; demo: login null, admin Radim (DEMO_VIEWERS)
+  me: null,                // { login, priv, github, personId, access }; demo: login null, admin Radim (DEMO_VIEWERS);
+                           // our own server: login, priv, github null, + loginId (the logins' `u…` id) and name
   logins: [],              // access.json as published next to the app (sealed records only, no names)
-  loginsFromRepo: null,    // fresh list from the data repo (leaders), for managing logins
+  loginsFromRepo: null,    // fresh list from the data repo – or from our own server (S.payload) – for managing logins
   repoInfo: null,          // repo.json next to the app: { owner, repo }
   conflicts: [],           // findConflicts(S.data) – recomputed on every change
   eventSeverity: new Map(),   // eventId → worst severity ('error' | 'warning' | 'info')
@@ -163,6 +164,12 @@ export async function updateLogins(mutate, message) {
   return result;
 }
 
+/** Our own server (S.payload) keeps the logins itself: the fresh list from it, after a change or a refresh. */
+export async function reloadLogins() {
+  S.loginsFromRepo = await S.payload.logins();
+  return S.loginsFromRepo;
+}
+
 /** Live mode: does the person have a login or an invite in access.json? */
 export const hasLogin = (personId) => S.mode === 'live' && loginList().some((l) => l.personId === personId);
 
@@ -172,6 +179,7 @@ export const hasLogin = (personId) => S.mode === 'live' && loginList().some((l) 
  */
 export function revokeLoginsOf(personId, message) {
   if (!hasLogin(personId)) return null;
+  if (S.payload) return S.payload.removeLoginsOf(personId, message).then(reloadLogins);
   return updateLogins((logins) => {
     for (let i = logins.length - 1; i >= 0; i -= 1) if (logins[i].personId === personId) logins.splice(i, 1);
   }, message);

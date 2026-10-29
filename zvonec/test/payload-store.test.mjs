@@ -102,3 +102,38 @@ test('payload store: Sync saves through it and merges a conflict, as with GitHub
     assert.deepEqual(server.files.get('data/people.json').json.people.map((p) => p.id).sort(), ['p-me', 'p-them']);
   });
 });
+
+test('payload store: Přístupy and the invite page are calls to the server, with the note for the history', async () => {
+  const calls = [];
+  const server = {
+    fetch: async (url, options = {}) => {
+      const u = new URL(url, 'https://zvonec.test');
+      calls.push({ method: options.method || 'GET', endpoint: u.pathname.replace('/api/zvonec/', ''), params: Object.fromEntries(u.searchParams), body: options.body ? JSON.parse(options.body) : null });
+      if (u.pathname.endsWith('/invite/accept')) return { ok: false, status: 401, json: async () => ({ error: 'Jsi přidaný. Teď se přihlas svým jménem a heslem.' }) };
+      return { ok: true, status: 200, json: async () => (u.pathname.endsWith('/logins') && options.method === 'GET' ? null : { ok: true }) };
+    },
+  };
+  await withFetch(server, async () => {
+    const store = new PayloadStore({ sbor: 'ukazka' });
+    assert.deepEqual(await store.logins(), []);   // nothing yet → an empty list
+    await store.setLogin({ personId: 'p2', name: 'Jana Nováková', access: 'member' }, 'přístup pro Jana');
+    await store.changeLogin('u7', { treasurer: true }, 'pokladník: Jana');
+    await store.removeLogin('i3', 'zrušeno: pozvánka');
+    await store.removeLoginsOf('p2', 'archiv');
+    await store.createInvite({ personId: 'p2' }, 'pozvánka pro Jana');
+    await store.openInvite('bada-kelo');
+    await assert.rejects(store.acceptInvite('bada-kelo', { firstName: 'Eva', password: 'dlouhe-heslo', consent: true }), (e) => e.status === 401 && /přihlas/.test(e.message));
+  });
+  assert.deepEqual(calls.map((c) => `${c.method} ${c.endpoint}`), [
+    'GET logins', 'POST logins', 'PATCH logins/u7', 'DELETE logins/i3', 'DELETE logins', 'POST invites', 'POST invite/open', 'POST invite/accept',
+  ]);
+  assert.ok(calls.every((c) => c.params.sbor === 'ukazka'));
+  assert.deepEqual(calls[1].body, { personId: 'p2', name: 'Jana Nováková', access: 'member', message: 'přístup pro Jana' });
+  assert.deepEqual(calls[2].body, { treasurer: true, message: 'pokladník: Jana' });
+  assert.equal(calls[4].params.person, 'p2');
+  assert.deepEqual(calls[5].body, { personId: 'p2', replace: null, message: 'pozvánka pro Jana' });
+  // the code travels in the body, never in the address
+  assert.deepEqual(calls[6].body, { code: 'bada-kelo' });
+  assert.equal(calls[7].body.code, 'bada-kelo');
+  assert.ok(calls.every((c) => !JSON.stringify(c.params).includes('bada-kelo')));
+});

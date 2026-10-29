@@ -67,7 +67,7 @@ export class PayloadStore {
 
   // ---------- session ----------
 
-  /** { tenant: { slug, name } | null, user: { name, level, personId, treasurer } | null } */
+  /** { tenant: { slug, name } | null, user: { name, level, personId, treasurer, loginId } | null } */
   session() {
     return this.request('GET', 'session');
   }
@@ -84,6 +84,51 @@ export class PayloadStore {
   /** „Změnit heslo“: the new password and the name I sign in with. */
   changePassword(name, password) {
     return this.request('POST', 'password', {}, { name, password });
+  }
+
+  // ---------- Přístupy and Pozvánka ----------
+  // The server keeps the logins (accounts and invites) and applies a change at once. The list has the shape of
+  // access.json's logins without any keys: { id, personId, access, created, expires?, treasurer?, invitedBy? }.
+  // `message` is the Czech note for the history, as updateLogins takes it.
+
+  /** The church's logins and invites (leaders). */
+  async logins() {
+    return (await this.request('GET', 'logins')) || [];
+  }
+
+  /** „Nový přístup“ / „Nastavit nové heslo“: the server makes up the password. Resolves to { login, name, password }. */
+  setLogin({ personId, name, access }, message) {
+    return this.request('POST', 'logins', {}, { personId, name, access, message });
+  }
+
+  /** „Změnit přístup“ ({ access }) and the treasurer mark ({ treasurer }) – admins. Resolves to the login. */
+  changeLogin(id, change, message) {
+    return this.request('PATCH', `logins/${encodeURIComponent(id)}`, {}, { ...change, message });
+  }
+
+  /** „Odebrat přístup“ / „Zrušit pozvánku“. */
+  removeLogin(id, message) {
+    return this.request('DELETE', `logins/${encodeURIComponent(id)}`, {}, { message });
+  }
+
+  /** Every login and invite of a person (their card is archived or deleted). */
+  removeLoginsOf(personId, message) {
+    return this.request('DELETE', 'logins', { person: personId }, { message });
+  }
+
+  /** „Vytvořit pozvánku“ for a person in Lidé or a newcomer (null); `replace` sends an invite again. → { login, code } */
+  createInvite({ personId = null, replace = null } = {}, message = '') {
+    return this.request('POST', 'invites', {}, { personId, replace, message });
+  }
+
+  /** The invite page: { status: 'ready', tenant, record, data } or { status: 'invalid' | 'expired', message }. */
+  openInvite(code) {
+    return this.request('POST', 'invite/open', {}, { code });
+  }
+
+  /** „Přijmout pozvánku“: the form ({ firstName, …, password, consent }) → the session, signed in. */
+  acceptInvite(code, form) {
+    return this.request('POST', 'invite/accept', {}, { ...form, code });
   }
 
   // ---------- the store (the same as GithubStore) ----------
