@@ -49,7 +49,7 @@ Ve sboru se ptáme, čím naši lidi žijí od pondělí do pátku, a modlíme s
 
 - **V práci.** Zeptáme se zkušenějšího kolegy, jak by to udělal on. Svou část odvedeme poctivě i tam, kde to nikdo nekontroluje.
 - **Ve škole.** Spolužačka chystá ples, sbírku nebo turnaj. Nabídneme jí pomoc: vylepíme plakáty, přeneseme lavice, uklidíme, když ostatní odejdou.
-- **Doma a na ulici.** Spolek uklízí břeh řeky nebo chlapi z ulice staví máj. Přijdeme s hráběmi nebo s bábovkou a zeptáme se, kde je nás potřeba.
+- **Doma a na ulici.** Spolek uklízí břeh řeky nebo někdo z ulice vaří vaječinu pro sousedy. Přijdeme s hráběmi nebo s vajíčky a zeptáme se, kde je nás potřeba.
 
 **Kontrolní otázky**
 
