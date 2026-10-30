@@ -5,9 +5,9 @@ Forma podle Radomila: cool nadpis, Proč (smysl pilíře ze strategického obsah
 ## 01 · FANDÍME
 **Nadpis:** Bůh tvoří, my fandíme
 *Další varianty:* Chválíme do očí · Dobré věci nahlas
-**Proč:** Všechno dobré, co lidé dělají, je Boží dar, i když to sami netuší. Proto ve městě hledáme poklad, ne odpad.
+**Proč:** Všechno dobré, co dělají lidé, spolky, firmy i úřady, je Boží dar, i když o tom sami třeba nevědí. Proto ve městě hledáme poklad, ne odpad.
 
-Řidička autobusu počká na studentku, která dobíhá od gymplu. Sestřička na noční podrží starého pána za ruku. Kluci od vedlejšího vchodu nafouknou sousedce kolo. Celé město je plné takových drobností a v každé poznáváme Boží rukopis. Fandíme jim a do očí jim řekneme, co se povedlo. Rádi to rozneseme i dál. Ve sboru taky. Všimneme si i toho, kdo po setkání nenápadně umyje hrnky. Lidem děkujeme nahlas a Bohu potichu.
+Řidička autobusu počká na studentku, která dobíhá od gymplu. Sestřička na noční podrží starého pána za ruku. Místní firma dá práci lidem, které jinde odmítli, a radnice opraví park, kam chodíme s dětmi. Celé město je plné takového dobra a v každém jeho kousku poznáváme Boží rukopis. Fandíme tomu nahlas: řidičce poděkujeme rovnou při vystupování, o firmě napíšeme dobrou recenzi a na radnici pošleme poděkování. Ve sboru taky. Všimneme si i toho, kdo po setkání nenápadně umyje hrnky. Lidem děkujeme nahlas a Bohu potichu.
 
 **Já**
 1. Komu tenhle týden řekneš do očí, co dělá skvěle?
