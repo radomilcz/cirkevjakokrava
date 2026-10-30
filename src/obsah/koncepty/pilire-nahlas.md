@@ -1,10 +1,11 @@
 # Čtyři pilíře nahlas (30. 10. 2026)
 
-Forma podle Radomila: cool nadpis, jeden odstavec o tom, co to znamená prakticky, otázky Já / My. Otto → strážce + korektor → opravy.
+Forma podle Radomila: cool nadpis, Proč (smysl pilíře ze strategického obsahu a Pilířů 2.0), jeden odstavec o tom, co to znamená prakticky, otázky Já / My. Náhled: https://claude.ai/artifact/QYR7jmgi8kXbjJKrm4unYL
 
 ## 01 · FANDÍME
 **Nadpis:** Bůh tvoří, my fandíme
 *Další varianty:* Chválíme do očí · Dobré věci nahlas
+**Proč:** Všechno dobré, co lidé dělají, je Boží dar, i když to sami netuší. Proto ve městě hledáme to dobré, ne chyby.
 
 Řidička autobusu počká na studentku, která dobíhá od gymplu. Sestřička na noční podrží starého pána za ruku. Kluci od vedlejšího vchodu nafouknou sousedce kolo. Celé město je plné takových drobností a v každé poznáváme Boží rukopis. Fandíme jim a do očí jim řekneme, co se povedlo. Rádi to rozneseme i dál. Ve sboru taky. Všimneme si i toho, kdo po setkání nenápadně umyje hrnky. Lidem děkujeme nahlas a Bohu potichu.
 
@@ -19,6 +20,7 @@ Forma podle Radomila: cool nadpis, jeden odstavec o tom, co to znamená praktick
 ## 02 · MAKÁME
 **Nadpis:** Tráva roste dřív než kráva
 *Další varianty:* Chytneme za druhý konec · Žádný učený z nebe nespadl
+**Proč:** Když se daří městu, daří se i nám. Proto se rádi přidáváme k dobrým věcem, které už ve městě táhnou druzí, a umíme pomoct i poprosit.
 
 Bůh v Novém Jičíně pracoval dávno před námi. Ve spolcích, u hasičů, na hřištích i v dílnách už leccos běží, a běží dobře. Nepřicházíme s hotovým plánem. Najdeme toho, kdo něco táhne, zeptáme se, s čím pomoct, a chytneme za druhý konec. Rádi si necháme poradit od starého mistra a u souseda si dáme kafe. Nejvíc ale makáme ve všední den, na směně nebo ve škole. Šéfuje tam někdo jiný a my do práce dáváme srdce. Bůh je v každé dobré práci.
 
@@ -33,6 +35,7 @@ Bůh v Novém Jičíně pracoval dávno před námi. Ve spolcích, u hasičů, n
 ## 03 · TVOŘÍME
 **Nadpis:** Dobrá pastva je lákavá
 *Další varianty:* Polévka bez háčku · Pastva roste tam, kde se kráva pase
+**Proč:** Bůh dává slunce i déšť dobrým i zlým a nikdo mu za to nic nedluží. Proto i my rádi rozdáváme, co umíme, lidem kolem sebe, i těm, kdo Ježíše ještě neznají, a nic za to nechceme.
 
 Co umíme, neseme tam, kde zatím nic neroste. Jeden nabrousí nože půlce vchodu. Druhá uvaří velký hrnec polévky a pozve celé patro. Parta deváťáků rozjede na plácku za domem florbal pro mladší děcka. Svým nápadem rádi nadchneme i sousedy, kterým je kostel fuk, a pustíme se do toho s nimi. A děláme to pořádně. Kdo má lidi rád, nic neodbude. Kdo přijde na polévku, dostane polévku.
 
@@ -47,8 +50,9 @@ Co umíme, neseme tam, kde zatím nic neroste. Jeden nabrousí nože půlce vcho
 ## 04 · TOUŽÍME
 **Nadpis:** Číslo v kravíně. Jméno na pastvě
 *Další varianty:* Bůh zná každého jménem · Kvůli nim to celé děláme
+**Proč:** Fandíme, makáme i tvoříme z jednoho důvodu: aby lidé zažili, že je Bůh zná a má je rád. Když se zeptají, řekneme po svém, co pro nás Bůh znamená. Co se pak stane v jejich srdci, je na Bohu.
 
-Ráno ve frontě na rohlíky stojí kluk se sluchátky, za ním paní z výdejny balíků a kolega po noční. Bůh je zná jménem, každého zvlášť. My se ta jména teprve učíme a večer je říkáme v modlitbě. Kvůli nim to všechno děláme. Toužíme, aby každý z nich zažil, že ho Bůh vidí a stojí o něj. Kdo přijde, je vítaný. Kdo ne, je pořád náš soused. Když se někdo z nich zeptá, odkud bereme klid, řekneme po svém, co pro nás znamená Bůh. Co se pak stane v jeho srdci, necháme na Bohu.
+Ráno ve frontě na rohlíky stojí kluk se sluchátky, za ním paní z výdejny balíků a kolega po noční. Bůh je zná jménem, každého zvlášť. My se ta jména teprve učíme a večer je říkáme v modlitbě. Toužíme, aby každý z nich zažil, že ho Bůh vidí a stojí o něj. Kdo přijde, je vítaný. Kdo ne, je pořád náš soused. Když se někdo z nich zeptá, odkud bereme klid, řekneme po svém, co pro nás znamená Bůh. Co se pak stane v jeho srdci, necháme na Bohu.
 
 **Já**
 1. Čí jméno se tenhle týden naučíš?
