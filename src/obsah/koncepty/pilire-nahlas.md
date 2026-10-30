@@ -6,9 +6,10 @@ Forma podle Radomila: nadpis, verš, Proč, odstavec obecné inspirace (bez př�
 **Nadpis:** Bůh tvoří, my fandíme
 *Další varianty:* Chválíme do očí · Dobré věci nahlas
 **Verš:** „Všechno dobré a dokonalé je dar shůry od Otce světel, u něhož není žádná změna, žádný proměnlivý stín.“ Jakub 1,17
+**Verš:** „Požehnáním poctivých se pozvedá město, ústy darebáků bývá bořeno.“ Přísloví 11,11
 **Proč:** Všechno dobré, co dělají lidé, spolky, firmy i úřady, je Boží dar, i když o tom sami třeba nevědí. Proto ve městě hledáme poklad, ne odpad.
 
-Chodíme po městě s otevřenýma očima a hledáme, co se komu povedlo. Těší nás poctivý řemeslník, trpělivá učitelka i dobře vedený spolek. Stejně rádi si všimneme firmy, která jedná fér, školy, do které děti chodí rády, nebo radnice, která dotáhne dobrý nápad. Co vidíme, říkáme nahlas: pochválíme do očí, poděkujeme, napíšeme pár řádků, doporučíme dál. A děkujeme dvakrát: lidem, kteří to udělali, i Bohu, který jim to dal do rukou.
+Mluvíme o našem městě dobře. Chodíme po něm s otevřenýma očima a hledáme, co se komu povedlo. Těší nás poctivý řemeslník, trpělivá učitelka i dobře vedený spolek. Stejně rádi si všimneme firmy, která jedná fér, školy, do které děti chodí rády, nebo radnice, která dotáhne dobrý nápad. Co vidíme, říkáme nahlas: pochválíme do očí, poděkujeme, napíšeme pár řádků, doporučíme dál. A děkujeme dvakrát: lidem, kteří to udělali, i Bohu, který jim to dal do rukou.
 
 **Na cestě**
 - Komu tenhle týden řekneš do očí, co dělá skvěle?

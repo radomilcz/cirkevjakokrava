@@ -12,6 +12,7 @@ Dřívější osa: vidíme, co Bůh dělá v lidech kolem → přidáváme se k 
 - Bůh nepracuje jen v kostele, ale i ve městě, v lidech, v jejich práci a nápadech.
 - Dobré věci kolem nás nebereme jako samozřejmost ani jako konkurenci. Všimneme si jich, máme z nich radost a řekneme to nahlas: lidem do očí i ostatním. (Radomil 9. 10.)
 - Oslavujeme Boha i tím, komu fandíme. Bohoslužba nekončí u dveří kostela.
+- **Žehnáme našemu městu** (Radomil 30. 10.): požehnání je schválení, schvalujeme to, co je dobré. Žehnat (lat. *benedicere*, řec. *eulogein*, česky dobrořečit) znamená dobře o něčem mluvit. Jednoduše: **„Mluvíme o našem městě dobře.“** Verš: **Př 11,11** (B21: „Požehnáním poctivých se pozvedá město, ústy darebáků bývá bořeno.“ – ověřeno na bible.com); další: Gn 1,31, Gn 12,2, 1 Pt 3,9, Ř 12,14 („Dobrořečte…“), Ž 122,6–7.
 - Druh: postoj (oči a pusa). Hranice: přiložená ruka = 02.
 - Kotvy: „Bůh tvoří, my fandíme.“ Princip „Když lidé tvoří pro druhé něco dobrého, není to náhoda…“. Verše: **Jk 1,17** (Radomil 9. 10.; B21: „Všechno dobré a dokonalé je dar shůry od Otce světel, u něhož není žádná změna, žádný proměnlivý stín.“ – ověřeno na bible.com), Fp 4,8, Gn 1,31.
 - Teologický základ 01: dobré věci u lidí jsou Boží dary, i když dárce neznají. Proto oslavou dobrých věcí oslavujeme Dárce. Totéž řeší „když“ ve 02: Bůh je v každé dobré práci, povolání je to, že o tom víš.
