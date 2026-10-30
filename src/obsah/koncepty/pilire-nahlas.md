@@ -1,6 +1,6 @@
 # Čtyři pilíře nahlas (30. 10. 2026)
 
-Forma podle Radomila: cool nadpis, Proč (smysl pilíře ze strategického obsahu a Pilířů 2.0), jeden odstavec o tom, co to znamená prakticky, otázky Já / My. Náhled: https://claude.ai/artifact/QYR7jmgi8kXbjJKrm4unYL
+Forma podle Radomila: cool nadpis, Proč (smysl pilíře ze strategického obsahu a Pilířů 2.0), provokativní otázky, které posouvají naše myšlení, otázky Já / My. Náhled: https://claude.ai/artifact/QYR7jmgi8kXbjJKrm4unYL
 
 ## 01 · FANDÍME
 **Nadpis:** Bůh tvoří, my fandíme
@@ -8,7 +8,10 @@ Forma podle Radomila: cool nadpis, Proč (smysl pilíře ze strategického obsah
 **Verš:** „Všechno dobré a dokonalé je dar shůry od Otce světel, u něhož není žádná změna, žádný proměnlivý stín.“ Jakub 1,17
 **Proč:** Všechno dobré, co dělají lidé, spolky, firmy i úřady, je Boží dar, i když o tom sami třeba nevědí. Proto ve městě hledáme poklad, ne odpad.
 
-Řidička autobusu počká na studentku, která dobíhá od gymplu s batohem na jednom rameni. Sestřička na noční drží starého pána za ruku, i když jí zvoní další pokoj. Místní firma dá práci lidem, které jinde odmítli, a radnice opraví park, kam chodíme s dětmi. V tom všem pracuje Bůh, i v pracovní době. Fandíme tomu nahlas: řidičce poděkujeme rovnou při vystupování, o firmě napíšeme dobrou recenzi a radnici napíšeme, že se park povedl. Ve sboru taky. Všimneme si i toho, kdo po setkání nenápadně umyje hrnky. Lidem děkujeme nahlas a Bohu potichu.
+**Otázky, které nás posouvají**
+- Hledáme ve městě poklad, nebo odpad?
+- Je poctivě upečený chleba menší Boží dar než dobré kázání?
+- Proč máme radost jen z toho, co nese naše jméno?
 
 **Já**
 1. Komu tenhle týden řekneš do očí, co dělá skvěle?
@@ -24,7 +27,10 @@ Forma podle Radomila: cool nadpis, Proč (smysl pilíře ze strategického obsah
 **Verš:** „Usilujte o prospěch města, do něhož jsem vás vystěhoval, a modlete se za ně k Hospodinu, neboť v jeho prospěchu je i váš prospěch.“ Jeremiáš 29,7
 **Proč:** Když se daří městu, daří se i nám. Proto se rádi přidáváme k dobrým věcem, které už ve městě táhnou druzí, a umíme pomoct i poprosit.
 
-Bůh v Novém Jičíně pracoval dávno před námi. Ve spolcích, u hasičů, na hřištích i v dílnách už leccos běží, a běží dobře. Nepřicházíme s hotovým plánem. Najdeme toho, kdo něco táhne, zeptáme se, s čím pomoct, a chytneme za druhý konec. Rádi si necháme poradit od starého mistra a u souseda si dáme kafe. Nejvíc ale makáme ve všední den, na směně nebo ve škole. Šéfuje tam sice někdo jiný, ale srdce do práce dáváme my. Bůh je v každé dobré práci.
+**Otázky, které nás posouvají**
+- Pomáháme jen tam, kde to pořádá církev?
+- Je pro nás práce jen výplata, nebo i povolání?
+- Proč je pro nás snazší pomáhat než si nechat pomoct?
 
 **Já**
 1. K čí dobré věci ve městě se tenhle týden přidáš?
@@ -37,10 +43,13 @@ Bůh v Novém Jičíně pracoval dávno před námi. Ve spolcích, u hasičů, n
 ## 03 · TVOŘÍME
 **Nadpis:** Dobrá pastva je lákavá
 *Další varianty:* Polévka bez háčku · Pastva roste tam, kde se kráva pase
-**Verš:** „On přece dává svému slunci vycházet na dobré lidi i na zlé a posílá déšť na spravedlivé i nespravedlivé.“ Matouš 5,45
+**Verš:** „Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.“ Efezským 2,10
 **Proč:** Bůh dává bez rozdílu a nic za to nechce. Proto i my rádi nabízíme, co umíme, všem kolem sebe, i těm, kdo Ježíše ještě neznají.
 
-Co umíme, neseme tam, kde zatím nic neroste. Jeden nabrousí nože půlce vchodu. Druhá uvaří velký hrnec polévky a pozve celé patro. Parta deváťáků rozjede na plácku za domem florbal pro mladší děcka. Svým nápadem rádi nadchneme i sousedy, kterým je kostel fuk, a pustíme se do toho s nimi. A děláme to pořádně. Kdo má lidi rád, nic neodbude. Kdo přijde na polévku, dostane polévku, ne kázání. Slunce taky nesvítí jen na ty, kdo mu poděkují.
+**Otázky, které nás posouvají**
+- Chystáme pro sousedy dárek, nebo návnadu?
+- Šli bychom sami rádi na to, co pro sousedy chystáme?
+- Když ve městě něco chybí, čekáme, až začne někdo jiný?
 
 **Já**
 1. Co umíš a komu to tenhle týden nabídneš?
@@ -56,7 +65,10 @@ Co umíme, neseme tam, kde zatím nic neroste. Jeden nabrousí nože půlce vcho
 **Verš:** „Všechnu svou starost uvrhněte na něj, vždyť jemu na vás záleží.“ 1. Petrova 5,7
 **Proč:** Fandíme, makáme i tvoříme z jednoho důvodu: aby lidé zažili, že je Bůh zná a má je rád.
 
-Ráno ve frontě na rohlíky stojí kluk se sluchátky, za ním paní z výdejny balíků a chlap po noční, kterému se klíží oči. Pro úřad jsou to rodná čísla, pro Boha jména. My se ta jména teprve učíme a večer je říkáme v modlitbě. Toužíme, aby to každý z nich zažil na vlastní kůži. Kdo přijde, je vítaný. Kdo ne, je pořád náš soused. Když se někdo z nich zeptá, odkud bereme klid, řekneme po svém, co pro nás znamená Bůh. Co se pak stane v jeho srdci, necháme na Bohu.
+**Otázky, které nás posouvají**
+- Mlčíme o Bohu z ohleduplnosti, nebo ze strachu?
+- Je pro nás soused přítel, nebo projekt?
+- Smí nám soused říct, že o Boha nestojí?
 
 **Já**
 1. Čí jméno se tenhle týden naučíš?
