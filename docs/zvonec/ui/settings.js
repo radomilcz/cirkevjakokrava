@@ -275,9 +275,12 @@ function backupBody() {
     if (data === 'old') { toast('Tohle je záloha starého Zvonce. Tu Zvonec nahrát neumí.', { icon: 'alert' }); return; }
     if (!data) { toast('Tohle není záloha Zvonce.', { icon: 'alert' }); return; }
     const summary = [plural(data.people.length, 'člověk', 'lidé', 'lidí'), plural(data.groups.length, 'skupina', 'skupiny', 'skupin'), plural(data.events.length, 'setkání', 'setkání', 'setkání')].join(', ');
+    // our own server keeps no history of the files, only its nightly backup
+    const where = S.payload ? 've Zvonci' : live ? 'na GitHubu' : 'v prohlížeči';
+    const after = S.payload ? ' Vrátit to půjde jen k noční záloze serveru.' : live ? ' Stará verze zůstane v historii na GitHubu.' : '';
     confirmSheet({
       title: 'Chceš nahradit všechna data zálohou?',
-      text: `V souboru: ${summary}. Všechno, co je teď ${live ? 'na GitHubu' : 'v prohlížeči'}, se přepíše.${live ? ' Stará verze zůstane v historii na GitHubu.' : ''}`,
+      text: `V souboru: ${summary}. Všechno, co je teď ${where}, se přepíše.${after}`,
       confirmLabel: 'Nahrát zálohu',
       onConfirm: () => { replaceAll(data, `nahraná záloha ${chosen.name}`); toast('Záloha je nahraná.'); },
     });
@@ -288,7 +291,7 @@ function backupBody() {
   };
   const counts = [plural(S.data.people.length, 'člověk', 'lidé', 'lidí'), plural(S.data.events.length, 'setkání', 'setkání', 'setkání')].join(' a ');
   return [
-    meta(`Záloha uloží všechno do jednoho souboru: ${counts}${live ? ', bez přihlašovacích údajů' : ''}.${live ? ' Každou změnu navíc Zvonec ukládá i s historií do soukromého úložiště na GitHubu.' : ''}`),
+    meta(`Záloha uloží všechno do jednoho souboru: ${counts}${live ? ', bez přihlašovacích údajů, darů a obrázků' : ''}.${S.payload ? ' Server navíc data každou noc zálohuje.' : live ? ' Každou změnu navíc Zvonec ukládá i s historií do soukromého úložiště na GitHubu.' : ''}`),
     h('div', { class: 'cfg-actions' },
       button('Stáhnout zálohu', { variant: 'quiet', size: 's', icon: 'download', onclick: backup }),
       can('admin') ? button('Nahrát zálohu', { variant: 'quiet', size: 's', icon: 'undo', onclick: () => file.click() }) : null),

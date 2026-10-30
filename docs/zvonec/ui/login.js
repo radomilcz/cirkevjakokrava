@@ -61,6 +61,7 @@ const mainButton = (label) => button(label, { variant: 'primary', size: 'l', blo
 // ---------- Přihlášení ----------
 
 export function renderLogin(part = '') {
+  if (S.payload) return liveLogin();   // our own server: the church is set up there, nothing to found here
   if (part === 'zalozit' || (S.mode === 'live' && !S.logins.length)) return renderSetup();
   return S.mode === 'demo' ? demoLogin() : liveLogin();
 }
@@ -76,7 +77,8 @@ function liveLogin() {
     S.signInMessage ? callout({ tone: 'wait', text: S.signInMessage }) : null,
     field({ label: 'Jméno', control: name, hint: 'Diakritika a velká písmena nevadí.' }),
     field({ label: 'Heslo', control: passwordBox }),
-    switchRow({ label: REMEMBER, hint: REMEMBER_HINT, checked: true, onChange: (on) => { remember = on; } }),
+    // on our own server the session is a cookie that stays (a month); there is nothing to choose
+    S.payload ? null : switchRow({ label: REMEMBER, hint: REMEMBER_HINT, checked: true, onChange: (on) => { remember = on; } }),
     error,
     submit);
   form.addEventListener('submit', async (e) => {
@@ -86,6 +88,20 @@ function liveLogin() {
     if (!name.value.trim()) { fieldError(name, 'Doplň svoje jméno.'); return; }
     if (!password.value) { fieldError(password, 'Doplň heslo.'); return; }
     busy(submit, true, 'Ověřuji…');
+    if (S.payload) {
+      let session = null;
+      try {
+        session = await S.payload.signIn(name.value, password.value);
+      } catch (problem) {
+        busy(submit, false, 'Přihlásit se');
+        error.show(problem.status === 401 ? 'Jméno nebo heslo nesedí.' : problem.message);
+        password.focus();
+        return;
+      }
+      busy(submit, false, 'Přihlásit se');
+      await signedIn(session);
+      return;
+    }
     const result = await signIn(S.logins, name.value, password.value);
     busy(submit, false, 'Přihlásit se');
     if (!result || result.record.access === 'invite') {
@@ -208,8 +224,27 @@ function renderSetup() {
 
 let invite = null;   // { code, status: 'loading' | 'ready' | 'invalid' | 'expired' | 'failed', message, result, store, data }
 
+/**
+ * Our own server opens the invite itself and sends only what the form needs (the invited card, who invites, the roles
+ * to offer, the church's name), in the shape of the app's data.
+ */
+async function checkPayloadInvite(code) {
+  let opened;
+  try {
+    opened = await S.payload.openInvite(code);
+  } catch (error) {
+    opened = { status: 'failed', message: `Nepodařilo se načíst pozvánku. Zkus to za chvíli znovu. (${error.message})` };
+  }
+  if (invite?.code !== code) return;
+  invite = opened.status === 'ready'
+    ? { code, status: 'ready', result: { record: opened.record }, data: { ...emptyData(), ...opened.data } }
+    : { code, status: ['expired', 'failed'].includes(opened.status) ? opened.status : 'invalid', message: opened.message };
+  render();
+}
+
 async function checkInvite(code) {
   invite = { code, status: 'loading' };
+  if (S.payload) { await checkPayloadInvite(code); return; }
   const found = await signIn(S.logins, INVITE_NAME, code);
   if (invite?.code !== code) return;
   if (!found || found.record.access !== 'invite') {
@@ -260,7 +295,7 @@ function inviteSentence(data, record) {
   return church ? `${church} tě zve do Zvonce. Vyplň svoje jméno a zvol si heslo.` : 'Vyplň svoje jméno a zvol si heslo.';
 }
 
-function registration({ demo = false, result, store, data }) {
+function registration({ demo = false, code, result, store, data }) {
   const person = (result && personById(data, result.record.personId)) || {};
   const roles = offeredRoles(data);
   const mine = data.groupMembers.filter((m) => m.personId === person.id).flatMap((m) => Object.keys(m.roles || {}));
@@ -294,7 +329,8 @@ function registration({ demo = false, result, store, data }) {
         name: 'roles', label: 'S čím chceš pomáhat', hint: 'Nemusíš nic vybírat. Když něco vybereš, vedoucí týmu se ti ozve.', multiple: true, value: picked,
         options: roles.map((r) => ({ value: r.id, label: r.name })), onChange: (v) => { picked = v; },
       }) : null,
-      switchRow({ label: REMEMBER, hint: REMEMBER_HINT, checked: true, onChange: (on) => { remember = on; } }),
+      // on our own server the session is a cookie that stays (a month); there is nothing to choose
+      S.payload ? null : switchRow({ label: REMEMBER, hint: REMEMBER_HINT, checked: true, onChange: (on) => { remember = on; } }),
     ], { label: 'Kontakt a další údaje' }),
     error,
     submit);
@@ -309,6 +345,24 @@ function registration({ demo = false, result, store, data }) {
     if (!consent) { error.show('Zapni souhlas se zapsáním údajů. Bez něj tě do Zvonce přidat nemůžeme.'); consentRow.querySelector('.switch').focus(); return; }
     if (demo) { toast('V ukázce se nikdo nepřidává. Skutečný Zvonec by tě teď pustil dovnitř.', { icon: 'info' }); return; }
     busy(submit, true, 'Přidávám tě…');
+    if (S.payload) {
+      // our own server writes the card and the roles, makes the member login and signs the person in, in one step
+      try {
+        const session = await S.payload.acceptInvite(code, {
+          firstName, lastName: last.value.trim(), phone: phone.value.trim(), email: email.value.trim(),
+          showInDirectory: directory, roles: picked, password: pass.value, consent,
+        });
+        invite = null;
+        await signedIn(session);
+        toast(`${welcome(firstName, { end: '!' })} Příště se přihlásíš jménem a heslem.`, { duration: 8000 });
+      } catch (err) {
+        busy(submit, false, 'Přijmout pozvánku');
+        // registered, only signing in failed: the sign-in page says so
+        if (err.status === 401) { invite = null; S.signInMessage = err.message; location.hash = '#prihlaseni'; return; }
+        error.show(`Nepodařilo se tě přidat. ${err.message || err}`);
+      }
+      return;
+    }
     const loginName = `${firstName} ${last.value.trim()}`.trim();
     try {
       const fields = { firstName, lastName: last.value.trim(), phone: phone.value.trim(), email: email.value.trim() };

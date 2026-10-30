@@ -133,6 +133,16 @@ export function passwordSheet() {
       if (!name.value.trim()) { fieldError(name, 'Doplň jméno.'); return false; }
       const problem = checkPassword(pass.value, again.value);
       if (problem) { fieldError(problem.startsWith('Hesla') ? again : pass, problem); return false; }
+      if (S.payload) {
+        // our own server keeps the password (and the name to sign in with) itself
+        try {
+          await S.payload.changePassword(name.value.trim(), pass.value);
+          toast('Heslo je změněné.');
+          return undefined;
+        } catch (error) {
+          return `Heslo se nepodařilo změnit. ${error.message || ''}`.trim();
+        }
+      }
       try {
         const record = await changePassword({ ...S.me.login }, S.me.priv, name.value.trim(), pass.value);
         await updateLogins((logins) => {

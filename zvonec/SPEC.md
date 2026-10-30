@@ -124,7 +124,7 @@ Privacy rules (GDPR; membership of a church reveals religion, GDPR Art. 9):
 - `person.note` is for leaders only and must never hold health, money or pastoral notes (the form says so).
 - An invite always creates a člen. Only an admin raises the level.
 - **Hiding data from members is a UI rule only.** Every login unseals the same GitHub token, which can read every
-  data file. Document this; do not pretend otherwise.
+  data file. Document this; do not pretend otherwise. (On our own server – Payload, §3.3 – the server enforces it.)
 
 ---
 
@@ -162,6 +162,19 @@ base-uri 'none'; form-action 'none'
   built on the fly with `buildPublic`.
 - **First run** (live, no logins): „Nový Zvonec“ asks for the GitHub key, repo owner and name, the first admin, and
   the base data („Z ukázky“ / „Žádný“).
+- **Payload** (`backend.json` next to the app: `{ "backend": "payload", "api": "/api/zvonec" }`, checked before
+  `access.json`): the app runs on our own server (znackarna/zvonec) and `S.payload` is a `PayloadStore`
+  (lib/store/payload.js). The server stands in for the data repo – the same files with a sha, 409 on a stale one –
+  so Sync, the merge and pictures are unchanged. It signs people in by name and password (a cookie, no sealed
+  token, `S.me.login/priv/github` stay null), serves `public.json`, and enforces the privacy rules of §2 itself:
+  a member gets the files cut down and a change a member may not make is refused. `?sbor=<slug>` in the page address
+  picks a church on an address shared by several. Přístupy and invites work through the server too: it keeps the
+  logins (accounts, and invites stored only as the hash of their code), makes up passwords and invite codes, applies
+  the rules of §2 and §5.18 (a leader manages members and invites, an admin everyone, nobody their own login) and a
+  change takes effect at once; the list reaches the app in the shape of access.json's logins without keys, and there
+  is no GitHub key or key to Dary to exchange. Registering from an invite is one call that writes the card and the
+  roles, makes the member login and signs the person in. Not yet on the server: „Tvůj dar dorazil“ receipts (they are
+  sealed to login keys).
 
 ### 3.4 Sign-in and the sealed token
 - One fine-grained personal access token, limited to the data repo, with Contents: Read and write.
