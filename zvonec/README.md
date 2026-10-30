@@ -1,8 +1,9 @@
 # Zvonec – kdo co kdy dělá
 
 Zvonec je správa sboru a plánovač setkání pro Církev jako kráva: **lidé, týmy a skupinky, kalendář
-s rozpisem služeb, osnova setkání a upozornění**. Běží jen na GitHubu – aplikace na GitHub Pages, data
-v soukromém repu, kontrola v GitHub Actions. Žádný server, žádná další služba.
+s rozpisem služeb, osnova setkání a upozornění**. Běží na https://zvonec.cirkevjakokrava.cz na vlastním
+serveru sboru (Payload a Postgres, provozuje Značkárna); aplikace je v tomhle repu, server v
+[znackarna/zvonec](https://github.com/znackarna/zvonec).
 
 **Ukázka s vymyšlenými lidmi:** https://manifest.cirkevjakokrava.cz/zvonec/
 
@@ -67,7 +68,7 @@ s pohledy.
 | **Archiv** | kdo k nám přestal chodit, nepatří do seznamu, ale do archivu. Na kartě člověka zvol v nabídce ⋯ **Přesunout do archivu** (nebo dole v Členství). Člověk pak zmizí ze seznamů, kontaktů, výběru lidí i návrhů do služeb, jeho budoucí služby se uvolní a přestane vést skupiny. Ve starých rozpisech a osnovách zůstane. Archiv najdeš úplně dole v Lidech pod odkazem **Archiv (počet)**; u každého uvidíš, odkdy tam je, a tlačítka **Vrátit z archivu** (karta dostane zpátky dřívější členství, a když ho Zvonec nezná, bude přítel; týmy a dovednosti zůstávají) a **Smazat kartu**. Po roce v archivu se Zvonec zeptá, jestli karty nesmazat. Archiv vidí jen vedoucí. Starý odkaz na filtr „Už nechodí“ otevře archiv |
 | **Týmy a skupinky** | **Týmy**, **Skupinky**, **Vedení** a **Role** (u každé role je vidět, kolik lidí ji umí, a kdo: zeleně umí, v obrysu se učí; vedoucí klepnutím na člověka změní, jak to umí, a přes „+ Přidat“ přidá dalšího). V týmu záložky **Lidé**, **Role**, **Kdo co umí** a **Setkání**. Role: kolik lidí, „Nezbytná role“, jen pro dospělé, u dětí, jen část setkání, které role zvládne jeden člověk naráz. Starý tým jde dát do archivu |
 | **Jak se scházíme** | stavební kameny setkání na třech záložkách. **Šablony** (jaká setkání máme: den, čas, délka, místo, obrázek, popis, kdo je potřeba a osnova; v šabloně vidíš i řady, které z ní vznikly), **Formáty** (z čeho se skládá osnova: u každého proč ho děláme a jak probíhá; členové čtou, vedoucí upravují) a **Místa** (budovy s adresou a mapou a místnosti v nich). Co tu zveřejníš, uvidí návštěvníci webu |
-| **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, kdy Zvonec bučí, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky, GitHub klíč) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
+| **Nastavení** | **Sbor** (název, hlavní místo, adresa), **Pravidla** (kolik služeb je moc, upozornění, od kolika let je člověk dospělý), **Přístupy** (kdo se může přihlásit, pozvánky) a **Záloha** (stáhnout, nahrát – jen správce; celý kalendář do telefonu) |
 | **Můj účet** | po kliknutí na tvoje jméno nahoře: můj kontakt a kdo ho vidí, kdy nemůžu, moje služby do kalendáře, barvy, změna hesla, odhlášení. V ukázce i „Jak to vidí ostatní“ |
 
 **Výběr lidí** je všude stejný – u role na setkání, u členů skupiny i u domácnosti. Pilulky **Umí to ·
@@ -92,7 +93,7 @@ oranžový kroužek s hodinkami čeká na potvrzení, červené ✕ je nemůže 
 | skupiny | ano | jen názvy |
 | služby, kdy nemůže, upozornění | ano | jen svoje (rozpis vidí celý) |
 
-Správce navíc zakládá a ruší přístupy a mění GitHub klíč. Vedoucí plánuje, upravuje lidi a skupiny a zve
+Správce navíc dává a ruší přístupy vedoucím a správcům. Vedoucí plánuje, upravuje lidi a skupiny a zve
 nové lidi. Člen vidí kalendář, rozpis a osnovu, odpovídá na svoje služby, zapisuje, kdy nemůže, a upravuje
 svůj kontakt.
 
@@ -125,58 +126,49 @@ Pozor = ať o tom víš: prázdné kolečko, v kalendáři čárkovaný obrys. U
 | K17 | bod osnovy nikdo nevede, protože role z formátu už neexistuje | pozor |
 
 Pravidla jsou v `docs/zvonec/lib/conflicts.js`. Stejný kód běží v aplikaci, v testech i v kontrole
-v GitHub Actions.
+na serveru.
 
 ## Jak je to postavené
 
-Jako [Mobilise Playbook](https://playbook.cirkevjakokrava.cz): **GitHub klíč je jeden, ostatní lidé jsou jen data.**
+Od 30. 10. 2026 běží Zvonec sboru na **vlastním serveru**: Payload a Postgres, provozuje ho Značkárna. Kód serveru
+je v repu [znackarna/zvonec](https://github.com/znackarna/zvonec), aplikace (frontend) zůstává tady.
 
 ```
-veřejné repo radomilcz/cirkevjakokrava          soukromé datové repo radomilcz/church-data
+veřejné repo radomilcz/cirkevjakokrava            server znackarna/zvonec (Payload + Postgres)
 
-docs/zvonec/  aplikace ── bere si ji ─────────▶  .github/workflows/web.yml
-                                                   aplikace + access.json + public.json → Pages
-                                                   https://zvonec.cirkevjakokrava.cz
-                                                access.json   zapečetěné přístupy (bez jmen)
-                                                public.json  jen zveřejněná setkání a formáty (bez lidí)
-                                                data/*.json   lidé, skupiny, setkání – na web NIKDY
-prohlížeč: jméno + heslo → odemkne klíč ───────▶  čte a zapisuje data/ přes GitHub API
-zvonec/check.mjs ◀── bere si kód ──────────────  .github/workflows/check.yml
+docs/zvonec/  aplikace ── server si ji bere ───▶  https://zvonec.cirkevjakokrava.cz
+                                                  backend.json   řekne aplikaci, že běží na serveru
+                                                  /api/zvonec    přihlášení, data, přístupy, pozvánky, dary
+                                                  /admin         správa sborů a zapnutí služeb
+prohlížeč: jméno + heslo ─────────────────────▶  server pozná, kdo to je, a dá mu jen to, co smí vidět
 ```
 
-- **Jeden GitHub klíč.** Správce ho jednou vyrobí (fine-grained token jen k datovému repu, Contents: Read
-  and write) a vloží ho při založení. Nikdo další GitHub účet ani vlastní klíč nepotřebuje.
-- **Přístupy jsou data.** Každý přístup má vlastní pár klíčů RSA. Soukromou půlku zamyká jméno a heslo
-  (PBKDF2, 310 000 iterací, jako Playbook), veřejnou půlkou aplikace zamkne kopii GitHub klíče. Kdo zná
-  jméno a heslo, odemkne si klíč a může pracovat. `access.json` jde na web, ale jména ani klíč v něm čitelně
-  nejsou. GitHub klíč jde vyměnit i bez nových hesel (Nastavení → Přístupy → GitHub klíč).
-- **Kdo se může přihlásit, má klíč.** Na to, co kdo vidí, dohlíží aplikace, ne GitHub. Technicky zdatný člen by
-  se k datům dostal i mimo aplikaci. Přihlásit se proto můžou jen lidé, kterým sbor věří, a do Zvonce
-  nepatří žádné pastorační, zdravotní ani finanční poznámky. Klíč jde kdykoli vyměnit.
-- **Pozvánka = registrace online.** Vedoucí vytvoří pozvánku (Nastavení → Přístupy → Pozvi nového
-  člověka, nebo v Lidech tlačítkem Pozvi). Odkaz platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno,
-  kontakt, s čím pomůže, vlastní heslo, zaškrtne **souhlas** a je v Lidech jako host. Role, se kterými
-  chce pomáhat, dostane jako „učí se“. Vedoucí to pak upraví.
-- **Ukládání:** změny se sbírají a po chvilce odejdou jako commit („Zvonec: Petr na Zvuk, …“). Každý
-  soubor s daty se ukládá zvlášť, takže se zapíše jen to, co se změnilo. Když mezitím uložil někdo jiný,
-  aplikace načte čerstvou verzi, **sloučí změny po záznamech** a uloží znovu. Co uložil někdo jiný,
-  aplikace stáhne, když se vrátíš do okna, a pak každou minutu.
-- **Nový a zrušený přístup** začne platit za pár minut – až workflow `web.yml` znovu vystaví web s novým
-  `access.json`.
-- **Ukázka:** když vedle aplikace `access.json` neleží (manifest.cirkevjakokrava.cz/zvonec/), běží aplikace
-  jako ukázka v prohlížeči s vymyšlenými lidmi. V Mém účtu se přes „Jak to vidí ostatní“ podíváš očima kohokoli z ukázky –
-  hodí se na školení vedoucích i na vyzkoušení pohledu člena.
-- **Kontrola v Actions:** `zvonec/check.mjs` pustí stejná pravidla nad složkou `data/`. Když najde chybu
-  u setkání, které ještě nebylo, běh zčervená a GitHub pošle e-mail.
+- **Přihlášení:** jméno a heslo, server si pamatuje přihlášení (cookie na měsíc). Žádný GitHub klíč.
+- **Kdo co vidí, hlídá server.** Člen dostane data už oříznutá (bez členství, poznámek a archivu ostatních,
+  kontakty jen sdílené, nepřítomnost jen svoji) a server odmítne změnu, kterou člen udělat nesmí. Na GitHubu
+  to hlídala jen aplikace.
+- **Přístupy a pozvánky** spravují vedoucí a správci ve Zvonci (Nastavení → Přístupy, nebo z karty člověka).
+  Změna platí hned. Pozvánka platí 14 dní a jde použít jen jednou. Nový člověk vyplní jméno, kontakt, s čím
+  pomůže, vlastní heslo, zaškrtne **souhlas** a je v Lidech jako host. Role, se kterými chce pomáhat, dostane
+  jako „učí se“. Vedoucí to pak upraví.
+- **Ukládání:** server drží stejné soubory jako dřív datové repo. Změny se sbírají a po chvilce se uloží. Když
+  mezitím uložil někdo jiný, aplikace načte čerstvou verzi, **sloučí změny po záznamech** a uloží znovu. Co
+  uložil někdo jiný, aplikace stáhne, když se vrátíš do okna, a pak každou minutu.
+- **Na serveru dál běží** kontrola upozornění, pondělní e-mail a stahování plateb z banky. Každou službu
+  zvlášť zapíná správce v `/admin` › Sbory.
+- **Ukázka:** když vedle aplikace neleží `backend.json` ani `access.json` (manifest.cirkevjakokrava.cz/zvonec/),
+  běží aplikace jako ukázka v prohlížeči s vymyšlenými lidmi. V Mém účtu se přes „Podívat se očima druhých“
+  podíváš očima kohokoli z ukázky – hodí se na školení vedoucích i na vyzkoušení pohledu člena.
+- **Verze aplikace na serveru:** https://zvonec.cirkevjakokrava.cz/api/zvonec/version ukáže, ze kterého commitu
+  tohohle repa server aplikaci bere (`frontend`).
 
-### Soubory s daty (soukromé repo)
+### Soubory s daty (na serveru)
 
 ```
 data/people.json     lidé a domácnosti
 data/groups.json     skupiny, role týmů, kdo je ve skupině a co umí
 data/events.json     šablony, setkání se službami a osnovou, řady, formáty, místa, kdy kdo nemůže, kolik kdo slouží
-data/settings.json   název a adresa sboru, výchozí limity, kdy Zvonec bučí
-access.json          zapečetěné přístupy – jde na web, neobsahuje jména
+data/settings.json   název a adresa sboru, výchozí limity, upozornění
 ```
 
 Přesný tvar záznamů je v [ARCHITECTURE.md](ARCHITECTURE.md). Když smažeš kartu, ve starých rozpisech
@@ -186,18 +178,18 @@ a osnovách zůstane jen jméno. Kontakt a ostatní údaje zmizí. Kde jméno ul
 ### Kód
 
 ```
-docs/zvonec/              aplikace na hlavní adrese: index.html (CSP: ven jen api.github.com a mapy OpenStreetMap),
-                          app.js (start, přihlášení, adresy obrazovek); one/ jen přesměruje staré odkazy
+docs/zvonec/              aplikace na hlavní adrese: index.html (CSP), app.js (start, přihlášení, adresy obrazovek);
+                          one/ jen přesměruje staré odkazy
 docs/zvonec/lib/          logika bez obrazovek: lidé, místa, skupiny, setkání a řady, osnova, plánování, upozornění,
-                          kontrola dat, přístupy, úložiště (GitHub / prohlížeč) a slučování, .ics, ukázková data
+                          kontrola dat, přístupy, úložiště (server / GitHub / prohlížeč) a slučování, .ics, ukázková data
 docs/zvonec/ui/           stavebnice a obrazovky, sdílený stav (state.js) a volba barev (palette.js)
 docs/zvonec/css/          vzhled a barevné dvojice (palettes.css – vyrábí je zvonec/palettes.mjs)
-zvonec/check.mjs          kontrola upozornění z příkazové řádky / Actions
+zvonec/check.mjs          kontrola upozornění z příkazové řádky
 zvonec/build-public.mjs   veřejný výřez dat (zveřejněná setkání a formáty) pro web
 zvonec/palettes.mjs       barevné dvojice: z podkladu a písma dopočítá všechny barvy, ověří kontrast a zapíše
                           docs/zvonec/css/palettes.css (node zvonec/palettes.mjs)
 zvonec/test/              testy (node --test zvonec/test/*.test.mjs)
-zvonec/data-repo/         vzory workflow pro datové repo (web.yml, check.yml)
+zvonec/data-repo/         vzory workflow pro starý provoz na GitHubu (web.yml, check.yml, digest.yml)
 ```
 
 Úplné zadání aplikace je v [SPEC.md](SPEC.md), datové schéma v [ARCHITECTURE.md](ARCHITECTURE.md) a pravidla
@@ -206,39 +198,40 @@ vzhledu v [design/one/DESIGN.md](design/one/DESIGN.md).
 Písma, ikony a favicon se berou z manifestu (`docs/assets/`). Build manifestu (`build.py`) do
 `docs/zvonec/` nesahá.
 
-## Spuštění naostro (jednou, asi 15 minut)
+## Provoz na serveru
 
-1. **Soukromé repo** pro data `radomilcz/church-data` (prázdné).
-2. Zkopírovat `zvonec/data-repo/web.yml`, `zvonec/data-repo/check.yml` a `zvonec/data-repo/digest.yml` do jeho
-   `.github/workflows/`.
-3. **Pages:** v datovém repu Settings → Pages → Source: **GitHub Actions**, Custom domain
-   `zvonec.cirkevjakokrava.cz`, po ověření *Enforce HTTPS*. DNS: záznam `zvonec` typu **CNAME** →
-   `radomilcz.github.io.` (stejně jako u Playbooku; Pages ze soukromého repa vyžadují GitHub Pro).
-   Pak Actions → Web → *Run workflow*.
-4. **GitHub klíč:** Settings → Developer settings → Fine-grained tokens → Generate new token,
-   *Only select repositories* → datové repo, Permissions → Repository → **Contents: Read and write**. Nic víc.
-5. Otevřít https://zvonec.cirkevjakokrava.cz – nikdo tam ještě není, takže se ukáže **Nový Zvonec**:
-   vložit klíč, svoje jméno a heslo. Jako základ jde vzít ukázku (skupiny, role, formáty, šablony, místa –
-   bez lidí).
-6. V Lidech přidat lidi (nebo rozeslat pozvánky), v Týmech a skupinkách je zařadit do týmů a v Kalendáři ze šablony
-   „Setkání na pastvě“ založit setkání, které se opakuje každý týden. Vedoucím dát oprávnění „vedoucí“
-   (karta člověka → Přístup).
+- **Správa:** https://zvonec.cirkevjakokrava.cz/admin (správce sboru). Tam se zapíná pondělní e-mail
+  („Posílat pondělní e-mail“) a stahování plateb („Stahovat platby z banky“).
+- **Lidé:** nové lidi zve vedoucí nebo správce ve Zvonci (Přístupy → Pozvat člověka, nebo z karty člověka).
+  Odkaz posílej soukromě, ne do skupinového chatu.
+- **Co je potřeba na serveru** (logy, doména, obnova ze zálohy, převod dat): issue v repu
+  [znackarna/zvonec](https://github.com/znackarna/zvonec/issues). **Tokeny a hesla do issue nikdy nepiš**, ty se
+  posílají zvlášť.
+- **Převod dalšího sboru z GitHubu:** krok za krokem v návodu serveru,
+  https://github.com/znackarna/zvonec#moving-the-church-over.
 
-## Co jde a co nejde jen s GitHubem
+### Starý provoz na GitHubu
+
+Do 30. 10. 2026 běžel Zvonec jen na GitHubu: aplikace na GitHub Pages, data v soukromém repu
+`radomilcz/church-data`, dary v `radomilcz/church-finance`, kontrola a pondělní e-mail v GitHub Actions.
+Workflow `web.yml`, `check.yml` a `digest.yml` v church-data jsou vypnuté a Pages taky. `bank.yml`
+v church-finance běží, dokud stahování plateb nepřevezme server. Aplikace tenhle režim pořád umí (`GithubStore`,
+když vedle ní leží `access.json`), vzory workflow jsou v `zvonec/data-repo/`.
+
+## Co Zvonec umí
 
 | chceme | jde? | jak |
 | --- | --- | --- |
-| plánování, upozornění, osnova, správa lidí, týmů a skupinek | ano | aplikace + soukromé repo |
-| přihlášení bez GitHub účtu | ano | jméno + heslo, jeden zapečetěný klíč (jako Playbook) |
+| plánování, upozornění, osnova, správa lidí, týmů a skupinek | ano | aplikace + server |
+| přihlášení bez GitHub účtu | ano | jméno + heslo |
 | registrace nových lidí online | ano, pozvánkou | odkaz na 14 dní, jen jednou; vyplní údaje, souhlas a heslo |
-| členové potvrzují nebo odmítají svoje služby | ano | po přihlášení v Přehledu nebo u setkání |
-| historie změn, kdo co změnil | ano | každé uložení je commit |
-| upozornění vedoucím | ano | Actions + e-mail od GitHubu, když je v rozpisu chyba |
-| kalendář v telefonu | ano, stažením .ics | odběr by musel ležet na veřejných Pages – jména by šla ven |
-| skrýt data před členy doopravdy | ne | jeden klíč čte všechno; skrývání je jen v aplikaci |
-| připomínky e-mailem členům | ano, jednou týdně | v pondělí ráno ze sborové schránky (níž „Pondělní e-mail“) |
-| registrace úplně bez pozvánky (formulář pro kohokoli) | ne | kdo by mohl zapisovat bez pozvánky, dostal by klíč i k datům ostatních |
-| víc lidí ukládá naráz | ano | změny se sloučí po záznamech; smazání člověka se ale do všech souborů nepropíše naráz |
+| členové potvrzují nebo odmítají svoje služby | ano | po přihlášení v Moje nebo u setkání |
+| skrýt data před členy doopravdy | ano | server dá každému jen to, co smí vidět |
+| upozornění vedoucím | ano | kontrola na serveru |
+| připomínky e-mailem členům | ano, jednou týdně | v pondělí ráno z adresy zvonec@cirkevjakokrava.cz (níž „Pondělní e-mail“) |
+| kalendář v telefonu | ano, stažením .ics | |
+| registrace úplně bez pozvánky (formulář pro kohokoli) | ne | jen pozvánkou od vedoucího |
+| víc lidí ukládá naráz | ano | změny se sloučí po záznamech |
 
 Další na seznamu: databáze písní k osnově, výměna služby mezi lidmi.
 
@@ -248,13 +241,9 @@ Každé pondělí kolem sedmé ráno dostane každý, kdo má přihlášení do 
 čeká: služby, na které má odpovědět, a co ho ten týden čeká. Vedoucí navíc vidí, co zbývá vyřešit v Obsazení. Když na
 člověka nic nečeká, e-mail nepřijde. Vypnout si ho může každý v Můj účet › Moje karta.
 
-Nastavení (jednou):
-1. Ve sborové schránce si vytvoř **heslo pro aplikace** (Gmail: Účet Google → Zabezpečení → Hesla aplikací, je
-   potřeba dvoufázové ověření; Seznam: Nastavení → Hesla pro aplikace).
-2. V repozitáři s daty Settings → Secrets and variables → Actions → New repository secret: `SMTP_HOST`
-   (`smtp.gmail.com` nebo `smtp.seznam.cz`), `SMTP_USER` (adresa schránky), `SMTP_PASS` (heslo pro aplikace).
-3. Actions → Weekly e-mail → *Run workflow*, do pole „only“ napiš svoji adresu – přijde ti jen tvůj e-mail.
-   Volba „dry run“ jen spočítá, kolik lidí by e-mail dostalo.
+E-mail posílá server přes Postmark z adresy zvonec@cirkevjakokrava.cz. Doména má v DNS podpis Postmarku
+(`…._domainkey`) a adresu pro vrácené e-maily (`pm-bounces`). Zapíná se v `/admin` › Sbory › „Posílat pondělní
+e-mail“, nejdřív po zkušebním e-mailu.
 
 
 ## Osobní údaje (GDPR)
@@ -269,13 +258,16 @@ Nastavení (jednou):
 - **Kdo co vidí:** viz tabulka výš. Členství prozrazuje vyznání (zvláštní kategorie údajů), proto ho člen
   nevidí u nikoho a netiskne se. Důvod, proč někdo nemůže, a upozornění vidí jen vedoucí. V rozpisu na nástěnku
   telefony nejsou.
-- **Kde data leží:** jen v **soukromém** repu, na web jde jen `access.json` bez jmen a `public.json` se zveřejněnými
-  setkáními a formáty, bez jediného člověka (workflow to hlídá).
-  Na veřejné ukázce jsou jen vymyšlení lidé (`@example.cz`). Žádné pastorační, zdravotní ani finanční
-  poznámky – jeden klíč znamená, že každý přihlášený prohlížeč přečte všechno.
-- **Úplný výmaz:** git si pamatuje staré verze. Smazat někoho úplně znamená přepsat historii datového repa
-  (`git filter-repo`) – proto osobní údaje nikdy nepatří do veřejného repa, ani zašifrované.
-- **Zpracovatel** je GitHub (data v USA, EU-US Data Privacy Framework) – to patří do informace pro členy.
+- **Kde data leží:** v databázi na serveru (znackarna/zvonec), nikdy v tomhle veřejném repu. Ven jde jen
+  `public.json` se zveřejněnými setkáními a formáty, bez jediného člověka. Na veřejné ukázce jsou jen vymyšlení
+  lidé (`@example.cz`). Pastorační a zdravotní poznámky do Zvonce nepatří.
+- **Pravidla na serveru:** ke každému novému poli nebo souboru, který člen vidět nemá, patří pravidlo
+  v `policy.ts` serveru a test. Jinak by chyba prozradila údaje lidem, kteří je vidět nemají.
+- **Úplný výmaz:** smazání karty ve Zvonci smaže údaje z databáze. V nočních zálohách serveru zůstanou, dokud se
+  zálohy nepřepíšou, a ve starém repu church-data v historii gitu, dokud se repo nesmaže nebo nepřepíše
+  (`git filter-repo`). Osobní údaje proto nikdy nepatří do veřejného repa, ani zašifrované.
+- **Zpracovatel** je Značkárna, která server provozuje; e-maily posílá Postmark. Kde server běží a kdo má přístup
+  k zálohám, patří do informace pro členy a do smlouvy se zpracovatelem.
 
 ## Vývoj
 
@@ -285,7 +277,10 @@ cd docs && python3 -m http.server 8000      # pak http://localhost:8000/zvonec/ 
 node zvonec/check.mjs cesta/k/data --today 2026-10-04 --markdown souhrn.md
 ```
 
-Ostrý režim lokálně: polož vedle aplikace `docs/zvonec/access.json` s obsahem `{"v":2,"logins":[]}` (a
+Lokální databáze není: aplikaci vyvíjíš v ukázce. Změny serveru (API, pravidla v `policy.ts`) patří do repa
+znackarna/zvonec i s testy, podle jeho návodu.
+
+Starý režim na GitHubu lokálně: polož vedle aplikace `docs/zvonec/access.json` s obsahem `{"v":2,"logins":[]}` (a
 případně `repo.json` s `{"owner":"…","repo":"…"}`) – ukáže se založení. Oba soubory jsou v `.gitignore`.
 
 Testy a kontrolu syntaxe pouští i GitHub Action `.github/workflows/zvonec.yml` („Zvonec tests“) při každé
