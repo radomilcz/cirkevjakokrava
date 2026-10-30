@@ -20,7 +20,15 @@
 
 ## Zvonec (`docs/zvonec/`, `zvonec/`)
 
-- Static vanilla ES modules on GitHub Pages, no build step. Strict CSP: no inline styles or
-  scripts, DOM built with `h()`, never `innerHTML`.
-- Personal data lives only in the private data repo, never in this public repo.
+- Static vanilla ES modules, no build step. Strict CSP: no inline styles or scripts, DOM built
+  with `h()`, never `innerHTML`.
+- The church's live Zvonec (https://zvonec.cirkevjakokrava.cz) runs on the server in
+  `znackarna/zvonec` (Payload + Postgres), which takes the frontend from this repo
+  (`/api/zvonec/version` shows the commit). GitHub Pages serves only the demo
+  (manifest.cirkevjakokrava.cz/zvonec/). The old GitHub mode (`church-data`) is retired; `bank.yml` in `church-finance` runs until the server takes over the bank downloads.
+- Personal data lives only on the server, never in this public repo, `public.json` or tests other
+  than the fictional demo. Every new field or file a member must not see needs a rule in the
+  server's `policy.ts` and a test there.
+- Develop the frontend in demo mode; there is no local database. Server changes go to
+  `znackarna/zvonec` with tests, following its README and CLAUDE.md.
 - Tests: `node --test zvonec/test/*.test.mjs`.
