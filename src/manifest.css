@@ -530,6 +530,9 @@ body,.rail button,.progress i{transition:color .6s,border-color .6s,background-c
   .slide:not(.love):not(.german) .statement .ln>span{display:inline;transform:none;transition:none}
   .slide:not(.love):not(.german) .statement{opacity:0;transform:translateY(.4em);transition:opacity .9s var(--ease),transform 1.1s var(--ease)}
   .slide.in:not(.love):not(.german) .statement{opacity:1;transform:none;transition-delay:.1s}
+  /* báseň (osa): řádky drží i na úzkém displeji, písmo menší, aby se nejdelší řádek vešel */
+  .slide.basen:not(.love):not(.german) .statement{font-size:clamp(1.25rem,6vw,2.2rem)}
+  .slide.basen:not(.love):not(.german) .statement .ln{display:block}
   .brand{font-size:1rem}
   .question{font-size:.95rem}
   .slide{padding-right:calc(var(--pad) + 14px)}

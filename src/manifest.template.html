@@ -104,7 +104,7 @@
   </section>
 
 {%- elif t in ('vyrok', 'vyrok_ruzovy') %}
-  {{ sekce(x, ('love' if t == 'vyrok_ruzovy' else '') ~ (' slovem' if x.get('slovo') else '')) }}
+  {{ sekce(x, ('love' if t == 'vyrok_ruzovy' else '') ~ (' slovem' if x.get('slovo') else '') ~ (' basen' if x.get('basen') else '')) }}
 {%- if x.get('slovo') and x.get('dovetek') %}
     <nav class="eyebrow rise tela" aria-label="Pilíře">
       {%- for p in pilire %}{% if not loop.first %}<span class="arrow" aria-hidden="true">→</span>{% endif %}<button type="button" class="tel{% if p.id == x.id %} je{% endif %}" data-cil="{{ p.otisk }}"{% if p.id == x.id %} aria-current="true"{% endif %}>{{ p.dovetek }}</button>{% endfor -%}

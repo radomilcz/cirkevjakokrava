@@ -12,8 +12,10 @@ Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný mo
 > Fandíme našemu městu,
 > makáme spolu s ním,
 > tvoříme pro něj pastvu,
-> toužíme, ať každý soused
-> ví, že Bohu na něm záleží.
+> toužíme, ať každý soused ví,
+> že Bohu na něm záleží.
+
+V náhledu Poslání je to samostatný slajd před pilíři (31. 10.).
 
 **Pilíře:** Fandíme · Makáme · Tvoříme · Toužíme
 

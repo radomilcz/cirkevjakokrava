@@ -1,5 +1,17 @@
 # Náhled (17. 10.): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
 slajdy:
+# osa jako samostatný slajd před pilíři (Radomil 31. 10.)
+- typ: vyrok
+  nazev: Osa
+  nadtitulek: Kráva chodí po čtyřech
+  basen: true
+  vyrok: |
+    Fandíme našemu městu,
+    makáme spolu s ním,
+    tvoříme pro něj pastvu,
+    toužíme, ať každý soused ví,
+    že Bohu na něm záleží.
+  otisk: '05'
 # rozcestník pilířů pryč (20. 10.), pilíře jdou rovnou za sebou se zbytkem Poslání
 - typ: vyrok
   nazev: 01 Fandíme
