@@ -1,6 +1,6 @@
 # Čtyři pilíře nahlas (30. 10. 2026)
 
-Forma podle Radomila: nadpis, verš, Proč, odstavec obecné inspirace (bez příběhů), otázky Na cestě / Na pastvě / Ve městě a Zrcadlo s provokativními otázkami. Náhled: https://claude.ai/artifact/QYR7jmgi8kXbjJKrm4unYL
+Forma podle Radomila: nadpis, verš, Proč, odstavec o praxi (Radomil 31. 10.), otázky Na cestě / Na pastvě / Ve městě a Zrcadlo s provokativními otázkami. Náhled: https://claude.ai/artifact/QYR7jmgi8kXbjJKrm4unYL
 
 ## 01 · FANDÍME
 **Nadpis:** Bůh tvoří, my fandíme
@@ -9,7 +9,7 @@ Forma podle Radomila: nadpis, verš, Proč, odstavec obecné inspirace (bez př�
 **Verš:** „Požehnáním poctivých se pozvedá město, ústy darebáků bývá bořeno.“ Přísloví 11,11
 **Proč:** Všechno dobré, co dělají lidé, spolky, firmy i úřady, je Boží dar, i když o tom sami třeba nevědí. Proto ve městě hledáme poklad, ne odpad.
 
-Mluvíme o našem městě dobře. Chodíme po něm s otevřenýma očima a hledáme, co se komu povedlo. Těší nás poctivý řemeslník, trpělivá učitelka i dobře vedený spolek. Stejně rádi si všimneme firmy, která jedná fér, školy, do které děti chodí rády, nebo radnice, která dotáhne dobrý nápad. Co vidíme, říkáme nahlas: pochválíme do očí, poděkujeme, napíšeme pár řádků, doporučíme dál. A děkujeme dvakrát: lidem, kteří to udělali, i Bohu, který jim to dal do rukou.
+Bůh v Novém Jičíně pracoval dávno před námi a všechno dobré má svůj původ u něj. Chodíme ulicemi s otevřenýma očima a všímáme si toho, co se lidem daří: čerstvého chleba z pekárny, učitelky, na kterou se děcka ráno těší, férové místní firmy i řidiče autobusu, co počká na dobíhajícího školáka. Mluvíme o svém městě dobře a nahlas chválíme to, co Bůh už schválil. Radost posíláme na dvě adresy: člověka pochválíme do očí i za jeho zády a Bohu poděkujeme za poklad, který do lidí vložil.
 
 **Na cestě**
 - Komu tenhle týden řekneš do očí, co dělá skvěle?
@@ -32,7 +32,7 @@ Mluvíme o našem městě dobře. Chodíme po něm s otevřenýma očima a hled�
 **Verš:** „Usilujte o prospěch města, do něhož jsem vás vystěhoval, a modlete se za ně k Hospodinu, neboť v jeho prospěchu je i váš prospěch.“ Jeremiáš 29,7
 **Proč:** Když se daří městu, daří se i nám. Proto se rádi přidáváme k dobrým věcem, které už ve městě táhnou druzí, a umíme pomoct i poprosit.
 
-Přidáváme se už v pondělí ráno. Firmu, školu nebo nemocnici, kde pracujeme, vede někdo jiný a my do ní dáváme srdce i ruce. Děláme ji poctivě, držíme slovo a jednáme fér s kolegy i zákazníky. Po práci jdeme za trenéry, hasiči nebo sousedy, kteří už rozjeli něco dobrého, a ptáme se, s čím pomoct. Ctíme jejich pravidla a tempo a přinášíme, co umíme. Rádi přijmeme radu od zkušenějšího mistra i pozvání na kafe od souseda.
+Poctivě odvedená směna v dílně, v nemocnici nebo u počítače má před Bohem stejnou váhu jako neděle u mikrofonu. Nový Jičín je náš domov, a tak s chutí přikládáme ruku všude tam, kde už sousedé, trenéři nebo místní spolky vedou dobrou věc. Táhneme s nimi za jeden provaz a s respektem podporujeme to, co rozjeli. A protože opravdové přátelství funguje oběma směry, stejně rádi si od souseda půjčíme nářadí, necháme si poradit nebo přijmeme pozvání k jeho stolu.
 
 **Na cestě**
 - Od koho si tenhle týden necháš poradit?
@@ -55,7 +55,7 @@ Přidáváme se už v pondělí ráno. Firmu, školu nebo nemocnici, kde pracuje
 **Verš:** „Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.“ Efezským 2,10
 **Proč:** Bůh dává bez rozdílu a nic za to nechce. Proto i my rádi nabízíme, co umíme, všem kolem sebe, i těm, kdo Ježíše ještě neznají.
 
-Tam, kde se nic neděje a lidé žijí vedle sebe jako cizinci, přicházíme s vlastním nápadem. Pouštíme se do toho s tím, co umíme: s řemeslem, dobrým jídlem, péčí o druhé i sportem. Rádi k tomu přizveme sousedy. S nimi to jde líp a u práce se poznají. Děláme to pořádně, aby to bylo dobré samo o sobě, protože kdo má sousedy rád, neodbude je. A nic za tím neschováváme. Žádný skrytý úmysl, žádný povinný program na konec.
+Chystáme v našem městě pastvu pro oči, uši a duši lidí, kterým je kostel cizí. Necháváme místo poctivé kráse a dobré hudbě a o životě i o víře mluvíme obyčejnou češtinou, jakou se bavíme doma nebo u piva. Otevíráme své obýváky a ke stolu s dobrým jídlem a kávou zveme dřív než do kostela. Štědrost a péče o každou maličkost jsou naším projevem úcty ke každému hostu: u našeho stolu má plnou svobodu, protože přátelství je pro nás cíl sám o sobě.
 
 **Na cestě**
 - Co umíš a komu to tenhle týden nabídneš?
@@ -77,7 +77,7 @@ Tam, kde se nic neděje a lidé žijí vedle sebe jako cizinci, přicházíme s 
 **Verš:** „Všechnu svou starost uvrhněte na něj, vždyť jemu na vás záleží.“ 1. Petrova 5,7
 **Proč:** Fandíme, makáme i tvoříme z jednoho důvodu: aby lidé zažili, že je Bůh zná a má je rád.
 
-Bůh zná každého člověka jménem a ví, co koho trápí. Proto i my bereme sousedy, kolegy a spolužáky jako lidi s vlastním jménem a příběhem, ne jako položky v tabulce. Když se nás někdo zeptá, odkud bereme naději, odpovíme obyčejnými slovy, bez frází a bez nátlaku. Na nás je jednat s lidmi laskavě a mluvit poctivě. Co se pak odehraje v jejich srdci, necháváme s důvěrou na Bohu. Každý se rozhoduje sám a svobodně. Kdo přijde, je vítaný. Kdo ne, je pořád náš soused.
+Za vším, co v Novém Jičíně děláme, bije jedno společné přání. Sami jsme na vlastní kůži zažili, že Bůh je mnohem lepší, než jsme se báli: každého člověka zná jménem, rozumí jeho příběhu a stojí o něj. Stejnou úlevu a přijetí přejeme uprostřed všedního týdne sousedovi přes plot, kolegovi po noční i mámě z vedlejšího vchodu. Když přijde řeč na to, odkud bereme pokoj a naději, mluvíme o Ježíši přirozeně a s radostí. Za svou lásku ručíme my a proměnu srdce s důvěrou necháváme na Bohu, kterému na každém člověku záleží.
 
 **Na cestě**
 - Čí jméno se tenhle týden naučíš?
