@@ -9,7 +9,7 @@ Forma: nadpis, Proč, odstavec o praxi, pilulky s verši, na rozklik ukázky (Na
 **Verš:** „Požehnáním poctivých se pozvedá město, ústy darebáků bývá bořeno.“ Přísloví 11,11
 **Proč:** Všechno dobré, co dělají lidé, spolky, firmy i úřady, je Boží dar, i když o tom sami třeba nevědí. Proto ve městě hledáme poklad, ne odpad.
 
-Bůh v Novém Jičíně pracoval dávno před námi a všechno dobré má svůj původ u něj. Chodíme ulicemi s otevřenýma očima a všímáme si toho, co se lidem daří: čerstvého chleba z pekárny, učitelky, na kterou se děcka ráno těší, férové místní firmy i řidiče autobusu, co počká na dobíhajícího školáka. Mluvíme o svém městě dobře a nahlas chválíme to, co Bůh už schválil. Radost posíláme na dvě adresy: člověka pochválíme do očí i za jeho zády a Bohu poděkujeme za poklad, který do lidí vložil.
+Bůh v Novém Jičíně pracoval dávno před námi a všechno dobré má svůj původ u něj. Jeho náturu vidíme v naší krajině i krajanech. Chodíme ulicemi s otevřenýma očima a všímáme si toho, co se lidem daří: čerstvého chleba z pekárny, učitelky, na kterou se děcka ráno těší, férové místní firmy i řidiče autobusu, co počká na dobíhajícího školáka. Mluvíme o svém městě dobře a nahlas chválíme to, co Bůh už schválil. Radost posíláme na dvě adresy: člověka pochválíme do očí i za jeho zády a Bohu poděkujeme za poklad, který do lidí vložil.
 
 **Na cestě**
 - Pokladní v obchodě řekneme, že nám její úsměv udělal radost.
