@@ -22,9 +22,10 @@ Bůh v Novém Jičíně pracoval dávno před námi a všechno dobré má svůj 
 - Které firmě, škole nebo spolku letos jako sbor poděkujeme?
 
 **Zrcadlo**
-- Hledáme ve městě poklad, nebo odpad?
-- Je poctivě upečený chleba menší Boží dar než dobré kázání?
-- Proč máme radost jen z toho, co nese naše jméno?
+- Co kdybychom ve městě hledali poklad, ne odpad?
+- Co když je i poctivý chleba z pekárny Boží dar?
+- Kde už se ve městě daří druhým a můžeme se radovat s nimi?
+
 
 ## 02 · MAKÁME
 **Nadpis:** Tráva roste dřív než kráva
@@ -45,9 +46,10 @@ Poctivě odvedená směna v dílně, v nemocnici nebo u počítače má před Bo
 - Koho ve městě požádáme o radu nebo pomoc?
 
 **Zrcadlo**
-- Pomáháme jen tam, kde to pořádá církev?
-- Je pro nás práce jen výplata, nebo i povolání?
-- Proč je pro nás snazší pomáhat než si nechat pomoct?
+- Kde ve městě můžeme táhnout s ostatními za jeden provaz?
+- Jak bude vypadat pondělí, když víme, že naše práce těší i Boha?
+- Jakou radost sousedovi uděláme, když si od něj necháme pomoct?
+
 
 ## 03 · TVOŘÍME
 **Nadpis:** Dobrá pastva je lákavá
@@ -67,9 +69,10 @@ Chystáme v našem městě pastvu pro oči, uši a duši lidí, kterým je koste
 - Co rozjedeme, aby se u toho potkali sousedé, kteří se zatím neznají?
 
 **Zrcadlo**
-- Chystáme pro sousedy dárek, nebo návnadu?
-- Šli bychom sami rádi na to, co pro sousedy chystáme?
-- Když ve městě něco chybí, čekáme, až začne někdo jiný?
+- Jak by vypadal dárek pro sousedy, za který nic nechceme?
+- Co pro sousedy připravíme tak dobře, že bychom tam rádi šli i my?
+- Co ve městě vyroste, když se odvážíme začít jako první?
+
 
 ## 04 · TOUŽÍME
 **Nadpis:** Číslo v kravíně. Jméno na pastvě
@@ -88,7 +91,8 @@ Za vším, co v Novém Jičíně děláme, bije jedno společné přání. Sami 
 - Za koho ze sousedů se modlíme jménem?
 
 **Zrcadlo**
-- Mlčíme o Bohu z ohleduplnosti, nebo ze strachu?
-- Je pro nás soused přítel, nebo projekt?
-- Smí nám soused říct, že o Boha nestojí?
+- Co kdybychom o Bohu mluvili stejně rádi jako o dobrém filmu?
+- Kde už Bůh v životech našich sousedů dávno pracuje?
+- Jakými přáteli budeme sousedům, i kdyby o Boha nestáli?
+
 
