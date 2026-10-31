@@ -10,7 +10,7 @@ Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný mo
 
 **Poznámka (Radomil 31. 10.):**
 > Fandíme našemu městu,
-> přidáváme se k němu,
+> makáme spolu s ním,
 > tvoříme pro něj pastvu,
 > ať každý soused pozná,
 > že Bohu na něm záleží.
