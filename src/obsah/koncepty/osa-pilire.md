@@ -8,7 +8,12 @@ Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný mo
 > 03 … tvoříme pastvu pro lidi, kteří Boha neznají,
 > 04 … aby se s ním potkávali tam, kde žijí a pracují.
 
-**Poznámka:** Fandíme našemu městu, přidáváme se k němu, tvoříme pro něj pastvu, ať na vlastní kůži pozná, že Bohu na něm záleží.
+**Poznámka (Radomil 31. 10.):**
+> Fandíme našemu městu,
+> přidáváme se k němu,
+> tvoříme pro něj pastvu,
+> ať každý pozná, že Bohu
+> na něm záleží.
 
 **Pilíře:** Fandíme · Makáme · Tvoříme · Toužíme
 
