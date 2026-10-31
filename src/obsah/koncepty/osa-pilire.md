@@ -6,7 +6,7 @@ Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný mo
 > 01 … Fandíme Boží práci na Kravařsku,
 > 02 … přidáváme se k lidem, kteří už ji dělají,
 > 03 … tvoříme pastvu pro ty, kteří Boha neznají,
-> 04 … ať ho potkávají tam, kde žijí, studují a pracují.
+> 04 … ať ho potkávají tam, kde s námi žijí a pracují.
 
 **Poznámka (Radomil 31. 10.):**
 > Fandíme našemu městu,
