@@ -1,6 +1,6 @@
-# Čtyři pilíře nahlas (30. 10. 2026)
+# Čtyři pilíře nahlas (31. 10. 2026)
 
-Forma podle Radomila: nadpis, verš, Proč, odstavec o praxi (Radomil 31. 10.), otázky Na cestě / Na pastvě / Ve městě a Zrcadlo s provokativními otázkami. Náhled: https://claude.ai/artifact/QYR7jmgi8kXbjJKrm4unYL
+Forma: nadpis, Proč, odstavec o praxi, pilulky s verši, na rozklik ukázky (Na cestě / Na pastvě / Ve městě) a Zrcadlo s laskavými otázkami, které měří, jestli to žijeme. Náhled: https://claude.ai/artifact/QYR7jmgi8kXbjJKrm4unYL
 
 ## 01 · FANDÍME
 **Nadpis:** Bůh tvoří, my fandíme
@@ -12,20 +12,18 @@ Forma podle Radomila: nadpis, verš, Proč, odstavec o praxi (Radomil 31. 10.), 
 Bůh v Novém Jičíně pracoval dávno před námi a všechno dobré má svůj původ u něj. Chodíme ulicemi s otevřenýma očima a všímáme si toho, co se lidem daří: čerstvého chleba z pekárny, učitelky, na kterou se děcka ráno těší, férové místní firmy i řidiče autobusu, co počká na dobíhajícího školáka. Mluvíme o svém městě dobře a nahlas chválíme to, co Bůh už schválil. Radost posíláme na dvě adresy: člověka pochválíme do očí i za jeho zády a Bohu poděkujeme za poklad, který do lidí vložil.
 
 **Na cestě**
-- Komu tenhle týden řekneš do očí, co dělá skvěle?
-- Všimneš si dnes práce, kterou ostatní berou jako samozřejmost?
+- Pokladní v obchodě řekneme, že nám její úsměv udělal radost.
+- Když se u oběda nadává na město, řekneme, co se v něm daří.
 **Na pastvě**
-- Čí neviditelnou práci ve sboru pochválíme nahlas?
-- Chválíme ve sboru dřív a častěji, než kritizujeme?
+- V neděli nahlas poděkujeme těm, kdo uvařili kávu a připravili sál.
+- Když mladí připraví program, řekneme jim potom konkrétně, co se povedlo.
 **Ve městě**
-- Čí dobrou práci ve městě pochválíme veřejně?
-- Které firmě, škole nebo spolku letos jako sbor poděkujeme?
-
+- Učitelům a trenérům našich dětí napíšeme, čeho si na jejich práci vážíme.
+- Dobrou místní kavárnu nebo firmu doporučíme známým a pochválíme ji v recenzi.
 **Zrcadlo**
-- Co kdybychom ve městě hledali poklad, ne odpad?
-- Co když je i poctivý chleba z pekárny Boží dar?
-- Kde už se ve městě daří druhým a můžeme se radovat s nimi?
-
+- Komu jsme za poslední měsíc s radostí řekli, co dělá dobře?
+- Podle čeho by sousedé poznali, že máme Nový Jičín rádi?
+- Za koho z lidí kolem nás jsme Bohu poslední dobou poděkovali?
 
 ## 02 · MAKÁME
 **Nadpis:** Tráva roste dřív než kráva
@@ -36,20 +34,18 @@ Bůh v Novém Jičíně pracoval dávno před námi a všechno dobré má svůj 
 Poctivě odvedená směna v dílně, v nemocnici nebo u počítače má před Bohem stejnou váhu jako neděle u mikrofonu. Nový Jičín je náš domov, a tak s chutí přikládáme ruku všude tam, kde už sousedé, trenéři nebo místní spolky vedou dobrou věc. Táhneme s nimi za jeden provaz a s respektem podporujeme to, co rozjeli. A protože opravdové přátelství funguje oběma směry, stejně rádi si od souseda půjčíme nářadí, necháme si poradit nebo přijmeme pozvání k jeho stolu.
 
 **Na cestě**
-- Od koho si tenhle týden necháš poradit?
-- Děláš svou práci tak, aby se na tebe dalo spolehnout?
+- Svou práci odvedeme poctivě i tam, kde to nikdo nekontroluje.
+- Od souseda si půjčíme nářadí a necháme si poradit, jak na to.
 **Na pastvě**
-- Modlíme se za práci, kterou naši lidé dělají přes týden?
-- Kterou akci škrtneme, aby lidem zbyl večer na to, co ve městě vedou jiní?
+- V neděli se modlíme za to, co nás čeká v práci a ve škole.
+- Program ve sboru nenafukujeme, aby lidem zbyl čas na spolky a oddíly.
 **Ve městě**
-- K čí dobré věci ve městě se tenhle týden přidáme?
-- Koho ve městě požádáme o radu nebo pomoc?
-
+- S mladými se přidáme k jarnímu úklidu, který pořádají skauti nebo škola.
+- Když spolek chystá městskou slavnost, přijdeme stavět stany a nosit lavice.
 **Zrcadlo**
-- Kde ve městě můžeme táhnout s ostatními za jeden provaz?
-- Jak bude vypadat pondělí, když víme, že naše práce těší i Boha?
-- Jakou radost sousedovi uděláme, když si od něj necháme pomoct?
-
+- K čí dobré věci ve městě jsme se letos rádi přidali?
+- Od koho jsme si za poslední měsíc nechali pomoct nebo poradit?
+- Podle čeho by kolegové poznali, že nám na naší práci záleží?
 
 ## 03 · TVOŘÍME
 **Nadpis:** Dobrá pastva je lákavá
@@ -60,19 +56,18 @@ Poctivě odvedená směna v dílně, v nemocnici nebo u počítače má před Bo
 Chystáme v našem městě pastvu pro oči, uši a duši lidí, kterým je kostel cizí. Necháváme místo poctivé kráse a dobré hudbě a o životě i o víře mluvíme obyčejnou češtinou, jakou se bavíme doma nebo u piva. Otevíráme své obýváky a ke stolu s dobrým jídlem a kávou zveme dřív než do kostela. Štědrost a péče o každou maličkost jsou naším projevem úcty ke každému hostu: u našeho stolu má plnou svobodu, protože přátelství je pro nás cíl sám o sobě.
 
 **Na cestě**
-- Co umíš a komu to tenhle týden nabídneš?
+- Sousedovým dětem pomůžeme s matikou před přijímačkami a nic za to nechceme.
+- Když pečeme, upečeme víc a kus zaneseme sousedům, jen tak.
 **Na pastvě**
-- Komu ze sboru pomůžeme s jeho vlastním nápadem?
-- Necháváme lidem čas a sílu na to, co rozjedou sami?
+- Když někdo ze sboru přijde s nápadem, pomůžeme mu ho dotáhnout.
+- Jídlo, hudbu i výzdobu chystáme pečlivě, aby se u nás hosté cítili vítaní.
 **Ve městě**
-- Kde ve městě něco chybí a kdo by do toho šel s námi?
-- Co rozjedeme, aby se u toho potkali sousedé, kteří se zatím neznají?
-
+- Pro náctileté, kteří nemají kam jít, otevřeme v pátek klub s deskovkami.
+- Rodičům s malými dětmi nabídneme dopoledne s kávou a hernou, bez kázání.
 **Zrcadlo**
-- Jak by vypadal dárek pro sousedy, za který nic nechceme?
-- Co pro sousedy připravíme tak dobře, že bychom tam rádi šli i my?
-- Co ve městě vyroste, když se odvážíme začít jako první?
-
+- Co jsme za poslední půlrok udělali pro sousedy jen tak, pro radost?
+- Podle čeho by hosté poznali, že jsme se na ně těšili a chystali?
+- Co jsme letos ve městě rozjeli tam, kde nic nebylo?
 
 ## 04 · TOUŽÍME
 **Nadpis:** Číslo v kravíně. Jméno na pastvě
@@ -83,16 +78,16 @@ Chystáme v našem městě pastvu pro oči, uši a duši lidí, kterým je koste
 Za vším, co v Novém Jičíně děláme, bije jedno společné přání. Sami jsme na vlastní kůži zažili, že Bůh je mnohem lepší, než jsme se báli: každého člověka zná jménem, rozumí jeho příběhu a stojí o něj. Stejnou úlevu a přijetí přejeme uprostřed všedního týdne sousedovi přes plot, kolegovi po noční i mámě z vedlejšího vchodu. Když přijde řeč na to, odkud bereme pokoj a naději, mluvíme o Ježíši přirozeně a s radostí. Za svou lásku ručíme my a proměnu srdce s důvěrou necháváme na Bohu, kterému na každém člověku záleží.
 
 **Na cestě**
-- Čí jméno se tenhle týden naučíš?
-- Co řekneš kamarádovi, když se zeptá, odkud bereš klid?
+- Naučíme se, jak se jmenují lidé z našeho vchodu, a budeme je zdravit jménem.
+- Když se kolega zeptá, odkud bereme klid, řekneme mu obyčejnými slovy o Ježíši.
 **Na pastvě**
-- Učíme se spolu mluvit o Bohu tak, aby tomu rozuměl i soused?
+- S mladými se učíme vyprávět, co s Ježíšem zažíváme, bez zbožných frází.
+- Kdo k nám přijde, může se na cokoli zeptat a nemusí s ničím souhlasit.
 **Ve městě**
-- Za koho ze sousedů se modlíme jménem?
-
+- Za lidi z naší ulice se modlíme jménem, i když o tom nevědí.
+- Když na náměstí uspořádáme zpívání koled, řekneme pár vět o tom, kdo je Ježíš.
 **Zrcadlo**
-- Co kdybychom o Bohu mluvili stejně rádi jako o dobrém filmu?
-- Kde už Bůh v životech našich sousedů dávno pracuje?
-- Jakými přáteli budeme sousedům, i kdyby o Boha nestáli?
-
+- Komu jsme poslední dobou mohli říct, co pro nás znamená Ježíš?
+- Kolik sousedů a kolegů známe jménem a víme, co je trápí?
+- Podle čeho by přátelé, kteří nevěří v Boha, poznali, že je máme rádi?
 
