@@ -3,10 +3,10 @@ Radomil 29. 9. 2026: „Chci, abys tu osu udržel, bylo to kulervoucí a přitom
 Tohle je páteř sekce Poslání. Každá další úprava (text, forma, jiný model, nový člověk v týmu) začíná tady a osu nemění bez Radomilova výslovného souhlasu. Obsah slajdů je v `poslani-ctyri-nahled.yml`. Obsah pilířů (tým Mobilise) je v `pilire-obsah-4.md`, verze pro lidi ze sboru v `pilire-karticky.md`, hloubka a zdroje v `pilire-pointa.md`. Build tuhle složku nečte.
 
 ## Osa 31. 10. 2026 (Radomil, aktuální)
-> 01 … Oslavujeme Boží práci kolem nás,
+> 01 … Fandíme Boží práci mezi sousedy,
 > 02 … přidáváme se k lidem, kteří už ji dělají,
-> 03 … tvoříme pastvu pro lidi, kteří Boha neznají,
-> 04 … aby se s ním potkávali tam, kde žijí a pracují.
+> 03 … tvoříme pastvu pro ty, kteří Boha neznají,
+> 04 … aby ho denně potkávali tam, kde žijí a pracují.
 
 **Poznámka (Radomil 31. 10.):**
 > Fandíme našemu městu,
