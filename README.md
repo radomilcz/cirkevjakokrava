@@ -8,12 +8,10 @@ Zdroj designu: [Figma – Církev jako kráva](https://www.figma.com/design/RT5a
 
 ## Zvonec (správa sboru a plánovač služeb)
 
-V `docs/zvonec/` je samostatná aplikace – lidé, skupiny, kalendář setkání, rozpis služeb, osnova a kolize –
-na https://manifest.cirkevjakokrava.cz/zvonec/ (ukázka s vymyšlenými lidmi). Kód je v `docs/zvonec/`
-(`app.js`, `lib/`, `ui/`), kontrola pro GitHub Actions v `zvonec/check.mjs`, vzory workflow pro datové repo
-v `zvonec/data-repo/` a testy v `zvonec/test/`. Data má v soukromém repu, ne tady. Návod, spuštění naostro
-a plán dalších kroků: [zvonec/README.md](zvonec/README.md), technický popis:
-[zvonec/ARCHITECTURE.md](zvonec/ARCHITECTURE.md).
+Zvonec se přestěhoval do repa [znackarna/zvonec](https://github.com/znackarna/zvonec): aplikace, server, testy
+i návod. Běží na https://zvonec.cirkevjakokrava.cz, ukázka s vymyšlenými lidmi na
+https://zvonec.cirkevjakokrava.cz/ukazka/. Stará adresa ukázky (`docs/zvonec/`) na ni jen přesměruje. Starší
+historie Zvonce zůstává v historii tohoto repa.
 
 ## Struktura
 
