@@ -10,13 +10,13 @@ A my uvnitř to někdy nemáme jinak. Tvoření necháme pár šikovným lidem s
 
 Bůh to vymyslel jinak. Svět nenamaloval černobíle. Dal mu barvy, vůně, chutě a zvuky, kterých se člověk nenabaží.
 
-Louka, na které se pasou krávy, kvete a voní. Člověk se na ni rád podívá.
+Louka, na které se pasou krávy, nezaroste. Kvete a voní. Člověk se na ni rád podívá.
 
-Tvořivost nepatří jen umělcům. Patří do kuchyně, k videu, ke grafice i k obyčejné práci, kterou někdo udělá pořádně.
+Tvořivost nepatří jen umělcům. Patří do kuchyně, k videu, ke grafice, k tabulkám i k obyčejné práci, kterou někdo udělá pořádně.
 
 ## Proč to děláme
 
-Protože první umělec je Bůh. A své dary nerozdává jen těm, kdo umí malovat nebo zpívat.
+Protože první umělec je Bůh. A své dary nerozdává jen těm, kdo umí malovat nebo zpívat. Stvořil nás ke svému obrazu. Proto nás to táhne něco vyrábět, vylepšovat a dávat věcem tvar.
 
 Když měl Izrael na poušti postavit stan setkávání, Bůh povolal Besaleela. Naplnil ho svým Duchem. Dal mu moudrost a zručnost, aby uměl navrhovat, pracovat se zlatem, stříbrem a mědí, brousit kameny a řezat dřevo. Jeden z prvních lidí, o kterých Bible říká, že je naplnil Boží Duch, byl řemeslník (Exodus 31,2–5).
 
@@ -24,9 +24,9 @@ Boží Duch patří i do dílny.
 
 Pavel k tomu přidává, že i my sami jsme Boží dílo. Bůh nás v Kristu stvořil k dobrým skutkům a připravil je pro nás dopředu. Kdo vyšel z Boží dílny, smí tvořit taky (Efezským 2,10).
 
-Krása pro nás není zbytečný luxus ani pozlátko. Je to Boží jazyk. Staví mosty tam, kam samotné argumenty nedosáhnou.
+Krása pro nás není zbytečný luxus ani pozlátko. Je to Boží jazyk. Staví mosty tam, kam samotné argumenty nedosáhnou. Člověk díky ní může zahlédnout Boha tak, že ho to nezahltí, ale probudí.
 
-**Nespoutaně** znamená, že se nedáme svázat nudou ani strachem z trapasu. Smíme zkoušet pořád znovu. I za cenu, že se pokus nepovede.
+**Nespoutaně** znamená, že se nedáme svázat nudou, zvykem ani strachem z trapasu. Smíme zkoušet pořád znovu. I za cenu, že se pokus nepovede.
 
 **Tvořivá** znamená, že nejsme jen konzumenti. Nečekáme, co nám kdo naservíruje. Děláme radost lidem kolem. Grafikou, hudbou, jídlem, slovem i tím, jak vypadá sál, kde se scházíme.
 
@@ -34,11 +34,13 @@ Krása pro nás není zbytečný luxus ani pozlátko. Je to Boží jazyk. Staví
 
 ### A. Krása mluví první
 
-Nový člověk si všimne spousty věcí, ještě než s ním kdo promluví. Jak vypadala pozvánka. Jestli je v sále uklizeno a na záchodě papír. Jestli hudba ladí a světlo neřeže do očí.
+Nový člověk si všimne spousty věcí, ještě než s ním kdo promluví. Jak vypadala pozvánka. Jestli je v sále uklizeno a na záchodě papír. Jestli hudba ladí a světlo neřeže do očí. I ticho něco říká.
 
 Tohle všechno mluví za nás. Buď říká, že nám na člověku záleží, nebo že je nám to jedno.
 
 Drahé to být nemusí. Stačí, když si s tím někdo dá práci.
+
+A krása má cenu sama o sobě. Nemusíme ke každé hezké věci lepit zbožný dovětek.
 
 Kamarádka si doma říká:
 
@@ -48,13 +50,13 @@ Kamarádka si doma říká:
 
 Na tom, co o Bohu říkáme, nic neměníme. Právě proto si můžeme hrát s tím, jak to říkáme.
 
-Obraz, video, humor, nová technika. Zkoušíme, co z toho dnešním lidem nejlíp pomůže pochopit, o co jde.
+Obraz, video, humor, nová technika. Zkoušíme, co z toho dnešním lidem nejlíp pomůže pochopit, o co jde. Co pomáhalo před dvaceti lety, dnes pomáhat nemusí. Co přestalo sloužit, klidně opustíme.
 
 Bůh má rád hravost. Náboženská křeč mu nevoní.
 
 Ne každý pokus vyjde. Někdy je video trapné a vtip nikdo nepochopí. Zasmějeme se, otřepeme se a zkusíme to znovu.
 
-Tvořivost umírá na perfekcionismus. Na strach, že to nebude dost dokonalé. Ani pro lidi, ani pro Boha.
+Tvořivost umírá na perfekcionismus. Na strach, že to nebude dost dokonalé. Ani pro lidi, ani pro Boha. Jenže Bůh nás přijal dřív, než jsme cokoli vyrobili.
 
 Strach z chyby nesmí být silnější než chuť tvořit.
 
@@ -70,6 +72,10 @@ Proto dbáme na řemeslo. Pozvánka musí říct kdy a kde. Video potřebuje zvu
 
 Nápad bez řemesla nikomu nepomůže. Řemeslo bez nápadu nikoho nepotěší. Potřebujeme obojí.
 
+Talenty máme zadarmo, ale bez práce jsou nadarmo. K řemeslu patří i příprava a ochota nechat si do díla mluvit.
+
+A jedno si hlídáme. Výsledek nikdy nesmí převálcovat člověka, který na něm dělá.
+
 A kadeřnice, která dostala naši pozvánku od sousedky, nevěří:
 
 *„Jak to, že i obyčejnou pozvánku od nich dočtu až do konce?“*
@@ -78,11 +84,15 @@ A kadeřnice, která dostala naši pozvánku od sousedky, nevěří:
 
 Co ukazujeme navenek, má těšit oko i ucho. Ošuntělý papír z kopírky by lidem řekl, že nám na nich moc nezáleží. Proto si s každou věcí dáváme práci.
 
-Hledáme, co kdo z nás umí, a dáváme tomu šanci. Ať je to 3D tiskárna, stříhání videa, nebo pájka. Žádný dar u nás nemá zakrnět.
+Hledáme, co kdo z nás umí, a dáváme tomu šanci. Ať je to 3D tiskárna, stříhání videa, pájka, programování, sport, nebo memy. Žádný dar u nás nemá zakrnět.
 
-Nepovedený pokus u nás nemá nikoho shodit. Má to být spíš začátek dalšího. Kdo se bojí posměchu, nic nového nezkusí.
+Dáváme dohromady různé profese i generace. Kdo něco umí, učí to mladší a nenechává si to pro sebe.
+
+Nepovedený pokus u nás nemá nikoho shodit. Má to být spíš začátek dalšího. Kdo se bojí posměchu, nic nového nezkusí. Učíme se mluvit si do práce věcně a laskavě. Vyrůst má dílo i ten, kdo ho dělal.
 
 Všechno, pod co se podepíšeme, má vypadat k světu. Stánek na městské slavnosti i příspěvek na sítích. Hezky a poctivě udělané.
+
+Vážíme si i toho, co v Novém Jičíně a na Kravařsku tvoří lidi mimo církev. Učíme se od nich a rádi s nimi spolupracujeme. Nechceme tvořit jen sami pro sebe.
 
 > **Forma se mění, jádro zůstává.**
 >
@@ -90,11 +100,11 @@ Všechno, pod co se podepíšeme, má vypadat k světu. Stánek na městské sla
 
 ## Do kapsy
 
-- Tvoříme pro oči, uši i duši.
 - Krása není luxus, ale Boží jazyk.
 - Nejsme konzumenti, ale tvůrci.
 - Boží Duch patří i do dílny.
 - Bůh miluje hravost, ne náboženskou křeč.
+- Výsledek nesmí převálcovat člověka, který ho tvoří.
 
 ## Zrcadlo
 

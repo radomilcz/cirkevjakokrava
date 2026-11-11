@@ -16,7 +16,7 @@ Bůh s námi nejedná jako otrokář s bičem. Je to laskavý Hospodář. Ví, �
 
 ## Proč to děláme
 
-Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“. Sám je tichý a pokorný. Kdo se od něj učí, dojde klidu. Jeho jho netlačí a jeho břemeno netíží (Matouš 11,28–30, ČEP).
+Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“. Sám je tichý a pokorný. Kdo se od něj učí, najde klid. Jeho jho netlačí a jeho břemeno netíží (Matouš 11,28–30, ČEP).
 
 Kolik stojíme, nezávisí na tom, kolik toho pro Boha odedřeme.
 
@@ -90,7 +90,7 @@ Večer doma s rodinou není ulejvání ze služby.
 
 V práci a v podnikání se snažíme zůstat poctiví a držet klidné tempo, i když se kolem všichni ženou za ziskem. Cizí očekávání bzučí jako ty mouchy. Otravovat smějí, tempo nám ale neurčují. Zakázku, která by nás semlela, zkoušíme odmítnout. Občas ji stejně vezmeme a pak toho litujeme.
 
-Městu, kolegům i zákazníkům zkoušíme slibovat jen to, co opravdu splníme. Když narazíme na strop, řekneme to včas a na rovinu. Chceme, aby se na nás dalo spolehnout i za pár let, ne jen první nadšený rok.
+Městu, kolegům i zákazníkům zkoušíme slibovat jen to, co opravdu splníme. Když narazíme na strop, řekneme to včas a na rovinu. Chceme, aby se na nás dalo spolehnout i za pár let.
 
 > **Bůh je Hospodář, ne otrokář.**
 >

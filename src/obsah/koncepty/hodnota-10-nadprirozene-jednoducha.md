@@ -32,7 +32,7 @@ Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic. A Pavel to p
 
 Plánovat je dobré. Promyšlená strategie, rozpočet a pořádek v penězích patří k poctivé práci. Věnujeme se jim pečlivě a nestydíme se za ně.
 
-Plán je u nás ale sluha. Pána máme jiného. Proto Boha zveme k rozhodování, rozpočtu i načasování dřív, než všechno uzavřeme.
+Plán je u nás ale sluha. Pána máme jiného.
 
 Když Bůh ukáže jinam, smíme plán zahodit. I když nás stál hodně práce. Někdy si Boží hlas spleteme s vlastní pohodlností. Proto se o tom radíme spolu.
 
@@ -50,7 +50,7 @@ Příběhy o tom, co Bůh udělal před lety, posloucháme rádi. Samy nám ale 
 
 Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme tomu, co nám Bůh říká. Střízlivě, bez zvláštního hlasu a velkých gest.
 
-Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Žádný dojem nestojí nad Písmem. Díváme se, jestli se podobá Ježíši a jaké nese ovoce. Duchovní dar má druhého postavit na nohy. Ovládat ho nesmí. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
+Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Žádný dojem nestojí nad Písmem. Díváme se, jestli se podobá Ježíši a jaké nese ovoce. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
 
 Duch svatý nevede do mlhy ani do strachu. Vede ke svobodě, pravdě a lásce.
 
@@ -70,7 +70,7 @@ Když je někdo v nouzi, pomodlíme se za něj. A pak mu uvaříme oběd nebo po
 
 Ten krok bývá malý a obyčejný. Udělat ho je na nás. Proměnit srdce, zahojit vztah, otevřít oči, to už je Boží práce.
 
-Tak to bylo i u řeky, kde Pavel mluvil k ženám. Mluvil srozumitelně. Srdce ale Lydii otevřel Pán (Skutky 16,11–14).
+Tak to bylo i u řeky. Pavel mluvil srozumitelně. Srdce ale Lydii otevřel Pán (Skutky 16,11–14).
 
 Odpustit se rozhodneme sami. Bolest z toho odnese on.
 
@@ -86,7 +86,7 @@ Na poradách řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na
 
 V práci to vypadá nenápadně. Ráno se pomodlíme za zakázku, za těžký rozhovor, za šéfa. A pak práci uděláme pořádně. Modlitba nenahradí šroubovák. A šroubovák nenahradí modlitbu.
 
-Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. A že tu jednal dávno před námi. Modlíme se za lékaře, podnikatele i radnici. I za ty, kteří se o tom nikdy nedozvědí. Kde je potřeba, přiložíme ruku. Městem vlastní silou nepohneme. Děláme svůj díl a čekáme, co udělá Bůh.
+Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. A že tu jednal dávno před námi. Modlíme se za lékaře, podnikatele i radnici. I za ty, kteří se o tom nikdy nedozvědí. Děláme svůj díl a čekáme, co udělá Bůh.
 
 > **Bez Ducha svatého je to jen prázdná sláma.**
 >
