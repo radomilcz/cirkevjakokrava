@@ -18,7 +18,7 @@ Kráva nikdy není sama. Krávy drží pohromadě a zahřívají se navzájem.
 
 **V anonymitě víra vysychá.**
 
-Bůh nás nestvořil pro samotu. Chce, abychom o sobě věděli a žili spolu.
+Bůh nás nestvořil pro samotu. Chce, abychom se znali jménem a žili spolu.
 
 ## Proč to děláme
 
@@ -40,9 +40,13 @@ První křesťané se drželi učení apoštolů. K tomu se scházeli den co den
 
 Rodina se nepozná podle toho, že sedí v jedné řadě a kouká stejným směrem. Pozná se podle toho, že se lidi dívají jeden druhému do očí.
 
+Proto se scházíme i po domech. Jíme spolu a modlíme se jeden za druhého.
+
 Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete. Všechno o sobě nevíme. To podstatné většinou ano.
 
 A víra k tomu patří. Neptáme se jen „Jak se máš?“, ale i „Jak se máš s Bohem?“
+
+Pamatujeme na tiché a na ty, kdo stojí stranou. Když někdo začne mizet, všimneme si toho.
 
 Host, který s námi strávil pár týdnů, se diví:
 
@@ -50,7 +54,7 @@ Host, který s námi strávil pár týdnů, se diví:
 
 ### B. Bezpečná důvěra a respekt k hranicím
 
-Důvěrnost neznamená, že se vzdáme soukromí. Nikdo nemusí vykládat všechno všem. Důvěra se nedá vynutit. Každý má právo na své tempo a své hranice.
+Důvěrnost neznamená, že se vzdáme soukromí. Nikdo nemusí vykládat všechno všem. Důvěra se nedá vynutit. Každý má právo na své tempo a své hranice. Díky nim nikoho nekontrolujeme a nedusíme. Dobrá blízkost dává zázemí a nechá člověka dýchat.
 
 Kráva respektuje hranice pastvy. My respektujeme hranice druhého. Nevyptáváme se víc, než chce ten druhý sám říct.
 
@@ -58,21 +62,23 @@ Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobn
 
 Když nám přesto ujede jazyk, jdeme se omluvit tomu, o kom jsme mluvili.
 
+Důvěra potřebuje ještě jedno. Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády.
+
 A když někdo zklame nás? Odpouštíme hned. Důvěra se ale vrací pomalu, podle toho, co ten druhý dělá. Odpustit neznamená odevzdat i klíče od trezoru.
 
-Kolegyně, která se nám svěřila, se ptá:
+Kolegyně, která nás pár měsíců pozoruje, se ptá:
 
-*„Jak to, že jim můžu říct své největší trápení a vím, že to zítra nebude vědět celé město?“*
+*„Jak to, že jsou si tak blízko, a nikdo nikoho nekontroluje ani nedusí?“*
 
 ### C. Doprovázení, které pomáhá dorůst
-
-Blízkost má jedno riziko. Lidi, kteří spolu tráví hodně času, se začnou podobat. Stejné fráze, stejné názory, stejné písničky v autě. Ve sboru tak snadno vznikne nepsaný vzor správného křesťana.
-
-Do jedné formy nikoho necpeme. Elektrikář se kvůli nám nemusí učit na kytaru.
 
 Doprovázet znamená jít kus cesty vedle sebe a všímat si, co Bůh do toho druhého vložil. Někdy to vidíme dřív než on sám. Pak mu to řekneme. A pomáháme mu dorůst do toho, kým ho Bůh chtěl mít.
 
 Zkušenější předávají mladším, co se s Bohem sami naučili. Tak Pavel provázel mladého Timotea a radil mu, ať to, co od něj slyšel, svěří lidem, kteří to naučí i další (2. Timoteovi 2,2). Chceme, aby každý jednou slyšel Boha sám, i bez nás.
+
+Blízkost má jedno riziko. Lidi, kteří spolu tráví hodně času, se začnou podobat. Stejné fráze, stejné názory, stejné písničky v autě.
+
+Do jedné formy nikoho necpeme a život mu neřídíme. Elektrikář se kvůli nám nemusí učit na kytaru.
 
 Zvlášť trpěliví chceme být s dětmi a dospívajícími. Můžou se ptát na těžké věci a můžou šlápnout vedle.
 
@@ -82,13 +88,13 @@ Kamarád, se kterým se vídáme už pár let, říká:
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Své tempo má i on. Hlubokou zpověď z nikoho netaháme první neděli. A hlídáme si, aby z nás nebyla partička starých známých. U stolu necháváme jednu židli volnou pro dalšího.
+Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Smí zůstat na kraji a jen se dívat. Nebo přijme pozvání k menšímu stolu. Hlídáme si, aby z nás nebyla partička starých známých. U stolu necháváme jednu židli volnou pro dalšího.
 
-Mezi sebou se scházíme po domech a pomáháme si s tím, co kdo zrovna nezvládá. Jednou podržím já tebe, podruhé ty mě. Když někoho potká krize, nenecháme ho v ní samotného.
+Mezi sebou si pomáháme s tím, co kdo zrovna nezvládá. Někdy stačí zpráva uprostřed týdne nebo odvoz k lékaři. Jednou podržím já tebe, podruhé ty mě.
 
-Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Jdeme vztah spravit, ne vyhrát hádku. A zůstáváme v něm, i když je to zrovna nepohodlné. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády. Napětí samo nezmizí. V tiché poště jen roste.
+Spor nenecháváme uležet. Jdeme vztah spravit, ne vyhrát hádku. A zůstáváme v něm, i když je to zrovna nepohodlné. Napětí samo nezmizí. V tiché poště jen roste.
 
-Blízkost nekončí na prahu sboru. Se sousedy a kolegy, kteří do církve nechodí, pěstujeme stejně věrná přátelství. Nejsou pro nás úkol.
+Blízkost nekončí na prahu sboru. Sousedy z ulice známe jménem. S nimi i s kolegy, kteří do církve nechodí, pěstujeme stejně věrná přátelství. Jsme poblíž, když je jim těžko. Nejsou pro nás úkol. Hodně od nich dostáváme i my.
 
 > **Nejsme duchovní kino. Jsme rodina, která jí z jednoho hrnce.**
 >
@@ -98,12 +104,12 @@ Blízkost nekončí na prahu sboru. Se sousedy a kolegy, kteří do církve nech
 
 - Vztah s Bohem je vždycky osobní, ale nikdy soukromý.
 - Nejsme duchovní kino. Jsme rodina, která jí z jednoho hrnce.
-- V anonymitě víra vysychá.
-- Nedáváme jen slova o Bohu. Dáváme i sami sebe.
-- Kráva respektuje hranice. Bezpečí bez drbů.
+- Nikdo nemá zmizet bez povšimnutí.
+- Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády.
+- Pomáháme dorůst. Do jedné formy nikoho necpeme.
 
 ## Zrcadlo
 
 1. Komu tenhle týden řeknu, s čím doopravdy zápasím?
-2. Udržím pro sebe, co mi kdo svěří?
+2. Koho na kraji sboru nebo své ulice tenhle týden oslovím?
 3. S kým vyřeším napětí z očí do očí?

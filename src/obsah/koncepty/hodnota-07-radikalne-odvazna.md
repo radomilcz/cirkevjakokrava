@@ -16,7 +16,7 @@ Slovo *radikální* pochází z latinského *radix*. Kořen. Radikální člově
 
 Čím hlouběji má strom kořeny, tím míň se bojí vichřice. A tím volněji může růst do nových tvarů. Stabilita je v pohybu.
 
-Naším kořenem je Kristus a jeho slovo. Proto se nemusíme bát změn. A ořezat suché větve, které už nenesou život.
+Naším kořenem je Kristus, jeho slovo a poslání, které nám svěřil. Proto se nemusíme bát změn. A ořezat suché větve, které už nenesou život.
 
 ## Proč to děláme
 
@@ -28,7 +28,7 @@ Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásk
 
 **Radikálně** znamená jít ke kořeni. Neptáme se jen, jestli něco běží. Ptáme se, proč to děláme a komu to slouží. A necháváme Boha, ať nám mění myšlení.
 
-**Odvážná** znamená vylézt z pohodlí a nahlas říct, co nefunguje. A vykročit, kam nás Bůh vede, i když jsme tam ještě nebyli.
+**Odvážná** znamená vylézt z pohodlí a přiznat omyl. A vykročit, kam nás Bůh vede, i když jsme tam ještě nebyli.
 
 Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevyroste.
 
@@ -38,41 +38,41 @@ Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevy
 
 Ve vitríně všechno krásně vypadá a nic neroste. Z kořene raší nové výhonky.
 
-Měníme vnější podobu, abychom zachránili podstatu a přiblížili ji lidem. V kolik začínáme, jaké zpíváme písně, jak mluvíme, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene.
+Rozlišujeme dvě věci. Evangelium se nemění. Forma, ve které ho neseme lidem, se měnit smí. V kolik začínáme, jaké zpíváme písně, jak mluvíme, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene. Když na formu nikdo nesmí sáhnout, začne novým lidem stát v cestě.
+
+Měníme vnější podobu, abychom zachránili podstatu a přiblížili ji lidem. Bůh nám smí sáhnout i na zažité názory a pohodlí, nejen na nedělní program. I na to, do čeho jsme dali spoustu práce.
 
 Tradici nám předali lidi, kteří Bohu věřili dřív než my. Vážíme si jich. Nejlíp jim poděkujeme, když z toho, co zasadili, necháme vyrůst něco živého. Za sklo to zavírat nebudeme.
 
-Člověk z jiného sboru se ptá:
+Tchán, který pamatuje starší pořádky, se ptá:
 
-*„Jak to, že se nebojí dělat věci jinak, a pořád pevně stojí na Bibli?“*
+*„Jak to, že se nebojí dělat věci jinak, a pořád vědí, na čem stojí?“*
 
 ### B. Pokora jako zkrocená síla
 
-Odvaha není arogance ani rebelie pro rebelii. Je to věrnost Kristu. Síla, kterou vede Duch svatý.
+Pokora není slabost ani ustrašenost. A neznamená omlouvat se za to, že věříme. Je to síla, kterou vede Duch svatý. Jako silný kůň, který poslouchá ruku jezdce.
 
-Máme svou váhu, svou hlavu i svou důstojnost. Nemusíme je nikomu předvádět. Kdo stojí pevně, nepotřebuje se vytahovat ani vyhrát každou hádku.
+Proto odvaha není arogance ani rebelie pro rebelii. Je to věrnost Kristu.
 
-Sílu máme na to, abychom unesli odpovědnost, chránili slabší a nepovolili pod tlakem. Skutečná autorita se pozná podle toho, že se vedle ní druzí narovnávají.
+Máme svou váhu, svou hlavu i svou důstojnost. Nemusíme je nikomu předvádět. Kdo stojí pevně, nepotřebuje druhé válcovat ani vyhrát každou hádku.
 
-Kdo chce něco měnit, potřebuje nejdřív poslouchat. Za starým zvykem často stojí dobrý důvod. Někdy už jen zvyk. Rozeznat jedno od druhého chce pokoru. A trpělivost s těmi, kdo to vidí jinak.
+Sílu máme na to, abychom unesli odpovědnost, chránili slabší a nepovolili pod tlakem. Skutečná autorita se pozná podle toho, že se vedle ní druzí narovnávají. Nikdo se nekrčí strachy.
 
 Sousedce to vrtá hlavou:
 
-*„Jak to, že mají tolik odvahy, a nepovyšují se?“*
+*„Jak to, že mají takový tah na branku, a člověk se vedle nich cítí bezpečně?“*
 
 ### C. Odvaha k pravdě i k vlastní omluvě
 
-Pravda chce odvahu dvakrát. Poprvé, když máme nahlas říct, co nefunguje. Laskavě, včas a do očí. Z dálky člověka jen shodíme. Podruhé, když to nefunguje kvůli nám.
+Pravda chce odvahu dvakrát. Poprvé, když ji máme říct druhému. Když si někdo ubližuje nebo jedná nepoctivě, neobcházíme to. Řekneme mu to laskavě, včas a do očí, protože mu chceme pomoct. Z dálky člověka jen shodíme. Podruhé, když je chyba na naší straně.
 
 Pak přijde věta, která se špatně vyslovuje: „Tohle jsme pokazili. Tudy cesta nevede.“ A po ní omluva těm, koho to stálo čas nebo nervy.
 
 Vyslechnout kritiku chce stejnou odvahu. Kdo u nás upozorní na problém, nemá dostat cejch potížisty. Možná vidí kouř dřív než ostatní. Připomínka není útok na toho, kdo vede.
 
-I u nás běží stroje, které kdysi táhly a dnes už jen hučí. Program, na který chodíme ze zvyku. Akce, kterou děláme, protože jsme ji dělali vždycky. Snažíme se takové stroje vypínat bez nostalgie. Někdy nám to trvá déle, než by mělo.
-
 Kdo to sleduje zvenku, kroutí hlavou:
 
-*„Jak to, že dokážou říct ‚tohle jsme pokazili‘ a jet dál?“*
+*„Jak to, že řeknou nepříjemnou pravdu do očí, a stejně rovně přiznají ‚tohle jsme pokazili‘?“*
 
 ## Jak to vypadá v týdnu
 
@@ -80,26 +80,26 @@ Když nový člověk nechápe, proč něco děláme, máme dvě možnosti. Vysv�
 
 Novým lidem věříme a necháváme je zkoušet vlastní nápady. Kdo se osvědčí v malých věcech, dostane větší odpovědnost.
 
-U každého programu se bez vytáček ptáme: vzniklo to z víry, nebo to držíme jen ze zvyku? Nese to ještě život? Když ne, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
+U každého programu se bez vytáček ptáme: vzniklo to z víry, nebo to držíme jen ze zvyku? Nese to ještě život? Díváme se na ovoce a posloucháme příběhy. Když to život nenese, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
 
-A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak.
+A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak. Riskujeme pro lidi, ne pro vlastní ego a adrenalin. Než něco změníme, posloucháme ty, kterých se to dotkne. Za starým zvykem často stojí dobrý důvod. A svůj plán netlačíme přes vztahy.
 
-Chceme se ozvat, když se v Novém Jičíně někomu děje křivda. Postavit se za chudé, za spravedlnost a za pravdu, i když to nebude populární. Ne vždycky na to máme odvahu. O to víc o ni prosíme.
+V práci, ve škole i na ulici v Novém Jičíně chceme držet rovnou páteř. Když vidíme podvod nebo to, jak někdo hází vinu na slabšího kolegu, neuhneme pohledem. Postavíme se na správnou stranu, i když nás to něco stojí. Těmi na druhé straně ale nepohrdáme. Ne vždycky na to máme odvahu. O to víc o ni prosíme.
 
 > **Tradice jsou kořeny, ne vitríny.**
 >
-> Kořeny máme proto, aby z nich něco rostlo. Na tenhle týden stačí vzít jeden zvyk, doma nebo ve sboru, a poctivě se zeptat, jestli ještě nese život.
+> Kořeny máme proto, aby z nich něco rostlo. Formy měníme, směr držíme. Na tenhle týden stačí vzít jeden zvyk, doma nebo ve sboru, a poctivě se zeptat, jestli ještě nese život.
 
 ## Do kapsy
 
 - Tradice jsou kořeny, ne vitríny.
 - Radikální znamená z kořene. A náš kořen je Kristus.
-- Kdo má hluboké kořeny, nebojí se větru ani nových větví.
 - Pokora je zkrocená síla, ne slabost.
-- Ořezáváme suché větve, aby mohlo vyrůst něco nového.
+- Pravdu říkáme zblízka a vlastní omyl přiznáme rovně.
+- Zastat se slabšího v týdnu váží víc než odvážná slova v neděli.
 
 ## Zrcadlo
 
-1. Kterého zvyku se držím jen proto, že je pohodlný?
-2. Co tenhle týden laskavě pojmenuju nahlas, i když riskuju, že narazím?
-3. Kde uznám, že šlapu vedle, a změním směr?
+1. Který svůj zvyk bráním jako věrnost Bohu?
+2. Jak zareaguju, až mi tenhle týden někdo řekne nepříjemnou pravdu?
+3. Koho se tenhle týden v práci nebo v okolí zastanu?

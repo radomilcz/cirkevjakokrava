@@ -14,7 +14,7 @@ Chceme obojí naráz. Stojíme pevně nohama na zemi a děláme poctivou práci.
 
 ## Proč to děláme
 
-Protože to tak dělal Pavel. Poctivě plánoval své cesty a pracoval rukama. Když ale jemu a jeho přátelům Duch svatý nedovolil kázat v Asii ani jít do Bithýnie, změnili směr. Pak měl Pavel v noci vidění. Muž z Makedonie ho prosil o pomoc. A oni vyrazili do Makedonie (Skutky 16,6–10).
+Protože to tak dělal Pavel. Poctivě plánoval své cesty a pracoval. Když ale jemu a jeho přátelům Duch svatý nedovolil kázat v Asii ani jít do Bithýnie, změnili směr. Pak měl Pavel v noci vidění. Muž z Makedonie ho prosil o pomoc. A oni vyrazili do Makedonie (Skutky 16,6–10).
 
 Plán měl. Ale když Bůh ukázal jinam, šel jinam.
 
@@ -30,9 +30,9 @@ Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic. A Pavel to p
 
 ### A. Plán slouží Pánu
 
-Plánovat je dobré. Promyšlená strategie, rozpočet a pořádek v penězích patří k poctivé práci. Věnujeme se jim pečlivě a nestydíme se za ně.
+Plánovat je dobré. Promyšlená strategie, rozpočet a pořádek v penězích patří k poctivé práci. Nestydíme se za ně. Duch svatý není výmluva pro lenost ani pro chaos.
 
-Plán je u nás ale sluha. Pána máme jiného.
+Plán je u nás ale sluha. Pána máme jiného. Boha proto zveme hned na začátek. K rozpočtu, ke směru i k načasování. Dřív, než všechno uzavřeme.
 
 Když Bůh ukáže jinam, smíme plán zahodit. I když nás stál hodně práce. Někdy si Boží hlas spleteme s vlastní pohodlností. Proto se o tom radíme spolu.
 
@@ -48,37 +48,33 @@ Duch svatý je pro nás dech Božího života v církvi.
 
 Příběhy o tom, co Bůh udělal před lety, posloucháme rádi. Samy nám ale nestačí. Chceme vidět, co dělá dnes, tady v Novém Jičíně.
 
-Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme tomu, co nám Bůh říká. Střízlivě, bez zvláštního hlasu a velkých gest.
+Modlíme se za nemocné a čekáme, že Bůh uzdravuje. Modlíme se za práci, za zkoušky, za pokažené vztahy. Počítáme s proroctvím i s dalšími duchovními dary. Když někdo z nás vnímá, že Bůh něco říká, má to u nás zaznít. Obyčejným hlasem a bez velkých gest.
 
-Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Žádný dojem nestojí nad Písmem. U každého se díváme, jestli se podobá Ježíši a jaké nese ovoce. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
+Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Žádný dojem nestojí nad Písmem. U každého se díváme, jestli se podobá Ježíši a jaké nese ovoce. Větou „Bůh mi pro tebe řekl“ u nás nikdo nesmí druhého ovládat. Dar má člověka povzbudit a postavit na nohy.
 
 Duch svatý nevede do mlhy ani do strachu. Vede ke svobodě, pravdě a lásce.
 
-Někdy Bůh odpoví hned. A jinak, než jsme čekali. Někdy čekáme dlouho a nerozumíme proč. I to k víře patří.
-
 Kolegyně, za kterou se modlíme, se diví:
 
-*„Jak to, že se modlí za praktické věci a Bůh jim tak konkrétně odpovídá?“*
+*„Jak to, že čekají od Boha zázraky a rozum nechávají zapnutý?“*
 
 ### C. Náš krok a Boží díl
 
 Zázraky nevynucujeme křikem. Víra má ruce, nohy, srdce a modlitbu.
 
-Uděláme poctivý lidský krok. Zajedeme pomoct. Odpustíme. A pak necháme Boha, ať udělá, co my neumíme.
+Když je někdo v úzkých, pomodlíme se za něj. A hned nato mu uvaříme polévku, pohlídáme děti nebo pomůžeme s prací. Modlitba pomoc nevytlačí a pomoc nevytlačí modlitbu.
 
-Ten krok bývá malý a obyčejný. Udělat ho je na nás. Proměnit srdce, zahojit vztah, otevřít oči, to už je Boží práce.
-
-Odpustit se rozhodneme sami. Bolest z toho odnese on.
+Náš díl bývá malý a obyčejný. Udělat ho je na nás. Proměnit srdce, zahojit vztah, otevřít oči, to už je Boží práce. Programem ani nátlakem to nezařídíme.
 
 Tak to bylo i u řeky ve Filipech. Pavel mluvil srozumitelně. Srdce ale Lydii otevřel Pán (Skutky 16,11–14).
 
 Švagr, který to sleduje z povzdálí, nechápe:
 
-*„Jak to, že tak obyčejná věc dokáže člověku obrátit život?“*
+*„Jak to, že se za člověka pomodlí a hned nato berou do ruky nářadí?“*
 
 ## Jak to vypadá v týdnu
 
-Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou. Zeptáme se: „Můžu se za tebe teď pomodlit?“ A když člověk nechce, bereme to. Za nemocné se modlíme, ale uzdravení neslibujeme.
+Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou. Zeptáme se: „Můžu se za tebe teď pomodlit?“ A když člověk nechce, bereme to. Uzdravení čekáme, ale neslibujeme. Někdy Bůh odpoví hned. Někdy čekáme dlouho a nerozumíme proč.
 
 Na poradách řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Občas na to zapomeneme. Vracíme se k tomu.
 
@@ -86,22 +82,22 @@ Když někdo řekne, že mu Bůh něco ukázal, vděčně to přijmeme a doptám
 
 V práci to vypadá nenápadně. Ráno se pomodlíme za zakázku, za těžký rozhovor, za šéfa. A pak práci uděláme pořádně. Modlitba nenahradí šroubovák. A šroubovák nenahradí modlitbu.
 
-Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. Modlíme se za lékaře, podnikatele i radnici. I za ty, kteří se o tom nikdy nedozvědí.
+Za Nový Jičín se modlíme. Za radnici, školy, firmy i rodiny. A kde je potřeba, přiložíme vlastní ruce a to, co umíme. Město vlastní silou nezměníme. Svůj díl ale udělat můžeme.
 
 > **Bez Ducha svatého je to jen prázdná sláma.**
 >
-> Na tenhle týden stačí jeden obyčejný krok, který dlouho odkládáš. Zajet pomoct, nebo odpustit. A krátká modlitba, než ho uděláš.
+> Na tenhle týden stačí jeden obyčejný krok, který dlouho odkládáš. Zajet pomoct, zavolat, uvařit. A krátká modlitba, než ho uděláš.
 
 ## Do kapsy
 
-- Děláme poctivé přirozené kroky a nadpřirozené čekáme od Boha.
 - Bez Ducha svatého je všechna naše snaha jen prázdná sláma.
 - Plán slouží Pánu, ne Pán plánu.
-- Sami to neudřeme. Vzrůst dává Bůh.
-- Nadpřirozenost nepotřebuje cirkus, ale poslušnost.
+- Modlitba není ozdoba na konci porady, ale místo, kde začínáme.
+- Boží vedení snese světlo Bible, rozumu i otázek druhých.
+- Modlitba nevytlačí pomoc a pomoc nevytlačí modlitbu.
 
 ## Zrcadlo
 
 1. O čem se radím se všemi, jen ne s Bohem?
-2. Kde tenhle týden doma nebo v práci počítám s Božím zásahem?
-3. Za koho se pomodlím jednoduše, obyčejnými slovy?
+2. Kde se tenhle týden modlitbou vyhýbám práci?
+3. Pro koho něco udělám, i když nevím, jak to vezme?

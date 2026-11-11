@@ -16,7 +16,7 @@ Kdo žije s krávami, ví, že na pastvě to občas smrdí hnojem. K životu to 
 
 Značku z toho neděláme. Ani to neschováváme. Hnůj se dá proměnit v hnojivo, jen když ho přestaneme natírat narůžovo.
 
-Nehrajeme divadlo. Bůh nestojí o naše nedělní role. Stojí o lidi z masa a kostí.
+Nehrajeme divadlo. Nás unavuje a lidi kolem odrazuje. Bůh nestojí o naše nedělní role. Stojí o lidi z masa a kostí.
 
 ## Proč to děláme
 
@@ -26,13 +26,11 @@ Petr ho v noci před ukřižováním třikrát zapřel. Po vzkříšení přišl
 
 Neponížil ho. A nedělal, že se nic nestalo. Před Ježíšem nemusel Petr nic hrát.
 
-Naše selhání není naše jméno.
-
 Pavel píše Timoteovi, že cílem toho, co učí, je láska. Láska z čistého srdce, dobrého svědomí a upřímné víry. A Jan dodává, že kdo tvrdí, že nemá nic na svědomí, klame sám sebe. Kdo se přizná, tomu Bůh odpustí. Je věrný (1. Timoteovi 1,5; 1. Janův 1,8–9).
 
 **Přirozenost** znamená žít bez přetvářky. Jednáme civilně a falešnou svatozář nenosíme.
 
-**Opravdovost** znamená stát v pravdě před Bohem i před lidmi. Před oběma se stejnou tváří.
+**Opravdovost** znamená stát v pravdě před Bohem i před lidmi. Před oběma se stejnou tváří. A co pokazíme, jdeme spravit.
 
 Bůh neléčí fasádu. Léčí člověka. Opravdovost je teprve poctivý začátek proměny.
 
@@ -40,13 +38,11 @@ Bůh neléčí fasádu. Léčí člověka. Opravdovost je teprve poctivý začá
 
 ### A. Jeden život od pondělí do neděle
 
-Máme jen jednu tvář. K čemu se v neděli hlásíme při písních, platí i v pondělí v dílně. A doma u dřezu, když se hádáme, kdo měl umýt nádobí.
+Máme jen jednu tvář. K čemu se v neděli hlásíme při písních, platí i v pondělí v dílně, za volantem a u piva se sousedem. A doma u dřezu, když se hádáme, kdo měl umýt nádobí.
 
-Nejde o to, abychom v dílně zpívali. Jde o to, aby tam stál tentýž člověk jako v neděli. Se stejnými slovy, stejnou trpělivostí a stejnou poctivostí.
+Nejde o to, abychom v dílně zpívali. Jde o to, aby tam stál tentýž člověk jako v neděli. Víra je vidět na tom, jak odvedeme práci, jak platíme účty a jak mluvíme o lidech, kteří u toho nejsou. A jak se chováme doma, když se nikdo cizí nedívá.
 
 Neděle pro nás není útěk od všedních dnů. Slavíme v ní, co jsme s Bohem od pondělí prožili, a nadechujeme se na další týden.
-
-Kdo nás zažil v pondělí v sedm ráno, ví své.
 
 Kolega, který nás zná z práce a jednou přišel i v neděli, se ptá:
 
@@ -56,27 +52,27 @@ Kolega, který nás zná z práce a jednou přišel i v neděli, se ptá:
 
 Kdo má dvě tváře, potřebuje i dvě pravdy. Jednu pro lidi a druhou pro sebe. My chceme mít jednu.
 
-Učíme se říkat pár krátkých vět. Spletl jsem se. Nevím. Bojím se. Odpusť mi. A taky jednu radostnou: Tady vidím Boží rukopis.
+Naše selhání není naše jméno. Proto můžeme říct pravdu bez vytáček.
 
-Proto selhání netutláme, ani kdyby se to hodilo kvůli dobrému jménu sboru. Když někdo z nás ujede, řekneme mu to. Napřímo a s láskou. A pak mu pomůžeme dát věci do pořádku. Zatím nám to jde líp na papíře než naživo.
+Učíme se říkat pár krátkých vět. Spletl jsem se. Nevím. Bojím se. Potřebuju pomoc. Odpusť mi. A taky jednu radostnou: Tady vidím Boží rukopis.
 
-Pověst sboru se dá spravit. Škody z pravdy zametené pod koberec mnohem hůř. I když mlčet je vždycky pohodlnější.
+U slov to nekončí. Když někomu ublížíme, jdeme za ním. Řekneme, co jsme provedli, omluvíme se a zeptáme se, jak to spravit. Zatím nám to jde líp na papíře než naživo.
+
+Selhání netutláme, ani kdyby se to hodilo kvůli dobrému jménu sboru. Pověst se dá spravit. Škody z pravdy zametené pod koberec mnohem hůř.
 
 Sousedka se zamyslí:
 
-*„Jak to, že se nebojí mluvit o svých chybách a umí odpouštět?“*
+*„Jak to, že přiznají chybu a hned ji jdou napravit?“*
 
 ### C. Věrný originál místo kopie
 
-Každý z nás má své slabosti, svou povahu a své vrásky. Bůh nás nechce přebrousit podle jedné šablony.
+Každý z nás má svou povahu, svůj humor, svůj příběh a své dary. I své slabosti a vrásky. Bůh nás nechce přebrousit podle jedné šablony.
 
-Cholerik se u nás nemusí tvářit jako flegmatik. Kdo se směje nahlas, nemusí se učit šeptat. A kdo přijde v neděli s mizernou náladou, nemusí ji schovávat.
+Cholerik se u nás nemusí tvářit jako flegmatik. Kdo se směje nahlas, nemusí se učit šeptat. Nikdo nemusí mluvit ani se modlit jako ti, kdo stojí vepředu. A kdo přijde v neděli s mizernou náladou, nemusí ji schovávat. Život chutná nejlíp bez umělých přísad.
 
 Originál ale není alibi. Kdo po výbuchu mávne rukou, že „já už jsem prostě takový“, schovává se. Opravdovost je těžší. Přiznat, že to bylo přes čáru, a jít to spravit.
 
-Druhým nelepíme doživotní nálepky za staré chyby.
-
-Život chutná nejlíp bez umělých přísad.
+Druhým nelepíme doživotní nálepky za staré chyby. Hledáme spolu jeho pravdivé jméno. Ptáme se, kým ho Bůh zamýšlel, a pomáháme si do toho dorůst. Věrný originál je věrný Kristu.
 
 Kamarádka si po čase říká:
 
@@ -86,13 +82,13 @@ Kamarádka si po čase říká:
 
 Nováček si u nás nemusí dávat pozor na pusu ani dělat, že má život vyřešený. S dokonalostí na nikoho nevyrukujeme. Žádnou nemáme. Když přijde řeč na víru, mluvíme i o tom, co jsme sami pokazili.
 
-Mezi sebou nechceme mít nedotknutelné svaté. Přejeme si, aby i ten, kdo v neděli stojí vepředu, mohl říct, s čím se pere. A abychom mu to my na židlích nevyčítali.
+Mezi sebou nechceme mít nedotknutelné svaté. Kdo v neděli stojí vepředu a něco pokazí, má to přiznat stejně rovně jako kdokoli jiný. A my na židlích mu to nemáme předhazovat.
 
 Z vlastních ran ale neděláme představení. Citlivé věci říkáme mezi čtyřma očima nebo v partě lidí, kterým věříme. Soukromí není přetvářka.
 
 Držíme slovo. Když v Novém Jičíně něco slíbíme, má to platit. Termín, který jsme slíbili zákazníkovi. Cena na faktuře bez fíglů. Slib sousedovi, že mu v sobotu pomůžeme.
 
-Kdo nás zná z neděle, má nás poznat i na stavbě, v kanceláři a za pultem.
+Když něco pokazíme v práci nebo na veřejnosti, neházíme to na druhé a čísla nepřikrašlujeme. Přiznáme to a srovnáme účet.
 
 > **Bůh miluje originál, ne naleštěnou kopii.**
 >
@@ -102,12 +98,12 @@ Kdo nás zná z neděle, má nás poznat i na stavbě, v kanceláři a za pultem
 
 - Žijeme jeden život a máme jednu tvář od pondělí do neděle.
 - Nebojíme se přiznat, že občas smrdíme hnojem.
+- Naše selhání není naše jméno.
+- Bůh neléčí fasádu. Léčí člověka.
 - Bůh miluje originál, ne naleštěnou kopii.
-- Život chutná nejlíp bez umělých přísad.
-- Nehájíme pověst církve, chráníme pravdu a člověka.
 
 ## Zrcadlo
 
 1. V čem se v práci chovám jinak než v neděli?
-2. Kde tenhle týden přiznám chybu, i když by se dala ututlat?
-3. Kde předstírám víc víry, než mám?
+2. Komu tenhle týden dlužím omluvu a konkrétní nápravu?
+3. Kde napodobuju druhé a zahazuju, co Bůh svěřil mně?
