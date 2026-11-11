@@ -10,7 +10,7 @@ Se slovy o Bohu se nám to stává taky. V neděli zazní něco dobrého. Pokýv
 
 Chyba není v neděli. Je v tom, co s ní uděláme my. Informace sama ještě nikoho nezměnila.
 
-Když před tebe hospodář položí čerstvý chleba, kus sýra a džbán vody, slovník nepotřebuješ. Hned víš, co jíš, k čemu to je a s kým se rozdělíš.
+Když před tebe hospodář položí čerstvý chleba, kus sýra a džbán vody, nepotřebuješ slovník ani výklad. Najíš se. A vydržíš do večera.
 
 Takhle blízko k životu má mít i nebe. Boží slovo má zasytit. Na celý týden.
 
@@ -20,9 +20,9 @@ Protože nás Ježíš učil modlit se takhle: „Buď vůle tvá jako v nebi, t
 
 Ta zem je i Nový Jičín. Fabrika, dílna, škola, kancelář. Tvoje rodina.
 
-Pavel radí Koloským: s lidmi zvenku jednejte moudře a mluvte vlídně, ať víte, jak komu odpovědět (Koloským 4,5–6).
+A Pavel píše Koloským: „Vaše slova ať jsou vždy vlídná a ochucená solí, ať víte, jak máte mluvit s každým člověkem“ (Koloským 4,6, Bible21).
 
-Odtud vycházejí obě slova v názvu.
+Řeč při zemi. A řeč ochucená solí. Odtud se vzala obě slova v názvu.
 
 **Srozumitelné slovo informuje, pronikavé formuje.**
 
@@ -72,7 +72,7 @@ Radši budeme srozumitelně chybovat než bezchybně mlžit.
 
 A host z neděle si ve středu říká:
 
-*„Jak to, že mě ještě dneska drží nad vodou, co říkali v neděli?“*
+*„Jak to, že mi nic necpali, a stejně mi to ještě dneska leží v hlavě?“*
 
 ## Jak to vypadá v týdnu
 
