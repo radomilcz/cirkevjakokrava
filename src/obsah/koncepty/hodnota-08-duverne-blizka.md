@@ -8,13 +8,13 @@ Lidí je kolem nás pořád dost. V práci, v autobuse, na hřišti s dětmi. A 
 
 V církvi to jde taky. A docela pohodlně.
 
-Přijdeme v neděli, sedneme si do řady, zazpíváme a posloucháme kázání. Dobré kázání. Pak kývneme na pár známých a jsme pryč dřív, než se nás někdo stihne zeptat, jak se máme. Nikdo neví, s čím jsme přišli. A nikdo neví, s čím odcházíme.
+Přijdeme v neděli, sedneme si do řady, zazpíváme a posloucháme kázání. Dobré kázání. A jsme pryč dřív, než se nás někdo stihne zeptat, jak se máme. Nikdo neví, s čím jsme přišli. A nikdo neví, s čím odcházíme.
 
 Takové duchovní kino. Pohodlné místo, dobrý program a žádné otázky. To pokušení zná každý z nás.
 
 Neděle za to nemůže. Je dobrá. Jen sama nestačí.
 
-Kráva nikdy není sama. Krávy drží pohromadě a zahřívají se navzájem. My bez sebe taky dlouho nevydržíme.
+Kráva nikdy není sama. Krávy drží pohromadě a zahřívají se navzájem.
 
 **V anonymitě víra vysychá.**
 
@@ -28,7 +28,7 @@ Svůj krok k Bohu musí udělat každý z nás sám. Víru nikdo nezdědí po m�
 
 Kdo ale patří Bohu, patří i ostatním. Bible tomu říká Kristovo tělo. A tělo po kouskách nežije.
 
-První křesťané v Jeruzalémě se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli (Skutky 2,42–46). Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží (Galatským 6,2). A Tesalonickým píše, že je on a jeho přátelé měli tak rádi, že jim chtěli dát nejen evangelium, ale i vlastní životy (1. Tesalonickým 2,8).
+První křesťané se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli (Skutky 2,42–46). Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží (Galatským 6,2). A Tesalonickým píše, že je on a jeho přátelé měli tak rádi, že jim chtěli dát nejen evangelium, ale i vlastní životy (1. Tesalonickým 2,8).
 
 Z toho jsou obě slova v názvu.
 
@@ -44,7 +44,7 @@ Rodina se nepozná podle toho, že sedí v jedné řadě a kouká stejným směr
 
 Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete. Všechno o sobě nevíme. To podstatné ano.
 
-A víra k tomu patří. Neptáme se jen „Jak se máš?“, ale i „Jak se máš s Bohem?“. Modlíme se spolu i jindy než v neděli.
+A víra k tomu patří. Neptáme se jen „Jak se máš?“, ale i „Jak se máš s Bohem?“
 
 Host, který s námi strávil pár týdnů, se diví:
 
@@ -56,7 +56,7 @@ Důvěrnost neznamená, že se vzdáme soukromí. Nikdo nemusí vykládat všech
 
 Kráva respektuje hranice pastvy. My respektujeme hranice druhého. Nevyptáváme se víc, než chce sám říct.
 
-Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobností, které nám nikdo nesvěřil. Tomu se bráníme. Co nám kdo svěří, má zůstat u nás.
+Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobností, které nám nikdo nesvěřil. Co nám kdo svěří, má zůstat u nás.
 
 Ne vždycky to uhlídáme. Když nám ujede jazyk, jdeme se omluvit tomu, o kom jsme mluvili.
 
@@ -78,11 +78,11 @@ Kamarád, se kterým se vídáme pár let, se ptá:
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Své tempo má i on. Hlubokou zpověď z nikoho netaháme první neděli. Stačí, když ví, že se může ozvat, až bude chtít.
+Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Své tempo má i on. Hlubokou zpověď z nikoho netaháme první neděli.
 
-Mezi sebou se scházíme po domech, po dvou, po třech i ve větších skupinkách. Pomáháme si se stěhováním a hlídáme si navzájem děti. Když někoho potká krize, snažíme se, aby na ni nezůstal sám.
+Mezi sebou se scházíme po domech. Pomáháme si se stěhováním a hlídáme si navzájem děti. Když někoho potká krize, snažíme se, aby na ni nezůstal sám.
 
-Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády. Příjemné to není. Jenže tiché napětí samo nezmizí. Jen roste.
+Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády. Tiché napětí samo nezmizí. Jen roste.
 
 Blízkost nekončí na prahu sboru. Se sousedy a kolegy, kteří do církve nechodí, pěstujeme stejně hluboká a věrná přátelství. Nečekáme, že s námi jednou přijdou v neděli. Jsou to naši přátelé i tak.
 

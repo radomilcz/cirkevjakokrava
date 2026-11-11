@@ -36,7 +36,7 @@ Krása pro nás proto není zbytečný luxus ani pozlátko. Staví mosty tam, ka
 
 Kdo k nám přijde poprvé, všimne si spousty věcí dřív, než kdokoli řekne první větu. Jak vypadala pozvánka. Jestli je v sále uklizeno a na záchodě papír. Jestli hudba ladí a světlo neřeže do očí.
 
-Tohle všechno mluví za nás. Buď to říká, že nám na člověku záleží, nebo že je nám jedno.
+Tohle všechno mluví za nás. Buď říká, že nám na člověku záleží, nebo že je nám to jedno.
 
 Drahé to být nemusí. Stačí, když si s tím někdo dá práci.
 
@@ -54,7 +54,7 @@ Bůh má rád hravost. Náboženská křeč mu nevoní.
 
 Ne každý pokus vyjde. Někdy je video trapné a vtip nikdo nepochopí. Zasmějeme se, otřepeme se a zkusíme to znovu.
 
-Tvořivost umírá na perfekcionismus. Na strach, že to nebude dost dokonalé. Pro lidi, a dokonce ani pro Boha.
+Tvořivost umírá na perfekcionismus. Na strach, že to nebude dost dokonalé. Ani pro lidi, ani pro Boha.
 
 Strach z chyby nesmí být silnější než chuť tvořit.
 
@@ -76,9 +76,9 @@ A kadeřnice, která má náš leták na pultu, se diví:
 
 ## Jak to vypadá v týdnu
 
-Co ukazujeme navenek, má těšit oko i ucho. Ošuntělá kopie z kopírky by lidem řekla, že nám na nich moc nezáleží. Proto si s každou věcí dáváme práci, i když to ne vždycky stihneme.
+Co ukazujeme navenek, má těšit oko i ucho. Ošuntělý papír z kopírky by lidem řekla, že nám na nich moc nezáleží. Proto si s každou věcí dáváme práci, i když to ne vždycky stihneme.
 
-Mezi sebou hledáme, co kdo umí. Jeden tiskne na 3D tiskárně, druhá stříhá video, další vaří pro celý sál, kreslí, nebo umí s pájkou a se dřevem. Každý takový dar u nás má místo. Žádný nemá zakrnět jen proto, že se nevejde do církevních kolonek.
+Mezi sebou hledáme, co kdo umí. Jeden tiskne na 3D tiskárně, druhá stříhá video, třetí vaří pro celý sál. Někdo kreslí, jiný umí s pájkou nebo se dřevem. Každý takový dar u nás má místo. Žádný nemá zakrnět jen proto, že se nevejde do církevních kolonek.
 
 Nepovedený pokus u nás nemá nikoho shodit. Snažíme se, aby to byl spíš začátek dalšího. Kdo se bojí posměchu, nic nového nezkusí.
 
@@ -100,4 +100,4 @@ Ve městě chceme, aby bylo k světu všecko, k čemu se podepíšeme. Stánek n
 
 1. Co tenhle týden udělám o kus líp, než musím?
 2. Čí nápad tenhle týden podpořím, i když není podle mého vkusu?
-3. Kdo kromě mě se tenhle týden potěší tím, co dělám?
+3. Kdo se kromě mě tenhle týden potěší tím, co dělám?

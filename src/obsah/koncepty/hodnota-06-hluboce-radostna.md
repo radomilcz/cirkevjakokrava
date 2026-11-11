@@ -22,7 +22,9 @@ Na svatbě v Káně došlo víno. Ježíš nenechal oslavu skončit. Z vody udě
 
 Tentýž Ježíš se rozplakal u hrobu svého přítele Lazara (Jan 11,35). Uměl slavit s lidmi i plakat s nimi. Odtud jsou obě slova v názvu.
 
-**Hluboce**, protože naše radost stojí na Božím vítězství. Trápení, nemoc ani smrt ho nesmažou. Proto smí téct slzy. Mezi křesťany, i mezi námi, se občas ozve, že kdo pláče, má slabou víru. Vždyť Pavel píše, ať se v Pánu radujeme pořád (Filipským 4,4). Jenže tentýž Pavel radí plakat s těmi, kdo pláčou, a radovat se s těmi, kdo se radují (Římanům 12,15).
+**Hluboce**, protože naše radost stojí na Božím vítězství. Trápení, nemoc ani smrt ho nesmažou. Proto smí téct slzy.
+
+Mezi křesťany, i mezi námi, se občas ozve, že kdo pláče, má slabou víru. Vždyť Pavel píše, ať se v Pánu radujeme pořád (Filipským 4,4). Jenže Pavel taky radí plakat s těmi, kdo pláčou, a radovat se s těmi, kdo se radují (Římanům 12,15).
 
 Smutek a pláč nejsou selháním víry. Plakat je v pořádku. A zdravé.
 
@@ -34,7 +36,7 @@ A radost nezačíná u nás. Bůh se na nás dívá s radostí, ne s věčně sv
 
 ### A. Vděčnost, která mění pohled
 
-Závist má ostrý zrak. Hned vidí, co má soused a my ne. Novější auto, delší dovolenou, děti, které poslouchají na první slovo.
+Závist má ostrý zrak. Hned vidí, co má soused a my ne. Novější auto, delší dovolenou.
 
 Vděčnost se dívá jinam. Ráno nás nic nebolí. Máme střechu nad hlavou. Doma topí. Děti došly ze školy v pořádku. Maličkosti, kterých si všimneme, až když chybí.
 
@@ -54,7 +56,7 @@ Smějeme se hlavně sami sobě. A svým církevním trapasům. Píseň, kterou j
 
 Zdravý humor shazuje naši vlastní důležitost, nikdy důstojnost druhého. Cynismus, posměch a sarkasmus se za humor jen převlékají.
 
-Kdo se neumí zasmát sám sobě, bere se smrtelně vážně. A vedle něj se těžko dýchá.
+Kdo se neumí zasmát sám sobě, bere se smrtelně vážně.
 
 Kamarád se po prvním večeru s námi ptá:
 
@@ -84,7 +86,7 @@ Nadávat umíme taky. Na ceny, na politiky, na rozkopanou silnici. Zapšklý mor
 
 > **Humor je hnojivo pro duši.**
 >
-> Kde se smějeme, tam se dobře roste. Na tenhle týden stačí jedno poděkování nahlas, třeba někomu, kdo ho od tebe nečeká.
+> Na tenhle týden stačí jedno poděkování nahlas, třeba někomu, kdo ho od tebe nečeká.
 
 ## Do kapsy
 
