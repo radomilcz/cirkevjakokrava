@@ -8,19 +8,17 @@ Hodně lidí si myslí, že se křesťan musí pořád usmívat. V práci, doma,
 
 Ten křečovitý úsměv známe. I z vlastního zrcadla. Chvíli vydrží, pak začnou bolet tváře. Takové divadlo unaví herce i diváky.
 
-Kráva nic nehraje. Stačí jí slunce, trocha trávy a klid. Je jí dobře a nemusí to nikomu dokazovat.
+Kráva nic nehraje. Stačí jí slunce a klid. Je jí dobře a nemusí to nikomu dokazovat.
 
-Radost, o kterou nám jde, není chvilková nálada ani laciné „ono to nějak dopadne“. Sahá hlouběji. Vyrůstá z vděčnosti, že žijeme a že o nás Bůh ví. A z toho, že se nemusíme brát tak vážně.
-
-A humor? Ten je pro duši jako hnojivo.
+Radost, o kterou nám jde, není chvilková nálada ani laciné „ono to nějak dopadne“. Sahá hlouběji. Vyrůstá z vděčnosti za to, že žijeme a že o nás Bůh ví. A z toho, že se nemusíme brát tak vážně.
 
 ## Proč to děláme
 
 Protože Ježíš nebyl suchar.
 
-Na svatbě v Káně došlo víno. Ježíš nenechal oslavu skončit. Z vody udělal víno a správce hostiny se divil, že ženich nechal to dobré až na konec (Jan 2).
+Na svatbě v Káně došlo víno. Ježíš nenechal oslavu skončit. Z vody udělal víno a správce hostiny se divil, že ženich nechal to dobré až na konec (Jan 2,1–11).
 
-Tentýž Ježíš se rozplakal u hrobu svého přítele Lazara (Jan 11,35). Uměl slavit s lidmi i plakat s nimi. Odtud jsou obě slova v názvu.
+Tentýž Ježíš se rozplakal nad smrtí svého přítele Lazara (Jan 11,35). Uměl slavit s lidmi i plakat s nimi. Odtud pocházejí obě slova v názvu.
 
 **Hluboce**, protože naše radost stojí na Božím vítězství. Trápení, nemoc ani smrt ho nesmažou. Proto smí téct slzy.
 
@@ -28,7 +26,7 @@ Mezi křesťany, i mezi námi, se občas ozve, že kdo pláče, má slabou víru
 
 Smutek a pláč nejsou selháním víry. Plakat je v pořádku. A zdravé.
 
-**Radostná**, protože umíme slavit. Sníst spolu něco dobrého, zasmát se sami sobě a mít radost, že jsme spolu. Už Přísloví vědí, že veselé srdce léčí a zdeptaný duch vysuší člověka až na kost (Přísloví 17,22).
+**Radostná**, protože umíme slavit. Sníst spolu něco dobrého, zasmát se sami sobě a mít radost, že jsme spolu. Už Přísloví vědí, že veselé srdce léčí a zdeptaný duch vysušuje kosti (Přísloví 17,22).
 
 A radost nezačíná u nás. Bůh se na nás dívá s radostí, ne s věčně svraštělým obočím.
 
@@ -40,9 +38,9 @@ Závist má ostrý zrak. Hned vidí, co má soused a my ne. Novější auto, del
 
 Vděčnost se dívá jinam. Ráno nás nic nebolí. Máme střechu nad hlavou. Doma topí. Děti došly ze školy v pořádku. Maličkosti, kterých si všimneme, až když chybí.
 
-Kdo za ně Bohu děkuje, tomu se v duši pomalu hojí hořkost. Nejde to přes noc. Ale jde to.
+Kdo za ně Bohu děkuje, tomu z duše pomalu mizí hořkost. Nejde to přes noc. Ale jde to.
 
-V těžkých časech se děkuje nejhůř. Někdy hledáme dlouho, než najdeme jedinou věc. Ale hledáme.
+V těžkých časech se děkuje nejhůř. Někdy hledáme dlouho, než najdeme aspoň jednu věc. Ale hledáme.
 
 Sousedka z vedlejšího vchodu se diví:
 
@@ -54,7 +52,7 @@ Smích boří zdi, které by teologická hádka jen zvýšila.
 
 Smějeme se hlavně sami sobě. A svým církevním trapasům. Píseň, kterou jsme začali tak vysoko, že ji nikdo nevyzpíval. Modlitba před jídlem tak dlouhá, že mezitím vystydl oběd.
 
-Zdravý humor shazuje naši vlastní důležitost, nikdy důstojnost druhého. Cynismus, posměch a sarkasmus se za humor jen převlékají.
+Zdravý humor shazuje naši vlastní důležitost. Nikdy nesnižuje důstojnost druhého. Cynismus, posměch a sarkasmus se za humor jen převlékají.
 
 Kdo se neumí zasmát sám sobě, bere se smrtelně vážně.
 
@@ -68,7 +66,7 @@ Když člověk krvácí, nepomůže mu slyšet, že je všechno růžové. Ani v
 
 Pomůže mu, když si k němu někdo sedne a vydrží. Bez rad. Klidně i mlčky.
 
-Radovat se s radujícími a plakat s plačícími je těžké obojí. Z cizího štěstí se špatně raduje, když se nám nedaří. U cizí bolesti se špatně mlčí, když bychom ji nejradši spravili slovy. Snažíme se o obojí. Ne vždycky to umíme.
+Radovat se s radujícími i plakat s plačícími, obojí je těžké. Z cizího štěstí se špatně raduje, když se nám nedaří. U cizí bolesti se špatně mlčí, protože bychom ji nejradši spravili slovy. Snažíme se o obojí. Učíme se to.
 
 Pláč má u nás místo. I v neděli dopoledne.
 
@@ -78,15 +76,15 @@ Kolegyně z práce se ptá:
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí si nasazovat nedělní obličej. Může dorazit rozesmátý po povedeném týdnu, nebo s očima opuchlýma od pláče. S prvním se zasmějeme. Druhému nebudeme slzy hned utírat.
+Kdo k nám přijde poprvé, nemusí nic hrát. Může dorazit rozesmátý po povedeném týdnu, nebo s očima opuchlýma od pláče. S rozesmátým se zasmějeme. Uplakanému nebudeme slzy hned utírat.
 
-Mezi sebou slavíme, co se dá. Narozeniny, novou práci, složenou zkoušku, uzdravení. Rádi spolu jíme a u stolu se smějeme, až nám tečou slzy. A když někomu z nás do smíchu není, nikdo ho do veselí nenutí.
+Mezi sebou slavíme, co se dá. Narozeniny, novou práci, složenou zkoušku, uzdravení. Rádi spolu jíme a u stolu se smějeme, až nám tečou slzy. A když někomu z nás do smíchu není, nesnažíme se ho nutit do veselí.
 
 Nadávat umíme taky. Na ceny, na politiky, na rozkopanou silnici. Zapšklý morous se v každém z nás ozve rychle. Snažíme se ho nekrmit. Do práce, do obchodu i do šatny po tréninku chceme nosit lehkost, naději a chuť slavit dobré věci.
 
 > **Humor je hnojivo pro duši.**
 >
-> Na tenhle týden stačí jedno poděkování nahlas, třeba někomu, kdo ho od tebe nečeká.
+> Kdo se umí zasmát sám sobě, snáz si všimne i toho, za co děkovat. Na tenhle týden stačí jedno poděkování nahlas, třeba někomu, kdo ho od tebe nečeká.
 
 ## Do kapsy
 
@@ -100,4 +98,4 @@ Nadávat umíme taky. Na ceny, na politiky, na rozkopanou silnici. Zapšklý mor
 
 1. Čemu se na sobě tenhle týden od srdce zasměju?
 2. Koho tenhle týden vyslechnu ve smutku bez laciných útěch?
-3. Uslyší ode mě tenhle týden doma i v práci víc díků, nebo stížností?
+3. Uslyší ode mě tenhle týden víc díků, nebo stížností?

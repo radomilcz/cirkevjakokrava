@@ -6,25 +6,25 @@
 
 Svět nás měří výkonem. Kolik toho uděláš, kolik vyděláš, kolik stihneš. Kdo nestíhá, jako by nebyl.
 
-Církev do toho umí spadnout taky. Jen to zní zbožněji. Víra se začne počítat na odpracované hodiny. Kdo vynechá akci, má výčitky. Kdo řekne ne, připadá si jako zrádce.
+My v církvi do toho umíme spadnout taky. Jen to u nás zní zbožněji. Víra se začne počítat na odpracované hodiny. Kdo vynechá akci, má výčitky. Kdo řekne ne, připadá si jako zrádce.
 
 Výsledek? Unavení, uštvaní lidi. A rodiny, které to odnesou.
 
-Krávu jen tak něco nerozhodí. Leží na louce a v klidu přežvykuje, i když kolem ní otravují mouchy. Bzučí a dotírají. Tempo jí ale neurčují.
+Krávu jen tak něco nerozhodí. Leží na louce a nikam nespěchá, i když kolem ní otravují mouchy. Bzučí a dotírají. Tempo jí ale neurčují.
 
 Bůh s námi nejedná jako otrokář s bičem. Je to laskavý Hospodář. Ví, že bičem nikoho nedonutí růst. Zdravé věci rostou zevnitř.
 
 ## Proč to děláme
 
-Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“ (Matouš 11,28). Jeho jho netlačí a jeho náklad je lehký (Matouš 11,29–30).
+Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“ (Matouš 11,28, ČEP). Jeho jho netlačí a jeho břemeno netíží (Matouš 11,30).
 
-Kolik stojíme, nezávisí na tom, kolik toho pro Boha odedřeme. Jsme synové a dcery, ne námezdní dělníci.
+Kolik stojíme, nezávisí na tom, kolik toho pro Boha odedřeme.
 
-Ježíš o sobě říká, že je vinný kmen a my ratolesti. Ratolest se nenadře. Nese ovoce, když zůstane na kmeni. Bez něj nezmůže nic (Jan 15,4–5).
+Ježíš o sobě říká, že je vinný kmen a my ratolesti. Ratolest se nenadře. Nese ovoce, když zůstane na kmeni (Jan 15,4–5).
 
 V názvu jsou dvě slova. **Vnitřně** znamená, že nám nestačí naleštěná fasáda a povedené akce. Zajímá nás, co se děje pod povrchem. V srdci, v manželství, v rodině.
 
-**Zdravá** drží pohromadě tři věci. Pravdivé učení. Tempo, které vydržíme. A odvahu včas zastavit a odpočinout si.
+**Zdravá** drží pohromadě tři věci. Pravdivé učení. Tempo, které vydržíme. A odvahu se včas zastavit a odpočinout si.
 
 ## Na čem to stojí
 
@@ -32,7 +32,7 @@ V názvu jsou dvě slova. **Vnitřně** znamená, že nám nestačí naleštěn�
 
 Šabat, den odpočinku, není odměna za dobře odvedený týden. Je to základ, na kterém týden stojí.
 
-Kdo neumí odpočívat, nebere vážně Boha. Jedná, jako by svět stál na něm. Tu větu říkáme hlavně sami sobě. Ne těm, kdo už únavou padají.
+Kdo neumí odpočívat, nebere vážně Boha. Jedná, jako by svět stál jen na něm samotném. Tu větu říkáme hlavně sami sobě. Ne těm, kdo už únavou padají.
 
 Rok v plném nasazení vydrží leckdo. My chceme tempo, které vydrží celý život.
 
@@ -62,9 +62,9 @@ Milost předchází práci. Nejdřív nás Bůh miluje. Teprve potom něco děl�
 
 Námezdní dělník dostane, co si odpracuje. Syn a dcera jsou doma i v den, kdy nic neodvedou.
 
-Sloužíme z radosti. Lásku si zasloužit nemusíme, už ji máme. Nemusíme hrát divadlo ani sbírat body. Před Bohem ani před sebou navzájem.
+Sloužíme z radosti. Lásku si zasloužit nemusíme, už ji máme. Nemusíme si nic vysloužit. Před Bohem ani před sebou navzájem.
 
-A kolega si po první neděli s námi říká:
+A kolega si po pár týdnech s námi říká:
 
 *„Jak to, že si tu nemusím nic dokazovat?“*
 
@@ -78,11 +78,9 @@ Když náklad potápí loď, letí přes palubu náklad, ne posádka. Když nest
 
 Večer doma s rodinou není ulejvání ze služby.
 
-V práci a v podnikání se snažíme držet poctivost a klidné tempo, i když se kolem žene hysterická honba za ziskem. Termíny a cizí očekávání bzučí jako ty mouchy. Otravovat smějí, tempo nám určovat nemusí. Zakázku, která by nás semlela, zkoušíme odmítnout. Ne vždycky na to máme odvahu.
+V práci a v podnikání se snažíme zůstat poctiví a držet klidné tempo, i když se kolem všichni ženou za ziskem. Cizí očekávání bzučí jako ty mouchy. Otravovat smějí, tempo nám ale neurčují. Zakázku, která by nás semlela, zkoušíme odmítnout. Občas ji stejně vezmeme a pak toho litujeme.
 
 > **Bůh je Hospodář, ne otrokář.**
->
-> Otrokář žene bičem a počítá, kolik z nás vymačká. Hospodář pečuje, protože ví, že z uštvaných nic dobrého nevyroste.
 >
 > Na tenhle týden stačí škrtnout z kalendáře jednu věc. Bez výčitek.
 
@@ -92,10 +90,10 @@ V práci a v podnikání se snažíme držet poctivost a klidné tempo, i když 
 - Bůh je Hospodář, ne otrokář.
 - Odpočinek není odměna. Je to základ života.
 - Člověk a rodina mají přednost před programem.
-- Říct včas ne chrání zdravé ano.
+- Říct včas „ne“ chrání zdravé „ano“.
 
 ## Zrcadlo
 
-1. Co tenhle týden dělám z radosti a co jen z pocitu viny?
+1. Co tenhle týden dělám jen z pocitu viny?
 2. Kdy tenhle týden vypnu telefon a budu jen se svými?
-3. Kdo ve sboru mele z posledního a s čím tenhle týden pomůžu?
+3. Komu ve sboru tenhle týden pomůžu nést náklad?

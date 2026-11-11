@@ -4,15 +4,15 @@
 
 ## Držet, nebo bourat
 
-Když se má něco změnit, lidi obvykle sáhnou po jedné ze dvou cest.
+Když se má něco změnit, lidi se obvykle vydají jednou ze dvou cest.
 
 Jedni se drží starých pořádků zuby nehty. „Takhle jsme to dělali vždycky.“ Druzí bourají všechno staré jen proto, že je staré.
 
-Obojí známe zevnitř. Jeden den bráníme zvyk, který už dávno nikomu neslouží. Druhý den bychom nejradši vyhodili i to, co nás drží nad vodou.
+Obojí jsme už sami zkusili. Jeden den bráníme zvyk, který už dávno nikomu neslouží. Druhý den bychom nejradši vyhodili i to, co nás drží nad vodou.
 
-Obě cesty mají stejný kořen. Nejistotu. Kdo neví, na čem stojí, buď se křečovitě drží, nebo kope kolem sebe.
+Obě cesty pramení z nejistoty. Kdo neví, na čem stojí, buď se křečovitě drží, nebo kope kolem sebe.
 
-Slovo radikální pochází z latinského radix. Kořen. Radikální člověk tedy jde až ke kořeni věcí. Rozmlátit všechno umí každý.
+Slovo *radikální* pochází z latinského *radix*. Kořen. Radikální člověk tedy jde až ke kořeni věcí. Rozmlátit všechno umí každý.
 
 Čím hlouběji má strom kořeny, tím míň se bojí vichřice. A tím volněji může růst do nových tvarů.
 
@@ -20,25 +20,25 @@ Naším kořenem je Kristus a jeho slovo. Proto se nemusíme bát měnit formy. 
 
 ## Proč to děláme
 
-Protože Ježíš se nebál jít proti náboženským zvyklostem, když stály v cestě milosrdenství. Uzdravoval nemocné i v sobotu. Člověk v nouzi pro něj vážil víc než zvyk.
+Protože se Ježíš nebál jít proti náboženským zvyklostem, když stály v cestě milosrdenství. Uzdravoval nemocné i v sobotu. Člověk v nouzi pro něj vážil víc než zvyk.
 
-Pavel píše Římanům, ať se nepřizpůsobují době, ve které žijí. Ať je Bůh mění zevnitř a obnoví jim mysl (Římanům 12,2). Ten verš míří na obě strany. Nekopírovat dobu. A nepřestat se měnit.
+Pavel píše Římanům, ať se nepřizpůsobují době, ve které žijí. Ať je Bůh promění zevnitř a obnoví jim mysl (Římanům 12,2). Ten verš míří na obě strany. Nekopírovat dobu. A nepřestat se proměňovat zevnitř.
 
 Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásku a rozvahu (2. Timoteovi 1,7). Síla bez rozvahy bourá. Rozvaha bez síly přešlapuje na místě.
 
-**Radikálně** znamená jít ke kořeni. Neptáme se jen, jestli něco běží. Ptáme se, proč to děláme a komu to slouží. A necháváme Boha, ať mění, jak přemýšlíme.
+**Radikálně** znamená jít ke kořeni. Neptáme se jen, jestli něco běží. Ptáme se, proč to děláme a komu to slouží. A necháváme Boha, ať nám mění myšlení.
 
 **Odvážně** znamená vylézt z pohodlí. Zkusit něco nového, udělat u toho chybu a nahlas říct, co nefunguje.
 
-Potřebujeme obojí. Bez kořenů nás odfoukne každá nová móda. Bez odvahy z kořenů nikdy nic nevyroste.
+Potřebujeme obojí. Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevyroste.
 
 ## Na čem to stojí
 
 ### A. Věrnost kořenům a svoboda ke změně
 
-Kořen i vitrína drží minulost. Kořen z ní ale tahá vodu a posílá ji do nových výhonků. Ve vitríně všechno vypadá krásně a nic neroste.
+Ve vitríně všechno krásně vypadá a nic neroste. Z kořene raší nové výhonky.
 
-Měníme formu, abychom zachránili podstatu a přiblížili ji lidem. Forma slouží životu, ne život formě. V kolik začínáme, jaké zpíváme písně, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud zůstávají na kořeni.
+Měníme formu, abychom zachránili podstatu a přiblížili ji lidem. V kolik začínáme, jaké zpíváme písně, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene.
 
 Tradici nám předali lidi, kteří Bohu věřili dřív než my. Vážíme si jich. Nejlíp jim poděkujeme, když z toho, co zasadili, necháme vyrůst něco živého. Za sklo to zavírat nebudeme.
 
@@ -72,7 +72,7 @@ I u nás běží stroje, které kdysi táhly a dnes už jen hučí. Program, na 
 
 ## Jak to vypadá v týdnu
 
-Když nový člověk nerozumí, proč něco děláme, máme dvě možnosti. Vysvětlit to. Nebo uznat, že to už vysvětlit neumíme, a změnit to.
+Když nový člověk nechápe, proč něco děláme, máme dvě možnosti. Vysvětlit to. Nebo uznat, že to už vysvětlit neumíme, a změnit to.
 
 Mezi sebou se snažíme u každého programu bez vytáček ptát: nese to ještě život? Když ne, je to suchá sláma. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a spálíme ji.
 

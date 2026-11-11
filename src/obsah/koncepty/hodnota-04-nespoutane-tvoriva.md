@@ -12,23 +12,23 @@ Bůh to vymyslel jinak. Svět nenamaloval černobíle. Dal mu barvy, vůně, chu
 
 Kráva louku nekazí. Kde se pase, tam louka nezaroste. Kvete, voní a člověk se na ni rád podívá.
 
-Tvořivost nepatří jen umělcům. Patří do dílny i do kuchyně. K videu, ke grafice i k obyčejné práci, kterou někdo udělá pořádně.
+Tvořivost nepatří jen umělcům. Patří do kuchyně, k videu, ke grafice i k obyčejné práci, kterou někdo udělá pořádně.
 
 ## Proč to děláme
 
-Protože první umělec je Bůh. A své dary nerozdává jen těm, kdo mluví zepředu.
+Protože první umělec je Bůh. A své dary nerozdává jen těm, kdo umí malovat nebo zpívat.
 
-Když měl Izrael na poušti postavit stánek setkávání, Bůh povolal Besaleela. Naplnil ho svým Duchem. Dal mu moudrost a zručnost, aby uměl navrhovat, pracovat se zlatem, stříbrem a mědí, brousit kameny a řezat dřevo (Exodus 31,2–5). Jeden z prvních lidí, o kterých Bible říká, že je naplnil Boží Duch, byl řemeslník.
+Když měl Izrael na poušti postavit stan setkávání, Bůh povolal Besaleela. Naplnil ho svým Duchem. Dal mu moudrost a zručnost, aby uměl navrhovat, pracovat se zlatem, stříbrem a mědí, brousit kameny a řezat dřevo (Exodus 31,2–5). Jeden z prvních lidí, o kterých Bible říká, že je naplnil Boží Duch, byl řemeslník.
 
 Boží Duch patří i do dílny.
 
 Pavel k tomu přidává, že i my sami jsme Boží dílo. Bůh nás v Kristu stvořil k dobrým skutkům a připravil je pro nás dopředu (Efezským 2,10). Kdo vyšel z Boží dílny, smí tvořit taky.
 
-Krása pro nás proto není zbytečný luxus ani pozlátko. Staví mosty tam, kam samotné argumenty nedosáhnou.
+Krása pro nás není zbytečný luxus ani pozlátko. Je to Boží jazyk. Staví mosty tam, kam samotné argumenty nedosáhnou.
 
 **Tvořivá** znamená, že nejsme jen konzumenti. Nečekáme, co nám kdo naservíruje. Děláme radost lidem kolem. Grafikou, hudbou, jídlem, slovem i tím, jak vypadá sál, kde se scházíme.
 
-**Nespoutaně** znamená, že se nedáme svázat nudou a zvyky, které už nikomu nic neříkají. Formu smíme zkoušet pořád znovu. I za cenu, že se pokus nepovede.
+**Nespoutaně** znamená, že se nedáme svázat nudou ani strachem z trapasu. Smíme zkoušet pořád znovu. I za cenu, že se pokus nepovede.
 
 ## Na čem to stojí
 
@@ -70,19 +70,19 @@ Proto dbáme na řemeslo. Pozvánka musí říct kdy a kde. Video potřebuje zvu
 
 Nápad bez řemesla nikomu nepomůže. Řemeslo bez nápadu nikoho nepotěší. Potřebujeme obojí.
 
-A kadeřnice, která má náš leták na pultu, se diví:
+A kadeřnice, která dostala náš leták od sousedky, nevěří:
 
 *„Jak to, že i obyčejný leták od nich dočtu až do konce?“*
 
 ## Jak to vypadá v týdnu
 
-Co ukazujeme navenek, má těšit oko i ucho. Ošuntělý papír z kopírky by lidem řekla, že nám na nich moc nezáleží. Proto si s každou věcí dáváme práci, i když to ne vždycky stihneme.
+Co ukazujeme navenek, má těšit oko i ucho. Ošuntělý papír z kopírky by lidem řekl, že nám na nich moc nezáleží. Proto si s každou věcí dáváme práci, i když to ne vždycky stihneme.
 
-Mezi sebou hledáme, co kdo umí. Jeden tiskne na 3D tiskárně, druhá stříhá video, třetí vaří pro celý sál. Někdo kreslí, jiný umí s pájkou nebo se dřevem. Každý takový dar u nás má místo. Žádný nemá zakrnět jen proto, že se nevejde do církevních kolonek.
+Mezi sebou hledáme, co kdo umí, a dáváme tomu šanci. Ať je to 3D tiskárna, stříhání videa, nebo pájka. Žádný dar u nás nemá zakrnět.
 
 Nepovedený pokus u nás nemá nikoho shodit. Snažíme se, aby to byl spíš začátek dalšího. Kdo se bojí posměchu, nic nového nezkusí.
 
-Ve městě chceme, aby bylo k světu všecko, k čemu se podepíšeme. Stánek na městské slavnosti, příspěvek na sítích, opravená lavička. Kam přijdeme, rádi bychom po sobě nechali něco hezčího, než tam bylo.
+Ve městě chceme, aby vypadalo k světu všechno, pod co se podepíšeme. Stánek na městské slavnosti i příspěvek na sítích. Hezky a poctivě udělané.
 
 > **Forma se mění, jádro zůstává.**
 >
@@ -98,6 +98,6 @@ Ve městě chceme, aby bylo k světu všecko, k čemu se podepíšeme. Stánek n
 
 ## Zrcadlo
 
-1. Co tenhle týden udělám o kus líp, než musím?
+1. Co nového tenhle týden zkusím, i když se to může nepovést?
 2. Čí nápad tenhle týden podpořím, i když není podle mého vkusu?
 3. Kdo se kromě mě tenhle týden potěší tím, co dělám?

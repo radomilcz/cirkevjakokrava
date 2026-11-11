@@ -6,21 +6,21 @@
 
 Sedíme nad plánem na příští rok. Tabulka, rozpočet, termíny, kdo co zařídí. Všechno do sebe zapadá. A na úplném konci si vzpomeneme na modlitbu. Ať nám to Bůh podepíše.
 
+Jenže bez Ducha svatého je všechna naše snaha jen prázdná sláma. Můžeme ji mlátit od rána do večera. Zrno z ní nevypadne a nic z ní nevyroste.
+
 Umíme to i obráceně. O zázracích mluvíme s jiskrou v očích a na obyčejnou práci se vykašleme. Slíbený e-mail neodejde, po akci nikdo neuklidí, termín nikdo nehlídá.
 
 Obě pokušení známe zevnitř. Z vlastních porad i z vlastních modliteb.
 
-Jenže bez Ducha svatého je všechna naše snaha jen prázdná sláma. Můžeme ji mlátit od rána do večera. Zrno z ní nevypadne a nic z ní nevyroste.
-
-Proto chceme obojí naráz. Stojíme pevně nohama na zemi a děláme poctivou práci. A zároveň počítáme s tím, že Bůh jedná nadpřirozeně. I na Kravařsku. I v pondělí ráno.
+Chceme obojí naráz. Stojíme pevně nohama na zemi a děláme poctivou práci. A zároveň počítáme s tím, že Bůh jedná nadpřirozeně. I na Kravařsku. I v pondělí ráno.
 
 ## Proč to děláme
 
-Protože to tak dělal Pavel. Poctivě plánoval své cesty a pracoval rukama. Když ale jemu a jeho přátelům Duch svatý nedovolil jít do Asie ani do Bithýnie, změnili směr. Pak měl Pavel v noci vidění. Muž z Makedonie ho prosil o pomoc. A oni vyrazili do Makedonie (Skutky 16,6–10).
+Protože to tak dělal Pavel. Poctivě plánoval své cesty a pracoval rukama. Když ale jemu a jeho přátelům Duch svatý nedovolil kázat v Asii ani jít do Bithýnie, změnili směr. Pak měl Pavel v noci vidění. Muž z Makedonie ho prosil o pomoc. A oni vyrazili do Makedonie (Skutky 16,6–10).
 
 Plán měl. Ale když Bůh ukázal jinam, šel jinam.
 
-Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic (Jan 15,5). A Pavel to později shrnul o sobě a o Apollovi: jeden sázel, druhý zaléval, ale růst dával Bůh (1. Korintským 3,6).
+Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic (Jan 15,5). A Pavel to později ukázal na sobě a na Apollovi: jeden sázel, druhý zaléval, ale růst dával Bůh (1. Korintským 3,6).
 
 **Sami to neudřeme. Vzrůst dává Bůh.**
 
@@ -32,7 +32,7 @@ Odtud obě slova v názvu. **Nadpřirozeně** znamená, že počítáme s Boží
 
 ### A. Plán slouží Pánu
 
-Plánovat je dobré. Promyšlená strategie, rozpočet a pořádek v penězích patří k poctivé práci. Chystáme je pečlivě a nestydíme se za ně.
+Plánovat je dobré. Promyšlená strategie, rozpočet a pořádek v penězích patří k poctivé práci. Věnujeme se jim pečlivě a nestydíme se za ně.
 
 Plán je u nás ale sluha. Pána máme jiného.
 
@@ -46,9 +46,9 @@ Kamarád, který nám pomáhá s přípravou, se pak ptá:
 
 Příběhy o tom, co Bůh udělal před lety, posloucháme rádi. Samy nám ale nestačí. Chceme vidět, co dělá dnes, tady v Novém Jičíně.
 
-Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme, co nám Bůh říká. Civilně a střízlivě, bez zvláštního hlasu a velkých gest.
+Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme tomu, co nám Bůh říká. Civilně a střízlivě, bez zvláštního hlasu a velkých gest.
 
-Pravé Boží vedení snese světlo Bible, zdravého rozumu i otázek druhých lidí. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
+Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
 
 Někdy Bůh odpoví hned. A jinak, než jsme čekali. Někdy čekáme dlouho a nerozumíme proč. I to k víře patří.
 
@@ -60,11 +60,11 @@ Kolegyně, za kterou se modlíme, se diví:
 
 Zázraky nevynucujeme křikem.
 
-Uděláme poctivý lidský krok. Napíšeme zprávu, do které se nám nechce. Zajedeme pomoct. Odpustíme. A pak necháme Boha, ať udělá, co my neumíme.
+Uděláme poctivý lidský krok. Zajedeme pomoct. Odpustíme. A pak necháme Boha, ať udělá, co my neumíme.
 
 Ten krok bývá malý a obyčejný. Udělat ho je na nás. Proměnit srdce, zahojit vztah, otevřít oči, to už je Boží práce.
 
-Odpustit se rozhodneme sami. Aby to přestalo bolet, to už je na Bohu.
+Odpustit se rozhodneme sami. Bolest z toho odnese on.
 
 Švagr, který to sleduje z povzdálí, nechápe:
 
@@ -72,7 +72,7 @@ Odpustit se rozhodneme sami. Aby to přestalo bolet, to už je na Bohu.
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí se bát divadla. Z Ducha svatého neděláme strašáka ani náboženskou hysterii. Za lidi se modlíme, když o to stojí. Krátce, česky a s láskou.
+Kdo k nám přijde poprvé, nemusí se ničeho bát. Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou.
 
 Mezi sebou řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Ne vždycky si na to vzpomeneme včas. Vracíme se k tomu.
 
@@ -82,7 +82,7 @@ Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. Modlíme se za
 
 > **Bez Ducha svatého je to jen prázdná sláma.**
 >
-> Na tenhle týden stačí jeden obyčejný krok, který dlouho odkládáš. A krátká modlitba, než ho uděláš.
+> Na tenhle týden stačí jeden obyčejný krok, který dlouho odkládáš. Zajet pomoct, nebo odpustit. A krátká modlitba, než ho uděláš.
 
 ## Do kapsy
 
