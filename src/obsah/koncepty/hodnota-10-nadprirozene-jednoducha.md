@@ -10,8 +10,6 @@ Jenže bez Ducha svatého je všechna naše snaha jen prázdná sláma. Můžeme
 
 Umíme to i obráceně. O zázracích mluvíme s jiskrou v očích a na obyčejnou práci se vykašleme. Slíbený e-mail neodejde, po akci nikdo neuklidí, termín nikdo nehlídá.
 
-Obě pokušení známe zevnitř. Z vlastních porad i z vlastních modliteb.
-
 Chceme obojí naráz. Stojíme pevně nohama na zemi a děláme poctivou práci. A zároveň počítáme s tím, že Bůh jedná nadpřirozeně. I na Kravařsku. I v pondělí ráno.
 
 ## Proč to děláme
@@ -24,7 +22,7 @@ Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic (Jan 15,5). A
 
 **Sami to neudřeme. Vzrůst dává Bůh.**
 
-Odtud obě slova v názvu. **Nadpřirozeně** znamená, že počítáme s Boží mocí. S modlitbou, s uzdravením, s proměnou srdce, kterou nikdo z nás sám nezařídí.
+**Nadpřirozeně** znamená, že počítáme s Boží mocí. S modlitbou, s uzdravením, s proměnou srdce, kterou nikdo z nás sám nezařídí.
 
 **Jednoduchá** znamená, že z toho neděláme cirkus, ezoteriku ani hysterii pro zasvěcené. Boží moc se ukazuje v prostých krocích. Když Boha posloucháme a když máme lidi rádi.
 
@@ -36,9 +34,9 @@ Plánovat je dobré. Promyšlená strategie, rozpočet a pořádek v penězích 
 
 Plán je u nás ale sluha. Pána máme jiného.
 
-Když Bůh ukáže jinam, smíme plán zahodit. I když nás stál spoustu večerů. Ne vždycky to poznáme hned. Někdy si Boží hlas spleteme s vlastní pohodlností. Proto se o tom radíme spolu.
+Když Bůh ukáže jinam, smíme plán zahodit. I když nás stál hodně práce. Někdy si Boží hlas spleteme s vlastní pohodlností. Proto se o tom radíme spolu.
 
-Kamarád, který nám pomáhá s přípravou, se pak ptá:
+Kamarád, který nám pomáhá s přípravou, se ptá:
 
 *„Jak to, že mají všechno tak dobře připravené, a stejně nechají Boha, ať jim to přehází?“*
 
@@ -46,7 +44,7 @@ Kamarád, který nám pomáhá s přípravou, se pak ptá:
 
 Příběhy o tom, co Bůh udělal před lety, posloucháme rádi. Samy nám ale nestačí. Chceme vidět, co dělá dnes, tady v Novém Jičíně.
 
-Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme tomu, co nám Bůh říká. Civilně a střízlivě, bez zvláštního hlasu a velkých gest.
+Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme tomu, co nám Bůh říká. Střízlivě, bez zvláštního hlasu a velkých gest.
 
 Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
 
@@ -72,9 +70,9 @@ Odpustit se rozhodneme sami. Bolest z toho odnese on.
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí se ničeho bát. Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou.
+Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou.
 
-Mezi sebou řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Ne vždycky si na to vzpomeneme včas. Vracíme se k tomu.
+Na poradách řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Občas na to zapomeneme. Vracíme se k tomu.
 
 V práci to vypadá nenápadně. Ráno se pomodlíme za zakázku, za těžký rozhovor, za šéfa. A pak práci uděláme pořádně. Modlitba nenahradí šroubovák. A šroubovák nenahradí modlitbu.
 
@@ -94,6 +92,6 @@ Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. Modlíme se za
 
 ## Zrcadlo
 
-1. O čem se tenhle týden radím se všemi, jen ne s Bohem?
+1. O čem se radím se všemi, jen ne s Bohem?
 2. Kde tenhle týden doma nebo v práci počítám s Božím zásahem?
-3. Za koho se tenhle týden pomodlím jednoduše, bez divadla?
+3. Za koho se pomodlím jednoduše, obyčejnými slovy?

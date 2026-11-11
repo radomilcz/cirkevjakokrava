@@ -10,13 +10,13 @@ Jedni se drží starých pořádků zuby nehty. „Takhle jsme to dělali vždyc
 
 Obojí jsme už sami zkusili. Jeden den bráníme zvyk, který už dávno nikomu neslouží. Druhý den bychom nejradši vyhodili i to, co nás drží nad vodou.
 
-Obě cesty pramení z nejistoty. Kdo neví, na čem stojí, buď se křečovitě drží, nebo kope kolem sebe.
+Obě cesty pramení z nejistoty. Kdo neví, na čem stojí, buď se drží, co to jde, nebo kope kolem sebe.
 
 Slovo *radikální* pochází z latinského *radix*. Kořen. Radikální člověk tedy jde až ke kořeni věcí. Rozmlátit všechno umí každý.
 
 Čím hlouběji má strom kořeny, tím míň se bojí vichřice. A tím volněji může růst do nových tvarů.
 
-Naším kořenem je Kristus a jeho slovo. Proto se nemusíme bát měnit formy. A pálit suchou slámu, která už nenese život.
+Naším kořenem je Kristus a jeho slovo. Proto se nemusíme bát změn. A ořezat suché větve, které už nenesou život.
 
 ## Proč to děláme
 
@@ -28,9 +28,9 @@ Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásk
 
 **Radikálně** znamená jít ke kořeni. Neptáme se jen, jestli něco běží. Ptáme se, proč to děláme a komu to slouží. A necháváme Boha, ať nám mění myšlení.
 
-**Odvážně** znamená vylézt z pohodlí. Zkusit něco nového, udělat u toho chybu a nahlas říct, co nefunguje.
+**Odvážná** znamená vylézt z pohodlí a nahlas říct, co nefunguje.
 
-Potřebujeme obojí. Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevyroste.
+Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevyroste.
 
 ## Na čem to stojí
 
@@ -38,11 +38,11 @@ Potřebujeme obojí. Bez kořenů nás odfoukne každá nová móda. Bez odvahy 
 
 Ve vitríně všechno krásně vypadá a nic neroste. Z kořene raší nové výhonky.
 
-Měníme formu, abychom zachránili podstatu a přiblížili ji lidem. V kolik začínáme, jaké zpíváme písně, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene.
+Měníme vnější podobu, abychom zachránili podstatu a přiblížili ji lidem. V kolik začínáme, jaké zpíváme písně, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene.
 
 Tradici nám předali lidi, kteří Bohu věřili dřív než my. Vážíme si jich. Nejlíp jim poděkujeme, když z toho, co zasadili, necháme vyrůst něco živého. Za sklo to zavírat nebudeme.
 
-Kolega se pak ptá:
+Člověk z jiného sboru se ptá:
 
 *„Jak to, že se nebojí dělat věci jinak, a pořád pevně stojí na Bibli?“*
 
@@ -66,7 +66,7 @@ Pak přijde věta, která se špatně vyslovuje: „Tohle jsme pokazili. Tudy ce
 
 I u nás běží stroje, které kdysi táhly a dnes už jen hučí. Program, na který chodíme ze zvyku. Akce, kterou děláme, protože jsme ji dělali vždycky. Snažíme se takové stroje vypínat bez nostalgie. Někdy nám to trvá déle, než by mělo.
 
-Člověk zvenku to sleduje a ptá se:
+Kdo to sleduje zvenku, kroutí hlavou:
 
 *„Jak to, že dokážou říct ‚tohle jsme pokazili‘ a jet dál?“*
 
@@ -74,15 +74,15 @@ I u nás běží stroje, které kdysi táhly a dnes už jen hučí. Program, na 
 
 Když nový člověk nechápe, proč něco děláme, máme dvě možnosti. Vysvětlit to. Nebo uznat, že to už vysvětlit neumíme, a změnit to.
 
-Mezi sebou se snažíme u každého programu bez vytáček ptát: nese to ještě život? Když ne, je to suchá sláma. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a spálíme ji.
+U každého programu se bez vytáček ptáme: nese to ještě život? Když ne, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
 
 A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak.
 
-Ve městě se chceme ozvat, když se v Novém Jičíně někomu děje křivda. Postavit se za chudé, za spravedlnost a za pravdu, i když to nebude populární. Ne vždycky na to máme odvahu. O to víc o ni prosíme.
+Chceme se ozvat, když se v Novém Jičíně někomu děje křivda. Postavit se za chudé, za spravedlnost a za pravdu, i když to nebude populární. Ne vždycky na to máme odvahu. O to víc o ni prosíme.
 
 > **Tradice jsou kořeny, ne vitríny.**
 >
-> Kořeny máme proto, aby z nich něco rostlo. Tenhle týden stačí vzít jeden zvyk, doma nebo ve sboru, a poctivě se zeptat, jestli ještě nese život.
+> Kořeny máme proto, aby z nich něco rostlo. Na tenhle týden stačí vzít jeden zvyk, doma nebo ve sboru, a poctivě se zeptat, jestli ještě nese život.
 
 ## Do kapsy
 
@@ -90,10 +90,10 @@ Ve městě se chceme ozvat, když se v Novém Jičíně někomu děje křivda. P
 - Radikální znamená z kořene. A náš kořen je Kristus.
 - Kdo má hluboké kořeny, nebojí se větru ani nových větví.
 - Pokora je zkrocená síla, ne slabost.
-- Pálíme suchou slámu, abychom udělali místo čerstvé pastvě.
+- Ořezáváme suché větve, aby mohlo vyrůst něco nového.
 
 ## Zrcadlo
 
-1. Kterého zvyku se tenhle týden držím jen proto, že je pohodlný?
+1. Kterého zvyku se držím jen proto, že je pohodlný?
 2. Co tenhle týden laskavě pojmenuju nahlas, i když riskuju, že narazím?
-3. Kde tenhle týden uznám, že šlapu vedle, a změním směr?
+3. Kde uznám, že šlapu vedle, a změním směr?

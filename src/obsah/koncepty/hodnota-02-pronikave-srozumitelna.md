@@ -10,7 +10,7 @@ Se slovy o Bohu se nám to stává taky. V neděli zazní něco dobrého. Pokýv
 
 Chyba není v neděli. Je v tom, co s ní uděláme my. Informace sama ještě nikoho nezměnila.
 
-Když před tebe hospodář položí čerstvý chleba, kus sýra a džbán vody, nepotřebuješ slovník ani výklad. Najíš se. A vydržíš do večera.
+Když před tebe sedlák položí čerstvý chleba, kus sýra a džbán vody, nepotřebuješ slovník ani výklad. Najíš se. A vydržíš do večera.
 
 Takhle blízko k životu má mít i nebe. Boží slovo má zasytit. Na celý týden.
 
@@ -40,7 +40,7 @@ My mluvíme o koloně cestou do práce, o splátkách, o dětech a o únavě po 
 
 Dojetí nestačí. Souhlas ještě není čin. Pravdu si bereme s sebou do všedních dnů.
 
-Kolega se pak nestačí divit:
+Kolega se nestačí divit:
 
 *„Jak to, že mluví o Bohu, a mně to pomáhá v práci?“*
 
@@ -50,7 +50,7 @@ Mluvit srozumitelně je obyčejná slušnost k člověku, který sedí naproti. 
 
 Neředíme krev na malinovou limonádu. Těžké věci říkáme naplno. Jen lidsky.
 
-Spasení, posvěcení, pomazání. Mimo kostel tahle slova skoro nikdo neřekne. Tak je překládáme do češtiny, kterou mluvíme v dílně a v kuchyni, a ukazujeme je na příkladech ze života.
+Spasení, posvěcení, pomazání. Mimo kostel tahle slova skoro nikdo neřekne. Tak je překládáme do češtiny, kterou mluvíme v práci a v kuchyni, a ukazujeme je na příkladech ze života.
 
 Pokud to neumíš říct kámošovi v hospodě, sám tomu nerozumíš.
 
@@ -78,19 +78,19 @@ A host z neděle si ve středu říká:
 
 Srozumitelnost začíná dřív, než kdokoli vezme do ruky mikrofon. Na webu, na pozvánce i u dveří má člověk hned vědět, kam přišel a co ho čeká. Církevní zvyky ani písničky znát nemusí. Hloupé otázky tu nejsou.
 
-Místo poučování vyprávíme, kde jsme to zvorali, čeho jsme se báli a co s tím udělal Bůh. Teorie staví zdi, prožitý příběh staví most.
+Místo poučování vyprávíme, kde jsme to zvorali, čeho jsme se báli a co s tím udělal Bůh. Poučka se zapomene. Příběh zůstane.
 
-Mezi sebou se po neděli neptáme jen: „Jak se ti to líbilo?“ Ptáme se rovnou: „Co ti z toho docvaklo a co jsi podle toho udělal?“
+Po neděli se neptáme jen: „Jak se ti to líbilo?“ Ptáme se rovnou: „Co ti z toho docvaklo a co jsi podle toho udělal?“
 
 Odpuštění zní v neděli hezky. Pronikne ale až v úterý, když zvedneme telefon a zavoláme tomu, komu jsme ublížili.
 
-Svatá hantýrka občas ujede každému z nás. Smíme se navzájem zarazit. S úsměvem. A když se modlíme, mluvíme s Bohem jako lidi.
+Svatá hantýrka občas ujede i nám. Smíme se navzájem zarazit. S úsměvem. A když se modlíme, mluvíme s Bohem jako lidi.
 
 Jsme z jednoho těsta i z jednoho města. Doma nemluvíme čínsky, ale novojičínsky. Než pustíme ven plakát, web nebo příspěvek na sítě, ptáme se, jestli mu rozumí soused, který v kostele nikdy nebyl.
 
 > **Nemusíme být kazatelé, stačí být ukazatelé.**
 >
-> Ukázat na Boha zvládne každý z nás. V dílně, na poradě i na hřišti. Počítá se, co z nedělních slov v pondělí uděláme.
+> Ukázat na Boha zvládne každý z nás. Na lešení, na poradě i na hřišti. Počítá se, co z nedělních slov během týdne uděláme.
 >
 > Na tenhle týden stačí jedna otázka někomu ze sboru: „Co ti docvaklo?“ Nebo jedna věc, kterou podle nedělních slov opravdu uděláš. Třeba ten telefonát v úterý.
 
@@ -105,5 +105,5 @@ Jsme z jednoho těsta i z jednoho města. Doma nemluvíme čínsky, ale novojič
 ## Zrcadlo
 
 1. Co mi z neděle docvaklo a co s tím tenhle týden udělám?
-2. Zvládnu tenhle týden říct někomu bez svaté hantýrky, co prožívám s Bohem?
-3. Když tenhle týden přijde řeč na víru, budu druhým pomáhat přemýšlet, nebo jim to předžvýkám?
+2. Zvládnu někomu bez svaté hantýrky říct, co prožívám s Bohem?
+3. Když přijde řeč na víru, budu druhým pomáhat přemýšlet, nebo jim to předžvýkám?

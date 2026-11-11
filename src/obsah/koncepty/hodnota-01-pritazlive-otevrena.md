@@ -18,7 +18,7 @@ Protože Bůh se k nám zachoval stejně.
 
 Nečekal, až se umyjeme a přijdeme za ním do chrámu. Přišel první. Rovnou do našeho chléva. A nevadilo mu, že to tam nevoní. Přijal nás dřív, než jsme byli přijatelní (Římanům 5,8).
 
-Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s celníky, s lidmi, které ostatní obcházeli obloukem. Místo u stolu si nikdo nemusel odpracovat.
+Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s celníky, s lidmi, které ostatní obcházeli obloukem. Místo u stolu si nikdo nemusel vybojovat.
 
 Takhle chceme přijímat druhé i my (Římanům 15,7). Dřív, než s námi v čemkoli souhlasí.
 
@@ -80,7 +80,7 @@ Ke stolu je zveme, protože je máme rádi. Stůl je cíl sám o sobě. Není to
 
 Doma to nemusí vypadat jako z katalogu. Božímu království bohatě stačí káva, buchta a volné místo na gauči.
 
-Kdo k nám přijde poprvé, vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyky. Děkujeme za ně.
+Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyky. Děkujeme za ně.
 
 > **Tvůj obývák je víc než pódium.**
 >
@@ -99,5 +99,5 @@ Kdo k nám přijde poprvé, vidí, co my už dávno nevidíme. Jeho otázky nám
 ## Zrcadlo
 
 1. Koho tenhle týden pozvu k sobě domů?
-2. Od koho si tenhle týden nechám pomoct nebo poradit?
+2. Od koho si nechám pomoct nebo poradit?
 3. Kdy zajdu na pivo s kamarádem, který o víru nestojí?

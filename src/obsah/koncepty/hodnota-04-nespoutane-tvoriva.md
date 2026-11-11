@@ -10,7 +10,7 @@ A my uvnitř to někdy nemáme jinak. Tvoření necháme pár šikovným lidem s
 
 Bůh to vymyslel jinak. Svět nenamaloval černobíle. Dal mu barvy, vůně, chutě a zvuky, kterých se člověk nenabaží.
 
-Kráva louku nekazí. Kde se pase, tam louka nezaroste. Kvete, voní a člověk se na ni rád podívá.
+Louka, na které se pasou krávy, kvete a voní. Člověk se na ni rád podívá.
 
 Tvořivost nepatří jen umělcům. Patří do kuchyně, k videu, ke grafice i k obyčejné práci, kterou někdo udělá pořádně.
 
@@ -26,21 +26,21 @@ Pavel k tomu přidává, že i my sami jsme Boží dílo. Bůh nás v Kristu stv
 
 Krása pro nás není zbytečný luxus ani pozlátko. Je to Boží jazyk. Staví mosty tam, kam samotné argumenty nedosáhnou.
 
-**Tvořivá** znamená, že nejsme jen konzumenti. Nečekáme, co nám kdo naservíruje. Děláme radost lidem kolem. Grafikou, hudbou, jídlem, slovem i tím, jak vypadá sál, kde se scházíme.
-
 **Nespoutaně** znamená, že se nedáme svázat nudou ani strachem z trapasu. Smíme zkoušet pořád znovu. I za cenu, že se pokus nepovede.
+
+**Tvořivá** znamená, že nejsme jen konzumenti. Nečekáme, co nám kdo naservíruje. Děláme radost lidem kolem. Grafikou, hudbou, jídlem, slovem i tím, jak vypadá sál, kde se scházíme.
 
 ## Na čem to stojí
 
 ### A. Krása mluví první
 
-Kdo k nám přijde poprvé, všimne si spousty věcí dřív, než kdokoli řekne první větu. Jak vypadala pozvánka. Jestli je v sále uklizeno a na záchodě papír. Jestli hudba ladí a světlo neřeže do očí.
+Nový člověk si všimne spousty věcí, ještě než s ním kdo promluví. Jak vypadala pozvánka. Jestli je v sále uklizeno a na záchodě papír. Jestli hudba ladí a světlo neřeže do očí.
 
 Tohle všechno mluví za nás. Buď říká, že nám na člověku záleží, nebo že je nám to jedno.
 
 Drahé to být nemusí. Stačí, když si s tím někdo dá práci.
 
-Kamarádka, která u nás byla poprvé, si pak doma říká:
+Kamarádka si doma říká:
 
 *„Jak to, že to u nich vypadá skvěle, a já se tam cítím jako doma?“*
 
@@ -66,23 +66,23 @@ Puberťák, kterého jinak nebaví nic, se diví:
 
 Netvoříme, abychom se předvedli. Každý nápad má někomu posloužit. Ptáme se, komu se díky němu bude líp žít.
 
-Proto dbáme na řemeslo. Pozvánka musí říct kdy a kde. Video potřebuje zvuk, kterému je rozumět. Police má unést knihy a guláš má mít sůl.
+Proto dbáme na řemeslo. Pozvánka musí říct kdy a kde. Video potřebuje zvuk, kterému je rozumět. Police má unést knihy a guláš se nemá připálit.
 
 Nápad bez řemesla nikomu nepomůže. Řemeslo bez nápadu nikoho nepotěší. Potřebujeme obojí.
 
-A kadeřnice, která dostala náš leták od sousedky, nevěří:
+A kadeřnice, která dostala naši pozvánku od sousedky, nevěří:
 
-*„Jak to, že i obyčejný leták od nich dočtu až do konce?“*
+*„Jak to, že i obyčejnou pozvánku od nich dočtu až do konce?“*
 
 ## Jak to vypadá v týdnu
 
-Co ukazujeme navenek, má těšit oko i ucho. Ošuntělý papír z kopírky by lidem řekl, že nám na nich moc nezáleží. Proto si s každou věcí dáváme práci, i když to ne vždycky stihneme.
+Co ukazujeme navenek, má těšit oko i ucho. Ošuntělý papír z kopírky by lidem řekl, že nám na nich moc nezáleží. Proto si s každou věcí dáváme práci.
 
-Mezi sebou hledáme, co kdo umí, a dáváme tomu šanci. Ať je to 3D tiskárna, stříhání videa, nebo pájka. Žádný dar u nás nemá zakrnět.
+Hledáme, co kdo z nás umí, a dáváme tomu šanci. Ať je to 3D tiskárna, stříhání videa, nebo pájka. Žádný dar u nás nemá zakrnět.
 
-Nepovedený pokus u nás nemá nikoho shodit. Snažíme se, aby to byl spíš začátek dalšího. Kdo se bojí posměchu, nic nového nezkusí.
+Nepovedený pokus u nás nemá nikoho shodit. Má to být spíš začátek dalšího. Kdo se bojí posměchu, nic nového nezkusí.
 
-Ve městě chceme, aby vypadalo k světu všechno, pod co se podepíšeme. Stánek na městské slavnosti i příspěvek na sítích. Hezky a poctivě udělané.
+Všechno, pod co se podepíšeme, má vypadat k světu. Stánek na městské slavnosti i příspěvek na sítích. Hezky a poctivě udělané.
 
 > **Forma se mění, jádro zůstává.**
 >
@@ -99,5 +99,5 @@ Ve městě chceme, aby vypadalo k světu všechno, pod co se podepíšeme. Stán
 ## Zrcadlo
 
 1. Co nového tenhle týden zkusím, i když se to může nepovést?
-2. Čí nápad tenhle týden podpořím, i když není podle mého vkusu?
-3. Kdo se kromě mě tenhle týden potěší tím, co dělám?
+2. Čí nápad podpořím, i když není podle mého vkusu?
+3. Kdo se kromě mě potěší tím, co dělám?

@@ -24,7 +24,7 @@ Když Ježíš posílal učedníky mezi lidi, řekl jim, že dostali zadarmo, a 
 
 Pavel to Korintským vysvětluje na setí. Kdo zaseje skoupě, skoupě sklidí. Kdo zaseje štědře, štědře sklidí. Ať každý dá, jak se sám rozhodne, ne s nechutí a ne pod tlakem. Bůh má rád toho, kdo dává s radostí. A má moc se postarat, abychom měli dost pro sebe a ještě zbylo pro druhé (2. Korintským 9,6–8).
 
-**Bytostně** znamená, že štědrost u nás nemá být jednorázová akce. Má být v naší povaze. Dáváme z toho, čeho nám Bůh dává dost. Ne v křeči a ne z pocitu viny.
+**Bytostně** znamená, že štědrost u nás nemá být jednorázová akce. Má být v naší povaze. Dáváme z toho, čeho nám Bůh dává dost. Ne na sílu a ne z pocitu viny.
 
 **Štědrá** znamená, že dáváme bez postranních úmyslů. Nečekáme protislužbu a nevedeme si sešit, kdo nám co dluží.
 
@@ -38,7 +38,7 @@ Kdo čeká, až mu bude přebývat, nedá nikdy nic. Vždycky se najde něco, co
 
 Pěst se nám ale ještě občas sevře sama. I my v duchu přepočítáváme, co nám zbude. Pak si připomínáme, čí to celé je.
 
-Kolega to nechápe:
+Bratranec to nechápe:
 
 *„Jak to, že jsou tak v klidu a rozdávají se, i když sami nemají na rozhazování?“*
 
@@ -50,7 +50,7 @@ Peníze jsou ta nejlevnější měna, kterou máme. To nejdražší, co můžeme
 
 Peníze dáváme taky, a rádi. Jen si jimi nechceme kupovat klid tam, kde někdo potřebuje nás. Zůstat, i když už bychom radši byli doma.
 
-Soused pak večer přemýšlí:
+Soused večer přemýšlí:
 
 *„Jak to, že mi věnoval celé odpoledne a nic za to nechtěl?“*
 
@@ -62,17 +62,17 @@ Ptáme se, co člověk potřebuje, a nevybíráme to za něj. Rozhodnutí nechá
 
 Štědrost nemá stavět pomník naší dobrotě. Má postavit druhého na vlastní nohy.
 
-Člověk, který pomoc přijal, se diví:
+Člověk, který pomoc přijal, na to vzpomíná:
 
 *„Jak to, že mi pomohli, a já si vůbec nepřipadal jako chudák?“*
 
 ## Jak to vypadá v týdnu
 
-Sousedům pomáháme, protože pomoc potřebují. Nic dalšího za tím nehledáme a za nic ji nevyměňujeme. Ani za návštěvu v neděli. Kdo k nám nikdy nepřijde, nemá o pomoc přijít.
+Sousedům pomáháme, protože pomoc potřebují. Nic dalšího za tím nehledáme a za nic ji nevyměňujeme. Ani za návštěvu v neděli.
 
-Mezi sebou si půjčujeme nářadí i auta. Vrtačka nemusí ležet v každé garáži. Kdo něco umí, poradí. Kdo má dodávku, odveze skříň. Hlídáme, aby nikdo z nás nezůstal v nouzi sám. Ne vždycky si toho všimneme včas. S penězi sboru hospodaříme otevřeně a pomníky si za ně nestavíme.
+Ve sboru si půjčujeme nářadí i auta. Vrtačka nemusí ležet v každé garáži. Kdo něco umí, poradí. Kdo má dodávku, odveze skříň. Hlídáme, aby nikdo z nás nezůstal v nouzi sám. S penězi sboru hospodaříme otevřeně a pomníky si za ně nestavíme.
 
-Ve městě chceme podporovat slabé, aby se postavili na nohy, i silné, aby rostli dál. Nejen záplatovat díry. Svým časem, radou i penězi chceme stát i za talenty, podnikavými lidmi a nápady, které můžou život kolem znásobit. Cedulku s naším jménem na to lepit nemusíme. Zatím nám to jde jen někdy. Kalkulačku pořád nosíme v kapse a občas ji vytáhneme.
+Ve městě chceme podporovat slabé, aby se postavili na nohy, i silné, aby rostli dál. Nejen záplatovat díry. Svým časem, radou i penězi chceme stát i za talenty, podnikavými lidmi a nápady, které můžou život kolem znásobit. Cedulku s naším jménem na to lepit nemusíme. Kalkulačku pořád nosíme v kapse a občas ji vytáhneme.
 
 > **Štědrost začíná tam, kde končí kalkulačka.**
 >
@@ -89,5 +89,5 @@ Ve městě chceme podporovat slabé, aby se postavili na nohy, i silné, aby ros
 ## Zrcadlo
 
 1. Komu tenhle týden dám čas, i když by stovka byla rychlejší?
-2. Co tenhle týden dám, i když mi to nepřebývá?
-3. Komu tenhle týden pomůžu tak, aby mu zůstala důstojnost?
+2. Co dám, i když mi to nepřebývá?
+3. Komu pomůžu tak, aby mu zůstala důstojnost?
