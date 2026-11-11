@@ -8,7 +8,7 @@ Každý den na nás padá spousta slov. Porady, maily, zprávy v mobilu. Všemu 
 
 Se slovy o Bohu se nám to stává taky. V neděli zazní něco dobrého. Pokýváme hlavou. V pondělí jedeme postaru.
 
-Někdy za to můžeme my v církvi. Mluvíme kostelní řečí a lidi jen zdvořile mlčí. Jindy rozumíme každému slovu, a stejně s tím nic neuděláme. Informace sama ještě nikoho nezměnila. Srozumitelný je i návod k pračce.
+Někdy za to můžeme my v církvi. Mluvíme kostelní řečí a lidi jen zdvořile mlčí. Jindy rozumíme každému slovu, a stejně s tím nic neuděláme. Informace sama ještě nikoho nezměnila.
 
 Když před tebe sedlák položí čerstvý chleba, kus sýra a džbán vody, nepotřebuješ slovník ani výklad. Najíš se. A vydržíš do večera.
 
@@ -28,7 +28,7 @@ Nebe, které pronikne až na zem. A řeč, které rozumí i člověk zvenku. Odt
 
 Srozumitelnost drží řeč při zemi. Od první minuty každý ví, o čem mluvíme. Pronikavost jde pod povrch. To, co Bůh říká, neproteče. Vsakuje se do všedních dnů jako déšť do pole. Do práce, domů, do ulic. Až do obyčejného úterý. A cestou mění i nás. Jak se na věci díváme, jak se rozhodujeme a jak jednáme.
 
-Jedno bez druhého kulhá. Samá srozumitelnost je milé tlachání o ničem. Samá pronikavost je šifra pro zasvěcené. Člověk zvenku si z ní neodnese nic.
+Jedno bez druhého kulhá. Samá srozumitelnost je milé tlachání o ničem. Srozumitelný je i návod na robotickou sekačku. Samá pronikavost je šifra pro zasvěcené. Člověk zvenku si z ní neodnese nic.
 
 ## Na čem to stojí
 
