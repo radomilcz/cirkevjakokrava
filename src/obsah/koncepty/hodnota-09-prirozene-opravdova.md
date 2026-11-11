@@ -16,7 +16,7 @@ Kdo žije s krávami, ví, že na pastvě to občas smrdí hnojem. K životu to 
 
 Značku z toho neděláme. Ani to neschováváme. Hnůj se dá proměnit v hnojivo, jen když ho přestaneme natírat narůžovo.
 
-Nehrajeme divadlo. Nás unavuje a lidi kolem odrazuje. Bůh nestojí o naše nedělní role. Stojí o lidi z masa a kostí.
+Nehrajeme divadlo. Bůh nestojí o naše nedělní role. Stojí o lidi z masa a kostí.
 
 ## Proč to děláme
 
@@ -30,7 +30,7 @@ Pavel píše Timoteovi, že cílem toho, co učí, je láska. Láska z čistého
 
 **Přirozenost** znamená žít bez přetvářky. Jednáme civilně a falešnou svatozář nenosíme.
 
-**Opravdovost** znamená stát v pravdě před Bohem i před lidmi. Před oběma se stejnou tváří. A co pokazíme, jdeme spravit.
+**Opravdovost** znamená stát v pravdě před Bohem i před lidmi. Před oběma se stejnou tváří. A co pokazíme, napravíme.
 
 Bůh neléčí fasádu. Léčí člověka. Opravdovost je teprve poctivý začátek proměny.
 
@@ -40,7 +40,7 @@ Bůh neléčí fasádu. Léčí člověka. Opravdovost je teprve poctivý začá
 
 Máme jen jednu tvář. K čemu se v neděli hlásíme při písních, platí i v pondělí v dílně, za volantem a u piva se sousedem. A doma u dřezu, když se hádáme, kdo měl umýt nádobí.
 
-Nejde o to, abychom v dílně zpívali. Jde o to, aby tam stál tentýž člověk jako v neděli. Víra je vidět na tom, jak odvedeme práci, jak platíme účty a jak mluvíme o lidech, kteří u toho nejsou. A jak se chováme doma, když se nikdo cizí nedívá.
+Nejde o to, abychom v dílně zpívali. Jde o to, aby tam stál tentýž člověk jako v neděli. Víra je vidět na tom, jak odvádíme práci, jak platíme účty a jak mluvíme o lidech, kteří u toho nejsou. A jak se chováme, když se nikdo cizí nedívá.
 
 Neděle pro nás není útěk od všedních dnů. Slavíme v ní, co jsme s Bohem od pondělí prožili, a nadechujeme se na další týden.
 
@@ -56,9 +56,9 @@ Naše selhání není naše jméno. Proto můžeme říct pravdu bez vytáček.
 
 Učíme se říkat pár krátkých vět. Spletl jsem se. Nevím. Bojím se. Potřebuju pomoc. Odpusť mi. A taky jednu radostnou: Tady vidím Boží rukopis.
 
-U slov to nekončí. Když někomu ublížíme, jdeme za ním. Řekneme, co jsme provedli, omluvíme se a zeptáme se, jak to spravit. Zatím nám to jde líp na papíře než naživo.
+U slov to nekončí. Když někomu ublížíme, jdeme za ním. Řekneme, co jsme provedli, omluvíme se a zeptáme se, co můžeme udělat. Zatím nám to jde líp na papíře než naživo.
 
-Selhání netutláme, ani kdyby se to hodilo kvůli dobrému jménu sboru. Pověst se dá spravit. Škody z pravdy zametené pod koberec mnohem hůř.
+Selhání netutláme, ani kdyby to sboru ušetřilo ostudu. Pověst se dá spravit. Škody z pravdy zametené pod koberec mnohem hůř.
 
 Sousedka se zamyslí:
 
@@ -72,7 +72,7 @@ Cholerik se u nás nemusí tvářit jako flegmatik. Kdo se směje nahlas, nemus�
 
 Originál ale není alibi. Kdo po výbuchu mávne rukou, že „já už jsem prostě takový“, schovává se. Opravdovost je těžší. Přiznat, že to bylo přes čáru, a jít to spravit.
 
-Druhým nelepíme doživotní nálepky za staré chyby. Hledáme spolu jeho pravdivé jméno. Ptáme se, kým ho Bůh zamýšlel, a pomáháme si do toho dorůst. Věrný originál je věrný Kristu.
+Druhému nelepíme doživotní nálepku za staré chyby. Hledáme spolu jeho pravdivé jméno a Boží záměr s ním. A věříme, že ještě poroste. Věrný originál je věrný Kristu.
 
 Kamarádka si po čase říká:
 
@@ -82,13 +82,13 @@ Kamarádka si po čase říká:
 
 Nováček si u nás nemusí dávat pozor na pusu ani dělat, že má život vyřešený. S dokonalostí na nikoho nevyrukujeme. Žádnou nemáme. Když přijde řeč na víru, mluvíme i o tom, co jsme sami pokazili.
 
-Mezi sebou nechceme mít nedotknutelné svaté. Kdo v neděli stojí vepředu a něco pokazí, má to přiznat stejně rovně jako kdokoli jiný. A my na židlích mu to nemáme předhazovat.
+Mezi sebou nechceme mít nedotknutelné svaté. Kdo v neděli stojí vepředu a něco pokazí, přizná to jako kdokoli jiný. A my na židlích mu to nepředhazujeme.
 
 Z vlastních ran ale neděláme představení. Citlivé věci říkáme mezi čtyřma očima nebo v partě lidí, kterým věříme. Soukromí není přetvářka.
 
 Držíme slovo. Když v Novém Jičíně něco slíbíme, má to platit. Termín, který jsme slíbili zákazníkovi. Cena na faktuře bez fíglů. Slib sousedovi, že mu v sobotu pomůžeme.
 
-Když něco pokazíme v práci nebo na veřejnosti, neházíme to na druhé a čísla nepřikrašlujeme. Přiznáme to a srovnáme účet.
+Když něco pokazíme v práci nebo na veřejnosti, neházíme to na druhé a čísla nepřikrašlujeme. Přiznáme to a škodu vyrovnáme.
 
 > **Bůh miluje originál, ne naleštěnou kopii.**
 >
