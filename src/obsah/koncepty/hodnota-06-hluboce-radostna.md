@@ -78,7 +78,7 @@ Kolegyně z práce se svěří:
 
 ## Jak to vypadá v týdnu
 
-Na první návštěvu k nám může člověk dorazit rozesmátý po povedeném týdnu, nebo s očima opuchlýma od pláče. S rozesmátým se zasmějeme. Uplakanému nebudeme slzy hned utírat. Zveme ho na dobré jídlo a obyčejný rozhovor.
+Na první návštěvu k nám může člověk dorazit rozesmátý po povedeném týdnu, nebo s očima opuchlýma od pláče. S rozesmátým se zasmějeme. Uplakanému nebudeme slzy hned utírat. Oba pak zveme na dobré jídlo a obyčejný rozhovor.
 
 Slavíme, co se dá. Narozeniny, novou práci, složenou zkoušku, uzdravení. Komu se daří, tomu to chceme přát bez závisti. Rádi spolu jíme a smějeme se, až nám tečou slzy. A komu do smíchu není, toho do veselí nenutíme. Necháme mu na smutek tolik času, kolik potřebuje.
 
