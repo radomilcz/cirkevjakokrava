@@ -64,7 +64,7 @@ Byl to nábor.
 
 Nikoho netlačíme. A přece to lidi táhne blíž. Tenhle magnetický paradox nemáme pod palcem. Když se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
 
-Když přijde řeč na Boha, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Deset hotových pouček je prázdná sláma. Jedna laskavá otázka otevře víc.
+Když přijde řeč na Boha, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Deset hotových pouček nikoho nezahřeje. Jedna laskavá otázka otevře víc.
 
 A když na těžkou otázku odpověď neznáme, řekneme na rovinu: *„Nevíme.“*
 
