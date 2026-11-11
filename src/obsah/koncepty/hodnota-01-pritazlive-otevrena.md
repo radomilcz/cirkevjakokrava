@@ -70,7 +70,7 @@ Byl to nábor.
 
 ### C. Přitažlivé tajemství
 
-Tlakem nikoho nepřitáhneme. Přitažlivost nemáme pod palcem. Kde se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
+Lidi přitahuje blíž, když na ně netlačíš. Tenhle magnetický paradox nemáme pod palcem. Kde se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
 
 Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc než deset pádných argumentů.
 
