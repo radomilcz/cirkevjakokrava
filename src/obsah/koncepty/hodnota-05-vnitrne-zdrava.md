@@ -50,6 +50,8 @@ Ne každý tlak a ne každé „měl bys“ je vedení Ducha svatého. Někdy je
 
 Snažíme se chránit lidi před vyhořením dřív, než padnou na pusu. Každé „už nemůžu“ bereme vážně.
 
+Hranice chrání i slabší. Když někdo někomu ubližuje, postavíme se na stranu toho slabšího. I kdyby ubližoval někdo z nás. Otevřenost neznamená naivitu.
+
 Známá, která k nám občas zajde, si oddechne:
 
 *„Jak to, že mě do ničeho netlačí a nedělají mi výčitky, když nepřijdu?“*
