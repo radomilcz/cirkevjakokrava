@@ -16,7 +16,7 @@ Bůh s námi nejedná jako otrokář s bičem. Je to laskavý Hospodář. Ví, �
 
 ## Proč to děláme
 
-Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“ (Matouš 11,28, ČEP). Jeho jho netlačí a jeho břemeno netíží (Matouš 11,30).
+Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“. Jeho jho netlačí a jeho břemeno netíží (Matouš 11,28, ČEP; Matouš 11,30).
 
 Kolik stojíme, nezávisí na tom, kolik toho pro Boha odedřeme.
 

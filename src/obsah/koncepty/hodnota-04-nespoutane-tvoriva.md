@@ -18,11 +18,11 @@ Tvořivost nepatří jen umělcům. Patří do kuchyně, k videu, ke grafice i k
 
 Protože první umělec je Bůh. A své dary nerozdává jen těm, kdo umí malovat nebo zpívat.
 
-Když měl Izrael na poušti postavit stan setkávání, Bůh povolal Besaleela. Naplnil ho svým Duchem. Dal mu moudrost a zručnost, aby uměl navrhovat, pracovat se zlatem, stříbrem a mědí, brousit kameny a řezat dřevo (Exodus 31,2–5). Jeden z prvních lidí, o kterých Bible říká, že je naplnil Boží Duch, byl řemeslník.
+Když měl Izrael na poušti postavit stan setkávání, Bůh povolal Besaleela. Naplnil ho svým Duchem. Dal mu moudrost a zručnost, aby uměl navrhovat, pracovat se zlatem, stříbrem a mědí, brousit kameny a řezat dřevo. Jeden z prvních lidí, o kterých Bible říká, že je naplnil Boží Duch, byl řemeslník (Exodus 31,2–5).
 
 Boží Duch patří i do dílny.
 
-Pavel k tomu přidává, že i my sami jsme Boží dílo. Bůh nás v Kristu stvořil k dobrým skutkům a připravil je pro nás dopředu (Efezským 2,10). Kdo vyšel z Boží dílny, smí tvořit taky.
+Pavel k tomu přidává, že i my sami jsme Boží dílo. Bůh nás v Kristu stvořil k dobrým skutkům a připravil je pro nás dopředu. Kdo vyšel z Boží dílny, smí tvořit taky (Efezským 2,10).
 
 Krása pro nás není zbytečný luxus ani pozlátko. Je to Boží jazyk. Staví mosty tam, kam samotné argumenty nedosáhnou.
 

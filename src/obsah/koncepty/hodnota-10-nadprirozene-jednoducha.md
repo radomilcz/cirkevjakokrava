@@ -18,7 +18,7 @@ Protože to tak dělal Pavel. Poctivě plánoval své cesty a pracoval rukama. K
 
 Plán měl. Ale když Bůh ukázal jinam, šel jinam.
 
-Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic (Jan 15,5). A Pavel to později ukázal na sobě a na Apollovi: jeden sázel, druhý zaléval, ale růst dával Bůh (1. Korintským 3,6).
+Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic. A Pavel to později ukázal na sobě a na Apollovi: jeden sázel, druhý zaléval, ale růst dával Bůh (Jan 15,5; 1. Korintským 3,6).
 
 **Sami to neudřeme. Vzrůst dává Bůh.**
 

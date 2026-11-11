@@ -18,11 +18,11 @@ Protože Ježíš nebyl suchar.
 
 Na svatbě v Káně došlo víno. Ježíš nenechal oslavu skončit. Z vody udělal víno a správce hostiny se divil, že ženich nechal to dobré až na konec (Jan 2,1–11).
 
-Tentýž Ježíš se rozplakal nad smrtí svého přítele Lazara (Jan 11,35). Uměl slavit s lidmi i plakat s nimi.
+Tentýž Ježíš se rozplakal nad smrtí svého přítele Lazara. Uměl slavit s lidmi i plakat s nimi (Jan 11,35).
 
 **Hluboce**, protože naše radost stojí na Božím vítězství. Trápení, nemoc ani smrt ho nesmažou. Proto smí téct slzy.
 
-Mezi křesťany, i mezi námi, se občas ozve, že kdo pláče, má slabou víru. Vždyť Pavel píše, ať se v Pánu radujeme pořád (Filipským 4,4). Jenže Pavel taky radí plakat s těmi, kdo pláčou, a radovat se s těmi, kdo se radují (Římanům 12,15).
+Mezi křesťany, i mezi námi, se občas ozve, že kdo pláče, má slabou víru. Vždyť Pavel píše, ať se v Pánu radujeme pořád. Jenže Pavel taky radí plakat s těmi, kdo pláčou, a radovat se s těmi, kdo se radují (Filipským 4,4; Římanům 12,15).
 
 Smutek a pláč nejsou selháním víry. Plakat je v pořádku.
 

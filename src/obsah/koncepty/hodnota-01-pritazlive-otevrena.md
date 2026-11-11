@@ -6,11 +6,11 @@
 
 Naši sousedi církev nehledají. Mají ranní směny, děti s horečkou a hypotéku do důchodu. Na kostel jim nezbývá čas ani chuť.
 
-A když je k nim nějaký věřící až podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat?
+Když je k nim někdo cizí podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat?
 
 Chápeme je. Taky bychom zbystřili.
 
-Co od nich chceme my? Být jim nablízku. Zbytek necháváme Bohu.
+Co od nich chceme my? Být jim nablízku. Překonat strach a navázat vztah. Zbytek necháváme Bohu.
 
 ## Proč to děláme
 
@@ -20,7 +20,7 @@ Nečekal, až se umyjeme a přijdeme za ním do chrámu. Přišel první. Rovnou
 
 Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s celníky, s lidmi, které ostatní obcházeli obloukem. Místo u stolu si nikdo nemusel vybojovat.
 
-Takhle chceme přijímat druhé i my (Římanům 15,7). Dřív, než s námi v čemkoli souhlasí.
+Takhle chceme přijímat druhé i my. Dřív, než s námi v čemkoli souhlasí (Římanům 15,7).
 
 V názvu jsou dvě slova a každé patří někomu jinému. **Otevřenost** je naše práce. Vyjít ze dveří, pozvat, prostřít. **Přitažlivost** je Boží věc. Reklamou ani show ji nevyrobíme. A nemusíme.
 
@@ -64,7 +64,7 @@ Byl to nábor.
 
 Lidi přitahuje blíž, když na ně netlačíš. Tenhle magnetický paradox nemáme pod palcem. Kde se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
 
-Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc, než deset pádných argumentů.
+Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc, než deset pádných argumentů
 
 A když na těžkou otázku odpověď neznáme, řekneme na rovinu: *„Nevíme.“*
 
@@ -84,7 +84,7 @@ Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyk
 
 > **Tvůj obývák je víc než pódium.**
 >
-> To podstatné se neděje jen v neděli pod světly. Děje se u kuchyňské linky, v práci a u plotu. Pastor zve na večeři svého souseda. Toho tvého nezná. Ty ano.
+> To podstatné se děje celý týden kolem tebe. Ne na nedělním pódiu, ale u kuchyňské linky, v práci za soustruhem nebo za kompem. U sousedů za plotem, když pozvou na hambáč. Pastor zve na večeři své sousedy. Tvého nezná. Ty ano.
 >
 > Na tenhle týden stačí jedno pozvání. Na večeři, na kafe, na pivo. Koho, to víš líp než my.
 
@@ -94,7 +94,6 @@ Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyk
 - Bůh nás přijal dřív, než jsme byli přijatelní.
 - V každém člověku hledáme poklad, ne odpad.
 - Láska nepotřebuje stejný názor.
-- Když po odmítnutí zájem ochladne, nebyl to vztah. Byl to nábor.
 
 ## Zrcadlo
 

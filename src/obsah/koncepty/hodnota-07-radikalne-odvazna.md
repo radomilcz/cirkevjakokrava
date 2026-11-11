@@ -22,9 +22,9 @@ Naším kořenem je Kristus a jeho slovo. Proto se nemusíme bát změn. A ořez
 
 Protože se Ježíš nebál jít proti náboženským zvyklostem, když stály v cestě milosrdenství. Uzdravoval nemocné i v sobotu. Člověk v nouzi pro něj vážil víc než zvyk.
 
-Pavel píše Římanům, ať se nepřizpůsobují době, ve které žijí. Ať je Bůh promění zevnitř a obnoví jim mysl (Římanům 12,2). Ten verš míří na obě strany. Nekopírovat dobu. A nepřestat se proměňovat zevnitř.
+Pavel píše Římanům, ať se nepřizpůsobují době, ve které žijí. Ať je Bůh promění zevnitř a obnoví jim mysl. Ten verš míří na obě strany. Nekopírovat dobu. A nepřestat se proměňovat zevnitř (Římanům 12,2).
 
-Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásku a rozvahu (2. Timoteovi 1,7). Síla bez rozvahy bourá. Rozvaha bez síly přešlapuje na místě.
+Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásku a rozvahu. Síla bez rozvahy bourá. Rozvaha bez síly přešlapuje na místě (2. Timoteovi 1,7).
 
 **Radikálně** znamená jít ke kořeni. Neptáme se jen, jestli něco běží. Ptáme se, proč to děláme a komu to slouží. A necháváme Boha, ať nám mění myšlení.
 

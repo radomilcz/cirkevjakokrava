@@ -26,7 +26,7 @@ Neponížil ho. A nedělal, že se nic nestalo. Před Ježíšem nemusel Petr ni
 
 Naše selhání není naše jméno.
 
-Pavel píše Timoteovi, že cílem toho, co učí, je láska. Láska z čistého srdce, dobrého svědomí a upřímné víry (1. Timoteovi 1,5). A Jan dodává, že kdo tvrdí, že nemá nic na svědomí, klame sám sebe. Kdo se přizná, tomu Bůh odpustí. Je věrný (1. Janův 1,8–9).
+Pavel píše Timoteovi, že cílem toho, co učí, je láska. Láska z čistého srdce, dobrého svědomí a upřímné víry. A Jan dodává, že kdo tvrdí, že nemá nic na svědomí, klame sám sebe. Kdo se přizná, tomu Bůh odpustí. Je věrný (1. Timoteovi 1,5; 1. Janův 1,8–9).
 
 **Přirozenost** znamená žít bez přetvářky. Jednáme civilně a falešnou svatozář nenosíme.
 

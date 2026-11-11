@@ -20,7 +20,7 @@ Protože nás Ježíš učil modlit se takhle: „Buď vůle tvá jako v nebi, t
 
 Ta zem je i Nový Jičín. Fabrika, dílna, škola, kancelář. Tvoje rodina.
 
-A Pavel píše Koloským: „Vaše slova ať jsou vždy vlídná a ochucená solí, ať víte, jak máte mluvit s každým člověkem“ (Koloským 4,6, Bible21).
+A Pavel píše Koloským: „Vaše slova ať jsou vždy vlídná a ochucená solí, ať víte, jak máte mluvit s každým člověkem“ (Koloským 4,6).
 
 Řeč při zemi. A řeč ochucená solí. Odtud se vzala obě slova v názvu.
 

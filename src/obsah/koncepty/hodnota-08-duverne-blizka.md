@@ -28,7 +28,7 @@ Svůj krok k Bohu musí udělat každý z nás sám. Víru nikdo nezdědí po m�
 
 Kdo ale patří Bohu, patří i ostatním. Bible tomu říká Kristovo tělo. A tělo po kouskách nežije.
 
-První křesťané se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli (Skutky 2,42–46). Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží (Galatským 6,2). A Tesalonickým píše, že je on a jeho přátelé měli tak rádi, že jim chtěli dát nejen evangelium, ale i vlastní životy (1. Tesalonickým 2,8).
+První křesťané se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli. Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží. A Tesalonickým píše, že je on a jeho přátelé měli tak rádi, že jim chtěli dát nejen evangelium, ale i vlastní životy (Skutky 2,42–46; Galatským 6,2; 1. Tesalonickým 2,8).
 
 **Důvěrnost** znamená, že nezůstaneme u řečí o počasí. Smíme mluvit o tom, s čím zápasíme, kde jsme selhali i z čeho máme radost. Bez strachu, že nás za to někdo pomluví.
 
