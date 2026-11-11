@@ -20,9 +20,9 @@ Protože nás Ježíš učil modlit se takhle: „Buď vůle tvá jako v nebi, t
 
 Ta zem je i Nový Jičín. Fabrika, dílna, škola, kancelář. Tvoje rodina.
 
-A Pavel radí Koloským, ať se k lidem zvenku chovají moudře a mluví s nimi vlídně, se špetkou soli. Ať umí každému odpovědět. (Koloským 4,5–6)
+A Pavel radí Koloským, ať se k lidem mimo církev chovají moudře a mluví s nimi vlídně, se špetkou soli. Ať umí každému odpovědět (Koloským 4,5–6).
 
-Nebe, které dojde až na zem. A řeč, které rozumí i člověk zvenku. Odtud se vzala obě slova v názvu.
+Nebe, které pronikne až na zem. A řeč, které rozumí i člověk zvenku. Odtud se vzala obě slova v názvu.
 
 **Srozumitelné slovo informuje, pronikavé formuje.**
 
@@ -40,8 +40,6 @@ My mluvíme o koloně cestou do práce, o splátkách, o dětech a o únavě po 
 
 Dojetí nestačí. Souhlas ještě není čin. Pravdu si bereme s sebou do všedních dnů.
 
-Víra, která funguje jen v neděli dopoledne, nefunguje vůbec.
-
 Kolega se nestačí divit:
 
 *„Jak to, že mluví o Bohu, a mně to pomáhá v práci?“*
@@ -52,9 +50,7 @@ Mluvit srozumitelně je obyčejná slušnost k člověku, který sedí naproti. 
 
 Neředíme krev na malinovou limonádu. Pravdu brousíme. Těžké věci říkáme naplno. Jen lidsky. A Ježíše neschováváme za obecné řeči o dobru.
 
-Spasení, posvěcení, pomazání. Mimo kostel tahle slova skoro nikdo neřekne. Tak je překládáme do češtiny, kterou mluvíme v práci a v kuchyni, a ukazujeme je na příkladech ze života.
-
-Milost, hřích ani Ducha Svatého neschováváme za kostelštinu. Vracíme je tam, kam patří. Do vztahů, únavy, strachů a rozhodnutí.
+Spasení, milost, hřích, posvěcení, pomazání. Mimo kostel tahle slova skoro nikdo neřekne. Tak je překládáme do češtiny, kterou mluvíme v práci a v kuchyni. A vracíme je tam, kam patří. Do vztahů, únavy, strachů a rozhodnutí.
 
 Pokud to neumíš říct kámošovi v hospodě, sám tomu nerozumíš.
 
@@ -82,7 +78,7 @@ A host z neděle si ve středu říká:
 
 ## Jak to vypadá v týdnu
 
-Srozumitelnost začíná dřív, než kdokoli vezme do ruky mikrofon. Na webu, na pozvánce i u dveří má člověk hned vědět, kam přišel a co ho čeká. Na rovinu řekneme, co se děje a proč to děláme. Církevní zvyky ani písničky znát nemusí. Hloupé otázky tu nejsou.
+Srozumitelnost začíná dřív, než kdokoli vezme do ruky mikrofon. Na webu, na pozvánce i u dveří má člověk hned vědět, kam přišel a co ho čeká. Církevní zvyky ani písničky znát nemusí. Co se děje a proč, mu řekneme na rovinu. Hloupé otázky tu nejsou.
 
 Místo poučování vyprávíme, kde jsme to zvorali, čeho jsme se báli a co s tím udělal Bůh. Poučka se zapomene. Příběh zůstane.
 
@@ -90,9 +86,11 @@ Po neděli se neptáme jen: „Jak se ti to líbilo?“ Ptáme se rovnou: „Co 
 
 Odpuštění zní v neděli hezky. Pronikne ale až v úterý, když zvedneme telefon a zavoláme tomu, komu jsme ublížili.
 
-Svatá hantýrka občas ujede i nám. Smíme se navzájem zarazit. S úsměvem. Třeba otázkou: „Co tím myslíš pro zítřek v práci?“ A když se modlíme, mluvíme s Bohem jako lidi.
+Svatá hantýrka občas ujede i nám. Smíme se navzájem zarazit. S úsměvem. Třeba otázkou: „A co to znamená pro zítřek v práci?“ A když se modlíme, mluvíme s Bohem jako lidi.
 
-Jsme z jednoho těsta i z jednoho města. Doma nemluvíme čínsky, ale novojičínsky. A nebučíme do větru. Než pustíme ven plakát, web nebo příspěvek na sítě, ptáme se, jestli mu rozumí soused, který v kostele nikdy nebyl. Věta z plakátu mu má dávat smysl, i kdyby nakonec nepřišel.
+Jsme z jednoho těsta i z jednoho města. Doma nemluvíme čínsky, ale novojičínsky.
+
+Nebučíme do větru. Než pustíme ven plakát, web nebo příspěvek na sítě, ptáme se, jestli mu rozumí soused, který v kostele nikdy nebyl. Sousedovi má věta z plakátu dávat smysl, i kdyby nakonec nepřišel.
 
 > **Nemusíme být kazatelé, stačí být ukazatelé.**
 >

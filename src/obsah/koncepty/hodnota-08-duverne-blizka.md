@@ -28,7 +28,7 @@ Svůj krok k Bohu musí udělat každý z nás sám. Víru nikdo nezdědí po m�
 
 Kdo ale patří Bohu, patří i ostatním. Bible tomu říká Kristovo tělo. A tělo po kouskách nežije.
 
-První křesťané se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli. Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží. A Tesalonickým píše, že je on a jeho přátelé měli tak rádi, že jim chtěli dát nejen evangelium, ale i vlastní životy (Skutky 2,42–46; Galatským 6,2; 1. Tesalonickým 2,8).
+První křesťané se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli. Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží. A Tesalonickým píše, že on a jeho přátelé je měli tak rádi, že jim chtěli dát nejen evangelium, ale i vlastní životy (Skutky 2,42–46; Galatským 6,2; 1. Tesalonickým 2,8).
 
 **Důvěrnost** znamená, že nezůstaneme u řečí o počasí. Smíme mluvit o tom, s čím zápasíme, kde jsme selhali i z čeho máme radost. Bez strachu, že nás za to někdo pomluví.
 
@@ -40,7 +40,7 @@ První křesťané se drželi učení apoštolů. K tomu se scházeli den co den
 
 Rodina se nepozná podle toho, že sedí v jedné řadě a kouká stejným směrem. Pozná se podle toho, že se lidi dívají jeden druhému do očí.
 
-Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete. Všechno o sobě nevíme. To podstatné většinou ano. A když někdo začne mizet, všimneme si a ozveme se.
+Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete. Všechno o sobě nevíme. To podstatné většinou ano.
 
 A víra k tomu patří. Neptáme se jen „Jak se máš?“, ale i „Jak se máš s Bohem?“
 
@@ -58,7 +58,7 @@ Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobn
 
 Když nám přesto ujede jazyk, jdeme se omluvit tomu, o kom jsme mluvili.
 
-A když někdo zklame nás? Odpouštíme hned. Důvěra se ale vrací pomalu, podle toho, co ten druhý dělá. Odpustit neznamená hned odevzdat klíče od trezoru.
+A když někdo zklame nás? Odpouštíme hned. Důvěra se ale vrací pomalu, podle toho, co ten druhý dělá. Odpustit neznamená odevzdat i klíče od trezoru.
 
 Kolegyně, která se nám svěřila, se ptá:
 
@@ -72,9 +72,9 @@ Do jedné formy nikoho necpeme. Elektrikář se kvůli nám nemusí učit na kyt
 
 Doprovázet znamená jít kus cesty vedle sebe a všímat si, co Bůh do toho druhého vložil. Někdy to vidíme dřív než on sám. Pak mu to řekneme. A pomáháme mu dorůst do toho, kým ho Bůh chtěl mít.
 
-Starší předávají mladším, co se s Bohem sami naučili. Tak Pavel provázel mladého Timotea. Chceme, aby jednou slyšel Boha sám, i bez nás (2. Timoteovi 2,2).
+Zkušenější předávají mladším, co se s Bohem sami naučili. Tak Pavel provázel mladého Timotea a radil mu, ať to, co od něj slyšel, svěří lidem, kteří to naučí i další (2. Timoteovi 2,2). Chceme, aby každý jednou slyšel Boha sám, i bez nás.
 
-Zvlášť trpěliví chceme být s dětmi a dospívajícími. Smějí se ptát na těžké věci a smějí šlápnout vedle.
+Zvlášť trpěliví chceme být s dětmi a dospívajícími. Můžou se ptát na těžké věci a můžou šlápnout vedle.
 
 Kamarád, se kterým se vídáme už pár let, říká:
 
@@ -82,13 +82,13 @@ Kamarád, se kterým se vídáme už pár let, říká:
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Své tempo má i on. Hlubokou zpověď z nikoho netaháme první neděli. A hlídáme si, aby z nás nebyla partička starých známých. Jedna židle má zůstat volná pro dalšího.
+Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Své tempo má i on. Hlubokou zpověď z nikoho netaháme první neděli. A hlídáme si, aby z nás nebyla partička starých známých. U stolu necháváme jednu židli volnou pro dalšího.
 
-Mezi sebou se scházíme po domech a pomáháme si s tím, co kdo zrovna nezvládá. Jednou podržím já tebe, podruhé ty mě. Nikdo není jen zachránce a nikdo jen potřebný. Když někoho potká krize, nenecháme ho v ní samotného.
+Mezi sebou se scházíme po domech a pomáháme si s tím, co kdo zrovna nezvládá. Jednou podržím já tebe, podruhé ty mě. Když někoho potká krize, nenecháme ho v ní samotného.
 
-Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Nejdeme vyhrát hádku. Jdeme vztah spravit. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády. Tiché napětí samo nezmizí. V tiché poště jen roste. A zůstáváme, i když je to zrovna nepohodlné.
+Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Jdeme vztah spravit, ne vyhrát hádku. A zůstáváme v něm, i když je to zrovna nepohodlné. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády. Napětí samo nezmizí. V tiché poště jen roste.
 
-Blízkost nekončí na prahu sboru. Se sousedy a kolegy, kteří do církve nechodí, pěstujeme stejně věrná přátelství. Nejsou náš projekt. Mají co dát i oni nám.
+Blízkost nekončí na prahu sboru. Se sousedy a kolegy, kteří do církve nechodí, pěstujeme stejně věrná přátelství. Nejsou pro nás úkol.
 
 > **Nejsme duchovní kino. Jsme rodina, která jí z jednoho hrnce.**
 >

@@ -16,7 +16,7 @@ Bůh s námi nejedná jako otrokář s bičem. Je to laskavý Hospodář. Ví, �
 
 ## Proč to děláme
 
-Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“. Sám je tichý a pokorný. Kdo se od něj učí, najde klid. Jeho jho netlačí a jeho břemeno netíží (Matouš 11,28–30, ČEP).
+Protože Ježíš unaveným nepřidává práci. Zve je k sobě: „Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout“. Je tichý a pokorný. Kdo se od něj učí, najde klid. Jeho jho netlačí a jeho břemeno netíží (Matouš 11,28–30, ČEP).
 
 Kolik stojíme, nezávisí na tom, kolik toho pro Boha odedřeme.
 
@@ -34,9 +34,9 @@ Ježíš o sobě říká, že je vinný kmen a my ratolesti. Ratolest se nenamá
 
 Kdo neumí odpočívat, nebere vážně Boha. Jedná, jako by svět stál jen na něm samotném. Tu větu říkáme hlavně sami sobě. Ne těm, kdo už únavou padají.
 
-Život umí přitvrdit a poctivá dřina k němu patří. Vyčerpání si ale se svatostí nepleteme. Vedle práce a služby má v týdnu pevné místo spánek, rodina a ticho s Bohem.
+Život umí přitvrdit a poctivá dřina k němu patří. Vyčerpání si ale nepleteme se svatostí. Vedle práce a služby má v týdnu pevné místo spánek, rodina a ticho s Bohem.
 
-Rok v plném nasazení vydrží leckdo. My chceme tempo, které vydrží celý život. Proto ho nenastavujeme podle nejvýkonnějšího z nás. Ani podle přeplněného kalendáře.
+Rok v plném nasazení vydrží leckdo. My chceme tempo, které vydrží celý život. Proto ho neurčuje nejvýkonnější z nás. Ani přeplněný kalendář.
 
 Švagrová žasne:
 
@@ -52,7 +52,7 @@ Ne každý tlak a ne každé „měl bys“ je vedení Ducha svatého. Někdy je
 
 Snažíme se chránit lidi před vyhořením dřív, než padnou na pusu. Varovné kontrolky nepřehlížíme. Každé „už nemůžu“ bereme vážně.
 
-Když v týmu roste napětí, řekneme to včas a nahlas. Zbožnou frází ho nepřikryjeme.
+Napětí v týmu nezakrýváme zbožnou frází.
 
 Hranice chrání i slabší. Když někdo někomu ubližuje, postavíme se na stranu toho slabšího. I kdyby ubližoval někdo z nás. Otevřenost neznamená naivitu.
 
@@ -66,11 +66,11 @@ Milost předchází práci. Nejdřív nás Bůh miluje. Teprve potom něco děl�
 
 Námezdní dělník dostane, co si odpracuje. Syn a dcera jsou doma i v den, kdy nic neodvedou.
 
-Sloužíme z radosti. Lásku si zasloužit nemusíme, už ji máme. Nemusíme si nic vysloužit. Před Bohem ani před sebou navzájem. Právě z té jistoty roste chuť vzít si něco na starost.
-
-K vnitřnímu zdraví patří i poctivé učení. Takové, které člověka postaví na vlastní nohy. Strachem ani vinou nikoho neřídíme. Bibli čteme v souvislostech. Ptát se smí každý. A když zjistíme, že jsme se spletli, opravíme názor i zvyk.
+K vnitřnímu zdraví patří i pravdivé učení. Takové, které lidi osvobozuje. Strachem ani výčitkami nikoho neřídíme. Bibli čteme v souvislostech. Ptát se smí každý. A když zjistíme, že jsme se spletli, opravíme názor i to, co děláme.
 
 Růst nejde uspěchat. Charakter zraje roky.
+
+Sloužíme z radosti. Lásku si zasloužit nemusíme, už ji máme. Nemusíme si nic vysloužit. Před Bohem ani před sebou navzájem. Právě z té jistoty roste chuť vzít si něco na starost.
 
 A kolega si říká:
 
@@ -78,9 +78,9 @@ A kolega si říká:
 
 ## Jak to vypadá v týdnu
 
-Nováčky nezapřaháme do provozu, sotva se rozkoukají. Nehledáme levnou pracovní sílu. Nejdřív smí vydechnout a nabrat síly. Ruku přiloží, až bude sám chtít.
+Nováčky nezapřaháme do provozu, sotva se rozkoukají. Nehledáme levnou pracovní sílu. Nejdřív můžou vydechnout a nabrat síly. Ruku přiloží, až budou sami chtít.
 
-Chceme, aby člověk měl přednost před programem. Program ale bývá hlasitější. Když vidíme, že někdo mele z posledního, sundáme z něj náklad. U slibu, že se za něj pomodlíme, to neskončí. Převezmeme za něj službu, ohlídáme děti, uvaříme.
+Chceme, aby člověk měl přednost před programem. Program ale bývá hlasitější. Když vidíme, že někdo mele z posledního, sundáme z něj náklad. Převezmeme za něj službu, ohlídáme děti, uvaříme.
 
 Když náklad potápí loď, letí přes palubu náklad, ne posádka. Když nestíháme, škrtneme program. Lidi ne.
 
@@ -88,9 +88,7 @@ Nepostradatelný není nikdo z nás. Ani vedoucí. Bůh svoje dílo začal, sám
 
 Večer doma s rodinou není ulejvání ze služby.
 
-V práci a v podnikání se snažíme zůstat poctiví a držet klidné tempo, i když se kolem všichni ženou za ziskem. Cizí očekávání bzučí jako ty mouchy. Otravovat smějí, tempo nám ale neurčují. Zakázku, která by nás semlela, zkoušíme odmítnout. Občas ji stejně vezmeme a pak toho litujeme.
-
-Městu, kolegům i zákazníkům zkoušíme slibovat jen to, co opravdu splníme. Když narazíme na strop, řekneme to včas a na rovinu. Chceme, aby se na nás dalo spolehnout i za pár let.
+V práci a v podnikání se snažíme zůstat poctiví a držet klidné tempo, i když se kolem všichni ženou za ziskem. Cizí očekávání bzučí jako ty mouchy. Otravovat smějí, tempo nám ale neurčují. Městu ani zákazníkům neslibujeme víc, než uneseme. Zakázku, která by nás semlela, zkoušíme odmítnout. Občas ji stejně vezmeme a pak toho litujeme.
 
 > **Bůh je Hospodář, ne otrokář.**
 >

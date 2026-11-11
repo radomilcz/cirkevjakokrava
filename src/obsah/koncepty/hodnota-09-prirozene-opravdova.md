@@ -14,7 +14,7 @@ Kdo žije s krávami, ví, že na pastvě to občas smrdí hnojem. K životu to 
 
 **Nebojíme se přiznat, že občas smrdíme hnojem.**
 
-Značku z toho neděláme. Hnůj se ale dá proměnit v hnojivo, když ho přestaneme lakovat narůžovo.
+Značku z toho neděláme. Ani to neschováváme. Hnůj se dá proměnit v hnojivo, jen když ho přestaneme natírat narůžovo.
 
 Nehrajeme divadlo. Bůh nestojí o naše nedělní role. Stojí o lidi z masa a kostí.
 
@@ -44,9 +44,9 @@ Máme jen jednu tvář. K čemu se v neděli hlásíme při písních, platí i 
 
 Nejde o to, abychom v dílně zpívali. Jde o to, aby tam stál tentýž člověk jako v neděli. Se stejnými slovy, stejnou trpělivostí a stejnou poctivostí.
 
-Kdo nás zažil v pondělí v sedm ráno, ví své.
+Neděle pro nás není útěk od všedních dnů. Slavíme v ní, co jsme s Bohem od pondělí prožili, a nadechujeme se na další týden.
 
-Neděle pro nás není únik z týdne. Slavíme v ní, co jsme s Bohem od pondělí prožili, a nadechneme se do dalších dnů.
+Kdo nás zažil v pondělí v sedm ráno, ví své.
 
 Kolega, který nás zná z práce a jednou přišel i v neděli, se ptá:
 
@@ -56,9 +56,9 @@ Kolega, který nás zná z práce a jednou přišel i v neděli, se ptá:
 
 Kdo má dvě tváře, potřebuje i dvě pravdy. Jednu pro lidi a druhou pro sebe. My chceme mít jednu.
 
-Proto selhání netutláme, ani kdyby se to hodilo kvůli dobrému jménu sboru. Když někdo z nás ujede, řekneme mu to. Napřímo a s láskou. A pak mu pomůžeme dát věci do pořádku. Zatím nám to jde líp na papíře než naživo.
+Učíme se říkat pár krátkých vět. Spletl jsem se. Nevím. Bojím se. Odpusť mi. A taky jednu radostnou: Tady vidím Boží rukopis.
 
-Učíme se k tomu pár krátkých vět. Spletl jsem se. Nevím. Bojím se. Odpusť mi. A taky jednu radostnou, že tady vidím Boží rukopis.
+Proto selhání netutláme, ani kdyby se to hodilo kvůli dobrému jménu sboru. Když někdo z nás ujede, řekneme mu to. Napřímo a s láskou. A pak mu pomůžeme dát věci do pořádku. Zatím nám to jde líp na papíře než naživo.
 
 Pověst sboru se dá spravit. Škody z pravdy zametené pod koberec mnohem hůř. I když mlčet je vždycky pohodlnější.
 
@@ -74,7 +74,7 @@ Cholerik se u nás nemusí tvářit jako flegmatik. Kdo se směje nahlas, nemus�
 
 Originál ale není alibi. Kdo po výbuchu mávne rukou, že „já už jsem prostě takový“, schovává se. Opravdovost je těžší. Přiznat, že to bylo přes čáru, a jít to spravit.
 
-Druhým nedáváme doživotní nálepky podle starých chyb. Hledáme pravdivé jméno člověka a to, co s ním zamýšlí Bůh.
+Druhým nelepíme doživotní nálepky za staré chyby.
 
 Život chutná nejlíp bez umělých přísad.
 
@@ -84,11 +84,11 @@ Kamarádka si po čase říká:
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí si dávat pozor na pusu ani hrát, že má život vyřešený. S dokonalostí na nikoho nevyrukujeme. Žádnou nemáme. Když přijde řeč na víru, mluvíme i o tom, co jsme sami pokazili.
+Nováček si u nás nemusí dávat pozor na pusu ani dělat, že má život vyřešený. S dokonalostí na nikoho nevyrukujeme. Žádnou nemáme. Když přijde řeč na víru, mluvíme i o tom, co jsme sami pokazili.
 
 Mezi sebou nechceme mít nedotknutelné svaté. Přejeme si, aby i ten, kdo v neděli stojí vepředu, mohl říct, s čím se pere. A abychom mu to my na židlích nevyčítali.
 
-Z vlastních ran ale neděláme představení. Citlivé věci říkáme mezi čtyřma očima nebo v partě lidí, kterým věříme. Nikoho nenutíme, aby před všemi vykládal svou minulost. Soukromí není přetvářka.
+Z vlastních ran ale neděláme představení. Citlivé věci říkáme mezi čtyřma očima nebo v partě lidí, kterým věříme. Soukromí není přetvářka.
 
 Držíme slovo. Když v Novém Jičíně něco slíbíme, má to platit. Termín, který jsme slíbili zákazníkovi. Cena na faktuře bez fíglů. Slib sousedovi, že mu v sobotu pomůžeme.
 

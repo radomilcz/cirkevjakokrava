@@ -36,7 +36,7 @@ Plán je u nás ale sluha. Pána máme jiného.
 
 Když Bůh ukáže jinam, smíme plán zahodit. I když nás stál hodně práce. Někdy si Boží hlas spleteme s vlastní pohodlností. Proto se o tom radíme spolu.
 
-Když se před námi dveře zavřou, nepanikaříme. Bůh vidí dál než my. A každé otevřené dveře ještě nejsou pokyn vejít.
+Zavřené dveře nás nevyděsí. Bůh vidí dál než my. A ne každé otevřené dveře jsou pokyn vejít.
 
 Kamarád, který nám pomáhá s přípravou, se ptá:
 
@@ -44,13 +44,13 @@ Kamarád, který nám pomáhá s přípravou, se ptá:
 
 ### B. Živý Duch a zdravé rozlišování
 
-Duch svatý pro nás není dekorace k hotovému plánu. Je to dech Božího života v církvi.
+Duch svatý je pro nás dech Božího života v církvi.
 
 Příběhy o tom, co Bůh udělal před lety, posloucháme rádi. Samy nám ale nestačí. Chceme vidět, co dělá dnes, tady v Novém Jičíně.
 
 Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme tomu, co nám Bůh říká. Střízlivě, bez zvláštního hlasu a velkých gest.
 
-Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Žádný dojem nestojí nad Písmem. Díváme se, jestli se podobá Ježíši a jaké nese ovoce. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
+Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Žádný dojem nestojí nad Písmem. U každého se díváme, jestli se podobá Ježíši a jaké nese ovoce. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
 
 Duch svatý nevede do mlhy ani do strachu. Vede ke svobodě, pravdě a lásce.
 
@@ -66,13 +66,11 @@ Zázraky nevynucujeme křikem. Víra má ruce, nohy, srdce a modlitbu.
 
 Uděláme poctivý lidský krok. Zajedeme pomoct. Odpustíme. A pak necháme Boha, ať udělá, co my neumíme.
 
-Když je někdo v nouzi, pomodlíme se za něj. A pak mu uvaříme oběd nebo pohlídáme děti.
-
 Ten krok bývá malý a obyčejný. Udělat ho je na nás. Proměnit srdce, zahojit vztah, otevřít oči, to už je Boží práce.
 
-Tak to bylo i u řeky. Pavel mluvil srozumitelně. Srdce ale Lydii otevřel Pán (Skutky 16,11–14).
-
 Odpustit se rozhodneme sami. Bolest z toho odnese on.
+
+Tak to bylo i u řeky ve Filipech. Pavel mluvil srozumitelně. Srdce ale Lydii otevřel Pán (Skutky 16,11–14).
 
 Švagr, který to sleduje z povzdálí, nechápe:
 
@@ -80,13 +78,15 @@ Odpustit se rozhodneme sami. Bolest z toho odnese on.
 
 ## Jak to vypadá v týdnu
 
-Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou. Zeptáme se: „Můžu se za tebe teď krátce pomodlit?“ Uzdravení neslibujeme. A když člověk řekne ne, bereme to.
+Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou. Zeptáme se: „Můžu se za tebe teď pomodlit?“ A když člověk nechce, bereme to. Za nemocné se modlíme, ale uzdravení neslibujeme.
 
-Na poradách řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Občas na to zapomeneme. Vracíme se k tomu. Proroctví a další duchovní dary přijímáme s vděčností. Doptáváme se na ně a převádíme je do kroků, které se dají ověřit.
+Na poradách řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Občas na to zapomeneme. Vracíme se k tomu.
+
+Když někdo řekne, že mu Bůh něco ukázal, vděčně to přijmeme a doptáme se. Pak hledáme krok, na kterém se pozná, jestli to sedí.
 
 V práci to vypadá nenápadně. Ráno se pomodlíme za zakázku, za těžký rozhovor, za šéfa. A pak práci uděláme pořádně. Modlitba nenahradí šroubovák. A šroubovák nenahradí modlitbu.
 
-Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. A že tu jednal dávno před námi. Modlíme se za lékaře, podnikatele i radnici. I za ty, kteří se o tom nikdy nedozvědí. Děláme svůj díl a čekáme, co udělá Bůh.
+Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. Modlíme se za lékaře, podnikatele i radnici. I za ty, kteří se o tom nikdy nedozvědí.
 
 > **Bez Ducha svatého je to jen prázdná sláma.**
 >
@@ -94,7 +94,7 @@ Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. A že tu jedna
 
 ## Do kapsy
 
-- Děláme poctivé přirozené kroky a čekáme na nadpřirozeného Boha.
+- Děláme poctivé přirozené kroky a nadpřirozené čekáme od Boha.
 - Bez Ducha svatého je všechna naše snaha jen prázdná sláma.
 - Plán slouží Pánu, ne Pán plánu.
 - Sami to neudřeme. Vzrůst dává Bůh.

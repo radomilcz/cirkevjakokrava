@@ -34,9 +34,9 @@ Pavel to Korintským vysvětluje na setí. Kdo zaseje skoupě, skoupě sklidí. 
 
 Kdo čeká, až mu bude přebývat, nedá nikdy nic. Vždycky se najde něco, co je potřeba zaplatit.
 
-Štědrost má vždycky dost. Nezávisí na výplatní pásce. Když věříme, že to, co máme, je Boží, povolí sevřená pěst. Uvolní se ruce i srdce. O svoje věci se Bůh postará líp než my.
+Nezávisí na výplatní pásce. Když věříme, že to, co máme, je Boží, povolí sevřená pěst. Uvolní se ruce i srdce. O svoje věci se Bůh postará líp než my.
 
-Pěst se nám ale ještě občas sevře sama. I my v duchu přepočítáváme, co nám zbude. Pak si připomínáme, čí to celé je. A učíme se hospodařit tak, abychom měli z čeho dávat i za rok.
+Pěst se nám ale ještě občas sevře sama. I my v duchu přepočítáváme, co nám zbude. Pak si připomínáme, čí to celé je.
 
 Bratranec to nechápe:
 
@@ -46,9 +46,9 @@ Bratranec to nechápe:
 
 Stovku pošleme na účet za deset vteřin. Celé odpoledne bolí víc.
 
-Peníze jsou důležité a mluvíme o nich otevřeně. To nejdražší, co máme, ale nejsou. Nejdražší jsme my sami. Náš čas, pozornost a důvěra.
+Peníze jsou důležité a mluvíme o nich otevřeně. Ale nejsou to nejdražší, co máme. Nejdražší jsme my sami. Náš čas, pozornost a důvěra.
 
-Peníze dáváme taky, a rádi. Někdy je poslat je na účet přesně to, co je potřeba. Jen si jimi nechceme kupovat klid tam, kde někdo potřebuje nás. Zůstat, i když už bychom radši byli doma.
+Peníze dáváme taky, a rádi. Jen si jimi nechceme kupovat klid tam, kde někdo potřebuje nás. Zůstat, i když už bychom radši byli doma.
 
 Soused večer přemýšlí:
 
@@ -60,9 +60,9 @@ Kdo pomáhá svrchu, ponižuje. I s plnou taškou dobrot.
 
 Ptáme se, co člověk potřebuje, a nevybíráme to za něj. Rozhodnutí necháváme jemu.
 
-Ptáme se taky, co umí a v čem je dobrý. Kdo dnes potřebuje teplý oběd, může zítra něco dát on nám. Když k pomoci dostane i důvěru a práci pro vlastní ruce, už jen nepřijímá. Pomáhá s námi.
+Ptáme se taky, co umí a v čem je dobrý. Kdo dnes potřebuje teplý oběd, může zítra sám pomoct druhým. Když k pomoci dostane i důvěru a práci do vlastních rukou, už nejen přijímá. Pomáhá s námi.
 
-Štědrost nemá stavět pomník naší dobrotě. Má postavit druhého na vlastní nohy. A kdo je v nouzi právě teď, tomu pomůžeme, i kdyby nám nikdy nic nevrátil.
+Štědrost nemá stavět pomník naší dobrotě. Má postavit druhého na vlastní nohy.
 
 Člověk, který pomoc přijal, na to vzpomíná:
 
@@ -70,13 +70,13 @@ Ptáme se taky, co umí a v čem je dobrý. Kdo dnes potřebuje teplý oběd, m�
 
 ## Jak to vypadá v týdnu
 
-Sousedům pomáháme, protože pomoc potřebují. Nic dalšího za tím nehledáme a za nic ji nevyměňujeme. Ani za návštěvu v neděli. Fotku na sítě k tomu nepotřebujeme. Někdy je to oběd, odvoz nebo půjčené auto. Někdy jen věta, že v tomhle nejsi sám.
+Sousedům pomáháme, protože pomoc potřebují. Nic dalšího za tím nehledáme a za nic ji nevyměňujeme. Ani za návštěvu v neděli. Někdy je to oběd nebo odvoz. Někdy jen věta, že na to nejsi sám.
 
-Ve sboru si půjčujeme nářadí i auta. Vrtačka nemusí ležet v každé garáži. Kdo něco umí, poradí. Kdo má dodávku, odveze skříň. Hlídáme, aby nikdo z nás nezůstal v nouzi sám. S penězi sboru hospodaříme otevřeně a pomníky si za ně nestavíme. Kdo dává hodně peněz nebo práce, větší slovo si tím u nás nekoupí.
+Ve sboru si půjčujeme nářadí i auta. Vrtačka nemusí ležet v každé garáži. Kdo něco umí, poradí. Kdo má dodávku, odveze skříň. Hlídáme, aby nikdo z nás nezůstal v nouzi sám. S penězi sboru hospodaříme otevřeně a pomníky si za ně nestavíme. Kdo dá hodně peněz nebo odvede hodně práce, větší slovo si tím u nás nekoupí.
 
 Učíme se i tu těžší půlku štědrosti. Říct si o pomoc a přijmout ji. Věta „já od nikoho nic nepotřebuju“ zní hrdě, ale vztahy ničí. Sbor, kde nikdo nic nepotřebuje, si nemá co dát.
 
-Ve městě chceme podporovat slabé, aby se postavili na nohy, i silné, aby rostli dál. Nejen záplatovat díry. Co je opravdu potřeba, se ptáme místních lidí, škol a organizací. Potřeby města neřešíme bez města. Svým časem, radou i penězi chceme stát i za talenty, podnikavými lidmi a nápady, které můžou život kolem znásobit. Cedulku s naším jménem na to lepit nemusíme. Kalkulačku pořád nosíme v kapse a občas ji vytáhneme.
+Potřeby města neřešíme bez města. Místních lidí, škol a organizací se ptáme, co je opravdu potřeba. Chceme podporovat slabé, aby se postavili na nohy, i silné, aby rostli dál. Nejen záplatovat díry. Svým časem, radou i penězi chceme stát i za talenty, podnikavými lidmi a nápady, které můžou život kolem znásobit. Cedulku s naším jménem na to lepit nemusíme. Kalkulačku pořád nosíme v kapse a občas ji vytáhneme.
 
 > **Štědrost začíná tam, kde končí kalkulačka.**
 >

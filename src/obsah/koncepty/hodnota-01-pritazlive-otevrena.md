@@ -24,9 +24,9 @@ Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s ce
 
 Takhle chceme přijímat druhé i my. Dřív, než s námi v čemkoli souhlasí (Římanům 15,7).
 
-Nejsme klub pro dokonalé. Chceme pastvu pro zvědavé, unavené i hladové. Kde se člověk nají, nadechne a smí být sám sebou.
+Nejsme klub pro dokonalé. Jsme pastva pro zvědavé, unavené i hladové. Člověk se tu nají, nadechne a smí být sám sebou.
 
-V názvu jsou dvě slova a každé patří někomu jinému. **Otevřenost** je naše práce. Vyjít ze dveří, pozvat, prostřít. **Přitažlivost** je hlavně Boží věc. Reklamou ani show ji nevyrobíme. Přichází tam, kde člověk mezi námi potká živého Boha a opravdový zájem o sebe.
+V názvu jsou dvě slova a každé patří někomu jinému. **Otevřenost** je naše práce. Vyjít ze dveří, pozvat, prostřít. **Přitažlivost** je Boží věc. Reklamou ani show ji nevyrobíme. A nemusíme.
 
 ## Na čem to stojí
 
@@ -34,7 +34,7 @@ V názvu jsou dvě slova a každé patří někomu jinému. **Otevřenost** je n
 
 Nalít kafe. Zavřít pusu. Poslouchat tak dlouho, až nás přejde chuť radit. Chceme lidi vyslechnout, ne vyslýchat.
 
-V každém člověku hledáme poklad, ne odpad. Vložil ho tam Bůh. Je tam vždycky. Jen ho někdy zakryla únava, selhání nebo cynismus.
+V každém člověku hledáme poklad, ne odpad. Ten poklad tam vložil Bůh. Je tam vždycky. Jen někdy leží hlouběji, pod únavou, selháním nebo cynismem.
 
 Přátelství ale jede oběma směry. Ježíš se nechal pohostit u Zachea. Samařanku poprosil o vodu. Kdo pomoc jen rozdává a sám si pomoct nenechá, drží si lidi od těla.
 
@@ -52,9 +52,7 @@ Představ si stůl, kde sedí máma v exekuci vedle chlapa, kterému klape firma
 
 Snadné to není. Metr na cizí selhání má doma každý z nás. Snažíme se ho nechávat v šuplíku. Ne vždycky to vyjde.
 
-Přijmout ale neznamená kývnout na všecko. Láska nepotřebuje stejný názor. Čemu věříme, říkáme nahlas. Tlačit do toho nikoho nebudeme.
-
-A když někdo druhému ubližuje, oči nepřivíráme. Zastaneme se slabšího.
+Přijmout ale neznamená kývnout na všecko. Láska nepotřebuje stejný názor. Čemu věříme, to říkáme nahlas. Tlačit do toho nikoho nebudeme.
 
 Jestli to myslíme vážně, pozná se ve chvíli, kdy nám někdo řekne, že o víru nestojí. Půjdeme s ním v pondělí zase na pivo?
 
@@ -70,7 +68,7 @@ Byl to nábor.
 
 Lidi přitahuje blíž, když na ně netlačíš. Tenhle magnetický paradox nemáme pod palcem. Kde se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
 
-Bůh u našich sousedů pracuje dávno předtím, než jsme je potkali my. Nenosíme ho tam. Jdeme za ním.
+Bůh u našich sousedů pracoval dávno předtím, než jsme je potkali. Nenosíme ho tam. Jdeme za ním.
 
 Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc než deset pádných argumentů.
 
@@ -88,9 +86,9 @@ Ke stolu je zveme, protože je máme rádi. Stůl je cíl sám o sobě. Není to
 
 Doma to nemusí vypadat jako z katalogu. Božímu království bohatě stačí káva, buchta a volné místo na gauči.
 
-Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyky. Děkujeme za ně. A všímáme si i toho, kdo z našich už dlouho chybí. Ozveme se mu.
+Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyky. Děkujeme za ně.
 
-Zajímá nás i město, ne jen jednotliví lidi. Kdo tu už dělá něco užitečného, k tomu se rádi přidáme. Naše logo na tom být nemusí.
+Zajímá nás i město, ne jen jednotliví lidi. Kdo tu už dělá něco užitečného, k tomu se rádi přidáme.
 
 > **Tvůj obývák je víc než pódium.**
 >
