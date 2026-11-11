@@ -4,11 +4,9 @@
 
 ## Podezřele milí
 
-Naši sousedi církev nehledají. Mají ranní směny, děti, psy a hypotéky do důchodu jako my. Na kostel jim nezbývá čas ani chuť. Kdybychom v neděli jen odemkli dveře a čekali, minuli bychom se s nimi.
+Naši sousedi církev nehledají. Mají ranní a noční směny, děti, psy a hypotéky do důchodu jako my. Na hledání smyslu života v kostelech jim nezbývá čas ani chuť. Kdybychom v neděli jen odemkli dveře a čekali, minuli bychom se s nimi.
 
-Když je k nim někdo cizí podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat?
-
-Chápeme je. Taky bychom zbystřili.
+Když je někdo cizí podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat? Chápeme je. Taky bychom zbystřili.
 
 Co od nich chceme my? Být jim nablízku. Překonat strach a navázat vztah. Zbytek necháváme Bohu.
 
