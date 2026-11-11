@@ -58,13 +58,13 @@ Byl to nábor.
 
 Člověk zvenku pak nechápe:
 
-*„Jak to, že se ke mně hlásí, i když spoustu věcí vidíme jinak?“*
+*„Jak to, že se ke mně hlásí, i když se mnou nesouhlasí?“*
 
 ### C. Přitažlivé tajemství
 
-Nikoho netlačíme. A přece to lidi táhne blíž. Tenhle magnetický paradox nemáme pod palcem. Když se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
+Lidi přitahuje blíž, když na ně netlačíš. Tenhle magnetický paradox nemáme pod palcem. Kde se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
 
-Když přijde řeč na Boha, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Deset hotových pouček nikoho nezahřeje. Jedna laskavá otázka otevře víc.
+Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc, než deset pádných argumentů.
 
 A když na těžkou otázku odpověď neznáme, řekneme na rovinu: *„Nevíme.“*
 
