@@ -90,7 +90,7 @@ Jsme z jednoho těsta i z jednoho města. Doma nemluvíme čínsky, ale novojič
 
 Nebučíme do větru. Než pustíme ven plakát, web nebo příspěvek na sítě, ptáme se, jestli mu rozumí soused, který v kostele nikdy nebyl. Sousedovi má věta z plakátu dávat smysl, i kdyby nakonec nepřišel.
 
-> **Neděle se pozná v pondělí.**
+> **Super neděli poznáš v pondělí.**
 >
 > Nepočítá se, čemu jsme v neděli zatleskali. Počítá se, co z těch slov během týdne uděláme. Na lešení, na poradě i na hřišti.
 >
