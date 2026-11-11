@@ -40,13 +40,13 @@ První křesťané se drželi učení apoštolů. K tomu se scházeli den co den
 
 Rodina se nepozná podle toho, že sedí v jedné řadě a kouká stejným směrem. Pozná se podle toho, že se lidi dívají jeden druhému do očí.
 
-Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete. Všechno o sobě nevíme. To podstatné většinou ano.
+Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete. Všechno o sobě nevíme. To podstatné většinou ano. A když někdo začne mizet, všimneme si a ozveme se.
 
 A víra k tomu patří. Neptáme se jen „Jak se máš?“, ale i „Jak se máš s Bohem?“
 
 Host, který s námi strávil pár týdnů, se diví:
 
-*„Jak to, že ti lidé spolu tak drží a vědí o sobě všechno podstatné?“*
+*„Jak to, že si na mě vzpomněli a ozvali se, když jsem v neděli nepřišel?“*
 
 ### B. Bezpečná důvěra a respekt k hranicím
 
@@ -57,6 +57,8 @@ Kráva respektuje hranice pastvy. My respektujeme hranice druhého. Nevyptávám
 Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobností, které nám nikdo nesvěřil. Co nám kdo svěří, má zůstat u nás. Výjimkou je, když někomu hrozí, že mu někdo ublíží.
 
 Když nám přesto ujede jazyk, jdeme se omluvit tomu, o kom jsme mluvili.
+
+A když někdo zklame nás? Odpouštíme hned. Důvěra se ale vrací pomalu, podle toho, co ten druhý dělá. Odpustit neznamená hned odevzdat klíče od trezoru.
 
 Kolegyně, která se nám svěřila, se ptá:
 
@@ -70,19 +72,23 @@ Do jedné formy nikoho necpeme. Elektrikář se kvůli nám nemusí učit na kyt
 
 Doprovázet znamená jít kus cesty vedle sebe a všímat si, co Bůh do toho druhého vložil. Někdy to vidíme dřív než on sám. Pak mu to řekneme. A pomáháme mu dorůst do toho, kým ho Bůh chtěl mít.
 
+Starší předávají mladším, co se s Bohem sami naučili. Tak Pavel provázel mladého Timotea. Chceme, aby jednou slyšel Boha sám, i bez nás (2. Timoteovi 2,2).
+
+Zvlášť trpěliví chceme být s dětmi a dospívajícími. Smějí se ptát na těžké věci a smějí šlápnout vedle.
+
 Kamarád, se kterým se vídáme už pár let, říká:
 
 *„Jak to, že mi pomáhají růst, a nepředělávají mě podle sebe?“*
 
 ## Jak to vypadá v týdnu
 
-Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Své tempo má i on. Hlubokou zpověď z nikoho netaháme první neděli.
+Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Své tempo má i on. Hlubokou zpověď z nikoho netaháme první neděli. A hlídáme si, aby z nás nebyla partička starých známých. Jedna židle má zůstat volná pro dalšího.
 
-Mezi sebou se scházíme po domech a pomáháme si s tím, co kdo zrovna nezvládá. Když někoho potká krize, nenecháme ho v ní samotného.
+Mezi sebou se scházíme po domech a pomáháme si s tím, co kdo zrovna nezvládá. Jednou podržím já tebe, podruhé ty mě. Nikdo není jen zachránce a nikdo jen potřebný. Když někoho potká krize, nenecháme ho v ní samotného.
 
-Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády. Tiché napětí samo nezmizí. Jen roste.
+Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Nejdeme vyhrát hádku. Jdeme vztah spravit. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády. Tiché napětí samo nezmizí. V tiché poště jen roste. A zůstáváme, i když je to zrovna nepohodlné.
 
-Blízkost nekončí na prahu sboru. Se sousedy a kolegy, kteří do církve nechodí, pěstujeme stejně věrná přátelství.
+Blízkost nekončí na prahu sboru. Se sousedy a kolegy, kteří do církve nechodí, pěstujeme stejně věrná přátelství. Nejsou náš projekt. Mají co dát i oni nám.
 
 > **Nejsme duchovní kino. Jsme rodina, která jí z jednoho hrnce.**
 >

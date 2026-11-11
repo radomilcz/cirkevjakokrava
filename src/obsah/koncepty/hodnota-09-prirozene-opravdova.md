@@ -14,6 +14,8 @@ Kdo žije s krávami, ví, že na pastvě to občas smrdí hnojem. K životu to 
 
 **Nebojíme se přiznat, že občas smrdíme hnojem.**
 
+Značku z toho neděláme. Hnůj se ale dá proměnit v hnojivo, když ho přestaneme lakovat narůžovo.
+
 Nehrajeme divadlo. Bůh nestojí o naše nedělní role. Stojí o lidi z masa a kostí.
 
 ## Proč to děláme
@@ -32,6 +34,8 @@ Pavel píše Timoteovi, že cílem toho, co učí, je láska. Láska z čistého
 
 **Opravdovost** znamená stát v pravdě před Bohem i před lidmi. Před oběma se stejnou tváří.
 
+Bůh neléčí fasádu. Léčí člověka. Opravdovost je teprve poctivý začátek proměny.
+
 ## Na čem to stojí
 
 ### A. Jeden život od pondělí do neděle
@@ -42,6 +46,8 @@ Nejde o to, abychom v dílně zpívali. Jde o to, aby tam stál tentýž člově
 
 Kdo nás zažil v pondělí v sedm ráno, ví své.
 
+Neděle pro nás není únik z týdne. Slavíme v ní, co jsme s Bohem od pondělí prožili, a nadechneme se do dalších dnů.
+
 Kolega, který nás zná z práce a jednou přišel i v neděli, se ptá:
 
 *„Jak to, že jsou v neděli úplně stejní jako v práci?“*
@@ -51,6 +57,8 @@ Kolega, který nás zná z práce a jednou přišel i v neděli, se ptá:
 Kdo má dvě tváře, potřebuje i dvě pravdy. Jednu pro lidi a druhou pro sebe. My chceme mít jednu.
 
 Proto selhání netutláme, ani kdyby se to hodilo kvůli dobrému jménu sboru. Když někdo z nás ujede, řekneme mu to. Napřímo a s láskou. A pak mu pomůžeme dát věci do pořádku. Zatím nám to jde líp na papíře než naživo.
+
+Učíme se k tomu pár krátkých vět. Spletl jsem se. Nevím. Bojím se. Odpusť mi. A taky jednu radostnou, že tady vidím Boží rukopis.
 
 Pověst sboru se dá spravit. Škody z pravdy zametené pod koberec mnohem hůř. I když mlčet je vždycky pohodlnější.
 
@@ -66,6 +74,8 @@ Cholerik se u nás nemusí tvářit jako flegmatik. Kdo se směje nahlas, nemus�
 
 Originál ale není alibi. Kdo po výbuchu mávne rukou, že „já už jsem prostě takový“, schovává se. Opravdovost je těžší. Přiznat, že to bylo přes čáru, a jít to spravit.
 
+Druhým nedáváme doživotní nálepky podle starých chyb. Hledáme pravdivé jméno člověka a to, co s ním zamýšlí Bůh.
+
 Život chutná nejlíp bez umělých přísad.
 
 Kamarádka si po čase říká:
@@ -74,11 +84,11 @@ Kamarádka si po čase říká:
 
 ## Jak to vypadá v týdnu
 
-S dokonalostí na nikoho nevyrukujeme. Žádnou nemáme. Když přijde řeč na víru, mluvíme i o tom, co jsme sami pokazili.
+Kdo k nám přijde poprvé, nemusí si dávat pozor na pusu ani hrát, že má život vyřešený. S dokonalostí na nikoho nevyrukujeme. Žádnou nemáme. Když přijde řeč na víru, mluvíme i o tom, co jsme sami pokazili.
 
 Mezi sebou nechceme mít nedotknutelné svaté. Přejeme si, aby i ten, kdo v neděli stojí vepředu, mohl říct, s čím se pere. A abychom mu to my na židlích nevyčítali.
 
-Z vlastních ran ale neděláme představení. Citlivé věci říkáme mezi čtyřma očima nebo v partě lidí, kterým věříme.
+Z vlastních ran ale neděláme představení. Citlivé věci říkáme mezi čtyřma očima nebo v partě lidí, kterým věříme. Nikoho nenutíme, aby před všemi vykládal svou minulost. Soukromí není přetvářka.
 
 Držíme slovo. Když v Novém Jičíně něco slíbíme, má to platit. Termín, který jsme slíbili zákazníkovi. Cena na faktuře bez fíglů. Slib sousedovi, že mu v sobotu pomůžeme.
 

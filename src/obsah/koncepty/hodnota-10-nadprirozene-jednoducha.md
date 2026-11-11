@@ -22,7 +22,7 @@ Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic. A Pavel to p
 
 **Sami to neudřeme. Vzrůst dává Bůh.**
 
-**Nadpřirozeně** znamená, že počítáme s Boží mocí. S modlitbou, s uzdravením, s proměnou srdce, kterou nikdo z nás sám nezařídí.
+**Nadpřirozeně** znamená, že počítáme s Boží mocí. S modlitbou, s uzdravením, s duchovními dary, s proměnou srdce, kterou nikdo z nás sám nezařídí.
 
 **Jednoduchá** znamená, že z toho neděláme cirkus, ezoteriku ani hysterii pro zasvěcené. Boží moc se ukazuje v prostých krocích. Když Boha posloucháme a když máme lidi rádi.
 
@@ -32,9 +32,11 @@ Ježíš učedníkům řekl na rovinu, že bez něj nezmůžou nic. A Pavel to p
 
 Plánovat je dobré. Promyšlená strategie, rozpočet a pořádek v penězích patří k poctivé práci. Věnujeme se jim pečlivě a nestydíme se za ně.
 
-Plán je u nás ale sluha. Pána máme jiného.
+Plán je u nás ale sluha. Pána máme jiného. Proto Boha zveme k rozhodování, rozpočtu i načasování dřív, než všechno uzavřeme.
 
 Když Bůh ukáže jinam, smíme plán zahodit. I když nás stál hodně práce. Někdy si Boží hlas spleteme s vlastní pohodlností. Proto se o tom radíme spolu.
+
+Když se před námi dveře zavřou, nepanikaříme. Bůh vidí dál než my. A každé otevřené dveře ještě nejsou pokyn vejít.
 
 Kamarád, který nám pomáhá s přípravou, se ptá:
 
@@ -42,11 +44,15 @@ Kamarád, který nám pomáhá s přípravou, se ptá:
 
 ### B. Živý Duch a zdravé rozlišování
 
+Duch svatý pro nás není dekorace k hotovému plánu. Je to dech Božího života v církvi.
+
 Příběhy o tom, co Bůh udělal před lety, posloucháme rádi. Samy nám ale nestačí. Chceme vidět, co dělá dnes, tady v Novém Jičíně.
 
 Modlíme se za nemocné. Za práci, za zkoušky, za pokažené vztahy. A nasloucháme tomu, co nám Bůh říká. Střízlivě, bez zvláštního hlasu a velkých gest.
 
-Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
+Pravé Boží vedení obstojí ve světle Bible, před zdravým rozumem i před otázkami druhých lidí. Žádný dojem nestojí nad Písmem. Díváme se, jestli se podobá Ježíši a jaké nese ovoce. Duchovní dar má druhého postavit na nohy. Ovládat ho nesmí. Kdo z nás řekne „Bůh mi řekl, a vy musíte poslouchat“, dostane od ostatních otázky.
+
+Duch svatý nevede do mlhy ani do strachu. Vede ke svobodě, pravdě a lásce.
 
 Někdy Bůh odpoví hned. A jinak, než jsme čekali. Někdy čekáme dlouho a nerozumíme proč. I to k víře patří.
 
@@ -56,11 +62,15 @@ Kolegyně, za kterou se modlíme, se diví:
 
 ### C. Náš krok a Boží díl
 
-Zázraky nevynucujeme křikem.
+Zázraky nevynucujeme křikem. Víra má ruce, nohy, srdce a modlitbu.
 
 Uděláme poctivý lidský krok. Zajedeme pomoct. Odpustíme. A pak necháme Boha, ať udělá, co my neumíme.
 
+Když je někdo v nouzi, pomodlíme se za něj. A pak mu uvaříme oběd nebo pohlídáme děti.
+
 Ten krok bývá malý a obyčejný. Udělat ho je na nás. Proměnit srdce, zahojit vztah, otevřít oči, to už je Boží práce.
+
+Tak to bylo i u řeky, kde Pavel mluvil k ženám. Mluvil srozumitelně. Srdce ale Lydii otevřel Pán (Skutky 16,11–14).
 
 Odpustit se rozhodneme sami. Bolest z toho odnese on.
 
@@ -70,13 +80,13 @@ Odpustit se rozhodneme sami. Bolest z toho odnese on.
 
 ## Jak to vypadá v týdnu
 
-Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou.
+Z Ducha svatého neděláme strašáka ani důvod k hysterii. Za lidi se modlíme, když o to stojí. Krátce, srozumitelně a s láskou. Zeptáme se: „Můžu se za tebe teď krátce pomodlit?“ Uzdravení neslibujeme. A když člověk řekne ne, bereme to.
 
-Na poradách řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Občas na to zapomeneme. Vracíme se k tomu.
+Na poradách řešíme rozpočty, termíny i problémy. Modlitba není ozdoba na konci porady, ale místo, kde začínáme. Ztichneme a ptáme se: „Co k tomu říká Pán?“ Občas na to zapomeneme. Vracíme se k tomu. Proroctví a další duchovní dary přijímáme s vděčností. Doptáváme se na ně a převádíme je do kroků, které se dají ověřit.
 
 V práci to vypadá nenápadně. Ráno se pomodlíme za zakázku, za těžký rozhovor, za šéfa. A pak práci uděláme pořádně. Modlitba nenahradí šroubovák. A šroubovák nenahradí modlitbu.
 
-Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. Modlíme se za lékaře, podnikatele i radnici. I za ty, kteří se o tom nikdy nedozvědí.
+Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. A že tu jednal dávno před námi. Modlíme se za lékaře, podnikatele i radnici. I za ty, kteří se o tom nikdy nedozvědí. Kde je potřeba, přiložíme ruku. Městem vlastní silou nepohneme. Děláme svůj díl a čekáme, co udělá Bůh.
 
 > **Bez Ducha svatého je to jen prázdná sláma.**
 >
@@ -84,7 +94,7 @@ Věříme, že Bůh v Novém Jičíně jedná i mimo zdi kostela. Modlíme se za
 
 ## Do kapsy
 
-- Děláme přirozené kroky. Nadpřirozené necháváme Bohu.
+- Děláme poctivé přirozené kroky a čekáme na nadpřirozeného Boha.
 - Bez Ducha svatého je všechna naše snaha jen prázdná sláma.
 - Plán slouží Pánu, ne Pán plánu.
 - Sami to neudřeme. Vzrůst dává Bůh.

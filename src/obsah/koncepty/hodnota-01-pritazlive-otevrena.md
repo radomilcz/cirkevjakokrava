@@ -4,7 +4,7 @@
 
 ## Podezřele milí
 
-Naši sousedi církev nehledají. Mají ranní směny, děti s horečkou a hypotéku do důchodu. Na kostel jim nezbývá čas ani chuť.
+Naši sousedi církev nehledají. Mají ranní směny, děti s horečkou a hypotéku do důchodu. Na kostel jim nezbývá čas ani chuť. Kdybychom v neděli jen odemkli dveře a čekali, minuli bychom se s nimi.
 
 Když je k nim někdo cizí podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat?
 
@@ -12,25 +12,29 @@ Chápeme je. Taky bychom zbystřili.
 
 Co od nich chceme my? Být jim nablízku. Překonat strach a navázat vztah. Zbytek necháváme Bohu.
 
+Proto se neptáme, jak je dostat k nám. Ptáme se, jak se dostat blíž k nim.
+
 ## Proč to děláme
 
 Protože Bůh se k nám zachoval stejně.
 
 Nečekal, až se umyjeme a přijdeme za ním do chrámu. Přišel první. Rovnou do našeho chléva. A nevadilo mu, že to tam nevoní. Přijal nás dřív, než jsme byli přijatelní (Římanům 5,8).
 
-Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s celníky, s lidmi, které ostatní obcházeli obloukem. Místo u stolu si nikdo nemusel vybojovat.
+Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s celníky, s lidmi, které ostatní obcházeli obloukem. Místo u stolu si nikdo nemusel vybojovat (Matouš 9,10–13).
 
 Takhle chceme přijímat druhé i my. Dřív, než s námi v čemkoli souhlasí (Římanům 15,7).
 
-V názvu jsou dvě slova a každé patří někomu jinému. **Otevřenost** je naše práce. Vyjít ze dveří, pozvat, prostřít. **Přitažlivost** je Boží věc. Reklamou ani show ji nevyrobíme. A nemusíme.
+Nejsme klub pro dokonalé. Chceme pastvu pro zvědavé, unavené i hladové. Kde se člověk nají, nadechne a smí být sám sebou.
+
+V názvu jsou dvě slova a každé patří někomu jinému. **Otevřenost** je naše práce. Vyjít ze dveří, pozvat, prostřít. **Přitažlivost** je hlavně Boží věc. Reklamou ani show ji nevyrobíme. Přichází tam, kde člověk mezi námi potká živého Boha a opravdový zájem o sebe.
 
 ## Na čem to stojí
 
 ### A. Otevřený zájem
 
-Nalít kafe. Zavřít pusu. Poslouchat tak dlouho, až nás přejde chuť radit.
+Nalít kafe. Zavřít pusu. Poslouchat tak dlouho, až nás přejde chuť radit. Chceme lidi vyslechnout, ne vyslýchat.
 
-V každém člověku hledáme poklad, ne odpad. Je tam vždycky. Jen někdy leží hlouběji.
+V každém člověku hledáme poklad, ne odpad. Vložil ho tam Bůh. Je tam vždycky. Jen ho někdy zakryla únava, selhání nebo cynismus.
 
 Přátelství ale jede oběma směry. Ježíš se nechal pohostit u Zachea. Samařanku poprosil o vodu. Kdo pomoc jen rozdává a sám si pomoct nenechá, drží si lidi od těla.
 
@@ -48,7 +52,9 @@ Představ si stůl, kde sedí máma v exekuci vedle chlapa, kterému klape firma
 
 Snadné to není. Metr na cizí selhání má doma každý z nás. Snažíme se ho nechávat v šuplíku. Ne vždycky to vyjde.
 
-Přijmout ale neznamená kývnout na všecko. Láska nepotřebuje stejný názor.
+Přijmout ale neznamená kývnout na všecko. Láska nepotřebuje stejný názor. Čemu věříme, říkáme nahlas. Tlačit do toho nikoho nebudeme.
+
+A když někdo druhému ubližuje, oči nepřivíráme. Zastaneme se slabšího.
 
 Jestli to myslíme vážně, pozná se ve chvíli, kdy nám někdo řekne, že o víru nestojí. Půjdeme s ním v pondělí zase na pivo?
 
@@ -64,7 +70,9 @@ Byl to nábor.
 
 Lidi přitahuje blíž, když na ně netlačíš. Tenhle magnetický paradox nemáme pod palcem. Kde se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
 
-Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc, než deset pádných argumentů
+Bůh u našich sousedů pracuje dávno předtím, než jsme je potkali my. Nenosíme ho tam. Jdeme za ním.
+
+Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc než deset pádných argumentů.
 
 A když na těžkou otázku odpověď neznáme, řekneme na rovinu: *„Nevíme.“*
 
@@ -80,7 +88,9 @@ Ke stolu je zveme, protože je máme rádi. Stůl je cíl sám o sobě. Není to
 
 Doma to nemusí vypadat jako z katalogu. Božímu království bohatě stačí káva, buchta a volné místo na gauči.
 
-Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyky. Děkujeme za ně.
+Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyky. Děkujeme za ně. A všímáme si i toho, kdo z našich už dlouho chybí. Ozveme se mu.
+
+Zajímá nás i město, ne jen jednotliví lidi. Kdo tu už dělá něco užitečného, k tomu se rádi přidáme. Naše logo na tom být nemusí.
 
 > **Tvůj obývák je víc než pódium.**
 >
@@ -94,6 +104,7 @@ Nováček vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyk
 - Bůh nás přijal dřív, než jsme byli přijatelní.
 - V každém člověku hledáme poklad, ne odpad.
 - Láska nepotřebuje stejný názor.
+- Jedna laskavá otázka otevře víc než deset pádných argumentů.
 
 ## Zrcadlo
 

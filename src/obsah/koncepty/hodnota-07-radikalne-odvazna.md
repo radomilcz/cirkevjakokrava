@@ -14,7 +14,7 @@ Obě cesty pramení z nejistoty. Kdo neví, na čem stojí, buď se drží, co t
 
 Slovo *radikální* pochází z latinského *radix*. Kořen. Radikální člověk tedy jde až ke kořeni věcí. Rozmlátit všechno umí každý.
 
-Čím hlouběji má strom kořeny, tím míň se bojí vichřice. A tím volněji může růst do nových tvarů.
+Čím hlouběji má strom kořeny, tím míň se bojí vichřice. A tím volněji může růst do nových tvarů. Stabilita je v pohybu.
 
 Naším kořenem je Kristus a jeho slovo. Proto se nemusíme bát změn. A ořezat suché větve, které už nenesou život.
 
@@ -28,7 +28,7 @@ Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásk
 
 **Radikálně** znamená jít ke kořeni. Neptáme se jen, jestli něco běží. Ptáme se, proč to děláme a komu to slouží. A necháváme Boha, ať nám mění myšlení.
 
-**Odvážná** znamená vylézt z pohodlí a nahlas říct, co nefunguje.
+**Odvážná** znamená vylézt z pohodlí a nahlas říct, co nefunguje. A vykročit tam, kde jsme ještě nebyli, když nás tam Bůh vede.
 
 Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevyroste.
 
@@ -38,7 +38,7 @@ Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevy
 
 Ve vitríně všechno krásně vypadá a nic neroste. Z kořene raší nové výhonky.
 
-Měníme vnější podobu, abychom zachránili podstatu a přiblížili ji lidem. V kolik začínáme, jaké zpíváme písně, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene.
+Měníme vnější podobu, abychom zachránili podstatu a přiblížili ji lidem. V kolik začínáme, jaké zpíváme písně, jakými slovy mluvíme, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene.
 
 Tradici nám předali lidi, kteří Bohu věřili dřív než my. Vážíme si jich. Nejlíp jim poděkujeme, když z toho, co zasadili, necháme vyrůst něco živého. Za sklo to zavírat nebudeme.
 
@@ -52,6 +52,8 @@ Odvaha není arogance ani rebelie pro rebelii. Je to věrnost Kristu. Síla, kte
 
 Máme svou váhu, svou hlavu i svou důstojnost. Nemusíme je nikomu předvádět. Kdo stojí pevně, nepotřebuje se vytahovat ani vyhrát každou hádku.
 
+Sílu máme na to, abychom unesli odpovědnost, chránili slabší a zůstali klidní pod tlakem. Skutečná autorita se pozná podle toho, že se vedle ní druzí narovnávají.
+
 Kdo chce něco měnit, potřebuje nejdřív poslouchat. Za starým zvykem často stojí dobrý důvod. Někdy už jen zvyk. Rozeznat jedno od druhého chce pokoru. A trpělivost s těmi, kdo to vidí jinak.
 
 Sousedce to vrtá hlavou:
@@ -60,9 +62,11 @@ Sousedce to vrtá hlavou:
 
 ### C. Odvaha k pravdě i k vlastní omluvě
 
-Pravda chce odvahu dvakrát. Poprvé, když máme nahlas říct, co nefunguje. Laskavě a včas. Podruhé, když to nefunguje kvůli nám.
+Pravda chce odvahu dvakrát. Poprvé, když máme nahlas říct, co nefunguje. Laskavě a včas. Člověku zblízka a proto, abychom mu pomohli. Z dálky se dá jen shazovat. Podruhé, když to nefunguje kvůli nám.
 
 Pak přijde věta, která se špatně vyslovuje: „Tohle jsme pokazili. Tudy cesta nevede.“ A po ní omluva těm, koho to stálo čas nebo nervy.
+
+Stejnou odvahu chce kritiku vyslechnout. Kdo u nás upozorní na slepou uličku, nemá dostat nálepku potížisty. Možná vidí kouř dřív než ostatní. Připomínka není útok na toho, kdo vede.
 
 I u nás běží stroje, které kdysi táhly a dnes už jen hučí. Program, na který chodíme ze zvyku. Akce, kterou děláme, protože jsme ji dělali vždycky. Snažíme se takové stroje vypínat bez nostalgie. Někdy nám to trvá déle, než by mělo.
 
@@ -74,7 +78,9 @@ Kdo to sleduje zvenku, kroutí hlavou:
 
 Když nový člověk nechápe, proč něco děláme, máme dvě možnosti. Vysvětlit to. Nebo uznat, že to už vysvětlit neumíme, a změnit to.
 
-U každého programu se bez vytáček ptáme: nese to ještě život? Když ne, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
+Novým lidem věříme a necháváme je zkoušet nové nápady. Kdo se osvědčí v malých věcech, dostane větší odpovědnost.
+
+U každého programu se bez vytáček ptáme: vzniklo to z víry, nebo to držíme jen ze zvyku? Nese to ještě život? Když ne, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
 
 A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak.
 
