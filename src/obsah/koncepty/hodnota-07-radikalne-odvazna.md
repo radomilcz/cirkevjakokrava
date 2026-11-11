@@ -78,7 +78,7 @@ Novým lidem věříme a necháváme je zkoušet vlastní nápady. Kdo se osvěd
 
 U každého programu se bez vytáček ptáme: vzniklo to z víry, nebo to držíme jen ze zvyku? Nese to ještě život? Díváme se na ovoce a posloucháme příběhy. Když to život nenese, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
 
-A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak. Riskujeme pro lidi, ne pro vlastní ego a adrenalin. Než něco změníme, posloucháme ty, kterých se to dotkne. Svůj plán netlačíme přes vztahy.
+A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak. Riskujeme pro lidi, ne pro vlastní ego a adrenalin. Než něco změníme, posloucháme ty, kterých se to dotkne. Svůj plán neprosazujeme na úkor vztahů.
 
 V práci, ve škole i na ulici v Novém Jičíně chceme držet rovnou páteř. Když vidíme podvod nebo to, jak někdo hází vinu na slabšího kolegu, neuhneme pohledem. Postavíme se na správnou stranu, i když nás to něco stojí. Těmi na druhé straně ale nepohrdáme. Ne vždycky na to máme odvahu. O to víc o ni prosíme.
 

@@ -10,7 +10,7 @@ V církvi to jde taky. A docela pohodlně.
 
 Přijdeme v neděli, sedneme si do řady, zazpíváme si a vyslechneme kázání. Dobré kázání. A jsme pryč dřív, než s námi někdo stihne promluvit. Nikdo neví, s čím jsme přišli. A nikdo neví, s čím odcházíme.
 
-Takové duchovní kino. Pohodlné místo, dobrý program a žádné otázky.
+Takové duchovní kino.
 
 Neděle je dobrá. Jen sama nestačí.
 
@@ -28,7 +28,7 @@ Svůj krok k Bohu musí udělat každý z nás sám. Víru nikdo nezdědí po m�
 
 Kdo ale patří Bohu, patří i ostatním. Bible tomu říká Kristovo tělo. A tělo po kouskách nežije.
 
-První křesťané se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli. Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží. A Tesalonickým píše, že on a jeho přátelé je měli tak rádi, že jim chtěli dát nejen evangelium, ale i vlastní životy (Skutky 2,42–46; Galatským 6,2; 1. Tesalonickým 2,8).
+První křesťané se drželi učení apoštolů. K tomu se scházeli den co den, jedli spolu po domech a dělili se o to, co měli. Pavel radí Galatským, ať jeden druhému pomáhají nést, co je tíží. A Tesalonickým píše, že jim s přáteli chtěli dát nejen evangelium, ale i vlastní životy (Skutky 2,42–46; Galatským 6,2; 1. Tesalonickým 2,8).
 
 **Důvěrnost** znamená, že nezůstaneme u řečí o počasí. Smíme mluvit o tom, s čím zápasíme, kde jsme selhali i z čeho máme radost. Bez strachu, že nás za to někdo pomluví.
 
@@ -42,7 +42,7 @@ Rodina se nepozná podle toho, že sedí v jedné řadě a kouká stejným směr
 
 Proto se scházíme i po domech. Jíme spolu a modlíme se jeden za druhého.
 
-Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete. Všechno o sobě nevíme. To podstatné většinou ano.
+Víme o sobě, kdo shání práci, komu stůně táta a kdo se nemůže dočkat prvního vnoučete.
 
 A víra k tomu patří. Neptáme se jen „Jak se máš?“, ale i „Jak se máš s Bohem?“
 
@@ -54,13 +54,11 @@ Host, který s námi strávil pár týdnů, se diví:
 
 ### B. Bezpečná důvěra a respekt k hranicím
 
-Důvěrnost neznamená, že se vzdáme soukromí. Nikdo nemusí vykládat všechno všem. Důvěra se nedá vynutit. Každý má právo na své tempo a své hranice. Díky nim nikoho nekontrolujeme a nedusíme. Dobrá blízkost dává zázemí a nechá člověka dýchat.
+Důvěrnost neznamená, že se vzdáme soukromí. Důvěra se nedá vynutit. Každý má právo na své tempo a své hranice. Díky nim nikoho nekontrolujeme a nedusíme. Dobrá blízkost dává zázemí a nechá člověka dýchat.
 
 Kráva respektuje hranice pastvy. My respektujeme hranice druhého. Nevyptáváme se víc, než chce ten druhý sám říct.
 
-Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobností, které nám nikdo nesvěřil. Co nám kdo svěří, má zůstat u nás. Výjimkou je, když někomu hrozí, že mu někdo ublíží.
-
-Když nám přesto ujede jazyk, jdeme se omluvit tomu, o kom jsme mluvili.
+Víme, jak snadno se z prosby o modlitbu stane drb. Co nám kdo svěří, má zůstat u nás. Výjimkou je, když někomu hrozí, že mu někdo ublíží.
 
 Důvěra potřebuje ještě jedno. Když mezi námi něco zaskřípe, jdeme za tím druhým rovnou. Mluvíme s člověkem z očí do očí, ne o člověku za jeho zády.
 
@@ -72,7 +70,7 @@ Kolegyně, která nás pár měsíců pozoruje, se ptá:
 
 ### C. Doprovázení, které pomáhá dorůst
 
-Doprovázet znamená jít kus cesty vedle sebe a všímat si, co Bůh do toho druhého vložil. Někdy to vidíme dřív než on sám. Pak mu to řekneme. A pomáháme mu dorůst do toho, kým ho Bůh chtěl mít.
+Doprovázet znamená jít kus cesty vedle sebe a všímat si, co Bůh do toho druhého vložil. Pomáháme mu dorůst do toho, kým ho Bůh chtěl mít.
 
 Zkušenější předávají mladším, co se s Bohem sami naučili. Tak Pavel provázel mladého Timotea a radil mu, ať to, co od něj slyšel, svěří lidem, kteří to naučí i další (2. Timoteovi 2,2). Chceme, aby každý jednou slyšel Boha sám, i bez nás.
 
@@ -92,7 +90,7 @@ Kdo k nám přijde poprvé, nemusí nám nic vyprávět. Smí zůstat na kraji a
 
 Mezi sebou si pomáháme s tím, co kdo zrovna nezvládá. Někdy stačí zpráva uprostřed týdne nebo odvoz k lékaři. Jednou podržím já tebe, podruhé ty mě.
 
-Spor nenecháváme uležet. Jdeme vztah spravit, ne vyhrát hádku. A zůstáváme v něm, i když je to zrovna nepohodlné. Napětí samo nezmizí. V tiché poště jen roste.
+Spor nenecháváme uležet. Jdeme vztah spravit, ne vyhrát hádku. A zůstáváme v něm, i když je to zrovna nepohodlné. V tiché poště napětí jen roste.
 
 Blízkost nekončí na prahu sboru. Sousedy z ulice známe jménem. S nimi i s kolegy, kteří do církve nechodí, pěstujeme stejně věrná přátelství. Jsme poblíž, když je jim těžko. Nejsou pro nás úkol. Hodně od nich dostáváme i my.
 
