@@ -12,6 +12,8 @@ Chápeme je. Taky bychom zbystřili.
 
 Co od nich chceme my? Být jim nablízku. Překonat strach a navázat vztah. Zbytek necháváme Bohu.
 
+Bůh pracoval v sousedství dřív než my. Nenosíme ho tam. Jdeme za ním.
+
 Proto se neptáme, jak je dostat k nám. Ptáme se, jak se dostat blíž k nim.
 
 ## Proč to děláme
@@ -67,8 +69,6 @@ Byl to nábor.
 ### C. Přitažlivé tajemství
 
 Lidi přitahuje blíž, když na ně netlačíš. Tenhle magnetický paradox nemáme pod palcem. Kde se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
-
-Bůh v sousedství pracoval dřív než my. Nenosíme ho tam. Jdeme za ním.
 
 Když přijde řeč na Ježíše, mluvíme o tom, co s ním sami prožíváme. I o tom, co nám nejde. Poučka srdce nikoho nezahřeje. Jedna laskavá otázka otevře víc než deset pádných argumentů.
 
