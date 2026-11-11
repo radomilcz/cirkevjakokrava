@@ -36,7 +36,7 @@ Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásk
 
 Ve vitríně všechno krásně vypadá a nic neroste. Z kořene raší nové výhonky.
 
-Evangelium se nemění. Forma, ve které ho neseme lidem, se měnit smí. V kolik začínáme, jaké zpíváme písně, jak mluvíme, jak sedíme, jak zveme: to všechno jsou větve. Můžou růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene. Když na formu nikdo nesmí sáhnout, začne novým lidem stát v cestě.
+Evangelium se nemění. Forma, ve které ho neseme lidem, se měnit smí. V kolik začínáme, jaké zpíváme písně, jak mluvíme, jak sedíme, jak zveme: to všechno jsou větve. Můžou růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene. Když je forma nedotknutelná, začne novým lidem stát v cestě.
 
 Dovolujeme Bohu sáhnout i na zažité názory a pohodlí, nejen na nedělní program. I na to, do čeho jsme dali spoustu práce.
 
@@ -78,9 +78,9 @@ Když nový člověk nechápe, proč něco děláme, máme dvě možnosti. Vysv�
 
 Novým lidem věříme a necháváme je zkoušet vlastní nápady. Kdo se osvědčí v malých věcech, dostane větší odpovědnost.
 
-U každého programu se bez vytáček ptáme: vzniklo to z víry, nebo to držíme jen ze zvyku? Nese to ještě život? Díváme se na ovoce a posloucháme příběhy. Když už to nenese život, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
+U každého programu se bez vytáček ptáme: vzniklo to z víry, nebo to držíme jen ze zvyku? Díváme se na ovoce a posloucháme příběhy. Když už to nenese život, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
 
-A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak. Riskujeme pro lidi, ne pro vlastní ego a adrenalin. Než něco změníme, vyslechneme ty, kterých se to dotkne. Za starým zvykem často stojí dobrý důvod. Někdy už jen zvyk. Svůj plán neprosazujeme na úkor vztahů.
+A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak. Riskujeme pro lidi, ne pro vlastní ego a adrenalin. Než něco změníme, vyslechneme ty, kterých se to dotkne. Svůj plán neprosazujeme na úkor vztahů.
 
 V práci, ve škole i na ulici v Novém Jičíně chceme mít páteř. Když vidíme podvod nebo to, jak někdo hází vinu na slabšího kolegu, neuhneme pohledem. Postavíme se na správnou stranu, i když nás to něco stojí. Těmi na druhé straně ale nepohrdáme. Ne vždycky máme odvahu se ozvat. O to víc o ni prosíme.
 
