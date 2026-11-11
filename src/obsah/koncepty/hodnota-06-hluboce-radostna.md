@@ -6,7 +6,7 @@
 
 Hodně lidí si myslí, že se křesťan musí pořád usmívat. V práci, doma, i když se mu zrovna všechno sype. Problémy? Jaké problémy?
 
-Ten křečovitý úsměv známe. I z vlastního zrcadla. Chvíli vydrží, pak začnou bolet tváře. Takový úsměv unaví toho, kdo ho nosí, i ty, kdo se na něj dívají.
+Ten křečovitý úsměv známe. I z vlastního zrcadla. Chvíli vydrží, pak začnou bolet tváře. Unaví toho, kdo ho nosí, i ty, kdo se dívají.
 
 Kráva se neusmívá na povel. Stačí jí slunce na hřbetě. Je jí zkrátka dobře.
 
@@ -32,13 +32,13 @@ A radost nezačíná u nás. Bůh se na nás dívá s radostí, ne s věčně sv
 
 Hlava si nejdřív všimne toho, co nefunguje, co chybí a kdo nás zklamal. A závist má ostrý zrak. Hned vidí, co má soused a my ne. Novější auto, delší dovolenou.
 
-Vděčnost se dívá jinam. Ráno nás nic nebolí. Máme střechu nad hlavou. Doma topí. Děti došly ze školy v pořádku. Doma někdo tiše drží kus života pohromadě. Maličkosti, kterých si všimneme, až když chybí.
+Vděčnost se dívá jinam. Ráno nás nic nebolí. Máme střechu nad hlavou. Děti došly ze školy v pořádku. Doma někdo tiše drží kus života pohromadě. Maličkosti, kterých si všimneme, až když chybí.
 
-Kdo za ně Bohu děkuje, tomu z duše pomalu mizí hořkost. Nejde to přes noc. Ale jde to.
+Kdo za ně Bohu děkuje, tomu z duše pomalu mizí hořkost.
 
 Vděčnost problémy nepřehlíží. Chce vidět celou pravdu, i s tím dobrým, co jsme od Boha dostali.
 
-Na dokonalý týden s děkováním nečekáme. V těžkých časech se děkuje nejhůř. Bůh ale zůstává dobrý i v těžký den. Někdy hledáme dlouho, než najdeme aspoň jednu věc. Ale hledáme.
+Na dokonalý týden s děkováním nečekáme. V těžkých časech se děkuje nejhůř. Bůh ale zůstává dobrý i v těžký den.
 
 Sousedka z vedlejšího vchodu se diví:
 
@@ -66,9 +66,9 @@ Mezi křesťany, i mezi námi, se občas ozve, že kdo pláče, má slabou víru
 
 Když člověk krvácí, nepomůže mu laciný vtip ani zbožná věta, že bude brzy všechno dobré. Takové věty často říkáme hlavně proto, aby se ulevilo nám.
 
-Pomůže mu, když někdo ztiší hlas, sedne si k němu a vydrží. Bez rad. Klidně i mlčky. Přinese polévku a počká, až naděje zase dozraje. Kdo na bolest není sám a nemusí nic hrát, najde často pokoj i uprostřed slz.
+Pomůže mu, když někdo ztiší hlas, sedne si k němu a vydrží. Bez rad. Klidně i mlčky. Přinese polévku a počká, až naděje zase dozraje. Kdo na bolest není sám, najde často pokoj i uprostřed slz.
 
-Radovat se s radujícími i plakat s plačícími, obojí je těžké. Z cizího štěstí se špatně raduje, když se nám nedaří. U cizí bolesti se špatně mlčí, protože bychom ji nejradši spravili slovy. Učíme se obojí.
+Radovat se s radujícími i plakat s plačícími, obojí je těžké. Cizí štěstí píchne, když se nám nedaří. Cizí bolest bychom nejradši spravili slovy. Učíme se obojí.
 
 Pláč má u nás místo. I v neděli dopoledne.
 
@@ -80,9 +80,9 @@ Kolegyně z práce se svěří:
 
 Na první návštěvu k nám může člověk dorazit rozesmátý po povedeném týdnu, nebo s očima opuchlýma od pláče. Povinné nadšení po něm nikdo nechce. Zveme ho k prostřenému stolu, k dobrému jídlu a obyčejnému rozhovoru.
 
-Slavíme, co se dá. Narozeniny, novou práci, složenou zkoušku, uzdravení. Komu se daří, tomu to chceme přát bez závisti. Rádi spolu jíme a smějeme se, až nám tečou slzy. A když někomu z nás do smíchu není, nesnažíme se ho nutit do veselí. Necháme mu na smutek tolik času, kolik potřebuje.
+Slavíme, co se dá. Narozeniny, novou práci, složenou zkoušku, uzdravení. Komu se daří, tomu to chceme přát bez závisti. Rádi spolu jíme a smějeme se, až nám tečou slzy. A komu do smíchu není, toho do veselí nenutíme. Necháme mu na smutek tolik času, kolik potřebuje.
 
-Nadávat umíme taky. Na ceny, na politiky, na rozkopanou silnici. Zapšklý morous se v nás ozve rychle. Snažíme se ho nekrmit. Do práce, do obchodu i do šatny po tréninku chceme nosit lehkost, naději a chuť slavit. A když se v Novém Jičíně nebo jinde na Kravařsku povede něco dobrého, máme z toho radost. I když jsme to nevymysleli my. Na společné akce bereme dobrou náladu, vděčnost a ruce, které rády pomůžou.
+Nadávat umíme taky. Na ceny, na politiky, na rozkopanou silnici. Zapšklý morous se v nás ozve rychle. Snažíme se ho nekrmit. Do práce i do šatny po tréninku chceme nosit lehkost a chuť slavit. A když se v Novém Jičíně nebo jinde na Kravařsku povede něco dobrého, máme z toho radost. I když jsme to nevymysleli my. Na společné akce bereme dobrou náladu, vděčnost a ruce, které rády pomůžou.
 
 > **Radost u nás není povinná nálada, ale důvěra v dobrého Hospodáře.**
 >
