@@ -1,6 +1,6 @@
 # 5. Vnitřně zdravá
 
-**Rosteme jako rodina v péči Hospodáře, ne pod tlakem na výkon**
+**Rosteme v péči Hospodáře, ne pod bičem otrokáře**
 
 ## Zbožnost na hodiny
 
