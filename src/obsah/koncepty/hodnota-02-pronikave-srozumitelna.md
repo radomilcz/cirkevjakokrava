@@ -8,7 +8,7 @@ Každý den na nás padá spousta slov. Porady, maily, zprávy v mobilu. Všemu 
 
 Se slovy o Bohu se nám to stává taky. V neděli zazní něco dobrého. Pokýváme hlavou. V pondělí jedeme postaru.
 
-Chyba není v neděli. Je v tom, co s ní uděláme my. Informace sama ještě nikoho nezměnila. Srozumitelný je i návod k pračce.
+Někdy za to můžeme my v církvi. Mluvíme řečí, kterou venku nikdo nepoužívá, a lidi jen zdvořile kývají. Jindy rozumíme každému slovu a stejně nic. Informace sama ještě nikoho nezměnila. Srozumitelný je i návod k pračce.
 
 Když před tebe sedlák položí čerstvý chleba, kus sýra a džbán vody, nepotřebuješ slovník ani výklad. Najíš se. A vydržíš do večera.
 
@@ -38,7 +38,7 @@ Ježíš mluvil o chlebu, kvásku, rybách, ovcích, dluzích a práci na poli. 
 
 My mluvíme o koloně cestou do práce, o splátkách, o dětech a o únavě po šichtě. A ptáme se, co na to Bůh.
 
-Dojetí nestačí. Souhlas ještě není čin. Pravdu si bereme s sebou do všedních dnů.
+Dojetí nestačí. Souhlas ještě není čin. Boží slovo bereme vážně, až když podle něj v týdnu jednáme.
 
 Kolega se nestačí divit:
 
@@ -54,6 +54,8 @@ Spasení, milost, hřích, posvěcení, pomazání. Mimo kostel tahle slova skor
 
 Pokud to neumíš říct kámošovi v hospodě, sám tomu nerozumíš.
 
+Mluvit jasně má svou cenu. Hned je vidět, kde se pleteme. Bereme to. Radši budeme srozumitelně chybovat než bezchybně mlžit.
+
 A soused kroutí hlavou:
 
 *„Jak to, že rozumím každému slovu, i když kostel znám jen zvenku?“*
@@ -66,15 +68,11 @@ Nikomu necpeme do krku sousto, které jsme rozžvýkali za něj. Každý dostal 
 
 Neslibujeme rychlé návody na život bez problémů. A otázky, které bolí, nepřecházíme.
 
-Z neděle si nemusíme odnést všechno. Stačí jedna poctivá myšlenka, která nám ještě ve středu u snídaně leží v hlavě. Vydá za celou řadu bodů, které nám vyprchají cestou na parkoviště.
-
-Mluvit jasně má svou cenu. Hned je vidět, kde se pleteme. Bereme to.
-
-Radši budeme srozumitelně chybovat než bezchybně mlžit.
+Z neděle si nemusíme odnést všechno. Stačí jedna poctivá myšlenka, která nám ještě ve středu u snídaně leží v hlavě a dovede nás k jednomu kroku. Vydá za celou řadu bodů, které nám vyprchají cestou na parkoviště.
 
 A host z neděle si ve středu říká:
 
-*„Jak to, že mi nic necpali, a stejně mi to ještě dneska leží v hlavě?“*
+*„Jak to, že mi nic necpali, a stejně už vím, jak se rozhodnu?“*
 
 ## Jak to vypadá v týdnu
 
@@ -86,25 +84,25 @@ Po neděli se neptáme jen: „Jak se ti to líbilo?“ Ptáme se rovnou: „Co 
 
 Odpuštění zní v neděli hezky. Pronikne ale až v úterý, když zvedneme telefon a zavoláme tomu, komu jsme ublížili.
 
-Svatá hantýrka občas ujede i nám. Smíme se navzájem zarazit. S úsměvem. Třeba otázkou: „A co to znamená pro zítřek v práci?“ A když se modlíme, mluvíme s Bohem jako lidi.
+Svatá hantýrka občas ujede i nám. V rozhovoru i v textu písně. Smíme se navzájem zarazit. S úsměvem. Třeba otázkou: „A co to znamená pro zítřek v práci?“ A když se modlíme, mluvíme s Bohem jako lidi.
 
 Jsme z jednoho těsta i z jednoho města. Doma nemluvíme čínsky, ale novojičínsky.
 
 Nebučíme do větru. Než pustíme ven plakát, web nebo příspěvek na sítě, ptáme se, jestli mu rozumí soused, který v kostele nikdy nebyl. Sousedovi má věta z plakátu dávat smysl, i kdyby nakonec nepřišel.
 
-> **Nemusíme být kazatelé, stačí být ukazatelé.**
+> **Neděle se pozná v pondělí.**
 >
-> Ukázat na Boha zvládne každý z nás. Na lešení, na poradě i na hřišti. Počítá se, co z nedělních slov během týdne uděláme.
+> Nepočítá se, čemu jsme v neděli zatleskali. Počítá se, co z těch slov během týdne uděláme. Na lešení, na poradě i na hřišti.
 >
 > Na tenhle týden stačí jedna otázka někomu ze sboru: „Co ti docvaklo?“ Nebo jedna věc, kterou podle nedělních slov opravdu uděláš. Třeba ten telefonát v úterý.
 
 ## Do kapsy
 
 - Mluvíme o nebi tak, aby dávalo smysl životu na zemi.
-- Srozumitelné slovo informuje, pronikavé formuje.
+- Srozumitelné slovo informuje, pronikavé formuje a vede k činu.
 - Kráva je přežvýkavec, ne předžvýkavec.
 - Pokud to neumíš říct kámošovi v hospodě, sám tomu nerozumíš.
-- Radši budeme srozumitelně chybovat než bezchybně mlžit.
+- Dojetí v neděli nestačí. Počítá se, co děláme od pondělí do soboty.
 
 ## Zrcadlo
 
