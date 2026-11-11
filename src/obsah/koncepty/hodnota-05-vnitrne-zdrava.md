@@ -62,7 +62,7 @@ Známá, která nám občas pomáhá, si oddechne:
 
 Milost předchází práci. Díky Ježíši jsme Boží synové a dcery, ještě než pro něj hneme prstem.
 
-Kolik stojíme, nezávisí na tom, kolik toho pro Boha odedřeme. Patříme Kristu a díky němu máme s Bohem pokoj (Římanům 5,1).
+Kolik stojíme, nezávisí na tom, kolik toho pro Boha odedřeme. Patříme Kristu, a tak máme s Bohem pokoj (Římanům 5,1).
 
 Námezdní dělník dostane, co si odpracuje. Syn a dcera jsou doma i v den, kdy nic neodvedou.
 
@@ -80,7 +80,7 @@ A kolega si říká:
 
 Nováčky nezapřaháme do provozu, sotva se rozkoukají. Ani když je na nich talent vidět. Nehledáme levnou pracovní sílu. Nejdřív můžou vydechnout a nabrat síly. Ruku přiloží, až budou sami chtít.
 
-Chceme, aby člověk měl přednost před programem. Program ale bývá hlasitější. Když vidíme, že někdo mele z posledního, neodbudeme ho jen větou „budeme se za tebe modlit“. Sundáme z něj náklad. Převezmeme za něj službu, přerozdělíme úkoly.
+Chceme, aby člověk měl přednost před programem. Program ale bývá hlasitější. Když vidíme, že někdo mele z posledního, neodbudeme ho jen větou „budeme se za tebe modlit“. Sundáme z něj náklad. Převezmeme za něj službu a přerozdělíme úkoly.
 
 Když náklad potápí loď, letí přes palubu náklad, ne posádka. Když nestíháme, škrtneme program. Lidi ne.
 

@@ -24,7 +24,7 @@ Když Ježíš posílal učedníky mezi lidi, řekl jim, že dostali zadarmo, a 
 
 Pavel to Korintským vysvětluje na setí. Kdo zaseje skoupě, skoupě sklidí. Kdo zaseje štědře, štědře sklidí. Ať každý dá, jak se sám rozhodne, ne s nechutí a ne pod tlakem. Bůh má rád toho, kdo dává s radostí. A má moc se postarat, abychom měli dost pro sebe a ještě zbylo pro druhé (2. Korintským 9,6–8).
 
-**Bytostně** znamená, že štědrost u nás nemá být jednorázová akce. Má být v naší povaze, každý obyčejný den. Dáváme z vděčnosti a z toho, čeho nám Bůh dává dost. Ne na sílu a ne z pocitu viny.
+**Bytostně** znamená, že štědrost u nás nemá být jednorázová akce. Má být v naší povaze, každý obyčejný den. Dáváme z vděčnosti. A z toho, čeho nám Bůh dává dost. Ne na sílu a ne z pocitu viny.
 
 **Štědrá** znamená, že dáváme rádi, potichu a bez postranních úmyslů. Nečekáme protislužbu a nevedeme si sešit, kdo nám co dluží.
 
@@ -36,9 +36,9 @@ Kdo čeká, až mu bude přebývat, nedá nikdy nic. Vždycky se najde něco, co
 
 Nezávisí na výplatní pásce. Když věříme, že to, co máme, je Boží, povolí sevřená pěst. Uvolní se ruce i srdce. Strach, že nezbude, ztrácí sílu.
 
-Kalkulačku ale nezahazujeme. Hospodaříme tak, abychom měli z čeho dávat i napřesrok.
-
 Pěst se nám ale ještě občas sevře sama. I my v duchu přepočítáváme, co nám zbude. Pak si připomínáme, čí to celé je.
+
+Kalkulačku tím nezahazujeme. Hospodaříme tak, abychom měli z čeho dávat i napřesrok.
 
 Bratranec to nechápe:
 
@@ -48,9 +48,9 @@ Bratranec to nechápe:
 
 Stovku pošleme na účet za deset vteřin. Celé odpoledne bolí víc.
 
-Peníze jsou důležité a mluvíme o nich otevřeně. Ale nejsou to nejdražší, co máme. Nejdražší jsme my sami. Náš čas, pozornost a důvěra, kterou do člověka vložíme. Otevřené dveře domova, kontakty a ruce přiložené k dílu.
+Peníze jsou důležité a mluvíme o nich otevřeně. Ale nejsou to nejdražší, co máme. Nejdražší jsme my sami. Náš čas, pozornost a důvěra, kterou do člověka vložíme. Otevřené dveře domova, kontakty a ruku přiloženou k dílu.
 
-Peníze dáváme taky, a rádi. Někdy jsou přesně to, co je potřeba. Jindy člověk potřebuje nás. Abychom zůstali, i když už bychom radši byli doma.
+Peníze dáváme taky. Někdy jsou přesně to, co je potřeba. Jindy člověk potřebuje nás. Abychom zůstali, i když už bychom radši byli doma.
 
 Soused večer přemýšlí:
 
@@ -64,9 +64,9 @@ Ptáme se, co člověk potřebuje, a nevybíráme to za něj. Rozhodnutí nechá
 
 Ptáme se taky, co umí a v čem je dobrý. Kdo dnes potřebuje teplý oběd, může zítra sám pomoct druhým. Když k pomoci dostane i důvěru a práci do vlastních rukou, už nejen přijímá. Pomáhá s námi.
 
-Kdo je zrovna na dně, tomu pomůžeme hned. I když nám nikdy nic nevrátí.
+Kdo je zrovna na dně, tomu pomůžeme hned. I když nám nemá co vrátit.
 
-Štědrost nemá stavět pomník naší dobrotě. Má postavit druhého na vlastní nohy. Stálého klienta, který se bez nás neobejde, si z nikoho dělat nechceme.
+Nechceme z nikoho dělat stálého klienta, který se bez nás neobejde. Štědrost nemá stavět pomník naší dobrotě. Má postavit druhého na vlastní nohy.
 
 Člověk, který pomoc přijal, na to vzpomíná:
 
@@ -74,28 +74,30 @@ Kdo je zrovna na dně, tomu pomůžeme hned. I když nám nikdy nic nevrátí.
 
 ## Jak to vypadá v týdnu
 
-Sousedům pomáháme, protože pomoc potřebují. Nic dalšího za tím nehledáme a za nic ji nevyměňujeme. Ani za návštěvu v neděli. Pomáháme potichu, ne kvůli fotce na sítě, a zbožné řeči k tomu nepřidáváme. Někdy je to oběd, odvoz nebo kontakt na správného člověka. Někdy jen věta, že na to nejsi sám.
+Sousedům pomáháme, protože pomoc potřebují. Nic dalšího za tím nehledáme a za nic ji nevyměňujeme. Ani za návštěvu v neděli. Fotku na sítě z toho neděláme. Někdy je to oběd, odvoz nebo kontakt na správného člověka. Někdy jen věta, že na to nejsi sám.
 
-Ve sboru si půjčujeme nářadí i auta. Vrtačka nemusí ležet v každé garáži. Kdo něco umí, poradí. Kdo má dodávku, odveze skříň. Když je někdo z nás v nouzi, chceme si toho všimnout dřív, než bude muset prosit. I když jde o peníze. Se společnými penězi hospodaříme otevřeně. Každý smí vědět, kam jdou. Kdo dá hodně peněz nebo odvede hodně práce, větší slovo si tím u nás nekoupí.
+Ve sboru si půjčujeme nářadí i auta. Vrtačka nemusí ležet v každé garáži. Kdo něco umí, poradí. Kdo má dodávku, odveze skříň. Když je někdo z nás v nouzi, chceme si toho všimnout dřív, než bude muset prosit. Pomůžeme i penězi.
+
+Společnou pokladnu vedeme otevřeně. Každý smí vědět, kam co jde. Kdo dá hodně peněz nebo odvede hodně práce, větší slovo si tím u nás nekoupí.
 
 Učíme se i tu těžší půlku štědrosti. Říct si o pomoc a přijmout ji. Věta „já od nikoho nic nepotřebuju“ zní hrdě, ale vztahy ničí. Sbor, kde nikdo nic nepotřebuje, si nemá co dát.
 
-Potřeby města neřešíme bez města. Místních lidí, škol a organizací se ptáme, co je opravdu potřeba, a vlastní projekty jim nevnucujeme. Chceme podporovat slabé, aby se postavili na nohy, i silné, aby rostli dál. Čas, rady i peníze chceme investovat i do talentů, podnikavých lidí a nápadů, které můžou život kolem znásobit. Cedulku s naším jménem na to lepit nemusíme. Kdybychom zítra zmizeli, měli bychom městu chybět.
+Potřeby města neřešíme bez města. Místních lidí, škol a organizací se ptáme, co je opravdu potřeba, a vlastní projekty jim nevnucujeme. Chceme podporovat slabé, aby se postavili na nohy, i silné, aby rostli dál. Talentům, podnikavým lidem a nápadům, které můžou život kolem znásobit, dáváme čas, radu i peníze. Cedulku s naším jménem na to lepit nemusíme. Kdybychom zítra zmizeli, měli bychom městu chybět.
 
 > **Kalkulačka má počítat, z čeho dáme. Ne jestli.**
 >
-> Kdo počítá s Bohem, počítá bez strachu a výsledek nechá na něm. Na tenhle týden stačí jedno odpoledne pro někoho, kdo ti ho nemá jak oplatit.
+> Kdo počítá s Bohem, počítá bez strachu. Na tenhle týden stačí jedno odpoledne pro někoho, kdo ti ho nemá jak oplatit.
 
 ## Do kapsy
 
 - Jsme správci, ne majitelé. Proto dáváme víc, než si bereme.
-- Peníze nejsou to nejdražší, co máš. Nejdražší je tvůj čas, pozornost a ruce.
+- Peníze nejsou to nejdražší, co máš. Nejdražší je tvůj čas, tvoje pozornost a tvoje ruce.
 - Pomoc, která ponižuje, není křesťanská.
-- Naše pomoc není vstupenka ani páka k náboru.
-- Přijmout pomoc chce stejnou pokoru jako pomoc nabídnout.
+- Za naši pomoc nikdo nemusí chodit v neděli.
+- Přijmout pomoc chce stejnou pokoru jako ji nabídnout.
 
 ## Zrcadlo
 
 1. Komu tenhle týden dám čas, i když by stovka byla rychlejší?
-2. Co tenhle týden hlídám jako majitel, a ne jako správce?
+2. Co hlídám jako majitel, a ne jako správce?
 3. Koho tenhle týden požádám o pomoc, i když se mi nechce?
