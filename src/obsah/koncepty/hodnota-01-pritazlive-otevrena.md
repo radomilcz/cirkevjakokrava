@@ -2,59 +2,55 @@
 
 **Přátelství nemá obchodní podmínky**
 
-## Na pastvě, všem na očích
+## Podezřele milí
 
-Naši sousedi církev nehledají. Mají dost starostí s prací, s dětmi a s tím, kdy jim zítra začíná směna. A když je k nim nějaký věřící až podezřele milý, mají oprávněnou obavu. Co když za tou laskavostí číhá nábor? Soudy? Poučování?
+Naši sousedi církev nehledají. Mají ranní směny, děti s horečkou a hypotéku do důchodu. Na kostel jim nezbývá čas ani chuť.
 
-Chápeme je.
+A když je k nim nějaký věřící až podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat?
 
-Kráva nežije v kostele. Žije na pastvě a pase se všem na očích. Nezavíráme za sebou dveře a nečekáme, kdo k nám sám zabloudí. Tvoříme pastvu, ne past.
+Chápeme je. Taky bychom zbystřili.
 
-Život běží u linek, v dílnách a přes plot. Tam s lidmi už žijeme. Překračujeme svůj stín i práh a jdeme blíž k těm, které potkáváme každý den.
+Co od nich chceme my? Být jim nablízku. Zbytek necháváme Bohu.
 
 ## Proč to děláme
 
-Otevřenost pro nás není marketingová strategie. Vychází z toho, jaký je Bůh.
+Protože Bůh to s námi udělal stejně.
 
-Bůh na nás taky nečekal v chrámu. Přišel první. Rovnou do našeho chléva. Přijal nás dřív, než jsme byli přijatelní (Římanům 5,8).
+Nečekal, až se umyjeme a přijdeme za ním do chrámu. Přišel první. Rovnou do našeho chléva. A nevadilo mu, že to tam nevoní. Přijal nás dřív, než jsme byli přijatelní (Římanům 5,8).
 
-Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s kýmkoli: s rybáři, s celníky, s lidmi na okraji.
+Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s celníky, s lidmi, které ostatní obcházeli obloukem. Místo u stolu si nikdo nemusel odpracovat.
 
-Proto i my nabízíme člověku přátelství dřív, než nám dá souhlas (Římanům 15,7).
+Takhle chceme přijímat i my. Dřív, než s námi člověk v čemkoli souhlasí (Římanům 15,7).
 
-V názvu jsou dvě slova. Každé patří někomu jinému.
-
-**Otevřenost** je náš krok. Vyjdeme ze dveří a prostřeme stůl.
-
-**Přitažlivost** je Boží věc. Nevyrábíme ji reklamou ani show. Voní sama tam, kde lidi přijmeme a oni si to nemusí nijak odpracovat.
+V názvu jsou dvě slova a každé patří někomu jinému. **Otevřenost** je naše práce. Vyjít ze dveří, pozvat, prostřít. **Přitažlivost** je Boží věc. Reklamou ani show ji nevyrobíme. A nemusíme.
 
 ## Na čem to stojí
 
-Nejde o techniku, ale o srdce. Stojí to na třech věcech.
-
 ### A. Otevřený zájem
 
-Neřešíme, jak dostat lidi do lavic. Řešíme, jak být blízko jim.
+Nalít kafe. Zavřít pusu. Poslouchat tak dlouho, až nás přejde chuť radit.
 
-Nalít kafe. Zavřít pusu. A doopravdy poslouchat. V každém člověku hledáme poklad, ne odpad. Boží zlato, ne seznam chyb.
+V každém člověku hledáme poklad, ne odpad. Je tam vždycky. Jen někdy leží hlouběji.
 
-Vztah ale není jednosměrka. Nehrajeme si na věčné zachránce. Ježíš se nechal pohostit u Zachea. Samařanku poprosil o vodu. Kdo pomoc jenom rozdává a sám ji odmítá, dívá se na druhé svrchu. Drží si lidi od těla.
+Přátelství ale jede oběma směry. Ježíš se nechal pohostit u Zachea. Samařanku poprosil o vodu. Kdo pomoc jen rozdává a sám si pomoct nenechá, drží si lidi od těla.
 
-Zveme ke svému stolu. A stejně vděčně sedáme k cizímu.
+Zveme ke svému stolu a stejně vděčně si sedneme k cizímu. A když nám dojdou síly, řekneme si o pomoc včas. Bez studu.
 
 Když se to povede, člověk zvenku se jednou podiví:
 
-*„Jak to, že si tu připadám vzácný, i když pro ně nic nedělám?“*
+*„Jak to, že o mě stojí, i když pro ně nic nedělám?“*
 
 ### B. Nekompromisní přijetí
 
-Když člověku padá svět na hlavu, potřebuje náruč místo nároků. Metr na cizí selhání jsme zlomili.
+Když člověku padá svět na hlavu, potřebuje náruč místo nároků.
 
-U našeho stolu sedí máma v exekuci vedle chlapa, kterému klape firma. A nikdo nikomu neskládá účty.
+Představ si stůl, kde sedí máma v exekuci vedle chlapa, kterému klape firma. Nikdo nikomu neskládá účty. Takový stůl chceme mít.
 
-Přijmout neznamená souhlasit se vším. Láska nepotřebuje stejný názor.
+Snadné to není. Metr na cizí selhání má doma každý z nás. Snažíme se ho nechávat v šuplíku. Ne vždycky to vyjde.
 
-Přátelství má jednu zkoušku, na které se všecko pozná. Co se stane, když člověk řekne víře „ne“? Půjdeme s ním v pondělí zase na pivo?
+Přijmout ale neznamená kývnout na všecko. Láska nepotřebuje stejný názor.
+
+Jestli to myslíme vážně, pozná se ve chvíli, kdy nám někdo řekne, že o víru nestojí. Půjdeme s ním v pondělí zase na pivo?
 
 Když po odmítnutí zájem ochladne, nebyl to vztah.
 
@@ -66,62 +62,42 @@ Byl to nábor.
 
 ### C. Přitažlivé tajemství
 
-Květina si neplatí billboardy u dálnice. Voní, protože je živá. Nesmrdíme náboženstvím. Voníme životem.
+Nikoho netlačíme. A přece to lidi táhne blíž. Tenhle magnetický paradox nemáme pod palcem. Když se obyčejné přátelství potká s živým Kristem, něco se pohne. Naše zásluha to není.
 
-Bůh v životech našich sousedů jedná dávno předtím, než je poznáme my. Když se lidské přátelství potká s živým Kristem, jiskra přeskočí sama.
+Na nás je mluvit o tom, co s Bohem sami prožíváme. I o tom, co nám nejde. Deset hotových pouček je prázdná sláma. Jedna laskavá otázka otevře víc.
 
-Žádné náboženské divadlo ani manipulace. Mluvíme o tom, co sami prožíváme. A když na těžkou otázku odpověď neznáme, řekneme na rovinu: *„Nevíme.“*
+A když na těžkou otázku odpověď neznáme, řekneme na rovinu: *„Nevíme.“*
 
-Laskavá otázka otevře srdce víc než deset hotových pouček.
-
-A jednou se člověk zvenku zeptá sám sebe:
+Jednou se pak člověk zvenku přistihne u otázky:
 
 *„Jak to, že přemýšlím o Bohu, i když jsme se bavili jen o fotbale a o práci?“*
 
 ## Jak to vypadá v týdnu
 
-Od pondělí do soboty.
+Na Kravařsku bydlíme. Stejná fronta u doktora, stejná třídní schůzka, stejná směna. Lidi, se kterými chceme být, nemusíme hledat. Sedí vedle nás.
 
-### K novým lidem
+Ke stolu je zveme, protože je máme rádi. Stůl je cíl sám o sobě. Není to předkrm ke kázání ani první schod do kostela. Kdo k nám přijde na večeři, přišel na večeři.
 
-Zveme ke stolu dřív než do kostela. Plný talíř rozváže jazyk líp než pódium.
+Doma nemusí být jako v katalogu. Bůh taky nepřišel do uklizeného chléva. Božímu království bohatě stačí káva, buchta a volné místo na gauči.
 
-Společný stůl je cíl sám o sobě. Není to předehra ke kázání. Přátelství je dar, ne návnada.
-
-### Mezi sebou
-
-Zveme lidi k sobě domů. Bez přetvářky. Božímu království bohatě stačí káva, buchta a volné místo na gauči.
-
-Otázky nováčků provětrají naše zvyky. A ukážou místa, kde jsme v církvi oslepli.
-
-A když nám docházejí síly, řekneme si o pomoc včas. Bez studu.
-
-### Ve městě
-
-V Novém Jičíně a na Kravařsku jsme doma. Ne na cizí misi.
-
-Všímáme si těch, kdo už dělají něco dobrého: učitelů, trenérů, spolků. Kryjeme jim záda. Na cizí práci nelepíme své logo.
+Kdo je mezi námi nový, vidí, co my už dávno nevidíme. Jeho otázky nám provětrají zvyky. Děkujeme za ně.
 
 > **Tvůj obývák je víc než pódium.**
 >
-> To nejpodstatnější se neděje v neděli pod světly, ale u kuchyňské linky, v práci a přes plot na zahradě. Pastor pozve na večeři svého souseda. Ten tvůj čeká na tebe.
+> To podstatné se neděje jen v neděli pod světly. Děje se u kuchyňské linky, v práci a přes plot. Pastor zve na večeři svého souseda. Toho tvého nezná. Ty ano.
+>
+> Na tenhle týden stačí jedno pozvání. Na večeři, na kafe, na pivo. Koho, to víš líp než my.
 
 ## Do kapsy
 
-- Přátelství nemá obchodní podmínky
-- Kráva nežije v kostele, ale na pastvě: tvoříme pastvu, ne past
-- Překračujeme svůj stín i práh a jdeme k lidem, které potkáváme každý den
-- Bůh přišel do našeho chléva a přijal nás dřív, než jsme byli přijatelní
-- Nabízíme přátelství dřív, než nám člověk dá souhlas
-- Hledáme poklad, ne odpad
-- Náruč místo nároků: láska nepotřebuje stejný názor
-- Kdo pomoc jen rozdává a sám ji odmítá, drží si lidi od těla
-- Květina si neplatí billboardy: voní, protože je živá
-- Když po odmítnutí zájem ochladne, byl to nábor
-- Tvůj obývák je víc než pódium
+- Přátelství nemá obchodní podmínky.
+- Bůh nás přijal dřív, než jsme byli přijatelní.
+- V každém člověku hledáme poklad, ne odpad.
+- Láska nepotřebuje stejný názor.
+- Když po odmítnutí zájem ochladne, nebyl to vztah. Byl to nábor.
 
 ## Zrcadlo
 
-1. Kdy jsem naposledy přijal pozvání ke stolu a nechal se od druhého pohostit nebo podržet?
-2. Zavřel jsem tenhle týden pusu a doopravdy poslouchal souseda nebo kolegu, místo abych čekal, kdy ho budu moct poučit?
-3. Stojím při svých přátelích stejně věrně i ve chvíli, kdy o víru nestojí a řeknou mi ne?
+1. Koho tenhle týden pozvu k sobě domů?
+2. Od koho si tenhle týden nechám pomoct nebo poradit?
+3. Kdo z mých přátel o víru nestojí? A kdy spolu zase zajdeme na pivo?
