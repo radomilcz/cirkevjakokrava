@@ -54,7 +54,7 @@ Důvěrnost neznamená, že se vzdáme soukromí. Nikdo nemusí vykládat všech
 
 Kráva respektuje hranice pastvy. My respektujeme hranice druhého. Nevyptáváme se víc, než chce ten druhý sám říct.
 
-Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobností, které nám nikdo nesvěřil. Co nám kdo svěří, má zůstat u nás. Výjimkou je, když někomu hrozí, že mu někdo ublíží.
+Víme, jak snadno se z prosby o modlitbu stane drb. Stačí přidat pár podrobností, které nám nikdo nesvěřil. Co nám kdo svěří, má zůstat u nás.
 
 Když nám přesto ujede jazyk, jdeme se omluvit tomu, o kom jsme mluvili.
 
