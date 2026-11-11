@@ -4,7 +4,7 @@
 
 ## Zbožnost na hodiny
 
-Svět nás měří výkonem. Kolik toho uděláš, kolik vyděláš, kolik stihneš. Kdo nestíhá, jako by nebyl.
+Svět nás žene sviňským krokem. Měří, kolik toho uděláš, kolik vyděláš, kolik stihneš. Kdo nestíhá, jako by nebyl.
 
 My v církvi do toho umíme spadnout taky. Jen tomu říkáme služba. Víra se začne počítat na odpracované hodiny. Kdo vynechá akci, má výčitky. Kdo řekne ne, připadá si jako zrádce.
 
