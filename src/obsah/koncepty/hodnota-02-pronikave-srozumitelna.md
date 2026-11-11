@@ -38,7 +38,7 @@ Ježíš mluvil o chlebu, kvásku, rybách, ovcích, dluzích a práci na poli. 
 
 My mluvíme o koloně cestou do práce, o splátkách, o dětech a o únavě po šichtě. A ptáme se, co na to Bůh.
 
-Boží slovo k těm věcem dosvítí. Do auta v koloně, do kuchyně, do dětského pokoje. Dojetí nestačí. Bereme ho vážně, až když podle něj v týdnu jednáme.
+Boží slovo k těm věcem dosvítí. Do auta v koloně, do kuchyně, do dětského pokoje. Bereme ho vážně, až když podle něj v týdnu jednáme.
 
 Kolega se nestačí divit:
 
@@ -92,7 +92,7 @@ Nebučíme do větru. Než pustíme ven plakát, web nebo příspěvek na sítě
 
 > **Super neděli poznáš v pondělí.**
 >
-> Nepočítá se, čemu jsme v neděli zatleskali. Počítá se, co z nedělních slov pronikne do týdne. Na lešení, na poradě i na hřišti.
+> Nepočítá se, čemu jsme v neděli zatleskali. Počítá se, co z nedělních slov prosákne do týdne. Na lešení, na poradě i na hřišti.
 >
 > Na tenhle týden stačí jedna otázka někomu ze sboru: „Co ti docvaklo?“ Nebo jedna věc, kterou podle nich opravdu uděláš.
 
