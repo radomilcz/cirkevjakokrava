@@ -8,8 +8,6 @@ Když se má něco změnit, lidi se obvykle vydají jednou ze dvou cest.
 
 Jedni se drží starých pořádků zuby nehty. „Takhle jsme to dělali vždycky.“ Druzí bourají všechno staré jen proto, že je staré.
 
-Obojí jsme už sami zkusili. Jeden den bráníme zvyk, který už dávno nikomu neslouží. Druhý den bychom nejradši vyhodili i to, co nás drží nad vodou.
-
 Obě cesty pramení z nejistoty. Kdo neví, na čem stojí, buď se drží, co to jde, nebo kope kolem sebe.
 
 Slovo *radikální* pochází z latinského *radix*. Kořen. Radikální člověk tedy jde až ke kořeni věcí. Rozmlátit všechno umí každý.
@@ -26,11 +24,9 @@ Pavel píše Římanům, ať se nepřizpůsobují době, ve které žijí. Ať j
 
 Timoteovi připomíná, že Bůh nám nedal ducha strachu. Dal nám sílu, lásku a rozvahu. Síla bez rozvahy bourá. Rozvaha bez síly přešlapuje na místě (2. Timoteovi 1,7).
 
-**Radikálně** znamená jít ke kořeni. Neptáme se jen, jestli něco běží. Ptáme se, proč to děláme a komu to slouží. A necháváme Boha, ať nám mění myšlení.
+**Radikálně** znamená jít ke kořeni. Ptáme se, proč něco děláme a komu to slouží. A necháváme Boha, ať nám mění myšlení.
 
 **Odvážná** znamená vylézt z pohodlí a přiznat omyl. A vykročit, kam nás Bůh vede, i když jsme tam ještě nebyli.
-
-Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevyroste.
 
 ## Na čem to stojí
 
@@ -38,7 +34,7 @@ Bez kořenů nás odfoukne každá nová móda. Bez odvahy z nich nikdy nic nevy
 
 Ve vitríně všechno krásně vypadá a nic neroste. Z kořene raší nové výhonky.
 
-Rozlišujeme dvě věci. Evangelium se nemění. Forma, ve které ho neseme lidem, se měnit smí. V kolik začínáme, jaké zpíváme písně, jak mluvíme, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene. Když na formu nikdo nesmí sáhnout, začne novým lidem stát v cestě.
+Evangelium se nemění. Forma, ve které ho neseme lidem, se měnit smí. V kolik začínáme, jaké zpíváme písně, jak mluvíme, jak sedíme, jak zveme: to všechno jsou větve. Smějí růst jinak než za našich babiček, dokud vyrůstají ze stejného kořene. Když na formu nikdo nesmí sáhnout, začne novým lidem stát v cestě.
 
 Měníme vnější podobu, abychom zachránili podstatu a přiblížili ji lidem. Bůh nám smí sáhnout i na zažité názory a pohodlí, nejen na nedělní program. I na to, do čeho jsme dali spoustu práce.
 
@@ -54,9 +50,9 @@ Pokora není slabost ani ustrašenost. A neznamená omlouvat se za to, že věř
 
 Proto odvaha není arogance ani rebelie pro rebelii. Je to věrnost Kristu.
 
-Máme svou váhu, svou hlavu i svou důstojnost. Nemusíme je nikomu předvádět. Kdo stojí pevně, nepotřebuje druhé válcovat ani vyhrát každou hádku.
+Máme svou váhu, svou hlavu i svou důstojnost. Kdo stojí pevně, nepotřebuje druhé válcovat ani vyhrát každou hádku.
 
-Sílu máme na to, abychom unesli odpovědnost, chránili slabší a nepovolili pod tlakem. Skutečná autorita se pozná podle toho, že se vedle ní druzí narovnávají. Nikdo se nekrčí strachy.
+Sílu máme na to, abychom unesli odpovědnost, chránili slabší a nepovolili pod tlakem. Skutečná autorita se pozná podle toho, že se vedle ní druzí narovnávají.
 
 Sousedce to vrtá hlavou:
 
@@ -82,7 +78,7 @@ Novým lidem věříme a necháváme je zkoušet vlastní nápady. Kdo se osvěd
 
 U každého programu se bez vytáček ptáme: vzniklo to z víry, nebo to držíme jen ze zvyku? Nese to ještě život? Díváme se na ovoce a posloucháme příběhy. Když to život nenese, je to suchá větev. I ta byla kdysi zelená. Poděkujeme za to, co nesla, a ořežeme ji.
 
-A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak. Riskujeme pro lidi, ne pro vlastní ego a adrenalin. Než něco změníme, posloucháme ty, kterých se to dotkne. Za starým zvykem často stojí dobrý důvod. A svůj plán netlačíme přes vztahy.
+A hlídáme i opačné pokušení. Neměníme věci jen proto, že nás omrzely nebo že je jinde dělají jinak. Riskujeme pro lidi, ne pro vlastní ego a adrenalin. Než něco změníme, posloucháme ty, kterých se to dotkne. Svůj plán netlačíme přes vztahy.
 
 V práci, ve škole i na ulici v Novém Jičíně chceme držet rovnou páteř. Když vidíme podvod nebo to, jak někdo hází vinu na slabšího kolegu, neuhneme pohledem. Postavíme se na správnou stranu, i když nás to něco stojí. Těmi na druhé straně ale nepohrdáme. Ne vždycky na to máme odvahu. O to víc o ni prosíme.
 
