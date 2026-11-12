@@ -72,7 +72,7 @@ Kolegyně, která se nám svěřila, se ptá:
 
 Doprovázet znamená jít kus cesty vedle sebe a všímat si, co Bůh do druhého vložil. Pomáháme mu dorůst do toho, kým ho Bůh chtěl mít.
 
-Zkušenější předávají mladším, co se s Bohem sami naučili. Tak Pavel provázel Timotea a radil mu, ať to, co od něj slyšel, svěří lidem, kteří to naučí i další (2. Timoteovi 2,2). Chceme, aby každý jednou slyšel Boha sám, i bez nás.
+Zkušenější předávají mladším, co se s Bohem sami naučili. Tak Pavel provázel Timotea a radil mu, ať to, co od něj slyšel, svěří lidem, kteří to naučí i další. Chceme, aby každý jednou slyšel Boha sám, i bez nás (2. Timoteovi 2,2).
 
 Blízkost má jedno riziko. Lidi, kteří spolu tráví hodně času, se začnou podobat. Stejné fráze, stejné názory, stejné písničky v autě. Ve sboru tak snadno vznikne nepsaný vzor správného křesťana.
 

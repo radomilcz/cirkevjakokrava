@@ -4,7 +4,7 @@
 
 ## Všemu rozumíme
 
-Každý den na nás padá spousta slov. Porady, maily, zprávy v mobilu. Všemu rozumíme a nic z toho s námi nehne. Proteče to.
+Každý den na nás padá tuna informací. Porady, maily, zprávy v mobilu. Všemu rozumíme. Máloco k nám neproniká. Zbytek protéká.
 
 Se slovy o Bohu se nám to stává taky. V neděli zazní něco dobrého. Pokýváme hlavou. V pondělí jedeme postaru.
 

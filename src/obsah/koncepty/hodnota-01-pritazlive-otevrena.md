@@ -4,25 +4,17 @@
 
 ## Podezřele milí
 
-„Dobrý den, hledáte smysl života?“ Sobota, půl deváté, parkoviště před marketem v Novém Jičíně. Pán s letákem se usmívá na chlapa v montérkách, který zrovna cpe do kufru octavie pytel cementu, plínky a granule. Mistr mu ráno napsal, že od pondělí jede noční. „Smysl ne,“ řekne chlap. „Klíčky jo.“
+„Dobrý den, hledáte smysl života?“ Sobota, půl deváté, parkoviště před marketem v Novém Jičíně. Pán s letákem se usmívá na chlapa v montérkách, který zrovna chce do kufru octavie nacpat pytel cementu, plínky a granule. Mistr mu ráno napsal, že od pondělí jede noční. „Smysl ne,“ řekne chlap. „Klíčky jo.“
 
-V tom pánovi s letákem se poznáváme víc, než bychom chtěli.
+Když je někdo cizí podezřele milý, zbystříme. Co po mně chce? Kdy vytáhne smlouvu nebo leták? Kdy mi řekne, že něco dělám blbě?
 
-Naši sousedi církev nehledají. Mají ranní a noční směny, děti, psy a hypotéky do důchodu jako my. Na hledání smyslu života v kostelech jim nezbývá čas ani chuť. Kdybychom v neděli jen odemkli dveře a čekali, minuli bychom se s nimi.
+Co chceme my? Být lidem nablízku. Překonat strach a navázat vztah. Zbytek necháme Bohu. Bůh pracoval v sousedství dřív než my. Nenosíme ho tam. Jdeme za ním.
 
-Když je někdo cizí podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat? Chápeme je. Taky bychom zbystřili.
+Ptáme se, jak se dostat blíž k nim. Ne jak je dostat k nám.
 
-Co od nich chceme my? Být jim nablízku. Překonat strach a navázat vztah. Zbytek necháváme Bohu.
+## Proč?
 
-Bůh pracoval v sousedství dřív než my. Nenosíme ho tam. Jdeme za ním.
-
-Proto se neptáme, jak je dostat k nám. Ptáme se, jak se dostat blíž k nim.
-
-## Proč to děláme
-
-Protože Bůh se k nám zachoval stejně.
-
-Nečekal, až se umyjeme a přijdeme za ním do chrámu. Přišel první. Rovnou do našeho chléva. A nevadilo mu, že to tam nevoní. Přijal nás dřív, než jsme byli přijatelní (Římanům 5,8).
+Protože Ježíš se k nám zachoval stejně. Nečekal, až se vydrhneme, hodíme do gala a přijdeme za ním do chrámu. Přišel rovnou do našeho chléva. A nevadilo mu, že to tam nevoní. Přijal nás dřív, než jsme byli přijatelní (Římanům 5,8).
 
 Ježíš dělal z obyčejného čtvrtka svátek. Sedal ke stolu s rybáři, s celníky, s lidmi, které ostatní obcházeli obloukem. Místo u stolu si nikdo nemusel vybojovat (Matouš 9,10–13).
 
