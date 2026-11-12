@@ -1,6 +1,6 @@
 # 7. Radikálně odvážná
 
-**Známe své kořeny v Kristu, a proto se nebojíme měnit to, co už neslouží životu**
+**Známe svoje kořeny, proto se nebojíme měnit a růst**
 
 ## Držet, nebo bourat
 
@@ -14,7 +14,7 @@ Obě cesty pramení z nejistoty. Kdo neví, na čem stojí, buď se drží, co t
 
 Slovo *radikální* pochází z latinského *radix*. Kořen. Radikální člověk tedy jde až ke kořeni věcí. Rozmlátit všechno umí každý.
 
-Čím hlouběji má strom kořeny, tím míň se bojí vichřice. A tím volněji může růst do nových tvarů. Stabilita je v pohybu.
+Čím hlouběji má strom kořeny, tím míň se bojí vichřice. A tím volněji může růst do nových tvarů. Stabilita je růst v pohybu.
 
 Naším kořenem je Kristus, jeho slovo a poslání, které nám svěřil. Proto se nemusíme bát změn. A ořezat suché větve, které už nenesou život.
 

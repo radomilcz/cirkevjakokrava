@@ -4,6 +4,10 @@
 
 ## Podezřele milí
 
+„Dobrý den, hledáte smysl života?“ Sobota, půl deváté, parkoviště před marketem v Novém Jičíně. Pán s letákem se usmívá na chlapa v montérkách, který zrovna cpe do kufru octavie pytel cementu, plínky a granule. Mistr mu ráno napsal, že od pondělí jede noční. „Smysl ne,“ řekne chlap. „Klíčky jo.“
+
+V tom pánovi s letákem se poznáváme víc, než bychom chtěli.
+
 Naši sousedi církev nehledají. Mají ranní a noční směny, děti, psy a hypotéky do důchodu jako my. Na hledání smyslu života v kostelech jim nezbývá čas ani chuť. Kdybychom v neděli jen odemkli dveře a čekali, minuli bychom se s nimi.
 
 Když je někdo cizí podezřele milý, zbystří. Co po mně chce? Kdy vytáhne leták? Kdy mě začne poučovat? Chápeme je. Taky bychom zbystřili.
