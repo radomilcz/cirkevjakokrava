@@ -20,3 +20,13 @@ aby ho potkávali tam, kde žijí, studují a pracují.“
 ## B) Poutavý odstavec
 
 **Fandíme Boží práci na Kravařsku.** Bůh tady pracoval dávno před námi a pracuje dál. Jeho práci vidíme u sousedky, která pohlídá cizí děti, u trenéra, co tráví soboty s klukama na hřišti, u učitelky, která si všimne smutného deváťáka. Té práci fandíme jako celá tribuna. **Přidáváme se k lidem, kteří už ji dělají.** Nemusíme vymýšlet vymyšlené. A kde něco chybí, **tvoříme pastvu pro ty, co Ježíše ještě neznají.** Pastva je místo, kde se člověk nají, nadechne a může růst: koncert, grilovačka, parta, dobrý rozhovor. Proč to celé? **Aby ho potkávali tam, kde žijí, studují a pracují.** U večeře, ve školní lavici, u pásu.
+
+## C) Bez podobenství (13. 11.)
+
+Ráno vyjdeme z domu a Kravařsko už je vzhůru. Pekař má za sebou první várku, učitelka chystá hodinu, trenér nafukuje míče. Bůh tu pracuje dřív než my a my jeho práci fandíme. Nahlas a s radostí. Pekaři, učitelce i trenérovi to řekneme do očí.
+
+Pak se přidáme. Tam, kde už někdo nese dobrou věc, chytneme za druhý konec. Ve spolku, ve škole, v práci. A rádi si necháme poradit.
+
+Kde něco chybí, začneme sami. Uvaříme, zahrajeme, otevřeme dveře. Pořádně a pro ty, co Ježíše ještě neznají.
+
+Proč to celé? Chceme, aby ho potkávali tam, kde žijí, studují a pracují. Ve školní lavici, u pásu, u večeře.
