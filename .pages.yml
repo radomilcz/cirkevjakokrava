@@ -65,6 +65,7 @@ components:
           - {name: dovetek, type: string, label: Dovětek vedle čísla nahoře (pilíře)}
           - {name: vyrok, type: text, label: 'Výrok (u pilíře s obřím slovem nepovinný)'}
           - {name: basen, type: boolean, label: 'Báseň: řádky zůstanou i na mobilu'}
+          - {name: plus, type: boolean, label: 'Pilíř: místo odkazu znak + na rozklik'}
           - {name: otazka, component: otazka}
           - {name: podpis, component: podpis}
           - {name: otisk, component: otisk}

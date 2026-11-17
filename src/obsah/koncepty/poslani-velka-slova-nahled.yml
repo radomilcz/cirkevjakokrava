@@ -1,4 +1,4 @@
-# Náhled (17. 10.): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
+# Náhled (17. 10.; vstupní slajdy pilířů 17. 11.): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
 slajdy:
 # osa jako samostatný slajd před pilíři (Radomil 31. 10.)
 - typ: vyrok
@@ -15,30 +15,38 @@ slajdy:
 # rozcestník pilířů pryč (20. 10.), pilíře jdou rovnou za sebou se zbytkem Poslání
 - typ: vyrok
   nazev: 01 Fandíme
-  nadtitulek: '01'
+  nadtitulek: plnotučná
   slovo: Fandíme
-  dovetek: oči
-  # výrok z webu schovaný (17. 10.):
-  #  Oslavujeme Boží náturu,
-  #  kreativitu a lásku -> mezi
-  #  lidmi na Kravařsku.
-  otazka: Co (kdo) je na Kravařsku tvoje srdcovka a proč?
+  plus: true
   otisk: '01'
   vyrok: |
-    Ceníme práci, péči a lásku mezi lidmi na Kravařsku. Když soused dělá něco skvěle, vidíme v tom jiskru Stvořitele.
-  verse:
-  - odkaz: Jakub 1,17
-    text: Všechno dobré a dokonalé je dar shůry od Otce světel, u něhož není žádná změna, žádný proměnlivý stín.
-    url: https://www.bible.com/bible/15/JAS.1.17.B21
-  detail_odkaz: Fandíme Boží práci kolem nás
+    našemu městu
   detail: |
     # Bůh tvoří, my fandíme.
 
-    Boží vliv nezačíná u dveří kostela. Jeho tvořivost a péči vidíme ve městě každý den. V poctivém řemesle, dobrém jídle i v lidech, kteří se starají o druhé.
+    ## Všechno dobré, co dělají lidé, spolky, firmy i úřady, je Boží dar, i když o tom sami třeba nevědí. Proto ve městě hledáme poklad, ne odpad.
 
-    Nejsme soupeři, ale fanoušci. Všímáme si toho, máme z toho radost a říkáme to lidem nahlas a do očí. Boha totiž oslavujeme i tím, komu fandíme.
+    Bůh v Novém Jičíně pracoval dávno před námi a všechno dobré má svůj původ u něj. Jeho náturu vidíme v naší krajině i krajanech. Chodíme ulicemi s otevřenýma očima a všímáme si toho, co se lidem daří: čerstvého chleba z pekárny, učitelky, na kterou se děcka ráno těší, férové místní firmy i řidiče autobusu, co počká na dobíhajícího školáka. Mluvíme o svém městě dobře a nahlas chválíme to, co Bůh už schválil. Radost posíláme na dvě adresy: člověka pochválíme do očí i za jeho zády a Bohu poděkujeme za poklad, který do lidí vložil.
 
-    [Tip] Pochval jednoho člověka za konkrétní věc, kterou dělá dobře. Třeba učitelku, se kterou tvůj kluk konečně pochopil zlomky. Do očí a pak i za zády.
+    > „Všechno dobré a dokonalé je dar shůry od Otce světel, u něhož není žádná změna, žádný proměnlivý stín.“
+    > [Jakub 1,17](https://bible.com/bible/15/JAS.1.17.B21)
+
+    > „Požehnáním poctivých se pozvedá město, ústy darebáků bývá bořeno.“
+    > [Přísloví 11,11](https://bible.com/bible/15/PRO.11.11.B21)
+
+    [Na cestě] Pokladní v obchodě řekneme, že nám její úsměv udělal radost. Když se u oběda nadává na město, řekneme, co se v něm daří.
+
+    [Na pastvě] V neděli nahlas poděkujeme těm, kdo uvařili kávu a připravili sál. Když mladí připraví program, řekneme jim potom konkrétně, co se povedlo.
+
+    [Ve městě] Učitelům a trenérům našich dětí napíšeme, čeho si na jejich práci vážíme. Dobrou místní kavárnu nebo firmu doporučíme známým a pochválíme ji v recenzi.
+
+    @ Zrcadlo
+
+    Komu jsme za poslední měsíc s radostí řekli, co dělá dobře?
+
+    Podle čeho by sousedé poznali, že máme Nový Jičín rádi?
+
+    Za koho z lidí kolem nás jsme Bohu poslední dobou poděkovali?
 - typ: vyrok_ruzovy
   nazev: Lásko, to je Kravařsko!
   nadtitulek: Kuhländchen.
@@ -49,22 +57,35 @@ slajdy:
   otisk: '05'
 - typ: vyrok
   nazev: 02 Makáme
-  nadtitulek: '02'
+  nadtitulek: plnotučná
   slovo: Makáme
-  dovetek: ruce
-  # výrok z webu schovaný (17. 10.):
-  #  Vnímáme, co Bůh kolem
-  #  dělá. Přidáváme k tomu
-  #  naše srdce, slova i ruce.
-  otazka: Jak se přidáváš k Boží práci ve svém sousedství?
+  plus: true
   otisk: '02'
   vyrok: |
-    Bůh nečeká v kostele.
-    Maká v Novém Jičíně.
-  detail_odkaz: Přidáváme se k lidem, co už ji dělají
+    na jeho růstu
   detail: |
-    > „Můj Otec pracuje i dnes; proto pracuji i já.“
-    > [Jan 5,17](https://bible.com/bible/15/JHN.5.17.B21)
+    # Tráva roste dřív než kráva.
+
+    ## Když se daří městu, daří se i nám. Proto se rádi přidáváme k dobrým věcem, které už ve městě táhnou druzí, a umíme pomoct i poprosit.
+
+    Poctivě odvedená směna v dílně, v nemocnici nebo u počítače má před Bohem stejnou váhu jako neděle u mikrofonu. Nový Jičín je náš domov, a tak s chutí přikládáme ruku všude tam, kde už sousedé, trenéři nebo místní spolky vedou dobrou věc. Táhneme s nimi za jeden provaz a s respektem podporujeme to, co rozjeli. A protože opravdové přátelství funguje oběma směry, stejně rádi si od souseda půjčíme nářadí, necháme si poradit nebo přijmeme pozvání k jeho stolu.
+
+    > „Usilujte o prospěch města, do něhož jsem vás vystěhoval, a modlete se za ně k Hospodinu, neboť v jeho prospěchu je i váš prospěch.“
+    > [Jeremiáš 29,7](https://bible.com/bible/15/JER.29.7.B21)
+
+    [Na cestě] Svou práci odvedeme poctivě i tam, kde to nikdo nekontroluje. Od souseda si půjčíme nářadí a necháme si poradit, jak na to.
+
+    [Na pastvě] V neděli se modlíme za to, co nás čeká v práci a ve škole. Program ve sboru nenafukujeme, aby lidem zbyl čas na spolky a oddíly.
+
+    [Ve městě] S mladými se přidáme k jarnímu úklidu, který pořádají skauti nebo škola. Když spolek chystá městskou slavnost, přijdeme stavět stany a nosit lavice.
+
+    @ Zrcadlo
+
+    K čí dobré věci ve městě jsme se letos rádi přidali?
+
+    Od koho jsme si za poslední měsíc nechali pomoct nebo poradit?
+
+    Podle čeho by kolegové poznali, že nám na naší práci záleží?
 - typ: kennedy
   nazev: Ich bin ein Kuhländler
   nadtitulek: Kuhländchen.
@@ -76,21 +97,35 @@ slajdy:
   popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
 - typ: vyrok
   nazev: 03 Tvoříme
-  nadtitulek: '03'
+  nadtitulek: plnotučná
   slovo: Tvoříme
-  dovetek: hlava
-  # výrok z webu schovaný (17. 10.):
-  #  Tvoříme pastvu pro oči,
-  #  uši a duši. Pro publikum,
-  #  co kostel ani víru neřeší.
-  otazka: Jakou pastvu tvoříš? Kdo (co) na ní roste?
+  plus: true
   otisk: '03'
-  detail_odkaz: Tvoříme pastvu pro ty, kteří církev neřeší
+  vyrok: |
+    dobrou pastvu
   detail: |
-    # Tvoříme pastvu pro ty, kteří církev neřeší.
+    # Dobrá pastva je lákavá.
+
+    ## Bůh dává bez rozdílu a nic za to nechce. Proto i my rádi nabízíme, co umíme, všem kolem sebe, i těm, kdo Ježíše ještě neznají.
+
+    Chystáme v našem městě pastvu pro oči, uši a duši lidí, kterým je kostel cizí. Necháváme místo poctivé kráse a dobré hudbě a o životě i o víře mluvíme obyčejnou češtinou, jakou se bavíme doma nebo u piva. Otevíráme své obýváky a ke stolu s dobrým jídlem a kávou zveme dřív než do kostela. Štědrost a péče o každou maličkost jsou naším projevem úcty ke každému hostu: u našeho stolu má plnou svobodu, protože přátelství je pro nás cíl sám o sobě.
 
     > „Jsme přece jeho dílo! Bůh nás v Kristu Ježíši stvořil k dobrým skutkům, které předem připravil, abychom se jim věnovali.“
     > [Efezským 2,10](https://bible.com/bible/15/EPH.2.10.B21)
+
+    [Na cestě] Sousedovým dětem pomůžeme s matikou před přijímačkami a nic za to nechceme. Když pečeme, upečeme víc a kus zaneseme sousedům, jen tak.
+
+    [Na pastvě] Když někdo ze sboru přijde s nápadem, pomůžeme mu ho dotáhnout. Jídlo, hudbu i výzdobu chystáme pečlivě, aby se u nás hosté cítili vítaní.
+
+    [Ve městě] Pro náctileté, kteří nemají kam jít, otevřeme v pátek klub s deskovkami. Rodičům s malými dětmi nabídneme dopoledne s kávou a hernou, bez kázání.
+
+    @ Zrcadlo
+
+    Co jsme za poslední půlrok udělali pro sousedy jen tak, pro radost?
+
+    Podle čeho by hosté poznali, že jsme se na ně těšili a chystali?
+
+    Co jsme letos ve městě rozjeli tam, kde nic nebylo?
 - typ: fotka
   nazev: Kráva – má Boží design
   nadtitulek: pastva
@@ -100,20 +135,33 @@ slajdy:
   fotka: assets/fotky/krava-manifest.webp
   popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
 - typ: vyrok
-  nazev: 04 Toužíme
-  nadtitulek: '04'
-  slovo: Toužíme
-  dovetek: srdce
-  # výrok z webu schovaný (17. 10.):
-  #  Aby lidé poznali, že Bohu
-  #  na nich záleží. Uprostřed
-  #  komunity, kam patříš i ty.
-  # otázka čeká na přepis bez „Boží dotek“ a „komunity“ (17. 10.):
-  # otazka: Prožívají lidé Boží dotek v srdci komunity, kterou tvoříš i ty?
+  nazev: 04 Vedeme
+  nadtitulek: plnotučná
+  slovo: Vedeme
+  plus: true
   otisk: '04'
-  detail_odkaz: Ať na vlastní kůži poznají, že Bohu na nich záleží
+  vyrok: |
+    druhé ke Kristu
   detail: |
-    # Ať na vlastní kůži poznají, že Bohu na nich záleží.
+    # Číslo v kravíně. Jméno na pastvě.
+
+    ## Fandíme, makáme i tvoříme z jednoho důvodu: aby lidé zažili, že je Bůh zná a má je rád.
+
+    Za vším, co v Novém Jičíně děláme, bije jedno společné přání. Sami jsme na vlastní kůži zažili, že Bůh je mnohem lepší, než jsme se báli: každého člověka zná jménem, rozumí jeho příběhu a stojí o něj. Stejnou úlevu a přijetí přejeme uprostřed všedního týdne sousedovi přes plot, kolegovi po noční i mámě z vedlejšího vchodu. Když přijde řeč na to, odkud bereme pokoj a naději, mluvíme o Ježíši přirozeně a s radostí. Za svou lásku ručíme my a proměnu srdce s důvěrou necháváme na Bohu, kterému na každém člověku záleží.
 
     > „Všechnu svou starost uvrhněte na něj, vždyť jemu na vás záleží.“
     > [1. Petrova 5,7](https://bible.com/bible/15/1PE.5.7.B21)
+
+    [Na cestě] Naučíme se, jak se jmenují lidé z našeho vchodu, a budeme je zdravit jménem. Když se kolega zeptá, odkud bereme klid, řekneme mu obyčejnými slovy o Ježíši.
+
+    [Na pastvě] S mladými se učíme vyprávět, co s Ježíšem zažíváme, bez zbožných frází. Kdo k nám přijde, může se na cokoli zeptat a nemusí s ničím souhlasit.
+
+    [Ve městě] Za lidi z naší ulice se modlíme jménem, i když o tom nevědí. Když na náměstí uspořádáme zpívání koled, řekneme pár vět o tom, kdo je Ježíš.
+
+    @ Zrcadlo
+
+    Komu jsme poslední dobou mohli říct, co pro nás znamená Ježíš?
+
+    Kolik sousedů a kolegů známe jménem a víme, co je trápí?
+
+    Podle čeho by přátelé, kteří nevěří v Boha, poznali, že je máme rádi?
