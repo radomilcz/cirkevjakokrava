@@ -230,7 +230,7 @@ def rozvrh(slajdy):
         predel = False
         if x['typ'] in OTISK_TYPU:
             x['otisk'] = OTISK_TYPU[x['typ']]
-        elif x['typ'] not in S_OTISKEM or x.get('plus'):   # vstupní slajd pilíře je čistý, bez otisku
+        elif x['typ'] not in S_OTISKEM:
             x['otisk'] = None
         elif x.get('otisk') in (None, '', 'auto'):
             x['otisk'] = 'auto'
