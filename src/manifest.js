@@ -34,6 +34,16 @@
   /* skupina je 816×997; export otisku je pořízený při rotaci 90°, Figma točí proti směru hodin, CSS po směru → css = 90 − r */
   Object.values(PRINT).forEach(c=>{const a=c.r*Math.PI/180,C=Math.abs(Math.cos(a)),S=Math.abs(Math.sin(a));
     c.w=816*C+997*S;c.h=816*S+997*C;c.rot=90-c.r});
+  /* kravské fleky pod vstupními slajdy pilířů: náhodný tvar, natočení i místo, žádný dvakrát po sobě */
+  const fleky=[1,2,3,4,5].sort(()=>Math.random()-.5);
+  slides.filter(s=>s.classList.contains('plusem')).forEach((s,n)=>{
+    const d=document.createElement('div');d.className='flek';d.setAttribute('aria-hidden','true');
+    const img=document.createElement('img');img.alt='';img.decoding='async';
+    img.src=`assets/fleky/blot0${fleky[n%fleky.length]}.webp`;
+    const r=Math.random;
+    d.style.cssText=`left:${-15+r()*65}%;top:${-20+r()*55}%;transform:rotate(${Math.round(r()*360)}deg)`;
+    d.appendChild(img);s.prepend(d);
+  });
   slides.forEach(s=>{
     const k=s.dataset.print;if(!k)return;const c=PRINT[k];
     const d=document.createElement('div');d.className='print';

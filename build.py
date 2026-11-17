@@ -230,7 +230,7 @@ def rozvrh(slajdy):
         predel = False
         if x['typ'] in OTISK_TYPU:
             x['otisk'] = OTISK_TYPU[x['typ']]
-        elif x['typ'] not in S_OTISKEM:
+        elif x['typ'] not in S_OTISKEM or x.get('plus'):   # vstupní slajd pilíře má místo otisku kravský flek (manifest.js)
             x['otisk'] = None
         elif x.get('otisk') in (None, '', 'auto'):
             x['otisk'] = 'auto'
@@ -395,6 +395,8 @@ def build():
     web = (tpl.replace('{{CSS}}', preload + f'<link rel="stylesheet" href="assets/manifest.css?v={v(css_web)}">')
               .replace('{{JS}}', f'<script src="assets/manifest.js?v={v(js)}"></script>'))
     zkopiruj_fotky(assets)
+    if ' plusem' in web:     # kravské fleky pod vstupními slajdy pilířů
+        shutil.copytree(os.path.join(SRC, 'assets', 'fleky'), os.path.join(assets, 'fleky'), dirs_exist_ok=True)
     for name in STATIC:
         shutil.copy(os.path.join(SRC, 'assets', name), os.path.join(assets, name))
     web = web.replace('{{SITE}}', SITE)
