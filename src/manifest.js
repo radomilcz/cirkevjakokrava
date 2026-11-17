@@ -107,7 +107,8 @@
     el.style.setProperty('--print',`color-mix(in srgb,${i} ${['#e6acac','#f9e7dd'].includes(g)?18:30}%,transparent)`);
   }
   function barvy(s){
-    if(!s.querySelector('.photo,.portret')){
+    if(s.classList.contains('plusem')){obarvi(s,ZAKLAD);s._barvy=ZAKLAD}   /* vstupní slajd pilíře: vždy hnědá s růžovou (Radomilův návrh 17. 11.) */
+    else if(!s.querySelector('.photo,.portret')){
       let k;do{k=Math.floor(Math.random()*PALETA.length)}while(k===posledni);
       posledni=k;obarvi(s,PALETA[k]);
       const [g,i]=PALETA[k];
@@ -148,7 +149,7 @@
 
   /* ---------- rozklik z výroku: otevřená vrstva má klávesy, kolečko i dotyk pro sebe ---------- */
   const detailOpen=()=>!!document.querySelector('dialog.detail[open]');
-  document.querySelectorAll('.vic,.podnadpis.odkaz').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.vic,.podnadpis.odkaz,.plus').forEach(b=>b.addEventListener('click',()=>{
     const d=document.getElementById(b.getAttribute('aria-controls'));if(!d||!d.showModal)return;
     obarvi(d,barvyTed);d.scrollTop=0;d.showModal();d._from=b;
   }));

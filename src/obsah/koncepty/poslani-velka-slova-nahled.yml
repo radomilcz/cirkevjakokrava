@@ -1,4 +1,4 @@
-# Náhled (17. 10.; vstupní slajdy pilířů 17. 11.): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
+# Náhled (17. 10.; vstupní slajdy pilířů 17. 11., hnědá s růžovou a bez otisku podle Radomilova návrhu): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
 slajdy:
 # osa jako samostatný slajd před pilíři (Radomil 31. 10.)
 - typ: vyrok
@@ -18,7 +18,6 @@ slajdy:
   nadtitulek: plnotučná
   slovo: Fandíme
   plus: true
-  otisk: '01'
   vyrok: |
     našemu městu
   detail: |
@@ -60,7 +59,6 @@ slajdy:
   nadtitulek: plnotučná
   slovo: Makáme
   plus: true
-  otisk: '02'
   vyrok: |
     na jeho růstu
   detail: |
@@ -100,7 +98,6 @@ slajdy:
   nadtitulek: plnotučná
   slovo: Tvoříme
   plus: true
-  otisk: '03'
   vyrok: |
     dobrou pastvu
   detail: |
@@ -135,13 +132,12 @@ slajdy:
   fotka: assets/fotky/krava-manifest.webp
   popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
 - typ: vyrok
-  nazev: 04 Vedeme
+  nazev: 04 Toužíme
   nadtitulek: plnotučná
-  slovo: Vedeme
+  slovo: Toužíme
   plus: true
-  otisk: '04'
   vyrok: |
-    druhé ke Kristu
+    ať najde cestu ke Kristu
   detail: |
     # Číslo v kravíně. Jméno na pastvě.
 
