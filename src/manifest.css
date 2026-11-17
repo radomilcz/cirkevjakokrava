@@ -88,10 +88,11 @@ body{
    Přesun rotace na .print ani náhrada za opacity nepomohly (22,1 % a 13,9 %). */
 .slide>*:not(.print):not(.photo):not(.portret):not(.veil):not(.title):not(.claim):not(.flek){position:relative;z-index:1}
 /* kravský flek pod vstupním slajdem pilíře (poloprůhledně přes overlay jako na webu); místo a natočení dává manifest.js */
-.flek{position:absolute;z-index:0;width:min(70vw,900px);pointer-events:none;mix-blend-mode:overlay;opacity:.9}
+/* flek leží nad písmem jako v Radomilově návrhu: přes overlay písmo pod ním jen zesvětlí */
+.flek{position:absolute;z-index:2;width:min(62vw,1200px);pointer-events:none;mix-blend-mode:overlay}
 .flek img{display:block;width:100%;height:auto}
 .slide.plusem{overflow:hidden}
-@media (max-width:700px){.flek{width:130vw}}
+@media (max-width:700px){.flek{width:120vw}}
 
 /* ---------- vstupní animace ---------- */
 .rise{opacity:0;transform:translateY(.45em);transition:opacity .9s var(--ease),transform 1.1s var(--ease)}
@@ -307,6 +308,7 @@ body{
 .slovem.plusem .stred .statement,.slovem.plusem .stred:has(.statement) .statement{margin:.35em 0 0;font-family:var(--grand);font-weight:400;font-size:clamp(1.1rem,2.3vw,2.5rem);line-height:1.2;max-width:none;letter-spacing:0}
 .plus{margin-top:clamp(.6rem,3vh,2.4rem);width:2.2em;height:2.2em;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;
   padding:0;border:0;border-radius:50%;background:none;color:inherit;font-family:var(--body);font-weight:300;font-size:clamp(1.8rem,3.2vw,3.2rem);line-height:1;cursor:pointer;transition:background-color .3s,transform .5s var(--ease)}
+.slovem.plusem .plus{color:#f9e7dd}   /* krémové +, v návrhu bílé; bílá v paletě není */
 .plus:hover,.plus:focus-visible{background:color-mix(in srgb,currentColor 12%,transparent);transform:rotate(90deg)}
 .plus:focus-visible{outline:2px solid currentColor;outline-offset:4px}
 .slovem .vic{margin-top:clamp(.6rem,2.4vh,2rem);padding:.5em 0;min-height:44px;font-size:clamp(1rem,1.7vw,2rem);line-height:1.2}

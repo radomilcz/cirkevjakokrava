@@ -35,14 +35,18 @@
   Object.values(PRINT).forEach(c=>{const a=c.r*Math.PI/180,C=Math.abs(Math.cos(a)),S=Math.abs(Math.sin(a));
     c.w=816*C+997*S;c.h=816*S+997*C;c.rot=90-c.r});
   /* kravské fleky pod vstupními slajdy pilířů: náhodný tvar, natočení i místo, žádný dvakrát po sobě */
-  const fleky=[1,2,3,4,5].sort(()=>Math.random()-.5);
-  slides.filter(s=>s.classList.contains('plusem')).forEach((s,n)=>{
-    const d=document.createElement('div');d.className='flek';d.setAttribute('aria-hidden','true');
-    const img=document.createElement('img');img.alt='';img.decoding='async';
-    img.src=`assets/fleky/blot0${fleky[n%fleky.length]}.webp`;
-    const r=Math.random;
-    d.style.cssText=`left:${-15+r()*65}%;top:${-20+r()*55}%;transform:rotate(${Math.round(r()*360)}deg)`;
-    d.appendChild(img);s.prepend(d);
+  const r=Math.random;let posledniFlek=0;
+  slides.filter(s=>s.classList.contains('plusem')).forEach(s=>{
+    const kolik=r()<.35?2:1;
+    for(let j=0;j<kolik;j++){
+      let f;do{f=1+Math.floor(r()*5)}while(f===posledniFlek);posledniFlek=f;
+      const d=document.createElement('div');d.className='flek';d.setAttribute('aria-hidden','true');
+      const img=document.createElement('img');img.alt='';img.decoding='async';img.src=`assets/fleky/blot0${f}.webp`;
+      /* jeden flek kolem středu, druhý u okraje */
+      const x=kolik===1?10+r()*35:(j?45+r()*30:-25+r()*20),y=kolik===1?-15+r()*35:(j?-30+r()*20:30+r()*25);
+      d.style.cssText=`left:${x}%;top:${y}%;transform:rotate(${Math.round(r()*360)}deg)`;
+      d.appendChild(img);s.appendChild(d);
+    }
   });
   slides.forEach(s=>{
     const k=s.dataset.print;if(!k)return;const c=PRINT[k];
