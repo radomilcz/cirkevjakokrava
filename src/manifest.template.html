@@ -58,6 +58,7 @@
   <section class="slide{% if trida %} {{ trida }}{% endif %}{% if x.prvni %} in{% endif %}" id="{{ x.id }}"
     {%- if x.otisk %} data-print="{{ x.otisk }}"{% endif %}
     {%- if x.predel %} data-predel{% endif %}
+    {%- if x.get('fleky') %} data-fleky='{{ x.fleky|tojson }}'{% endif %}
     {%- if stitek %} aria-label="{{ stitek }}"{% endif %}>
 {%- endmacro %}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -121,7 +122,7 @@
     {{ vyrok(x.vyrok) }}
 {%- endif %}
 {%- if x.get('detail') and x.get('plus') %}
-      <button type="button" class="plus rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}" aria-label="Rozbal: {{ x.slovo }} {{ x.vyrok|trim }}"><span aria-hidden="true">+</span></button>
+      <button type="button" class="plus rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}" aria-label="Rozbal: {{ x.slovo }} {{ x.vyrok|trim }}"><span aria-hidden="true"></span></button>
 {%- elif x.get('detail') %}
       <button type="button" class="vic rise" aria-haspopup="dialog" aria-controls="d-{{ x.id }}"><span class="vic-t">{{ (x.get('detail_odkaz') or 'Víc')|txt }}</span>&nbsp;<span class="sipka" aria-hidden="true">→</span></button>
 {%- endif %}

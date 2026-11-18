@@ -34,19 +34,16 @@
   /* skupina je 816×997; export otisku je pořízený při rotaci 90°, Figma točí proti směru hodin, CSS po směru → css = 90 − r */
   Object.values(PRINT).forEach(c=>{const a=c.r*Math.PI/180,C=Math.abs(Math.cos(a)),S=Math.abs(Math.sin(a));
     c.w=816*C+997*S;c.h=816*S+997*C;c.rot=90-c.r});
-  /* kravské fleky pod vstupními slajdy pilířů: náhodný tvar, natočení i místo, žádný dvakrát po sobě */
-  const r=Math.random;let posledniFlek=0;
-  slides.filter(s=>s.classList.contains('plusem')).forEach(s=>{
-    const kolik=r()<.35?2:1;
-    for(let j=0;j<kolik;j++){
-      let f;do{f=1+Math.floor(r()*5)}while(f===posledniFlek);posledniFlek=f;
+  /* kravské fleky pod vstupními slajdy pilířů: obrázky, místa a natočení z Figmy (rám 1920×1080),
+     rám se na slajd mapuje jako cover, takže fleky drží kompozici na šířku i na výšku */
+  slides.filter(s=>s.dataset.fleky).forEach(s=>{
+    JSON.parse(s.dataset.fleky).forEach(([m,l,t,w,h,iw,ih,r])=>{
       const d=document.createElement('div');d.className='flek';d.setAttribute('aria-hidden','true');
-      const img=document.createElement('img');img.alt='';img.decoding='async';img.src=`assets/fleky/blot0${f}.webp`;
-      /* jeden flek kolem středu, druhý u okraje */
-      const x=kolik===1?10+r()*35:(j?45+r()*30:-25+r()*20),y=kolik===1?-15+r()*35:(j?-30+r()*20:30+r()*25);
-      d.style.cssText=`left:${x}%;top:${y}%;transform:rotate(${Math.round(r()*360)}deg)`;
-      d.appendChild(img);s.appendChild(d);
-    }
+      [['--l',l],['--t',t],['--w',w],['--h',h],['--iw',iw],['--ih',ih]].forEach(([k,v])=>d.style.setProperty(k,v));
+      d.style.setProperty('--r',r+'deg');
+      const img=document.createElement('img');img.alt='';img.decoding='async';img.src=`assets/fleky/mrak${m}.webp`;
+      d.appendChild(img);s.prepend(d);
+    });
   });
   slides.forEach(s=>{
     const k=s.dataset.print;if(!k)return;const c=PRINT[k];

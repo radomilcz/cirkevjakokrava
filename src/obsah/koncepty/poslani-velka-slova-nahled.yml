@@ -1,4 +1,4 @@
-# Náhled (17. 10.; vstupní slajdy pilířů 17. 11., hnědá s růžovou podle Radomilova návrhu, otisk automaticky): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
+# Náhled (17. 10.; vstupní slajdy pilířů 17. 11., podle Figmy (Manifest › Kultura, rámy 18–21): hnědá s růžovou, fleky mrak_0N na místech z Figmy): pilíř = číslo, obří slovo, pointa (Radomil; 03 a 04 zatím bez ní), odkaz s větou z rozcestníku do rozkliku; otázka v rozkliku. Build nečte.
 slajdy:
 # osa jako samostatný slajd před pilíři (Radomil 31. 10.)
 - typ: vyrok
@@ -15,9 +15,10 @@ slajdy:
 # rozcestník pilířů pryč (20. 10.), pilíře jdou rovnou za sebou se zbytkem Poslání
 - typ: vyrok
   nazev: 01 Fandíme
-  nadtitulek: plnotučná
+  nadtitulek: oči
   slovo: Fandíme
   plus: true
+  fleky: [['01', 596.18, -384.35, 1441.06, 1441.06, 979.64, 1058.33, -45]]
   vyrok: |
     Bohu a našemu městu
   detail: |
@@ -56,9 +57,10 @@ slajdy:
   otisk: '05'
 - typ: vyrok
   nazev: 02 Makáme
-  nadtitulek: plnotučná
+  nadtitulek: ruce
   slovo: Makáme
   plus: true
+  fleky: [['01', -286.48, 245.23, 1365.44, 1325.59, 979.64, 1058.33, -114.02], ['01', 942.27, -597.59, 1365.44, 1325.59, 979.64, 1058.33, -114.02]]
   vyrok: |
     společně na jeho růstu
   detail: |
@@ -95,9 +97,10 @@ slajdy:
   popis_fotky: Vystřižený černobílý portrét Johna F. Kennedyho.
 - typ: vyrok
   nazev: 03 Tvoříme
-  nadtitulek: plnotučná
+  nadtitulek: hlava
   slovo: Tvoříme
   plus: true
+  fleky: [['05', 335.73, 23.92, 1285, 940, 1285, 940, 0]]
   vyrok: |
     pro lidi šťavnatou pastvu
   detail: |
@@ -133,9 +136,10 @@ slajdy:
   popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
 - typ: vyrok
   nazev: 04 Toužíme
-  nadtitulek: plnotučná
+  nadtitulek: srdce
   slovo: Toužíme
   plus: true
+  fleky: [['03', 707.16, -227.99, 1182.11, 1183.98, 918.88, 922.05, 20.34]]
   vyrok: |
     ať najdou cestu ke Kristu
   detail: |
