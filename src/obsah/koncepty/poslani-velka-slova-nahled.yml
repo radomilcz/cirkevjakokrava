@@ -20,7 +20,7 @@ slajdy:
   plus: true
   fleky: [['01', 596.18, -384.35, 1441.06, 1441.06, 979.64, 1058.33, -45]]
   vyrok: |
-    Bohu a našemu městu
+    našemu městu
   detail: |
     # Bůh tvoří, my fandíme.
 
@@ -62,7 +62,7 @@ slajdy:
   plus: true
   fleky: [['01', -286.48, 245.23, 1365.44, 1325.59, 979.64, 1058.33, -114.02], ['01', 942.27, -597.59, 1365.44, 1325.59, 979.64, 1058.33, -114.02]]
   vyrok: |
-    společně na jeho růstu
+    na jeho růstu
   detail: |
     # Tráva roste dřív než kráva.
 
@@ -102,7 +102,7 @@ slajdy:
   plus: true
   fleky: [['05', 335.73, 23.92, 1285, 940, 1285, 940, 0]]
   vyrok: |
-    pro lidi šťavnatou pastvu
+    dobrou pastvu
   detail: |
     # Dobrá pastva je lákavá.
 
@@ -135,13 +135,13 @@ slajdy:
   fotka: assets/fotky/krava-manifest.webp
   popis_fotky: Skotský náhorní skot zblízka, za ním dřevěná ohrada.
 - typ: vyrok
-  nazev: 04 Toužíme
+  nazev: 04 Láskou
   nadtitulek: srdce
-  slovo: Toužíme
+  slovo: Láskou
   plus: true
   fleky: [['03', 707.16, -227.99, 1182.11, 1183.98, 918.88, 922.05, 20.34]]
   vyrok: |
-    ať najdou cestu ke Kristu
+    vedeme ke Kristu
   detail: |
     # Číslo v kravíně. Jméno na pastvě.
 
